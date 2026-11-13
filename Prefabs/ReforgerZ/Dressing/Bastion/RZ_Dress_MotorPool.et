@@ -24,6 +24,7 @@ GenericEntity {
     }
    }
    coords 2.5 0 2.2
+   angles 0 0 0
   }
   GenericEntity : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
    ID "6CDA528E33076E0B"
@@ -32,6 +33,7 @@ GenericEntity {
     }
    }
    coords 3.2 0 2.0
+   angles 0 0 0
   }
   GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
    ID "083496199B56095D"
@@ -58,6 +60,7 @@ GenericEntity {
     }
    }
    coords -2.8 0 -2.4
+   angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "A808A417D8B80A25"

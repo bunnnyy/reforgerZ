@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{DC6B28A772BCC731}Prefabs/Structures/Recreation/Beach/ShowerBeach_01.et" {
    ID "92F6CBC394868A6B"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0 0.15 0
+   angles 0 0 0
   }
   SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
    ID "6216A71B85803926"
@@ -49,6 +51,7 @@ GenericEntity {
     }
    }
    coords -1.2 0 1.1
+   angles 0 0 0
   }
   GenericEntity : "{D63716E01EF9AC74}Prefabs/Props/Forest/ForestBench_01/ForestBench_01.et" {
    ID "E2D89B7D4077B7B5"

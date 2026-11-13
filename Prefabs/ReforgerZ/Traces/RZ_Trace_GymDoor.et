@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{158A49327BE741D9}Prefabs/Props/Furniture/BunkBed_01/BunkBed_01_Mattress.et" {
    ID "324D07759DC261C4"
@@ -32,6 +33,7 @@ GenericEntity {
     }
    }
    coords 1.2 0 0.2
+   angles 0 0 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
    ID "CFAFF2FC1D023A75"
@@ -40,6 +42,7 @@ GenericEntity {
     }
    }
    coords 1.2 0.15 0.2
+   angles 0 0 0
   }
   GenericEntity : "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et" {
    ID "7C733D5B263CA284"
@@ -48,6 +51,7 @@ GenericEntity {
     }
    }
    coords -1.5 0 0.3
+   angles 0 0 0
   }
  }
 }

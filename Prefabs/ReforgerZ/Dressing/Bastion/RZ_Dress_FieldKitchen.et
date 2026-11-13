@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
    ID "B638A624E84272B8"
@@ -28,10 +29,12 @@ GenericEntity {
   GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
    ID "F43EC07D94906098"
    coords 2.7 0.78 0.4
+   angles 0 0 0
   }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
    ID "B94236EA23E94678"
    coords 2.6 0.78 -0.3
+   angles 0 0 0
   }
   GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
    ID "DB137AE8EA141E35"
@@ -40,6 +43,7 @@ GenericEntity {
     }
    }
    coords -1.9 0 0.9
+   angles 0 0 0
   }
   GenericEntity : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
    ID "395A91A804CA7CB9"

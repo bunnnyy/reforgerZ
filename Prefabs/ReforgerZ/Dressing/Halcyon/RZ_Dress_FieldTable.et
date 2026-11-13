@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
    ID "44781332E208FF10"
@@ -41,6 +42,7 @@ GenericEntity {
     }
    }
    coords 0 0.78 -0.1
+   angles 0 0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "5686CAF9AF8480D0"
@@ -49,6 +51,7 @@ GenericEntity {
     }
    }
    coords 0.1 0 0.8
+   angles 0 0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "4C4CB15E688E9CDB"
@@ -57,6 +60,7 @@ GenericEntity {
     }
    }
    coords -0.2 0 -0.8
+   angles 0 0 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
    ID "31E1927B74393E59"
@@ -74,6 +78,7 @@ GenericEntity {
     }
    }
    coords 1.7 1.0 -0.1
+   angles 0 0 0
   }
   GenericEntity {
    ID "53C1B6EE546458AF"

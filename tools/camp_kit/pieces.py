@@ -196,8 +196,8 @@ piece("Barricade_Scrap", "RedHand", "None", "Approach", "Tin sheets lashed at an
     P("TinWall_01_3m.et", -0.8, 0, 6), P("TinWall_01_3m.et", 1.4, 0.4, -18), P("TirePile_01_small.et", 3.2, 0.9), P("Junk_01_pile_small.et", -2.9, 0.5, 30), P("Pallet_01.et", 0.4, -0.3, 10, 0.6, 0, 80)])
 piece("RedHandSheet", "RedHand", "None", "Approach", "A tin sheet stood on two tyre piles, facing the road (the red hand decal still to come).", [
     P("TirePile_01_small.et", -1.0, 0), P("TirePile_01_small.et", 1.1, 0.1), P("TinWall_01_3m.et", 0, 0.05, 2, 0.6), P("Junk_01_single_planks.et", 0.2, -0.5, 25)])
-piece("TrophyWall", "RedHand", "None", "Edge", "A long tin wall hung with skulls on boards and junk; a tyre leaning on it.", [
-    P("TinWall_01_6m_A.et", 0, 0, 4), P("DeerSkull_01_board.et", -1.6, 0.1, 4, 1.6), P("DeerSkull_01_board.et", 0.3, 0.12, 4, 1.8), P("DeerSkull_01_board.et", 1.9, 0.14, 4, 1.5),
+piece("TrophyWall", "RedHand", "None", "Approach", "A long tin wall by the way in, hung with skulls on boards that look out at whoever comes up the road; a tyre leaning on it, junk at its foot.", [
+    P("TinWall_01_6m_A.et", 0, 0, 4), P("DeerSkull_01_board.et", -1.6, 0.32, 184, 1.6), P("DeerSkull_01_board.et", 0.3, 0.34, 184, 1.8), P("DeerSkull_01_board.et", 1.9, 0.36, 184, 1.5),
     P("Tire_UAZ469.et", -2.6, 0.5, 0, 0.3, 75), P("Junk_01_pile_small.et", 2.4, 0.9, 20)])
 piece("Sofa", "RedHand", "Sit", "Centre", "A sofa and armchair round a barrel side table, bottles everywhere.", [
     P("Sofa_02_green.et", 0, 0, 4), P("Armchair_01.et", 1.9, 1.3, 238), P("BarrelMetal_01_rust.et", 0.9, 1.5), P("BeerBottle_01_group.et", 0.9, 1.5, 0, 0.9),
@@ -322,6 +322,69 @@ piece("Triage", "Halcyon", "Work", "Approach", "Triage inside the gate: a table 
     P("ToolsSurgical_01_autoclavedrum.et", -0.5, 0.05, 0, 0.78), P("CrateWooden_02_1x1x1.et", 1.9, 0.2, 8),
     S("RZ_Work", -0.5, -0.9, "sit", -0.5, 0)])
 
+# ------------------------------------------------------------------- Dense sites (docs/SITES.md, "Dense sites")
+# Small set dressing a dense kit repeats many times: stores, fuel, tyres, cover, light, beds.
+piece("CrateStack", "Common", "None", "Inner", "Crates stacked against a wall, one on top, a pallet leaning on them.", [
+    P("CrateWooden_02_1x1x1.et", 0, 0, 3), P("CrateWooden_02_1x1x1.et", 1.05, 0.05, -4), P("CrateWooden_02_1x1x1.et", 0.5, 0, 6, 1.0), P("CrateWooden_01_plain.et", -1.0, 0.1, 12),
+    P("CrateWooden_01_plain.et", -1.0, 0.1, -8, 0.62), P("Pallet_01.et", 1.9, 0.2, 80, 0.55, 0, 78)])
+piece("PalletStack", "Common", "None", "Inner", "Pallets piled, a second pile beside them, sacks stacked at the end.", [
+    P("Pallet_01_Pile.et", 0, 0, 4), P("Pallet_01_Pile.et", 1.4, 0.1, -6), P("SackUniversal_01_Pile.et", 0.1, 1.3, 20)])
+piece("BarrelGroup", "Common", "None", "Inner", "Fuel and water drums stood together, two jerrycans, a bucket.", [
+    P("BarrelMetal_01_grey.et", 0, 0), P("BarrelMetal_01_grey.et", 0.7, 0.1), P("BarrelMetal_01_blue.et", 0.35, 0.65), P("BarrelMetal_01_rust.et", -0.7, 0.3),
+    P("Jerrycan_01.et", 1.3, 0.5, 25), P("Jerrycan_01.et", 1.35, 0.1, -10), P("Bucket_01.et", -0.3, -0.7)])
+piece("TyreStack", "Common", "None", "Inner", "Tyres stacked, one leaning on the stack, one on the ground.", [
+    P("TirePile_01_small.et", 0, 0), P("Tire_UAZ469.et", 1.1, 0.3, 0, 0, 90), P("Tire_UAZ469.et", -0.2, 1.1)])
+piece("Bedrolls", "Common", "Sleep", "Inner", "Blankets laid out under the sky, packs at their heads, a lantern between them.", [
+    P("BlanketBeach_01_brown.et", -0.6, 0, 4), P("BlanketBeach_01_red.et", 0.6, 0.1, -3), P("SackUniversal_01.et", -0.6, 1.1, 30), P("SackUniversal_01.et", 0.6, 1.15, -20),
+    P("LanternMilitary_US_01.et", 0, 1.3)])
+piece("SandbagPile", "Bastion", "None", "Inner", "Filled sandbags waiting to be laid, spare sacks beside them.", [
+    P("Sandbag_01_single_burlap.et", 0, 0), P("Sandbag_01_single_burlap.et", 0.55, 0.1, 8), P("Sandbag_01_single_burlap.et", 0.25, 0.05, 90, 0.17), P("Sandbag_01_single_burlap.et", -0.5, 0.4, 40),
+    P("Sandbag_01_end_burlap.et", 0.2, 0.8, 20), P("SackUniversal_01.et", 1.2, 0.5, 60)])
+piece("SandbagWall", "Bastion", "None", "Inner", "A chest-high sandbag wall two sections long inside the wire: cover between the gate and the door.", [
+    P("Sandbag_01_long_high_burlap.et", -1.7, 0, 0), P("Sandbag_01_long_high_burlap.et", 1.7, 0.05, 2)])
+piece("MessTable", "Bastion", "Sit", "Centre", "A mess table: tins, mugs and a lamp left on it.", [
+    P("PicnicTable_01.et", 0, 0, 3), P("LitterInterior_USSR_01_bowl.et", -0.4, 0.1, 0, 0.78), P("LitterInterior_USSR_01_mug.et", 0.2, -0.1, 0, 0.78),
+    P("LitterInterior_USSR_01_tincan_V1.et", 0.5, 0.15, 0, 0.78), P("LanternMilitary_US_01.et", 0, 0.05, 0, 0.78),
+    S("RZ_Sit", -0.5, 0.8, "sit", -0.5, 0), S("RZ_Sit", 0.5, -0.8, "sit", 0.5, 0)])
+piece("CheckpointSign", "Bastion", "None", "Approach", "A stop sign on its stand, a cone either side, a lamp at its foot.", [
+    P("SignCheckpoint_01_stop.et", 0, 0, 0), P("ConeTraffic_01_red.et", -0.9, 0.2), P("ConeTraffic_01_red.et", 0.9, 0.3), P("LanternMilitary_US_01.et", 0.4, -0.3)])
+piece("JeepWreck", "Bastion", "None", "Edge", "A jeep that will never run again, kept for its parts: a wheel off, a crate of tools, a jerrycan.", [
+    P("UAZ469_wreck_rusty_static.et", 0, 0, -8), P("CrateWooden_01_plain.et", 1.9, 0.6, 20), P("Tire_UAZ469.et", -1.7, 1.2), P("Jerrycan_01.et", 1.8, -0.5, 15)])
+piece("GeneratorPost", "Bastion", "Work", "Edge", "A generator behind a sandbag end, its fuel beside it, a crate of cable.", [
+    P("GeneratorPortable_US_01_Off.et", 0, 0, 0), P("Sandbag_01_end_burlap.et", 0, 0.9, 0), P("Jerrycan_01.et", 0.8, 0.2, 30), P("CrateWooden_01_plain.et", -1.0, 0.1, 10),
+    S("RZ_Work", 0, -0.9, "loiter", 0, 0)])
+piece("RadioMast", "Bastion", "Work", "Inner", "The radio: a mast, a table with the set and a lamp, a stool.", [
+    P("Antenna_R161_01.et", 0, 0), P("TableMilitary_US_01.et", 1.6, 0, 90), P("RadioSmall_01_black.et", 1.6, 0.2, 0, 0.78), P("Stool_01.et", 2.5, 0),
+    P("LanternMilitary_US_01.et", 1.6, -0.5, 0, 0.78),
+    S("RZ_Work", 2.5, 0, "sit", 1.6, 0)])
+
+# ------------------------------------------------------------------- From the mods the project loads already (docs/MOD_STACK.md, "The camps' look")
+# Pieces no vanilla prop gives: riot fencing (MoreGMProps), security
+# mesh (SecurityFences), a guard tower, a container, one forklift, stacked cases and a fuel pump (IH_Better_GM_Props, which
+# Timmmmmbs Garbage Composition brings). Tried and left out: IH's diesel generator (the size of a van, bright green) and
+# SBBG Wrecks' armoured car and ambulance props (not seen standing where they were put), MoreGMProps' blast walls,
+# earth-filled barriers and concrete barriers (the author prefers razor wire to concrete). MoreGMProps' burn pile isn't a
+# kit piece: the dead zone holds only what a site's story puts there (docs/SITES.md, "Zones", "The elements").
+piece("Watchtower_Bastion", "Bastion", "Watch", "Approach", "A guard tower that sees the gate and the road in; nobody trusts its ladder any more, so the sentry stands at its foot.", [
+    P("GuardTower_destructible.et", 0, 0, 0),
+    S("RZ_Watch", 2.9, 2.9, "loiter", 2.9, 14)])
+piece("SearchTable", "Bastion", "Work", "Approach", "Where packs are opened before anyone goes further: a table, a crate for what is taken off people, a lamp.", [
+    P("TableMilitary_US_01.et", 0, 0, 0), P("CrateWooden_01_plain.et", 1.5, 0.1, 85), P("LanternMilitary_US_01.et", -0.4, 0.05, 0, 0.9), P("Suitcase_04_open.et", 0.3, 0, 10, 0.9),
+    S("RZ_Work", 0, -0.9, "loiter", 0, 0)])
+# One supply yard a site: its back (the container) to the building's wall, the work in front of it
+piece("SupplyYard", "Common", "Work", "Inner", "The stores, off the trucks: a container along the wall, pallets set down in a row in front of it, cases stacked, the forklift parked at its end, the storeman's crate to count at.", [
+    P("Container_openable.et", 1.29, -2.6, 90), P("Pallet_01_Pile.et", -2.4, 0, 2), P("Pallet_01_Pile.et", -0.8, 0.05, -3), P("Pallet_01_Pile.et", 0.8, 0, 4),
+    P("EqBoxStack_destructible.et", 2.6, -0.3, 5), P("EqBoxStack_destructible.et", 2.7, 0.9, -4), P("Forklift_orange.et", 5.3, -1.6, 0),
+    P("CrateWooden_01_plain.et", -4.4, 0.4, 80), P("BarrelMetal_01_grey.et", -4.7, -2.0), P("BarrelMetal_01_grey.et", -4.8, -1.2),
+    S("RZ_Work", -4.4, 1.3, "loiter", -4.4, 0.4)])
+piece("LootContainer", "RedHand", "Sit", "Inner", "What the crew took, shut in a container along the wall: a chair in front of it for whoever has the key, a crate, bottles.", [
+    P("Container_openable.et", 1.29, -1.4, 90), P("ChairOld_01.et", -1.0, 1.1, 170), P("CrateWooden_01_plain.et", 0.3, 1.0, 80), P("BeerBottle_01_group.et", 0.3, 1.0, 0, 0.83),
+    S("RZ_Sit", -1.0, 1.1, "sit", -1.0, 6)])
+piece("FuelPoint", "Common", "None", "Inner", "A fuel pump unit on the ground, drums and cans round it.", [
+    P("US_fuelpump.et", 0, 0, 0), P("BarrelMetal_01_grey.et", 1.7, 0.2), P("BarrelMetal_01_grey.et", 1.8, -0.6), P("Jerrycan_01.et", -1.4, 0.3, 15), P("Jerrycan_01.et", -1.45, -0.1, -20)])
+piece("RiotLine", "Common", "None", "Approach", "Riot fencing in a line: a lane to queue in.", [
+    P("RiotFence.et", -2.01, 0, 0), P("RiotFence.et", -0.67, 0, 0), P("RiotFence.et", 0.67, 0, 0), P("RiotFence.et", 2.01, 0, 0)])
+
 # ------------------------------------------------------------------- The layers (docs/SITES.md, "Building in layers")
 # The wire: runs of each faction's barrier along the line, longest first (build.py reads each run's
 # length from its footprint). Each run lies along its own x, its front (+Z) out of the site.
@@ -339,6 +402,7 @@ piece("Scrap_RedHand_L", "RedHand", "None", "Approach", "Rusted tin sheets stood
 piece("Scrap_RedHand_M", "RedHand", "None", "Approach", "A long sheet of rusted tin.", [P("TinWall_01_6m_A_rusty.et", -3.0, 0, 0)])
 piece("Scrap_RedHand_S", "RedHand", "None", "Approach", "A road block of steel dragged across a gap.", [P("RoadBlock_01.et", 0, 0, 0)])
 piece("Scrap_RedHand_XS", "RedHand", "None", "Approach", "A pile of tyres in a gap.", [P("TirePile_01_small.et", 0, 0, 0)])
+piece("Scrap_RedHand_XXS", "RedHand", "None", "Approach", "A pallet stood on its edge in the last gap.", [P("Pallet_01.et", 0, 0, 90, 0.42, 0, 85)])
 piece("Fence_Haven_L", "Haven", "None", "Approach", "A long run of plank fence, kept mended.", [P("WoodenFence_01_8m.et", -4.0, 0, 0)])
 piece("Fence_Haven_M", "Haven", "None", "Approach", "A section of plank fence.", [P("WoodenFence_01_4m.et", -2.0, 0, 0)])
 piece("Fence_Haven_S", "Haven", "None", "Approach", "An old fence panel on a post.", [P("WoodenFenceOld_01_4m.et", -2.0, 0, 0)])
@@ -351,6 +415,29 @@ piece("Fence_Halcyon_M", "Halcyon", "None", "Approach", "A tall chain-link secti
 piece("Fence_Halcyon_S", "Halcyon", "None", "Approach", "A short chain-link section.", [
     P("NetFence_05_tall_3m.et", -1.55, 0, 0), P("NetFence_05_tall_pole.et", 1.6, 0, 0)])
 piece("Fence_Halcyon_XS", "Halcyon", "None", "Approach", "A coil of wire in a gap.", [P("BarbedTape_01_Short.et", 0, 0, 90)])
+piece("Fence_Halcyon_XXS", "Halcyon", "None", "Approach", "A no-entry sign on its pole in the last gap.", [P("SignIndustrial_USSR_02_warnings_entryforbidden_pole.et", 0, 0, 0)])
+# The lab's own line: security mesh four metres high, a razor coil along its top
+piece("SecFence_Halcyon_L", "Halcyon", "None", "Approach", "Security mesh four metres high with a razor coil along its top, two sections.", [
+    P("SF_SecurityFence_6m.et", -6.0, 0, 0), P("SF_SecurityFence_6m.et", 0, 0, 0)])
+piece("SecFence_Halcyon_M", "Halcyon", "None", "Approach", "A section of security mesh, a razor coil along its top.", [P("SF_SecurityFence_6m.et", -3.0, 0, 0)])
+piece("SecFence_Halcyon_S", "Halcyon", "None", "Approach", "A short section of security mesh.", [P("SF_SecurityFence_3m.et", -1.5, 0, 0)])
+# Road blocks (docs/SITES.md, "One way in"): what a stronghold closes every road with but its one gate. Razor wire, not
+# concrete (the author, 2026-11-13).
+piece("Block_Bastion_L", "Bastion", "None", "Approach", "The road closed with razor wire: two knife rests end to end across it, a coil of concertina behind them.", [
+    P("BarbedTape_KnifeRest.et", -1.8, 0, 90), P("BarbedTape_KnifeRest.et", 1.8, 0.05, 88), P("BarbedTape_01_Long.et", 0, -1.3, 90)])
+piece("Block_Bastion_M", "Bastion", "None", "Approach", "A knife rest of razor wire across a lane.", [P("BarbedTape_KnifeRest.et", 0, 0, 90)])
+piece("Block_Halcyon_L", "Halcyon", "None", "Approach", "The road closed with the lab's own fence: a section of security mesh, a razor coil along its top.", [P("SF_SecurityFence_6m.et", -3.0, 0, 0)])
+piece("Block_Halcyon_M", "Halcyon", "None", "Approach", "A short section of security mesh across a lane.", [P("SF_SecurityFence_3m.et", -1.5, 0, 0)])
+piece("Block_RedHand_L", "RedHand", "None", "Approach", "A truck on its rims dragged across the road, tyres piled at its nose.", [
+    P("Ural4320_wreck_static.et", -0.9, 0, 90), P("TirePile_01_small.et", 4.3, 0.2, 0)])
+piece("Block_RedHand_M", "RedHand", "None", "Approach", "A van turned across the road.", [P("S1203_wreck_static.et", 0, 0, 90)])
+piece("Block_RedHand_S", "RedHand", "None", "Approach", "A steel road block, a tyre against it.", [P("RoadBlock_01.et", 0, 0, 0), P("Tire_UAZ469.et", 0.3, 0.7, 0)])
+piece("Block_Haven_L", "Haven", "None", "Approach", "A van on its rims across the road, crates stacked to close the rest.", [
+    P("UAZ452_wreck_static.et", -1.2, 0, 90), P("CrateWooden_02_1x1x1.et", 1.9, 0, 5), P("CrateWooden_02_1x1x1.et", 3.0, 0.1, -4), P("CrateWooden_02_1x1x1.et", 2.4, 0.05, 8, 1.0)])
+piece("Block_Haven_M", "Haven", "None", "Approach", "A fence panel across the lane, braced with crates.", [
+    P("WoodenFence_01_4m.et", -2.0, 0, 0), P("CrateWooden_02_1x1x1.et", -0.8, -0.75, 6), P("CrateWooden_02_1x1x1.et", 0.6, -0.75, -5)])
+piece("Block_Haven_S", "Haven", "None", "Approach", "Crates stacked in a gap.", [
+    P("CrateWooden_02_1x1x1.et", -0.52, 0, 4), P("CrateWooden_02_1x1x1.et", 0.52, 0, -3), P("CrateWooden_02_1x1x1.et", 0, 0, 6, 1.0)])
 # The gates: what stands each side of the opening on the road in
 piece("Gate_Bastion", "Bastion", "None", "Approach", "The checkpoint: a stop sign on its stand, a knife rest pulled aside along the wire, a sandbag end.", [
     P("SignCheckpoint_01_stop.et", -2.2, 0.1, 0), P("BarbedTape_KnifeRest.et", 0.6, 0, 92), P("Sandbag_01_end_burlap.et", -3.1, -0.1, 90)])
@@ -406,24 +493,24 @@ RULES = {
     "FirePit": (3, "yard", "near " + SEATS + " 8; away use:Sleep 6; away CookPot 4; flat 6"),
     "Table": (3, "yard", "near CookPot|FirePit 8; flat 5; noline"),
     "Tarp": (3, "work", "wall 3; faces wall"),
-    "FireBarrel": (3, "yard", "near Sofa|CardTable 4; flat 8"),
-    "Tent_Small_Civilian": (3, "sleep", "away " + FIRES + " 6; flat 5; noline"),
-    "Tent_Large_Civilian": (3, "sleep", "away " + FIRES + " 6; flat 5"),
+    "FireBarrel": (3, "court", "door front 10; flat 8"),
+    "Tent_Small_Civilian": (3, "sleep", "away " + FIRES + " 6; flat 5; soil; noline"),
+    "Tent_Large_Civilian": (3, "sleep", "away " + FIRES + " 6; flat 5; soil"),
     "Firewood": (3, "kitchen", "near CookPot 7; flat 6"),
     "CookPot": (3, "kitchen", "door side 4; away Latrine 15; away use:Sleep 6; flat 6"),
     "WashStand": (3, "kitchen", "near WaterBarrel 3; flat 6"),
     "Latrine": (3, "yard", "away CookPot|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"),
-    "DryingLine": (4, "sleep", "flat 5"),
-    "Duckboards": (4, "yard", "near use:Sleep 4"),
+    "DryingLine": (4, "sleep", "flat 5; soil"),
+    "Duckboards": (4, "yard", "by use:Sleep 5; soil"),
     "CrateChairs": (3, "yard", "near FirePit|CookPot 8; flat 6"),
-    "Clutter": (5, "yard", "near use:Sit 4; jitter"),
+    "Clutter": (5, "yard", "by use:Sit 4; jitter"),
     "RadioTable": (3, "work", "wall 3; faces in"),
     "ScrapShelter": (3, "sleep", "away " + FIRES + " 6; flat 6"),
     "Barricade_Fence": (1, "wire", "faces out"),
     "Kennel": (4, "gate", "faces road; flat 8"),
     # Bastion
-    "Tent_Small_Bastion": (3, "sleep", "away FirePit|CookPot 6; flat 5"),
-    "Tent_Large_Bastion": (3, "sleep", "away FirePit|CookPot 6; flat 5"),
+    "Tent_Small_Bastion": (3, "sleep", "away FirePit|CookPot 6; flat 5; soil; row"),
+    "Tent_Large_Bastion": (3, "sleep", "away FirePit|CookPot 6; flat 5; soil"),
     "SentryNest_Bastion": (1, "yard", "covers gate; covers road; faces road; away gate 3; bank"),
     "RosterBoard": (2, "court", "wall 2; door front 6; faces wall"),
     "Barricade_Sandbag": (1, "wire", "faces out"),
@@ -434,15 +521,15 @@ RULES = {
     "Gate_Bastion": (1, "gate", "faces road; flat 8"),
     # The Red Hand
     "SentryNest_RedHand": (1, "yard", "covers gate; covers road; faces road; away gate 3; bank"),
-    "CardTable": (3, "yard", "near FireBarrel|Sofa 5; flat 6"),
+    "CardTable": (3, "yard", "by FireBarrel|Sofa 7; flat 6"),
     "TollBarrier": (2, "gate", "faces road; flat 8"),
     "Barricade_Scrap": (1, "wire", "faces out"),
     "RedHandSheet": (4, "gate", "faces road; flat 8"),
-    "TrophyWall": (4, "gate", "faces road; flat 8"),
-    "Sofa": (3, "yard", "near FireBarrel 3; faces FireBarrel; flat 6"),
+    "TrophyWall": (4, "gate", "by TollBarrier|RedHandSheet|WreckGate 12; faces road; flat 8"),
+    "Sofa": (3, "yard", "by FireBarrel 4; faces FireBarrel; flat 6"),
     # The Haven
-    "WashingLine": (4, "sleep", "flat 5"),
-    "Garden": (4, "yard", "soil; flat 4; away gate 10"),
+    "WashingLine": (4, "sleep", "flat 5; soil"),
+    "Garden": (4, "yard", "soil; flat 4; away gate 10; row"),
     "WaterBarrel": (3, "kitchen", "near CookPot 5; kind well 25; flat 6"),
     "BearDoor": (4, "court", "door front 3; faces out"),
     "Memorial": (2, "court", "wall 3; near Table 8; faces in"),
@@ -451,7 +538,7 @@ RULES = {
     "Gate_Haven": (1, "gate", "faces road; flat 8"),
     "Lookout_Haven": (1, "yard", "covers gate; covers road; faces road; away gate 3"),
     # Halcyon
-    "Tent_Halcyon": (3, "sick", "away CookPot 10; flat 5"),
+    "Tent_Halcyon": (3, "sick", "away CookPot 10; flat 5; soil; row"),
     "FieldTable": (3, "work", "wall 4; faces in; flat 5"),
     "ColdBox": (2, "stores", "wall 2; guarded; faces wall"),
     "Antenna": (4, "yard", "high"),
@@ -473,25 +560,52 @@ RULES = {
     "StoresBoard": (2, "court", "faces out"),
     # From the reference board
     "Bunker_Bastion": (1, "yard", "covers gate; covers road; faces road; away gate 3; bank"),
-    "MotorPool": (4, "gate", "faces road; away gate 4; flat 6"),
+    "MotorPool": (3, "gate", "faces road; away gate 4; flat 6"),
     "FieldKitchen": (3, "kitchen", "door side 4; away Latrine 15; away use:Sleep 6; flat 6"),
-    "AidPost": (3, "sick", "away CookPot 8; flat 5"),
+    "AidPost": (3, "sick", "away CookPot 8; flat 5; soil"),
     "Floodlight_Bastion": (3, "yard", "faces out"),
-    "Scrap_RedHand_Wreck": (1, "wire", ""),
+    "Scrap_RedHand_Wreck": (1, "wire", ""), "Scrap_RedHand_XXS": (1, "wire", ""), "Fence_Halcyon_XXS": (1, "wire", ""),
     "WreckGate": (2, "gate", "faces road; flat 8"),
-    "FuelDump": (4, "yard", "away " + FIRES + " 8; flat 6"),
+    "FuelDump": (4, "yard", "wall 8; away " + FIRES + " 8; flat 6"),
     "Watchtower_Haven": (1, "yard", "covers gate; covers road; faces road; away gate 3"),
     "WorkBoard": (4, "gate", "faces road; flat 8"),
-    "LanternPost": (4, "court", "door front 8"),
+    "LanternPost": (4, "court", "door front 8; away LanternPost 7"),
     "Gate_Halcyon": (1, "gate", "faces road; flat 8"),
     "WarningSigns": (4, "gate", "faces road; flat 8"),
     "Loudspeaker_Halcyon": (4, "yard", "flat 8"),
     "Triage": (3, "gate", "faces road; flat 6"),
+    # Dense sites' set dressing: every one has a rule that says where to look, so it is never left to its plan spot alone
+    "CrateStack": (5, "work", "wall 3; faces wall"),
+    "PalletStack": (5, "yard", "by SupplyYard|LootContainer|Tarp 9; flat 8"),
+    "BarrelGroup": (5, "yard", "by MotorPool|FuelPoint|FuelDump|Generator|GeneratorPost|CookPot 8; flat 8"),
+    "TyreStack": (5, "yard", "by MotorPool|JeepWreck|WreckGate|FuelDump|Barricade_Scrap 8"),
+    "Bedrolls": (5, "sleep", "by use:Sleep 6; away " + FIRES + " 4; flat 5; soil"),
+    "SandbagPile": (5, "yard", "by Bunker_Bastion|SentryNest_Bastion|SandbagWall|Barricade_Sandbag 7"),
+    "SandbagWall": (4, "court", "door front 14; faces front; flat 8"),
+    "MessTable": (4, "kitchen", "by CookPot 10; row; flat 5"),
+    "CheckpointSign": (5, "gate", "by Gate_Bastion 10; faces road; flat 8"),
+    "JeepWreck": (4, "gate", "by MotorPool 10; faces road; away gate 4; flat 6"),
+    "GeneratorPost": (4, "yard", "wall 3; away use:Sleep 8"),
+    "RadioMast": (4, "work", "wall 4; faces in; flat 5"),
+    # From the mods the project loads already
+    "Watchtower_Bastion": (2, "yard", "covers gate; faces road; away gate 4; flat 6"),
+    "SupplyYard": (3, "work", "wall 12; faces wall; away gate 10; away door 4; flat 5"),
+    "LootContainer": (3, "yard", "wall 10; faces wall; away gate 8; away door 4; flat 5"),
+    "SearchTable": (2, "gate", "by Gate_Bastion 12; faces road; flat 6"),
+    "FuelPoint": (4, "yard", "by MotorPool|FuelDump 10; away " + FIRES + " 8; flat 6"),
+    "RiotLine": (4, "gate", "by Triage 9; faces road; flat 8"),
+    "SecFence_Halcyon_L": (1, "wire", ""), "SecFence_Halcyon_M": (1, "wire", ""), "SecFence_Halcyon_S": (1, "wire", ""),
+    "Block_Bastion_L": (1, "wire", ""), "Block_Bastion_M": (1, "wire", ""), "Block_Halcyon_L": (1, "wire", ""), "Block_Halcyon_M": (1, "wire", ""),
+    "Block_RedHand_L": (1, "wire", ""), "Block_RedHand_M": (1, "wire", ""), "Block_RedHand_S": (1, "wire", ""),
+    "Block_Haven_L": (1, "wire", ""), "Block_Haven_M": (1, "wire", ""), "Block_Haven_S": (1, "wire", ""),
     # Counters (laid by the quartermaster, not by the solver)
     "Counter_Bastion": (1, "court", ""), "Counter_RedHand": (1, "court", ""), "Counter_Haven": (1, "court", ""), "Counter_Halcyon": (1, "court", ""),
 }
 # Bastion's field kitchen is its cook pot: every rule that names the pot means either
 RULES = {name: (tier, zone, rules.replace("CookPot", "CookPot|FieldKitchen")) for name, (tier, zone, rules) in RULES.items()}
+# A prop's footprint on the ground where its measured box says more than what stands on it (footprints.py): the guard
+# tower's box takes in its platform and stair, 7.5 x 8.7 m; its legs stand on 4.6 m square.
+FOOT_FORCED = {"GuardTower_destructible.et": (4.6, 4.6)}
 # A kit's own tier for a piece (the Haven's long table is what the Haven is for)
 KIT_TIER = {("SURVIVORS", "Table"): 2}
 
@@ -501,22 +615,28 @@ KIT_TIER = {("SURVIVORS", "Table"): 2}
 # and door boards, the lookout, the light, the stores board, and the plan's pieces that go indoors
 # at a building (valuable or delicate).
 WIRE_BASTION = ["Wire_Bastion_L", "Wire_Bastion_M", "Wire_Bastion_S", "Wire_Bastion_XS"]
-WIRE_REDHAND = ["Scrap_RedHand_L", "Scrap_RedHand_M", "Scrap_RedHand_Wreck", "Scrap_RedHand_S", "Scrap_RedHand_XS"]
+WIRE_REDHAND = ["Scrap_RedHand_L", "Scrap_RedHand_M", "Scrap_RedHand_Wreck", "Scrap_RedHand_S", "Scrap_RedHand_XS", "Scrap_RedHand_XXS"]
 WIRE_HAVEN = ["Fence_Haven_L", "Fence_Haven_M", "Fence_Haven_S", "Fence_Haven_XS"]
-WIRE_HALCYON = ["Fence_Halcyon_L", "Fence_Halcyon_M", "Fence_Halcyon_S", "Fence_Halcyon_XS"]
+WIRE_HALCYON = ["Fence_Halcyon_L", "Fence_Halcyon_M", "Fence_Halcyon_S", "Fence_Halcyon_XS", "Fence_Halcyon_XXS"]
+# The lab's own line, and each stronghold's road blocks (docs/SITES.md, "One way in")
+WALL_HALCYON = ["SecFence_Halcyon_L", "SecFence_Halcyon_M", "SecFence_Halcyon_S", "Fence_Halcyon_XS", "Fence_Halcyon_XXS"]
+BLOCK_BASTION = ["Block_Bastion_L", "Block_Bastion_M", "Wire_Bastion_S", "Wire_Bastion_XS"]
+BLOCK_HALCYON = ["Block_Halcyon_L", "Block_Halcyon_M", "Fence_Halcyon_XS", "Fence_Halcyon_XXS"]
+BLOCK_REDHAND = ["Block_RedHand_L", "Block_RedHand_M", "Block_RedHand_S", "Scrap_RedHand_XS"]
+BLOCK_HAVEN = ["Block_Haven_L", "Block_Haven_M", "Block_Haven_S"]
 DOCTRINE = {
-    ("MILITARY", "STRONGHOLD"): dict(close="all", harden="all", ring=8, yard=14, wire=WIRE_BASTION, window="BoardWindow", door="BoardDoor_Bastion",
+    ("MILITARY", "STRONGHOLD"): dict(close="all", harden="all", ring=8, yard=14, wire=WIRE_BASTION, block=BLOCK_BASTION, window="BoardWindow", door="BoardDoor_Bastion",
                                      lookout=["SentryNest_Bastion"], light="Floodlight_Bastion", stores="StoresBoard", indoors=["Tarp"]),
     ("MILITARY", "OUTPOST"): dict(close="two", harden="all", ring=7, yard=12, wire=["Sandbags_Bastion_L", "Sandbags_Bastion_M", "Wire_Bastion_S", "Wire_Bastion_XS"],
                                   window="BoardWindow", door="BoardDoor_Bastion", lookout=["SentryNest_Bastion"]),
     ("MILITARY", "ROAD_POST"): dict(close="none", harden="none"),
-    ("BANDITS", "STRONGHOLD"): dict(close="all", harden="doors", ring=8, yard=14, wire=WIRE_REDHAND, door="BoardDoor_RedHand", lookout=["SentryNest_RedHand"]),
+    ("BANDITS", "STRONGHOLD"): dict(close="all", harden="doors", ring=8, yard=14, wire=WIRE_REDHAND, block=BLOCK_REDHAND, door="BoardDoor_RedHand", lookout=["SentryNest_RedHand"]),
     ("BANDITS", "OUTPOST"): dict(close="road", harden="none", ring=7, yard=12, wire=WIRE_REDHAND, lookout=["SentryNest_RedHand"]),
     ("BANDITS", "ROAD_POST"): dict(close="none", harden="none"),
-    ("SURVIVORS", "STRONGHOLD"): dict(close="all", harden="threat", ring=8, yard=14, wire=WIRE_HAVEN, window="BoardWindow", door="BoardDoor", lookout=["Lookout_Haven"]),
+    ("SURVIVORS", "STRONGHOLD"): dict(close="all", harden="threat", ring=8, yard=14, wire=WIRE_HAVEN, block=BLOCK_HAVEN, window="BoardWindow", door="BoardDoor", lookout=["Lookout_Haven"]),
     ("SURVIVORS", "OUTPOST"): dict(close="road", harden="doors", ring=7, yard=12, wire=WIRE_HAVEN, door="BoardDoor", lookout=["Lookout_Haven"]),
     ("SURVIVORS", "SAFEHOUSE"): dict(close="road", harden="all", ring=6, yard=10, wire=WIRE_HAVEN, window="BoardWindow", door="BoardDoor", lookout=["Lookout_Haven"]),
-    ("INSTITUTE", "STRONGHOLD"): dict(close="all", harden="all", ring=9, yard=12, wire=WIRE_HALCYON, window="BoardWindow", door="BoardDoor",
+    ("INSTITUTE", "STRONGHOLD"): dict(close="all", harden="all", ring=9, yard=12, wire=WALL_HALCYON, block=BLOCK_HALCYON, window="BoardWindow", door="BoardDoor",
                                       lookout=["GuardPost_Halcyon"], light="Floodlight", stores="StoresBoard",
                                       indoors=["FieldTable", "Tent_Halcyon", "ColdBox", "SampleTable", "NotebookBench", "RadioTable", "Tarp", "CrateChairs"]),
     ("INSTITUTE", "OUTPOST"): dict(close="two", harden="doors", ring=7, yard=12, wire=WIRE_HALCYON, door="BoardDoor", lookout=["GuardPost_Halcyon"]),
@@ -529,7 +649,7 @@ DOCTRINE = {
 AT = {
     "RedHandSheet": "gate", "PlagueBoard": "gate",
     "BearDoor": "door", "Memorial": "door", "DeconShower": "door",
-    "TrophyWall": "front", "VegStall": "front",
+    "TrophyWall": "gate", "VegStall": "front",
     "Gate_Bastion": "gate", "Gate_Haven": "gate", "Kennel": "gate",
     "WreckGate": "gate", "WorkBoard": "gate", "Gate_Halcyon": "gate", "Triage": "gate", "WarningSigns": "closed", "LanternPost": "door",
 }
@@ -592,6 +712,110 @@ KITS = [
         ("FieldTable", -2, 3, 3), ("Tent_Halcyon", 1, -9, 0), ("Generator", 10, -6, 20),
         ("Antenna", 11, 2, 0), ("DeconShower", -7, -6, 10), ("ColdBox", 5, 0.5, -30), ("NotebookBench", -7, 2, 15)]),
 ]
+
+# Dense sites (docs/SITES.md, "Dense sites"): (faction, place) -> the kit's extras after its plan's own pieces: (piece, how
+# many, why it's there, and when: left out = always; "supplied" while the faction is thriving or holding on, "thriving",
+# "hit" after an attack, a fire or a death, or under pressure: docs/SITES.md, "What the state changes in the yard"). An
+# extra has no spot in the plan (m_bExtra): the solver puts it where its zone and rules say (what it stands by, its
+# ground, its row), or leaves it out. The plans page (render.py) draws the plan without them.
+DENSE = {
+    ("MILITARY", "STRONGHOLD"): [
+        ("Watchtower_Bastion", 1, "the gate and the road in are watched from above"),
+        ("SearchTable", 1, "nobody passes the checkpoint with a pack unopened"),
+        ("CheckpointSign", 1, "the stop line, before the knife rest"),
+        ("JeepWreck", 1, "parked by the dead truck: one more kept for parts"),
+        ("FuelPoint", 1, "the motor pool's fuel, away from every fire", "supplied"),
+        ("TyreStack", 1, "the motor pool's spares"),
+        ("SupplyYard", 1, "the stores that don't fit indoors, against the building's wall"),
+        ("PalletStack", 2, "what the supply yard hasn't broken down yet", "supplied"),
+        ("CrateStack", 1, "handed out through the wall's windows"),
+        ("CrateStack", 2, "more of it while the convoys get through", "supplied"),
+        ("Tent_Small_Bastion", 4, "the sections the building has no room for, in a line on the grass"),
+        ("Tent_Large_Bastion", 1, "the platoon tent"),
+        ("Duckboards", 1, "the tent line's mud"),
+        ("MessTable", 2, "the mess, in a row by the kitchen"),
+        ("RadioMast", 1, "the set that still reaches the road posts"),
+        ("GeneratorPost", 1, "power for the set and the lights, away from the tents"),
+        ("LanternPost", 2, "light at the entrance"),
+        ("SandbagWall", 1, "a fallback between the gate and the door, thrown up after a bad night", "hit"),
+        ("SandbagPile", 2, "spare bags where the line is being built up", "hit"),
+        ("Clutter", 2, "what's left where people sit")],
+    ("MILITARY", "OUTPOST"): [
+        ("Tent_Small_Bastion", 2, "the section's tents, in a line on the grass"),
+        ("SandbagPile", 2, "spare bags by the nest", "hit"),
+        ("CrateStack", 1, "the section's stores against the wall"),
+        ("CrateStack", 1, "more of it while the convoys get through", "supplied"),
+        ("BarrelGroup", 1, "water and fuel by the cook pot", "supplied"),
+        ("LanternPost", 1, "light at the entrance")],
+    ("BANDITS", "STRONGHOLD"): [
+        ("LootContainer", 1, "what the crew took, under lock, someone always sitting on it"),
+        ("PalletStack", 1, "loot not yet sorted", "thriving"),
+        ("FuelPoint", 1, "the toll is paid in fuel"),
+        ("BarrelGroup", 2, "more of the toll", "supplied"),
+        ("TyreStack", 2, "tyres are the crew's sandbags"),
+        ("TyreStack", 1, "more of them after someone got in", "hit"),
+        ("Tent_Small_Civilian", 3, "those the house has no room for, on the grass, any way round"),
+        ("ScrapShelter", 1, "a lean-to for the watch"),
+        ("Bedrolls", 2, "sleeping it off by the tents"),
+        ("CrateStack", 1, "stolen stores against the wall"),
+        ("CrateStack", 1, "more when the road pays", "supplied"),
+        ("Clutter", 2, "bottles round every seat"),
+        ("Clutter", 3, "more bottles when the crew is fat and loud", "thriving")],
+    ("BANDITS", "OUTPOST"): [
+        ("TyreStack", 2, "tyres are the crew's sandbags"),
+        ("BarrelGroup", 1, "the toll", "supplied"),
+        ("Tent_Small_Civilian", 1, "one tent on the grass"),
+        ("Bedrolls", 1, "sleeping by the tent"),
+        ("CrateStack", 1, "stolen stores against the wall"),
+        ("Clutter", 1, "bottles round every seat"),
+        ("Clutter", 2, "more bottles when the crew is fat and loud", "thriving")],
+    ("SURVIVORS", "STRONGHOLD"): [
+        ("Tent_Small_Civilian", 3, "families who came in late, on the grass"),
+        ("Tent_Large_Civilian", 1, "the shared tent"),
+        ("Bedrolls", 1, "airing by the tents"),
+        ("Garden", 3, "beds dug in rows: the village feeds itself"),
+        ("WaterBarrel", 2, "water where it's used: the kitchen, the garden"),
+        ("WashingLine", 1, "the wash, on the grass"),
+        ("Firewood", 1, "cut for the kitchen"),
+        ("Firewood", 1, "a second pile while there are hands to cut it", "supplied"),
+        ("CrateChairs", 2, "more seats at the fire"),
+        ("CrateStack", 1, "the stores against the wall"),
+        ("CrateStack", 2, "a full store in a good season", "supplied"),
+        ("LanternPost", 3, "light at the entrance"),
+        ("Clutter", 3, "what's left where people sit")],
+    ("SURVIVORS", "OUTPOST"): [
+        ("Tent_Small_Civilian", 1, "one tent on the grass"),
+        ("Garden", 2, "beds dug in a row"),
+        ("WaterBarrel", 1, "water by the kitchen"),
+        ("Firewood", 1, "cut for the kitchen", "supplied"),
+        ("CrateStack", 1, "the stores against the wall"),
+        ("CrateStack", 1, "a full store in a good season", "supplied"),
+        ("LanternPost", 2, "light at the entrance"),
+        ("Clutter", 1, "what's left where people sit")],
+    ("SURVIVORS", "SAFEHOUSE"): [
+        ("Garden", 1, "a bed by the house"),
+        ("WaterBarrel", 1, "water by the kitchen"),
+        ("Firewood", 1, "cut for the kitchen", "supplied"),
+        ("CrateStack", 1, "the stores against the wall"),
+        ("LanternPost", 1, "a light left on for whoever comes")],
+    ("INSTITUTE", "STRONGHOLD"): [
+        ("RiotLine", 1, "the queue for triage"),
+        ("WarningSigns", 2, "said again at every closed road"),
+        ("SupplyYard", 1, "what the lab runs on, against the building's wall"),
+        ("PalletStack", 2, "deliveries not yet opened", "supplied"),
+        ("CrateStack", 1, "the stores against the wall"),
+        ("CrateStack", 2, "more while the courier still comes", "supplied"),
+        ("Tent_Halcyon", 2, "the ward that overflowed, in a line on the grass"),
+        ("BarrelGroup", 1, "the generators' fuel", "supplied"),
+        ("Loudspeaker_Halcyon", 1, "the order heard at every corner"),
+        ("Clutter", 1, "the smokers' corner")],
+    ("INSTITUTE", "OUTPOST"): [
+        ("WarningSigns", 1, "said again at the closed road"),
+        ("CrateStack", 1, "the stores against the wall"),
+        ("CrateStack", 1, "more while the courier still comes", "supplied"),
+        ("BarrelGroup", 1, "the generator's fuel", "supplied"),
+        ("Clutter", 1, "the smokers' corner")],
+}
 
 # The Traces kit (World > Traces > Kit on RZ_GameMode.et): kit field -> (composition name, parts).
 # Built into Prefabs/ReforgerZ/Traces/<name>.et. Seats aren't used: traces are scenery only.

@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et" {
    ID "E8210631CBA6982F"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0 1.5 0.08
+   angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "2206779596BBE101"
@@ -40,6 +42,7 @@ GenericEntity {
     }
    }
    coords -0.05 0.62 0.55
+   angles 0 0 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
    ID "53968A607F7517E9"
@@ -57,6 +60,7 @@ GenericEntity {
     }
    }
    coords -0.6 0 0.7
+   angles 0 0 0
   }
   GenericEntity {
    ID "996B57E5E13A11D9"

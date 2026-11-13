@@ -28,7 +28,7 @@ import glob, hashlib, math, os, re, sys, random
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
 sys.path.insert(0, HERE)
-from pieces import AT, C, DOCTRINE, FP, KIT_TIER, KITS, OPENINGS, RULES, TRACES  # noqa: E402
+from pieces import AT, C, DENSE, DOCTRINE, FP, KIT_TIER, KITS, OPENINGS, RULES, TRACES  # noqa: E402
 import footprints  # noqa: E402
 
 PROPS = os.path.join(HERE, "props.txt")
@@ -41,8 +41,9 @@ ROLE = {"c": "CENTRE", "i": "INNER", "a": "APPROACH", "e": "EDGE"}
 ZONES = ["yard", "wire", "gate", "kill", "court", "stores", "work", "kitchen", "sleep", "sick", "dump", "dead"]
 CLOSE = {"none": "NONE", "road": "ROAD", "two": "TWO", "all": "ALL"}
 HARDEN = {"none": "NONE", "doors": "DOORS", "threat": "THREAT", "all": "ALL"}
+WHEN = {"supplied": "SUPPLIED", "thriving": "THRIVING", "hit": "HIT"}
 # A doctrine's layer pieces: (its key, RZ_ESiteLayer)
-LAYERS = (("wire", "WIRE"), ("window", "WINDOW"), ("door", "DOOR"), ("lookout", "LOOKOUT"), ("light", "LIGHT"), ("stores", "STORES"))
+LAYERS = (("wire", "WIRE"), ("block", "BLOCK"), ("window", "WINDOW"), ("door", "DOOR"), ("lookout", "LOOKOUT"), ("light", "LIGHT"), ("stores", "STORES"))
 CR, LF = chr(13), chr(10)
 SEAT_PAD = 0.45      # a seated or standing person round a seat's spot, inside the footprint (a lean's 0.6)
 PLAN_GAP = 0.3       # pieces in a plan stand at least this far apart
@@ -115,8 +116,9 @@ def piece_text(parts, props, index):
         if not hier:  # a prefab with its own Hierarchy can't take a second one
             L += ["   components {", '    Hierarchy "{%s}" {' % gid(), "    }", "   }"]
         L.append("   coords %s %s %s" % (x, y, z))
-        if yaw or pitch or roll:
-            L.append("   angles %s %s %s" % (pitch, yaw, roll))
+        # Always written: some prefabs (the mods' walls and barriers) carry a turn of their own, which a
+        # prop placed with none would keep, standing side-on to its run
+        L.append("   angles %s %s %s" % (pitch, yaw, roll))
         L.append("  }")
     for s in parts:
         if s[0] != "s":
@@ -238,7 +240,7 @@ def write_gm(s):
     open(GM, "w", encoding="utf-8", newline="").write(s)
 
 
-def piece_lines(name, fac, place, rel, layer=None, x=0.0, z=0.0, yaw=0.0, indoors=False, plan=True):
+def piece_lines(name, fac, place, rel, layer=None, x=0.0, z=0.0, yaw=0.0, indoors=False, plan=True, extra=False, when=""):
     """One kit entry: the piece, its ring, use, seats, where it stands by a building, its plan spot,
     footprint, tier, zone, rules, layer and whether it goes indoors."""
     folder, use, role, intent, parts = C[name]
@@ -250,7 +252,11 @@ def piece_lines(name, fac, place, rel, layer=None, x=0.0, z=0.0, yaw=0.0, indoor
          "        m_eUse %s" % USE[use], "        m_iSeats %d" % seats]
     if plan and name in AT and place != "ROAD_POST":
         L.append("        m_eAt %s" % AT[name].upper())
-    if plan:
+    if extra:
+        L.append("        m_bExtra 1")
+        if when:
+            L.append("        m_eWhen %s" % WHEN[when])
+    elif plan:
         L.append("        m_vPlan %s 0 %s" % (num(x), num(z)))
         if yaw:
             L.append("        m_fPlanYaw %s" % num(yaw))
@@ -279,6 +285,13 @@ def write_kits():
         L += ['     RZ_DressingKit "{%s}" {' % gid(), "      m_eFaction %s" % fac, "      m_ePlace %s" % place, "      m_aPieces {"]
         for name, x, z, yaw in plan:
             L += piece_lines(name, fac, place, rel, None, x, z, yaw, name in indoors)
+        # A dense kit's extras: after the plan's own pieces, with no spot in the plan
+        for entry in DENSE.get((fac, place), []):
+            name, count, when = entry[0], entry[1], (entry[3] if len(entry) > 3 else "")
+            if name not in C or (when and when not in WHEN):
+                sys.exit("%s %s: no piece named %s, or no such state as '%s' (pieces.DENSE)" % (fac, place, name, when))
+            for _ in range(count):
+                L += piece_lines(name, fac, place, rel, None, extra=True, when=when)
         L.append("      }")
         L += ["      m_eClose %s" % CLOSE[d.get("close", "none")], "      m_eHarden %s" % HARDEN[d.get("harden", "none")]]
         if "ring" in d:

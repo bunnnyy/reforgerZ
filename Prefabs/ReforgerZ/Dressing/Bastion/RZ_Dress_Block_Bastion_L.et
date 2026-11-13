@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "77392E802EB3426E"
+ components {
+  RplComponent "{4FF4E5CAE2F1D815}" {
+  }
+  Hierarchy "{0942A083598BFA6F}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{DDF59362051B28BC}Prefabs/Props/Military/Fortification/BarbedTape_KnifeRest.et" {
+   ID "388885CAE4C11ED5"
+   components {
+    Hierarchy "{B2B00223AB5E838C}" {
+    }
+   }
+   coords -1.8 0 0
+   angles 0 90 0
+  }
+  GenericEntity : "{DDF59362051B28BC}Prefabs/Props/Military/Fortification/BarbedTape_KnifeRest.et" {
+   ID "A6E9230C3F22BDBE"
+   components {
+    Hierarchy "{4B56BDB057155329}" {
+    }
+   }
+   coords 1.8 0 0.05
+   angles 0 88 0
+  }
+  StaticModelEntity : "{18822FB3F0D2ED00}Prefabs/Structures/Walls/BarbedWire/BarbedTape_01/BarbedTape_01_Long.et" {
+   ID "7B32356A80060D85"
+   components {
+    Hierarchy "{3405F5C889903F64}" {
+    }
+   }
+   coords 0 0 -1.3
+   angles 0 90 0
+  }
+ }
+}

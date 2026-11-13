@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
    ID "D0F6938831B79A1C"
@@ -32,6 +33,7 @@ GenericEntity {
     }
    }
    coords -0.4 0.78 0.1
+   angles 0 0 0
   }
   GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
    ID "B389880F3DCD0D13"

@@ -1,0 +1,48 @@
+GenericEntity {
+ ID "68EFBC7AD4E17E15"
+ components {
+  RplComponent "{528912FE2655A3FF}" {
+  }
+  Hierarchy "{4B764440C231A7BD}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{3C18BC59A0B01788}Prefabs/Structures/Military/RiotFence/RiotFence.et" {
+   ID "243B3CAF6A29AA05"
+   components {
+    Hierarchy "{F5452E9D7C67ADAF}" {
+    }
+   }
+   coords -2.01 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{3C18BC59A0B01788}Prefabs/Structures/Military/RiotFence/RiotFence.et" {
+   ID "EF395D397BB69B94"
+   components {
+    Hierarchy "{ADEFFF7D67786AFB}" {
+    }
+   }
+   coords -0.67 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{3C18BC59A0B01788}Prefabs/Structures/Military/RiotFence/RiotFence.et" {
+   ID "A19F940C3943A4B9"
+   components {
+    Hierarchy "{0F2D822F89315FB3}" {
+    }
+   }
+   coords 0.67 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{3C18BC59A0B01788}Prefabs/Structures/Military/RiotFence/RiotFence.et" {
+   ID "873E838A2B250555"
+   components {
+    Hierarchy "{9E9EE0CEE951991B}" {
+    }
+   }
+   coords 2.01 0 0
+   angles 0 0 0
+  }
+ }
+}

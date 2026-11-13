@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{962A737E048E4B9E}Prefabs/Props/Civilian/Loudspeaker_01/Loudspeaker.et" {
    ID "2CE81CFB66153261"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0 1.7 0
+   angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "B77E4AE20974873D"

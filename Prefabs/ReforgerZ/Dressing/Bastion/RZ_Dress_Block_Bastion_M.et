@@ -1,0 +1,21 @@
+GenericEntity {
+ ID "046BB46F78B1A3D4"
+ components {
+  RplComponent "{335450DF905225AF}" {
+  }
+  Hierarchy "{D50B305E4E719DA4}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{DDF59362051B28BC}Prefabs/Props/Military/Fortification/BarbedTape_KnifeRest.et" {
+   ID "C09705A924FA84AC"
+   components {
+    Hierarchy "{394F4A5F0D6E21A2}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 90 0
+  }
+ }
+}

@@ -189,6 +189,21 @@ class RZ_SiteStory
 
 	//------------------------------------------------------------------------------------------------
 	//! The story the state picks of the faction's four: the best fit, the seed breaking ties.
+	//! Whether an extra that follows the site's state stands today (docs/SITES.md, "What the state
+	//! changes in the yard").
+	static bool Holds(RZ_ESiteWhen when, RZ_SiteFacts facts)
+	{
+		switch (when)
+		{
+			case RZ_ESiteWhen.SUPPLIED: return facts.m_iGoing == RZ_SiteFacts.THRIVING || facts.m_iGoing == RZ_SiteFacts.HOLDING;
+			case RZ_ESiteWhen.THRIVING: return facts.m_iGoing == RZ_SiteFacts.THRIVING;
+			case RZ_ESiteWhen.HIT: return facts.m_iLately != RZ_SiteFacts.QUIET || facts.m_iGoing == RZ_SiteFacts.PRESSURE;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int Pick(RZ_EFaction f, RZ_SiteFacts facts, int seed)
 	{
 		int first = First(f);

@@ -27,6 +27,12 @@ def load():
 MEASURED = load()
 
 
+try:
+    from pieces import FOOT_FORCED as FORCED
+except ImportError:
+    FORCED = {}
+
+
 def rot(x, z, yaw):
     a = math.radians(yaw)
     return x * math.cos(a) + z * math.sin(a), -x * math.sin(a) + z * math.cos(a)
@@ -34,6 +40,8 @@ def rot(x, z, yaw):
 
 def prop_box(name, fp):
     """(w, d, ox, oz, measured) of a prop: its measured box, else the hand-typed FP (0.5 m if neither)."""
+    if name in FORCED:  # what stands on the ground, where the measured box says more (pieces.FOOT_FORCED)
+        return FORCED[name][0], FORCED[name][1], 0.0, 0.0, True
     m = MEASURED.get(name)
     if m and m.get("w", 0) > 0.01 and m.get("d", 0) > 0.01:
         return m["w"], m["d"], m.get("ox", 0.0), m.get("oz", 0.0), True

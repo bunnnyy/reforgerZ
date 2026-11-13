@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords -1.5 0 0
+   angles 0 0 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
    ID "5541F2B29D54F6E6"
@@ -23,10 +24,12 @@ GenericEntity {
     }
    }
    coords 1.5 0 0
+   angles 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
    ID "158FD74B5B0F5831"
    coords -1.5 1.2 0.06
+   angles 0 0 0
   }
  }
 }

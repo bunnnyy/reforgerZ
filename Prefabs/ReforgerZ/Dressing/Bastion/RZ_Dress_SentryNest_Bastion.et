@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 1.3
+   angles 0 0 0
   }
   GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
    ID "7DC4A6F74975C3A6"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0 0.45 1.3
+   angles 0 0 0
   }
   GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
    ID "875F907DA578899D"
@@ -72,6 +74,7 @@ GenericEntity {
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
    ID "92AD9A1570CC438B"
    coords 0.6 0.62 -0.5
+   angles 0 0 0
   }
   GenericEntity {
    ID "D8CADFD13CB04685"

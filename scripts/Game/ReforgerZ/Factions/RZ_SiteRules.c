@@ -33,7 +33,8 @@ enum RZ_ESiteLayer
 	LOOKOUT,	// a watch toward a threatened side (watch)
 	LIGHT,		// a light on the gate and the corners (watch)
 	STORES,		// the stores board by the entrance, once valuables went indoors (work and life)
-	STORY		// a spot kept for a story element (docs/SITES.md, "The story of each site"): data until shown
+	STORY,		// a spot kept for a story element (docs/SITES.md, "The story of each site"): data until shown
+	BLOCK		// a road block: the faction's barrier across a road in that isn't its one gate (close it off)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -44,6 +45,18 @@ enum RZ_ESiteClose
 	ROAD,		// the side the road comes in on
 	TWO,		// that side and the most threatened other one
 	ALL			// all round
+}
+
+//------------------------------------------------------------------------------------------------
+//! When a dense kit's extra stands (docs/SITES.md, "What the state changes in the yard"): always, or
+//! only while the site's state (RZ_SiteFacts, the story's own) says so. Worked out with the story,
+//! each season day.
+enum RZ_ESiteWhen
+{
+	ALWAYS,
+	SUPPLIED,	// the faction is thriving or holding on: its stores, fuel and firewood are there
+	THRIVING,	// only while it thrives: what it has more of than it needs
+	HIT			// attacked, burned or mourning in the last days, or under pressure: defences going up
 }
 
 //------------------------------------------------------------------------------------------------
@@ -91,13 +104,15 @@ class RZ_SiteRules
 	static const int R_OVER = 8;
 	static const int R_COVERS = 9;
 	static const int R_BEHIND = 10;
+	static const int R_BY = 11;		// stands by: within reach of what it serves, or it isn't there at all
 
 	ref array<ref RZ_SiteRule> m_aRules = {};
 	string m_sFaces;			// "" = the plan's own turn
 	bool m_bGuarded;			// the most guarded spot: far from the wire, near the main door
 	bool m_bHigh;				// the highest free ground with a view
 	bool m_bBank;				// may stand on a bank or steep ground (a nest)
-	bool m_bSoil;				// soft ground: off the verges and the building's paving
+	bool m_bSoil;				// soft ground: off the verges and the building's paving, never on a paved surface
+	bool m_bRow;				// set out in a row with the others of its kind, squared to the building
 	bool m_bJitter;				// clutter: turned 0-8 degrees and moved 0-0.5 m by the seed
 	bool m_bNoLine;				// two of a kind never in a straight line
 	bool m_bIndoors;			// valuable or delicate: indoors (as data) at a site with a building
@@ -145,6 +160,8 @@ class RZ_SiteRules
 				case "high": rules.m_bHigh = true; break;
 				case "bank": rules.m_bBank = true; break;
 				case "soil": rules.m_bSoil = true; break;
+				case "by": rules.Add(R_BY, what, dist); break;
+				case "row": rules.m_bRow = true; break;
 				case "jitter": rules.m_bJitter = true; break;
 				case "noline": rules.m_bNoLine = true; break;
 				case "indoors": rules.m_bIndoors = true; break;
@@ -208,6 +225,7 @@ class RZ_SiteRules
 		{
 			case R_AWAY: return string.Format("Away from: %1 %2 m", what, rule.m_fDist);
 			case R_NEAR: return string.Format("Near: %1 %2 m", what, rule.m_fDist);
+			case R_BY: return string.Format("Stands by: %1 %2 m", what, rule.m_fDist);
 		}
 
 		return what;

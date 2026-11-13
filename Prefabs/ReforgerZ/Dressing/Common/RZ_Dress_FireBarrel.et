@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   ParticleEffectEntity : "{899360C930DA3EE3}Prefabs/Particles/Campfire_burning.et" {
    ID "0DB772D0D2E47A3B"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0 0.9 0
+   angles 0 0 0
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
    ID "9D3C81D7AAB49494"
@@ -45,10 +47,12 @@ GenericEntity {
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
    ID "A0A131F469A91D46"
    coords -1.0 0.62 -0.6
+   angles 0 0 0
   }
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
    ID "6814F75F00AEBF28"
    coords 0.6 0 -0.9
+   angles 0 0 0
   }
   GenericEntity {
    ID "0CBBDB2E5311BC27"

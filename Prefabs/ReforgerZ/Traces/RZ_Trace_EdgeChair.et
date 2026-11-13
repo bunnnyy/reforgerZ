@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
    ID "EE6F3AA0C68AECC1"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0 0.45 0
+   angles 0 0 0
   }
   GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
    ID "181D4A64385F2F19"
@@ -31,6 +33,7 @@ GenericEntity {
     }
    }
    coords 0.5 0 0.3
+   angles 0 0 0
   }
  }
 }

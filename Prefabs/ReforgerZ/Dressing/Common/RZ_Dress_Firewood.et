@@ -24,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0.7 0 0.3
+   angles 0 0 0
   }
   GenericEntity : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
    ID "3B177FF4756CA7E6"

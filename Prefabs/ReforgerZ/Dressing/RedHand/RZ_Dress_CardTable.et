@@ -47,6 +47,7 @@ GenericEntity {
   GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
    ID "69A90392D45A0FA2"
    coords 0.25 0.78 0.1
+   angles 0 0 0
   }
   GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
    ID "07344E4D2D4A52D8"
@@ -55,6 +56,7 @@ GenericEntity {
     }
    }
    coords -0.35 0.78 -0.1
+   angles 0 0 0
   }
   GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
    ID "6797EBC936328357"
@@ -63,6 +65,7 @@ GenericEntity {
     }
    }
    coords -1.6 0 1.2
+   angles 0 0 0
   }
   GenericEntity {
    ID "37ABB4631288C1EE"

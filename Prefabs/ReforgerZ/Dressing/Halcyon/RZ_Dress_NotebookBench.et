@@ -33,6 +33,7 @@ GenericEntity {
     }
    }
    coords -0.7 0.45 0
+   angles 0 0 0
   }
   GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
    ID "2D2A4B8FED224DBB"
@@ -41,6 +42,7 @@ GenericEntity {
     }
    }
    coords 1.2 0 0.3
+   angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "24C866C778BA5FF2"
@@ -58,6 +60,7 @@ GenericEntity {
     }
    }
    coords -1.3 0.62 0.8
+   angles 0 0 0
   }
   GenericEntity {
    ID "78DB6CD9893161AA"

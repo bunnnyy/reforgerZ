@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords -3.1 0 0
+   angles 0 0 0
   }
   SCR_DestructibleEntity : "{A8B28F7E550B0F41}Prefabs/Structures/Walls/Net/NetFence_05/NetFence_05_tall_pole.et" {
    ID "AB705F6E7B3677FB"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 3.2 0 0
+   angles 0 0 0
   }
  }
 }

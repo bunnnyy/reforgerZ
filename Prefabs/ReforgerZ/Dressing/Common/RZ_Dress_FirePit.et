@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
    ID "EB8816DD1D9058C3"
@@ -68,14 +69,17 @@ GenericEntity {
     }
    }
    coords 0.9 0 0.9
+   angles 0 0 0
   }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
    ID "A76ED659B560B925"
    coords -1.1 0 0.6
+   angles 0 0 0
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "A95ABD9E5FDAAF87"
    coords 1.2 0 -1.1
+   angles 0 0 0
   }
   GenericEntity {
    ID "6D065E3BD16C43E5"

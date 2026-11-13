@@ -33,6 +33,7 @@ GenericEntity {
     }
    }
    coords -1.1 0 0.4
+   angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "DE30A6A9CFF7D778"

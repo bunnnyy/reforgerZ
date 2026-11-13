@@ -24,6 +24,7 @@ GenericEntity {
     }
    }
    coords 2.9 0 0.6
+   angles 0 0 0
   }
   GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
    ID "AE819BC0E6FEC916"
@@ -32,6 +33,7 @@ GenericEntity {
     }
    }
    coords -2.8 0 0.7
+   angles 0 0 0
   }
   GenericEntity : "{44277710A8E45F97}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_rusty_static.et" {
    ID "011745D236173331"

@@ -60,6 +60,8 @@ class RZ_PhotoTour
 	protected int m_iLastCount = -1;
 	protected int m_iPhotos;
 	protected float m_fHour = -1;
+	protected string m_sOnly;		// "only <text>": just the stops whose name holds it
+	protected bool m_bAround;		// "around": the ground photos from all eight compass points
 
 	//------------------------------------------------------------------------------------------------
 	//! From the game mode's start. Does nothing without the list file.
@@ -170,6 +172,10 @@ class RZ_PhotoTour
 				posts = bits[1].ToInt();
 			else if (bits[0] == "noon")
 				m_fHour = 12;
+			else if (bits[0] == "only" && bits.Count() >= 2)
+				m_sOnly = bits[1];
+			else if (bits[0] == "around")
+				m_bAround = true;
 			else if (bits[0] == "hour" && bits.Count() >= 2)
 				m_fHour = bits[1].ToFloat();
 			else if (bits[0] == "show")
@@ -194,6 +200,16 @@ class RZ_PhotoTour
 
 		if (posts > 0)
 			AddPosts(posts);
+
+		if (!m_sOnly.IsEmpty())
+		{
+			for (int k = m_aStops.Count() - 1; k >= 0; k--)
+			{
+				// The sites named; a showcase group is always photographed
+				if (m_aStops[k].m_bSite && !m_aStops[k].m_sName.Contains(m_sOnly))
+					m_aStops.Remove(k);
+			}
+		}
 
 		foreach (int i, RZ_PhotoStop stop : m_aStops)
 		{
@@ -375,7 +391,12 @@ class RZ_PhotoTour
 					limit = SITE_TIMEOUT;
 			}
 
+			// (a site still being read or solved has only its counters up: not ready, however still)
 			bool ready = count > 0 && m_iStable >= SETTLE_SECONDS;
+			RZ_CampLife camp = m_GM.GetCampLife();
+			if (stop.m_bSite && camp && !camp.LaidOutNear(stop.m_vPos, PIECE_RADIUS))
+				ready = false;
+
 			if (!ready && m_iWait < limit)
 				return;
 
@@ -438,6 +459,17 @@ class RZ_PhotoTour
 
 		if (best < 0)
 			return;
+
+		if (m_bAround)
+		{
+			for (int all = 0; all < 8; all++)
+			{
+				if (clear[all] >= 0)
+					AddShot(stop.m_sName + "_g" + all.ToString() + "_ground", GroundEye(c, all * 45, reach), look);
+			}
+
+			return;
+		}
 
 		AddShot(stop.m_sName + "_5_ground", GroundEye(c, best * 45, reach), look);
 		int second = -1;

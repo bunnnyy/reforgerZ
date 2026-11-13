@@ -56,6 +56,7 @@ GenericEntity {
     }
    }
    coords 0.1 0 0.9
+   angles 0 0 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
    ID "BC8E2762DC61F69D"
@@ -64,6 +65,7 @@ GenericEntity {
     }
    }
    coords -1.4 0 -1.3
+   angles 0 0 0
   }
   GenericEntity {
    ID "28247615E3D4670E"

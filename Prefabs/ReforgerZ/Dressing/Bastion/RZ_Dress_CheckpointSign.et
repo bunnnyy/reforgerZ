@@ -1,0 +1,48 @@
+GenericEntity {
+ ID "4C86DC70961ADE46"
+ components {
+  RplComponent "{D6214C7234D48E4D}" {
+  }
+  Hierarchy "{B14CD2D95BDEE417}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{C1977A326F2AA011}Prefabs/Structures/Signs/Military/SignCheckpoint_01_stop.et" {
+   ID "734193DCEB8A68AE"
+   components {
+    Hierarchy "{8DC6861220A58596}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+   ID "A51EA659C1578559"
+   components {
+    Hierarchy "{EE5BB7B0BDEB6891}" {
+    }
+   }
+   coords -0.9 0 0.2
+   angles 0 0 0
+  }
+  GenericEntity : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+   ID "6B7760A9DF4764BB"
+   components {
+    Hierarchy "{00EB5CD629FA7A36}" {
+    }
+   }
+   coords 0.9 0 0.3
+   angles 0 0 0
+  }
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+   ID "AEF4088066560D60"
+   components {
+    Hierarchy "{7879F37B9D743410}" {
+    }
+   }
+   coords 0.4 0 -0.3
+   angles 0 0 0
+  }
+ }
+}

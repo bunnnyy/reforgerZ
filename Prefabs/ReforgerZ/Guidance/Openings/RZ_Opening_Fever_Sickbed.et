@@ -24,14 +24,17 @@ GenericEntity {
     }
    }
    coords 1.3 0 0.3
+   angles 0 0 0
   }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
    ID "5662608FB8EDB4AC"
    coords 1.1 0 -0.3
+   angles 0 0 0
   }
   GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
    ID "E6CB7655D2D96DDD"
    coords 1.4 0 -0.5
+   angles 0 0 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
    ID "D0E3CD1C4721A1FD"

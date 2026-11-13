@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
    ID "3D7F094BB2BA479C"
@@ -32,6 +33,7 @@ GenericEntity {
     }
    }
    coords -0.7 0.78 0.05
+   angles 0 0 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
    ID "9AB5FD869DA710A9"

@@ -1,0 +1,48 @@
+GenericEntity {
+ ID "63059BAF51BF8694"
+ components {
+  RplComponent "{1A4BA35F2494A753}" {
+  }
+  Hierarchy "{49AB800450FBA0C3}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{44277710A8E45F97}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_rusty_static.et" {
+   ID "EB58A2CC707A1AB2"
+   components {
+    Hierarchy "{22D870DC49BF9019}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 -8 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "273C5CF3EECF015B"
+   components {
+    Hierarchy "{315104A092F0F621}" {
+    }
+   }
+   coords 1.9 0 0.6
+   angles 0 20 0
+  }
+  GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
+   ID "06141E503BDE5772"
+   components {
+    Hierarchy "{4920371DFE5EE62C}" {
+    }
+   }
+   coords -1.7 0 1.2
+   angles 0 0 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "5989E00D2094DF11"
+   components {
+    Hierarchy "{830BB37D48B40C98}" {
+    }
+   }
+   coords 1.8 0 -0.5
+   angles 0 15 0
+  }
+ }
+}

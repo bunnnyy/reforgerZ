@@ -15,10 +15,12 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
    ID "EC7274A09FC232FA"
    coords 0.6 0 0.4
+   angles 0 0 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
    ID "862A59150D7531CD"
@@ -27,6 +29,7 @@ GenericEntity {
     }
    }
    coords -1.0 0 0.8
+   angles 0 0 0
   }
  }
 }

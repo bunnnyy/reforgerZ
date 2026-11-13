@@ -60,6 +60,7 @@ GenericEntity {
     }
    }
    coords 0.6 0 0.9
+   angles 0 0 0
   }
  }
 }

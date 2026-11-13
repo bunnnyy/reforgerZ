@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0.0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
    ID "2DCF69BB7F4DE0C0"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0.7 0 0
+   angles 0 0 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
    ID "FB655DB469D82B49"
@@ -31,6 +33,7 @@ GenericEntity {
     }
    }
    coords 1.4 0 0
+   angles 0 0 0
   }
   GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
    ID "EEA8DE290A6C7FC4"
@@ -39,6 +42,7 @@ GenericEntity {
     }
    }
    coords 2.1 0 0
+   angles 0 0 0
   }
   GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
    ID "92322BA7269D08E1"
@@ -47,6 +51,7 @@ GenericEntity {
     }
    }
    coords 2.8 0 0
+   angles 0 0 0
   }
  }
 }

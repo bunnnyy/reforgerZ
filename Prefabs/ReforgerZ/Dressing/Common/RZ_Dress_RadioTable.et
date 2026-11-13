@@ -33,6 +33,7 @@ GenericEntity {
     }
    }
    coords 0.45 0.78 0.1
+   angles 0 0 0
   }
   GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
    ID "E8FFF69D25A96024"

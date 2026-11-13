@@ -24,6 +24,7 @@ class RZ_SiteSolver
 	protected static const int T_GATEPOST = 9;	// the gate's post: a spot just inside it that sees it
 	protected static const int T_STORY = 10;	// the story's spots (docs/SITES.md, "The story of each site")
 	protected static const int T_PEOPLE = 11;	// the posts and the routes (docs/SITES.md, "The people")
+	protected static const int T_SEAL = 12;		// every road in but the checkpoints closed (docs/SITES.md, "Checkpoints")
 
 	protected static const float THREAT_WATCH = 3;		// a side this threatened wants a watch (as the audit)
 	protected static const float PLAN_WEIGHT = 0.6;		// score lost per metre from the plan's spot
@@ -39,6 +40,7 @@ class RZ_SiteSolver
 	protected static const float PROP_SPREAD = 0.28;	// the ground under any one prop varies at most this much
 	protected static const float ROUGH_SLOPE = 0.36;	// a tier 1 piece's second pass, and a piece that may stand on a bank: 20 degrees...
 	protected static const float ROUGH_SPREAD = 0.6;	// ...and a prop's ground up to this
+	protected static const float ROW_GAP = 1.2;			// between two of a kind set out in a row
 
 	ref RZ_CampPlace m_Place;			// held: the job may hand its place over to a newer one (Survey) while this one is solved
 	ref RZ_SiteResult m_Result;
@@ -78,6 +80,8 @@ class RZ_SiteSolver
 	protected int m_iYardFace = -1;		// the wire side the yard is on
 	protected vector m_vKitchen;		// the kitchen's door
 	protected ref array<RZ_DressingPiece> m_aWires = {};	// the faction's barrier runs, longest first
+	protected ref array<RZ_DressingPiece> m_aBlocks = {};	// its road blocks, longest first
+	protected ref map<string, int> m_mGround = new map<string, int>();	// what the ground under its soft-ground pieces was made of
 	protected string m_sWhy;			// the last hard rule a spot failed
 	protected bool m_bRough;			// a tier 1 piece's second pass: the ground's flatness eased
 	protected bool m_bAnyZone;			// and its last: anywhere inside the wire
@@ -133,6 +137,20 @@ class RZ_SiteSolver
 		if (m_iNext >= m_aTask.Count())
 		{
 			m_bDone = true;
+			if (!m_mGround.IsEmpty())
+			{
+				string seen = "";
+				foreach (string material, int times : m_mGround)
+				{
+					if (!seen.IsEmpty())
+						seen += ", ";
+
+					seen += string.Format("%1 x%2", material, times);
+				}
+
+				RZ_Log.Info(string.Format("Sites ground: %1 at %2: %3", RZ_Factions.GetName(m_Place.m_eFaction), RZ_SettlementScanner.GridReference(m_Place.m_vPos), seen));
+			}
+
 			return;
 		}
 
@@ -154,6 +172,7 @@ class RZ_SiteSolver
 			case T_GATEPOST: GatePost(); SidePosts(); break;
 			case T_STORY: StorySpots(); break;
 			case T_PEOPLE: People(); break;
+			case T_SEAL: SealRoads(); break;
 		}
 	}
 
@@ -184,14 +203,23 @@ class RZ_SiteSolver
 			if (!e || e.m_sPrefab.IsEmpty() || e.m_eAt == RZ_EDressAt.COUNTER)
 				continue;
 
-			if (p.m_Site && e.m_eUse == RZ_EDressUse.SLEEP)
+			// (a dense kit's extra tents stand in the yard all the same: they're the look of the camp)
+			if (p.m_Site && e.m_eUse == RZ_EDressUse.SLEEP && !e.m_bExtra)
 				continue;
 
 			plan.Insert(e);
 		}
 
+		// A dense kit's extras have no spot in the plan: the frame and the yard are the plan's own
+		array<RZ_DressingPiece> drawn = {};
+		foreach (RZ_DressingPiece own : plan)
+		{
+			if (!own.m_bExtra)
+				drawn.Insert(own);
+		}
+
 		m_Lay = new RZ_CampLayout();
-		m_Camp.ChooseFrame(p, m_Ground, m_Fit, plan, m_iCap, m_Lay);
+		m_Camp.ChooseFrame(p, m_Ground, m_Fit, drawn, m_iCap, m_Lay);
 		m_Result.m_sWhere = m_Lay.m_sWhere;
 
 		m_iClose = m_Kit.m_eClose;
@@ -222,7 +250,7 @@ class RZ_SiteSolver
 		m_vGate = RZ_SiteAudit.GatePoint(p);
 		m_fGateOut = RZ_Compass.Bearing(m_vMid, m_vGate);
 		if (m_iClose != RZ_ESiteClose.NONE)
-			TraceWire(plan);
+			TraceWire(drawn);
 
 		if (m_Wire)
 		{
@@ -250,8 +278,26 @@ class RZ_SiteSolver
 			m_aWires.InsertAt(w, at);
 		}
 
-		// The tasks: the path, the gate, the wire, harden, the watch, then work and life by tier
+		foreach (RZ_DressingPiece block : m_Kit.m_aLayers)
+		{
+			if (!block || block.m_eLayer != RZ_ESiteLayer.BLOCK || block.m_sPrefab.IsEmpty())
+				continue;
+
+			int before = 0;
+			while (before < m_aBlocks.Count() && Length(m_aBlocks[before]) >= Length(block))
+			{
+				before++;
+			}
+
+			m_aBlocks.InsertAt(block, before);
+		}
+
+		// The tasks: the path, the other roads closed, the gate, the wire, harden, the watch, then work
+		// and life by tier
 		AddTask(T_PATH, null, 0);
+		if (m_Wire && m_Settings.m_iCheckpoints > 0 && m_iClose == RZ_ESiteClose.ALL && !m_aBlocks.IsEmpty())
+			AddTask(T_SEAL, null, 0);
+
 		foreach (RZ_DressingPiece g : plan)
 		{
 			if (g.m_eZone == RZ_ESiteZone.GATE)
@@ -639,12 +685,16 @@ class RZ_SiteSolver
 	//! close to one straight slope (at most 20 degrees; no point more than 0.25 m off it), so the run
 	//! is tilted to follow it (RZ_SitePlaced.m_fSlope) rather than float or sink. Its height is the
 	//! slope's at its origin. "" if it fits.
-	protected string RunFails(RZ_DressingPiece e, inout vector pos, float yaw, out float slope)
+	protected string RunFails(RZ_DressingPiece e, inout vector pos, float yaw, out float slope, bool onRoad = false)
 	{
 		slope = 0;
 		float lo;
 		float hi;
-		int blocks = m_Grid.FirstBlock(pos, yaw, e.Foot(), WireMask(), lo, hi);
+		int wireMask = WireMask();
+		if (onRoad)
+			wireMask = wireMask & ~(RZ_SiteGrid.ROAD | RZ_SiteGrid.CLEAR);
+
+		int blocks = m_Grid.FirstBlock(pos, yaw, e.Foot(), wireMask, lo, hi);
 		if (blocks != 0)
 			return RZ_SiteGrid.FlagName(blocks);
 
@@ -652,6 +702,11 @@ class RZ_SiteSolver
 		float x1 = e.m_vFootMax[0];
 		float cz = (e.m_vFootMin[2] + e.m_vFootMax[2]) * 0.5;
 		float half = Math.Min(0.6, (e.m_vFootMax[2] - e.m_vFootMin[2]) * 0.5);
+		// A road block may be deep (a truck across the road): the ground is read under all of it, so no
+		// wheel hangs over a kerb
+		if (onRoad)
+			half = (e.m_vFootMax[2] - e.m_vFootMin[2]) * 0.5;
+
 		int steps = Math.Max(2, Math.Ceil(x1 - x0));
 		array<float> xs = {};
 		array<float> hs = {};
@@ -761,6 +816,158 @@ class RZ_SiteSolver
 			if (!placed)
 				i++;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Checkpoints (docs/SITES.md): a site that closes every side keeps a few road entrances open
+	//! (setting Checkpoints, 2): its main gate and the road crossings furthest from it, so a road
+	//! through comes in at one and leaves at the other and a truck can pass. Each gets a sentry's
+	//! post and a nest (GatePost, Lookouts). Every other road through its line (and a road running
+	//! along it) is closed with the faction's road blocks, the longest that fits first, side by side
+	//! across it, each squared to the line; a road closed from side to side is no gate any more.
+	//! Nothing else stands on a road: inside the line the roads stay clear.
+	protected void SealRoads()
+	{
+		// The road crossings that aren't the main gate, as runs of stations
+		int n = m_Wire.m_aAt.Count();
+		array<int> runFrom = {};
+		array<int> runTo = {};
+		array<float> away = {};
+		int i = 0;
+		while (i < n)
+		{
+			int st = m_Wire.m_aState[i];
+			if (st != RZ_SiteWire.ST_GATE && st != RZ_SiteWire.ST_ROAD)
+			{
+				i++;
+				continue;
+			}
+
+			int face = m_Wire.m_aFace[i];
+			int j = i;
+			bool main = RZ_Util.DistXZ(m_Wire.m_aAt[i], m_vGate) < 1.5;
+			while (j + 1 < n && m_Wire.m_aFace[j + 1] == face && (m_Wire.m_aState[j + 1] == RZ_SiteWire.ST_GATE || m_Wire.m_aState[j + 1] == RZ_SiteWire.ST_ROAD))
+			{
+				j++;
+				if (RZ_Util.DistXZ(m_Wire.m_aAt[j], m_vGate) < 1.5)
+					main = true;
+			}
+
+			if (!main)
+			{
+				runFrom.Insert(i);
+				runTo.Insert(j);
+				away.Insert(RZ_Util.DistXZ((m_Wire.m_aAt[i] + m_Wire.m_aAt[j]) * 0.5, m_vGate));
+			}
+
+			i = j + 1;
+		}
+
+		// The furthest of them are kept as checkpoints (a gate only: a road along the line doesn't count)
+		int keep = m_Settings.m_iCheckpoints - 1;
+		array<bool> stays = {};
+		for (int u = 0; u < runFrom.Count(); u++)
+		{
+			stays.Insert(false);
+		}
+
+		for (int c = 0; c < keep; c++)
+		{
+			int best = -1;
+			foreach (int r, float d : away)
+			{
+				if (stays[r] || m_Wire.m_aState[runFrom[r]] != RZ_SiteWire.ST_GATE)
+					continue;
+
+				if (best < 0 || d > away[best])
+					best = r;
+			}
+
+			if (best < 0)
+				break;
+
+			stays[best] = true;
+		}
+
+		foreach (int run, int start : runFrom)
+		{
+			if (stays[run])
+				continue;
+
+			int stop = runTo[run];
+			float yaw = m_Wire.FaceOut(m_Wire.m_aFace[start]);
+			int left = 0;
+			int k = start;
+			while (k <= stop)
+			{
+				bool placed = false;
+				float room = (stop - k + 1) * RZ_SiteWire.STATION;
+				foreach (RZ_DressingPiece w : m_aBlocks)
+				{
+					if (m_iLayerLaid >= m_iLayerCap)
+						break;
+
+					float len = Length(w);
+					if (len > room + 0.6)
+						continue;
+
+					int count = Math.Max(1, RZ_Util.RoundToInt(len / RZ_SiteWire.STATION));
+					int last = Math.Min(stop, k + count - 1);
+					vector mid = (m_Wire.m_aAt[k] + m_Wire.m_aAt[last]) * 0.5;
+					array<float> nudges = {0, -0.5, 0.5, -1.0, 1.0};
+					foreach (float nudge : nudges)
+					{
+						vector pos = LinePose(w, RZ_Compass.PointAt(mid, yaw, nudge), yaw);
+						float slope;
+						if (!RunFails(w, pos, yaw, slope, true).IsEmpty())
+							continue;
+
+						Take(w, pos, yaw, RZ_ESiteLayer.BLOCK, false);
+						m_Result.m_aPlaced[m_Result.m_aPlaced.Count() - 1].m_fSlope = slope;
+						m_iLayerLaid++;
+						m_Wire.Seal(k, last);
+						placed = true;
+						k = last + 1;
+						break;
+					}
+
+					if (placed)
+						break;
+				}
+
+				if (!placed)
+				{
+					left++;
+					k++;
+				}
+			}
+
+			// A slit a body can pass (under 1.5 m) still counts as closed: nothing drives through it
+			if (left * RZ_SiteWire.STATION < 1.5)
+				m_Wire.DropGate((m_Wire.m_aAt[start] + m_Wire.m_aAt[stop]) * 0.5, RZ_SiteWire.GATE_MAX);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The bearing out of a gate: its side of the line's.
+	protected float GateOut(vector gate)
+	{
+		int nearest = -1;
+		float d = float.MAX;
+		foreach (int s, vector at : m_Wire.m_aAt)
+		{
+			float ds = RZ_Util.DistXZ(at, gate);
+			if (ds < d)
+			{
+				d = ds;
+				nearest = s;
+			}
+		}
+
+		if (nearest < 0)
+			return m_fGateOut;
+
+		return m_Wire.FaceOut(m_Wire.m_aFace[nearest]);
 	}
 
 	// ================================================================ Harden the building
@@ -1075,6 +1282,35 @@ class RZ_SiteSolver
 		}
 
 		int placed = 0;
+		// A nest at each other road entrance kept open (docs/SITES.md, "Checkpoints"): just inside it,
+		// beside the road, facing out along it
+		if (m_Wire && m_Settings.m_iCheckpoints > 1 && m_iClose == RZ_ESiteClose.ALL)
+		{
+			for (int g = 1; g < m_Wire.m_aGates.Count(); g++)
+			{
+				if (placed >= MAX_LOOKOUTS || m_iLayerLaid >= m_iLayerCap)
+					return;
+
+				vector check = m_Wire.m_aGates[g];
+				float checkOut = GateOut(check);
+				array<vector> beside = {};
+				array<float> besideYaw = {};
+				array<float> offs = {5, -5, 6.5, -6.5, 8, -8};
+				foreach (float off : offs)
+				{
+					for (int deep = 0; deep < 2; deep++)
+					{
+						vector by = RZ_Compass.PointAt(RZ_Compass.PointAt(check, checkOut + 180, 3 + deep * 2.5), checkOut + 90, off);
+						beside.Insert(RZ_Util.GroundPos(by));
+						besideYaw.Insert(checkOut);
+					}
+				}
+
+				if (PlaceBest(looks[placed % looks.Count()], m_Plain, beside, besideYaw, false, check, RZ_SiteGrid.BLOCKS_LIFE & ~(RZ_SiteGrid.STEP | RZ_SiteGrid.STEEP), RZ_ESiteLayer.LOOKOUT, 0.5))
+					placed++;
+			}
+		}
+
 		foreach (int sector : sectors)
 		{
 			if (placed >= MAX_LOOKOUTS || m_iLayerLaid >= m_iLayerCap)
@@ -1267,6 +1503,18 @@ class RZ_SiteSolver
 		m_Camp.PlanSpot(m_Place, m_Lay, e, planPos, planYaw);
 		RZ_EDressAt at = RZ_CampLife.AtOfPiece(e);
 		bool hasPlan = !m_Place.m_Site || at == RZ_EDressAt.YARD || at == RZ_EDressAt.DOOR || at == RZ_EDressAt.FRONT || !m_Wire;
+		// An extra has no spot of its own: its rules and its zone point to its spots, else anywhere
+		// in the yard (the seed says where the search starts)
+		if (e.m_bExtra)
+		{
+			hasPlan = false;
+			planPos = RZ_Util.GroundPos(RZ_Compass.PointAt(m_vDoor, m_Rng.Range(0, 360), m_Rng.Range(4, 14)));
+			if (m_Wire)
+				planPos = m_Wire.Point(m_Rng.Range(m_Wire.m_fX0 + WIRE_IN, m_Wire.m_fX1 - WIRE_IN), m_Rng.Range(m_Wire.m_fZ0 + WIRE_IN, m_Wire.m_fZ1 - WIRE_IN));
+
+			planYaw = -1;
+		}
+
 		array<vector> spots = {};
 		array<float> yaws = {};
 		if (hasPlan)
@@ -1339,6 +1587,22 @@ class RZ_SiteSolver
 	{
 		RZ_CampSite site = m_Place.m_Site;
 		float none = -1;
+		// A row: beside each of its kind already down, either side, turned as it is
+		if (rules.m_bRow)
+		{
+			float step = e.m_vFootMax[0] - e.m_vFootMin[0] + ROW_GAP;
+			foreach (RZ_SitePlaced mate : m_Result.m_aPlaced)
+			{
+				if (mate.m_Entry != e || mate.m_bIndoors)
+					continue;
+
+				spots.Insert(RZ_Util.GroundPos(RZ_SiteGrid.Frame(mate.m_vPos, mate.m_fYaw, step, 0)));
+				yaws.Insert(mate.m_fYaw);
+				spots.Insert(RZ_Util.GroundPos(RZ_SiteGrid.Frame(mate.m_vPos, mate.m_fYaw, -step, 0)));
+				yaws.Insert(mate.m_fYaw);
+			}
+		}
+
 		switch (e.m_eZone)
 		{
 			case RZ_ESiteZone.GATE:
@@ -1398,6 +1662,7 @@ class RZ_SiteSolver
 			switch (rule.m_iType)
 			{
 				case RZ_SiteRules.R_NEAR:
+				case RZ_SiteRules.R_BY:
 				case RZ_SiteRules.R_OVER:
 				{
 					RZ_SitePlaced target = Nearest(rule.m_sWhat, m_vMid);
@@ -1430,6 +1695,23 @@ class RZ_SiteSolver
 						{
 							spots.Insert(m_Camp.FacePointOf(site, f, m_Rng.Range(-0.7, 0.7), 1.2 + (e.m_vFootMax[2] - e.m_vFootMin[2]) * 0.5));
 							yaws.Insert(none);
+						}
+
+						// An extra has no spot of its own to start from: every side is tried along its length,
+						// against the wall and a step off it
+						if (e.m_bExtra)
+						{
+							array<float> along = {-0.6, -0.3, 0, 0.3, 0.6};
+							foreach (int side : faces)
+							{
+								foreach (float t : along)
+								{
+									spots.Insert(m_Camp.FacePointOf(site, side, t, 1.2 + (e.m_vFootMax[2] - e.m_vFootMin[2]) * 0.5));
+									yaws.Insert(none);
+									spots.Insert(m_Camp.FacePointOf(site, side, t, 3.5 + (e.m_vFootMax[2] - e.m_vFootMin[2]) * 0.5));
+									yaws.Insert(none);
+								}
+							}
 						}
 					}
 
@@ -1746,6 +2028,16 @@ class RZ_SiteSolver
 
 		foreach (RZ_SiteRule rule : rules.m_aRules)
 		{
+			if (rule.m_iType == RZ_SiteRules.R_BY)
+			{
+				// It serves something: no such thing here, or too far from it, and it isn't put down
+				RZ_SitePlaced served = Nearest(rule.m_sWhat, pos);
+				if (!served || RZ_Util.DistXZ(served.m_vPos, pos) > rule.m_fDist + HalfSize(e) + HalfSize(served.m_Entry))
+					return RZ_SiteRules.Text(rule);
+
+				continue;
+			}
+
 			if (rule.m_iType != RZ_SiteRules.R_AWAY)
 				continue;
 
@@ -1768,6 +2060,9 @@ class RZ_SiteSolver
 		int blocks = m_Grid.FirstBlock(pos, yaw, foot, mask, lo, hi);
 		if (blocks != 0)
 			return RZ_SiteGrid.FlagName(blocks);
+
+		if (rules.m_bSoil && Paved(e, pos, yaw))
+			return "paved ground";
 
 		float slope = FLAT_SLOPE;
 		if (rules.m_fFlat >= 0)
@@ -1805,6 +2100,24 @@ class RZ_SiteSolver
 		}
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Soft ground only (rule "soil": a tent, a bed, a garden, a line): true if the middle or a corner
+	//! of the footprint is on a paved surface. The grid knows roads and their verges; a yard's
+	//! cobbles or a forecourt's asphalt it doesn't, so the ground's own material is read here.
+	protected bool Paved(RZ_DressingPiece e, vector pos, float yaw)
+	{
+		array<vector> quad = {};
+		RZ_CampLife.QuadOf(pos, yaw, e.m_vFootMin, e.m_vFootMax, 0, quad);
+		quad.Insert((quad[0] + quad[2]) * 0.5);
+		foreach (vector corner : quad)
+		{
+			if (RZ_SiteGrid.PavedAt(RZ_Util.GroundPos(corner), m_mGround))
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1899,6 +2212,7 @@ class RZ_SiteSolver
 			switch (rule.m_iType)
 			{
 				case RZ_SiteRules.R_NEAR:
+				case RZ_SiteRules.R_BY:
 				{
 					RZ_SitePlaced near = Nearest(rule.m_sWhat, pos);
 					if (near)
@@ -1986,6 +2300,20 @@ class RZ_SiteSolver
 			score += Math.Clamp(rise * 2, -4, 12);
 		}
 
+		// A row: right beside one of its kind
+		if (rules.m_bRow)
+		{
+			float beside = e.m_vFootMax[0] - e.m_vFootMin[0] + ROW_GAP + 0.6;
+			foreach (RZ_SitePlaced mate : m_Result.m_aPlaced)
+			{
+				if (mate.m_Entry == e && !mate.m_bIndoors && RZ_Util.DistXZ(mate.m_vPos, pos) <= beside)
+				{
+					score += 14;
+					break;
+				}
+			}
+		}
+
 		if (rules.m_bNoLine && m_Wire)
 		{
 			vector l = m_Wire.Local(pos);
@@ -2022,6 +2350,15 @@ class RZ_SiteSolver
 		{
 			if (given >= 0)
 				return given;
+
+			// The first of a row is squared to the building (to the road in on open ground)
+			if (rules.m_bRow)
+			{
+				if (m_Place.m_Site)
+					return WallOut(m_Place.m_Site, pos);
+
+				return m_fGateOut;
+			}
 
 			return RZ_Compass.Bearing(pos, m_vMid);
 		}
@@ -2348,6 +2685,27 @@ class RZ_SiteSolver
 		if (!m_bGate || m_Place.m_eKind == RZ_ECampPlace.ROAD_POST)
 			return;
 
+		m_Result.m_vGatePost = GatePostAt(m_vGate, m_fGateOut);
+		m_Result.m_bGatePost = true;
+
+		// The other road entrances kept open: a checkpoint's post at each
+		if (!m_Wire || m_Settings.m_iCheckpoints < 2 || m_iClose != RZ_ESiteClose.ALL)
+			return;
+
+		for (int g = 1; g < m_Wire.m_aGates.Count(); g++)
+		{
+			float gateOut = GateOut(m_Wire.m_aGates[g]);
+			m_Result.m_aCheckposts.Insert(GatePostAt(m_Wire.m_aGates[g], gateOut));
+			m_Result.m_aCheckOut.Insert(gateOut);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A sentry's spot at a gate: just inside it, 3-7 m in and 2.5-6 m to the side of the way in, on
+	//! ground a body can stand on (off the road and the way kept clear if it can), with a clear line
+	//! to the gate; else any square a body can stand on within 8 m that sees it; else the gate itself.
+	protected vector GatePostAt(vector gate, float gateOut)
+	{
 		array<float> ins = {3, 5, 7};
 		array<float> sides = {2.5, -2.5, 4, -4, 6, -6};
 		vector best;
@@ -2365,7 +2723,7 @@ class RZ_SiteSolver
 
 				foreach (float side : sides)
 				{
-					vector spot = RZ_Util.GroundPos(RZ_Compass.PointAt(RZ_Compass.PointAt(m_vGate, m_fGateOut + 180, d), m_fGateOut + 90, side));
+					vector spot = RZ_Util.GroundPos(RZ_Compass.PointAt(RZ_Compass.PointAt(gate, gateOut + 180, d), gateOut + 90, side));
 					if (m_Wire && !m_Wire.Inside(spot, 0.5))
 						continue;
 
@@ -2373,7 +2731,7 @@ class RZ_SiteSolver
 					if ((flags & RZ_SiteGrid.OUTSIDE) == 0 && (flags & avoid) != 0)
 						continue;
 
-					if (!m_Grid.LineClear(spot, m_vGate))
+					if (!m_Grid.LineClear(spot, gate))
 						continue;
 
 					best = spot;
@@ -2391,7 +2749,7 @@ class RZ_SiteSolver
 			{
 				for (int k = 0; k < 16; k++)
 				{
-					vector near = RZ_Util.GroundPos(RZ_Compass.PointAt(m_vGate, k * 22.5, r));
+					vector near = RZ_Util.GroundPos(RZ_Compass.PointAt(gate, k * 22.5, r));
 					if (pass2 == 0 && m_Wire && !m_Wire.Inside(near, 0.3))
 						continue;
 
@@ -2399,7 +2757,7 @@ class RZ_SiteSolver
 					if ((nearFlags & RZ_SiteGrid.OUTSIDE) == 0 && (nearFlags & RZ_SiteGrid.NO_WALK) != 0)
 						continue;
 
-					if (!m_Grid.LineClear(near, m_vGate))
+					if (!m_Grid.LineClear(near, gate))
 						continue;
 
 					best = near;
@@ -2410,10 +2768,9 @@ class RZ_SiteSolver
 		}
 
 		if (!found)
-			best = m_vGate;
+			best = gate;
 
-		m_Result.m_vGatePost = RZ_Util.GroundPos(best);
-		m_Result.m_bGatePost = true;
+		return RZ_Util.GroundPos(best);
 	}
 
 	//------------------------------------------------------------------------------------------------

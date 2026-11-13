@@ -24,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0.7 0 0.3
+   angles 0 0 0
   }
   GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
    ID "C41190649945104E"
@@ -32,10 +33,12 @@ GenericEntity {
     }
    }
    coords -0.6 0 0.2
+   angles 0 0 0
   }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
    ID "FD39425F9D423FE4"
    coords 0.3 0 -0.4
+   angles 0 0 0
   }
  }
 }

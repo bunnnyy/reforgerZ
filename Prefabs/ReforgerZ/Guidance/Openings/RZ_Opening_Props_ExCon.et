@@ -20,10 +20,12 @@ GenericEntity {
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
    ID "85E992C3BCB3CF93"
    coords 1.2 0 0.3
+   angles 0 0 0
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "E6D0CF01B2064C06"
    coords 1.0 0 -0.4
+   angles 0 0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "CA98633D163836F1"
@@ -32,6 +34,7 @@ GenericEntity {
     }
    }
    coords -1.3 0 0.2
+   angles 0 0 0
   }
  }
 }

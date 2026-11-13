@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords -2.2 0 0.1
+   angles 0 0 0
   }
   GenericEntity : "{DDF59362051B28BC}Prefabs/Props/Military/Fortification/BarbedTape_KnifeRest.et" {
    ID "44B1C83FC479BE8E"

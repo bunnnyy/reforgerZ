@@ -47,14 +47,17 @@ GenericEntity {
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "C6C120059BF2DEF3"
    coords -0.6 0 0.5
+   angles 0 0 0
   }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
    ID "1F04556A7E473FB6"
    coords -0.75 0 0.3
+   angles 0 0 0
   }
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
    ID "7AA1E665AC3B880C"
    coords -0.4 0 -0.5
+   angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "748593D46AE4D1FF"

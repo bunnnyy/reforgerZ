@@ -42,6 +42,7 @@ GenericEntity {
     }
    }
    coords 0.9 0 0.4
+   angles 0 0 0
   }
   GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
    ID "CED26AECD2800EB6"
@@ -50,6 +51,7 @@ GenericEntity {
     }
    }
    coords 0.9 1.6 0.4
+   angles 0 0 0
   }
   GenericEntity {
    ID "844C2724EAAB144B"

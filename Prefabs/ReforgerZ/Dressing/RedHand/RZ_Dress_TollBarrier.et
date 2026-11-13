@@ -60,6 +60,7 @@ GenericEntity {
     }
    }
    coords 2.9 0 0.7
+   angles 0 0 0
   }
   ParticleEffectEntity : "{899360C930DA3EE3}Prefabs/Particles/Campfire_burning.et" {
    ID "9BBDD910BE3C35CF"
@@ -68,6 +69,7 @@ GenericEntity {
     }
    }
    coords 2.9 0.9 0.7
+   angles 0 0 0
   }
   GenericEntity {
    ID "EFAA4ED84DC274B5"

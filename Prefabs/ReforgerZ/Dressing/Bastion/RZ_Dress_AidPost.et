@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
    ID "04CAFD7A4ECF28D9"
@@ -32,6 +33,7 @@ GenericEntity {
     }
    }
    coords 2.3 0.78 0.9
+   angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "CC382DCBD74C390F"
@@ -49,6 +51,7 @@ GenericEntity {
     }
    }
    coords -1.5 0 0.3
+   angles 0 0 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
    ID "96A431F76E3FCF4B"
@@ -66,6 +69,7 @@ GenericEntity {
     }
    }
    coords 1.5 0 1.6
+   angles 0 0 0
   }
   GenericEntity {
    ID "A77038E0DC53C60B"

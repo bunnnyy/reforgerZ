@@ -42,10 +42,12 @@ GenericEntity {
     }
    }
    coords -0.9 0 0.4
+   angles 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
    ID "F046A00A49BDF9A3"
    coords -0.9 1.3 0.48
+   angles 0 0 0
   }
  }
 }

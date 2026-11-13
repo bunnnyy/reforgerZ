@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords -0.9 0 1.0
+   angles 0 0 0
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
    ID "7AB2D84E624A92F5"
@@ -46,6 +47,7 @@ GenericEntity {
   GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
    ID "9166E823B723891E"
    coords 0.9 0 -0.4
+   angles 0 0 0
   }
   GenericEntity {
    ID "EF80C59DBF6639C0"

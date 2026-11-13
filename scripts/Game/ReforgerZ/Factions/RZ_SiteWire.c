@@ -19,7 +19,7 @@ class RZ_SiteWire
 
 	protected static const float MIN_OFF = 4;	// a side never comes closer to the building than this
 	protected static const float WALLED_SHARE = 0.6;	// a wall, fence or hedge closing this much of a side further out is the line
-	protected static const int WALLED_REACH = 22;		// ...looked for this many metres past where the doctrine wants the side
+	protected static const int WALLED_REACH = 40;		// ...out to this far: a depot or a yard walled already is the perimeter, not a second ring inside it
 	protected static const float SHADOW = 6;			// a wall, a fence or a hedge this close outside a gap closes it
 	protected static const float BANK_REACH = 3;	// a bank this far out of the line...
 	protected static const float BANK_DROP = 1.5;	// ...this much lower closes it
@@ -521,6 +521,30 @@ class RZ_SiteWire
 		{
 			if (m_aFace[g] == m_iGateFace && m_aState[g] == ST_GAP && RZ_Util.DistXZ(pt, m_vGate) <= GATE_WIDTH * 0.5)
 				m_aState[g] = ST_GATE;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A road in that the faction closed (docs/SITES.md, "One way in"): its stations `from` to `to`
+	//! are the barrier now.
+	void Seal(int from, int to)
+	{
+		for (int i = from; i <= to; i++)
+		{
+			if (m_aState[i] == ST_GATE || m_aState[i] == ST_ROAD)
+				m_aState[i] = ST_PIECE;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A closed road is no gate any more: the gate (never the main one) within `reach` of `mid` is
+	//! struck off.
+	void DropGate(vector mid, float reach)
+	{
+		for (int g = m_aGates.Count() - 1; g >= 1; g--)
+		{
+			if (RZ_Util.DistXZ(m_aGates[g], mid) <= reach)
+				m_aGates.Remove(g);
 		}
 	}
 

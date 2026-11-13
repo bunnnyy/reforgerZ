@@ -20,10 +20,12 @@ GenericEntity {
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "1D0216615F8721FB"
    coords 1.3 0 0.4
+   angles 0 0 0
   }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
    ID "56276735969A4F75"
    coords 1.4 0 0.2
+   angles 0 0 0
   }
   GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
    ID "0F2ECA0116EBC516"
@@ -32,6 +34,7 @@ GenericEntity {
     }
    }
    coords -1.3 0 0.3
+   angles 0 0 0
   }
   GenericEntity {
    ID "0A11F6AAB257D1C0"

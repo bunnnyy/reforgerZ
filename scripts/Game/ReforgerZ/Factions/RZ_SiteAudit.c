@@ -383,11 +383,16 @@ class RZ_SiteAudit
 		string dropped = "";
 		foreach (RZ_SitePlaced drop : result.m_aDropped)
 		{
+			// A dense kit's extra is there if there's room: leaving one out costs nothing
 			int tier = TierOf(drop.m_Entry, p.m_eFaction);
-			if (tier == 1)
-				tierOneDropped++;
+			if (!drop.m_Entry.m_bExtra)
+			{
+				if (tier == 1)
+					tierOneDropped++;
 
-			dropCost += DropCost(tier);
+				dropCost += DropCost(tier);
+			}
+
 			if (!dropped.IsEmpty())
 				dropped += ", ";
 

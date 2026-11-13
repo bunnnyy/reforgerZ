@@ -42,6 +42,7 @@ GenericEntity {
     }
    }
    coords 0.5 0 1.0
+   angles 0 0 0
   }
   GenericEntity {
    ID "5C94F6C36535D5FD"

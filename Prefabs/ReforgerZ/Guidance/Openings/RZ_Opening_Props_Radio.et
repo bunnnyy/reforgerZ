@@ -33,6 +33,7 @@ GenericEntity {
     }
    }
    coords -1.0 0 0.4
+   angles 0 0 0
   }
   GenericEntity : "{4F6BB0502ED3EFBB}Prefabs/Props/Military/Generators/GeneratorPortable_US_01_Off.et" {
    ID "48922D8C7B563DAB"

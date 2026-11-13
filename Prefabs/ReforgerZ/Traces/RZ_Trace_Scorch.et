@@ -11,6 +11,7 @@ GenericEntity {
   GenericEntity : "{89CF04517B5283CB}Prefabs/Props/Garbage/Generic/LitterInterior_01/Piles/LitterInterior_USSR_01_pile_V1.et" {
    ID "CDA8B2C7B0BCCFF4"
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
    ID "B1C30361EA14AF21"

@@ -294,6 +294,12 @@ class RZ_SitePeople
 		if (result.m_bGatePost)
 			AddPost(RZ_SitePost.GATE, result.m_vGatePost, m_fGateOut, false, grid, around);
 
+		// The other road entrances kept open: a checkpoint each, manned like the gate
+		foreach (int c, vector check : result.m_aCheckposts)
+		{
+			AddPost(RZ_SitePost.GATE, check, result.m_aCheckOut[c], false, grid, around);
+		}
+
 		// The watch pieces: the nearest the gate that sees it is the nest; the rest are lookouts
 		int nest = -1;
 		float nearest = float.MAX;

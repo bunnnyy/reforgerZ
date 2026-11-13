@@ -33,6 +33,7 @@ GenericEntity {
     }
    }
    coords 0.35 0.78 0.1
+   angles 0 0 0
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
    ID "B86EF550ABDCE3E1"
@@ -41,6 +42,7 @@ GenericEntity {
     }
    }
    coords 0 0 -0.8
+   angles 0 0 0
   }
  }
 }

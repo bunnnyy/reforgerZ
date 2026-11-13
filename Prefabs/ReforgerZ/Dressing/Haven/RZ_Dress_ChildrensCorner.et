@@ -33,6 +33,7 @@ GenericEntity {
     }
    }
    coords -0.9 0 1.0
+   angles 0 0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "BF180F68DD7414CF"
@@ -41,10 +42,12 @@ GenericEntity {
     }
    }
    coords 0.9 0 1.2
+   angles 0 0 0
   }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
    ID "94D29D58C17FA791"
    coords 0.3 0 0.6
+   angles 0 0 0
   }
  }
 }

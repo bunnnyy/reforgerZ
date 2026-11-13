@@ -24,6 +24,7 @@ GenericEntity {
     }
    }
    coords -0.3 0.15 0.1
+   angles 0 0 0
   }
   GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
    ID "F45722E18FE9710D"
@@ -32,6 +33,7 @@ GenericEntity {
     }
    }
    coords 0.35 0.15 -0.1
+   angles 0 0 0
   }
   GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
    ID "0B37F56A8644E462"
@@ -40,6 +42,7 @@ GenericEntity {
     }
    }
    coords 1.2 0 0.5
+   angles 0 0 0
   }
   GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
    ID "A9C306A7D2F91B23"
@@ -75,6 +78,7 @@ GenericEntity {
     }
    }
    coords 0.9 0 -1.1
+   angles 0 0 0
   }
   GenericEntity {
    ID "F9957B14C8A7B1F6"

@@ -24,14 +24,17 @@ GenericEntity {
     }
    }
    coords 0.4 0.78 0.05
+   angles 0 0 0
   }
   GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
    ID "E221C6ABDC3B428E"
    coords -0.4 0.78 0.1
+   angles 0 0 0
   }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
    ID "669F26A9FFE3B865"
    coords 0.1 0.78 -0.15
+   angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "2F7E8E29C8AD5688"
@@ -49,6 +52,7 @@ GenericEntity {
     }
    }
    coords -1.5 0 -1.1
+   angles 0 0 0
   }
   GenericEntity {
    ID "97E6E88386B8BC8B"

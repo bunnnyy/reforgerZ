@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
    ID "D0C9EA12662A4AB4"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 2.0 0 -1.0
+   angles 0 0 0
   }
  }
 }

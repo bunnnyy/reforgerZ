@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
    ID "3896C48CB6549BFB"
@@ -32,6 +33,7 @@ GenericEntity {
     }
    }
    coords 0.4 0.78 0
+   angles 0 0 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
    ID "65B00210B9842793"

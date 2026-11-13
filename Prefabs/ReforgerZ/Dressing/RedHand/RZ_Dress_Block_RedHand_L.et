@@ -1,0 +1,30 @@
+GenericEntity {
+ ID "13387809A08A7A67"
+ components {
+  RplComponent "{22A176AB023EE2FC}" {
+  }
+  Hierarchy "{B0E1E5E5DC5DBEF6}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{AE300E34EA8FF40C}Prefabs/Props/Wrecks/Ural4320_wreck/Ural4320_wreck_static.et" {
+   ID "B6323AF2A8740E0B"
+   components {
+    Hierarchy "{A2F93E564753E9DD}" {
+    }
+   }
+   coords -0.9 0 0
+   angles 0 90 0
+  }
+  GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
+   ID "4DB1D33DDC1541A7"
+   components {
+    Hierarchy "{5763DF69EA7C84C6}" {
+    }
+   }
+   coords 4.3 0 0.2
+   angles 0 0 0
+  }
+ }
+}

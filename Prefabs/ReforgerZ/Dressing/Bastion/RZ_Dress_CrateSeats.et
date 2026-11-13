@@ -56,10 +56,12 @@ GenericEntity {
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
    ID "3FB92BDAC6833567"
    coords 0.2 1.0 0.2
+   angles 0 0 0
   }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
    ID "0E7693278AE469DC"
    coords -0.25 1.0 -0.1
+   angles 0 0 0
   }
   GenericEntity {
    ID "AB71361657343038"

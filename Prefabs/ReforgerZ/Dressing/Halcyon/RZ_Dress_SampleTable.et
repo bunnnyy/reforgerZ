@@ -20,6 +20,7 @@ GenericEntity {
     }
    }
    coords 0 0 -0.3
+   angles 0 0 0
   }
   GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
    ID "C333D7DD779F839D"
@@ -28,6 +29,7 @@ GenericEntity {
     }
    }
    coords -0.5 0.78 -0.3
+   angles 0 0 0
   }
   GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
    ID "27D2456C11BC4536"
@@ -36,6 +38,7 @@ GenericEntity {
     }
    }
    coords -0.2 0.78 -0.35
+   angles 0 0 0
   }
   GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
    ID "76DE37C0AB40D870"
@@ -62,6 +65,7 @@ GenericEntity {
     }
    }
    coords 1.6 0 -1.2
+   angles 0 0 0
   }
   GenericEntity {
    ID "2DDAA827770D5082"

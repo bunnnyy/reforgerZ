@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "00BA770DEF98727C"
+ components {
+  RplComponent "{8AD6F9773C25321D}" {
+  }
+  Hierarchy "{EBDBD2472189B862}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+   ID "65CE83137C1E6B6E"
+   components {
+    Hierarchy "{53BD71D40D7148DB}" {
+    }
+   }
+   coords -2.0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "E3EF3D2C4555E19E"
+   components {
+    Hierarchy "{31C2C7743236DE0D}" {
+    }
+   }
+   coords -0.8 0 -0.75
+   angles 0 6 0
+  }
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "0CD290BE89174C63"
+   components {
+    Hierarchy "{99A8490EFA7AC7A6}" {
+    }
+   }
+   coords 0.6 0 -0.75
+   angles 0 -5 0
+  }
+ }
+}

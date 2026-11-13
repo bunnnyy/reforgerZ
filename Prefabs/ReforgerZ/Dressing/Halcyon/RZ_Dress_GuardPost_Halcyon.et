@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 1.1
+   angles 0 0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "D96CA056478B2E4B"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords -0.5 0 0.1
+   angles 0 0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "11516E7A8A5812AD"
@@ -31,6 +33,7 @@ GenericEntity {
     }
    }
    coords 0.6 0 0.0
+   angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "6E8BCADD0A73080E"
@@ -48,6 +51,7 @@ GenericEntity {
     }
    }
    coords 1.6 0.62 0.3
+   angles 0 0 0
   }
   GenericEntity {
    ID "5B4B155983A757EF"

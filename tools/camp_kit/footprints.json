@@ -18,6 +18,14 @@
    "oz": -0.037,
    "feet": true
   },
+  "BRDM_V1_prop.et": {
+   "w": 2.291,
+   "d": 5.709,
+   "h": 2.037,
+   "ox": -0.006,
+   "oz": 0.138,
+   "feet": false
+  },
   "BarbedTape_01_Long.et": {
    "w": 1.084,
    "d": 3.448,
@@ -120,6 +128,14 @@
    "h": 0.07,
    "ox": -0.029,
    "oz": -0.016,
+   "feet": true
+  },
+  "Body_BurnPile.et": {
+   "w": 9.026,
+   "d": 5.414,
+   "h": 1.233,
+   "ox": 0.464,
+   "oz": 0.239,
    "feet": true
   },
   "Bucket_01.et": {
@@ -226,6 +242,14 @@
    "oz": 0.001,
    "feet": true
   },
+  "Container_openable.et": {
+   "w": 2.543,
+   "d": 7.338,
+   "h": 2.764,
+   "ox": -0.079,
+   "oz": -1.286,
+   "feet": true
+  },
   "CrateWooden_01_plain.et": {
    "w": 0.879,
    "d": 1.455,
@@ -266,12 +290,28 @@
    "oz": -0.325,
    "feet": false
   },
+  "Diesel_generator_destructible.et": {
+   "w": 2.457,
+   "d": 8.071,
+   "h": 3.115,
+   "ox": -0.002,
+   "oz": -0.173,
+   "feet": true
+  },
   "DogHouse_01.et": {
    "w": 0.897,
    "d": 1.086,
    "h": 0.941,
    "ox": 0.003,
    "oz": 0.003,
+   "feet": true
+  },
+  "EqBoxStack_destructible.et": {
+   "w": 1.256,
+   "d": 1.012,
+   "h": 1.401,
+   "ox": 0.018,
+   "oz": 0.001,
    "feet": true
   },
   "FieldKitchenTrailerUSSR_01.et": {
@@ -306,14 +346,6 @@
    "oz": -0.073,
    "feet": false
   },
-  "Flag_1_2_RedCross_01.et": {
-   "w": 2.402,
-   "d": 2.002,
-   "h": 1.709,
-   "ox": 0.0,
-   "oz": -1.0,
-   "feet": false
-  },
   "FlowerpotFlowers_01_begonia_white.et": {
    "w": 0.28,
    "d": 0.273,
@@ -329,6 +361,22 @@
    "ox": 0.002,
    "oz": -0.007,
    "feet": false
+  },
+  "Forklift_green.et": {
+   "w": 3.382,
+   "d": 1.229,
+   "h": 2.227,
+   "ox": 0.315,
+   "oz": 0.0,
+   "feet": true
+  },
+  "Forklift_orange.et": {
+   "w": 3.382,
+   "d": 1.229,
+   "h": 2.227,
+   "ox": 0.315,
+   "oz": 0.0,
+   "feet": true
   },
   "GeneratorFloodlight_USSR_01.et": {
    "w": 3.05,
@@ -354,12 +402,52 @@
    "oz": 0.0,
    "feet": true
   },
+  "GuardTower_destructible.et": {
+   "w": 7.514,
+   "d": 8.74,
+   "h": 10.834,
+   "ox": 0.001,
+   "oz": -0.389,
+   "feet": false
+  },
   "Guitar_01.et": {
    "w": 0.439,
    "d": 1.178,
    "h": 0.122,
    "ox": 0.002,
    "oz": -0.001,
+   "feet": true
+  },
+  "Hesco_01.et": {
+   "w": 1.072,
+   "d": 1.072,
+   "h": 1.022,
+   "ox": -0.0,
+   "oz": 0.0,
+   "feet": true
+  },
+  "Hesco_Wall_Combo_4m.et": {
+   "w": 4.037,
+   "d": 2.091,
+   "h": 2.022,
+   "ox": 0.005,
+   "oz": 0.006,
+   "feet": true
+  },
+  "Hesco_Wall_High_4m.et": {
+   "w": 4.038,
+   "d": 1.073,
+   "h": 2.022,
+   "ox": 0.002,
+   "oz": 0.0,
+   "feet": true
+  },
+  "Hesco_Wall_Low_4m.et": {
+   "w": 4.024,
+   "d": 1.078,
+   "h": 1.022,
+   "ox": 0.005,
+   "oz": 0.042,
    "feet": true
   },
   "Hutch_01.et": {
@@ -482,12 +570,28 @@
    "oz": 0.009,
    "feet": false
   },
+  "M923A1_Cargo.et": {
+   "w": 2.506,
+   "d": 4.691,
+   "h": 1.718,
+   "ox": 0.0,
+   "oz": -2.266,
+   "feet": false
+  },
   "M923A1_wreck_static.et": {
    "w": 3.205,
    "d": 8.267,
    "h": 2.8,
    "ox": 0.211,
    "oz": -0.362,
+   "feet": true
+  },
+  "M997_Ambulance.et": {
+   "w": 2.467,
+   "d": 4.436,
+   "h": 2.653,
+   "ox": -0.017,
+   "oz": -1.213,
    "feet": true
   },
   "MarketStand_01.et": {
@@ -586,6 +690,22 @@
    "oz": 0.006,
    "feet": true
   },
+  "RiotFence.et": {
+   "w": 1.329,
+   "d": 1.25,
+   "h": 2.45,
+   "ox": 0.0,
+   "oz": 0.0,
+   "feet": true
+  },
+  "RiotFence_5x.et": {
+   "w": 1.329,
+   "d": 1.25,
+   "h": 2.45,
+   "ox": 0.0,
+   "oz": 0.0,
+   "feet": true
+  },
   "RoadBlock_01.et": {
    "w": 2.214,
    "d": 0.522,
@@ -610,6 +730,38 @@
    "oz": 0.037,
    "feet": true
   },
+  "SF_SecurityFence_3m.et": {
+   "w": 3.442,
+   "d": 0.626,
+   "h": 4.208,
+   "ox": 1.5,
+   "oz": 0.0,
+   "feet": false
+  },
+  "SF_SecurityFence_6m.et": {
+   "w": 6.442,
+   "d": 0.626,
+   "h": 4.208,
+   "ox": 3.0,
+   "oz": -0.0,
+   "feet": false
+  },
+  "SF_SecurityFence_Corner.et": {
+   "w": 3.536,
+   "d": 3.534,
+   "h": 4.209,
+   "ox": 1.547,
+   "oz": -1.454,
+   "feet": false
+  },
+  "SF_SecurityFence_ExitVehicleSign.et": {
+   "w": 0.452,
+   "d": 0.006,
+   "h": 0.322,
+   "ox": 0.0,
+   "oz": 0.002,
+   "feet": false
+  },
   "SackUniversal_01.et": {
    "w": 0.793,
    "d": 0.544,
@@ -625,14 +777,6 @@
    "ox": 0.086,
    "oz": 0.039,
    "feet": true
-  },
-  "Sandbag_01_bunker_burlap_camonet.et": {
-   "w": 6.613,
-   "d": 8.043,
-   "h": 3.345,
-   "ox": 0.037,
-   "oz": 0.019,
-   "feet": false
   },
   "Sandbag_01_end_burlap.et": {
    "w": 2.035,
@@ -672,6 +816,14 @@
    "h": 2.595,
    "ox": -0.512,
    "oz": 0.244,
+   "feet": true
+  },
+  "Shoothouse_Cover_Jersey.et": {
+   "w": 1.983,
+   "d": 0.542,
+   "h": 0.849,
+   "ox": -0.009,
+   "oz": 0.0,
    "feet": true
   },
   "ShowerBeach_01.et": {
@@ -760,6 +912,22 @@
    "h": 0.497,
    "ox": 0.0,
    "oz": -0.044,
+   "feet": true
+  },
+  "T-Wall.et": {
+   "w": 2.202,
+   "d": 0.774,
+   "h": 4.002,
+   "ox": 0.0,
+   "oz": 0.0,
+   "feet": true
+  },
+  "T-Wall_5x.et": {
+   "w": 2.202,
+   "d": 0.774,
+   "h": 4.002,
+   "ox": 0.0,
+   "oz": 0.0,
    "feet": true
   },
   "TableMedical_01.et": {
@@ -930,6 +1098,14 @@
    "oz": -0.042,
    "feet": true
   },
+  "UAZ459_wrecked_blue_prop.et": {
+   "w": 2.274,
+   "d": 4.088,
+   "h": 1.636,
+   "ox": -0.028,
+   "oz": 0.169,
+   "feet": false
+  },
   "UAZ469_wreck_blue_static.et": {
    "w": 2.274,
    "d": 4.088,
@@ -946,12 +1122,36 @@
    "oz": 0.169,
    "feet": false
   },
+  "US_fuelpump.et": {
+   "w": 1.983,
+   "d": 1.05,
+   "h": 1.318,
+   "ox": 0.0,
+   "oz": 0.024,
+   "feet": true
+  },
   "Ural4320_wreck_static.et": {
    "w": 3.159,
    "d": 7.622,
    "h": 2.611,
    "ox": -0.222,
    "oz": 0.097,
+   "feet": false
+  },
+  "Ural_4320_Cargo_Wreck.et": {
+   "w": 2.462,
+   "d": 4.206,
+   "h": 1.797,
+   "ox": 0.0,
+   "oz": -1.894,
+   "feet": false
+  },
+  "Ural_4320_Fuel_Tank_Wreck.et": {
+   "w": 2.478,
+   "d": 4.199,
+   "h": 1.636,
+   "ox": 0.001,
+   "oz": -1.737,
    "feet": false
   },
   "VegetableBed_01_small.et": {

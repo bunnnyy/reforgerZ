@@ -586,6 +586,43 @@ class RZ_SiteGrid
 		return "the ground";
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! A paved surface at a spot on the ground (a road's or a yard's cobbles, asphalt, concrete,
+	//! paving, tiles, brick, stone, metal): the material a downward trace hits, by its name. `seen`
+	//! counts the names read (the solver's "Sites ground" log line).
+	static bool PavedAt(vector at, map<string, int> seen = null)
+	{
+		TraceParam param = new TraceParam();
+		param.Start = Vector(at[0], at[1] + 1.2, at[2]);
+		param.End = Vector(at[0], at[1] - 1.5, at[2]);
+		param.LayerMask = EPhysicsLayerPresets.Projectile;
+		param.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+		float frac = GetGame().GetWorld().TraceMove(param, null);
+		if (frac >= 1)
+			return false;
+
+		string name = param.TraceMaterial; // VERIFY: a downward trace's TraceMaterial names the surface hit (the terrain's layer under a road or a yard, a paving mesh's material), with a word that tells paved ground from soft; seen on Everon: grass_01 to grass_03, dirt_01, cobblestone_01_wave (.emat)
+		if (name.IsEmpty())
+			return false;
+
+		name.ToLower();
+		int slash = name.LastIndexOf("/");
+		if (slash >= 0)
+			name = name.Substring(slash + 1, name.Length() - slash - 1);
+
+		if (seen)
+			seen.Set(name, seen.Get(name) + 1);
+
+		array<string> hard = {"asphalt", "concrete", "cobble", "pavement", "paving", "paved", "tile", "brick", "tarmac", "stone", "metal", "road"};
+		foreach (string word : hard)
+		{
+			if (name.Contains(word))
+				return true;
+		}
+
+		return false;
+	}
+
 	// ================================================================ Reading
 	//------------------------------------------------------------------------------------------------
 	protected void ReadHeightRow(int lz)

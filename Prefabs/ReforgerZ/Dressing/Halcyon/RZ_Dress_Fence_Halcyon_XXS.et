@@ -1,0 +1,21 @@
+GenericEntity {
+ ID "4ACCC065B6A4ADC2"
+ components {
+  RplComponent "{6BFAD803A05910EA}" {
+  }
+  Hierarchy "{12E66CEA8D853A67}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{1C5C824E26DB1D62}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_entryforbidden_pole.et" {
+   ID "51B901C1E6BC3889"
+   components {
+    Hierarchy "{ACB2CC651C9433E4}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+ }
+}

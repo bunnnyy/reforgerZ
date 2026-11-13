@@ -1,0 +1,30 @@
+GenericEntity {
+ ID "06B8EA50E5B9125A"
+ components {
+  RplComponent "{D61B0500A8C68FB6}" {
+  }
+  Hierarchy "{09D5C6FE1D165334}" {
+  }
+ }
+ coords 0 0 0
+ {
+  StaticModelEntity : "{BF962BA2DB86E25C}Prefabs/Structures/Walls/SecurityFence/SF_SecurityFence_6m.et" {
+   ID "CF9EA202DA3F9D17"
+   components {
+    Hierarchy "{B0857DED4D644CBB}" {
+    }
+   }
+   coords -6.0 0 0
+   angles 0 0 0
+  }
+  StaticModelEntity : "{BF962BA2DB86E25C}Prefabs/Structures/Walls/SecurityFence/SF_SecurityFence_6m.et" {
+   ID "FE52C1C563759B4A"
+   components {
+    Hierarchy "{ECF586D0AF0AC6D2}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+ }
+}

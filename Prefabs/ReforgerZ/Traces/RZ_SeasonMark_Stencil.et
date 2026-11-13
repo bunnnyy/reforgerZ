@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords -0.5 0 0
+   angles 0 0 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
    ID "9A4BD5B662ADDB5F"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0.5 0 0
+   angles 0 0 0
   }
   GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
    ID "9D53559F243A056A"
@@ -31,6 +33,7 @@ GenericEntity {
     }
    }
    coords 0 1.2 0.06
+   angles 0 0 0
   }
  }
 }

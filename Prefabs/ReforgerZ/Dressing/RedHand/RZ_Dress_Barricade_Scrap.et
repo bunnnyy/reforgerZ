@@ -33,6 +33,7 @@ GenericEntity {
     }
    }
    coords 3.2 0 0.9
+   angles 0 0 0
   }
   GenericEntity : "{74D1DB7828061BD7}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_pile_small.et" {
    ID "BCAD14D8AEE4CE85"

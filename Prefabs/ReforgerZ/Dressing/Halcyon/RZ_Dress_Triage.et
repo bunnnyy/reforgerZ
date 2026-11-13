@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "48A6D4516ED2EC31"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords -0.5 0 -0.9
+   angles 0 0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "60F2E91C698AB985"
@@ -31,6 +33,7 @@ GenericEntity {
     }
    }
    coords 0.6 0 0.95
+   angles 0 0 0
   }
   GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
    ID "9F7F850335B92BE3"
@@ -39,6 +42,7 @@ GenericEntity {
     }
    }
    coords 0.5 0.78 0
+   angles 0 0 0
   }
   GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
    ID "51976581C884D933"
@@ -47,6 +51,7 @@ GenericEntity {
     }
    }
    coords -0.5 0.78 0.05
+   angles 0 0 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
    ID "38408334F7A7E1F6"

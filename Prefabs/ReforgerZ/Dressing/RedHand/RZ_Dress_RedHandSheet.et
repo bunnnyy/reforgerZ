@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords -1.0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
    ID "823FB26588F25443"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 1.1 0 0.1
+   angles 0 0 0
   }
   SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
    ID "8BD7BBF0E94E4A5E"

@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords -1.5 0 0.05
+   angles 0 0 0
   }
   GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
    ID "F897DB5AA6686C23"

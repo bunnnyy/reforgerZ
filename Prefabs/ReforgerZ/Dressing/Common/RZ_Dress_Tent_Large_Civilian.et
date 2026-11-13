@@ -51,6 +51,7 @@ GenericEntity {
     }
    }
    coords -1.9 0 -1.8
+   angles 0 0 0
   }
  }
 }

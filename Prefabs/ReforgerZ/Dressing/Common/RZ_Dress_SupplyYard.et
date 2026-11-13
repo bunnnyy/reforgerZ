@@ -1,0 +1,117 @@
+GenericEntity {
+ ID "9684553FCEFCC7EF"
+ components {
+  RplComponent "{411470557C81F406}" {
+  }
+  Hierarchy "{72E769A2BB77B0F9}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{4FB60DA41FDDFAEE}Prefabs/Props/BIGProps/Container_openable.et" {
+   ID "B3FD59F4210E8A9F"
+   components {
+    Hierarchy "{2CA5EC1A753019F6}" {
+    }
+   }
+   coords 1.29 0 -2.6
+   angles 0 90 0
+  }
+  GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
+   ID "27B88E791D0106CC"
+   components {
+    Hierarchy "{0D417C72F408D93E}" {
+    }
+   }
+   coords -2.4 0 0
+   angles 0 2 0
+  }
+  GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
+   ID "CB0F49D8755C6438"
+   components {
+    Hierarchy "{122F4D4276CD5C8F}" {
+    }
+   }
+   coords -0.8 0 0.05
+   angles 0 -3 0
+  }
+  GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
+   ID "2E1261E70A73CCB0"
+   components {
+    Hierarchy "{0EFEC458AF8328CD}" {
+    }
+   }
+   coords 0.8 0 0
+   angles 0 4 0
+  }
+  GenericEntity : "{4A2EC75E9F3D6010}Prefabs/Props/CustomDestructible/EqBoxStack_destructible.et" {
+   ID "01DE8734F42E37C4"
+   components {
+    Hierarchy "{3230E279B5AF0780}" {
+    }
+   }
+   coords 2.6 0 -0.3
+   angles 0 5 0
+  }
+  GenericEntity : "{4A2EC75E9F3D6010}Prefabs/Props/CustomDestructible/EqBoxStack_destructible.et" {
+   ID "B70517602200F544"
+   components {
+    Hierarchy "{3D921BF6F0A64155}" {
+    }
+   }
+   coords 2.7 0 0.9
+   angles 0 -4 0
+  }
+  GenericEntity : "{0A395427C0D4725B}Prefabs/Props/BIGProps/Forklift_orange.et" {
+   ID "4D0AE943D28DC8F5"
+   components {
+    Hierarchy "{4F29AE3154F7E4A4}" {
+    }
+   }
+   coords 5.3 0 -1.6
+   angles 0 0 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "068C6C6820ACCB64"
+   components {
+    Hierarchy "{302B2CDB41C6D63F}" {
+    }
+   }
+   coords -4.4 0 0.4
+   angles 0 80 0
+  }
+  GenericEntity : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
+   ID "5288AF1424BA2212"
+   components {
+    Hierarchy "{BA36851EBDE43635}" {
+    }
+   }
+   coords -4.7 0 -2.0
+   angles 0 0 0
+  }
+  GenericEntity : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
+   ID "87D81B5CDA2CC4CA"
+   components {
+    Hierarchy "{DE76278E893F0EF6}" {
+    }
+   }
+   coords -4.8 0 -1.2
+   angles 0 0 0
+  }
+  GenericEntity {
+   ID "0872D78870D3186D"
+   components {
+    SCR_AISmartActionSentinelComponent "{002AA4015B68600B}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition -4.4 1.6 0.4
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{000C1F1316F6DFFA}" {
+    }
+   }
+   coords -4.4 0 1.3
+  }
+ }
+}

@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   SCR_DestructibleEntity : "{9E939BD958DD48D1}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et" {
    ID "DBEA96A460F7424B"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0.2 0 0.2
+   angles 0 0 0
   }
  }
 }

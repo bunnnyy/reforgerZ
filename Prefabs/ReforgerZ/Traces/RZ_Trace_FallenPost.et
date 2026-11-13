@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
    ID "4FCAC86F8E736EC6"
@@ -28,6 +29,7 @@ GenericEntity {
     }
    }
    coords 1.6 0 -0.8
+   angles 0 0 0
   }
   GenericEntity : "{C7A49C5B54C86903}Prefabs/Props/Military/Sandbags/Sandbag_01_single_burlap.et" {
    ID "AD89CEE98F5F721E"
@@ -36,6 +38,7 @@ GenericEntity {
     }
    }
    coords -1.4 0 -0.6
+   angles 0 0 0
   }
   GenericEntity : "{C7A49C5B54C86903}Prefabs/Props/Military/Sandbags/Sandbag_01_single_burlap.et" {
    ID "39267E65A27EC966"

@@ -337,6 +337,13 @@ class RZ_FactionPerks
 			why = "its building doesn't suit it";
 			atLeast = 2;
 		}
+		else if (camp && !camp.HasRoomAt(f, RZ_ECampPlace.STRONGHOLD, was))
+		{
+			// A building with no ground of its own (a hall on a square, a house in a yard of walls): it
+			// moves only for one that suits it and has room
+			why = "no room for its yard";
+			atLeast = 2;
+		}
 
 		if (why.IsEmpty())
 			return;
@@ -347,7 +354,10 @@ class RZ_FactionPerks
 		bool built = ChooseBuiltPos(f, pos, atLeast);
 		m_aHasQm[f] = true;
 		if (!built && atLeast > 0)
+		{
+			RZ_Log.Info(string.Format("Quartermasters: %1's stronghold at %2 stays (%3, and no town has a building that suits it better with room for its yard).", RZ_Factions.GetName(f), RZ_SettlementScanner.GridReference(was), why));
 			return;
+		}
 
 		if (!built)
 		{

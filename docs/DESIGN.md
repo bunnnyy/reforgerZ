@@ -796,7 +796,7 @@ drawn whole, of compositions built from vanilla outdoor props
 | Red Hand camp | the toll barrier, a scrappy nest, a scrap barricade and the red hand painted on corrugated iron at the approach, an oil-drum fire, a card table, a stolen sofa, a cook pot and a woodpile, tents and a scrap shelter, bags and bottles |
 | Haven safehouse and outpost | a table outside, a cook pot and a woodpile, a water barrel and a wash stand, a washing line, a garden bed, the bear stencil on a door board; an outpost adds a candle memorial with names, a tent, a children's corner, a fence and a vegetable stall |
 | Halcyon field station | a field table, the ward tent (the plain FIA tent: the medical one carries a heal station), a decon shower screened with tin sheets, a cold store on a pallet, a generator, an antenna, a bench of notebooks, the plague-doctor stencil board (the lab, Halcyon's stronghold: a guard post, two generators behind sandbags, a bench by the back door and floodlights outside; in a building its tables, the ward tent, the cold store, the sorting table and the radio table indoors, as data) |
-| Strongholds | the faction's set, more of it (26 pieces against an outpost's 17): more tents, bags and bottles, a drying line, a latrine screen, and each faction's extras (Bastion's duty board and checkpoint, the Red Hand's trophy wall and kennel, the Haven's fire pit, chairs round a crate, its gate and a lookout's chair, Halcyon's sorting table and radio table) |
+| Strongholds | the faction's set, more of it (up to 60 pieces against an outpost's 36, its kit's extras among them: [SITES.md](SITES.md#dense-sites)): more tents, bags and bottles, a drying line, a latrine screen, and each faction's extras (Bastion's duty board and checkpoint, the Red Hand's trophy wall and kennel, the Haven's fire pit, chairs round a crate, its gate and a lookout's chair, Halcyon's sorting table and radio table) |
 | Road posts | 4 pieces on the verges either side of the barrier: a fire barrel, a nest or a card table, a tarp, a barricade |
 | Every site's layers ([SITES.md](SITES.md#each-factions-doctrine)) | the faction's barrier round it with its gates on the roads in (Bastion's concertina wire, the Red Hand's rusted tin and tyres, the Haven's plank fences, Halcyon's chain-link), boards over the windows and the doors that aren't the entrance, a lookout toward each threatened side, Halcyon's floodlights, the stores board by the door when the valuables went indoors |
 | Every place with a quartermaster | his **counter**: a table between him and his customers (Bastion's stores window, the Red Hand fence's table, the Haven's stores table, Halcyon's issue table) |
@@ -932,8 +932,8 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   the background from the start (**Pre-read**, strongholds and the lab first), a little each second
   ([SITES.md](SITES.md#the-site-grid)), and a place a player comes near first goes before the rest;
   the layout is kept, so a visit lays it out at once. The pieces spawn **4 per server tick**
-  for all places together (a stronghold's 26 pieces and its layers' 30 to 50 are up in about a
-  minute and a half at the 5 s tick); when a place's last piece is up, its people are given their jobs again.
+  for all places together (a stronghold's 40 to 55 pieces and its layers' 30 to 60 are up in about two
+  minutes at the 5 s tick); when a place's last piece is up, its people are given their jobs again.
   A site's layers (the wire's runs, the boards, the lookouts, the lights) count up to **Layer
   pieces** (60) on top of its piece count, and at most **200** of camp life's own pieces stand or
   wait to spawn on the server (Traces' props, boards and sound looks are scenery too but don't
@@ -1006,8 +1006,10 @@ the group prefab it stands.
 *Simplified:* a guard prefab that is an AI group gets one job for the whole group. Sleep is a
 despawn, not an animation. Props spawned at run time may not cut the navmesh (the VERIFY list).
 By a building: the lookout stands on the ground at a corner, not on the roof or in the bell
-tower; nothing is ever put on a road: every road into the wire is a gate kept open, with a
-barricade beside it, not across it (for the supply trucks and players' cars); the building's rooms
+tower; nothing but a stronghold's road blocks is ever put on a road: every road into the wire is a gate
+kept open, with a barricade beside it, not across it (for the supply trucks and players' cars),
+except that a stronghold keeps only its checkpoints open and closes its other roads
+([SITES.md](SITES.md#checkpoints)); the building's rooms
 aren't dressed inside (its stores are the quartermaster at his counter and the valuables kept
 indoors as data, its mess the meal at the yard's table, its barracks the sleepers); the yard and
 the wire are laid against the building's box, so a building of odd shape (an L, a courtyard) gets

@@ -24,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0.2 0 0.3
+   angles 0 0 0
   }
   GenericEntity : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
    ID "53F99CECA960BDDB"
@@ -32,6 +33,7 @@ GenericEntity {
     }
    }
    coords 0.9 0 0.5
+   angles 0 0 0
   }
   GenericEntity : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
    ID "30EA4A62E8F6A10F"
@@ -40,6 +42,7 @@ GenericEntity {
     }
    }
    coords 1.6 0 0.2
+   angles 0 0 0
   }
   GenericEntity : "{1C5C824E26DB1D62}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_entryforbidden_pole.et" {
    ID "53095BCA19E7C5CB"
@@ -48,6 +51,7 @@ GenericEntity {
     }
    }
    coords -3.0 0 0.2
+   angles 0 0 0
   }
  }
 }
