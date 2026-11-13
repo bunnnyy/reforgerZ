@@ -1,0 +1,159 @@
+# The Red Hand's toll (docs/ERRANDS.md, "Duties"; Missions/Errands/RZ_DutyRedHand.c, Toll): whoever
+# comes to the pole stands there to be talked to (RZ_TalkDutyPerson). The working conversation is
+# shared (duty.toll.pole): asking where they're bound is the beat's option 2 (one of its two looks),
+# and the three calls are options 3 take the toll, 4 wave them through, 5 turn them back. Some have a
+# word of their own besides (who they are), which settles nothing.
+
+conv duty.toll.pole
+for duty:toll
+topic "Stop there. Toll."
+prio quest
+voice redhand
+
+node start
+  say? night :: They stop where the lamp reaches, no closer, and wait to hear what it costs.
+  say They stop at the pole, and wait to hear what it costs.
+  > @bound Where are you bound? -> heard   do call:slot:2
+  > @call Right. Here's how it goes. -> call
+
+node heard
+  say They answer, and watch your hands while they do it.
+  > @call2 Right. Here's how it goes. -> call
+
+node call
+  say The pole stays down until you say.
+  > @take Toll's paid here. Hand it over. -> end   do call:slot:3
+  > @wave Go on through. -> end   do call:slot:4
+  > @turn Not today. Back the way you came. -> end   do call:slot:5
+
+conv duty.toll.handcart
+for duty:toll:handcart
+topic "How old are the little ones?"
+prio flavour
+once
+voice plain
+
+node start
+  say Four and six. They walked the first day and then they stopped walking, and now they sleep. I envy them. I've not slept since the roads shut.
+  > @back0 Right. -> hub
+
+conv duty.toll.courier
+for duty:toll:courier
+topic "What's in the satchel?"
+prio flavour
+once
+voice haven
+
+node start
+  say Letters, mostly. A dressing or two. The Haven sends a runner to the farms on this road every third day, and the farms send eggs back. Ask anyone. It's not a secret.
+  > @back1 Right. -> hub
+
+conv duty.toll.deserter
+for duty:toll:deserter
+topic "That's Bastion kit."
+prio flavour
+once
+voice plain
+
+node start
+  say It was. I've taken the patches off. They sent us to hold a bridge with nine rounds each, and I counted the rounds and counted the dead, and I walked.
+  > @back2 Right. -> hub
+
+conv duty.toll.tech
+for duty:toll:tech
+topic "What's in the case?"
+prio flavour
+once
+voice halcyon
+
+node start
+  say Samples. Sealed for your protection and mine. I'm not authorised to open it, and if I were, I'd advise you to stand well back.
+  > @back3 Right. -> hub
+
+conv duty.toll.child
+for duty:toll:child
+topic "Where are your people?"
+prio flavour
+once
+voice plain
+
+node start
+  say My aunt's in the next town. She has a blue door. I know the way. I've been once, before, in a car. It was quicker in a car.
+  > @back4 Right. -> hub
+
+conv duty.toll.oldman
+for duty:toll:oldman
+topic "What have you got for me?"
+prio flavour
+once
+voice plain
+
+node start
+  say Nothing but news, son. And the news is this: the ferry man at the river has stopped taking bread. He takes boots now. Remember that one. It's worth a toll.
+  > @back5 Right. -> hub
+
+conv duty.toll.bitten
+for duty:toll:bitten
+topic "Why the long sleeves?"
+prio flavour
+once
+voice plain
+
+node start
+  say Cold. It's cold. Everybody's cold. I just want to get to my sister's, that's all, she has a stove.
+  > @back6 Right. -> hub
+
+conv duty.toll.runner
+for duty:toll:runner
+topic "Whose crew are you with?"
+prio flavour
+once
+voice redhand
+
+node start
+  say Same as you, mate, just a different boss. Mine says yours owes him for a crate. I'm not carrying that message. I'm carrying this one, and it's not for you.
+  > @back7 Right. -> hub
+
+conv duty.toll.priest
+for duty:toll:priest
+topic "Where's your parish, Father?"
+prio flavour
+once
+voice plain
+
+node start
+  say Wherever they still bury people properly. It's a moving parish these days. I'll say a word for your lot too, if you let me through. Even for your lot.
+  > @back8 Right. -> hub
+
+conv duty.toll.widow
+for duty:toll:widow
+topic "Who are you in black for?"
+prio flavour
+once
+voice haven
+
+node start
+  say My husband. He was on this road with the cart, the first week. I've come to see the place. That's all. I won't stay long. I just want to see the place.
+  > @back9 Right. -> hub
+
+conv duty.toll.pedlar
+for duty:toll:pedlar
+topic "What are you selling?"
+prio flavour
+once
+voice plain
+
+node start
+  say Needles, thread, buttons, bootlaces, a lucky rabbit's foot, unlucky for the rabbit. Everything a man forgets he needs until he needs it. Discount for the pole.
+  > @back10 Right. -> hub
+
+conv duty.toll.hunter
+for duty:toll:hunter
+topic "Good hunting up there?"
+prio flavour
+once
+voice plain
+
+node start
+  say Deer's come down out of the high woods. Nobody's shooting them now, so they've stopped being afraid of a man walking. They're still afraid of the other things.
+  > @back11 Right. -> hub

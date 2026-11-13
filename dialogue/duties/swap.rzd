@@ -1,0 +1,388 @@
+# The Haven's swap table (docs/ERRANDS.md, "Duties"; Missions/Errands/RZ_DutyHaven.c, SwapTable): the
+# sixteen who come to the table, in their own words. Each stands a step behind the table while it's
+# their turn (RZ_TalkDutyPerson). Their replies run the beat's own options (call:slot:N): 1 ask where
+# it came from, 2 ask who it's for (two questions at most, counting what your hands turn over), then
+# 3 take the trade, 4 refuse it, 5 the other way. What follows each is the beat's own line.
+
+conv duty.swap.ring
+for duty:swap:ring
+topic "About the ring."
+prio quest
+voice haven
+
+node start
+  say It's a good ring. Gold, not plated. He bought it in the year we had the flood, when there was nothing, so you know he meant it.
+  say Two tins. That's all. It's not for me, before you think it.
+  > @where Is it yours to sell? -> more   do call:slot:1
+  > @who Who are the tins for? -> more   do call:slot:2
+  > @terms Let's settle it. -> terms
+
+node more
+  say She turns the empty finger with her thumb, round and round, where the ring used to sit.
+  > @ask I've another question. -> start
+  > @settle Let's settle it. -> terms
+
+node terms
+  say So. Two tins, or not.
+  > @take Two tins for the ring. -> end   do call:slot:3
+  > @no Keep your ring. I can't take it. -> end   do call:slot:4
+  > @third Tins now. The ring, when you can. -> end   do call:slot:5
+
+conv duty.swap.watch
+for duty:swap:watch
+topic "That's a man's watch."
+prio quest
+voice plain
+
+node start
+  say It goes. Listen. It ticks. You have to wind it in the morning or it stops, I know how, I do it every day.
+  say Bread. A whole one, if you've got a whole one.
+  > @where Where did you get it? -> more   do call:slot:1
+  > @who Who's the bread for? -> more   do call:slot:2
+  > @terms All right. Let's see. -> terms
+
+node more
+  say He holds the watch to his ear again while you think, as if it might have stopped since.
+  > @ask Tell me something else. -> start
+  > @settle All right. Let's see. -> terms
+
+node terms
+  say Is it a yes?
+  > @take Bread for the watch. -> end   do call:slot:3
+  > @no I can't take that watch. -> end   do call:slot:4
+  > @third Bread. The watch goes in the book. -> end   do call:slot:5
+
+conv duty.swap.coat
+for duty:swap:coat
+topic "Put your coat back on."
+prio quest
+voice haven
+
+node start
+  say It's warm enough in here. Feel it, it's a good coat, wool, not that army stuff. Lined at the pockets.
+  say A tin of beef. That's a fair price for a coat that good. Anyone would say so.
+  > @where Have you another coat? -> more   do call:slot:1
+  > @who Who's the tin for? -> more   do call:slot:2
+  > @terms Let's settle it. -> terms
+
+node more
+  say He stands very straight, the way a cold man does when he's decided not to shiver in front of you.
+  > @ask Hold on. One more thing. -> start
+  > @settle Let's settle it. -> terms
+
+node terms
+  say Well?
+  > @take The tin for the coat. -> end   do call:slot:3
+  > @no Keep the coat on. -> end   do call:slot:4
+  > @third An hour at the woodpile for the tin. -> end   do call:slot:5
+
+conv duty.swap.aspirin
+for duty:swap:aspirin
+topic "Let me see the packet."
+prio quest
+voice plain
+
+node start
+  say Antibiotics. Real ones, sealed, from the hospital before it went. You can't get these for love.
+  say Six tins is a gift. I could get eight at the camp. I'd rather they went to a house.
+  > @where Which hospital? Which shelf? -> more   do call:slot:1
+  > @who Who are you selling for? -> more   do call:slot:2
+  > @terms Let's settle it. -> terms
+
+node more
+  say He smiles the whole time. It's a very good smile. It doesn't change at all.
+  > @ask I'm not finished asking. -> start
+  > @settle Let's settle it. -> terms
+
+node terms
+  say Six tins. Final.
+  > @take Six tins for the packet. -> end   do call:slot:3
+  > @no No. Take it somewhere else. -> end   do call:slot:4
+  > @third Let me call the nurse to look first. -> end   do call:slot:5
+
+conv duty.swap.stolen
+for duty:swap:stolen
+topic "Where's the spoon from?"
+prio quest
+voice plain
+
+node start
+  say Solid silver, that. Look at the weight. One tin and it's yours, I'm not greedy.
+  say Don't look over there. Look at the spoon.
+  > @where Where did you find it? -> more   do call:slot:1
+  > @who Who's the tin for? -> more   do call:slot:2
+  > @terms Let's settle it. -> terms
+
+node more
+  say Across the room the old woman has her hand flat on her brooch, as if it might go next.
+  > @ask Hang on. -> start
+  > @settle Let's settle it. -> terms
+
+node terms
+  say One tin. Quick, before I change my mind.
+  > @take A tin for the spoon. -> end   do call:slot:3
+  > @no Put it away. -> end   do call:slot:4
+  > @third Let's ask the lady whose spoon it is. -> end   do call:slot:5
+
+conv duty.swap.hoard
+for duty:swap:hoard
+topic "That's every candle we have."
+prio quest
+voice haven
+
+node start
+  say And I'll pay for every one, fair price, more than fair. Look in the sack. Tins, good ones, no dents.
+  say A man who plans ahead isn't a villain. He's just early.
+  > @where Where did all the tins come from? -> more   do call:slot:1
+  > @who Who are the candles for? -> more   do call:slot:2
+  > @terms Let's settle it. -> terms
+
+node more
+  say He pats the sack, the way you'd pat a dog that's done well.
+  > @ask One more question. -> start
+  > @settle Let's settle it. -> terms
+
+node terms
+  say All of them. What do you say?
+  > @take Every candle, for the tins. -> end   do call:slot:3
+  > @no No. Not to you. -> end   do call:slot:4
+  > @third Four, like anyone else. -> end   do call:slot:5
+
+conv duty.swap.proxy
+for duty:swap:proxy
+topic "Let me read the list."
+prio quest
+voice haven
+
+node start
+  say Lamp oil, salt, and a needle, a proper one, for wool. Gran says the eggs are worth more than that. Gran says to say so.
+  say I'm only fetching. It's not my list.
+  > @where Why didn't your gran come? -> more   do call:slot:1
+  > @who Is any of it for you? -> more   do call:slot:2
+  > @terms Let's see what we've got. -> terms
+
+node more
+  say Her eyes go to the jar of boiled sweets at the end of the table, and away, and back.
+  > @ask Wait, I've a question. -> start
+  > @settle Let's see what we've got. -> terms
+
+node terms
+  say Can I have them? The things on the list?
+  > @take The list, for the eggs. -> end   do call:slot:3
+  > @no Your gran has to come herself. -> end   do call:slot:4
+  > @third The list for four eggs. Keep two. -> end   do call:slot:5
+
+conv duty.swap.crew
+for duty:swap:crew
+topic "You're not from round here."
+prio quest
+voice redhand
+
+node start
+  say Good rounds, those. Clean, no misfires. I'm not here to make trouble. I'm here for dressings and whatever you've got for a fever.
+  say I'll say it once. The rounds are a fair price, and I'm a polite customer.
+  > @where Where's your camp? -> more   do call:slot:1
+  > @who Who's hurt? -> more   do call:slot:2
+  > @terms Let's settle it. -> terms
+
+node more
+  say His eyes go to the door, the window, the lookout's ladder, and back to you, as if he were reading a price list.
+  > @ask I've something else to ask. -> start
+  > @settle Let's settle it. -> terms
+
+node terms
+  say Yes or no.
+  > @take Dressings for the rounds. -> end   do call:slot:3
+  > @no Not for the Red Hand. -> end   do call:slot:4
+  > @third A dressing for the lad. No rounds. -> end   do call:slot:5
+
+conv duty.swap.cash
+for duty:swap:cash
+topic "That's a lot of money."
+prio quest
+voice plain
+
+node start
+  say It's all there. You can count it. I'd like you to count it, actually. It's been a while.
+  say A loaf. I know what it looks like. I know what it's worth now. I'd still like it counted.
+  > @where Where's this from? -> more   do call:slot:1
+  > @who Who's the loaf for? -> more   do call:slot:2
+  > @terms Let's settle it. -> terms
+
+node more
+  say He squares the edges of the notes with two fingers, the way he must have done it for years at a desk.
+  > @ask One more thing. -> start
+  > @settle Let's settle it. -> terms
+
+node terms
+  say A loaf, then?
+  > @take A loaf for the notes. -> end   do call:slot:3
+  > @no Keep your money. -> end   do call:slot:4
+  > @third A loaf for an afternoon on the sums. -> end   do call:slot:5
+
+conv duty.swap.pearls
+for duty:swap:pearls
+topic "Those are real."
+prio quest
+voice haven
+
+node start
+  say My mother wore them to her wedding and to his funeral and nowhere in between. Every one is knotted. If the string goes, you only lose one.
+  say I want his name on the truck list. Pavel Roux. Fourteen. He's strong.
+  > @where Are they yours to give? -> more   do call:slot:1
+  > @who Is he here? -> more   do call:slot:2
+  > @terms Let's talk about the list. -> terms
+
+node more
+  say She doesn't touch the pearls. She looks at the door, where a boy is pretending not to wait.
+  > @ask I need to ask you something. -> start
+  > @settle Let's talk about the list. -> terms
+
+node terms
+  say Will you put him on it?
+  > @take I'll take the pearls. -> end   do call:slot:3
+  > @no The list isn't for sale. -> end   do call:slot:4
+  > @third Keep them. Come and see the clerk. -> end   do call:slot:5
+
+conv duty.swap.papers
+for duty:swap:papers
+topic "What are these papers?"
+prio quest
+voice plain
+
+node start
+  say Travel papers. Stamped by the regional office, signed, the proper form. Show these at the line and you walk out.
+  say Three sets. A week's food. That's a price for a life, isn't it?
+  > @where Have you seen them work? -> more   do call:slot:1
+  > @who Who are these for? -> more   do call:slot:2
+  > @terms Let's settle it. -> terms
+
+node more
+  say He keeps one hand on the folder the whole time, as if the papers might believe him and walk off.
+  > @ask Let me ask you something. -> start
+  > @settle Let's settle it. -> terms
+
+node terms
+  say A week's food. Last offer.
+  > @take A week's food for the papers. -> end   do call:slot:3
+  > @no No. Go somewhere else. -> end   do call:slot:4
+  > @third Lookout, come and see these. -> end   do call:slot:5
+
+conv duty.swap.tools
+for duty:swap:tools
+topic "Those are good chisels."
+prio quest
+voice haven
+
+node start
+  say The best in the valley. My father's, then mine. I'm not selling them. I'm leaving them with you while my hands mend.
+  say Two tins a week while they're on your shelf. I'll want every one back. I'll know if one's missing.
+  > @where What happened to your hands? -> more   do call:slot:1
+  > @who Who'll use them meanwhile? -> more   do call:slot:2
+  > @terms Let's settle it. -> terms
+
+node more
+  say He unrolls the cloth a little, touches each handle in turn, and rolls it up again.
+  > @ask One thing before we settle. -> start
+  > @settle Let's settle it. -> terms
+
+node terms
+  say Will you keep them?
+  > @take Two tins, and the tools are ours. -> end   do call:slot:3
+  > @no We're not a pawnshop. -> end   do call:slot:4
+  > @third On the shelf, for a week's work. -> end   do call:slot:5
+
+conv duty.swap.boots
+for duty:swap:boots
+topic "Whose boots are those?"
+prio quest
+voice plain
+
+node start
+  say They're good boots. Leather. Our brother's, he doesn't need them. Two pairs of anything for one pair of these.
+  say Anything. Clogs. Slippers. We're not fussy.
+  > @where Where's your brother? -> more   do call:slot:1
+  > @who Who are the pairs for? -> more   do call:slot:2
+  > @terms Let's settle it. -> terms
+
+node more
+  say They stand on one foot each on the cold floor, and change feet, together, without noticing.
+  > @ask Tell me something else. -> start
+  > @settle Let's settle it. -> terms
+
+node terms
+  say Is it a deal?
+  > @take The boots for two pairs of clogs. -> end   do call:slot:3
+  > @no Where is he, really? -> end   do call:slot:4
+  > @third Clogs. The boots stay, named. -> end   do call:slot:5
+
+conv duty.swap.salt
+for duty:swap:salt
+topic "Salt, is it?"
+prio quest
+voice plain
+
+node start
+  say From the pans on the coast. A third of the sack for flour, weight for weight. You know what salt's worth with winter coming.
+  > @where Which pans? Which coast? -> more   do call:slot:1
+  > @who Who's the flour for? -> more   do call:slot:2
+  > @terms Let's settle it. -> terms
+
+node more
+  say She keeps the sack tied at the bottom with her hand on the knot.
+  > @ask Hold on. -> start
+  > @settle Let's settle it. -> terms
+
+node terms
+  say Weight for weight?
+  > @take Flour for the sack, weight for weight. -> end   do call:slot:3
+  > @no No trade. -> end   do call:slot:4
+  > @third Flour for the top half, weighed dry. -> end   do call:slot:5
+
+conv duty.swap.letter
+for duty:swap:letter
+topic "Who's the letter to?"
+prio quest
+voice haven
+
+node start
+  say To my daughter, Vera. She's in Saint-Philippe, on the street by the mill. The tin's for whoever carries it. It's a good tin, peaches.
+  say Somebody will be going north. Next week, perhaps.
+  > @where How long have you been bringing it? -> more   do call:slot:1
+  > @who When did you last hear from her? -> more   do call:slot:2
+  > @terms Let's talk about it. -> terms
+
+node more
+  say He has the letter in both hands, the corners soft from being carried.
+  > @ask I want to ask you something. -> start
+  > @settle Let's talk about it. -> terms
+
+node terms
+  say Will you take it?
+  > @take The letter and the tin, for the box. -> end   do call:slot:3
+  > @no That street burned, Josef. -> end   do call:slot:4
+  > @third The letter, not the tin. -> end   do call:slot:5
+
+conv duty.swap.knife
+for duty:swap:knife
+topic "That's a sharp little knife."
+prio quest
+voice plain
+
+node start
+  say It's too small now. I've sharpened it down to nothing. I want a proper one. A bread knife, or a butcher's.
+  say I'll trade this and a day's mending. I'm good at mending.
+  > @where What do you need it for? -> more   do call:slot:1
+  > @who Who's it for? -> more   do call:slot:2
+  > @terms Let's settle it. -> terms
+
+node more
+  say She holds the little knife the way you hold a thing you've held for a long time, without looking at it.
+  > @ask Tell me one more thing. -> start
+  > @settle Let's settle it. -> terms
+
+node terms
+  say Will you swap?
+  > @take A bigger knife for yours. -> end   do call:slot:3
+  > @no No knives for you. -> end   do call:slot:4
+  > @third Keep both. Go and see the lookout. -> end   do call:slot:5

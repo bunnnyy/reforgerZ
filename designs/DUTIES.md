@@ -10,16 +10,6 @@ author asked for that isn't built yet.
 
 ## What waits
 
-### The swap table's conversations
-
-The author: *"Swap table is good, make it super interesting with dialogue and lots of different
-items."* Asked for as real conversations (`dialogue/**/*.rzd`, many short ones with their own
-people, wants and tells, in the voices of docs/WRITING.md). As built, each of the sixteen traders
-is a beat: what they say, three things to handle and ask, three calls. To make them `.rzd` trees,
-the talk engine needs a speaker for a duty's customer (a speaker kind, a body to talk to at the
-table, and effects that come back into the duty's scene). That is its own piece of work, and it
-would serve the toll's passers-by and gate duty's arrivals as well.
-
 ### Real things on the table
 
 Suspicious Item Props' things (`PrefabsEditable/Auto/Props/Civilian/Suspicious Items/`: the stack

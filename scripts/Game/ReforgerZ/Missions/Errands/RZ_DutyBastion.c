@@ -14,11 +14,16 @@ class RZ_DutyBastion
 		if (right != 0)
 			codes[0] = "infamy1";
 
-		RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_GATE, 2,
+		RZ_DutyBeat b = RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_GATE, 2,
 			RZ_DutyScript.A("Hold the stamp to the light", "Read the dates and the name", "Ask their business"),
 			RZ_DutyScript.A(stamp, dates, business),
 			RZ_DutyScript.A("Lift the barrier", "Turn them back", "Hold them for the sergeant"),
 			RZ_DutyScript.A(passed, turned, held), codes, right, "", "", told);
+		// They stand at the barrier to be talked to (dialogue/duties/gate.rzd): the asking is option 2;
+		// their papers lie on the post's table in front
+		b.m_sTalk = "gate:" + key;
+		b.m_sTalkName = "Someone at the barrier";
+		b.m_sThing = RZ_DutyThings.For("gate:" + key);
 	}
 
 	//------------------------------------------------------------------------------------------------

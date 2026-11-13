@@ -395,12 +395,44 @@ class RZ_DutyHaven
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Who a trader is, for the talk screen.
+	protected static string SwapName(string key)
+	{
+		switch (key)
+		{
+			case "ring": return "Ilse Varga";
+			case "watch": return "A small boy";
+			case "coat": return "Pavel, in his shirt";
+			case "aspirin": return "A neat man";
+			case "stolen": return "A lad with a spoon";
+			case "hoard": return "Bruno Hask";
+			case "proxy": return "Mila, for her gran";
+			case "crew": return "A man in a clean jacket";
+			case "cash": return "Mr Lindqvist";
+			case "pearls": return "Agata Roux";
+			case "papers": return "A thin man with a folder";
+			case "tools": return "Tomas the carpenter";
+			case "boots": return "Two brothers";
+			case "salt": return "A woman with a sack";
+			case "letter": return "Old Josef";
+			case "knife": return "Nadia";
+		}
+
+		return "Someone at the table";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One who comes to the table. `fair`: which call is right (0 take it, 1 refuse, 2 the third way).
 	protected static void Swap(string key, string line, string handled, string asked, string forWhom, int fair, string took, string refused, string third, string who, string later)
 	{
 		RZ_DutyScript.G(key);
 		RZ_DutyBeat b = RZ_DutyScript.T(key, line, RZ_DutyBeat.AT_HERE);
 		b.m_iPicks = 2;
+		// They stand at the table to be talked to (dialogue/duties/swap.rzd), and what they brought
+		// lies on the cloth in front (RZ_DutyThings)
+		b.m_sTalk = "swap:" + key;
+		b.m_sTalkName = SwapName(key);
+		b.m_sThing = RZ_DutyThings.For("swap:" + key);
 		RZ_DutyScript.O("Turn it over in your hands", handled, "hold:2");
 		RZ_DutyScript.O("Ask where it came from", asked, "hold:2");
 		RZ_DutyScript.O("Ask who it's for", forWhom, "hold:2");

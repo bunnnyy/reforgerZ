@@ -225,12 +225,16 @@ class RZ_DutyRedHand
 	protected static void Pass(string key, bool when, string line, string pack, string them, string bound, int right, string took, string waved, string turned)
 	{
 		RZ_DutyScript.G(key, when);
-		RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_GATE, 2,
+		RZ_DutyBeat b = RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_GATE, 2,
 			RZ_DutyScript.A("Look in what they carry", "Look at their hands and boots", "Ask where they're bound"),
 			RZ_DutyScript.A(pack, them, bound),
 			RZ_DutyScript.A("Take the toll", "Wave them through", "Turn them back"),
 			RZ_DutyScript.A(took, waved, turned),
 			RZ_DutyScript.A("+1", "", ""), right);
+		// They stand at the pole to be talked to (dialogue/duties/toll.rzd): the asking is option 2
+		b.m_sTalk = "toll:" + key;
+		b.m_sTalkName = "Someone at the pole";
+		b.m_sThing = RZ_DutyThings.For("toll:" + key);
 	}
 
 	//------------------------------------------------------------------------------------------------

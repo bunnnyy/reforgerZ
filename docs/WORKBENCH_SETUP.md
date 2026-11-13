@@ -552,7 +552,7 @@ and the UI files) need none, and eight have no base:
 | `RZ_ErrandCarried.et` | a small item with an InventoryItemComponent that can't be equipped (a bundle, a satchel, a small box; the mission item prefab will do), plus RZ_MissionItemComponent | `RZ_MissionItemComponent` | Missions > Errands > Props > Carried | optional | a carried way's item: His Effects' effects, The Name on the Tag's ID; only the asker or a helper hands it in; empty = the mission item. Tagged with a negative mission id (no mission's drop takes it) and as the giver's goods |
 | (existing prefab) | a vanilla wristwatch item (an existing prefab) | — | Missions > Errands > Props > Watch | optional | The Last Tin's watch, traded for two tins; empty = a common find. Put in the player's pack |
 | (existing prefab) | a body under a sheet or a body bag on a board or a stretcher: a composition of vanilla props with nothing to use (`RZ_DutyBody.et`) | — | Missions > Errands > Props > Duty body | optional | the dead laid out for Laying Out, Burial Detail, The Pit's Leavings and The Cold Room: what lies there until it's lifted; empty = Props > Effects (a dead man's things). A work site's look: shown only while a player is near, gone when it's taken up |
-| (existing prefab) | a standing civilian with no weapon and no AI, or a prop figure (`RZ_DutyPerson.et`) | — | Missions > Errands > Props > Duty person | optional | someone waiting in the line at the gate (The Line at the Door, The Wash-Down, The Look-Over, Intake): stands there until taken by the arm; empty = Puzzles > Civilian. A work site's look: shown only while a player is near, gone when it's taken up |
+| (existing prefab) | a standing civilian with no weapon and no AI, or a prop figure (`RZ_DutyPerson.et`) | — | Missions > Errands > Props > Duty person | optional | someone waiting in the line at the gate (The Line at the Door, The Wash-Down, The Look-Over, Intake), and the trader, passer-by or arrival you talk to at the swap table, the toll and the barrier: stands there until taken by the arm; empty = Puzzles > Civilian. A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | a small rack or case of vials (`RZ_DutyTray.et`; a vanilla medical case will do) | — | Missions > Errands > Props > Duty tray | optional | a sample tray set out for Bench Work; empty = Props > Crate. A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | BanditGear's vodka bottle (an existing prefab from the stack) | — | Missions > Errands > Props > Duty vodka | optional | the bottle The Still gives whoever ran the batch; empty = no bottle, only the pay. Put in the player's pack |
 
@@ -2859,7 +2859,9 @@ session, tick off:
   days later lifting, across a restart too). At dusk, the door round: four doors 18 m off, a line at
   each, then four chalk prompts side by side. The roll call: five places, and after the third look
   the other two prompts go. Known: the swap table, four people in turn, two looks each and then
-  three calls. Each one's hand-in says how many calls were right.
+  three calls. Talk to the trader with a pad (Duty person, else a civilian): a question uses a look,
+  and a call in the talk settles them like the prompt does; the toll's and the gate's people talk
+  the same way. Each one's hand-in says how many calls were right.
 - [ ] Bastion's duties ([ERRANDS.md](ERRANDS.md#bastions-duties)): the loudspeaker tape (a pole 60 to
   140 m out, three holds and one thing found there). Gate duty by day: four at the barrier in turn,
   three looks offered and two allowed, then three calls; the giver says how many were right. Kit

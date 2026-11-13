@@ -42,7 +42,7 @@ SPEAKER_RE = re.compile(r"^(leader|leader:(haven|bastion|redhand|halcyon)|strong
                         r"named|named:(haven|bastion|redhand|halcyon)(/[a-z_]+)?|"
                         r"post|post:(bastion|redhand)|table|table:(host|mother|son|boy|road)|"
                         r"stranger|stranger:[a-z_]+|radio|radio:open|radio:secure|radio:(bastion|redhand|halcyon)|"
-                        r"quest|quest:[a-z_]+|mission|opening)$")
+                        r"quest|quest:[a-z_]+|mission|opening|duty|duty:[a-z_]+|duty:[a-z_]+:[a-z_0-9]+)$")
 
 TIERS = ["kill_on_sight", "hunted", "watched", "uneasy", "stranger", "tolerated", "wildcard", "known", "respected",
          "trusted", "champion"]
@@ -145,7 +145,7 @@ KNOWABLE_KEYS = {"bg", "tier", "fame", "infamy", "rep", "hunted", "exiled", "kin
                  "cover", "group", "secure"}
 NUMBER_RE = re.compile(r"[0-9]|\{cure_percent\}|\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|"
                        r"twenty|thirty|fifty|hundred|percent|half|minutes?)\b", re.I)
-GENERIC_SPEAKERS = {"occupant", "resident", "named", "post", "wanderer", "leader", "stranger", "table", "quest", "mission",
+GENERIC_SPEAKERS = {"occupant", "resident", "named", "post", "wanderer", "leader", "stranger", "table", "quest", "mission", "duty",
                     "opening"}
 FORBIDDEN_EFFECTS = {"fame", "house", "infamy", "follow", "escort", "companion"}
 REGARD_WORDS = {"thanks", "kept", "broke", "threatened", "slander", "vouched_liar", "lied"}
@@ -848,7 +848,7 @@ def lint(convs):
                     if t not in TARGETS_SPECIAL and not c.node(t):
                         errs.append("%s: no node '%s'" % (wch, t))
         # A season flag set in a conversation that serves many speakers is bound to one (@here, a binding)
-        many = any(sp in GENERIC_SPEAKERS or sp.startswith(("named:", "post:", "wanderer:", "stranger", "leader:", "quest", "mission")) for sp in c.speakers)
+        many = any(sp in GENERIC_SPEAKERS or sp.startswith(("named:", "post:", "wanderer:", "stranger", "leader:", "quest", "mission", "duty")) for sp in c.speakers)
         own = c.id.split(".")[0]
         for n in c.nodes:
             fx_all = [v for k, _, v in n.items if k == "do"] + [ch.do for ch in n.choices]

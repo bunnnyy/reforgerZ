@@ -307,7 +307,7 @@ scripts/Game/ReforgerZ/
                  side (View radio), a medic slowing a bite
   Persistence/   save and load of mode state, the hall of fame
   Dialogue/      the talk screen's engine: conversations, adapters for each kind of person
-                 (strangers, the open channel, the quartermasters and the medic too), what a reply
+                 (strangers, the open channel, the quartermasters, the medic and a duty's people too), what a reply
                  needs, who's near each player for the nametags; the trees (hubs,
                  nodes, checks, effects), conditions, memory (dialogue.json: promises, callbacks,
                  lies told), scenes and sittings, barks, Make it right, greets that open, the secure
