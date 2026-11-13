@@ -64,6 +64,14 @@ class RZ_Duties
 			list.Insert(new RZ_ErrandDuty(own, RZ_EFaction.SURVIVORS));
 		}
 
+		// Bastion's own: the loudspeaker tape, gate duty, kit inspection, the field telephone (stag at
+		// the wire is its watch)
+		array<string> bastion = {"tape", "gate", "kits", "telephone"};
+		foreach (string post : bastion)
+		{
+			list.Insert(new RZ_ErrandDuty(post, RZ_EFaction.MILITARY));
+		}
+
 		// A watch and the stores, everywhere
 		for (int g = 0; g < 4; g++)
 		{
@@ -138,7 +146,15 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			case "names": DefineNames(); break;
 			case "list": DefineList(); break;
 			case "cull": DefineCull(); break;
-			default: DefineHaven(); break;
+			default:
+			{
+				if (m_iFaction == RZ_EFaction.MILITARY)
+					DefineBastion();
+				else
+					DefineHaven();
+
+				break;
+			}
 		}
 	}
 
@@ -681,6 +697,66 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		}
 	}
 
+	// ================================================================ Bastion's own
+	//------------------------------------------------------------------------------------------------
+	protected void DefineBastion()
+	{
+		switch (m_sDuty)
+		{
+			case "tape":
+			{
+				m_iRung = RZ_Duties.RUNG_CHORES;
+				m_sRoles = "radio operator,mechanic";
+				m_sThread = "changed the loudspeaker tape";
+				m_sTitle = "The Loudspeaker Tape";
+				SceneWay("Change the tape", true, "Go out to the loudspeaker on its pole beyond {here}, change the tape and test the speaker. Then tell {giver}.", 4, 0);
+				Offer("The tape in the east speaker has stretched. It's telling people to turn back in a voice like a drowning man. {why} Take the new loop out, fit it, test it. It's loud. Don't hang about after.");
+				Over("Stand down. Signals changed it.");
+				Said("The new loop's in the tin. Keep your fingers off the oxide.", "Heard it from here. Good and clear.", "Changed and tested. That's one thing on this post that speaks plainly.");
+				break;
+			}
+
+			case "gate":
+			{
+				m_iRung = RZ_Duties.RUNG_FACE;
+				m_sRoles = "sentry,medic";
+				m_sThread = "stood gate duty";
+				m_sTitle = "Gate Duty";
+				SceneWay("Take the barrier", true, "Take the barrier at the gate of {here}: look over the papers of each of the four who come, and pass, turn back or hold each one. Then tell {giver}.", 6, 1);
+				Offer("Gate duty, one relief. {why} Four will come to the barrier. Hold the stamp to the light, read the dates, ask their business. You've time for two of the three. Some papers are forged, and some true papers are in the wrong hands. The barrier's yours.");
+				Over("Stand down. The gate's manned.");
+				Said("The lamp's on the hook. A forged stamp shows against it.", "Relieved. Who did you pass, and who's in my guard hut?", "Report. All four, in order.");
+				break;
+			}
+
+			case "kits":
+			{
+				m_iRung = RZ_Duties.RUNG_FACE;
+				m_sRoles = "sentry,mechanic,radio operator";
+				m_sThread = "inspected the section's kit";
+				m_sTitle = "Kit Inspection";
+				SceneWay("Inspect the section's kit", false, "Inspect each of the three kits laid out at {here}, and pass, write up or deal with each one. Then clean the spare rifle and tell {giver}.", 6, 1);
+				Offer("Kit inspection, and I want it done by someone the section can't get round. {why} Three kits. Count it, look down the barrel, go through the pack. You'll have time for two of those on each. If something's gone, find out where. That's worth more to me than the write-up.");
+				Over("Stand down. The corporal inspected them.");
+				Said("The list is on each blanket. They'll be standing by their bunks.", "Inspection complete. What's missing, and who's lying?", "Right. Let's have it, kit by kit.");
+				break;
+			}
+
+			case "telephone":
+			{
+				m_iRung = RZ_Duties.RUNG_ARMED;
+				m_sRoles = "radio operator,mechanic";
+				m_sThread = "walked the telephone line";
+				m_sTitle = "The Field Telephone";
+				SceneWay("Walk the line", true, "Test the field telephone at {here}, walk the wire out to its break, work out what broke the wire, splice it and ring through. Then tell {giver}.", 8, 1);
+				Offer("The line to the far post is dead. {why} Walk it out till you find the break. Then look at it properly before you touch it. Broken, cut and tapped are three different reports, and I act on each of them differently. Then splice it and ring through.");
+				Over("Stand down. The line came back by itself, which worries me more.");
+				Said("Handset, tape, cutters. And your rifle.", "Line's up. What was it, and what answered?", "Good. Now tell me what you saw at the break.");
+				break;
+			}
+		}
+	}
+
 	// ================================================================ A watch, the stores, and the Trusted rung
 	//------------------------------------------------------------------------------------------------
 	//! A way played as a scene (RZ_DutyScenes): its beats are the step.
@@ -931,6 +1007,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			case "school": return !dark;
 			case "garden": return !dark && e.m_iHouse >= 0;
 			case "swap": return !dark;
+			case "gate": return !dark;
 			case "names":
 			{
 				if (m_iFaction == RZ_EFaction.MILITARY)
@@ -1199,6 +1276,74 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				{
 					so.Insert("The snares want checking before the crows do it for us.");
 					so.Insert("Nobody here has tasted meat since last week.");
+				}
+
+				break;
+			}
+
+			case "tape":
+			{
+				if (rain)
+					so.Insert("The damp's got into the housing and the voice has gone to mud.");
+
+				if (late)
+					so.Insert("It's the only thing left on that road telling anyone anything.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("It's been round ten thousand times and it sounds it.");
+					so.Insert("People have stopped hearing it, and a new voice makes them listen again.");
+				}
+
+				break;
+			}
+
+			case "gate":
+			{
+				if (sick && town)
+					so.Insert(string.Format("Half of %1 is on the road, and they all have a piece of paper.", town.m_sName));
+
+				if (late)
+					so.Insert("Command's stamps have been turning up in hands Command never knew.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("We turned a forger back yesterday. He'll have told his friends which gate.");
+					so.Insert("The man who had it this morning passed everyone, to be liked.");
+				}
+
+				break;
+			}
+
+			case "kits":
+			{
+				if (late)
+					so.Insert("We can't replace anything now, so I need to know where everything is.");
+
+				if (hungry)
+					so.Insert("The men are trading kit for food over the wire, and I want to know who.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("Something's missing from that section, and nobody's reported it.");
+					so.Insert("They've been in contact, and men get careless after contact.");
+				}
+
+				break;
+			}
+
+			case "telephone":
+			{
+				if (rain)
+					so.Insert("It went in the storm, which may mean the storm did it. Or that somebody used the storm.");
+
+				if (night || dusk)
+					so.Insert("It went quiet at last light, and I don't like what goes quiet at last light.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("It was working at stand-to, and dead an hour after.");
+					so.Insert("That's twice this week, and the first time I called it weather.");
 				}
 
 				break;
@@ -1526,6 +1671,10 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				case "doorround": RZ_DutyHaven.DoorRound(e, played); break;
 				case "rollcall": RZ_DutyHaven.RollCall(e, played); break;
 				case "swap": RZ_DutyHaven.SwapTable(e, played); break;
+				case "tape": RZ_DutyBastion.Tape(e, played); break;
+				case "gate": RZ_DutyBastion.Gate(e, played); break;
+				case "kits": RZ_DutyBastion.Kits(e, played); break;
+				case "telephone": RZ_DutyBastion.Telephone(e, played); break;
 				case "watch": RZ_DutyPosts.Watch(gm, e, played); break;
 				case "lockup": RZ_DutyPosts.LockUp(gm, e, played); break;
 				case "list": RZ_DutyPosts.TrialList(gm, e, played); break;

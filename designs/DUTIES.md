@@ -67,31 +67,11 @@ Built: the school room, the garden, the door round, the roll call and the swap t
 
 ### Bastion
 
-| Duty | Kind | What it is |
-|---|---|---|
-| Gate duty | W | Papers checked by eye at the barrier, forged ones among them, from the tells |
-| Stag at the wire | W | A night post: watch sectors, report what moves. What was it that moved |
-| The loudspeaker tape | S | Swap the tape at a perimeter post and test it |
-| Kit inspection | W | See below |
-| The field telephone | W | See below |
-
-- **Kit inspection.** *"Give more varieties to what can happen, maybe leads to a small sub-mission
-  of find the item or other things."* What's wrong varies (a magazine, a radio battery, a bayonet, a
-  canteen, the section's map, a morphine syrette, a man's tags or letters missing; a fouled barrel;
-  a round left in the chamber; a serial on the lost list; contraband in a kit: vodka, cigarettes, a
-  forged pass, a Red Hand armband), and so does what you do about it (write it up, cover for the
-  private who begs, confiscate, report who had the listed rifle). A missing item can open a short
-  follow-on to find it, where it truly went this time: under a bunk, lost at the last patrol's
-  contact point, sold at a Red Hand toll, traded for food at a Haven house, gone with a man who
-  walked off (find him: talk him back or cover). Finishing the follow-on pays more. Where did it
-  really go, and who's lying.
-- **The field telephone.** *"Add more things that can happen."* Walk the wire, find the break,
-  splice it. The break varies (a fallen tree, chewed, cut clean, wire taken for snares, a junction
-  box under water, a body or a snagged infected tangled in it, a tap spliced in that leads to a
-  hidden listening set and whoever sits at it, the line running through a house someone is living
-  in quietly), and so does the test call after the splice (the right post, nobody, a voice that
-  isn't ours, breathing). Broken or cut, by whom, from the signs at the break. Optional extension:
-  run new wire to a further post.
+Built: gate duty, stag at the wire (the watch), the loudspeaker tape, kit inspection and the field
+telephone ([docs/ERRANDS.md](../docs/ERRANDS.md#bastions-duties)). Waiting: the forged passports and
+soldier's IDs of Suspicious Item Props as things in the hand at the gate and in a kit (they need our
+own child prefabs with era-right names first); the follow-on where a missing rifle is bought back at
+a Red Hand toll (today it's reported, and the routine Fell Off the Inventory is the buying back).
 
 ### The Red Hand
 

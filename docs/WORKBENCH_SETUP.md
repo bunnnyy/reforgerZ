@@ -2585,7 +2585,7 @@ Report the line. The place audit's own lines (`Places: ...`, `Places fail: ...`,
 are in [PLACES.md](PLACES.md#the-audit).
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 36 routines, 48 duties (on) and 70 cards, N players with a ledger.`; a sorting
+start, `Errands: on, 36 routines, 52 duties (on) and 70 cards, N players with a ledger.`; a sorting
 duty, `Duty sorting: the dead for <player>, N subjects, N looks (errand N).`, `Duty sorting: errand N
 judged for <player>: N of N right, score S, danger 0|1.` and `Duty sorting: errand N judged itself
 (no work sites), score S.`, with each of its prompts a `Work sites: errand.N.s0.take ...` line; a duty's
@@ -2805,6 +2805,12 @@ session, tick off:
   each, then four chalk prompts side by side. The roll call: five places, and after the third look
   the other two prompts go. Known: the swap table, four people in turn, two looks each and then
   three calls. Each one's hand-in says how many calls were right.
+- [ ] Bastion's duties ([ERRANDS.md](ERRANDS.md#bastions-duties)): the loudspeaker tape (a pole 60 to
+  140 m out, three holds and one thing found there). Gate duty by day: four at the barrier in turn,
+  three looks offered and two allowed, then three calls; the giver says how many were right. Kit
+  inspection: three kits, and after a missing thing is written up, *Go and find it* leads to a
+  place to search. The field telephone, Known: the test at the post, the break out along the line
+  with its three looks and three readings, the splice, the ring, and the offer of new wire.
 - [ ] With their people ([ERRANDS.md](ERRANDS.md#with-their-people)): take a patrol's short leg
   from a lookout or a sentry. Their people stand at the gate, walk three points and come home, and
   stop when you fall more than 150 m behind; each point gives one line about what's there; back at

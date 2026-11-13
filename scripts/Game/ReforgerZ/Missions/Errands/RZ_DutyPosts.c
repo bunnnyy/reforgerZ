@@ -78,7 +78,12 @@ class RZ_DutyPosts
 		pool.Insert(Sighting("cart", "A cart with one wheel squealing, and somebody swearing at it under their breath.", 1, 0));
 		pool.Insert(Sighting("birds", "Every bird in the far wood goes up at once. Then nothing, for a long time.", 2, 0));
 		pool.Insert(Sighting("crawl", "Something on the road on its hands, coming steadily, never once lifting its head.", 0, 0));
-		for (int i = 0; i < 3 && !pool.IsEmpty(); i++)
+		// Bastion's stag at the wire is a longer relief: four come by
+		int relief = 3;
+		if (e.m_iFaction == RZ_EFaction.MILITARY)
+			relief = 4;
+
+		for (int i = 0; i < relief && !pool.IsEmpty(); i++)
 		{
 			int pick = Math.RandomInt(0, pool.Count());
 			RZ_DutyBeat b = pool[pick];

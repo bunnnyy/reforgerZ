@@ -141,6 +141,40 @@ class RZ_DutyScript
 	}
 
 	//------------------------------------------------------------------------------------------------
+	static array<string> A(string a, string b, string c)
+	{
+		array<string> list = {a, b, c};
+		return list;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A case to work out and call: its line; three things to look at (`looks`: their prompts,
+	//! `shows`: what each shows), of which `allowed` may be done; then three calls (`calls`: their
+	//! prompts, `follows`: what follows each, `codes`: each one's outcome codes), `right` the one
+	//! that's right (0-2). The right call is scored right, the others wrong. `who` and `later` go
+	//! with the right call (a local, a later line), `told` is what the giver says of it.
+	static RZ_DutyBeat Case(string key, string line, int where, int allowed, array<string> looks, array<string> shows, array<string> calls, array<string> follows, array<string> codes, int right, string who = "", string later = "", string told = "")
+	{
+		RZ_DutyBeat b = T(key, line, where);
+		b.m_iPicks = allowed;
+		for (int i = 0; i < 3; i++)
+		{
+			O(looks[i], shows[i], "hold:2");
+		}
+
+		for (int c = 0; c < 3; c++)
+		{
+			string code = "ends wrong " + codes[c];
+			if (c == right)
+				O(calls[c], follows[c], "ends right " + codes[c], who, later, told);
+			else
+				O(calls[c], follows[c], code);
+		}
+
+		return b;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! `count` interactions drawn from the pool, in a random order, appended to `beats`. How many
 	//! were in the pool.
 	static int Draw(int count, notnull array<ref RZ_DutyBeat> beats)
