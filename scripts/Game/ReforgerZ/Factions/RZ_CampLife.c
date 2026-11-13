@@ -3405,6 +3405,11 @@ class RZ_CampLife
 			if (name.Contains("ruin") || name.Contains("wreck") || name.Contains("bridge") || name.Contains("ramp"))
 				continue;
 
+			// A wall, a fence or a flight of steps is no building (the Haven once "moved into" a
+			// concrete retaining wall)
+			if (name.Contains("wall") || name.Contains("fence") || name.Contains("stair"))
+				continue;
+
 			// Never by or over the water: a pier, a quay, a harbour shed, a boathouse (docs/SITES.md)
 			if (!s_bProbeOld && (IsNaval(name) || OverWater(b, mins, maxs)))
 				continue;

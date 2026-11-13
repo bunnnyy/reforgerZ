@@ -864,7 +864,7 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   30 m of a safehouse's (the spots themselves are put in the yard of a building that suits the
   place: [SITES.md](SITES.md#where-a-place-stands)). At least 100 m² for a stronghold, 45 m² for an
   outpost or a field station, 30 m² for a safehouse; never a side over 70 m (a hangar, a factory
-  hall), under 5 m, or over four times as long as it's wide (a pier, a wall), a ruin, a bridge, a vehicle ramp, a
+  hall), under 5 m, or over four times as long as it's wide (a pier, a wall), a ruin, a bridge, a vehicle ramp, a wall, a fence or steps by its prefab's name, a
   building that is scenery, or anything of the waterside: a pier, jetty, dock, quay, harbour,
   breakwater, slipway, pontoon, wharf, marina, mooring, boathouse, fisherman's shed or lighthouse by
   its prefab's name, anything from the naval structures' folder, or a building whose box stands over
