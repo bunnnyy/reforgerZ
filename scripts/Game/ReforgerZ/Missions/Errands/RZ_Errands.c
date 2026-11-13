@@ -341,12 +341,14 @@ class RZ_Errands
 		m_More = new RZ_ErrandsDealer(this);
 		m_Games = new RZ_DutyGames(gm, this);
 		m_Squads = new RZ_DutySquads(gm, this);
+		m_Scenes = new RZ_DutyScenes(gm, this);
 	}
 
 	protected ref RZ_ErrandsPay m_PayKinds;
 	protected ref RZ_ErrandsDealer m_More;
 	protected ref RZ_DutyGames m_Games;			// the sorting duties, played at their place (RZ_DutyGame.c)
 	protected ref RZ_DutySquads m_Squads;		// the people who go out with a player on a duty (RZ_DutySquads.c)
+	protected ref RZ_DutyScenes m_Scenes;		// what a duty has you see, find and decide (RZ_DutyScenes.c)
 
 	//------------------------------------------------------------------------------------------------
 	RZ_ErrandsDealer Dealer() { return m_More; }
@@ -421,7 +423,6 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
-	RZ_Strangers GetStrangers() { return m_Strangers; }
 	RZ_Locals GetLocals() { return m_Locals; }
 
 	// ================================================================ Hand to Hand, for the finale
@@ -497,6 +498,8 @@ class RZ_Errands
 	RZ_GameModeComponent GetGM() { return m_GM; }
 	RZ_DutyGames GetGames() { return m_Games; }
 	RZ_DutySquads GetSquads() { return m_Squads; }
+	RZ_DutyScenes GetScenes() { return m_Scenes; }
+	RZ_Strangers GetStrangers() { return m_Strangers; }
 	float GetClock() { return m_fClock; }
 
 	//------------------------------------------------------------------------------------------------
@@ -1079,8 +1082,11 @@ class RZ_Errands
 	//! Once a second (the game mode's second tick): the sorting duties read what the player's hands did.
 	void SecondTick(array<int> ids, array<IEntity> players)
 	{
-		if (IsOn())
-			m_Games.SecondTick(ids, players);
+		if (!IsOn())
+			return;
+
+		m_Games.SecondTick(ids, players);
+		m_Scenes.SecondTick(ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1177,6 +1183,7 @@ class RZ_Errands
 
 		m_Games.Drop(e.m_iId);
 		m_Squads.Drop(e.m_iId);
+		m_Scenes.Drop(e.m_iId);
 
 		RemoveProp(e);
 		RZ_WorkSites sites = RZ_WorkSites.Get();
@@ -3228,7 +3235,7 @@ class RZ_Errands
 		}
 
 		// An amends way pays the amends instead of its Favor (the Latrine: Watched, amends; a Stranger, Favor)
-		float favor = w.m_iFavor * m_Settings.m_fPayScale;
+		float favor = Math.Max(0, w.m_iFavor + Math.Min(e.m_iBonus, 3)) * m_Settings.m_fPayScale;
 		if (w.m_bAmends && infamy >= AMENDS_FLOOR)
 			favor = 0;
 

@@ -858,6 +858,8 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		if (w.m_iGame > 0)
 			ResolveTable(dealer, e, w, playerId, said);
 
+		ResolveScene(dealer, e, w, said);
+
 		if (w.m_bSquad && ResolveLost(dealer, e, said))
 			return;
 
@@ -954,6 +956,14 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		bool round = w.m_sWay == "leg" || w.m_sWay == "round";
 		if ((round && points.IsEmpty()) || !dealer.GetSquads().Start(e, e.Fill(m_sTitle), SquadName(w), home, points))
 			dealer.Notify(e, "Nobody is free to go with you after all. Do it alone, and come back.");
+
+		// A hunt: something at the snare line, where its work is
+		if (m_sDuty == "hunt")
+		{
+			RZ_DutyScene scene = dealer.GetScenes().Ensure(e, e.Fill(m_sTitle), e.m_vGiver, false);
+			scene.m_vLast = e.m_vPlace;
+			RZ_DutyFinds.Hunt(gm, e, scene.m_aBeats);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -968,8 +978,36 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		if (w.m_iGame > 0)
 			return !dealer.GetGames().Find(e.m_iId) || dealer.GetGames().IsJudged(e.m_iId);
 
+		// A chore's small turn: once its work is done, four times in ten, something comes up there
+		if (w.m_sWay.StartsWith("t") && !w.m_bSquad)
+		{
+			RZ_WorkSites sites = RZ_WorkSites.Get();
+			if (!sites || !sites.IsDone(RZ_Errands.WorkKey(e)))
+				return true;
+
+			if (e.GetText("turn").IsEmpty())
+			{
+				e.SetText("turn", "1");
+				array<ref RZ_DutyBeat> turn = {};
+				if (Math.RandomFloat01() < 0.4)
+					RZ_DutyFinds.Turn(dealer.GetGM(), e, m_sDuty, turn);
+
+				if (!turn.IsEmpty())
+				{
+					RZ_DutyScene turned = dealer.GetScenes().Ensure(e, e.Fill(m_sTitle), e.m_vGiver, false);
+					turned.m_vLast = e.m_vPlace;
+					foreach (RZ_DutyBeat tb : turn)
+					{
+						turned.m_aBeats.Insert(tb);
+					}
+				}
+			}
+
+			return dealer.GetScenes().IsDone(e.m_iId);
+		}
+
 		if (!w.m_bSquad)
-			return true;
+			return dealer.GetScenes().IsDone(e.m_iId);
 
 		RZ_DutySquads squads = dealer.GetSquads();
 		if (!squads.Find(e.m_iId) || squads.IsLost(e.m_iId))
@@ -978,7 +1016,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		if (w.m_sWay == "leg" || w.m_sWay == "round")
 			return squads.IsHome(e.m_iId, me);
 
-		return squads.IsWith(e.m_iId, me);
+		return squads.IsWith(e.m_iId, me) && dealer.GetScenes().IsDone(e.m_iId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1046,6 +1084,33 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			said.Insert("Mostly right, and nothing dangerous. Where you weren't sure you were careful, and careful I can live with.");
 		else
 			said.Insert("You got through it, and nothing bad got past you. But that was a lot of care and not much certainty.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What was chosen on the way decides part of the pay: the choices' Favor (3 more at most), and
+	//! for a scored scene the share got right (no Fame unless every call was). What the giver has
+	//! heard of it goes into `said`.
+	protected void ResolveScene(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w, notnull array<string> said)
+	{
+		RZ_DutyScene scene = dealer.GetScenes().Find(e.m_iId);
+		if (!scene)
+			return;
+
+		e.m_iBonus = scene.m_iFavor;
+		foreach (string told : scene.m_aTold)
+		{
+			said.Insert(told);
+		}
+
+		if (scene.m_iScored <= 0)
+			return;
+
+		float score = scene.Score();
+		if (score < 0.99)
+		{
+			e.m_iFameCap = 0;
+			e.m_iCap = Math.Max(1, RZ_Util.RoundToInt((w.m_iFavor + Math.Min(scene.m_iFavor, 3)) * score));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

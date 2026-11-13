@@ -20,6 +20,8 @@ class RZ_DutySquad
 	ref array<vector> m_aPoints = {};	// a round's points (home isn't one)
 	int m_iReached;						// points whose find has been said
 	bool m_bLostSaid;
+	bool m_bHeld;						// stopped at a point while the player sees to what's there
+	int m_iFinds;						// points that held something to go and look at
 }
 
 //------------------------------------------------------------------------------------------------
@@ -227,6 +229,17 @@ class RZ_DutySquads
 				continue;
 			}
 
+			// Stopped at a find: they wait until the player has seen to it (or let it be)
+			if (s.m_bHeld)
+			{
+				if (!m_Dealer.GetScenes().IsDone(s.m_iErrand))
+					continue;
+
+				s.m_bHeld = false;
+				s.m_Escort.Resume();
+				m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, string.Format("%1 move on.", RZ_Util.Capitalize(s.m_Escort.m_sName)));
+			}
+
 			if (s.m_iMode != RZ_DutySquad.MODE_ROUND || s.m_iReached >= s.m_aPoints.Count())
 				continue;
 
@@ -235,6 +248,31 @@ class RZ_DutySquads
 				continue;
 
 			s.m_iReached++;
+			// Something off the path, for the player to go and see to: at two points in three, and
+			// always at one of them
+			RZ_Errand e = m_Dealer.FindById(s.m_iErrand);
+			bool last = s.m_iReached >= s.m_aPoints.Count();
+			if (e && (Math.RandomFloat01() < 0.66 || (last && s.m_iFinds == 0)))
+			{
+				array<ref RZ_DutyBeat> beats = {};
+				RZ_DutyFinds.Patrol(m_GM, e, point, beats);
+				if (!beats.IsEmpty())
+				{
+					RZ_DutyScene scene = m_Dealer.GetScenes().Ensure(e, s.m_sTitle, s.m_vHome, true);
+					scene.m_vLast = point;
+					foreach (RZ_DutyBeat beat : beats)
+					{
+						scene.m_aBeats.Insert(beat);
+					}
+
+					s.m_iFinds++;
+					s.m_bHeld = true;
+					s.m_Escort.Stop();
+					m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, string.Format("Point %1 of %2. %3 stop. There's something off the path here: go and look. They'll wait, and they can see you within 20 m.", s.m_iReached, s.m_aPoints.Count(), RZ_Util.Capitalize(s.m_Escort.m_sName)));
+					continue;
+				}
+			}
+
 			string left = "Then home.";
 			if (s.m_iReached < s.m_aPoints.Count())
 				left = "On to the next.";

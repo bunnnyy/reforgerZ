@@ -202,11 +202,46 @@ and quick.
   stream, a fall, nobody there to receive it, the count one short at the hand-over). Your plan when
   it goes wrong.
 
+### The numbers, and the items to work in
+
+- *"Those are perfect. And for decon line, I meant that's how many variations. But you can make
+  more variations for sure to make it interesting. 5 and 5 was good for like how many per run of
+  that actual errand. And the toll however many interactions feel good for the 5-15 minute rule."*
+  So: the decon line's pool is at least 15 arrivals and 25 faults, and one run draws about 5
+  arrivals with about 5 faults among them. The toll's pool is about 50 interactions, and one shift
+  has as many as fit a 5 to 15 minute duty.
+- **Suspicious Item Props** is a dependency (merge `claude/sleepy-volta-nwm433` before building with
+  it). Plain pick-up items under `PrefabsEditable/Auto/Props/Civilian/Suspicious Items/`:
+  `{696CC1F6BC5BE3F7}E_StackofCash.et`, `{7B605E8E4B952837}E_GoldBrick.et`,
+  `{0CF6E65BB0AAFDE6}E_PearlNecklace.et`, `{D0476EFD1BB2CCB3}E_CreditCards.et` (these four are
+  already rare loot); `{1F1E24829D04D94D}E_USPassport.et`, `{9FF272641E7F2C53}E_UKPassport.et`,
+  `{405F6A7443646EF8}E_RUPassport.et` (forged passports); `{479A3C8B3C95D643}E_USMilitaryID.et`,
+  `{A66D9268D93A8861}E_RUMilitaryID.et` (soldier's IDs); `{9C85B00E7EBE4AA5}E_DisassembledGlock.et`
+  (a pistol in parts); `{ABE8D94854706E1A}E_Wiring.et` (a spool of copper wire);
+  `{EDA4F5D74A1C12F1}E_OxycodonePills.et` (a large pill bottle); `{55476D9B2E3F4C63}E_CocaineBrick.et`,
+  `{AAB632A193BF6B69}E_WeedBrick.et` (drug bricks); `{B6A80DB9A683D7E1}E_Blindfold.et` (a bandana
+  blindfold worn as a hat). Never `E_Smartphone.et`.
+- Known problems: the passports, both IDs, the wiring and the drug bricks name an inventory icon
+  the mod doesn't ship; the RU passport and ID say "Russian Federation", and the pills name a 1996
+  brand, so their names are wrong for 1989. To use the papers, IDs or pills, make our own child
+  prefabs under `Prefabs/ReforgerZ/` that inherit theirs and set an era-right name and description
+  (as `RZ_Water_Dirty.et` does), written as text with a `.meta`, and list them for the PC to open.
+- Where they fit: forged papers and IDs among the real ones at gate duty and in kit inspection's
+  contraband; the marked goods (gold, necklace, cards, cash) in the count and at the toll; a dead
+  man's ID and the valuables at the swap table and the roll call; the pill bottle in the ward and
+  the incinerator's bags; the blindfold for Bastion's lock-up on the Trusted rung. JTF Bronze Props
+  (a dependency) has `Detainee` and `InterrogationRoom` scene groups: `tools/camp_kit/world_kit.txt`
+  lists every usable scene and prop by where it suits, for dressing any duty's place.
+- Two errand or card ideas from the props work, to build if they fit cleanly: a soldier's ID
+  brought back from a patrol that didn't return; a forger selling false hope at the line.
+
 ## Order of work
 
-1. **Things that happen** on the duties built (rule 2), and the small turns on the chores.
-2. **Rung 4**, a watch and stock-taking.
-3. **The twenty**, one commit per faction, lowest rungs first.
+1. **Rung 4**, a watch and stock-taking.
+2. **The twenty**, one commit per faction, lowest rungs first.
+
+Rules 1 to 3 are built, with their engines (the sorting game, the scenes of beats, the squads):
+[docs/ERRANDS.md](../docs/ERRANDS.md#things-that-happen). The duties below are written on them.
 
 ## What it must not do
 

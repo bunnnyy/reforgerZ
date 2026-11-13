@@ -122,7 +122,9 @@ and one way to end it: **research the cure.**
   the line at the gate and the dead (sorted in person: go to each, look where you choose with fewer
   looks than places, carry it to the pyre, the table or the grave, and a bitten one let through
   costs you), a patrol with their people, and for the Known a hunt with the
-  hunter and Halcyon's sample bench. Each run is drawn from the world as it is
+  hunter and Halcyon's sample bench. Something happens on the way (a mark on a door, someone
+  hiding, a truck nobody has found), and what you do about it is remembered. Each run is drawn from
+  the world as it is
   ([ERRANDS.md](docs/ERRANDS.md#duties)).
 - **Hands-on work**: a step that says dig, build, board up, fix, search, fill, paint or burn is a thing
   at its place with one prompt you hold (*Dig the latrine*), and the world shows the result: the

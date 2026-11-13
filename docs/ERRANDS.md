@@ -441,7 +441,8 @@ and ledger), with three differences that put work in reach from the first day:
 
 Code: `Missions/Errands/RZ_ErrandDuties.c` (`RZ_Duties` the ladder, `RZ_ErrandDuty` the duties: one
 object per kind and faction), `RZ_DutyGame.c` ([the sorting duties](#the-sorting-duties)), `RZ_DutySquads.c`
-([their people](#with-their-people)). Settings: **Missions > Errands > Duties** (on) and **Duty
+([their people](#with-their-people)), `RZ_DutyScenes.c` and `RZ_DutyFinds.c`
+([things that happen](#things-that-happen)). Settings: **Missions > Errands > Duties** (on) and **Duty
 gap**; the sorting duties' three optional props under **Missions > Errands > Props**.
 
 ### The trust ladder
@@ -536,14 +537,68 @@ Hand group, else the survivor group; with none of those, a figure that moves as 
 
 - **A patrol** sets off from the gate when you take it, walks its points in order round the
   compass and comes home. They walk only while a player is within the escort leash (150 m), so you
-  walk it with them. At each point one line says what's there, from the world as it is at that
+  walk it with them. At a point there is either something off the path to go and see to
+  ([below](#things-that-happen)), or one line about what's there, from the world as it is at that
   spot (`RZ_DutySquads.Found`): the infected within 80 m, the noise off a sick town or the quiet of
   a clean one (by name), tracks in the rain, a light at night, smoke at dusk, what the late stages
   leave on the road. The step is done when they're home and you're within 40 m of them.
-- **A hunter** follows you out to the snare line. The hold there counts only with the hunter
-  within 40 m, so you wait for them. Then home.
+- **A hunter** follows you out to the snare line, where something is found first
+  ([below](#things-that-happen)). The hold there counts only with the hunter within 40 m, so you
+  wait for them. Then home.
 - **If they're killed**, you're told to go back and say so: no pay, the faction's morale 1 down,
   and the giver's line. Nothing else is taken from you.
+
+### Things that happen
+
+The author's rule: *"something interesting should happen or see something or whatever. Doesn't
+just have to be shooting."* A duty has things on the way to see, find and decide, in person
+(`RZ_DutyScenes`, the beats in `RZ_DutyFinds`). A **beat** is a moment at a spot: one line said as
+you come within 9 m, and one to three things you can do about it, each its own
+[work site](#work-sites) side by side, a hold with your hands. What you choose is applied at once
+and remembered by whoever it concerns.
+
+| | |
+|---|---|
+| What a choice can change | The giver's regard (up or down); a **local** made at the nearest house who remembers you; a line the giver says to you some hours later (a callback); a record in the world's memory; a rumour for 6 hours; the place's food or its faction's morale; the nearest town's infection (by 2); noise where you stand; a found hook for the [strangers](#strangers) (someone hiding there); a thing in your pack (a leg of meat, a post's ration, Props > Watch); the job's Favor; small Fame; Infamy |
+| A find reported | Each find put in the report is the giver's regard up, and 1 more Favor for the job (twice at most). What you reported can come back as what the giver says when you hand in (*"They brought that truck's load in this morning. That was yours."*) |
+| A shady choice | Pocketing, or keeping something from the people you work for, costs only **if it's seen**: their people within 20 m of you, or the place itself within 25 m. Seen: it's undone, 1 or 2 Infamy with the faction, the giver's regard down, and they say so when you report. Unseen: it's yours, and nobody knows |
+| The pay | The choices' Favor is added to the way's before the ledger's caps, 3 at most. A scored scene (each beat has a right call) pays by the share right, with Fame only when every call was |
+| No work sites | The first thing you could do at a beat is what's done, by standing there |
+
+**A patrol's finds.** At two points in three (and always at one), the patrol stops: *"There's
+something off the path here: go and look. They'll wait, and they can see you within 20 m."* The find
+is 12 to 30 m off the point, so sometimes in their sight and sometimes not. They wait until you've
+seen to it, or for 150 s. One find a stop, drawn from those that are true at that spot:
+
+| Find | True when | What you can do |
+|---|---|---|
+| A door with a mark | A door mark near, in [Traces](TRACES.md#errands-old-mark)' grammar (its line read at your level), twice as likely | Copy it into the patrol book (reported, recorded) · leave it |
+| A fresh grave | The town 40+ infected, or a Traces kill-site scene within 400 m | Read the name for the report · set the cross straight (the family asks who, later) |
+| A radio still talking | A rumour is going round | Listen and write it down (a real rumour, reported) · switch it off |
+| A child's drawing | Always | Take it back for the board (they stand at it, later) · leave it pinned |
+| Tracks, many, barefoot | Rain, or the Collapse on | Count them and mark the way (reported: the night post is moved) · scuff them out |
+| Smoke from a cold chimney | Dusk or night, or a town nobody lives in | Go to the door, and then: **report them** · **say nothing** (shady: a local who remembers) · **leave a tin** (1 food: a local). Or mark the house (reported; the strangers may meet whoever hides there) |
+| An infected in a pit | The town 40+ infected | Finish it with the knife (the town 2 less infected) · mark the pit |
+| A body with papers | Always | Take the papers (reported; someone knew the name) · take the watch (shady) |
+| A truck with its load | The Collapse on | Mark it for the quartermaster (reported, morale +1) · take a share (shady, 2 Infamy if seen) |
+| A dog | Always | Give it something (1 food: it follows the patrol in, morale +1) · send it off |
+| A tin box under a step | Always | Hand it in unopened (reported) · open it and take what's in it (shady) |
+| Another patrol, not ours | Always | Raise an open hand (recorded, morale +1) · stand until they go |
+
+**A hunt's finds**, at the snare line before you check the snares: a cat in a snare (cut it loose,
+and it comes to the kitchen door after; or it's meat), a deer path crossing the line (set a snare
+across it, +1 food; or leave it), or two snares robbed with a small boot print: wait in the hedge,
+and a girl comes with a rabbit (let her keep it: a local; take it back: +1 food; bring her in: a
+local, reported).
+
+**A chore's small turn.** Four times in ten, once a chore's work is done, something comes up where
+you worked, and the step waits on what you do:
+
+| Chore | The turn | What you can do |
+|---|---|---|
+| Kitchen | The pot comes up a ladle short | Water it down · put in a tin of your own (1 food: +1 Favor, +1 food, regard up) · give up your own bowl (regard up) |
+| Wood and water | The well rope has frayed, or the axe head is loose | Splice or wedge it (a longer hold: +1 Favor, regard up) · knot it and say so, or leave it (the axe comes off the day after, and you hear of it) |
+| Washing down | The water has gone grey half way | Fetch clean and do it again (+1 Favor, regard up) · call it done (two are sick later, regard down) |
 
 ### When there's nothing: the reason, in words
 

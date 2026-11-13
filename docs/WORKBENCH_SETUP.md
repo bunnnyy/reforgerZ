@@ -2586,7 +2586,10 @@ Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#st
 start, `Errands: on, 36 routines, 27 duties (on) and 70 cards, N players with a ledger.`; a sorting
 duty, `Duty sorting: the dead for <player>, N subjects, N looks (errand N).`, `Duty sorting: errand N
 judged for <player>: N of N right, score S, danger 0|1.` and `Duty sorting: errand N judged itself
-(no work sites), score S.`, with each of its prompts a `Work sites: errand.N.s0.take ...` line; a duty's people, `Duty
+(no work sites), score S.`, with each of its prompts a `Work sites: errand.N.s0.take ...` line; a duty's
+scene, `Duty scene: errand N, <player> at <beat>: <what they chose> (seen false|true).`, its prompts
+`Work sites: errand.N.b0.0 ...`, and a house marked by a patrol, `Errands: found hook hiding at <grid>
+from a duty`; a duty's people, `Duty
 squad: the patrol out with <player> from <grid>, N points (errand N).`; a contract
 a giver made because they were asked, `Mission N '<title>' made on asking: <player> asked <faction>.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
@@ -2778,6 +2781,13 @@ session, tick off:
   All with a pad. Report a perfect one: full Favor and 1 Fame. Put a bitten one in a grave on
   purpose: no pay, +2 Infamy. Check the three prompts along one body can each be aimed at
   (0.7 m apart); if they can't, say so.
+- [ ] Things that happen ([ERRANDS.md](ERRANDS.md#things-that-happen)): on a patrol's short leg, at
+  least one point stops the patrol with *"something off the path"*. Go to it: its line is said, and
+  two or three prompts sit side by side; holding one says what follows and the patrol moves on.
+  Take the shady one (the watch, the truck's share) within 20 m of them: *"You were seen, and it was
+  undone"*, Infamy, and the giver says so. Take it further off: nothing is said. Report a find: the
+  hand-in pays 1 more Favor. After a chore, sometimes one more prompt pair comes up where you
+  worked (the pot a ladle short); the step is done only when you've chosen.
 - [ ] With their people ([ERRANDS.md](ERRANDS.md#with-their-people)): take a patrol's short leg
   from a lookout or a sentry. Their people stand at the gate, walk three points and come home, and
   stop when you fall more than 150 m behind; each point gives one line about what's there; back at
