@@ -168,7 +168,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Nametags | — | A small tag over each person within 8 m you can talk to and can see: name, role, who they're with in their colour; three at most ([below](#nametags)) | `RZ_NametagClient` | `NametagPanel` built as text in the HUD layout, compiles, not checked in play |
 | Subtitles | `hud.png` (the old one-line name) | What people say outside the talk screen, at the bottom centre: how it reaches you (an icon), the name in their faction colour and their role, for someone in person an arrow to them and how far; the line in bright bone. Radio channels' voices in their own box at the top centre, clear of the quest tracker ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` and `RadioLinePanel` built as text in the HUD layout, not checked in play |
 | The reader | `reader.png` | A note, letter, order or flyer on a sheet of paper in the middle of the screen, a page at a time ([below](#subtitles-and-the-reader)) | `RZ_ReaderMenu` | Layout built as text, not checked in play |
-| Car repair | `car_repair.png` | A fixable car's job card (each job, what it needs, the button that does it) beside a side view of the car with each job lit where it is, and Start the engine ([below](#the-car-repair-screen)) | `RZ_CarMenu` | Layouts built as text, not checked in play |
+| Car repair | `car_repair.png`, `car_hotwire.png` (the loom) | A fixable car's job card (each job, what the car has and lacks, what you need, the button that does it) beside a side view of the car with each job lit where it is, and Start the engine; Hotwire puts the loom in the picture's place, five wires to cut the right two of ([below](#the-car-repair-screen)) | `RZ_CarMenu` | Layouts built as text, not checked in play |
 | Shop | `shop.png` | A quartermaster's stock in tabs, each item with its Favor price and the standing it needs, a picture of the selected item and a details panel with Buy ([below](#the-shop-screen)) | `RZ_ShopMenu` | Layouts built as text, not checked in play |
 | Crafting | `crafting.png` | A workbench's recipes as a list, and for the picked one a picture of what it makes with its description, each input against what you carry (have or missing), how long and how loud, and Craft ([below](#the-crafting-screen)) | `RZ_CraftMenu` | Layouts built as text, preset and **UI > Craft row layout** set; seen in the layout preview, not checked in play |
 | Cooking | — (the crafting screen's) | A stove's list (boiled water, the home remedy, the stove recipes), in the crafting screen with the stove's words and a button named for what it does: Boil, Brew, Cook ([below](#the-cooking-screen)) | `RZ_CraftMenu` | Built as text (the crafting screen's layouts); **UI > Cook row layout** not set yet, not checked in play |
@@ -760,18 +760,41 @@ flyers so far.
 
 ### The car repair screen
 
-As approved (`car_repair.html`): **Look over the car** at a fixable car ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix))
+As approved (`car_repair.html`), with the author's play-test ask that what's fitted and what isn't
+be plain at a glance: **Look over the car** at a fixable car ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix))
 opens a panel 1,440 × 820 in the middle of the screen, the world dimmed behind it. The header is the
-car ("The blue two-door") and "2 of 5 done". On the left, a side view of the car facing left (a
+car ("The blue two-door") and, on the right, what it lacks by name: "Missing: battery, tyre, fuel,
+keys" in red, or "Nothing missing" in olive. On the left, a side view of the car facing left (a
 white line drawing, tinted) with five numbered markers where the jobs are: 1 spark plugs at the
 front of the bonnet, 2 the battery by the windscreen, 3 the tyre on the front wheel, 4 fuel above
 the rear wheel, 5 the ignition behind the windscreen. Under it, what the last job said. On the
 right the job card, one row per job with the same number and colour: its name, what you need or
-what you have ("In your bag", "None on you", "Needs a wrench or a toolkit", "No keys. About 45 s,
-loud, can fail") and the button that does it (Fit, Pour, Hotwire, Use the key). A job under way
-shows "Fitting... 6 s" and a thin bar. Olive is done, amber you can do now (or are doing), grey you
-need something first. The selected row is lighter with an amber bar, and its marker on the car
-gets a ring. **Start the engine** sits bottom right, dim with what it still needs until it can go.
+have ("One in your bag", "None on you", "Needs a wrench or a toolkit", "Two wires to cut"), a tag
+that says what the car has, and the button that does it (Fit, Pour, Hotwire, Use the key). A job
+under way shows "Fitting... 6 s" and a thin bar.
+
+**What the car has is said three ways**, never by colour alone: the tag's words, its colour and a
+mark.
+
+| The car | Tag | Colour | Mark |
+|---|---|---|---|
+| Has it | FITTED, FUELLED, HOTWIRED, KEYS | olive `#9AA35E` | a tick (the icon `track_done`) |
+| Lacks it | MISSING, EMPTY, NO KEYS | red `#D9574C` (the status strip's off) | a cross (the letter X) |
+| Under way, or the key is on you | WORKING, HOTWIRING, KEY ON YOU | amber `#E3A33B` | none |
+
+The number square on a row and its marker on the car say what **you** can do: olive done, amber
+you can do it now (or are doing it), red it's missing and you've nothing for it. No row is dimmed.
+The selected row is lighter with an amber bar, and its marker on the car gets a ring. **Start the
+engine** sits bottom right, dim with what it still needs until it can go.
+
+**The loom** (`car_hotwire.html`). **Hotwire** on a car with no keys puts the loom under the
+steering column in the picture's place ([DESIGN.md](DESIGN.md#hotwiring-the-loom)): five wires side
+by side, each drawn in its colour with the colour's name under it and "thick", "striped" or "plain"
+under that, so no two are told apart by colour alone. The thick one is labelled FEED. Under the
+wires, the sticker's lines and "WRONG CUTS 0 OF 2"; under those, what the last cut said. A cut wire
+shows its gap with bright copper ends (one of the two) or sooty ones (a wrong one) and is labelled
+with what it was. The picked wire has an amber outline. The jobs stay on the right, none lit. Back
+returns to the jobs and leaves the loom as it is.
 
 | | Keyboard and mouse | Gamepad |
 |---|---|---|
@@ -779,6 +802,13 @@ gets a ring. **Start the engine** sits bottom right, dim with what it still need
 | Do it | Enter, or click the row | A |
 | Start the engine | **T** (`RZ_CarStart`), or click the button | Y |
 | Close | Esc, or the close button | B |
+| At the loom: pick a wire | left/right, or point at it | D-pad or left stick |
+| At the loom: cut it | Enter, or click the wire | A |
+| At the loom: back to the jobs | Esc (the close button closes the screen) | B |
+
+The footer's prompts change with it: A is **Do it** or **Cut**, B is **Close** or **Back to the
+jobs**. The loom uses vanilla's `MenuLeft`, `MenuRight`, `MenuSelect` and `MenuBack`, so there's
+no new binding.
 
 You can't move while it's open; the world keeps running. A job you start goes on after the screen
 closes, as long as you stay close (the timed action's own rule). The screen guard closes it in
@@ -786,19 +816,24 @@ danger, more than **Dialogue > Range** (6 m) from the car, or after **Idle secon
 pick ([How the scripts fit](#how-the-scripts-fit)).
 
 **How it works.** The look reaches the server (`RZ_Cars.Inspect`), which opens a screen-guard entry
-and sends `PAYLOAD_CAR` to that player: `C|serial|car|done|5|status|can start|what start needs`,
+and sends `PAYLOAD_CAR` to that player: `C|serial|car|done|5|status|can start|what start needs|what's missing|1 if anything is`,
 `I|what a look says` (the old notice, for the fallback), `W|job|seconds left|seconds` while a job
-is under way, and `J|job|state|name|need|button` per job; `X|reason` closes it. A pick goes back as
-`RpcAsk_CarJob(serial, job)`, at most two a second. The server checks the screen is open on that
-serial, the car is still there and you're within range and not busy, then runs the car's own code
-(`Fit` for one part, the hotwire or the key, `TryStart`); what it would have said as a notice is
-caught (`RZ_ScreenCapture`) and becomes the status line, and the screen is sent again. A fit or a
-hotwiring that finishes or stops sends it again too; starting the car closes it and its line is a
-card. **Fallbacks:** with **UI > Car job layout** empty, a client that can't open the menu (it says
-so, shows the look as a card, and uses the actions from then on), or the server at its cap of open
-screens (the client gets `F|busy` and shows the actions for a minute), the car's prompts and
-notices work as before. The client hides the car's prompts only while it would use the screen
-(`RZ_CarMenu.HidesSlotsOn`: the spot's read label is "Look over the car").
+is under way, and `J|job|state|name|need|button|tag|tone` per job; `X|reason` closes it. While the
+car's panel is off the loom follows: `L|wrong cuts|allowed|right cuts`, `K|place|colour|thick|striped|cut|label`
+per wire and `Q|line` per sticker line (`RZ_CarLoom.Records`: only what can be seen). A pick goes
+back as `RpcAsk_CarJob(serial, job)`, at most two a second; a cut is job 10 plus the wire's place.
+The server checks the screen is open on that serial, the car is still there and you're within range
+and not busy, then runs the car's own code (`Fit` for one part, `Ignition` for the key or the loom,
+`CutWire`, `TryStart`); what it would have said as a notice is caught (`RZ_ScreenCapture`) and
+becomes the status line, and the screen is sent again. A fit that finishes or stops sends it again
+too; starting the car closes it and its line is a card. The client shows the loom once Hotwire was
+picked and the server sent one, and goes back to the jobs when a payload comes without it (the car
+is hotwired, or the loom shorted). **Fallbacks:** with **UI > Car job layout** empty, a client that
+can't open the menu (it says so, shows the look as a card, and uses the actions from then on), or
+the server at its cap of open screens (the client gets `F|busy` and shows the actions for a minute),
+the car's prompts and notices work as before, with the timed hotwire. The client hides the car's
+prompts only while it would use the screen (`RZ_CarMenu.HidesSlotsOn`: the spot's read label is
+"Look over the car").
 
 **The picture** is `UI/Textures/ReforgerZ/RZ_CarSide.png` (1,440 × 480, white on transparent,
 rendered from `src/RZ_CarSide.svg` with `node tools/render_ui.js textures`), imported as a texture
@@ -1428,7 +1463,7 @@ the same thing:
 
 | What's under the cursor | What it does | Screens |
 |---|---|---|
-| A row a click acts on | Becomes the selected row, drawn in place, so A or Enter then does what a click would | The talk screen's replies, the Standing page's rows, the object menu's options, the car repair screen's jobs (and the ring on the car), the power panel's breakers and its two buttons |
+| A row a click acts on | Becomes the selected row, drawn in place, so A or Enter then does what a click would | The talk screen's replies, the Standing page's rows, the object menu's options, the car repair screen's jobs (and the ring on the car) and its loom's wires, the power panel's breakers and its two buttons |
 | A row a click only picks | Lit like the selected row while the cursor is on it; the selection, its detail and what A does stay as they were, so passing over rows on the way to BUY, CRAFT or DEPLOY changes nothing | The shop's items, the crafting and cooking screens' recipes, the spawn screen's backgrounds, the radio screen's channels, the notebook's Quests and Journal rows |
 | Any other button | A lighter fill and an amber bar on its left edge, made in the button's Overlay the first time (`RZ_UIW.HoverMark`), off when the cursor leaves | The notebook's and the shop's tabs, every close button, CRAFT, BUY, DEPLOY, START THE ENGINE, TRACK, the radio filter chip, PIN IT UP, the reader's arrows, the death brief's CONTINUE |
 
@@ -1473,7 +1508,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_TalkMenu` | client (`ChimeraMenuBase`) | The talk screen ([The talk screen](#the-talk-screen)) |
 | `RZ_Nametags`, `RZ_NametagClient` | server, on the dialogue's tick; client, from the HUD's update | [Nametags](#nametags): each player's list of the people near them to talk to, and the tags over the ones in sight |
 | `RZ_Reader`, `RZ_ReaderMenu` | server, client | The reader: one player's paper, a page at a time ([Subtitles and the reader](#subtitles-and-the-reader)) |
-| `RZ_Cars` (its repair screen part), `RZ_CarMenu` | server, client | The car repair screen ([above](#the-car-repair-screen)) |
+| `RZ_Cars` (its repair screen part), `RZ_CarLoom`, `RZ_CarMenu` | server, server (data), client | The car repair screen and the hotwire's loom ([above](#the-car-repair-screen)) |
 | `RZ_ShopScreen`, `RZ_ShopOpenAction`, `RZ_ShopMenu` | server, server, client | The shop screen ([above](#the-shop-screen)) |
 | `RZ_Crafting` (its screen part), `RZ_CraftMenu`, `RZ_ItemPreview` | server, client, client | The crafting screen and the cooking screen ([above](#the-crafting-screen)) |
 | `RZ_RadioScreen`, `RZ_ViewRadioAction`, `RZ_RadioMenu` | server, every machine, client | The radio screen ([above](#the-radio-screen)) |
@@ -1565,8 +1600,8 @@ Infamy that may fade.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; thirteen mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop, the crafting screen, and the quest tracker with the Quests tab, the power panel). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the Journal's past jobs, the season page with the hall of fame), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches and the cooking screen at stoves, the radio screen (View radio), the object menu on props and places with its status strip and locked rows (the strip shared with the cooking screen), the hold prompt at work sites, the power panel at the power station, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, the kind of place you start at, Deploy) and locked backgrounds refused by the server, the death brief over it at each death, the map's icon layer with you-are-here, the tracked job's objective (a diamond or a search area, no other job) and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
+| Built | The icon set and its renderer; fourteen mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and its loom, the shop, the crafting screen, and the quest tracker with the Quests tab, the power panel). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the Journal's past jobs, the season page with the hall of fame), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches and the cooking screen at stoves, the radio screen (View radio), the object menu on props and places with its status strip and locked rows (the strip shared with the cooking screen), the hold prompt at work sites, the power panel at the power station, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, the kind of place you start at, Deploy) and locked backgrounds refused by the server, the death brief over it at each death, the map's icon layer with you-are-here, the tracked job's objective (a diamond or a search area, no other job) and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
 | Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting, radio, object menu, power panel and spawn screens', the death brief's and the map key's written as text, with images on the static icons; the icon atlas and the `RZ_Icons` imageset; the car picture (`RZ_CarSide.edds`, set in **UI > Car picture**); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop, crafting, spawn screen, death brief, radio and power panel presets; N, 1–5, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend, power breaker and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter; on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons (in their old line-icon style); the notebook's five pages with their icons (the Radio page's channel list too) and the HUD's noise icon. In the layout preview at 1920 × 1080: the crafting, car repair, shop, reader, talk and notice board screens, each within its slots |
-| Not checked in play | The map's design A markers (disc, ring, emblem, badge) and the key's discs and badges; the objective's diamond and search area, and their row in the key; the infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); the tabs' new order and the Journal's past jobs; the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the crafting screen; the cooking screen (**UI > Cook row layout** isn't set yet); the radio screen (**UI > Radio channel layout** isn't set yet, and **View radio** in hand needs vanilla's inspection checked); the object menu (its preset and **UI > Object row layout** aren't set yet); the power panel (its preset and **UI > Power breaker layout** are set); the death brief; the subtitles; the hold prompt (its bar's speed and its starting again when hurt are VERIFY); mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
+| Not checked in play | The map's design A markers (disc, ring, emblem, badge) and the key's discs and badges; the objective's diamond and search area, and their row in the key; the infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); the tabs' new order and the Journal's past jobs; the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen, its picture, its FITTED and MISSING tags and the hotwire's loom; the shop screen and its item picture; the crafting screen; the cooking screen (**UI > Cook row layout** isn't set yet); the radio screen (**UI > Radio channel layout** isn't set yet, and **View radio** in hand needs vanilla's inspection checked); the object menu (its preset and **UI > Object row layout** aren't set yet); the power panel (its preset and **UI > Power breaker layout** are set); the death brief; the subtitles; the hold prompt (its bar's speed and its starting again when hurt are VERIFY); mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
 | Planned | Mockups of the notice board, the object menu, the radio screen and the season page; the Journal's mockup with its past jobs; the lock card as a screen of its own (today a notice, or the [Point of no return] node with **Dialogue > Trees** on: [FINALE.md](FINALE.md#the-lock)) |

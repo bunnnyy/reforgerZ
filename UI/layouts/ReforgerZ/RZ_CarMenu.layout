@@ -87,8 +87,8 @@ FrameWidgetClass "{38130A52A986C600}" {
       OffsetLeft 48
       PositionY 34
       OffsetTop 34
-      SizeX 900
-      OffsetRight -948
+      SizeX 600
+      OffsetRight -648
       SizeY 44
       OffsetBottom -78
       Alignment 0 0
@@ -105,18 +105,18 @@ FrameWidgetClass "{38130A52A986C600}" {
      Name "CarDone"
      Slot FrameWidgetSlot "{4518ED2964582BAA}" {
       Anchor 0 0 0 0
-      PositionX 1000
-      OffsetLeft 1000
+      PositionX 680
+      OffsetLeft 680
       PositionY 44
       OffsetTop 44
-      SizeX 320
+      SizeX 640
       OffsetRight -1320
       SizeY 30
       OffsetBottom -74
       Alignment 0 0
      }
-     Color 0.639 0.62 0.565 1
-     Text "2 of 5 done"
+     Color 0.851 0.341 0.298 1
+     Text "Missing: tyre, fuel"
      "Font Size" 22
      "Min Font Size" 22
      "Horizontal Alignment" Right
@@ -651,6 +651,1681 @@ FrameWidgetClass "{38130A52A986C600}" {
           Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
          }
         }
+       }
+      }
+     }
+    }
+    FrameWidgetClass "{B651EF5D0DE82776}" {
+     Name "Loom"
+     Slot FrameWidgetSlot "{532BB4523F22DF59}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 120
+      OffsetTop 120
+      SizeX 640
+      OffsetRight -688
+      SizeY 450
+      OffsetBottom -570
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     {
+      ImageWidgetClass "{49753DCC80A76D15}" {
+       Name "LoomBg"
+       Slot FrameWidgetSlot "{D95BB09B34185706}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 640
+        OffsetRight -640
+        SizeY 256
+        OffsetBottom -256
+        Alignment 0 0
+       }
+       Color 0.047 0.055 0.059 1
+       Size 1 1
+      }
+      PanelWidgetClass "{3EFB813091D10D3F}" {
+       Name "LoomLine"
+       Slot FrameWidgetSlot "{3D8C3F401C0556D0}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 640
+        OffsetRight -640
+        SizeY 256
+        OffsetBottom -256
+        Alignment 0 0
+       }
+       Color 0.165 0.18 0.192 1
+       style outline_2px
+      }
+      FrameWidgetClass "{A6BFE526DCA1E13D}" {
+       Name "WireBox0"
+       Slot FrameWidgetSlot "{487369B4DEC9C48A}" {
+        Anchor 0 0 0 0
+        PositionX 10
+        OffsetLeft 10
+        PositionY 8
+        OffsetTop 8
+        SizeX 120
+        OffsetRight -130
+        SizeY 240
+        OffsetBottom -248
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{DA1BB3AC31AAD707}" {
+         Name "WireBg0"
+         Slot FrameWidgetSlot "{BD4109BB38CF7B2E}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        TextWidgetClass "{0B2E339321E021D5}" {
+         Name "WireLabel0"
+         Slot FrameWidgetSlot "{F9056EDA4B4EBE2C}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 4
+          OffsetTop 4
+          SizeX 120
+          OffsetRight -120
+          SizeY 24
+          OffsetBottom -28
+          Alignment 0 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text ""
+         "Font Size" 16
+         "Min Font Size" 16
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{2103BC9326EC16FC}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{8888D3F6CB3914C7}" {
+         Name "WireTop0"
+         Slot FrameWidgetSlot "{91225FA5205863A8}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 34
+          OffsetTop 34
+          SizeX 14
+          OffsetRight -67
+          SizeY 70
+          OffsetBottom -104
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        ImageWidgetClass "{F00F6ED0946B49E4}" {
+         Name "WireMid0"
+         Slot FrameWidgetSlot "{DF9E973922CCA40D}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 104
+          OffsetTop 104
+          SizeX 14
+          OffsetRight -67
+          SizeY 20
+          OffsetBottom -124
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        ImageWidgetClass "{4882DAF1B93A1876}" {
+         Name "WireBot0"
+         Slot FrameWidgetSlot "{DA16E992AB47679F}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 124
+          OffsetTop 124
+          SizeX 14
+          OffsetRight -67
+          SizeY 70
+          OffsetBottom -194
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        FrameWidgetClass "{366061554FDE270B}" {
+         Name "WireStripes0"
+         Slot FrameWidgetSlot "{DF7CEA37E591F812}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 120
+          OffsetRight -120
+          SizeY 240
+          OffsetBottom -240
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         {
+          ImageWidgetClass "{92532A9DD6E49300}" {
+           Name "WireStripeA0"
+           Slot FrameWidgetSlot "{1B01C5B797A78B6C}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 48
+            OffsetTop 48
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -56
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{D25B4D1D7B0F33CD}" {
+           Name "WireStripeB0"
+           Slot FrameWidgetSlot "{B170C35134151499}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 76
+            OffsetTop 76
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -84
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{0BAAF09711E32BBA}" {
+           Name "WireStripeC0"
+           Slot FrameWidgetSlot "{0970926B277D6B08}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 136
+            OffsetTop 136
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -144
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{1FEC151A5890E218}" {
+           Name "WireStripeD0"
+           Slot FrameWidgetSlot "{2833E26B982D2B90}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 164
+            OffsetTop 164
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -172
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+         }
+        }
+        ImageWidgetClass "{0CA268AA0328AF1A}" {
+         Name "WireEndA0"
+         Slot FrameWidgetSlot "{F504B20322F88DB0}" {
+          Anchor 0 0 0 0
+          PositionX 50
+          OffsetLeft 50
+          PositionY 98
+          OffsetTop 98
+          SizeX 20
+          OffsetRight -70
+          SizeY 8
+          OffsetBottom -106
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.839 0.58 0.329 1
+         Size 1 1
+        }
+        ImageWidgetClass "{B978ABD6DE229C36}" {
+         Name "WireEndB0"
+         Slot FrameWidgetSlot "{9724A94453B36173}" {
+          Anchor 0 0 0 0
+          PositionX 50
+          OffsetLeft 50
+          PositionY 122
+          OffsetTop 122
+          SizeX 20
+          OffsetRight -70
+          SizeY 8
+          OffsetBottom -130
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.839 0.58 0.329 1
+         Size 1 1
+        }
+        TextWidgetClass "{CE9FE74BC9BA9C49}" {
+         Name "WireName0"
+         Slot FrameWidgetSlot "{DD5A7AD5C5F83B43}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 198
+          OffsetTop 198
+          SizeX 120
+          OffsetRight -120
+          SizeY 24
+          OffsetBottom -222
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Text "RED"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{710E1711FBCFAF2C}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{C22F489DA9F9ECF2}" {
+         Name "WireKind0"
+         Slot FrameWidgetSlot "{735C9B037074F4EF}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 220
+          OffsetTop 220
+          SizeX 120
+          OffsetRight -120
+          SizeY 20
+          OffsetBottom -240
+          Alignment 0 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text "plain"
+         "Font Size" 16
+         "Min Font Size" 16
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{507DF0E7974F1564}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        PanelWidgetClass "{2399C2378FD83658}" {
+         Name "WireFocus0"
+         Slot FrameWidgetSlot "{7EA5D8D62350489D}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ButtonWidgetClass "{7AC492E9FBBB1F0E}" {
+         Name "Wire0"
+         Slot FrameWidgetSlot "{2AAD70171CBB35F9}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         style blank
+        }
+       }
+      }
+      FrameWidgetClass "{B96551A53B8A3529}" {
+       Name "WireBox1"
+       Slot FrameWidgetSlot "{10D6F2D13CAAA943}" {
+        Anchor 0 0 0 0
+        PositionX 134
+        OffsetLeft 134
+        PositionY 8
+        OffsetTop 8
+        SizeX 120
+        OffsetRight -254
+        SizeY 240
+        OffsetBottom -248
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{76C7041FE41686D0}" {
+         Name "WireBg1"
+         Slot FrameWidgetSlot "{B6B3321B676B8CE4}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        TextWidgetClass "{D17F58D485BF5334}" {
+         Name "WireLabel1"
+         Slot FrameWidgetSlot "{00A6D3D4C39D7DED}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 4
+          OffsetTop 4
+          SizeX 120
+          OffsetRight -120
+          SizeY 24
+          OffsetBottom -28
+          Alignment 0 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text ""
+         "Font Size" 16
+         "Min Font Size" 16
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{D26CA94214D23826}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{5A259FEA709D56FA}" {
+         Name "WireTop1"
+         Slot FrameWidgetSlot "{2136A8A3C50B21A1}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 34
+          OffsetTop 34
+          SizeX 14
+          OffsetRight -67
+          SizeY 70
+          OffsetBottom -104
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        ImageWidgetClass "{648CB6E0971F95DC}" {
+         Name "WireMid1"
+         Slot FrameWidgetSlot "{C8868603CC1F5F50}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 104
+          OffsetTop 104
+          SizeX 14
+          OffsetRight -67
+          SizeY 20
+          OffsetBottom -124
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        ImageWidgetClass "{7ED646D4218F0E54}" {
+         Name "WireBot1"
+         Slot FrameWidgetSlot "{27E9D84440F8CDAB}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 124
+          OffsetTop 124
+          SizeX 14
+          OffsetRight -67
+          SizeY 70
+          OffsetBottom -194
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        FrameWidgetClass "{60D7AE54BC920118}" {
+         Name "WireStripes1"
+         Slot FrameWidgetSlot "{0B2DCA205CAB6781}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 120
+          OffsetRight -120
+          SizeY 240
+          OffsetBottom -240
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         {
+          ImageWidgetClass "{15F080CDCCDB7A87}" {
+           Name "WireStripeA1"
+           Slot FrameWidgetSlot "{A858545D4ED0E150}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 48
+            OffsetTop 48
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -56
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{0435687F2D1F6160}" {
+           Name "WireStripeB1"
+           Slot FrameWidgetSlot "{CEA40088108CFFF9}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 76
+            OffsetTop 76
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -84
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{AE3E2695436898AA}" {
+           Name "WireStripeC1"
+           Slot FrameWidgetSlot "{C9361D1CA403507C}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 136
+            OffsetTop 136
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -144
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{CF49AF35E9163055}" {
+           Name "WireStripeD1"
+           Slot FrameWidgetSlot "{291C919B66E9A315}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 164
+            OffsetTop 164
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -172
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+         }
+        }
+        ImageWidgetClass "{F5A4D0545E9605EC}" {
+         Name "WireEndA1"
+         Slot FrameWidgetSlot "{33C2CBE2804B3FF7}" {
+          Anchor 0 0 0 0
+          PositionX 50
+          OffsetLeft 50
+          PositionY 98
+          OffsetTop 98
+          SizeX 20
+          OffsetRight -70
+          SizeY 8
+          OffsetBottom -106
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.839 0.58 0.329 1
+         Size 1 1
+        }
+        ImageWidgetClass "{8AA56E7C7A1866A6}" {
+         Name "WireEndB1"
+         Slot FrameWidgetSlot "{7E178CB29BE49CBB}" {
+          Anchor 0 0 0 0
+          PositionX 50
+          OffsetLeft 50
+          PositionY 122
+          OffsetTop 122
+          SizeX 20
+          OffsetRight -70
+          SizeY 8
+          OffsetBottom -130
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.839 0.58 0.329 1
+         Size 1 1
+        }
+        TextWidgetClass "{189A4E1BF76EA432}" {
+         Name "WireName1"
+         Slot FrameWidgetSlot "{699D043E5415D443}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 198
+          OffsetTop 198
+          SizeX 120
+          OffsetRight -120
+          SizeY 24
+          OffsetBottom -222
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Text "RED"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{CFFEA468568663B6}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{064B34EF91002135}" {
+         Name "WireKind1"
+         Slot FrameWidgetSlot "{B2D253DC5FC9E555}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 220
+          OffsetTop 220
+          SizeX 120
+          OffsetRight -120
+          SizeY 20
+          OffsetBottom -240
+          Alignment 0 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text "plain"
+         "Font Size" 16
+         "Min Font Size" 16
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{1637B56C9937A3AE}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        PanelWidgetClass "{7DAACBB7EE2DC8F9}" {
+         Name "WireFocus1"
+         Slot FrameWidgetSlot "{E1330018369D678A}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ButtonWidgetClass "{5A6C60B1D54060A4}" {
+         Name "Wire1"
+         Slot FrameWidgetSlot "{A72B87D0712AC072}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         style blank
+        }
+       }
+      }
+      FrameWidgetClass "{057C56C26E1F5E22}" {
+       Name "WireBox2"
+       Slot FrameWidgetSlot "{1AD1D5256061147E}" {
+        Anchor 0 0 0 0
+        PositionX 258
+        OffsetLeft 258
+        PositionY 8
+        OffsetTop 8
+        SizeX 120
+        OffsetRight -378
+        SizeY 240
+        OffsetBottom -248
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{66828772E603088E}" {
+         Name "WireBg2"
+         Slot FrameWidgetSlot "{F29DCD2DA478F1BD}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        TextWidgetClass "{DAFBC155D1C444E7}" {
+         Name "WireLabel2"
+         Slot FrameWidgetSlot "{ECDFB881544DBD08}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 4
+          OffsetTop 4
+          SizeX 120
+          OffsetRight -120
+          SizeY 24
+          OffsetBottom -28
+          Alignment 0 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text ""
+         "Font Size" 16
+         "Min Font Size" 16
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{2854EBC29553FA37}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{E6CAA27B5861D35C}" {
+         Name "WireTop2"
+         Slot FrameWidgetSlot "{E875BF43672647F1}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 34
+          OffsetTop 34
+          SizeX 14
+          OffsetRight -67
+          SizeY 70
+          OffsetBottom -104
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        ImageWidgetClass "{0995E1390CDBAE6B}" {
+         Name "WireMid2"
+         Slot FrameWidgetSlot "{FBD6921DB357563F}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 104
+          OffsetTop 104
+          SizeX 14
+          OffsetRight -67
+          SizeY 20
+          OffsetBottom -124
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        ImageWidgetClass "{28FF4E36DCB596DD}" {
+         Name "WireBot2"
+         Slot FrameWidgetSlot "{AE7B3DAC06095EAA}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 124
+          OffsetTop 124
+          SizeX 14
+          OffsetRight -67
+          SizeY 70
+          OffsetBottom -194
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        FrameWidgetClass "{D86882021CCF57C3}" {
+         Name "WireStripes2"
+         Slot FrameWidgetSlot "{18677A4C81A8F08E}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 120
+          OffsetRight -120
+          SizeY 240
+          OffsetBottom -240
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         {
+          ImageWidgetClass "{0CE628B0E6E9ED5D}" {
+           Name "WireStripeA2"
+           Slot FrameWidgetSlot "{6537821A38D90F57}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 48
+            OffsetTop 48
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -56
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{89224D8AAF1E289F}" {
+           Name "WireStripeB2"
+           Slot FrameWidgetSlot "{607A9B1FA13607B1}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 76
+            OffsetTop 76
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -84
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{7A95987AFAB2A4B2}" {
+           Name "WireStripeC2"
+           Slot FrameWidgetSlot "{D75D1A2FD6127DFE}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 136
+            OffsetTop 136
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -144
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{366C7D9EFCE9C04C}" {
+           Name "WireStripeD2"
+           Slot FrameWidgetSlot "{9EBEAAC6B7373761}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 164
+            OffsetTop 164
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -172
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+         }
+        }
+        ImageWidgetClass "{5618DB4B8D3621E8}" {
+         Name "WireEndA2"
+         Slot FrameWidgetSlot "{3C41EE74DF7AEBA9}" {
+          Anchor 0 0 0 0
+          PositionX 50
+          OffsetLeft 50
+          PositionY 98
+          OffsetTop 98
+          SizeX 20
+          OffsetRight -70
+          SizeY 8
+          OffsetBottom -106
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.839 0.58 0.329 1
+         Size 1 1
+        }
+        ImageWidgetClass "{BCC7F0B4C276104B}" {
+         Name "WireEndB2"
+         Slot FrameWidgetSlot "{0F01EDB0F34B04AC}" {
+          Anchor 0 0 0 0
+          PositionX 50
+          OffsetLeft 50
+          PositionY 122
+          OffsetTop 122
+          SizeX 20
+          OffsetRight -70
+          SizeY 8
+          OffsetBottom -130
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.839 0.58 0.329 1
+         Size 1 1
+        }
+        TextWidgetClass "{DCAC5711FEB70D56}" {
+         Name "WireName2"
+         Slot FrameWidgetSlot "{21257ECD7116A30F}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 198
+          OffsetTop 198
+          SizeX 120
+          OffsetRight -120
+          SizeY 24
+          OffsetBottom -222
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Text "RED"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{C5265F05CAEF7F7A}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{EB8B5F6262635966}" {
+         Name "WireKind2"
+         Slot FrameWidgetSlot "{1A2390E2842C9C96}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 220
+          OffsetTop 220
+          SizeX 120
+          OffsetRight -120
+          SizeY 20
+          OffsetBottom -240
+          Alignment 0 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text "plain"
+         "Font Size" 16
+         "Min Font Size" 16
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{4CFF69F112E602BE}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        PanelWidgetClass "{D265AC2F1E184E2C}" {
+         Name "WireFocus2"
+         Slot FrameWidgetSlot "{1BA3E61389C4378D}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ButtonWidgetClass "{897CB9A98AD51DCB}" {
+         Name "Wire2"
+         Slot FrameWidgetSlot "{0AE954A9C237D600}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         style blank
+        }
+       }
+      }
+      FrameWidgetClass "{A7B92CD4B8DEBC32}" {
+       Name "WireBox3"
+       Slot FrameWidgetSlot "{9631B97F7CC39658}" {
+        Anchor 0 0 0 0
+        PositionX 382
+        OffsetLeft 382
+        PositionY 8
+        OffsetTop 8
+        SizeX 120
+        OffsetRight -502
+        SizeY 240
+        OffsetBottom -248
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{1738C95FFFF0CD76}" {
+         Name "WireBg3"
+         Slot FrameWidgetSlot "{3DA200725A72832F}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        TextWidgetClass "{36FD4D8FD403DCBB}" {
+         Name "WireLabel3"
+         Slot FrameWidgetSlot "{10DDFECE5FE65DCE}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 4
+          OffsetTop 4
+          SizeX 120
+          OffsetRight -120
+          SizeY 24
+          OffsetBottom -28
+          Alignment 0 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text ""
+         "Font Size" 16
+         "Min Font Size" 16
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{A860A04873E3DCF8}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{AD8C486E72CAFDA4}" {
+         Name "WireTop3"
+         Slot FrameWidgetSlot "{E6118B4A46F6D2BE}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 34
+          OffsetTop 34
+          SizeX 14
+          OffsetRight -67
+          SizeY 70
+          OffsetBottom -104
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        ImageWidgetClass "{E7596A0BC0050F7E}" {
+         Name "WireMid3"
+         Slot FrameWidgetSlot "{C58A8ED3948330EC}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 104
+          OffsetTop 104
+          SizeX 14
+          OffsetRight -67
+          SizeY 20
+          OffsetBottom -124
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        ImageWidgetClass "{C85271B3EF90B5AB}" {
+         Name "WireBot3"
+         Slot FrameWidgetSlot "{B8AA6B00902D83C9}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 124
+          OffsetTop 124
+          SizeX 14
+          OffsetRight -67
+          SizeY 70
+          OffsetBottom -194
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        FrameWidgetClass "{9ED2A98EC3475292}" {
+         Name "WireStripes3"
+         Slot FrameWidgetSlot "{C7684C995C8A0336}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 120
+          OffsetRight -120
+          SizeY 240
+          OffsetBottom -240
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         {
+          ImageWidgetClass "{0B19491706FCA8EE}" {
+           Name "WireStripeA3"
+           Slot FrameWidgetSlot "{E1951017F738F075}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 48
+            OffsetTop 48
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -56
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{2901A2934AC82FC2}" {
+           Name "WireStripeB3"
+           Slot FrameWidgetSlot "{360D5DEE9D93B37F}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 76
+            OffsetTop 76
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -84
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{03B06712775FE1F1}" {
+           Name "WireStripeC3"
+           Slot FrameWidgetSlot "{C22FF40F2A31303F}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 136
+            OffsetTop 136
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -144
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{D7B05F4360D2E193}" {
+           Name "WireStripeD3"
+           Slot FrameWidgetSlot "{BDCB8936C1F472D9}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 164
+            OffsetTop 164
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -172
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+         }
+        }
+        ImageWidgetClass "{E23B98F90FECAD77}" {
+         Name "WireEndA3"
+         Slot FrameWidgetSlot "{8D87AE0F2CE87E35}" {
+          Anchor 0 0 0 0
+          PositionX 50
+          OffsetLeft 50
+          PositionY 98
+          OffsetTop 98
+          SizeX 20
+          OffsetRight -70
+          SizeY 8
+          OffsetBottom -106
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.839 0.58 0.329 1
+         Size 1 1
+        }
+        ImageWidgetClass "{B830C9EC488EB7FA}" {
+         Name "WireEndB3"
+         Slot FrameWidgetSlot "{643ECD32554D310B}" {
+          Anchor 0 0 0 0
+          PositionX 50
+          OffsetLeft 50
+          PositionY 122
+          OffsetTop 122
+          SizeX 20
+          OffsetRight -70
+          SizeY 8
+          OffsetBottom -130
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.839 0.58 0.329 1
+         Size 1 1
+        }
+        TextWidgetClass "{21CE52707D82B47B}" {
+         Name "WireName3"
+         Slot FrameWidgetSlot "{C9A5A59E0D50654F}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 198
+          OffsetTop 198
+          SizeX 120
+          OffsetRight -120
+          SizeY 24
+          OffsetBottom -222
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Text "RED"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{8658CE0569B77E07}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{A68AC8DF3AC7CB21}" {
+         Name "WireKind3"
+         Slot FrameWidgetSlot "{95430E0BFCAAA199}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 220
+          OffsetTop 220
+          SizeX 120
+          OffsetRight -120
+          SizeY 20
+          OffsetBottom -240
+          Alignment 0 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text "plain"
+         "Font Size" 16
+         "Min Font Size" 16
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{1F20A87D4237B549}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        PanelWidgetClass "{ACB4078C36794A20}" {
+         Name "WireFocus3"
+         Slot FrameWidgetSlot "{189DEBFDD465588D}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ButtonWidgetClass "{90A9674A80C409BD}" {
+         Name "Wire3"
+         Slot FrameWidgetSlot "{75EFAD2263BEF1F3}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         style blank
+        }
+       }
+      }
+      FrameWidgetClass "{F2878012BA445090}" {
+       Name "WireBox4"
+       Slot FrameWidgetSlot "{12BA06D4487DEE34}" {
+        Anchor 0 0 0 0
+        PositionX 506
+        OffsetLeft 506
+        PositionY 8
+        OffsetTop 8
+        SizeX 120
+        OffsetRight -626
+        SizeY 240
+        OffsetBottom -248
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{BC787F64BAD38FB9}" {
+         Name "WireBg4"
+         Slot FrameWidgetSlot "{61ADD34911B50B5A}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        TextWidgetClass "{AF0AF9A58E29A115}" {
+         Name "WireLabel4"
+         Slot FrameWidgetSlot "{C2BD2D7CD842652B}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 4
+          OffsetTop 4
+          SizeX 120
+          OffsetRight -120
+          SizeY 24
+          OffsetBottom -28
+          Alignment 0 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text ""
+         "Font Size" 16
+         "Min Font Size" 16
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{609397235DB9EA46}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{4C024990AAD8EBA9}" {
+         Name "WireTop4"
+         Slot FrameWidgetSlot "{8ED0A072ED1307E1}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 34
+          OffsetTop 34
+          SizeX 14
+          OffsetRight -67
+          SizeY 70
+          OffsetBottom -104
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        ImageWidgetClass "{4894C842A6665D48}" {
+         Name "WireMid4"
+         Slot FrameWidgetSlot "{6E386BF1B66FFEF2}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 104
+          OffsetTop 104
+          SizeX 14
+          OffsetRight -67
+          SizeY 20
+          OffsetBottom -124
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        ImageWidgetClass "{C9EF00CE18CF620B}" {
+         Name "WireBot4"
+         Slot FrameWidgetSlot "{BE20D0077024789C}" {
+          Anchor 0 0 0 0
+          PositionX 53
+          OffsetLeft 53
+          PositionY 124
+          OffsetTop 124
+          SizeX 14
+          OffsetRight -67
+          SizeY 70
+          OffsetBottom -194
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Size 1 1
+        }
+        FrameWidgetClass "{0A251C22BF28B9FF}" {
+         Name "WireStripes4"
+         Slot FrameWidgetSlot "{9D9F38B4DD6D3157}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 120
+          OffsetRight -120
+          SizeY 240
+          OffsetBottom -240
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         {
+          ImageWidgetClass "{A876A1DF2F56CD03}" {
+           Name "WireStripeA4"
+           Slot FrameWidgetSlot "{EC89BAB0FE9261DC}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 48
+            OffsetTop 48
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -56
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{AE9F3E38C1372F78}" {
+           Name "WireStripeB4"
+           Slot FrameWidgetSlot "{5CD617A5E93F42BD}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 76
+            OffsetTop 76
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -84
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{7C8C6DF9225F09F0}" {
+           Name "WireStripeC4"
+           Slot FrameWidgetSlot "{36F81048C754E1FB}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 136
+            OffsetTop 136
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -144
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+          ImageWidgetClass "{29960BC1EC6D4297}" {
+           Name "WireStripeD4"
+           Slot FrameWidgetSlot "{2AA64CCF790C96A5}" {
+            Anchor 0 0 0 0
+            PositionX 53
+            OffsetLeft 53
+            PositionY 164
+            OffsetTop 164
+            SizeX 14
+            OffsetRight -67
+            SizeY 8
+            OffsetBottom -172
+            Alignment 0 0
+           }
+           Color 0.082 0.09 0.102 1
+           Size 1 1
+          }
+         }
+        }
+        ImageWidgetClass "{9BD617F87BF23932}" {
+         Name "WireEndA4"
+         Slot FrameWidgetSlot "{43005973637488CB}" {
+          Anchor 0 0 0 0
+          PositionX 50
+          OffsetLeft 50
+          PositionY 98
+          OffsetTop 98
+          SizeX 20
+          OffsetRight -70
+          SizeY 8
+          OffsetBottom -106
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.839 0.58 0.329 1
+         Size 1 1
+        }
+        ImageWidgetClass "{1E233EBC2523880B}" {
+         Name "WireEndB4"
+         Slot FrameWidgetSlot "{84187FA77490788B}" {
+          Anchor 0 0 0 0
+          PositionX 50
+          OffsetLeft 50
+          PositionY 122
+          OffsetTop 122
+          SizeX 20
+          OffsetRight -70
+          SizeY 8
+          OffsetBottom -130
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.839 0.58 0.329 1
+         Size 1 1
+        }
+        TextWidgetClass "{F5F3BA34D07D465D}" {
+         Name "WireName4"
+         Slot FrameWidgetSlot "{ED081219CF22EAAE}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 198
+          OffsetTop 198
+          SizeX 120
+          OffsetRight -120
+          SizeY 24
+          OffsetBottom -222
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Text "RED"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{4F559874B1247714}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{D1B6BA01F0CC1999}" {
+         Name "WireKind4"
+         Slot FrameWidgetSlot "{69ED01CF069D9774}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 220
+          OffsetTop 220
+          SizeX 120
+          OffsetRight -120
+          SizeY 20
+          OffsetBottom -240
+          Alignment 0 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text "plain"
+         "Font Size" 16
+         "Min Font Size" 16
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{F3F6F15BB65111DD}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        PanelWidgetClass "{C658B28364C75E4A}" {
+         Name "WireFocus4"
+         Slot FrameWidgetSlot "{12964164042087DC}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ButtonWidgetClass "{AAE78AEBAF5DFF93}" {
+         Name "Wire4"
+         Slot FrameWidgetSlot "{B4EC827BAF4732E9}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         style blank
+        }
+       }
+      }
+      TextWidgetClass "{094192A63528DFC9}" {
+       Name "LoomLabel"
+       Slot FrameWidgetSlot "{E57D2EAD8EE70AD1}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 268
+        OffsetTop 268
+        SizeX 400
+        OffsetRight -400
+        SizeY 26
+        OffsetBottom -294
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text "THE STICKER UNDER THE COLUMN"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{893A5E6528305D33}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{68945FBB0CF01C90}" {
+       Name "LoomStrikes"
+       Slot FrameWidgetSlot "{9D77CD637C6D5F2C}" {
+        Anchor 0 0 0 0
+        PositionX 340
+        OffsetLeft 340
+        PositionY 268
+        OffsetTop 268
+        SizeX 300
+        OffsetRight -640
+        SizeY 26
+        OffsetBottom -294
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text "WRONG CUTS 0 OF 2"
+       "Font Size" 18
+       "Min Font Size" 18
+       "Horizontal Alignment" Right
+       FontProperties FontProperties "{D96206D1BEEA8BE5}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{3ECDFFFBC52AC50E}" {
+       Name "LoomClues"
+       Slot FrameWidgetSlot "{5FBECDBDBD56307F}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 298
+        OffsetTop 298
+        SizeX 640
+        OffsetRight -640
+        SizeY 150
+        OffsetBottom -448
+        Alignment 0 0
+       }
+       Color 0.957 0.941 0.902 1
+       Text ""
+       "Font Size" 22
+       "Min Font Size" 22
+       Wrap 1
+       FontProperties FontProperties "{42902AF993B870AC}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
        }
       }
      }

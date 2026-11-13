@@ -165,6 +165,77 @@ ButtonWidgetClass "{41E9D340198FFBD0}" {
           }
          }
         }
+        OverlayWidgetClass "{88B86ED02798D435}" {
+         Name "JobTagBox"
+         Slot LayoutSlot "{45C2CE1C56B642F0}" {
+          HorizontalAlign 2
+          VerticalAlign 1
+          Padding 12 0 0 0
+         }
+         {
+          ImageWidgetClass "{2CA315ADDE0A90E2}" {
+           Name "JobTagBg"
+           Slot OverlayWidgetSlot "{5ECC97F2B0223A57}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.851 0.341 0.298 1
+           Size 1 1
+          }
+          HorizontalLayoutWidgetClass "{5AFA22B506E9ECA9}" {
+           Name "JobTagLine"
+           Slot OverlayWidgetSlot "{E6A12B6516CED42C}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+            Padding 10 4 10 4
+           }
+           {
+            ImageWidgetClass "{11356A87697E8503}" {
+             Name "JobTagTick"
+             Slot LayoutSlot "{92335A1A1863EAB1}" {
+              HorizontalAlign 0
+              VerticalAlign 1
+              Padding 0 0 6 0
+             }
+             "Is Visible" 0
+             Color 0.082 0.09 0.102 1
+             Size 18 18
+            }
+            TextWidgetClass "{6825467C4C74C8FF}" {
+             Name "JobTagCross"
+             Slot LayoutSlot "{6E0A89FBB70BFCC6}" {
+              HorizontalAlign 0
+              VerticalAlign 1
+              Padding 0 0 6 0
+             }
+             "Is Visible" 0
+             Color 0.082 0.09 0.102 1
+             Text "X"
+             "Font Size" 20
+             "Min Font Size" 20
+             FontProperties FontProperties "{02DB2B9E2DB1DFC6}" {
+              Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+             }
+            }
+            TextWidgetClass "{9E463269D2646C74}" {
+             Name "JobTag"
+             Slot LayoutSlot "{1CDA9F345DBCB86B}" {
+              HorizontalAlign 0
+              VerticalAlign 1
+              Padding 0 0 0 0
+             }
+             Color 0.082 0.09 0.102 1
+             Text "MISSING"
+             "Font Size" 20
+             "Min Font Size" 20
+             FontProperties FontProperties "{A44C07AA63036BFD}" {
+              Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+             }
+            }
+           }
+          }
+         }
+        }
         OverlayWidgetClass "{AD46122EF27F4182}" {
          Name "JobButtonBox"
          Slot LayoutSlot "{B39FBD4F9327CE5D}" {
