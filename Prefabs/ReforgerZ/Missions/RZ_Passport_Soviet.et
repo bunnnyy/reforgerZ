@@ -1,0 +1,16 @@
+GenericEntity : "{405F6A7443646EF8}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_RUPassport.et" {
+ ID "C8FBC0F380431400"
+ components {
+  InventoryItemComponent "{5DC8164A43508FCD}" {
+   Attributes SCR_ItemAttributeCollection "{5DC8164A43508FF3}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5DC8164A43508FF1}" {
+     Name "Soviet passport"
+     Description "A red Soviet passport. The photograph has been changed, carefully."
+     Icon ""
+     m_bShowIconInInventory 0
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

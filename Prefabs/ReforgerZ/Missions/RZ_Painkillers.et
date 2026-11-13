@@ -1,0 +1,14 @@
+GenericEntity : "{EDA4F5D74A1C12F1}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_OxycodonePills.et" {
+ ID "0093047D3C87A572"
+ components {
+  InventoryItemComponent "{5DCB097033027B79}" {
+   Attributes SCR_ItemAttributeCollection "{5DCB097033027B7C}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5DCB097033027B62}" {
+     Name "Painkillers"
+     Description "A brown bottle of strong painkillers. The chemist's label is half torn off."
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

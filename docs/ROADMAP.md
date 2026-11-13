@@ -223,9 +223,11 @@ else waits is play, engine checks and the author's calls.
   on the Workshop lets a player punch.
 - **The scenery mods** (added, nothing uses them yet): the world-building kit lists 402 pieces to
   dress places with ([SITES.md](SITES.md#the-world-building-kit)), but no piece in `pieces.py` names
-  one of its new props and no script spawns one of its groups. Suspicious Item Props' passports,
-  military IDs, cash and the rest wait for missions; nine of its sixteen items name an inventory icon
-  the mod doesn't ship ([MOD_STACK.md](MOD_STACK.md#scenery-night-sounds-and-small-things)).
+  one of its new props and no script spawns one of its groups. Suspicious Item Props' things stand at
+  duties as display copies, and our own children of its passports, soldier's IDs and pills show the
+  3D preview in the inventory in place of the icon the mod doesn't ship
+  ([MOD_STACK.md](MOD_STACK.md#scenery-night-sounds-and-small-things)); its wiring and drug bricks
+  are unused.
 - **Deer in multiplayer** (built, not seen in play): WildlifeExpansion works a deer's moves and
   death out on each machine by itself, so players may not see the same herd in the same place or a
   shot deer fall ([DESIGN.md](DESIGN.md#wildlife)). Test with two clients before relying on it; if

@@ -1,0 +1,13 @@
+GenericEntity {
+ ID "D571829D6A981046"
+ components {
+  MeshObject "{BCB53D480BC1D91F}" {
+   Object "{12453BF28C0DE80E}Assets/Models/StackofCash.xob"
+  }
+  RplComponent "{62FBA6A24EC56CC1}" {
+  }
+  Hierarchy "{5F58FA20D254C781}" {
+  }
+ }
+ coords 0 0 0
+}

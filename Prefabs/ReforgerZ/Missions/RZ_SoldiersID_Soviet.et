@@ -1,0 +1,16 @@
+GenericEntity : "{A66D9268D93A8861}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_RUMilitaryID.et" {
+ ID "A6659086E83B10C4"
+ components {
+  InventoryItemComponent "{5DC8164AECB26EA5}" {
+   Attributes SCR_ItemAttributeCollection "{5DC8164AECB26EA3}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5DC8164AECB26EA0}" {
+     Name "Soviet military card"
+     Description "A Soviet soldier's military card in a red cover. A long way from his unit."
+     Icon ""
+     m_bShowIconInInventory 0
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

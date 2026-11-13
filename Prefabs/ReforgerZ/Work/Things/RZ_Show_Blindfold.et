@@ -1,0 +1,13 @@
+GenericEntity {
+ ID "AB2842AE85E12D3D"
+ components {
+  MeshObject "{AF6DA20663FC9706}" {
+   Object "{5031CED07755BA21}Assets/Models/Blindfold.xob"
+  }
+  RplComponent "{57FDD9A6D674EE80}" {
+  }
+  Hierarchy "{FA8C9B18B486B33F}" {
+  }
+ }
+ coords 0 0 0
+}

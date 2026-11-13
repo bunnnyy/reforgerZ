@@ -91,10 +91,11 @@ class RZ_DutyBastion
 		if (right == 2 && !who.IsEmpty())
 			codes[2] = codes[2] + " local";
 
-		RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_HERE, 2,
+		RZ_DutyBeat b = RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_HERE, 2,
 			RZ_DutyScript.A("Count it against the list", "Look down the barrel", "Go through the pack"), seen,
 			RZ_DutyScript.A("Pass the kit", "Write him up", "Deal with it quietly"),
 			RZ_DutyScript.A(passed, written, quiet), codes, right, who, later);
+		b.m_sThing = RZ_DutyThings.For("kit:" + key);
 	}
 
 	//------------------------------------------------------------------------------------------------

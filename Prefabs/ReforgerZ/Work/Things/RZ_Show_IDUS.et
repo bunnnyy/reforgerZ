@@ -1,0 +1,13 @@
+GenericEntity {
+ ID "FA1F7291E0E625E8"
+ components {
+  MeshObject "{907C6C61EB3C9446}" {
+   Object "{67DD0D7B85AC4156}Assets/Models/Military-ID-US.xob"
+  }
+  RplComponent "{E14ACAA9CBDCACD9}" {
+  }
+  Hierarchy "{5F4C019F7035DF40}" {
+  }
+ }
+ coords 0 0 0
+}

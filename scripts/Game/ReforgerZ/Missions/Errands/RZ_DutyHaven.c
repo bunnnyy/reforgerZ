@@ -307,7 +307,8 @@ class RZ_DutyHaven
 		RZ_DutyScript.O("Gone, with their things", "Written. The name is struck from the kitchen's count, and the store is checked.", code[2] + " write flag:gone");
 		if (truth == 1)
 		{
-			RZ_DutyScript.T("card", string.Format("On the blanket, an identity card. %1, and a face twenty years younger. It would pass for nearly anyone, now.", who), RZ_DutyBeat.AT_NEAR, "dead");
+			RZ_DutyBeat card = RZ_DutyScript.T("card", string.Format("On the blanket, an identity card. %1, and a face twenty years younger. It would pass for nearly anyone, now.", who), RZ_DutyBeat.AT_NEAR, "dead");
+			card.m_sThing = RZ_DutyThings.For("rollcall:card");
 			RZ_DutyScript.O("Hand the card to the clerk", "Into the clerk's hand, for the book. A name with a face is worth keeping.", "report regard+");
 			RZ_DutyScript.O("Keep the card", "Into your coat. A dead name is a door, in some places.", "shady1 later", "", string.Format("The clerk went to write %1 in the book and there was no card to copy from. There's only your word for the spelling.", who));
 		}

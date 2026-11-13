@@ -1,0 +1,13 @@
+GenericEntity {
+ ID "C5A1A0F29493F626"
+ components {
+  MeshObject "{0A50D3B17AFE37F5}" {
+   Object "{BC45C69C6D1423C0}Assets/Models/CreditCardStack.xob"
+  }
+  RplComponent "{B4C536D77F5996D7}" {
+  }
+  Hierarchy "{5B175C8861220DB9}" {
+  }
+ }
+ coords 0 0 0
+}

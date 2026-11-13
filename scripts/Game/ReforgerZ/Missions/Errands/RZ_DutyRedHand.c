@@ -156,12 +156,13 @@ class RZ_DutyRedHand
 	protected static void Haul(string key, string line, string turned, string weighed, int right, string remark)
 	{
 		RZ_DutyScript.G(key);
-		RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_HERE, 2,
+		RZ_DutyBeat b = RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_HERE, 2,
 			RZ_DutyScript.A("Turn it over", "Weigh it in your hand", "Check it against the tally"),
 			RZ_DutyScript.A(turned, weighed, remark),
 			RZ_DutyScript.A("Put it on the crew's pile", "Put it aside for the fence", "Put it on the boss's pile"),
 			RZ_DutyScript.A("On the crew's pile, to be shared out.", "Aside, for the fence, and whatever he'll give.", "On the boss's pile. Nobody touches that pile."),
 			RZ_DutyScript.A("", "", ""), right);
+		b.m_sThing = RZ_DutyThings.For("count:" + key);
 	}
 
 	//------------------------------------------------------------------------------------------------

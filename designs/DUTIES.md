@@ -10,26 +10,6 @@ author asked for that isn't built yet.
 
 ## What waits
 
-### Real things on the table
-
-Suspicious Item Props' things (`PrefabsEditable/Auto/Props/Civilian/Suspicious Items/`: the stack
-of cash, the gold bar, the pearl necklace, the credit cards, the forged passports, the soldier's
-IDs, the pistol in parts, the copper wire, the pill bottle, the drug bricks, the blindfold; never
-`E_Smartphone.et`) are named in the duties' words (the swap table, the count, the toll, gate duty,
-kit inspection, the roll call, the incinerator) but don't stand there as objects. Two things are
-needed first:
-
-- **Prop copies with nothing to use.** They're pick-up items, so one standing as a work site's
-  look could be taken: free loot. Each needs a copy without its pick-up action.
-- **Our own child prefabs for the papers, the IDs and the pills**, under `Prefabs/ReforgerZ/`,
-  inheriting theirs with an era-right name and description (as `RZ_Water_Dirty.et` does), written
-  as text with a `.meta`, for the PC to open: the RU passport and ID say "Russian Federation", the
-  pills name a 1996 brand, and the passports, IDs, wiring and drug bricks name an inventory icon
-  the mod doesn't ship.
-
-JTF Bronze Props' `Detainee` and `InterrogationRoom` scenes (`tools/camp_kit/world_kit.txt`) would
-dress the lock-up, with the blindfold.
-
 ### The Trusted rung's other versions
 
 | Duty | Waits for |

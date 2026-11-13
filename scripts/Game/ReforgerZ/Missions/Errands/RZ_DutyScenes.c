@@ -194,6 +194,8 @@ class RZ_DutyScene
 	int m_iSeen;					// shady choices that were seen
 	IEntity m_Person;				// the open beat's person to talk to (m_sTalk), only while it's open
 	IEntity m_Thing;				// the open beat's thing on show (m_sThing), only while it's open
+	ResourceName m_sDress;			// what stands beside the scene's first beat until it's over (the lock-up's pen)
+	IEntity m_Dress;
 
 	//------------------------------------------------------------------------------------------------
 	bool Has(string flag)
@@ -228,7 +230,8 @@ class RZ_DutyScenes
 	protected static const float SEEN_HOME = 25;		// and so does the place
 	protected static const float OPTION_STEP = 0.9;		// between a beat's options, side by side
 	static const int TAG_PERSON = -18;					// RZ_PuzzleObjectComponent mission id: a duty's person to talk to (object index: the errand)
-	protected static const float PERSON_OFF = 1.8;		// a beat's person stands this far behind its options
+	protected static const float PERSON_OFF = 1.8;
+	protected static const float DRESS_OFF = 6;			// the lock-up's pen stands this far to the side		// a beat's person stands this far behind its options
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Errands m_Dealer;
@@ -299,6 +302,9 @@ class RZ_DutyScenes
 				continue;
 
 			CloseBeat(m_aScenes[i]);
+			if (m_aScenes[i].m_Dress)
+				RZ_Util.DeleteUnit(m_aScenes[i].m_Dress);
+
 			m_aScenes.Remove(i);
 		}
 	}
@@ -446,6 +452,17 @@ class RZ_DutyScenes
 			return;
 
 		s.m_Thing = RZ_Util.SpawnPrefab(b.m_sThing, RZ_Util.GroundPos(at) + Vector(0, 0.05, 0), yaw);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What stands beside the scene (the lock-up's pen or room), on the ground, once: it stays until
+	//! the errand is dropped.
+	protected void PlaceDress(RZ_DutyScene s, vector at, float yaw)
+	{
+		if (s.m_Dress || s.m_sDress.IsEmpty())
+			return;
+
+		s.m_Dress = RZ_Util.SpawnPrefab(s.m_sDress, RZ_Util.GroundPos(at), yaw);
 	}
 
 	// ================================================================ Running
@@ -629,6 +646,7 @@ class RZ_DutyScenes
 		vector back = Vector(Math.Sin(rad), 0, Math.Cos(rad));
 		PlacePerson(s, b, b.m_vAt - back * PERSON_OFF, yaw);
 		PlaceThing(s, b, b.m_vAt + back, yaw);
+		PlaceDress(s, b.m_vAt + axis * DRESS_OFF, yaw);
 	}
 
 	//------------------------------------------------------------------------------------------------

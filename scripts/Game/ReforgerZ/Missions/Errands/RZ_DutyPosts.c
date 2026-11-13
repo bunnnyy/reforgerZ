@@ -103,6 +103,8 @@ class RZ_DutyPosts
 		string who = Name(rng);
 		RZ_DutyBeat door = new RZ_DutyBeat("door", "", RZ_DutyBeat.AT_GATE);
 		door.m_bAlone = true;
+		door.m_sThing = RZ_DutyThings.For("lockup:door");
+		scene.m_sDress = RZ_DutyThings.LockUp(e.m_iFaction);
 		door.Opt("Take the watch at the door", string.Format("You have the door. %1 is behind it. Nobody else is awake.", who)).Work(RZ_EWork.HANDS, 5);
 		scene.m_aBeats.Insert(door);
 		string says;
@@ -126,6 +128,7 @@ class RZ_DutyPosts
 		RZ_DutyBeat talk = new RZ_DutyBeat("talk", says, RZ_DutyBeat.AT_SAME);
 		talk.m_fWait = 30;
 		talk.m_bAlone = true;
+		talk.m_sThing = door.m_sThing;
 		RZ_DutyOption o = talk.Opt("Keep the watch", "You keep the door until you're relieved. The talking stops, after a while.");
 		o = talk.Opt("Write down what was said", "Written down, word for word, for whoever reads the watch book.");
 		o.Fx("report,record").Pay(0, 1).Told("What you wrote in the watch book was read out this morning. It changed what happens to them. I won't say how.");

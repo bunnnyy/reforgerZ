@@ -196,6 +196,9 @@ class RZ_ErrandSettings
 	[Attribute(desc: "Props a step's place shows while it's open (all optional; empty = words only)")]
 	ref RZ_ErrandProps m_Props;
 
+	[Attribute(desc: "Things on show at a duty: display copies with nothing to pick up, and the lock-up's dressing (all optional; empty = words only)")]
+	ref RZ_DutyThingProps m_Things;
+
 	protected static ref RZ_ErrandSettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------
@@ -205,6 +208,15 @@ class RZ_ErrandSettings
 			m_Props = RZ_ErrandProps.Cast(RZ_Util.NewWithDefaults("RZ_ErrandProps"));
 
 		return m_Props;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_DutyThingProps Things()
+	{
+		if (!m_Things)
+			m_Things = RZ_DutyThingProps.Cast(RZ_Util.NewWithDefaults("RZ_DutyThingProps"));
+
+		return m_Things;
 	}
 
 	//------------------------------------------------------------------------------------------------
