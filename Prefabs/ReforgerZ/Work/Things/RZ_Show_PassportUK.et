@@ -1,0 +1,13 @@
+GenericEntity {
+ ID "159E3B050C680476"
+ components {
+  MeshObject "{494CA46CE840CFD4}" {
+   Object "{8CDEF96C3875DB32}Assets/Models/UK-Passport.xob"
+  }
+  RplComponent "{C8B88FC24B8376C7}" {
+  }
+  Hierarchy "{EF49EE2F8920BDD5}" {
+  }
+ }
+ coords 0 0 0
+}

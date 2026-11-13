@@ -3530,7 +3530,9 @@ research missions (data, readings, live specimens) ─────────�
   the antidote prefab), one dose per sale, and refuses when the lab has none. The Red Hand's
   Steal the Antidotes moves up to two doses from the lab to the Red Hand's black market (4 at
   most), and a Red Hand antidote shop action sells only those. Stabilisers are a second, smaller
-  stock at the same quartermaster. All three stocks are saved.
+  stock at the same quartermaster. All three stocks are saved. A Trusted duty, a dose, can give one
+  dose from the lab's stock or the black market to someone of a place, never to a player
+  ([ERRANDS.md](ERRANDS.md#the-trusted-rung)).
 - **The final stand** sends one horde every 2.5 minutes, plus one more per 6 players at the lab
   (3 at most), so about five steady players can hold it. Its clock stands still while nobody is
   online; a restart during the stand starts it again from 15 minutes, and players joining are told

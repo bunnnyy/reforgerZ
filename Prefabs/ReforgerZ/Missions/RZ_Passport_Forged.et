@@ -1,0 +1,8 @@
+GenericEntity : "{BE67AE9F067F1808}Prefabs/ReforgerZ/Missions/RZ_Passport_UK.et" {
+ ID "7A40D2C9E15B3F82"
+ components {
+  RZ_MissionItemComponent "{6B2E9D41C07A3F59}" {
+  }
+ }
+ coords 0 0 0
+}

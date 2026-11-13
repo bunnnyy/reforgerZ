@@ -1,0 +1,16 @@
+GenericEntity : "{9FF272641E7F2C53}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_UKPassport.et" {
+ ID "D5742F91B4C80878"
+ components {
+  InventoryItemComponent "{5DC8164A3E037632}" {
+   Attributes SCR_ItemAttributeCollection "{5DC8164A3E037630}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5DC8164A3E03764E}" {
+     Name "Passport"
+     Description "A British passport, stamped for a holiday that ended at the roadblock."
+     Icon ""
+     m_bShowIconInInventory 0
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

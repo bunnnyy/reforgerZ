@@ -102,6 +102,13 @@ class RZ_Duties
 		list.Insert(new RZ_ErrandDuty("list", RZ_EFaction.INSTITUTE));
 		list.Insert(new RZ_ErrandDuty("cull", RZ_EFaction.SURVIVORS));
 		list.Insert(new RZ_ErrandDuty("cull", RZ_EFaction.MILITARY));
+		list.Insert(new RZ_ErrandDuty("lockup", RZ_EFaction.INSTITUTE));
+		list.Insert(new RZ_ErrandDuty("names", RZ_EFaction.BANDITS));
+		list.Insert(new RZ_ErrandDuty("names", RZ_EFaction.INSTITUTE));
+		list.Insert(new RZ_ErrandDuty("dose", RZ_EFaction.SURVIVORS));
+		list.Insert(new RZ_ErrandDuty("dose", RZ_EFaction.MILITARY));
+		list.Insert(new RZ_ErrandDuty("dose", RZ_EFaction.BANDITS));
+		list.Insert(new RZ_ErrandDuty("animals", RZ_EFaction.INSTITUTE));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -160,6 +167,8 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			case "names": DefineNames(); break;
 			case "list": DefineList(); break;
 			case "cull": DefineCull(); break;
+			case "dose": DefineDose(); break;
+			case "animals": DefineAnimals(); break;
 			default:
 			{
 				if (m_iFaction == RZ_EFaction.MILITARY)
@@ -1070,6 +1079,15 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				Said("Sit on the crate. Keep the bar down.", "Still in there? Good. What did he say?", "Morning. Well?");
 				break;
 			}
+
+			case RZ_EFaction.INSTITUTE:
+			{
+				m_sTitle = "The Isolation Room";
+				Offer("One of the subjects is in the isolation room overnight, on observation. {why} The protocol says the door stays shut until the morning reading. They will talk to you through the hatch. What you write down goes in their file, and what you do with the door is on yours.");
+				Over("Stand down. The morning reading came early. They've been moved.");
+				Said("The hatch opens from your side only. Don't open the door.", "The night's over. What did they say?", "Thank you. Put it in the file, if it belongs there.");
+				break;
+			}
 		}
 	}
 
@@ -1086,6 +1104,30 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			Offer("The casualty return is three lines short and it goes up tonight. {why} Go to each man's bunk and look at what he left. Killed, missing, or walked. The return says which, and that word follows him and his family. Get it right.");
 			Over("Stand down. The adjutant made up the return.");
 			Said("Their bunks haven't been touched. Keep it that way.", "Return received. Three lines. I'll read them now.", "Signed. I hope you looked properly.");
+			return;
+		}
+
+		if (m_iFaction == RZ_EFaction.BANDITS)
+		{
+			m_sRoles = "toll man,mechanic,cook";
+			m_sTitle = "The Debt Book";
+			m_sThread = "kept the boss's book";
+			SceneWay("Go round the boss's book", false, "Go to the door of each of the three in the boss's debt book near {here}, see what's there, and mark each owed, written off or paid. Then press your thumb under the lines and tell {giver}.", 10, 2);
+			Offer("The boss wants the book squared before the week turns. {why} Three names, three doors. Go and look. Some are hiding it, some haven't got it, and some paid and the book never heard. Whatever you write, the crew acts on it.");
+			Over("Forget it. The boss did the round himself. Nobody enjoyed it.");
+			Said("Look before you write. That's all he asks.", "The book. Let's see your lines.", "Squared. He'll read it tonight.");
+			return;
+		}
+
+		if (m_iFaction == RZ_EFaction.INSTITUTE)
+		{
+			m_sRoles = "lab assistant,technician";
+			m_sTitle = "Whose Work It Was";
+			m_sThread = "put the names on the week's work";
+			SceneWay("Read the desks for the week's report", false, "Go to each of the three desks at {here}, read what's on it, and place each name on the week's report: first, thanked, or left off. Then initial it and tell {giver}.", 10, 2);
+			Offer("The week's bench report goes in the record tonight, and the names on it are wrong more often than they're right. {why} Read the desks. The notebooks don't lie, even when the people do. Whatever you place stays on their record.");
+			Over("Never mind. The director placed the names herself.");
+			Said("The notebooks are on the desks. Read the hands, not the covers.", "The report. Show me where you put them.", "Initialled. Thank you. It's the first one in a month I'd sign.");
 			return;
 		}
 
@@ -1108,6 +1150,61 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		Offer("There is one place on the trial list this week and three people it could go to. {why} The staff are too close to choose, and the director would choose by the numbers alone. You're trusted, and you're not one of us. Read the charts. Write one name.");
 		Over("The place has been filled. The director decided.");
 		Said("The charts are at the foot of each bed. Take as long as you need.", "It's written. I'll tell the other two myself. That part isn't yours.", "Thank you. Whatever you chose, somebody had to.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DefineDose()
+	{
+		m_iRung = RZ_Duties.RUNG_TRUST;
+		m_sThread = "wrote a name on the dose";
+		switch (m_iFaction)
+		{
+			case RZ_EFaction.MILITARY:
+			{
+				m_sRoles = "medic,sentry";
+				m_sTitle = "The Sergeant's List";
+				SceneWay("Read the three beds and name one", false, "Read the chart at each of the three beds at {here}, then write one name on the card in the dose case. Then tell {giver}.", 10, 2);
+				Offer("The lab sent one dose for the post. There are three on the sergeant's list. {why} He won't choose, and he says I can't. You can. Read the beds. Whoever you write, the post will know it was you.");
+				Over("Stand down. The sergeant chose in the end.");
+				Said("The case stays shut until there's a name on the card.", "It's done. Who?", "Done. I'll tell the other two. That part's mine.");
+				break;
+			}
+
+			case RZ_EFaction.BANDITS:
+			{
+				m_sRoles = "toll man,cook";
+				m_sTitle = "Who the Crew Pays For";
+				SceneWay("Read the three beds and name one", false, "Read the three bitten at {here}, then write one name on the card on the fence's dose. Then tell {giver}.", 10, 2);
+				Offer("The fence has one dose on his shelf, and the boss will pay for it, for one of ours. {why} Three are bitten. He says you choose, so nobody can say he chose. Read them. Write a name, or put it back on the shelf.");
+				Over("Forget it. The fence sold it while we were talking.");
+				Said("The card's on the case. One name.", "Well? Who's it for?", "Done. The boss paid. Don't expect thanks from the other two.");
+				break;
+			}
+
+			default:
+			{
+				m_sRoles = "nurse,clerk";
+				m_sTitle = "The House's One Dose";
+				SceneWay("Read the three beds and name one", false, "Read the chart at each of the three beds at {here}, then write one name on the card in the dose case. Then tell {giver}.", 10, 2);
+				Offer("The lab gave the house one dose. There are three in the back room who need it. {why} We can't choose. We know them. You know them a little, which is better. Read them, and write a name, or send it back.");
+				Over("Never mind. The three of them decided, between themselves.");
+				Said("Take your time with each. They're awake.", "It's done, then. Sit down a minute.", "Thank you. I couldn't have.");
+				break;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DefineAnimals()
+	{
+		m_iRung = RZ_Duties.RUNG_TRUST;
+		m_sRoles = "lab assistant,technician";
+		m_sThread = "went through the animal house";
+		m_sTitle = "The Animal House";
+		SceneWay("Go through the animal house", false, "Go through the three cages at {here}: read each animal and put it down, keep it for the trial, or move it to the clean room. Then sign the log and tell {giver}.", 10, 2);
+		Offer("The animal house needs going through tonight, and the keeper won't do it any more. {why} Three cages. Some are turning, some are getting better, and some cards are on the wrong cage. A turning one kept is one that gets out.");
+		Over("Never mind. The director had them all put down. Every one.");
+		Said("Gloves, and don't put your hand through the bars.", "The log. What did you do with them?", "Signed. The keeper will want to know which ones.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1182,6 +1279,12 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				if (m_iFaction == RZ_EFaction.MILITARY)
 					return facts && facts.Stage() >= RZ_EOutbreakStage.COLLAPSE;
 
+				if (m_iFaction == RZ_EFaction.BANDITS)
+					return !dark;
+
+				if (m_iFaction == RZ_EFaction.INSTITUTE)
+					return facts && facts.CurePercent() >= 20 && !facts.IsCured();
+
 				if (e.m_iHouse < 0 || !facts)
 					return false;
 
@@ -1190,6 +1293,18 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			}
 
 			case "list": return facts && facts.CurePercent() >= 40 && !facts.IsCured();
+			case "animals": return facts && !facts.IsCured();
+			case "dose":
+			{
+				RZ_CureResearch cure = gm.GetCure();
+				if (!cure || cure.IsCured())
+					return false;
+
+				if (m_iFaction == RZ_EFaction.BANDITS)
+					return cure.GetStolenAntidotes() > 0;
+
+				return cure.GetLabAntidotes() > 0;
+			}
 			case "cull":
 			{
 				RZ_Settlement town = gm.GetSettlement(e.m_iSettlement);
@@ -1841,6 +1956,34 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				break;
 			}
 
+			case "dose":
+			{
+				if (sick)
+					so.Insert("There are more bitten every day, and only the one dose.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("It won't keep, and neither will they.");
+					so.Insert("All three have been told there's a dose. None was told there's one.");
+				}
+
+				break;
+			}
+
+			case "animals":
+			{
+				if (night)
+					so.Insert("They're louder at night. Some of them are louder than they should be.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("Two of the cards were swapped last week, and nobody noticed for three days.");
+					so.Insert("The keeper found one at the bars this morning, and it wasn't on the turning list.");
+				}
+
+				break;
+			}
+
 			case "list":
 			{
 				if (facts && facts.CurePercent() >= 70)
@@ -2018,7 +2161,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				case "wreck": RZ_DutyRedHand.Wreck(e, played); break;
 				case "still": RZ_DutyRedHand.Still(e, played); break;
 				case "count": RZ_DutyRedHand.Count(e, played); break;
-				case "toll": RZ_DutyRedHand.Toll(gm, e, played); break;
+				case "toll": RZ_DutyRedHand.Toll(dealer, gm, e, played); break;
 				case "spotter": RZ_DutyRedHand.Spotter(dealer, e, played); break;
 				case "tape": RZ_DutyBastion.Tape(e, played); break;
 				case "gate": RZ_DutyBastion.Gate(e, played); break;
@@ -2027,11 +2170,25 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				case "watch": RZ_DutyPosts.Watch(gm, e, played); break;
 				case "lockup": RZ_DutyPosts.LockUp(gm, e, played); break;
 				case "list": RZ_DutyPosts.TrialList(gm, e, played); break;
+				case "dose": RZ_DutyTrusted.Dose(e, played); break;
+				case "animals": RZ_DutyTrusted.Animals(e, played); break;
 				case "names":
 				{
 					if (m_iFaction == RZ_EFaction.MILITARY)
 					{
 						RZ_DutyPosts.Return(gm, e, played);
+						break;
+					}
+
+					if (m_iFaction == RZ_EFaction.BANDITS)
+					{
+						RZ_DutyTrusted.DebtBook(e, played);
+						break;
+					}
+
+					if (m_iFaction == RZ_EFaction.INSTITUTE)
+					{
+						RZ_DutyTrusted.Names(e, played);
 						break;
 					}
 

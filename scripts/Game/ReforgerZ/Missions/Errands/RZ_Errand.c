@@ -294,6 +294,14 @@ class RZ_ErrandDef
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What a carried way puts in the pack, if this errand has its own (a soldier's card, forged
+	//! papers). "": Props > Carried, else the mission item.
+	ResourceName CarriedPrefab(RZ_Errand e)
+	{
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! For whom (standing, background, life): checked with the player before Why.
 	bool ForWhom(RZ_Errands dealer, int playerId, RZ_NamedPerson giver)
 	{

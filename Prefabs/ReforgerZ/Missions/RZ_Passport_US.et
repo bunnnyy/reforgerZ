@@ -1,0 +1,16 @@
+GenericEntity : "{1F1E24829D04D94D}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_USPassport.et" {
+ ID "D7F4D47F7266C8C2"
+ components {
+  InventoryItemComponent "{5DC8164A068454DF}" {
+   Attributes SCR_ItemAttributeCollection "{5DC8164A068454DC}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5DC8164A068454DA}" {
+     Name "Passport"
+     Description "An American passport. Whoever it belongs to is a long way from home."
+     Icon ""
+     m_bShowIconInInventory 0
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -161,7 +161,7 @@ class RZ_DutyHalcyon
 
 		RZ_DutyScript.Into(scene.m_aBeats);
 		RZ_DutyScript.T("line", "", RZ_DutyBeat.AT_GATE);
-		RZ_DutyScript.O("Open the decon line", "Spray, brush, rinse, the lamp, the seals, the log. Five are coming through. Two of the three checks on each is all the drum and the clock allow.", "hold:4");
+		RZ_DutyScript.O("Open the decon line", "Spray, brush, rinse, the lamp, the seals, the log. Five are coming through. The tank on the roof holds four rinses and the drum six sprays: run anyone through twice and it's sooner. Two of the three checks on each is all the clock allows.", "hold:4 fill:water=4 fill:drum=6");
 		foreach (int n, int person : arrivals)
 		{
 			array<string> shows = {"Nothing shows under the lamp.", "Every seal holds, and the visor is whole.", "The case matches its manifest, and the log reads true."};
@@ -189,15 +189,19 @@ class RZ_DutyHalcyon
 			if (right == 3)
 				code[3] = "ends right report";
 
-			RZ_DutyScript.O("Pass them through", "Through the inner door. The green lamp, and the bolt.", code[0], "", "", "");
-			RZ_DutyScript.O("Run them through again", "Spray, brush, rinse, again, from the top. A third of the drum, and ten minutes of their patience.", code[1]);
-			RZ_DutyScript.O("Send them to the room", "The side door, and the room with the window in it. They look at you through the glass.", code[2]);
+			RZ_DutyScript.O("Pass them through", "Through the inner door. The green lamp, and the bolt.", code[0] + " use:water use:drum", "", "", "");
+			RZ_DutyScript.O("Run them through again", "Spray, brush, rinse, again, from the top. Twice the water, twice the drum, and ten minutes of their patience.", code[1] + " use:water use:water use:drum use:drum");
+			RZ_DutyScript.O("Send them to the room", "The side door, and the room with the window in it. They look at you through the glass.", code[2] + " use:water");
 			RZ_DutyScript.O("Report it to the director", "Written, signed, and sent up. Whatever it is, it isn't yours to settle at a door.", code[3]);
-			if (n == 2)
+			// The tank and the drum run short by what's been used, not on a clock
+			if (n < 4)
 			{
-				RZ_DutyScript.T("water", "The rinse runs brown, then stops. The tank on the roof is empty.", RZ_DutyBeat.AT_SAME);
-				RZ_DutyScript.O("Carry water up from the yard tank", "Six buckets, up the ladder. The rinse runs clear again.", "fill hold:10 +1 regard+");
-				RZ_DutyScript.O("Run the last two without the rinse", "Spray and brush, and no rinse. What the brush loosens stays on.", "infect+ later", "", "Two came through your line without a rinse. One of them carried it into the canteen on a sleeve. We caught it. That time.");
+				RZ_DutyScript.T("drum" + n.ToString(), "The spray coughs, and spits, and stops. The drum is empty.", RZ_DutyBeat.AT_SAME, "drumout");
+				RZ_DutyScript.O("Mix a new drum from the store", "Powder, water, the paddle, and the smell that gets into your teeth. Full again.", "fill hold:8 fill:drum=6 +1");
+				RZ_DutyScript.O("Brush only, no spray", "Brush and rinse, and no spray. It'll have to be enough.", "infect+ fill:drum=99");
+				RZ_DutyScript.T("water" + n.ToString(), "The rinse runs brown, then stops. The tank on the roof is empty.", RZ_DutyBeat.AT_SAME, "waterout");
+				RZ_DutyScript.O("Carry water up from the yard tank", "Six buckets, up the ladder. The rinse runs clear again.", "fill hold:10 fill:water=4 +1 regard+");
+				RZ_DutyScript.O("Run the rest without the rinse", "Spray and brush, and no rinse. What the brush loosens stays on.", "infect+ later fill:water=99", "", "Two came through your line without a rinse. One of them carried it into the canteen on a sleeve. We caught it. That time.");
 			}
 		}
 
@@ -334,12 +338,12 @@ class RZ_DutyHalcyon
 		}
 
 		RZ_DutyScript.T("chart", "The researcher, at the ward door, with the day's sheet. The trial needs the fevers written as responses, she says. It's only a word.", RZ_DutyBeat.AT_HERE);
-		RZ_DutyScript.O("Write the charts as they are", "As they are. She reads them, and her mouth goes thin, and she takes them.", "write record regard+", "", "", "You wrote the ward's charts true. The trial's numbers are worse for it, and right for it. That's worth more than a good week.");
+		RZ_DutyScript.O("Write the charts as they are", "As they are. She reads them, and her mouth goes thin, and she takes them.", "write record regard+ research", "", "", "You wrote the ward's charts true. The trial's numbers are worse for it, and right for it. That's worth more than a good week.");
 		RZ_DutyScript.O("Write them her way", "Her way. Three fevers become three responses. The trial has a good day, on paper.", "write shady2 +1");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static string Ord(int i)
+	static string Ord(int i)
 	{
 		array<string> words = {"first", "second", "third"};
 		return words[Math.ClampInt(i, 0, 2)];
@@ -360,7 +364,16 @@ class RZ_DutyHalcyon
 		array<bool> rough = {true, true, false, true, true, false};
 		RZ_DutyScript.Into(scene.m_aBeats);
 		RZ_DutyScript.T("take", "", RZ_DutyBeat.AT_HERE);
-		RZ_DutyScript.O("Take the box from the cold room", string.Format("In your hands: %1. %2 You're carrying it alone, and what happens on the way is yours to decide.", what[cargo], rule[cargo]), "hold:4");
+		// The rules felt on the way: what can't wait warms after six minutes, what can't bear rough
+		// ground rings at a sprint, a jump or a fall
+		int carry = 0;
+		if (!wait[cargo])
+			carry += 1;
+
+		if (!rough[cargo])
+			carry += 2;
+
+		RZ_DutyScript.O("Take the box from the cold room", string.Format("In your hands: %1. %2 You're carrying it alone, and what happens on the way is yours to decide.", what[cargo], rule[cargo]), "hold:4 carry:" + carry.ToString());
 		RZ_DutyScript.Pool();
 		RZ_DutyScript.G("checkpoint");
 		RZ_DutyScript.T("checkpoint", "A Bastion corporal steps into the road. Open it, he says. Orders.", RZ_DutyBeat.AT_OUT);
@@ -443,7 +456,7 @@ class RZ_DutyHalcyon
 		}
 
 		RZ_DutyScript.T("sign", "");
-		RZ_DutyScript.O("Sign the manifest", string.Format("Signed. %1, delivered.", RZ_Util.Capitalize(what[cargo])), "write hold:3");
+		RZ_DutyScript.O("Sign the manifest", string.Format("Signed. %1, delivered.", RZ_Util.Capitalize(what[cargo])), "write hold:3 carry:0");
 	}
 
 	//------------------------------------------------------------------------------------------------

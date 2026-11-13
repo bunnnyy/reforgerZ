@@ -1,0 +1,93 @@
+# Bastion's gate duty (docs/ERRANDS.md, "Duties"; Missions/Errands/RZ_DutyBastion.c, Gate): whoever
+# comes to the barrier stands there to be talked to (RZ_TalkDutyPerson). The working conversation is
+# shared (duty.gate.barrier): asking their business is the beat's option 2 (one of its two looks), and
+# the three calls are options 3 lift the barrier, 4 turn them back, 5 hold them for the sergeant.
+# Some have a word of their own besides, which settles nothing.
+
+conv duty.gate.barrier
+for duty:gate
+topic "Papers. Then your business."
+prio quest
+voice bastion
+
+node start
+  say? night :: They hold the papers out into the lamplight, at arm's length, and don't come closer than the barrier.
+  say They hold the papers out over the barrier, and wait.
+  > @business What's your business at the post? -> heard   do call:slot:2
+  > @call I've seen enough. -> call
+
+node heard
+  say They tell you, and look at the barrier while they do, not at you.
+  > @call2 I've seen enough. -> call
+
+node call
+  say The barrier's yours to lift.
+  > @lift Through you go. -> end   do call:slot:3
+  > @turn Turn round. Not today. -> end   do call:slot:4
+  > @hold Wait there. The sergeant will see you. -> end   do call:slot:5
+
+conv duty.gate.farmer
+for duty:gate:farmer
+topic "Same as every week?"
+prio flavour
+once
+voice haven
+
+node start
+  say Every week since they put the pole up. I bring the turnips, the cook says they're small, I say they're the only turnips in the valley. We understand each other.
+  > @back0 Right. -> hub
+
+conv duty.gate.nurse
+for duty:gate:nurse
+topic "Where were you nursing?"
+prio flavour
+once
+voice plain
+
+node start
+  say The district hospital, until the night they locked the ward doors with us on the inside. I was on the inside. I came out of the window. I can show you the scar.
+  > @back1 Right. -> hub
+
+conv duty.gate.soldier
+for duty:gate:soldier
+topic "Which unit?"
+prio flavour
+once
+voice bastion
+
+node start
+  say Second company, the bridge detail. What's left of the bridge detail is me. I'm reporting in. Somebody should have, a week ago. I'm the somebody.
+  > @back2 Right. -> hub
+
+conv duty.gate.family
+for duty:gate:family
+topic "How many of you?"
+prio flavour
+once
+voice haven
+
+node start
+  say Five on the paper. Four on the road. The paper was written before. I haven't had the heart to cross him out, and I won't, not with a pen, not here.
+  > @back3 Right. -> hub
+
+conv duty.gate.priest
+for duty:gate:priest
+topic "What brings a priest to a post?"
+prio flavour
+once
+voice plain
+
+node start
+  say Your men die too, Corporal. Somebody ought to say the words over them who isn't the man who has to dig. I'll dig as well, if you like. I've got used to digging.
+  > @back4 Right. -> hub
+
+conv duty.gate.girl
+for duty:gate:girl
+topic "Where are you going alone?"
+prio flavour
+once
+voice plain
+
+node start
+  say My mother said to come to the soldiers if anything happened. Something happened. So I came. She said you'd know what to do. Do you know what to do?
+  > @back5 Right. -> hub

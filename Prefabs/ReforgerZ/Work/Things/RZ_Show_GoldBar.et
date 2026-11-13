@@ -1,0 +1,13 @@
+GenericEntity {
+ ID "DEB3A95CD0884BDD"
+ components {
+  MeshObject "{9BD8F2E4A25889E3}" {
+   Object "{753D2DFB521837D9}Assets/Models/GoldBar.xob"
+  }
+  RplComponent "{A4466B88884569DE}" {
+  }
+  Hierarchy "{8ADEE5F312E15D03}" {
+  }
+ }
+ coords 0 0 0
+}

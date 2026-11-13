@@ -4,6 +4,7 @@ class RZ_DialoguePacks
 	static void AddAll(RZ_DialogueDB db)
 	{
 		RZ_DialoguePack_barks.Add(db);
+		RZ_DialoguePack_duties.Add(db);
 		RZ_DialoguePack_finale.Add(db);
 		RZ_DialoguePack_leaders.Add(db);
 		RZ_DialoguePack_openings.Add(db);
@@ -17,6 +18,6 @@ class RZ_DialoguePacks
 
 	static int Count()
 	{
-		return 238;
+		return 274;
 	}
 }

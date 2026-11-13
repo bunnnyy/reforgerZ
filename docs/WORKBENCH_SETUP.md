@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **344 prefab fields**: 46 on `RZ_GameModeComponent`, 281 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **316 entries**: 183 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 96 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **361 prefab fields**: 46 on `RZ_GameModeComponent`, 298 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **339 entries**: 201 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 101 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -555,6 +555,29 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | a standing civilian with no weapon and no AI, or a prop figure (`RZ_DutyPerson.et`) | — | Missions > Errands > Props > Duty person | optional | someone waiting in the line at the gate (The Line at the Door, The Wash-Down, The Look-Over, Intake): stands there until taken by the arm; empty = Puzzles > Civilian. A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | a small rack or case of vials (`RZ_DutyTray.et`; a vanilla medical case will do) | — | Missions > Errands > Props > Duty tray | optional | a sample tray set out for Bench Work; empty = Props > Crate. A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | BanditGear's vodka bottle (an existing prefab from the stack) | — | Missions > Errands > Props > Duty vodka | optional | the bottle The Still gives whoever ran the batch; empty = no bottle, only the pay. Put in the player's pack |
+| `RZ_SoldiersID_Carried.et` | shipped as text: our item child with an RZ_MissionItemComponent added (it can't be equipped, no mission's drop takes it). Open it once in Workbench | `RZ_MissionItemComponent` | Missions > Errands > Props > Soldier's ID | optional | the card The Patrol That Didn't Come Back carries home; empty = Props > Carried. Put in the player's pack as a carried item |
+| `RZ_Passport_Forged.et` | shipped as text: our item child with an RZ_MissionItemComponent added (it can't be equipped, no mission's drop takes it). Open it once in Workbench | `RZ_MissionItemComponent` | Missions > Errands > Props > Forged papers | optional | the set False Hope at the Line buys off the forger; empty = Props > Carried. Put in the player's pack as a carried item |
+| `RZ_Show_Cash.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' StackofCash mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Cash | optional | banknotes on the swap table and the count's tarp; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
+| `RZ_Show_GoldBar.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' GoldBar mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Gold bar | optional | the gold bar on the count's tarp; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
+| `RZ_Show_Pearls.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' PearlNecklace mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Pearls | optional | the pearls on the swap table and the count's tarp; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
+| `RZ_Show_Cards.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' CreditCardStack mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Cards | optional | the wallet of bank cards on the count's tarp; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
+| `RZ_Show_PassportUS.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' US-Passport mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Passport, American | optional | papers held out at gate duty; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
+| `RZ_Show_PassportUK.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' UK-Passport mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Passport, British | optional | the swap table's travel papers, the toll's second set of papers, papers at gate duty; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
+| `RZ_Show_PassportRU.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' RU-Passport mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Passport, Soviet | optional | a forged pass at gate duty, the dead one's card on the roll call's blanket; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
+| `RZ_Show_IDUS.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' Military-ID-US mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Soldier's ID | optional | a soldier's identity card at gate duty; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
+| `RZ_Show_Pills.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' Oxy-Pills mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Pills | optional | the swap table's aspirin, the count's medicine, the medic's kit at kit inspection; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
+| `RZ_Show_Blindfold.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' Blindfold mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Blindfold | optional | on the ground at the lock-up's door; empty = the door only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
+| (existing prefab) | a patch of bare turned soil about 2 by 1 m with nothing to use (`RZ_Work_DigMark.et` fits, or a base-game soil decal) | — | Missions > Errands > Things > Bed, dug | optional | the garden's seed beat: a bed dug and raked; empty = words only. A look: stands in front of the beat while it's open and a player is there, gone after. Nothing to use |
+| (existing prefab) | a bed with a row of young plants, as a composition of base-game small plants on bare soil, nothing to use | — | Missions > Errands > Things > Bed, planted | optional | the garden's watering beat; empty = words only. A look: stands in front of the beat while it's open and a player is there, gone after. Nothing to use |
+| (existing prefab) | a bed with a crop standing tall, as a composition of base-game plants or crops, nothing to use | — | Missions > Errands > Things > Bed, ripe | optional | the garden's lifting beat; empty = words only. A look: stands in front of the beat while it's open and a player is there, gone after. Nothing to use |
+| (existing prefab) | JTF Bronze Props' `{979D7F3B8D689B42}Prefabs/Compositions/JTF/JTF_Detainee_US_01.et` (an existing prefab from the stack) | — | Missions > Errands > Things > Lock-up pen | optional | beside a Haven or Bastion lock-up's door for the night's watch; empty = the door only. Up while the watch is on (a player is at the door), gone when the errand ends. One part logs a double Hierarchy error when spawned (the kit's note) |
+| (existing prefab) | JTF Bronze Props' `{2FEC0B67EDE06202}Prefabs/Compositions/JTF/JTF_InterrogationRoom_01.et` (an existing prefab from the stack) | — | Missions > Errands > Things > Lock-up room | optional | beside a Red Hand lock-up's door for the night's watch; empty = the door only. Up while the watch is on (a player is at the door), gone when the errand ends |
+| `RZ_Passport_US.et` | shipped as text: Suspicious Item Props' item, renamed "Passport" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a passport, for the errands that hand one over. A real item: it can be picked up and carried |
+| `RZ_Passport_UK.et` | shipped as text: Suspicious Item Props' item, renamed "Passport" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a passport; the base of the forger's papers (RZ_Passport_Forged). A real item: it can be picked up and carried |
+| `RZ_Passport_Soviet.et` | shipped as text: Suspicious Item Props' item, renamed "Soviet passport" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a passport, for the errands that hand one over. A real item: it can be picked up and carried |
+| `RZ_SoldiersID_US.et` | shipped as text: Suspicious Item Props' item, renamed "Soldier's ID card" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a soldier's identity card; the base of the errands' carried one (RZ_SoldiersID_Carried). A real item: it can be picked up and carried |
+| `RZ_SoldiersID_Soviet.et` | shipped as text: Suspicious Item Props' item, renamed "Soviet military card" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a soldier's identity card, for the errands that hand one over. A real item: it can be picked up and carried |
+| `RZ_Painkillers.et` | shipped as text: Suspicious Item Props' item, renamed "Painkillers" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a bottle of painkillers, for the errands that hand one over. A real item: it can be picked up and carried |
 
 #### Contracts
 
@@ -2642,7 +2665,7 @@ Report the line. The place audit's own lines (`Places: ...`, `Places fail: ...`,
 are in [PLACES.md](PLACES.md#the-audit).
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 36 routines, 62 duties (on) and 70 cards, N players with a ledger.`; a sorting
+start, `Errands: on, 36 routines, 69 duties (on) and 72 cards, N players with a ledger.`; a sorting
 duty, `Duty sorting: the dead for <player>, N subjects, N looks (errand N).`, `Duty sorting: errand N
 judged for <player>: N of N right, score S, danger 0|1.` and `Duty sorting: errand N judged itself
 (no work sites), score S.`, with each of its prompts a `Work sites: errand.N.s0.take ...` line; a duty's
@@ -2851,37 +2874,64 @@ session, tick off:
   or a sentry until they give the watch. Take the post: three lines come 25 to 45 s apart, each with
   three prompts side by side; the giver says how you called them. As Trusted, at night: the
   lock-up's prisoner speaks after half a minute, and opening the door costs 3 Infamy and makes a
-  local. At a house that lost someone: a door for each, then the book. At a Bastion post after the
+  local; with Things > Lock-up pen and room slotted, the pen (the Haven, Bastion) or the table and
+  lamp (the Red Hand) stand 6 m beside the door with a blindfold at it, and all of it is gone when
+  the errand ends. At a house that lost someone: a door for each, then the book. At a Bastion post after the
   Collapse: three bunks, and the return. At the lab with the cure 40% made: three charts and the
-  list. A cull: their people walk out, up to five infected come, and they hold until it's clear.
+  list. A cull: their people walk out, up to five infected come, and they hold until it's clear. The
+  Red Hand's debt book: three doors, then your thumb under the lines. Halcyon's desks: three
+  desks, then the report; its animal house: three cages, a turning one kept raises the town's
+  infection; its isolation room is the lock-up with nothing beside the door. A dose (with one in
+  the lab's stock, or on the Red Hand's black market): three beds, then the card; the stock is one
+  less after, and nothing comes into your pack.
   Ask for any of the Trusted ones again the same season day: it isn't offered.
 - [ ] The Haven's duties ([ERRANDS.md](ERRANDS.md#the-havens-duties)): by day at a safehouse, the
   school room (count, then four places to look 9 m off, each a prompt of its own) and the garden
   (dig a bed; ask again after the gap: the same bed now wants planting, then water, and two season
   days later lifting, across a restart too). At dusk, the door round: four doors 18 m off, a line at
   each, then four chalk prompts side by side. The roll call: five places, and after the third look
-  the other two prompts go. Known: the swap table, four people in turn, two looks each and then
-  three calls. Each one's hand-in says how many calls were right.
+  the other two prompts go; write the right name out and not back and *Go with them* leads out
+  along the wood road to what's there. Known: the swap table, four people in turn, two looks each and then
+  three calls. Talk to the trader with a pad (Duty person, else a civilian): a question uses a look,
+  and a call in the talk settles them like the prompt does; the toll's and the gate's people talk
+  the same way. With Missions > Errands > Things slotted, what's laid down stands in front (the
+  cash, the pearls, the papers, the bottle; at the count the gold bar and the cards): try to pick it
+  up (there's nothing to take), and see it go when the beat closes. Each one's hand-in says how many calls were right.
 - [ ] Bastion's duties ([ERRANDS.md](ERRANDS.md#bastions-duties)): the loudspeaker tape (a pole 60 to
   140 m out, three holds and one thing found there). Gate duty by day: four at the barrier in turn,
   three looks offered and two allowed, then three calls; the giver says how many were right. Kit
   inspection: three kits, and after a missing thing is written up, *Go and find it* leads to a
-  place to search. The field telephone, Known: the test at the post, the break out along the line
+  place to search; sold at a toll, *Go and buy it back* leads to the nearest Red Hand pole (two
+  tins). Stag: pick a sector first; four come by from it. The field telephone, Known: the test at the post, the break out along the line
   with its three looks and three readings, the splice, the ring, and the offer of new wire.
 - [ ] The Red Hand's duties ([ERRANDS.md](ERRANDS.md#the-red-hands-duties)): stripping a wreck (three
   holds at a spot out along the road, and something under the seat). The still: the needle's line
   comes 15 s after the fire, the cut 10 s after that, and with **Props > Duty vodka** set a bottle
   is in your pack at the end. The count: four things, then three names. The toll: five in turn at
   the bar, each with three looks and three calls; then the extension (the one who bolts must be
-  reached inside 50 s); then the boss. Spotter, Known: the hill 180 to 350 m out, three watches
-  20 s apart; if the glass flashes, standing still for 20 s passes it.
+  reached inside 50 s; the merchant walks beside you to the marker and goes when you reach it);
+  then the boss. Set a feud with Bastion (admin) and take the toll: no Bastion soldiers come, and
+  the extension is the patrol. Spotter, Known: the hill 180 to 350 m out, three watches 20 s apart;
+  if the glass flashes, standing still for 20 s passes it. Mark the board right, then take the
+  camp's toll the same or next season day: the boss says what the crew did on it. At night, the
+  quiet hour gives three sounds, not sights.
 - [ ] Halcyon's duties ([ERRANDS.md](ERRANDS.md#halcyons-duties)): the sample round (four swabs 14 m
   out, then four marks). The decon line: five arrivals in turn, each with three checks and four
   calls, **seven prompts side by side**: say whether they can each be aimed at, and whether it reads
-  as a line of stations or as a muddle. The incinerator: four bags, then the porter. Known: the
-  ward (three beds 12 to 30 m apart, six signs and four looks at each, then two calls of three; a
-  turning written as a fever sits up at once) and the cold chain (the box's rule is said when you
-  take it; two stops on the way out to the far door 180 to 350 m off).
+  as a line of stations or as a muddle. Run two arrivals through again: the tank's empty after
+  the next one, and the water prompt waits there. The incinerator: four bags, then the porter.
+  Known: the ward (three beds 12 to 30 m apart, six signs and four looks at each, then two calls of
+  three; a turning written as a fever sits up at once; every call right and the charts true: the
+  cure's research goes up by 1, once a season day) and the cold chain (the box's rule is said when
+  you take it; two stops on the way out to the far door 180 to 350 m off; sprint, or jump off a
+  wall, with the culture or the heavy box: it rings once, and a second time at most; dawdle over
+  six minutes with the trial vials: it warms).
+- [ ] The two errands from the props work ([ERRANDS.md](ERRANDS.md#the-cards)): with a town near a
+  Bastion post at 50+ infected (admin), ask its named person: *The Patrol That Didn't Come Back*; take
+  the card in the town and carry it back yourself (Props > Soldier's ID slotted: it shows as a
+  soldier's card in the pack and can't be equipped). At a Haven house of five whose meal ran short,
+  *False Hope at the Line*: buy the papers at the gate and hand them in; or leave him be, and the
+  house is one fewer.
 - [ ] With their people ([ERRANDS.md](ERRANDS.md#with-their-people)): take a patrol's short leg
   from a lookout or a sentry. Their people stand at the gate, walk three points and come home, and
   stop when you fall more than 150 m behind; each point gives one line about what's there; back at
@@ -4362,8 +4412,10 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   footsteps, landings and falls still sound. **Loot** (Suspicious Item Props): search shops, houses,
   a police station and bodies until a stack of cash, a gold bar, a pearl necklace or a stack of
   credit cards turns up; each shows a picture in the inventory, and the Red Hand's fence takes the
-  necklace and the gold bar. In Workbench, drop a passport and a military ID into a pack and look
-  at their inventory picture: the mod names an icon it doesn't ship. **Scenery** (the world-building
+  necklace and the gold bar. In Workbench, open the six item children (`Prefabs/ReforgerZ/Missions/RZ_Passport_*.et`,
+  `RZ_SoldiersID_*.et`, `RZ_Painkillers.et`) and the ten display copies
+  (`Prefabs/ReforgerZ/Work/Things/`), drop a passport and a soldier's card into a pack: each shows
+  its 3D preview, a name and words of the time (the mod's own icon file is missing). **Scenery** (the world-building
   kit, [SITES.md](SITES.md#the-world-building-kit)): in the World Editor put down an ivy piece
   against a wall, one of MMHs IVY's wrecks, JTF's `FieldGraves`, `Checkpoint_US` and `RefugeeCamp`,
   and one of Overgrown's buildings; each stands on the ground and looks whole. **Nothing else

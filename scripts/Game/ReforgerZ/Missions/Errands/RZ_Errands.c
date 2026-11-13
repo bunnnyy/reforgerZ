@@ -38,6 +38,12 @@ class RZ_ErrandProps
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Carried (optional): what a carried way puts in your pack (His Effects' effects, The Name on the Tag's ID): an item with RZ_MissionItemComponent that can't be equipped. Empty = the mission item", "et")]
 	ResourceName m_sCarried;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Soldier's ID (optional): the card The Patrol That Didn't Come Back carries home, an item with RZ_MissionItemComponent (RZ_SoldiersID_Carried.et). Empty = Carried", "et")]
+	ResourceName m_sSoldiersID;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Forged papers (optional): the set False Hope at the Line buys off the forger as proof, an item with RZ_MissionItemComponent (RZ_Passport_Forged.et). Empty = Carried", "et")]
+	ResourceName m_sForgedPapers;
+
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Watch (optional): The Last Tin's watch, a real wristwatch traded for two tins. Empty = a common find", "et")]
 	ResourceName m_sWatch;
 
@@ -196,6 +202,9 @@ class RZ_ErrandSettings
 	[Attribute(desc: "Props a step's place shows while it's open (all optional; empty = words only)")]
 	ref RZ_ErrandProps m_Props;
 
+	[Attribute(desc: "Things on show at a duty: display copies with nothing to pick up, and the lock-up's dressing (all optional; empty = words only)")]
+	ref RZ_DutyThingProps m_Things;
+
 	protected static ref RZ_ErrandSettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------
@@ -205,6 +214,15 @@ class RZ_ErrandSettings
 			m_Props = RZ_ErrandProps.Cast(RZ_Util.NewWithDefaults("RZ_ErrandProps"));
 
 		return m_Props;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_DutyThingProps Things()
+	{
+		if (!m_Things)
+			m_Things = RZ_DutyThingProps.Cast(RZ_Util.NewWithDefaults("RZ_DutyThingProps"));
+
+		return m_Things;
 	}
 
 	//------------------------------------------------------------------------------------------------

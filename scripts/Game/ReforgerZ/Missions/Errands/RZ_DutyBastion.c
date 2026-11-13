@@ -14,11 +14,16 @@ class RZ_DutyBastion
 		if (right != 0)
 			codes[0] = "infamy1";
 
-		RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_GATE, 2,
+		RZ_DutyBeat b = RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_GATE, 2,
 			RZ_DutyScript.A("Hold the stamp to the light", "Read the dates and the name", "Ask their business"),
 			RZ_DutyScript.A(stamp, dates, business),
 			RZ_DutyScript.A("Lift the barrier", "Turn them back", "Hold them for the sergeant"),
 			RZ_DutyScript.A(passed, turned, held), codes, right, "", "", told);
+		// They stand at the barrier to be talked to (dialogue/duties/gate.rzd): the asking is option 2;
+		// their papers lie on the post's table in front
+		b.m_sTalk = "gate:" + key;
+		b.m_sTalkName = "Someone at the barrier";
+		b.m_sThing = RZ_DutyThings.For("gate:" + key);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -86,10 +91,11 @@ class RZ_DutyBastion
 		if (right == 2 && !who.IsEmpty())
 			codes[2] = codes[2] + " local";
 
-		RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_HERE, 2,
+		RZ_DutyBeat b = RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_HERE, 2,
 			RZ_DutyScript.A("Count it against the list", "Look down the barrel", "Go through the pack"), seen,
 			RZ_DutyScript.A("Pass the kit", "Write him up", "Deal with it quietly"),
 			RZ_DutyScript.A(passed, written, quiet), codes, right, who, later);
+		b.m_sThing = RZ_DutyThings.For("kit:" + key);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -114,6 +120,10 @@ class RZ_DutyBastion
 		{
 			RZ_DutyScript.T("sold", string.Format("The man in the next bunk talks, in the end. The %1 went over the wire for cigarettes. To a toll man.", what), RZ_DutyBeat.AT_SAME, "search");
 			RZ_DutyScript.O("Put the toll in the report", "In the report: what, to whom, for how many cigarettes. Somebody will be sent to buy it back.", "report +1 write", "", "", "The thing your inspection lost to a toll has been bought back. The private's paying for it out of his tobacco, for a year.");
+			RZ_DutyScript.O("Go and buy it back at the toll yourself", "You'll go. The private gives you his tobacco tin to start the bidding.", "flag:buy");
+			RZ_DutyScript.T("buy", string.Format("The toll man's pole. The %1 is in his hut, and he knows exactly what it's worth to a soldier.", what), RZ_DutyBeat.AT_FAR, "buy");
+			RZ_DutyScript.O("Pay him two tins for it", string.Format("Two tins on his barrel. He brings the %1 out wrapped in sacking and doesn't watch you go.", what), "food2 hold:4 +3 regard+ report", "", "", string.Format("You bought the %1 back at the Red Hand's pole with your own tins. The private's paying you back in cigarettes, and the section talks about it.", what));
+			RZ_DutyScript.O("Tell him whose it is", "He shrugs. A Bastion stencil is trouble to keep, he says, but it's still two tins. You leave without it.", "report");
 			RZ_DutyScript.O("Let it stay sold", "You close the book on it. Two men owe you, and one of them knows a toll man.", "shady1 later", "", "You didn't write up where it went. I haven't forgotten. If you ever need something off the far side of the wire, ask me.");
 		}
 		else if (where == 3)
@@ -155,6 +165,21 @@ class RZ_DutyBastion
 		Kit("pass", "A kit with a pack he'd rather you didn't open.", 2, "A pass, stamped, made out in another name. And a civilian shirt.", 1, "Passed. He walks out the gate one evening as someone else.", "Written up, with the pass pinned to the page. He sits down on the bunk.", "You burn the pass in the stove and leave the shirt. He hasn't decided whether to thank you.", false);
 		Kit("armband", "A kit laid out perfectly. Too perfectly.", 2, "At the bottom of the pack, folded small: a strip of red cloth, the Red Hand's.", 1, "Passed. One of the men on your wire answers to somebody else.", "Written up. He's gone from the hut before supper, between two corporals.", "You hold it up. He says it was his brother's. You put it back. You've chosen to believe him.", false);
 		int pool = RZ_DutyScript.Draw(3, picked);
+		// Buying it back is done at a real Red Hand pole when one stands within 2 km
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		array<RZ_RoadPost> posts = {};
+		if (gm && gm.GetCheckpoints())
+			gm.GetCheckpoints().PostsNear(RZ_EFaction.BANDITS, e.m_vGiver, 2000, posts);
+
+		foreach (RZ_DutyBeat bought : picked)
+		{
+			if (bought.m_sKey == "buy" && !posts.IsEmpty())
+			{
+				bought.m_iWhere = RZ_DutyBeat.AT_SET;
+				bought.m_vAt = posts[0].m_vPos;
+			}
+		}
+
 		foreach (RZ_DutyBeat b : picked)
 		{
 			scene.m_aBeats.Insert(b);

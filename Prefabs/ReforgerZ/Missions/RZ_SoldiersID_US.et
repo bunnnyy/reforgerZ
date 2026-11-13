@@ -1,0 +1,16 @@
+GenericEntity : "{479A3C8B3C95D643}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_USMilitaryID.et" {
+ ID "FEEDD596F4A6592B"
+ components {
+  InventoryItemComponent "{5DC8164A9F632E03}" {
+   Attributes SCR_ItemAttributeCollection "{5DC8164A9F632E1E}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5DC8164A9F632E1D}" {
+     Name "Soldier's ID card"
+     Description "An army identity card. The face on it is younger than the name sounds."
+     Icon ""
+     m_bShowIconInInventory 0
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}
