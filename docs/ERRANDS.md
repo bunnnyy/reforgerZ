@@ -122,6 +122,13 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
   *Needs 2 food*, *Needs 8 Haven Favor*); a Trust check or a threat isn't a lock, its tag shows the
   score. While the ways show, the giver's topics wait (they're waiting on your answer). The labels
   above stay the world prompt's.
+- **Errands and jobs are separate** (the author's rule). Errands and duties count only against
+  errands and duties: the errands you may hold at once (**Errands one player may hold**, 2), one at a
+  time from a giver, one chore of yours at a place. A contract, a leader's job, a questline stage
+  and the opening's chain never count against them, and an errand never counts against a job: a
+  holding's leader offers its [Job]s and its named people their [Errand]s and [Duty]s side by side,
+  whatever you already hold from the place (`RZ_Errands.CountHeld`, `HasOpenOffer` and `ChoresAt`
+  leave the opening's handed steps out).
 - **The reason in their voice.** Asked when nothing's true, or when it isn't safe, the giver says
   why: *"Not while that lot's at the fence."*, *"You've your hands full already."*, *"Nothing on the
   board for you. Check back after the shift change."*
@@ -163,6 +170,13 @@ the giver) is within 600 m of you, ×0.85 past 1.2 km; **freshness**, ×1.2 when
 its subject (a death, a bite, a fire, shells in the last 2 played hours); and ×0.8 for a real day from a
 faction a dead life of yours lied to (below). The pick is weighted among the top three. At most 12
 errands live on the server.
+
+**Errand reach.** Most players run: an errand whose subject (the person, lair, house or body it's
+about) lies further than **Errand reach** from its giver (`RZ_ErrandSettings`, 1.5 km) is dealt only
+when no nearer one is true at that giver (the deal's reason says *a long walk*), and then the giver
+adds *It's a long walk: about 3 km north-east.* An errand can't move to another giver (it's about
+that person's own place), so it stays theirs. The ways' own places are picked near the giver already
+(on Everon all within 1.3 km, [PLACES.md](PLACES.md#offer-reach)).
 
 **The context cache** (`Missions/Errands/RZ_ErrandsDealer.c`, `RZ_ErrandContext`): per online player,
 remade every 30 s: the settlement you're in and who holds it, a holding within 600 m, a pack's range
@@ -238,7 +252,11 @@ A way whose step is work with your hands is a [work site](DESIGN.md#work-site) a
 thing to work at stands there (its before look, or the way's own prop), with one prompt in the step's
 words. Hold it for its time (vanilla's bar); the step is done, and the result stands there until the
 errand is over and nobody is near. Only the asker can do it (the prompt doesn't show for anyone
-else); at the giver's place or its gate it stands 3–6 m off, at water 1.5–3 m off. An item the step
+else); at the giver's place or its gate it stands 3–6 m off, at water 1.5–3 m off. Work the words
+put indoors (a bench, a sick man, a search of a house, a shop, the police station, the school or the
+hall) is on the ground floor of the nearest such building within 60 m of the place, else in the open
+as before; where the words name someone (the newcomer, the bitten man, the survivor before dark) that
+person stands at it while you work (Props > Duty person). The table says which. An item the step
 needs at its place (a battery) is handed over after the hold, there. The step's line drops its time
 there. With work sites off, these steps are done by staying there as before (the times in the
 tables below).
@@ -251,54 +269,54 @@ tables below).
 | Filter Parts | **Take the part off** | 6 s | a toolbox and parts → nothing (fitted, packed away) |
 | The Burying | **Dig the grave** | 15 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
 | The Round | **See to the sick** | 20 s | a mattress, a blanket, a bucket → the same (it stays) |
-| The Newcomer | **Search the shops for a coat** | 8 s | a crate of odds and ends → rummaged clutter |
-| The Newcomer | **Check the newcomer over** | 9 s | a mattress, a blanket, a bucket → the same (it stays) |
+| The Newcomer | **Search the shops for a coat** | 8 s | a crate of odds and ends → rummaged clutter (in a shop) |
+| The Newcomer | **Check the newcomer over** | 9 s | a mattress, a blanket, a bucket → the same (it stays) (indoors, with him) |
 | Make It Right | **Fill the water cans** | 7 s | empty cans and buckets → nothing (carried off) |
-| The Count | **Count the stores** | 9 s | a table with a lamp → the same (it stays) |
+| The Count | **Count the stores** | 9 s | a table with a lamp → the same (it stays) (indoors) |
 | The Latrine | **Dig the latrine** | 15 s | a marked pit (stakes, planks, a sack of lime) → the latrine screen |
-| The Pit Count | **Count the bets into the book** | 20 s | a table with a lamp → the same (it stays) |
+| The Pit Count | **Count the bets into the book** | 20 s | a table with a lamp → the same (it stays) (indoors) |
 | Night Readings | **Fit the battery** | 6 s | a toolbox and parts → nothing (fitted, packed away) |
 | Night Readings | **Reset the sensor** | 7 s | a toolbox and parts → nothing (fitted, packed away) |
-| Labels | **Relabel the sample trays** | 20 s | a table with a lamp → the same (it stays) |
-| Labels | **Relabel the sample trays** | 12 s | a table with a lamp → the same (it stays) |
-| Before Dark | **Clean and dress the bite** | 11 s | a mattress, a blanket, a bucket → the same (it stays) |
+| Labels | **Relabel the sample trays** | 20 s | a table with a lamp → the same (it stays) (indoors) |
+| Labels | **Relabel the sample trays** | 12 s | a table with a lamp → the same (it stays) (indoors) |
+| Before Dark | **Clean and dress the bite** | 11 s | a mattress, a blanket, a bucket → the same (it stays) (in a house, with the survivor) |
 | The Market | **Search the grass** | 8 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The Receiver | **Fit the battery** | 6 s | a toolbox and parts → nothing (fitted, packed away) |
 | The Receiver | **Re-seat the cable** | 7 s | a toolbox and parts → nothing (fitted, packed away) |
-| Sit With Him | **Dress the bite** | 12 s | a mattress, a blanket, a bucket → the same (it stays) |
+| Sit With Him | **Dress the bite** | 12 s | a mattress, a blanket, a bucket → the same (it stays) (indoors, with him) |
 | Sandbags | **Fill and stack the sandbags** | 18 s | a pile of empty sacks → a sandbag barricade |
 | The New Number | **Paint the new number** | 10 s | a bare board on a post, a paint tin → the stencilled board |
-| Behind the Red Door | **Search what's left** | 7 s | a crate of odds and ends → rummaged clutter |
-| Behind the Red Door | **Search the boy's room** | 8 s | a crate of odds and ends → rummaged clutter |
-| Clean Rifles | **Search for cleaning kits** | 8 s | a crate of odds and ends → rummaged clutter |
-| Clean Rifles | **Strip and clean the rifle** | 15 s | a table with a lamp → the same (it stays) |
-| Clean Paper | **Search for clean paper** | 8 s | a crate of odds and ends → rummaged clutter |
-| Clean Paper | **Rule the margins** | 9 s | a table with a lamp → the same (it stays) |
-| Chairs for the Reading | **Stack the chairs** | 9 s | a table with a lamp → the same (it stays) |
+| Behind the Red Door | **Search what's left** | 7 s | a crate of odds and ends → rummaged clutter (in a house) |
+| Behind the Red Door | **Search the boy's room** | 8 s | a crate of odds and ends → rummaged clutter (in a house) |
+| Clean Rifles | **Search for cleaning kits** | 8 s | a crate of odds and ends → rummaged clutter (in the police station) |
+| Clean Rifles | **Strip and clean the rifle** | 15 s | a table with a lamp → the same (it stays) (indoors) |
+| Clean Paper | **Search for clean paper** | 8 s | a crate of odds and ends → rummaged clutter (in the school) |
+| Clean Paper | **Rule the margins** | 9 s | a table with a lamp → the same (it stays) (indoors) |
+| Chairs for the Reading | **Stack the chairs** | 9 s | a table with a lamp → the same (it stays) (in the hall) |
 | What the Cure Costs Here | **Put the name on the roster** | 8 s | a board on a post → the notice wall |
 | Into the Record | **Take the notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Take a Name to the Board | **Write the name up** | 8 s | a board on a post → the notice wall |
-| Pack for the Queue | **Search the house** | 9 s | a crate of odds and ends → rummaged clutter |
+| Pack for the Queue | **Search the house** | 9 s | a crate of odds and ends → rummaged clutter (in a house) |
 | The Tags | **Take the tags** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The Tags | **Take the photo frame** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The Wreck's Name | **Search the cab for papers** | 8 s | a crate of odds and ends → rummaged clutter |
 | The Wreck's Name | **Search the cab** | 8 s | a crate of odds and ends → rummaged clutter |
-| Clean Glasses | **Search for whole glasses** | 9 s | a crate of odds and ends → rummaged clutter |
+| Clean Glasses | **Search for whole glasses** | 9 s | a crate of odds and ends → rummaged clutter (in a house) |
 | Name Day | **Take the clock down** | 8 s | a toolbox and parts → nothing (fitted, packed away) |
 | The Truck Didn't Come | **Search the truck** | 9 s | a crate of odds and ends → rummaged clutter |
 | Clean Slate | **Dig at the burial pit** | 15 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
-| Civvies | **Search for plain clothes** | 8 s | a crate of odds and ends → rummaged clutter |
+| Civvies | **Search for plain clothes** | 8 s | a crate of odds and ends → rummaged clutter (in a house) |
 | The Name on the Tape | **Take the tag and jacket** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The Name on the Tape | **Take the jacket** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Notebook 31 | **Take the coat and notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Notebook 31 | **Take the notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Notebook 31 | **Pocket the notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Paint | **Paint the hand** | 12 s | a bare board on a post, a paint tin → the stencilled board |
-| Dress Uniform | **Fold the uniform** | 12 s | a table with a lamp → the same (it stays) |
+| Dress Uniform | **Fold the uniform** | 12 s | a table with a lamp → the same (it stays) (indoors) |
 | Names on the Call | **Pin the list up** | 5 s | a board on a post → the notice wall |
 | The Last Apples | **Pick what's left** | 9 s | a crate of odds and ends → rummaged clutter |
-| You're the One | **Write the name in the book** | 6 s | a table with a lamp → the same (it stays) |
-| The Visitors' Log | **Sign the log** | 5 s | a table with a lamp → the same (it stays) |
+| You're the One | **Write the name in the book** | 6 s | a table with a lamp → the same (it stays) (indoors) |
+| The Visitors' Log | **Sign the log** | 5 s | a table with a lamp → the same (it stays) (indoors) |
 | Not Past the Chapel | **Board up the doors** | 15 s | planks and a bucket of nails → the boarded doorway |
 | His Effects | **Gather their things** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | His Effects | **Take their things** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
@@ -306,7 +324,7 @@ tables below).
 | The Name on the Tag | **Raise the cairn** | 12 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
 | The Name on the Tag | **Take the ID** | 6 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The openings: Water, Water for the Fever | **Fill what you can carry** | 8 s | empty cans and buckets → nothing |
-| The openings: Across the Road | **Search it, quietly** | 6–8 s | a crate of odds and ends → rummaged clutter |
+| The openings: Down the Road | **Search it, quietly** | 6–8 s | a crate of odds and ends → rummaged clutter (inside the building its words name) |
 | Strangers: The Funeral for the Car, Two in the Back (push-start) | **Push the car** | 10 s | the car itself |
 | Strangers: Two in the Back ([Mechanic]) | **Fix the car** | 15 s | a toolbox and parts → nothing |
 | Strangers: The Digger | **Dig the grave** | 15 s | a marked plot → a grave |
@@ -349,7 +367,7 @@ Through the one small-pay ledger, per identity for the season (`RZ_ErrandLedger`
 | **In kind** | a Bastion post (a Red Hand camp), one errand in three paying 4+ Favor, never while that faction needs food or supplies | a ration (a magazine) off its own shelf in place of 3 Favor, in your pack, **tagged** as the giver's goods: food delivery, the fence and every errand refuse it for pay (*"These are Levie's. Take them back to Levie."*, [mission goods](DESIGN.md#story-blocks)). Needs **Props > Pay ration** (**Pay magazine**); empty, Favor only |
 | **A meal** | a house errand paying 4 Favor or less, at a house fed above one upkeep | supper: the house −1 food, 15% of your health back, 2 Haven Favor, in place of the Favor |
 | **When the truck comes** | a post whose faction needs supplies | the Favor waits for its next truck there (a real day at most) and goes to the life that earned it, if it's online when the truck comes in |
-| **Carried items** | a way marked carried (His Effects' effects, The Name on the Tag's ID) | the step puts an item in your pack (**Props > Carried**, else the mission item: it can't be equipped, no mission's drop takes it). Only you or a helper can hand it in; taken by anyone else, the errand is spoiled and the thief takes +3 Infamy with the giver's people; lost, it's over |
+| **Carried items** | a way marked carried (His Effects' effects, The Name on the Tag's ID) | the step puts an item in your pack (a card's own where it has one: **Props > Soldier's ID**, **Forged papers**; else **Props > Carried**, else the mission item: it can't be equipped, no mission's drop takes it). Only you or a helper can hand it in; taken by anyone else, the errand is spoiled and the thief takes +3 Infamy with the giver's people; lost, it's over |
 
 **Headlines**: errands put out at most **2** a real day (**Headlines a day**).
 
@@ -379,7 +397,7 @@ Some routines answer a small real fault at a place (`RZ_Faults`), rolled at most
 | **Filter Parts** | safehouse, the storekeeper | the water fault, 8+ people, Known | The pump house part at the next town (25 s; [Mechanic or Lab Tech] 12 s): 8 Favor, fixed |
 | **The Gate at Dusk** | safehouse, the lookout | dusk near, one guard or none, a town at 60+ infection within 1.5 km, not Every Ridge Calls | Stand at the gate 10 real min: 5 Favor |
 | **The Burying** | safehouse, the clerk | someone died at the house lately | Dig the grave at the edge of town (hold, 15 s; a grave stands there after): 3 Favor; a world record |
-| **The Round** | safehouse, the clerk | [Nurse or Doctor], no medic, 4+ people | A minute at each bed (2 min): 4 Favor |
+| **The Round** | safehouse, the clerk | [Nurse or Doctor], no medic, 4+ people | Go round the sick at their beds ([below](#the-round-at-the-beds)): 4 Favor, less for the wrong calls (no Fame unless every call was right), 2 more for every one right |
 | **The Newcomer** | safehouse, the clerk | the house took someone in this season day | A coat from the next town (20 s), or [Nurse or Doctor] check him over (30 s): 4 Favor |
 | **The Children's Hour** | safehouse | 5+ people, 08:00–17:00 | Watch the yard 5 real min: 4 Favor |
 | **Make It Right** (amends) | safehouse, the lookout | the Haven Watches you | Keep the gate (3 min) or carry the night water (15 s at the next town): amends |
@@ -410,6 +428,52 @@ Some routines answer a small real fault at a place (`RZ_Faults`), rolled at most
 
 *Simplified:* His Lighter's "crewman" is anyone who died near the camp, and The Market's ring is found
 at the party's spot as a step, not as an item.
+
+### The Round at the beds
+
+✅ Played as a scene (`Missions/Errands/RZ_DutyRound.c`, the duties' scene engine), laid out when it's
+taken. Two to four of the sick, each with a name and one of ten conditions (a fever going round the
+town, a cut gone bad, a bite hidden under a sleeve, hunger from giving their food to the children, a
+broken wrist, a child waiting for their mother, an old man who's stopped trying, a chest that's
+worse lying flat, a burn, and a wound too far gone), at most one of each.
+
+**Where they lie**, in this order, with the place and every piece's fit or drop in the log
+(`Errands: The Round: ...`):
+
+| Where | When | How it fits |
+|---|---|---|
+| Indoors | the house's ground floor has room for two cots or more | Against the walls, on the loose loot's floor points of the lowest storey, a cot (**Props > Round bed**) each: its long side to the wall, else its foot to the room, a little further out each try. Its measured box needs a floor under every corner (a downward trace) and nothing in the way at knee or chest height, and keeps a person's width from the other cots |
+| Under a tent | not indoors | A canvas shelter (**Props > Round tent**) 6–14 m from the house, its open front away from it, else sideways: its box clear at knee and chest, level within 0.6 m, nothing over it. Up to 8 spots tried. The cots under it are laid out as JTF Bronze Props' casualty point lays them (three side by side, a fourth across the back); one whose box isn't clear is left out |
+| In the yard | neither | Cots 4–10 m from the house, their long side to the wall, each box clear, level within 0.3 m, nothing over it and apart from the others; a cot that won't fit is left out |
+
+Nothing is squeezed in: what doesn't fit is dropped. With no Round bed (or one that was never
+measured) there's nothing indoors and they lie on the ground under the tent or in the yard. If
+nowhere takes even one, the clerk says so and the errand pays nothing. The measured boxes are the
+cot's and the shelter's in `tools/camp_kit/footprints.json` ([SITES.md](SITES.md#real-footprints)),
+copied into `RZ_DutyRound.Box`. The cots and the tent go when the errand ends.
+
+**At each bed.** The patient lies on the cot (vanilla's unconscious state, so they lie still) and
+is a duty's person on the talk screen: only the bed you're at answers, the others are waiting their
+turn. Their conversation (`dialogue/duties/round.rzd`) is what they say, what happened to them and
+what they need. The bed's work sites stand along its open side, not in the wall:
+
+- **Five looks, time for three:** feel their brow, look them over for a wound, listen to their
+  breathing, look in their eyes, and ask what happened (also asked on the talk screen). Each tells
+  you something; together they tell you what it is.
+- **Three things to do, one right:** water and a cool cloth, clean and dress it [1 med], fetch
+  the clerk quietly (a bite: counts as reporting it), something to eat [1 food], splint and sling it
+  [1 med], sit with them and talk (morale), sit them up and get them talking, sit them up and keep
+  them up, cool water then a loose dressing [1 med], send for the medic from the next house. The
+  wrong one uses what it uses and does nothing for them, and they let you see that.
+- **A bite missed:** if the hidden bite was treated as something else, before the round's done the
+  patient sits up turned. The house deals with it: morale down, the town 2 more infected, and the
+  clerk tells you two of theirs are being stitched.
+
+**Pay**, scored as a duty's scene is: 4 Favor and what the choices earned; less for the wrong
+calls and no Fame then; every call right, 2 Favor more and the clerk says so.
+
+*Simplified:* the patient's lying pose is vanilla's unconscious state; the turned patient is told,
+not spawned as an infected.
 
 Four missions left the random pool for these and are gone from the code: Fuel for the Lights
 (Lights), Water Purifier (Filter Parts), Water Run (Water for {house}) and Medicine Before Dark
@@ -456,7 +520,7 @@ work, and pay more. Nothing new is counted: the rungs are the tiers that exist, 
 | 1 | Anyone else, from the first minute | Chores, watched: the kitchen, wood and water, washing down | 3–4 Favor |
 | 2 | **They know your face**: three errands or duties done for that faction this season (any of them: a routine counts), or Known | The line at the gate, the dead, a watch, a patrol's short leg with their people | 5–6 Favor, 1 Fame |
 | 3 | Known | Armed work with their people and the stores: a patrol's long round, a hunt, the sample bench, stock-taking | 7–8 Favor, 1 Fame |
-| 4 | Trusted | [The sensitive ones](#the-trusted-rung): the lock-up, the names, the trial list, a cull. Each once a place a season day | 10 Favor, 2 Fame |
+| 4 | Trusted | [The sensitive ones](#the-trusted-rung): the lock-up, the names (the dead, the debt book, whose work it was), the trial list, who gets a dose, a cull, the animal house. Each once a place a season day | 10 Favor, 2 Fame |
 
 The third piece of work for a faction says so (*"That's three pieces of work for the Haven. They
 know your face now..."*). Pay goes through the small-pay ledger above, so a duty can make you Known
@@ -491,14 +555,15 @@ hands at a [work site](#work-sites) at the place (or behind it), then back to th
 | A hunt | 3 | farmer, cook, lookout, toll man | For the Pot | — | The Meat Run | — | **Walk the snare line with the hunter**: 200–400 m out, the hunter following you, *Check the snares* (15 s) with them beside you. Or **hand over a leg of raw meat** | 7 Favor, 1 Fame, +1 food at a house; the meat 8 Favor, 1 Fame, +2 food | ✅ |
 | The bench | 3 | lab assistant, technician | — | — | — | Bench Work | A sorting duty: the sample trays set out. Carry each to **the bin** (a broken seal, a turned colour), **the bath** (a label that doesn't match) or **the rack** | Up to 8 Favor; 1 Fame if every one | ✅ |
 
-| A watch | 2 | lookout, sentry, guard, toll man | The Roof at Dusk | Stag | The Quiet Hour | The Gate Log | At dusk or night. [A scene](#things-that-happen): take the post, then three things come by, 25 to 45 s apart. Each is a threat, someone, or nothing, and its line holds the tell (*it stops at the marker and stands there* against *sits down on its pack*). **Stand the gate to**, **send someone out**, or **let it pass** | Up to 6 Favor by the calls got right; 1 Fame if all three. A false alarm is spoken of; a threat let pass is the town 2 more infected; someone sent out to a threat is morale 1 down; someone met on the road becomes a local | ✅ |
+| A watch | 2 | lookout, sentry, guard, toll man | The Roof at Dusk | Stag | The Quiet Hour | The Gate Log | At dusk or night. [A scene](#things-that-happen): take the post, then three things come by, 25 to 45 s apart. Each is a threat, someone, or nothing, and its line holds the tell (*it stops at the marker and stands there* against *sits down on its pack*). **Stand the gate to**, **send someone out**, or **let it pass** | Up to 6 Favor by the calls got right; 1 Fame if all three. A false alarm is spoken of; a threat let pass is the town 2 more infected; someone sent out to a threat is morale 1 down; someone met on the road becomes a local. **Bastion's stag** starts with a sector (the road, the wood line, the gap in the wire) and four come by from that sector's own; **the Red Hand's quiet hour at night** is kept by ear, three sounds and the same three calls | ✅ |
 | Stock-taking | 3 | storekeeper, clerk, mechanic, technician, toll man | The Larder Book | The Armoury Count | Counted Twice | The Cold Store | [A sorting duty](#the-sorting-duties), the fourth skin: crates against the book. *Count what's in it*, *Check the seal*, *Read the chit against the book*; carry each to **the counted stack**, **written off** (only the chit wrong) or **the query table** (short, or the seal cut: someone answers for it) | Up to 8 Favor; 1 Fame if every one. A theft passed as sound: 2 Infamy, morale 1 down | ✅ |
-| The lock-up | 4 | sentry, guard, lookout, toll man, medic | The One at the Gate | The Stockade Watch | The Debtor in the Shed | — | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
-| The names | 4 | clerk, cook, nurse; Bastion: radio operator, medic, sentry | The Book of Names | The Casualty Return | — | — | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
-| The list | 4 | lab assistant, technician | — | — | — | The Trial List | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
+| The lock-up | 4 | sentry, guard, lookout, toll man, medic | The One at the Gate | The Stockade Watch | The Debtor in the Shed | The Isolation Room | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
+| The names | 4 | clerk, cook, nurse; Bastion: radio operator, medic, sentry; the Red Hand: toll man, mechanic, cook; Halcyon: lab assistant, technician | The Book of Names | The Casualty Return | The Debt Book | Whose Work It Was | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
+| The list | 4 | doctor, lab assistant, technician | — | — | — | The Trial List | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
+| A dose | 4 | nurse, clerk; Bastion: medic, sentry; the Red Hand: toll man, cook | The House's One Dose | The Sergeant's List | Who the Crew Pays For | — | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
 | A cull | 4 | lookout, sentry, guard, farmer | The Strays | Clearing the Wire | — | — | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
+| The animal house | 4 | lab assistant, technician | — | — | — | The Animal House | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
 
-The duties that wait are in [designs/DUTIES.md](../designs/DUTIES.md).
 
 ### The sorting duties
 
@@ -509,27 +574,34 @@ with your hands**, never on a screen (`RZ_DutyGames`, `RZ_DutyGame`; the rule is
 the result. The server holds the truth and judges.
 
 **How it plays, in three lines.** Three or four subjects wait in a row at the place (bodies, people,
-trays); walking up to one tells you its tell, and beside it are three places to look, a 2 s hold
-each (*Look at the arms*, *Look at the neck*, *Check the papers against the tag*), but you have
-fewer looks than there are places (subjects + 2), so the tells say where to spend them. Then you
-take it up (*Lift onto the stretcher*, 3 s) and three spots appear a few metres off: where you put
-it down is the verdict (*Put on the pyre*, *Lay on the holding table*, *Dig the grave and lower them
-in*, 8 s with the spade if you carry one). Right pays in full, too careful pays half, too careless
-pays nothing, and a bad one let through is the dangerous miss.
+trays). Each has **one prompt, its name** (*A courier*, *Tag 114*): it opens the
+[object menu](UI.md#the-object-menu) with its three places to look, a 2 s hold each once picked
+(*Look at the arms*, *Look at the neck*, *Check the papers against the tag*), and taking it up
+(*Take them by the arm*, 3 s), under its tell, what you've seen of it, the looks left and the
+rules. You have fewer looks than there are places (subjects + 2), so the tells say where to spend
+them. Three **named places** stand within 10 m (*the gate*, *the wash*, *the holding room*), each a
+thing that reads as what it is; carry one there and leave it (*Leave them here: the wash*): where
+you leave it is the verdict. Right pays in full, too careful pays half, too careless pays nothing,
+and a bad one let through is the dangerous miss.
 
 | | |
 |---|---|
 | Subjects | 3, or 4 from the Collapse stage on. Each is **clean**, **odd** (the third place: papers that don't match, a fever, a label that doesn't match) or **bad** (one of the first two places: a bite; the line's clouded eyes; the bench's broken seal or turned colour) |
 | How many are bad | Each is bad at 15% + the infection of the sickest town within 2.5 km ÷ 300 + 4% a stage (50% at most), odd at 22%. Never a row with nothing to find |
 | The tell | One short line, said as you come within 4 m: calm (*Died in bed, family there*), odd (*The tag is written twice*) or risky (*Found in the street at Morton*: the sick town, by name). It points the right way three times in four |
-| Looking | A subject's three places open while you stand within 5 m of it, side by side along it, and close when you walk off. A look is said as a line (*A bite on the arm, wrapped in cloth. 3 looks left.*) and is gone for good. At the line in the rain: one look fewer. With none left the places close |
-| Taking and putting down | One at a time. The three spots are 6 to 10 m from the row and only there while you carry something; each one put down stays where it was put (the next grave is beside the last), by the work sites' own looks: a grave is the Grave look, the pyre the Burn look, the holding table the Care look, the rack the Bench look |
-| The clipboard | *Read the clipboard*, by the row: the goal in three lines, the looks left, and each subject with its tell, what you've seen and where you put it, on a sheet in [the reader](UI.md#subtitles-and-the-reader). The one paper in the game, and you never need it |
+| Looking | A subject's one prompt lists its places to look while it has looks left, then only taking it up. A look picked is held at the subject (2 s, the hands animation) and said as a line (*A bite on the arm, wrapped in cloth. 3 looks left.*); it's gone from the list for good. At the line in the rain: one look fewer. Without the object menu (UI > Object row layout empty) the three places stand as their own prompts beside it while you're within 5 m, as before |
+| The rules, where you are | Never a note to go back to: the rules (*A bite or clouded eyes goes to the holding room. Only a fever goes to the wash. All clear goes through the gate.*) are at the foot of every subject's menu, in the line when you take one up, and in the tracker under the step with the looks left |
+| The places | Within 10 m of the row, each with its thing standing, a vanilla prop measured in `tools/camp_kit/footprints.json`, set where its box is clear, level within 0.5 m and apart from the others (10 tries; one that won't fit is dropped and logged, and its place is still there): the line's gate a road barrier, the wash a shower stand, the holding room a white tent; the dead's graves a grave, holding table a medical table, pyre a woodpile; the bench's rack a long table, bath an old sink, bin a rusty drum; the stores' counted stack a pallet pile, write-off pile a crate, query table a long table. Gone when the sorting ends |
+| Taking and leaving | One at a time. While you lead one, each place has its prompt in front of its thing (*Leave them here: the wash*; *Bury them here: the graves*, 8 s with the spade if you carry one; *Set it down here: the bin*), the tracker's line names the three with their distance and way (*The gate: 8 m NE.*) and its map point sits between them. Each one left stays where it was put (the next grave beside the last), by the work sites' own looks |
+| The line at a gate | The people waiting stand at the place's real way in: the faction place's own gate within 120 m (its road entry), else the road where it comes into the town (the road point 25 to 120 m from the giver farthest from the town's middle), queued along it outside, facing in. The barrier is beside the road at the gate, the wash and the holding room 6 m inside, either side. With neither, the giver's own door, and the log says so (`Duty sorting: the line for errand N stands at ...`) |
+| Who waits | People in the line each wear their own clothes: **Props > Duty person looks** (optional) by the errand and their place in it, else three of vanilla's civilians and the Duty person, so no two side by side are the same |
+| The clipboard | *Read the clipboard*, by the row: the goal in three lines, the looks left, and each subject with its tell, what you've seen and where you put it, on a sheet in [the reader](UI.md#subtitles-and-the-reader). There if you want it; the menus and the tracker say all of it |
 | The verdicts | In order of care: pass (the grave, the gate, the rack), check (the holding table, the wash, the bath), stop (the pyre, the holding room, the bin). The one that matches is **right**; a more careful one is **too careful**; a less careful one **missed**, or **let through** if the subject was bad |
 | The score | Judged when the last one is put down. Right 1, too careful ½, the others 0, over the number of subjects. Favor is the way's × the score (1 at least); Fame only for a perfect row, which is also a record in the world's memory (`duty.<kind>`, the giver's name) and the giver says so |
 | The dangerous miss | No pay. 2 Infamy with the giver's faction, and the place pays a little: the town is 2 more infected (the dead, the line), or the faction's morale is 1 down (the bench, the stores). It comes out when you report, or when the errand ends any other way |
 | Leaving it | Nothing is lost: what you looked at and put down stays until the errand lapses. Walk back and go on |
 | What stands there | **Props > Duty body**, **Duty person** and **Duty tray** (optional): what waits in the row. Empty: Props > Effects, Puzzles > Civilian and Props > Crate. Each is a work site's look, up only while a player is near |
+| What's on show | **Things** (optional): display copies of Suspicious Item Props' things, a mesh with nothing to pick up (`Prefabs/ReforgerZ/Work/Things/RZ_Show_*.et`), on the ground in front of an open beat and gone when it closes. Only what's in plain sight: the swap table's cash, pearls, travel papers and aspirin; the count's gold bar, pearls, bank cards, banknotes and medicine; the toll's second set of papers; gate duty's passports and soldier's identity cards; the medic's open kit at kit inspection; the dead one's card on the roll call's blanket; a blindfold at the lock-up's door. A toll's pack or a kit's bag isn't shown before it's looked in, and the incinerator's bags are sealed. The lock-up's night watch also stands JTF Bronze Props' holding pen beside the door (the Haven, Bastion) or its interrogation room's table and lamp (the Red Hand), from the first beat until the errand ends. Empty slots: words only (`Missions/Errands/RZ_DutyThings.c`) |
 | No work sites | With **Shared > Work sites** off there is nothing to handle: standing at the place sorts every one the careful way, for half pay and nothing dangerous |
 
 ### With their people
@@ -564,10 +636,14 @@ person, alone: nobody of the place is watching.
 
 | Duty | True when | How it plays | What it decides |
 |---|---|---|---|
-| **The lock-up** (the Haven, Bastion, the Red Hand) | Dusk or night | Take the watch at the door by the gate (5 s). After half a minute the one inside speaks through it: the deserter who wouldn't fire on a road, the debtor with a girl at the Haven, the one who's frightened and not bitten. Then three things you can do at the door | **Keep the watch**: paid. **Write down what was said**: reported, recorded, 1 more Fame, and it changes what happens to them. **Open the door**: no pay, 3 Infamy, morale 1 down, and the giver knows whose watch it was; the one you let out becomes a local who remembers |
+| **The lock-up** (all four) | Dusk or night | Take the watch at the door by the gate (5 s). After half a minute the one inside speaks through it: the deserter who wouldn't fire on a road, the debtor with a girl at the Haven, the one who's frightened and not bitten, Halcyon's subject whose readings are normal and nobody reads them. Then three things you can do at the door | **Keep the watch**: paid. **Write down what was said**: reported, recorded, 1 more Fame, and it changes what happens to them. **Open the door**: no pay, 3 Infamy, morale 1 down, and the giver knows whose watch it was; the one you let out becomes a local who remembers |
 | **The Book of Names** (the Haven) | The house has dead (`m_iDied`) | A door for each of the house's dead, three at most, by the gate: who's inside doesn't know yet. Then the book by the stove (*Write the names in the book*, 6 s) | At each door: **tell them all of it** (they ask for you at the burying), **tell them gently** (they hear the rest from someone else), or **leave it for the clerk** (2 Favor less, the giver's regard down). The book: recorded, morale +1, a rumour that the names were read |
 | **The Casualty Return** (Bastion) | From the Collapse on | Three bunks. What was left at each says what became of the man: kit squared away and a letter half written; kit here but rifle and water gone; the locker empty to the paint, or his tags on the pillow. Return each **killed**, **missing** or **gone of his own will**, then sign | Scored: pays by the calls got right. A deserter returned killed is seen at a toll after the letter was written; a dead man posted absent is known to his section (morale 1 down); a deserter posted right is a rumour at every gate |
 | **The Trial List** (Halcyon) | The cure 40% made, and not out | Read the chart at each of three beds (the one most likely to live, the one the trial learns most from, the night technician's sister), then write one name on the list by the door | No right answer. The name is recorded and goes round as a rumour naming all three. The one who'd live: morale +1, and the director calls it sentiment. The useful one: 1 more Favor, and the ward goes quiet. The sister: the technician becomes a local who remembers. It never touches a dose or the cure's count |
+| **The Debt Book** (the Red Hand) | By day | Three names in the boss's book, a door each near the camp. What's there says the truth: hiding it (tins under a board, a new padlock), can't pay (an empty larder, the last chair in the grate), or paid and the book never heard (a chit with the boss's thumbprint, the red thread's paid knot). Mark each **owed** (the collectors call), **written off** or **paid**, then press your thumb under the lines | Scored, like the return. Collectors sent to a house that can't pay take the stove, and the lane knows whose book it was; a debtor rightly written off becomes a local who remembers; a paid one rightly closed is a rumour that the crew was collecting twice; a wrong "paid" is twelve tins out of the camp's pot |
+| **Whose Work It Was** (Halcyon) | The cure 20% made, and not out | The week's bench report names who did each run. Three desks: notebooks in one hand from the first line to the last (the work), a neat hand on the labels and nothing else (help), or a clean desk with the name signed under someone else's pages (credit taken). Place each **first**, **thanked below the line** or **left off**, then initial the report | Scored. The one who did the work placed first becomes a local who remembers; the one who took credit left off is a rumour; anyone else left off costs morale. It never touches the cure's count or HC3's paper ([QUESTLINES.md](QUESTLINES.md#hc3-authors)) |
+| **A dose**: The House's One Dose (the Haven), The Sergeant's List (Bastion), Who the Crew Pays For (the Red Hand) | The lab has a dose in stock (the Red Hand: the black market has one), and the cure not out | Three bitten in beds, all of whom asked for it (consent, as [FINALE.md](FINALE.md) has it for every dose): the one the place needs most, the one with most life ahead, and a third (the old one who asked to be passed over; the girl not on the strength; the boss's sister's boy). Read each bed, then write one name on the card in the case, or **send it back** | No right answer. The dose comes off the stock when the card is written (the lab's, so Halcyon's quartermaster has one fewer to sell; the Red Hand's from the fence's shelf) and goes to the one named: **never to the player**. Recorded and a rumour naming who had it. The one needed most: 1 more Favor. The most life: morale +1. The Haven's old one: the giver's regard down; the others' third: a local who remembers. If the stock emptied first, the case is empty at the bed. Sent back, the stock keeps it |
+| **The Animal House** (Halcyon) | The cure not out | Three cages, drawn from six animals (a rhesus monkey, a rabbit, rats, a beagle, a goat, mice). At each, two of three looks (the card, watch it, hold out food), then **put it down**, **keep it for the trial** or **back to the clean room**: turning, the dose working in it, or the card on the wrong cage. Then sign the log | Scored. A turning one kept gets out: the town's infection up and heat at the lab |
 | **A cull** (the Haven, Bastion) | The town 30+ infected, and room for an escort | Out armed with their people to one point 70 to 120 m off. There the strays come, up to five, as the spawner has room, 40 to 60 m out. They stand with you until none is within 90 m (three minutes at most), then home | The town is 2 less infected. If their people are killed: no pay, morale 1 down |
 
 ### The factions' own duties
@@ -589,10 +665,10 @@ repeat soon. Two things the beats can do that a patrol's finds don't:
 | Duty | Rung | Kind | True when | How it plays | What it changes |
 |---|---|---|---|---|---|
 | **The School Room** | 1 | Simple | By day | Count the heads (eleven, and the slate says twelve). Four places a child hides, each 9 m off: look until you find them. Then why they won't come out, and what you do: sit with them, carry them in, or leave them and tell the teacher | The giver's regard; the child asks for you after |
-| **The Garden** | 1 | Simple, and worked out when a row is dying | By day, at a house | The house's **four beds are kept between visits** (below). This visit does what the neediest bed needs: dig it over, plant it from the seed tin (your choice of three), carry water to it from the well, or lift what's ripe and carry it to the kitchen. Then **one thing happens**, from eight | A harvest feeds the house (potatoes +2, beans +1, onions +1 and morale); what happens can give meat, a local, a rumour, regard either way |
+| **The Garden** | 1 | Simple, and worked out when a row is dying | By day, at a house | The house's **four beds are kept between visits** (below). This visit does what the neediest bed needs: dig it over, plant it from the seed tin (your choice of three), carry water to it from the well, or lift what's ripe and carry it to the kitchen. Then **one thing happens**, from eight. With **Things > Bed, dug / planted / ripe** slotted, the bed stands as what it is in front of you while you work it | A harvest feeds the house (potatoes +2, beans +1, onions +1 and morale); what happens can give meat, a local, a rumour, regard either way |
 | **The Door Round** | 2 | Worked out | Dusk or night | Four doors, each 18 m off: knock and listen at every one. One has someone living behind it who hasn't said so (a kettle just lifted off the heat, a curtain an inch further across, small wet footprints going in). One has the dead behind it. Then chalk one door for the house | Scored. The right door: reported, and a face at the glass asks you not yet (leave the chalk: a local; rub it out, shady: a local who'll come in when they can). The dead's door chalked: morale 1 down, and you're told |
-| **The Roll Call** | 2 | Worked out | Always | The list has twenty names and the kitchen fed nineteen. Five places to look (the coat pegs, the gate book, the beds, the bowls, the children) and time for three. Then write against the name: out and not back, dead in the night, or gone with their things | Scored, recorded. If it was a death, a dead man's identity card is on the blanket: hand it to the clerk, or keep it (shady) |
-| **The Swap Table** | 3 | Worked out | By day | Four come to the table one at a time, drawn from sixteen, each with something laid down and something they want (a wedding ring for two tins, a child with a dead man's watch, a man selling his coat in the cold, antibiotics that are aspirin, a spoon its owner recognises across the room, a man cornering the candles, a girl trading for her gran, a Red Hand face buying for the camp, banknotes for a loaf, pearls for a place on a list, forged travel papers...). You may do two of three things first (turn it over in your hands, ask where it came from, ask who it's for), then call it: take the trade, refuse it, or find another way | Scored: the right call is in what you learned. A trade taken feeds the house; the other way, when it's right, makes a local who speaks of it after |
+| **The Roll Call** | 2 | Worked out | Always | The list has twenty names and the kitchen fed nineteen. Five places to look (the coat pegs, the gate book, the beds, the bowls, the children) and time for three. Then write against the name: out and not back, dead in the night, or gone with their things. Written out and not back, two go along the wood road to look, and you can **go with them**: in a ditch with a turned ankle, in a barn loft too frightened to come down, or at the wood's edge, bitten (or nothing at all, if the name wasn't out) | Scored, recorded. If it was a death, a dead man's identity card is on the blanket: hand it to the clerk, or keep it (shady). The search: someone brought home is 2 more Favor and a local (morale up, or regard up); the dead brought back is recorded and morale 1 down; nothing found, where you wrote them out, is a wrong call |
+| **The Swap Table** | 3 | Worked out | By day | Four come to the table one at a time, drawn from sixteen, each with something laid down and something they want (a wedding ring for two tins, a child with a dead man's watch, a man selling his coat in the cold, antibiotics that are aspirin, a spoon its owner recognises across the room, a man cornering the candles, a girl trading for her gran, a Red Hand face buying for the camp, banknotes for a loaf, pearls for a place on a list, forged travel papers...). You may do two of three things first (turn it over in your hands, ask where it came from, ask who it's for), then call it: take the trade, refuse it, or find another way. Each trader stands at the table to be talked to, with a conversation of their own (all sixteen, `dialogue/duties/swap.rzd`): asking is a look, and the call is made in the talk | Scored: the right call is in what you learned. A trade taken feeds the house; the other way, when it's right, makes a local who speaks of it after |
 
 **The garden's beds.** Four a house, saved with the errands' counters: a bed is fallow, dug,
 planted or watered, with its crop and the day it went in. Potatoes and onions are ripe two season
@@ -609,9 +685,9 @@ whose bed it is, the well low.
 | Duty | Rung | Kind | True when | How it plays | What it changes |
 |---|---|---|---|---|---|
 | **The Loudspeaker Tape** | 1 | Simple | Always | Out to the speaker on its pole, 60 to 140 m off: open the housing, change the tape, and run the test (it's loud: noise where you stand). One of five things about the old tape or the pole: a soldier's voice saying names under the warning, a wren's nest in the horn, the battery stolen, one of the infected standing under it listening, an answer chalked on the pole by people in a mill | A tape handed in or names spliced into the loop (shady: a rumour); a found hook where the chalk says; the town 2 less infected |
-| **Gate Duty** | 2 | Worked out | By day | Four come to the barrier, from fourteen. For each you may do two of three things (hold the stamp to the light, read the dates and the name, ask their business), then **lift the barrier**, **turn them back** or **hold them for the sergeant**. Some papers are forged (an eagle with one wing longer, today's date in the stamp's own ink, a potato stamp); some true papers are in the wrong hands (a missing man's identity card, a pass for one held by five, a warrant from a Command that doesn't answer); some false ones should pass (a nurse a week out of date, a priest with a dead bishop's letter) | Scored. Someone wrongly passed is 1 Infamy; someone held is reported; the giver says what came of the ones you got right |
+| **Gate Duty** | 2 | Worked out | By day | Four come to the barrier, from fourteen. For each you may do two of three things (hold the stamp to the light, read the dates and the name, ask their business), then **lift the barrier**, **turn them back** or **hold them for the sergeant**. Some papers are forged (an eagle with one wing longer, today's date in the stamp's own ink, a potato stamp); some true papers are in the wrong hands (a missing man's identity card, a pass for one held by five, a warrant from a Command that doesn't answer); some false ones should pass (a nurse a week out of date, a priest with a dead bishop's letter). Each stands at the barrier to be talked to: asking their business is a look, and the call is made in the talk (one conversation for all fourteen, and six with a word of their own besides, `dialogue/duties/gate.rzd`) | Scored. Someone wrongly passed is 1 Infamy; someone held is reported; the giver says what came of the ones you got right |
 | **Stag at the Wire** | 2 | Worked out | Dusk or night | [The watch](#the-duties), Bastion's: four things come by where the others have three | As the watch |
-| **Kit Inspection** | 2 | Worked out, with a follow-on | Always | Three kits, from fourteen. Two of three looks at each (count it against the list, look down the barrel, go through the pack), then **pass the kit**, **write him up** or **deal with it quietly**. What's wrong varies: a magazine, the radio's spare battery, the section map or a morphine syrette missing; a private's letters and tags packed to go; a fouled barrel; a round in the chamber; a serial on the lost list; a bottle, a brick of cigarettes, a forged pass, a Red Hand armband. A **missing** thing, written up or dealt with, opens the search: go and find it, or leave it at a line in the book. Where it truly went, this time, is one of five: under the end bunk, in the grass where the section went to ground, sold over the wire to a toll man, traded to a woman down the lane for bread, or gone with the man who had it, who is sitting on a milestone. Then clean the spare rifle | Scored. A clean kit written up is morale 1 down. The search found: 2 more Favor. What you cover for makes a local, or a line later; what you report is spoken of |
+| **Kit Inspection** | 2 | Worked out, with a follow-on | Always | Three kits, from fourteen. Two of three looks at each (count it against the list, look down the barrel, go through the pack), then **pass the kit**, **write him up** or **deal with it quietly**. What's wrong varies: a magazine, the radio's spare battery, the section map or a morphine syrette missing; a private's letters and tags packed to go; a fouled barrel; a round in the chamber; a serial on the lost list; a bottle, a brick of cigarettes, a forged pass, a Red Hand armband. A **missing** thing, written up or dealt with, opens the search: go and find it, or leave it at a line in the book. Where it truly went, this time, is one of five: under the end bunk, in the grass where the section went to ground, sold over the wire to a toll man, traded to a woman down the lane for bread, or gone with the man who had it, who is sitting on a milestone. Then clean the spare rifle. Sold to a toll man, you can **go and buy it back yourself** at a real Red Hand pole within 2 km (else one far out): two tins from your pack, or leave it there | Scored. A clean kit written up is morale 1 down. The search found: 2 more Favor. Bought back: 3 more Favor, reported, regard up. What you cover for makes a local, or a line later; what you report is spoken of |
 | **The Field Telephone** | 3 | Worked out | Always | Test the line at the post, then out to the break, one of ten (a fallen pine, chewed, cut clean, thirty yards taken for snares, a junction box under water, a dead man wound in it, one of the infected still walking against it, a second wire twisted on, a cottage where someone sits with an earpiece, frost). Two of three looks (the wire's ends, the ground, along the wire), then say it **broke**, was **cut** or was **tapped**. Splice it and ring through: the far post, nobody, a voice that isn't ours (hang up and report, or keep them talking), or breathing. Then, if you like, run new wire to the further post | Scored on the reading of the break. Cut or tapped is reported. The further post wired: 2 more Favor, morale +1 |
 
 #### The Red Hand's duties
@@ -621,8 +697,8 @@ whose bed it is, the well low.
 | **Stripping a Wreck** | 1 | Simple | By day | Out to a car in the ditch, 60 to 140 m off: wheels, battery, seats, each by hand. Something slides out from under the driver's seat, one of six (a pistol in parts, a child's shoe, a bag of banknotes, a tin of photographs, something knocking in the boot, a road map with our tolls priced on it). Then load the handcart | What was under the seat: handed to the camp (reported), kept (shady), or let be |
 | **The Still** | 2 | Simple, by hand | Always | A potato, plum or beet mash: load it, light and feed the fire, then **the needle**: it's climbing past the band, or falling out of it, and you damp the fire or feed it (the wrong one boils it over, or lets it go cold). Then **the cut**: pour the first runnings away, or keep it all. One of eight things happens round it (a hand feeling along the shelf for a bottle, smoke going straight up, the boss wanting it stronger, a Haven woman at the fence wanting spirit for wounds, the coil cracked, another crew asking the method, the woodpile wet, one of the lads wanting a taste before the gate). Then bottle it | Scored on the needle and the cut. The cut skipped: morale 1 down, and two of the lads can't see straight. **A bottle is yours** (Props > Duty vodka: BanditGear's bottle; empty: no bottle). What you do for the Haven woman or the boy makes a local |
 | **The Count** | 2 | Worked out | Always | Four things off the tarp, from fourteen (tins, boots, a gold bar, pearls, bank cards in six names, banknotes, medicine, a rifle with the boss's wax thumbprint, a Bastion radio, a station master's watch, a child's coat, spanners, blank stamped passes, a signet ring). Two of three looks (turn it over, weigh it, check it against the tally), then **the crew's pile**, **the fence** or **the boss's pile**. The tally's own hand names who entered each line, and one of three has been rubbing lines out. Then the tally is one short: name him | Scored on the piles and on the name. The right name is reported; the wrong one takes a beating for it (morale 1 down) and knows whose word it was |
-| **The Toll** | 2 | Worked out | By day | **Five come up the road, drawn from fifty-one** by what's so: the outbreak's stage, the hour, rain, how sick the town is (a family with a handcart, a Haven courier with medicine, a deserter with his badges cut off, a Halcyon man with a case chained to his wrist, a child alone, an old man with nothing but news, a man with his hand in his coat, another crew's runner, a keeper with a shotgun, a cart of the dead, forged Bastion papers, a man who'll work it off, one who says the boss knows her, a coffin that is heavy for its size...). Two of three looks (what they carry, their hands and boots, where they're bound), then **take the toll**, **wave them through** or **turn them back**. Then one chance to do more, from four: walk a merchant through to the far marker, run down one who bolts before he reaches the trees (50 s, alive), follow one who turns off into the wood, or hold the bar when a Bastion patrol comes up. Then the boss counts the box | Scored on the five. A toll rightly taken: 1 more Favor. The extension: 2 more Favor and 1 Fame. The box handed over one thing short is shady |
-| **Spotter** | 3 | Worked out | By day | Up a hill 180 to 350 m off with the glass. One of five things to watch (the road, a Bastion post's gate, the Haven's truck road, Halcyon's people at a well, another crew's camp). Three watches, 20 s apart, each saying one thing seen. One of five things happens up there (your glass flashes: **lie still** for 20 s, or run and be sure of; cloud comes down; another crew's spotter climbs your hill; you see one of ours hand a package to one of theirs; someone who gave you soup walks toward what's planned). Then the slate: one line, of three, that the crew can use | Scored on the line. The right line is recorded, goes round as a rumour, and is kept as the camp's board for that target (a saved counter with the day). The infected's ground at dusk isn't one of the targets: that's the routine Rent's Due |
+| **The Toll** | 2 | Worked out | By day | **Five come up the road, drawn from fifty-one** by what's so: the outbreak's stage, the hour, rain, how sick the town is, and who's at odds and who holds the road (a feud with the Haven or Halcyon keeps their courier or technician off it; a Bastion post within 1.5 km or a truce brings Bastion's soldiers, papers and crier up it, a feud keeps its soldiers off and brings its patrol to the bar) (a family with a handcart, a Haven courier with medicine, a deserter with his badges cut off, a Halcyon man with a case chained to his wrist, a child alone, an old man with nothing but news, a man with his hand in his coat, another crew's runner, a keeper with a shotgun, a cart of the dead, forged Bastion papers, a man who'll work it off, one who says the boss knows her, a coffin that is heavy for its size...). Two of three looks (what they carry, their hands and boots, where they're bound), then **take the toll**, **wave them through** or **turn them back**. Each stands at the pole to be talked to: asking where they're bound is a look, and the call is made in the talk (one conversation for all fifty-one, and twelve with a word of their own besides, `dialogue/duties/toll.rzd`). Then one chance to do more, from four: walk a merchant through to the far marker (he walks beside you, a body with his mule's worth of nerves, until the marker), run down one who bolts before he reaches the trees (50 s, alive), follow one who turns off into the wood, or hold the bar when a Bastion patrol comes up. Then the boss counts the box | Scored on the five. A toll rightly taken: 1 more Favor. The extension: 2 more Favor and 1 Fame. The box handed over one thing short is shady |
+| **Spotter** | 3 | Worked out | By day | Up a hill 180 to 350 m off with the glass. One of five things to watch (the road, a Bastion post's gate, the Haven's truck road, Halcyon's people at a well, another crew's camp). Three watches, 20 s apart, each saying one thing seen. One of five things happens up there (your glass flashes: **lie still** for 20 s, or run and be sure of; cloud comes down; another crew's spotter climbs your hill; you see one of ours hand a package to one of theirs; someone who gave you soup walks toward what's planned). Then the slate: one line, of three, that the crew can use | Scored on the line. The right line is recorded, goes round as a rumour, and is kept as the camp's board for that target (a saved counter with the day). The infected's ground at dusk isn't one of the targets: that's the routine Rent's Due. **The crew acts on it**: at the camp's next toll within two season days the boss says what the crew did on the mark (the carts taken, a cart walked past Bastion's barrier, a third off the Haven's truck, Halcyon's handcart, the other crew a hut short), morale up and a rumour, and the mark is used. Simplified: what the crew did is said, not played; no convoy or truck moves |
 
 **The toll's numbers.** Fifty-one passers-by are written; twenty-eight can come any day, and
 the rest only when the world says so (six from the Collapse on, three before it, six while the town
@@ -636,10 +712,10 @@ All five are worked out and led.
 | Duty | Rung | True when | How it plays | What it changes |
 |---|---|---|---|---|
 | **The Sample Round** | 2 | By day | Four marked spots, each 14 m out (the pump handle, the market trough, the church hall door, the mill race): a swab at every one, and the strip stays white, goes pink slowly, or goes red before the tube is capped. Then one mark on the station's map: where it's coming from. Then one of three things (a child with a cup at the spot you marked, a face at a window asking what the suit has found, a tear in your own suit) | Scored. The right mark: reported, and the town 2 less infected. What you tell the man at the window is a rumour either way |
-| **The Decon Line** | 2 | Always | **Five arrivals, drawn from fifteen, with five faults, drawn from twenty-five, shared among them** (one may carry two, one none). For each, two of three checks (the lamp over the suit, the seals and the visor, the case and the log), then **pass them through**, **run them through again**, **send them to the room**, or **report it to the director**. A fault shows only at its own check, and the worst one decides the right call: a splash on a boot is a re-run, a cracked visor or a bite pressed into the forearm is the room, a tube missing from a case or a kitten asleep in one is a report. After the third, the rinse runs dry: carry water up, or run the last two without | Scored. A fault passed: the town 2 more infected and 1 Infamy. A clean one held or reported: morale 1 down. Carrying the water: 1 more Favor |
+| **The Decon Line** | 2 | Always | **Five arrivals, drawn from fifteen, with five faults, drawn from twenty-five, shared among them** (one may carry two, one none). For each, two of three checks (the lamp over the suit, the seals and the visor, the case and the log), then **pass them through**, **run them through again**, **send them to the room**, or **report it to the director**. A fault shows only at its own check, and the worst one decides the right call: a splash on a boot is a re-run, a cracked visor or a bite pressed into the forearm is the room, a tube missing from a case or a kitten asleep in one is a report. **The tank and the drum run short by count**: the tank holds four rinses and the drum six sprays; passing someone uses one of each, running them through again two of each, the room one rinse. When either is empty the line stops after that arrival: carry water up (or mix a new drum from the store, 1 more Favor), or go on without (the town more infected) | Scored. A fault passed: the town 2 more infected and 1 Infamy. A clean one held or reported: morale 1 down. Carrying the water: 1 more Favor |
 | **The Incinerator** | 2 | Always | Four sealed bags, from twelve. Two of three checks (the label against the log, the weight, the feel through the bag), then **the fire**, **set aside and reported**, or **cut open**. The label, the weight and the feel don't always agree: clinical waste that's a man's weight with a wristband under the plastic; expired cultures with one tube warm; a bag that was at the other end of the trolley a minute ago; sharps that are a pound of wedding rings; a canvas bag of rifle rounds; sealed, in-date morphine written off as expired; the director's files. Then the log is one short, and a porter has one more, off the book | Scored. What's set aside is reported. The porter's bag: burn it (shady), refuse it (reported), or open it: every letter the wards have written since the road closed, to burn or to carry to the Haven's board (shady: a rumour, and the porter remembers) |
-| **The Observation Ward** | 3 | Until the cure is out | Three beds, from eight conditions (a plain fever; the infection, early; the infection, turning; the trial dose doing it; nothing wrong and wants out; nothing wrong and wants the dose; fear; hunger). At each, **six signs taken by hand and time for four** (the temperature, the pulse, the torch in the eyes, the skin and any bite, how they speak, the chart at the bed's foot). Then what it is (the true one among three), then what's to be done (fluids and cooling, isolation and the doctor, restraints, the doctor, the truth, a meal). Then the researcher at the door, who'd like the fevers written as responses | Scored on each diagnosis and each treatment. **A turning missed** (written as anything else, or not restrained) sits up behind you: morale 1 down, the town 2 more infected, and you're told. Charts written true: recorded, regard up. Written her way: shady, 1 more Favor. It never touches the cure's count |
-| **The Cold Chain** | 3 | Always | Take the box from the cold room. One of six cargoes, each with one thing it can't bear: trial vials (no waiting), blood samples (not opened), a culture in a flask (no rough ground), four doses (they arrive counted), sealed results (not opened), the heavy cold box (no rough ground, never set down in the wet). Two things happen on the road, from eight (a corporal who wants it opened, a toll bar, a woman on her knees for one dose, the cold pack split, the bridge out, something keeping pace in the hedge, rain like a tap, a man in a good coat who'd pay to look), and each offers three ways through: one opens it, one costs time, one is rough. Then the far door, one of three (the power out, nobody there, the count one short), and the manifest | Scored: a way the cargo can bear is right. With the doses, giving the woman one of the four is wrong, and she remembers it; telling her which door is right. Nothing in the box is ever the player's |
+| **The Observation Ward** | 3 | Until the cure is out | Three beds, from eight conditions (a plain fever; the infection, early; the infection, turning; the trial dose doing it; nothing wrong and wants out; nothing wrong and wants the dose; fear; hunger). At each, **six signs taken by hand and time for four** (the temperature, the pulse, the torch in the eyes, the skin and any bite, how they speak, the chart at the bed's foot). Then what it is (the true one among three), then what's to be done (fluids and cooling, isolation and the doctor, restraints, the doctor, the truth, a meal). Then the researcher at the door, who'd like the fevers written as responses | Scored on each diagnosis and each treatment. **A turning missed** (written as anything else, or not restrained) sits up behind you: morale 1 down, the town 2 more infected, and you're told. Charts written true: recorded, regard up. Written her way: shady, 1 more Favor. **A round done well counts**: every diagnosis and treatment right and the charts written true adds 1 research to the cure (as a mission's research, inside the backlog's room), once a place a season day |
+| **The Cold Chain** | 3 | Always | Take the cold box (a case stands at the prompt: Props > Duty tray, else Crate, else the base game's cardboard box). One of six cargoes, each with one thing it can't bear: trial vials (no waiting), blood samples (not opened), a culture in a flask (no rough ground), four doses (they arrive counted), sealed results (not opened), the heavy cold box (no rough ground, never set down in the wet). Two things happen on the road, from eight (a corporal who wants it opened, a toll bar, a woman on her knees for one dose, the cold pack split, the bridge out, something keeping pace in the hedge, rain like a tap, a man in a good coat who'd pay to look), and each offers three ways through: one opens it, one costs time, one is rough. Then the far door, one of three (the power out, nobody there, the count one short), and the manifest | Scored: a way the cargo can bear is right. With the doses, giving the woman one of the four is wrong, and she remembers it; telling her which door is right. Nothing in the box is ever the player's. **The rules are felt on the way**: a cargo that can't wait warms after six minutes on the road, and one that can't bear rough ground rings at a sprint, a jump or a fall (a ride counts too); each is a wrong call, two jolts at most, and is said once |
 
 **The decon line's numbers.** Fifteen arrivals and twenty-five faults are written. Nine faults
 show under the lamp, eight at the seals and the visor, eight in the case and the log; ten are a
@@ -651,16 +727,26 @@ checks of three on each: about ten minutes.
 The author's rule: *"something interesting should happen or see something or whatever. Doesn't
 just have to be shooting."* A duty has things on the way to see, find and decide, in person
 (`RZ_DutyScenes`, the beats in `RZ_DutyFinds`). A **beat** is a moment at a spot: one line said as
-you come within 9 m, and one to three things you can do about it, each its own
-[work site](#work-sites) side by side, a hold with your hands. What you choose is applied at once
-and remembered by whoever it concerns.
+you come within 9 m, and one to three things you can do about it, each a [work site](#work-sites),
+a hold with your hands. **Several at the one spot are one prompt** (the rule:
+[UI.md](UI.md#default-first-then-menus), "One spot, one prompt"): its name (*The far door*, a
+patient's name), opening the object menu with each thing to do as a row; the row picked is then
+that prompt's hold, so it's still done with your hands. A thing set out at a place of its own to go
+and look at (more than 3 m off, a patrol's finds) keeps its own prompt there. What you choose is
+applied at once and remembered by whoever it concerns.
 
 | | |
 |---|---|
+| The spot's name | The beat's own name if it has one, else who stands there to talk to (*Someone at the barrier*), else what its line names first when that's a thing (*"The far door. No lamp over it."* gives *The far door*), else the duty's title |
+| A row you can't do | One needing something from your pack you haven't got is greyed, with why (*You haven't got that on you: a tin of food.*) |
+| Changing your mind | Walk off a few steps, or leave it a minute, and the prompt is the list again. With one thing left at the spot, it's that thing's plain hold |
+| At the way in | What's said at a gate stands at the place's real way in (`AT_ENTRY`): the decon line, gate duty's barrier, the toll's bar and what comes to it, a watch's post. The faction place's own gate within 120 m, else the road where it comes into the town, else the giver's door, and the log says which (`Duty scene: errand N, <beat> at the way in: ...`) |
+| Without the object menu | UI > Object row layout empty, or a player whose client couldn't open it: each thing stands as its own prompt side by side, as before |
 | What a choice can change | The giver's regard (up or down); a **local** made at the nearest house who remembers you; a line the giver says to you some hours later (a callback); a record in the world's memory; a rumour for 6 hours; the place's food or its faction's morale; the nearest town's infection (by 2); noise where you stand; a found hook for the [strangers](#strangers) (someone hiding there); a thing in your pack (a leg of meat, a post's ration, Props > Watch); the job's Favor; small Fame; Infamy |
 | A find reported | Each find put in the report is the giver's regard up, and 1 more Favor for the job (twice at most). What you reported can come back as what the giver says when you hand in (*"They brought that truck's load in this morning. That was yours."*) |
 | A shady choice | Pocketing, or keeping something from the people you work for, costs only **if it's seen**: their people within 20 m of you, or the place itself within 25 m. Seen: it's undone, 1 or 2 Infamy with the faction, the giver's regard down, and they say so when you report. Unseen: it's yours, and nobody knows |
 | The pay | The choices' Favor is added to the way's before the ledger's caps, 3 at most. A scored scene (each beat has a right call) pays by the share right, with Fame only when every call was |
+| Where a beat stands | Beside the giver's place, at its gate, out on the road, or near the last beat, in the open. A beat whose words name a door stands on the doorstep of a real house's outside door (the door finder the locks use): the Cold Chain's far door 180–350 m off, a debt's door 12–60 m from the last; with no such door anywhere near, in the open as before. A thing to take (the Cold Chain's box) always stands at its prompt: Props > Duty tray, else Crate, else the base game's cardboard box |
 | Finding the next beat | The errand's place moves to each beat as it opens, so the journal and the tracker point at it, and a beat more than 15 m off is said with its direction (*About 120 m north-east.*). A patrol's finds are said by the patrol, and leave the errand's place at the gate |
 | No work sites | The first thing you could do at a beat is what's done, by standing there |
 
@@ -707,8 +793,8 @@ and the refusals in [Being asked](#being-asked)):
 | Shown | When |
 |---|---|
 | *You've done your shift. Ask again in a while (20 min at most)* | Every duty you could have is on its gap |
-| *You've a job here already. Finish that one* | You hold an errand or a duty at this place |
-| *Every job here is taken. Ask again when one is done* | Three duties are live at the place |
+| *You've a chore of theirs already. Finish that one* | You hold an errand or a duty at this place (a job, a quest or the opening's chain never counts) |
+| *Every chore here is taken. Ask again when one is done* | Three duties are live at the place |
 | *Needs Known with Bastion* (on a way's reply, not the ask) | The patrol's long round, below rung 3 |
 | *Everyone has work in hand. Ask again shortly* | The server's 12 live errands are all out |
 | *Nothing while you're Watched with Bastion, except to make amends* | Watched, and no amends work is true |
@@ -749,6 +835,8 @@ and the refusals in [Being asked](#being-asked)):
 | **Dress Rehearsal** (disguises) | crews, a Red Hand named person; Known with the Red Hand, below Known with Bastion; disguises on | a Bastion road post within 2 km | Walk up to it in Bastion kit and pass the look, 10 s at the barrier, and walk back: 10 Favor, 2 Fame. At the barrier and not passing: it's over, and the open channel laughs at someone in borrowed green (no name) |
 | **The Officer's Coat** (house; disguises) | a Haven named person; you're disguised in Bastion kit; disguises on | a Bastion holding or post within 1.5 km | Tell her you're not Bastion (regard). Take the tin "for the paperwork": the house −1 food, a lie found by rumour (+3 Haven Infamy). [Known: Bastion] ask at the post yourself (10 s): 4 Favor, and her answer: *"On the roster as killed, or struck off? Which?"* |
 | **The Name on the Tape** (the dead; disguises) | a Bastion named person; Known with Bastion; disguises on | one of Bastion's people died within 1.5 km this season day and is still out there (the nail list, [REPUTATION.md](REPUTATION.md#whose-kit-it-was)); never to whoever killed them | Bring the tag and jacket home (15 s where they fell): 4 Favor, 1 Fame; the name is marked home and read on the nightly call. [Known: Red Hand] sell the jacket to the fence: 10 Red Hand Favor, and the board lists "kit lost". Once per dead name |
+| **The Patrol That Didn't Come Back** ✅ (the props work) | a Bastion named person | the nearest town to the post, within 1.5 km, is 50+ infected: the patrol sent in didn't come out | Go into the town to where they stopped (a spot 40 to 120 m from its centre, the effects there) and take an identity card (10 s, a carried item: **Props > Soldier's ID**, `RZ_SoldiersID_Carried.et`), and carry it home yourself: 5 Favor, 1 Fame, recorded. [Known: Red Hand] sell the card to the fence (a dead man's name is a door): 10 Red Hand Favor, and the section stays missing |
+| **False Hope at the Line** ✅ (the props work) | a Haven house's named person | a house of five or more whose last meal ran short or that lost people lately: a forger at its gate sells papers for the sealed checkpoint | Buy a set off him for proof at the gate (8 s, a carried item: **Props > Forged papers**, `RZ_Passport_Forged.et`) and carry it to the giver: 5 Favor, recorded. Or see him off the line (8 s): 3 Favor. Or leave him be: a family of the house walks to the checkpoint with his papers, and the house is one fewer (nothing goes through the perimeter) |
 | **Spot the Tells** (Bastion; disguises) | a Bastion named person; Known with Bastion; disguises on | two or more different players caught by Bastion within 2.5 km in the last 2 season days | Find the scout by the tells (20 s among the three on duty): right (always with a Soldier or Police background, else two times in three) 5 Favor, 2 Fame; wrong, Private Hollis spends the night in the stockade and nobody pays. [Known: Red Hand] take the scout's money and point at Hollis: 10 Red Hand Favor, 35% it comes out (+5 Bastion Infamy) |
 | **Paint** (the crews; disguises; with Name Day's Brush) | a Red Hand named person; Known with the Red Hand; disguises on | night, a Bastion road post within 2.5 km | Paint a red hand on the barrier (hold, 12 s): in Bastion kit asking for a light (you must be passing as Bastion at the barrier, else it's over), from the back unseen, or in plain sight (Bastion's timed grudge and +3 Bastion Infamy). 2 Fame, the crew name Brush if you have none, and "a civilian with a paint tin" on Bastion's board |
 | **Wrong Way Round** (the crews) | a Red Hand named person; Trusted with the Red Hand | a lived-in house within 2 km with no Red Hand holding within 1.5 km of it | Look at the house's backwards red hands (10 s there), then: tell the boss (2 Fame; the house loses a person; +5 Haven Infamy); take a cut (6 Haven Favor; 35% the house finds out, +5 Haven Infamy); warn them off (2 Haven Fame); recruit them (2 Fame; the house loses a person) |
@@ -1014,21 +1102,24 @@ system hands a player, already taken (`RZ_Errands.Hand`, code in `Guidance/RZ_Op
 `RZ_OpeningSteps.c`). They
 are the **only errands, and the only jobs, handed to the player rather than asked for**:
 `RZ_ErrandDef.IsOpening()` and `RZ_Errand.IsOpening()` are true for them and for nothing else. With
-someone outside, each step is handed in a conversation the player opens: before it, a **talk
+someone outside, the first step is handed in a conversation the player opens: before it, a **talk
 objective** is handed and tracked, and talking to the contact ends it and hands the step there
-(nobody outside, or the contact dead: the step is handed at once).
+(nobody outside, or the contact dead: the step is handed at once). Every step is done where it's
+done (`m_bEndsThere`): none sends you back. The next starts there, said by the contact walking with
+you, or given by the next person you're sent on to (*Find <name>*, a talk objective at their place);
+the patterns are in [DESIGN.md](DESIGN.md#openings-how-every-life-starts).
 
 | Step | Key | Way | The step |
 |---|---|---|---|
-| ✅ Outside the Door, Back to *the contact* (the talk objectives) | `opening.talk`, `opening.talk.next` | talk | "Talk to *the contact*.": never done by being there (`StepCounts` false), only by opening talk with them, when it ends quietly (no past job); 45 minutes before it lapses, which ends the opening |
-| ✅ Across the Road | `opening.search`, `opening.search.short` | sneak | a building 50–250 m from the contact (quiet): hold **Search it, quietly** at the crate there (8 s; 6 s), then back to them (off: 20 s, 10 s there) |
-| ✅ Water | `opening.water` | do | the nearest well or water tower: hold **Fill what you can carry** at the cans by it (8 s; off: 15 s there), then back |
-| ✅ The Cut | `opening.hand` | give | one medical item handed over at the contact, once you've chosen to on the talk screen (`opening.tend_cut`) |
-| ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | give, do | a medical item at the contact once you've chosen to on the talk screen (`opening.tend_fever`); **Fill what you can carry** at the well (8 s) |
-| ✅ The Clock | `opening.clock`, `opening.clock_med` | give | an antidote (or a medical item) at the contact once you've chosen to on the talk screen (`opening.tend_clock`, `opening.tend_clock_med`); 10 minutes before it lapses |
+| ✅ Outside the Door, Find *the next person*, Back to *the contact* (the talk objectives) | `opening.talk`, `opening.talk.find`, `opening.talk.next` | talk | "Talk to *the contact*." (Find: "Find *Ruth* at *Ruth's house in Morton*. Talk to them."; Back to only when no next person could stand): never done by being there (`StepCounts` false), only by opening talk with them, when it ends quietly (no past job); 45 minutes before it lapses, which ends the opening |
+| ✅ Down the Road | `opening.search`, `opening.search.short` | sneak | a building 150–450 m from the contact (quiet), named for what it is (the chemist's, the old aid post, the vet's farm, the doctor's house...: [PLACES.md](PLACES.md#a-place-is-what-its-words-say)): hold **Search it, quietly** at the crate inside it (8 s; 6 s), done there (off: 20 s, 10 s there) |
+| ✅ Water | `opening.water` | do | the nearest well or water tower: hold **Fill what you can carry** at the cans by it (8 s; off: 15 s there), done there |
+| ✅ The Cut | `opening.hand` | give | one medical item handed over at the giver, when you pick the hand-over reply (*[Errand] Hold still. Let me dress that hand.*) |
+| ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | give, do | a medical item at the giver when you pick the hand-over reply; **Fill what you can carry** at the well (8 s) |
+| ✅ The Clock | `opening.clock`, `opening.clock_med` | give | an antidote (or a medical item) at the giver when you pick the hand-over reply; 10 minutes before it lapses |
 | ✅ The Pump | `opening.pump` | do | 5 s at a petrol station's pump with fuel in a can |
 | ✅ Downwind | `opening.downwind` | sneak | 30 s within 25 m, only while hidden (`m_bUnseen`), quiet |
-| ✅ The Station Keys | `opening.keys` | do | inside the locked building whose key the contact gave you |
+| ✅ The Station Keys | `opening.keys` | do | inside the locked building whose key the giver gave you |
 | ✅ The Toll | `opening.toll` | talk | 10 s within 30 m of a Red Hand toll with no shot near it |
 | ✅ A Sample | `opening.sample` | do | at the remains with a sample in your pack (the crate or effects prop: none) |
 | ✅ Open Channel | `opening.channel` | do | anywhere, once you've answered on the open channel |

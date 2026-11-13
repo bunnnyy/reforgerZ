@@ -41,6 +41,12 @@ class RZ_PlacedSettings
 
 	[Attribute("40", desc: "Most things kept track of. Past it the longest-unused one out of sight is cleared early")]
 	int m_iMaxTracked;
+
+	[Attribute("4", desc: "Fire heat: heat a minute a lit fireplace a player built makes where it stands, with a player within 60 m (the light and the smoke draw the infected). 0 = none")]
+	float m_fFireHeat;
+
+	[Attribute("2", desc: "Fire heat at night: the fire's heat is multiplied by this between dusk and dawn (it shows further)")]
+	float m_fFireNightMult;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -218,6 +224,7 @@ class RZ_PlacedThings
 		m_fTimer = CHECK_INTERVAL;
 		int now = RZ_SeasonClock.Now();
 		Look(players, now);
+		Burn(players);
 		DropGone(players);
 		ClearUnused(players, now);
 	}
@@ -264,6 +271,28 @@ class RZ_PlacedThings
 				if (RZ_Util.NearestDistance(at, players) <= use)
 					t.m_iUsed = now;
 			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A lit fire a player built, found this minute within 60 m of a player, makes heat where it stands once a
+	//! minute (more at night): the light and the smoke carry. A fire nobody is near makes none (the
+	//! infected near nobody are data).
+	protected void Burn(array<IEntity> players)
+	{
+		if (m_Settings.m_fFireHeat <= 0 || !m_GM.GetHeat())
+			return;
+
+		float amount = m_Settings.m_fFireHeat;
+		if (RZ_GameTime.IsNight())
+			amount = amount * Math.Max(1, m_Settings.m_fFireNightMult);
+
+		foreach (RZ_PlacedThing t : m_aThings)
+		{
+			if (!t.m_bFound || !RZ_Fires.IsLit(t.m_Entity))
+				continue;
+
+			m_GM.GetHeat().AddHeat(t.m_vPos, amount);
 		}
 	}
 

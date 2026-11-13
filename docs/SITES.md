@@ -175,7 +175,9 @@ as **Foot min** and **Foot max**. A prop with no measured box falls back to the 
 which have no mesh box). A prop whose box says more than what stands on the ground takes the size
 typed in `pieces.FOOT_FORCED` (the guard tower: its box takes in the platform and the stair,
 7.5 × 8.7 m; its legs stand on 4.6 m square). The openings' and Traces' compositions use the same
-props, so they're measured too. `render.py` draws every prop at its measured size and offset.
+props, so they're measured too. `render.py` draws every prop at its measured size and offset. The
+Round's cot and canvas shelter ([ERRANDS.md](ERRANDS.md#the-round-at-the-beds)) use their boxes from
+this file too, copied into `RZ_DutyRound.Box`: after a new measurement of either, copy the numbers there.
 
 The first measurement showed why pieces clipped: a `WoodLog_01_A` is a 6 m trunk (drawn as 2 m), the
 small camo net 13.6 m across (4 m), a long sandbag 3.5 m (2 m), the big US tent 6.3 × 9.9 m (5 × 7),

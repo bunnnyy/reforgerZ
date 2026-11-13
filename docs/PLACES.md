@@ -3,8 +3,8 @@
 Code: `World/RZ_PlaceNeeds.c` (the needs, the checks, the finder), `World/RZ_PlaceAudit.c` (the
 audit), and the pickers that use them (below). Server only.
 
-A task's words must be true where it puts you. "Search the house over the way" needs a house over
-the way; "what's left of a big one by the road" needs a road, and the remains lying by it; "the well
+A task's words must be true where it puts you. "Search the house down the road" needs a house down
+the road; "what's left of a big one by the road" needs a road, and the remains lying by it; "the well
 in Tisy" needs a well, in Tisy. Every kind of task that names its place or a thing at it has a
 **need**: place flags with their ranges, and the things its words name. Its picker tries candidates
 against the need and takes the first that fits, or offers nothing; it never puts a task where its
@@ -19,15 +19,17 @@ same code.
 - [The flags](#the-flags)
 - [The things](#the-things)
 - [The needs](#the-needs)
+- [A place is what its words say](#a-place-is-what-its-words-say)
 - [How a picker uses a need](#how-a-picker-uses-a-need)
 - [The live check](#the-live-check)
 - [The audit](#the-audit)
 - [Results](#results)
+- [Offer reach](#offer-reach)
 - [Not covered](#not-covered)
 
 ## Why: the forest by Camurac
 
-On Everon the opening's first step, **Across the Road** ("Search the houses over the way, quietly"),
+On Everon the opening's first step, **Down the Road** ("Search the house down the road, quietly"),
 put the player in a forest on a rocky slope by Camurac. The root, found by the audit below:
 
 1. **Step 1 made the place up.** With no building 50–250 m from the contact, it took a random point
@@ -131,15 +133,15 @@ or way isn't offered here.
 
 | Need | The words | Flags | Things | Picked by |
 |---|---|---|---|---|
-| `opening.start` | outside the door you came out of, someone waiting | BUILDING(any/12) NOT_STEEP(30) (houses over the way are the roll's ranking, not its words) | NPC the contact within 15 m (empty: nobody stands there, the scene's note points at the nearest work) | the openings' place roll |
-| `opening.search` | the house (the chemist's, the garage...) over the way | BUILDING(house or the background's kind/15) NOT_STEEP(30) | | Across the Road (step 1) |
+| `opening.start` | outside the door you came out of, someone waiting | BUILDING(any/12) NOT_STEEP(30) (houses down the road are the roll's ranking, not its words) | NPC the contact within 15 m (empty: nobody stands there, the scene's note points at the nearest work) | the openings' place roll |
+| `opening.search` | the house (the chemist's, the garage...) down the road; the next person's house | BUILDING(house or the background's kind/15) NOT_STEEP(30), checked outside its side; the spot inside, on its ground floor | | Down the Road (step 1), the next person (Find *name*); its words by what's there ([below](#a-place-is-what-its-words-say)) |
 | `opening.water` | the well | WATER_SOURCE(8) | | Water, Water for the Fever |
 | `opening.pump` | the petrol station | BUILDING(fuel/20) | | The Pump |
 | `opening.downwind` | the pack's ground | NOT_STEEP(35) | | Downwind, by a lair |
 | `opening.treeline` | the tree line where they cross | TREES(4/40) NOT_STEEP(35) | | Downwind, with no pack near |
-| `opening.keys` | the locked house over the way, and its key | BUILDING(any/6) | SLOT the key (not offered) | The Station Keys |
+| `opening.keys` | the locked building near the giver, and its key | BUILDING(any/6) | SLOT the key (not offered) | The Station Keys |
 | `opening.sample` | what's left of a big one by the road, and the sample by it | ROAD(12) NOT_STEEP(25) NOT_LOCKED | REMAINS within 4 m, ITEM the sample within 4 m (either slot empty: not offered) | A Sample |
-| `opening.sample.yard` | what's left of a big one in a yard over the way, and the sample by it | HOUSES(1/20) NOT_STEEP(25) NOT_LOCKED | the same | A Sample, with no road near |
+| `opening.sample.yard` | what's left of a big one in a yard down the road, and the sample by it | HOUSES(1/20) NOT_STEEP(25) NOT_LOCKED | the same | A Sample, with no road near |
 | `opening.gate` | the gate | NOT_STEEP(30) | | Hold the Gate |
 | `opening.debt` | the house with the owing in it | HOUSES(1/15) | | The Debt |
 | `opening.toll` | the Red Hand's toll or gate | NEAR_FACTION(Red Hand/120) | | The Toll |
@@ -157,7 +159,7 @@ or way isn't offered here.
 | `errand.ridge` | up {place}: the ridge | HIGH_GROUND(+8) | | Weather, Write It Down |
 | `errand.farmhouse` | the farmhouse {place} | BUILDING(farm/25) | | Not Past the Chapel |
 | `errand.orchard` | the orchard at {place} | IN_TOWN(+300) BUILDING(orchard/40) | | The Last Apples |
-| `errand.police`, `errand.school`, `errand.hall` | the police station, the school, the hall in {place} | IN_TOWN(+300) BUILDING(police, school, public/30) | | Clean Rifles, Clean Paper, the hall's chairs |
+| `errand.police`, `errand.school`, `errand.hall`, `errand.shop` | the police station, the school, the hall, the shops in {place} | IN_TOWN(+300) BUILDING(police, school, public, shop/30) | | Clean Rifles, Clean Paper, the hall's chairs, The Newcomer's coat |
 | `errand.prop.effects`, `.crate`, `.papers`, `.parts`, `.car` | the way's prop at the place | | PROP within 6 m (the car 8 m; empty: words only, and a warning) | a way with a prop |
 | `work.site` | beside the thing you work at: its before look and its prompt | NOT_STEEP(25) NOT_LOCKED | SLOT the work site's prompt (empty: the step is done by staying there) | `RZ_WorkSites.Spot`: a work site's spot beside its place (an errand's at the giver's place or gate 3–6 m off, at water 1.5–3 m; a job's by its engine, well, gate, door, charge or hive), looking twice and then four times as far when none fits; else the place itself; every site opened is checked live |
 | `mission` | at {town}: the town its brief names | IN_TOWN(+1500) | | every contract, event and stage, when it starts (live only). The shared town picks (`RZ_Mission.PickSettlement`, `PickSettlementAway`) take a town at the line only when no other fits |
@@ -166,6 +168,50 @@ or way isn't offered here.
 An errand way names its need in `RZ_ErrandWay.m_sNeed`; without one, its place kind's (`NeedKey`).
 A routine whose ask names `{next_town}` names the town its next-town way goes to, and isn't true
 (not dealt) when no town near has the place.
+
+## A place is what its words say
+
+A task's words that name a kind of building (the chemist's, the garage, the farm, the hall, the
+shops, the police station, the school) are true of the building it sends you to, by one rule on the
+building's prefab name, `RZ_PlaceCheck.WordsTrue`. The pickers' kinds (`RZ_OpeningRoll.KindOf`, used by
+the need flag BUILDING and by `RZ_WorkSites.Indoors`) ask it as well as the door slots' kind:
+
+| Kind | The words | True of (by prefab name) | Never |
+|---|---|---|---|
+| `clinic` | the chemist's | pharmacy, drugstore, apothecary, clinic, hospital, surgery, medical | anything military, a tent, a barracks, a camp, a shed, a vet's |
+| `aid` | the old aid post | the army's medical buildings (medical or hospital, under `/military/`) | tents and camp pieces |
+| `farm` | the farm, the vet's farm | farm, barn, stable, cowshed, pigsty | a shed |
+| `garage` | the garage | garage, workshop, auto or car service, mechanic, repair | |
+| `shop` | the shop, the shops | shop, store, market, kiosk, grocery, pub, bar, café, restaurant | anything military or industrial, a workshop |
+| `public` | the hall | town hall, school, church, chapel, office, hall, culture | fuel and gas stations, anything military |
+| `house` | the house, the doctor's house | a house (`IsHouse`: not a shed, garage, barn, ruin...) | |
+| the rest | the police post, the school, the petrol station, the radio hut, the old barracks | the landmark finder's words | |
+
+Vanilla's maps have no civilian chemist's: a medical building there is the army's (a wooden medical
+barracks, a field hospital). Before this rule a Nurse's *Down the Road* could send you to "the
+chemist's" that was a wooden barracks or a shed in a field.
+
+**Words by what's there.** A step whose words name a building has a variant for each kind it can
+send you to, picked by what stands near the giver, in this order; with none of them, it isn't
+offered (never with words that would lie). The step's line, the giver's lines, the tracker and the map
+all use the variant picked.
+
+| Task | Variants, in order |
+|---|---|
+| *Down the Road*, a Nurse or a Doctor | the chemist's (a real pharmacy) → the old aid post (the army's medical building) → the vet's farm (a farmhouse or barn) → the doctor's house (a house) |
+| *Down the Road*, a Lab Technician | the school → the chemist's → the old aid post → the house |
+| *Down the Road*, a Mechanic | the garage → the petrol station → the house |
+| *Down the Road*, a Hunter | the farm → the house |
+| *Down the Road*, a Police officer | the police post → the hall → the house |
+| *Down the Road*, a Soldier | the old barracks → the hall → the house |
+| *Down the Road*, a Radio ham | the radio hut → the house |
+| *Down the Road*, the Unemployed | the shop → the house |
+| *Down the Road*, anyone else | the house |
+| Errands that name a building (Clean Rifles' police station, Clean Paper's school, the hall's chairs, The Newcomer's shops, Not Past the Chapel's farmhouse) | that building in a town near the giver, else not offered |
+
+**Inside it.** *Down the Road*'s search stands inside the building its words name, on its ground
+floor, at one of the loose loot's anchors (`RZ_WorkSites.FloorOf`); a building with no anchors (a
+shed, a ruin) isn't picked. An errand's indoor work does the same ([ERRANDS.md](ERRANDS.md#work-sites)).
 
 ## How a picker uses a need
 
@@ -185,11 +231,15 @@ and returns the first that passes the checks; zero when none does:
 giver's places each time a talk menu is built). The pickers:
 
 - **The openings' roll** (`RZ_OpeningPlaces.c`): each candidate building ranked (a fitting building
-  with houses 50–250 m off, a house with them, a lone fitting one, a lone house), the best kept;
+  with houses 150–450 m off, a house with them, a lone fitting one, a lone house), the best kept;
   12 towns; a second pass at half the clear distances (without the last starts) before the spawn
   point. Why doors were refused is counted (`WhyText`) and logged with a spawn-point fallback.
-- **Step 1** (`RZ_Openings.PickSearch`): a house 50–250 m from the contact, the background's kind
+- **Step 1** (`RZ_Openings.PickSearch`): a house 150–450 m from the contact, the background's kind
   first, the spot outside its side facing the contact; none, and the chain skips step 1.
+- **The next person** (handed on, `RZ_Openings.FindNext`): a house 200–600 m on from step 1's place,
+  150 m or more from the first giver, the one nearest where the chain ends first, not locked; the
+  spot outside its side facing step 1's place meets `opening.search`; none, and step 2 is the first
+  giver's (back to them).
 - **Step 2** (`RZ_OpeningSteps.c`): the well and the pump at a dry spot by them; the tree line, the
   gate and the debt through `Near`; A Sample by a road's verge, else in a yard.
 - **Errand ways** (`RZ_Errands.PlaceFor`): out from the giver through `Near`; a town by name: the
@@ -246,6 +296,7 @@ Log lines (also what `places.py summary` prints and `draw` reads):
 | `Places: <need>: P of A placed, N pass, F fail, score S[ UNDER]; fails: <why xN>; fallback: ...` | per need: asked, placed (the rest declined), passed; `<need> things` for the spawn tests |
 | `Places need: <need>: <flags>; <things> \| <words>` | the need it was checked against |
 | `Places fail: <need> at <grid> ("<text>"): <why>` | the first 8 failing places a need |
+| `Places words: <need> at <grid> ("<text>"): names <kind>, the building there is <name>` | a place whose words name a kind of building with no building of that kind there ([A place is what its words say](#a-place-is-what-its-words-say)); also `WORDS(names <kind>, stands at <name>)` in the need's fails |
 | `Places roll: <background>: <kind>: rank R, first pass \| second pass; doors refused: ...` | each roll |
 | `Places declined: opening.start for <background>: <why>`, then `Places roll: <background>: the spawn point at <grid>` | a roll that found nothing: its steps are asked from a spawn point, as in play |
 | `Places declined: <need> from <grid> ("<text>"): N candidates; <why> xN` | the first 8 asks a need declined, and why its candidates failed (declining is allowed: nothing there would make the words true) |
@@ -300,6 +351,31 @@ aren't settlements). A saved season keeps its towns: the start's warning counts 
 its strongholds, outposts and safehouses there are moved or given up at the start
 ([SITES.md](SITES.md#where-a-place-stands)), and the audit's `world.place` lines name any holding,
 safehouse or wanderer still there.
+
+## Offer reach
+
+The audit's last phase measures the jobs' [offer reach](MISSIONS.md#who-gets-offered-what). From
+every giver of each faction (`RZ_OfferReach.Givers`), 8 contract towns are picked the shared pool's
+way (anywhere, `RZ_Mission.PickSettlement`) and 8 the way a giver asked picks them (the near hint):
+
+| Line | Means |
+|---|---|
+| `Reach jobs: <faction>: G givers, reach R m; pool before: median M max X; after: median M max X (K kept, N moved to a nearer giver)` | before: the pool's town from the giver that would have offered it; after: from the giver that offers it now |
+| `Reach jobs: <faction>: F left far (no giver in reach); made on asking: median M max X, P of A past reach` | the pool's towns no giver of the faction has within reach (offered as before, with the long walk line), and the asked picks |
+
+Everon, reach 2.5 km:
+
+| Faction | Givers | Pool before (median, max) | Pool after (median, max) | Moved | Left far | Made on asking (median, max) |
+|---|---|---|---|---|---|---|
+| Haven | 8 | 4.1 km, 9.5 km | 1.5 km, 9.4 km | 41 of 64 | 11 | 1.5 km, 2.5 km (0 of 64 past) |
+| Bastion | 5 | 3.4 km, 10.3 km | 1.9 km, 10.3 km | 16 of 40 | 9 | 1.4 km, 2.4 km (0 of 40 past) |
+| Red Hand | 5 | 3.4 km, 10.1 km | 1.9 km, 10.1 km | 14 of 40 | 14 | 1.8 km, 2.5 km (0 of 40 past) |
+| Halcyon | 3 | 7.6 km, 11.7 km | 4.6 km, 11.7 km | 4 of 24 | 15 | 1.9 km, 2.5 km (0 of 24 past) |
+
+The pool's towns are a model of the contracts' own pickers (each contract picks its place its own
+way); the towns left far are those in parts of the map no giver of the faction stands near, Halcyon's
+most of all (three givers). The errand ways' places (the `Places draw: errand.*` lines) were already
+near their givers: 89 places, median 277 m, max 1.3 km.
 
 ## Not covered
 

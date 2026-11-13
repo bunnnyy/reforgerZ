@@ -1,0 +1,13 @@
+GenericEntity {
+ ID "E3EA03EEE64344DB"
+ components {
+  MeshObject "{45A693A19C189DD3}" {
+   Object "{7740FEE8CC71CEEB}Assets/Models/RU-Passport.xob"
+  }
+  RplComponent "{ABF60EA4CA6E57E8}" {
+  }
+  Hierarchy "{B83F2E9A1B27027D}" {
+  }
+ }
+ coords 0 0 0
+}

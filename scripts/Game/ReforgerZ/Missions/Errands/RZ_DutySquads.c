@@ -116,14 +116,17 @@ class RZ_DutySquads
 	//------------------------------------------------------------------------------------------------
 	//! Start a squad for this errand at `home`. A round walks `points` and comes back; with none, it
 	//! follows the player. False: no room for another escort (the duty is done alone).
-	bool Start(RZ_Errand e, string title, string name, vector home, array<vector> points)
+	bool Start(RZ_Errand e, string title, string name, vector home, array<vector> points, ResourceName prefab = "")
 	{
 		if (Find(e.m_iId))
 			return true;
 
 		RZ_Escort escort = new RZ_Escort();
 		escort.m_sName = name;
-		escort.m_sPrefab = PrefabFor(m_GM, e.m_iFaction);
+		escort.m_sPrefab = prefab;
+		if (prefab.IsEmpty())
+			escort.m_sPrefab = PrefabFor(m_GM, e.m_iFaction);
+
 		escort.m_fArriveRadius = POINT_RANGE;
 		escort.m_bHide = false;		// they're armed, and out there to look
 		if (!escort.Begin(m_GM, home))

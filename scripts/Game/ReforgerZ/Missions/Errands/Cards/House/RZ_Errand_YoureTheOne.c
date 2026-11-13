@@ -22,6 +22,7 @@ class RZ_Errand_YoureTheOne : RZ_ErrandCard
 		w.m_fRadius = 15;
 		w.m_sStep = "Write {name} into the council book at {here} (10 s).";
 		w.Work(RZ_EWork.BENCH, "Write the name in the book", 6);
+		w.m_sInside = "any";
 		w.Done("He read it twice, upside down, and said it out loud once. Then he said: there, now she's somewhere. Thank you.");
 
 		w = Way("talk");

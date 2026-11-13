@@ -587,6 +587,8 @@ so it never leans on the brief.
 
 - **Who, what and where, in one line that stands on its own.** Name the person by their name or
   token, the thing, and the town, house or grid.
+- **One thing at one place.** Steps in a row are separate objectives, never one line chained with
+  "then" (a duty's scene names its steps in `RZ_DutyGoals.c`; the way back is always its own line).
 - **Short and imperative:** a verb first, one line, no second sentence. The brief keeps the voice;
   the objective is plain.
 - **No pronoun without a named person in the same line.** "Find out his number" fails; so does "Go
@@ -599,7 +601,7 @@ so it never leans on the brief.
 | Not | But |
 |---|---|
 | Find out his number. | Find Emil Novak's trial number at the lab in Morton. |
-| Go back to her. | Go back to Jana Novak at the safehouse in Outskirts 59-95. |
+| Search the houses over the way. | Search the chemist's down the road, quietly. Then go on to Ruth, at Ruth's house in Morton. |
 | Search the houses over the way. | Search the houses across the road from Lucie Brandt's, quietly. |
 | Secure it and hold the area for a minute. | Hold the cellar cache in Levie for a minute. |
 | Find him. | Find the downed pilot outside Morton and walk the pilot to Levie. |

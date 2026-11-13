@@ -318,9 +318,9 @@ class RZ_OpeningText
 		if (step == 1)
 		{
 			if (search.IsEmpty())
-				search = "the house over the way";
+				search = "the house down the road";
 
-			return string.Format("%1. Look, and come back. Walk, don't run.", Capital(search));
+			return string.Format("%1. Look in, quietly. Walk, don't run.", Capital(search));
 		}
 
 		if (step == 2)
@@ -334,7 +334,7 @@ class RZ_OpeningText
 				case RZ_EOpeningTask.PUMP: return "A can of fuel from the pump. Just the one.";
 				case RZ_EOpeningTask.DOWNWIND: return "Watch where they go about. Don't let them see you.";
 				case RZ_EOpeningTask.KEYS: return "The locked door. You've got the key now.";
-				case RZ_EOpeningTask.TOLL: return "The toll. Talk, look, come back. No shooting.";
+				case RZ_EOpeningTask.TOLL: return "The toll. Talk, look, walk away. No shooting.";
 				case RZ_EOpeningTask.SAMPLE: return "The sample. By the remains, down the road.";
 				case RZ_EOpeningTask.CHANNEL: return "Call on the open channel. Somebody's asking.";
 				case RZ_EOpeningTask.SWAP: return "Catch the one on the road. See what they'll swap.";
@@ -347,6 +347,141 @@ class RZ_OpeningText
 		}
 
 		return "Go on. Don't wait for me. I'm slower than I look.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "What was it you needed?" while a step runs: the live step first, in their words (`step`:
+	//! the tracker's text, filled), then a short word of their own (AskAgain's), so a missed line
+	//! is never lost.
+	static string Remind(string step, int stepNo, int task, string search, bool withYou = false)
+	{
+		if (step.IsEmpty())
+			return AskAgain(stepNo, task, search);
+
+		string line = "Like I said. " + Capital(step);
+		if (stepNo == 1)
+			return line + " Walk, don't run.";
+
+		if (stepNo == 2)
+			return line + " " + AskAgain(stepNo, task, search);
+
+		if (withYou)
+			return line + " I'm right behind you.";
+
+		return line + " Don't wait for me. I'm slower than I look.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Step 1's giver, handing you on: who's next and where (said with step 1's ask).
+	static string SendOn(string next, string who, string place)
+	{
+		return string.Format("When you're done there, don't come back for me. Go on to %1, %2, at %3. They need someone more than I do.", next, who, place);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The same, short, after the step said again.
+	static string ThenOn(string next, string place)
+	{
+		return string.Format("Then on to %1, at %2.", next, place);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The next person, as you come up.
+	static string NextCallOver(string sentBy)
+	{
+		if (sentBy.IsEmpty())
+			return "\"You're the one they sent? Over here.\"";
+
+		return string.Format("\"You're the one %1 sent? Over here.\"", sentBy);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who the next person is, by your background (they give step 2).
+	static string NextWho(string bg)
+	{
+		switch (bg)
+		{
+			case "nurse": return "the mother with the sick boy";
+			case "doctor": return "the man whose friend was bitten";
+			case "elder": return "the woman between two families";
+			case "soldier": return "the one keeping the gate";
+			case "police": return "the shopkeeper who kept your station's keys";
+		}
+
+		return "someone who heard you help";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first giver, once they've sent you on.
+	static string GoOn(string next)
+	{
+		return string.Format("Go on. %1's waiting for you, not me. I'll be all right here.", next);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The contact who walks with you, as the first step starts.
+	static string ComingWith()
+	{
+		return "I'm coming with you. I'm not sitting here on my own another day. You lead.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The contact who walked with you, there.
+	static string WalkedYouIn(int faction)
+	{
+		if (faction == RZ_EFaction.BANDITS)
+			return "This is as far as I go. They don't know my face, and I'd like to keep it that way.";
+
+		return "This is it. I'll find a corner. Go on, they'll want to see you, not me.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Drifter's next ask
+
+	//------------------------------------------------------------------------------------------------
+	//! The hand-over reply's label (RZ_TalkOpening; tagged [Errand]).
+	static string HandOver(int task)
+	{
+		switch (task)
+		{
+			case RZ_EOpeningTask.CUT: return "Hold still. Let me dress that hand.";
+			case RZ_EOpeningTask.FEVER: return "Show me the boy. I've got something.";
+			case RZ_EOpeningTask.CLOCK: return "Here's the antidote. Roll his sleeve up.";
+			case RZ_EOpeningTask.CLOCK_MED: return "Let me clean it and bind it. That buys time.";
+		}
+
+		return "Here it is.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why the hand-over is locked: what you don't carry.
+	static string HandOverNeed(int task)
+	{
+		if (task == RZ_EOpeningTask.CLOCK)
+			return "Needs the antidote";
+
+		return "Needs a dressing, or anything medical";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string HandOverMissing()
+	{
+		return "You haven't got it on you. I'll wait.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What they say as you hand it over.
+	static string HandedOver(int task)
+	{
+		switch (task)
+		{
+			case RZ_EOpeningTask.CUT: return "Mind the edge. There. You always did hold on harder than you needed to.";
+			case RZ_EOpeningTask.FEVER: return "He's through there, on the kitchen floor. You knelt down like it was a waiting room and not my kitchen. I'll hold his hand.";
+			case RZ_EOpeningTask.CLOCK: return "He didn't even flinch. Just closed his eyes. Is that good?";
+			case RZ_EOpeningTask.CLOCK_MED: return "Tight as that? All right. All right. I'll watch him.";
+		}
+
+		return "Thank you.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -379,12 +514,12 @@ class RZ_OpeningText
 	{
 		switch (bg)
 		{
-			case "nurse": result.Insert("clinic"); return;
-			case "doctor": result.Insert("clinic"); return;
+			case "nurse": result.Insert("clinic"); result.Insert("aid"); result.Insert("farm"); return;
+			case "doctor": result.Insert("clinic"); result.Insert("aid"); result.Insert("farm"); return;
 			case "mechanic": result.Insert("garage"); result.Insert("fuel"); return;
 			case "hunter": result.Insert("farm"); return;
 			case "police": result.Insert("police"); result.Insert("public"); return;
-			case "labtech": result.Insert("school"); result.Insert("clinic"); return;
+			case "labtech": result.Insert("school"); result.Insert("clinic"); result.Insert("aid"); return;
 			case "radioham": result.Insert("radio"); return;
 			case "soldier": result.Insert("military"); result.Insert("public"); return;
 			case "unemployed": result.Insert("shop"); return;
@@ -392,12 +527,23 @@ class RZ_OpeningText
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! What step 1 calls its building: "the chemist's" (the step adds whose road it's across).
-	static string SearchPlace(string kind)
+	//! What step 1 calls its building: "the chemist's" (the step adds whose road it's across). Words
+	//! for the building that's really there (docs/PLACES.md, "A place is what its words say"): a Nurse
+	//! or a Doctor with no chemist's near is sent to the army's old aid post, else a vet's farm, else
+	//! the doctor's house; nobody is sent to "the chemist's" that is a shed.
+	static string SearchPlace(string kind, string bg = "")
 	{
+		bool medic = bg == "nurse" || bg == "doctor";
+		if (medic && kind == "farm")
+			return "the vet's farm";
+
+		if (medic && kind.IsEmpty())
+			return "the doctor's house";
+
 		switch (kind)
 		{
 			case "clinic": return "the chemist's";
+			case "aid": return "the old aid post";
 			case "garage": return "the garage";
 			case "fuel": return "the petrol station";
 			case "farm": return "the farm";

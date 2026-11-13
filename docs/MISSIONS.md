@@ -59,6 +59,21 @@ How the code does it:
   need, *You've taken all they have*, or *Nothing today. Ask again later* when the world can run
   none of them now). The named people's small work is there the same way
   ([ERRANDS.md](ERRANDS.md#duties)).
+- **Offer reach: work within walking reach.** Most players run, so a giver offers contracts whose
+  place is within **Offer reach** of them (`RZ_ContractSettings`, 2.5 km; `RZ_OfferReach`;
+  measured on Everon in [PLACES.md](PLACES.md#offer-reach)):
+  - **Made on asking**, the contract's town is picked within reach of the giver asked when any
+    town fits the contract (the town pickers keep to those near it); with none, anywhere as before.
+    That giver always offers it.
+  - **The shared pool's** contracts have their place picked anywhere, so each is offered by the
+    givers of its faction that have it within reach: a contract another giver of theirs has in
+    reach isn't listed here (not open, not locked). Givers are the faction's quartermaster, its
+    holdings (outposts only with their own quartermaster on) and, for the Haven, its safehouses.
+  - **With no giver of the faction in reach**, it's offered as before, by any of them, and the
+    pitch says so plainly: *It's a long walk: about 9 km north-east.*
+  - A leader's personal job (only at their seat) and a job with no single place are never moved.
+  - The radio's *Ask at any quartermaster* is unchanged: the work is listed by whichever of them
+    has it within reach.
 - **Jobs only by interaction.** Every job starts from a person you talk to or a thing you use,
   never from the radio, a timer, a spawn or walking past. The one exception is the openings'
   steps, and only their "Talk to ..." objective while someone's outside (the steps are handed when

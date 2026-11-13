@@ -131,6 +131,8 @@ class RZ_Spot
 	RZ_PuzzleObjectComponent m_Comp;
 	IEntity m_Host;			// the map object carries the prompts itself (CanHost): it's the body, never spawned or deleted
 	bool m_bHosted;			// it had a host (gone: the thing was destroyed, so no spot)
+	IEntity m_Fire;			// a fireplace (a campfire a player built, or a map's): cooks only while lit
+	bool m_bWasFire;		// it was a fireplace (m_Fire gone: taken apart)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -874,6 +876,8 @@ class RZ_Interactions
 		BaseWorld world = GetGame().GetWorld();
 		float reach = Math.Max(m_Settings.m_fScanRadius, m_Loot.GetSpawnRadius());
 		world.QueryEntitiesBySphere(center, reach, OnScanEntity, null, EQueryEntitiesFlags.STATIC);
+		// A fireplace a player built is no map object: found among what moves, as a stove
+		world.QueryEntitiesBySphere(center, m_Settings.m_fScanRadius, OnScanFire, null, EQueryEntitiesFlags.DYNAMIC); // VERIFY: a fireplace spawned at run time (the campfire mod's) is found by the dynamic query, not the static one
 
 		// Nearest first (an index list, so the candidates themselves never move)
 		array<int> order = {};
@@ -925,6 +929,17 @@ class RZ_Interactions
 
 		m_aCand.Clear();
 		TouchSpotsNear(center);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Among what moves only a fireplace counts (a campfire a player built): a stove like the map's,
+	//! by its name.
+	protected bool OnScanFire(IEntity e)
+	{
+		if (!e || ChimeraCharacter.Cast(e) || !RZ_Fires.IsFireplace(e))
+			return true;
+
+		return OnScanEntity(e);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1043,6 +1058,13 @@ class RZ_Interactions
 		{
 			s.m_Host = c.m_Entity;
 			s.m_bHosted = true;
+		}
+
+		// A fireplace cooks only while it burns
+		if (c.m_iKind == KIND_STOVE && RZ_Fires.IsFireplace(c.m_Entity))
+		{
+			s.m_Fire = c.m_Entity;
+			s.m_bWasFire = true;
 		}
 
 		if (c.m_iKind == KIND_RADIO || c.m_iKind == KIND_STOVE || c.m_iKind == KIND_WORKBENCH)

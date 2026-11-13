@@ -153,6 +153,7 @@ FUNCTION_CHANNELS = [
     (r"VoiceDefaults\.c$", r".", "ambient"),
     (r"/Traces/RZ_TraceText\.c$", r"Door|Words|Know|Read|Glance|Age|Scratch", "door"),
     (r"/Traces/", r".", "trace"),
+    (r"RZ_DutyGoals\.c$", r".", "objective"),
     (r"/Errands/", r".", "speech"),
     (r"RepVoice\.c$", r"Picture", "rumour"),
     (r"RepVoice\.c$", r".", "leader"),

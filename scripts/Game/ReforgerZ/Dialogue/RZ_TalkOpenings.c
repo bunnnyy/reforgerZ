@@ -9,6 +9,8 @@
 //! needed?" (choice slot 0). They talk only to the player they waited for. Server only.
 class RZ_TalkOpening : RZ_TalkGeneric
 {
+	static const int HAND_OVER = 38;	// the hand-over reply (RZ_Openings.HandOver)
+
 	protected int m_iOpening;
 
 	//------------------------------------------------------------------------------------------------
@@ -35,8 +37,14 @@ class RZ_TalkOpening : RZ_TalkGeneric
 		s.m_iFaction = -1;
 		if (!o)
 		{
-			s.m_sHeader = "Someone";
-			s.m_sName = "Someone";
+			// The first giver, after sending you on (a negated id), or nobody we know
+			string title = "Someone";
+			RZ_Openings openings = RZ_Openings.Get();
+			if (openings && !openings.SpeakerFor(m_iOpening).IsEmpty())
+				title = openings.SpeakerFor(m_iOpening);
+
+			s.m_sHeader = title;
+			s.m_sName = title;
 			return;
 		}
 
@@ -72,6 +80,48 @@ class RZ_TalkOpening : RZ_TalkGeneric
 	{
 		RZ_Opening o = Find();
 		return o && (o.m_bWaitTalk || !o.m_bSpoke);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Their replies, and while a hand-over step runs (the cut, the fever, the clock) the hand-over
+	//! itself, first and tagged [Errand], locked with what's missing when you don't carry it. Only
+	//! picking it hands the thing over: opening the talk never does.
+	override void Replies(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, IEntity user, notnull array<ref RZ_TalkReply> replies)
+	{
+		super.Replies(gm, s, playerId, user, replies);
+		RZ_Openings openings = RZ_Openings.Get();
+		string label;
+		string need;
+		if (!openings || !openings.HandOverReply(playerId, m_iOpening, user, label, need))
+			return;
+
+		RZ_TalkReply r = Reply(HAND_OVER, label);
+		r.m_bOwn = true;
+		r.m_bJob = true;
+		r.m_sTag = RZ_TalkJobs.Tag("Errand");
+		r.m_iRank = RZ_TalkReply.RANK_ON;
+		if (!need.IsEmpty())
+		{
+			r.m_bEnabled = false;
+			r.m_sNeed = need;
+			r.m_iRank = RZ_TalkReply.RANK_LOCKED;
+		}
+
+		replies.InsertAt(r, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Pick(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
+	{
+		if (replyId != HAND_OVER)
+		{
+			super.Pick(gm, s, playerId, replyId, user);
+			return;
+		}
+
+		RZ_Openings openings = RZ_Openings.Get();
+		if (openings)
+			openings.HandOver(playerId, m_iOpening, user, s.m_aNew);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -200,6 +200,10 @@ class RZ_ErrandsPay
 		if (s.m_Props && !s.m_Props.m_sCarried.IsEmpty())
 			prefab = s.m_Props.m_sCarried;
 
+		ResourceName own = e.m_Def.CarriedPrefab(e);
+		if (!own.IsEmpty())
+			prefab = own;
+
 		e.m_Carried = RZ_MissionGoods.Give(me, prefab, e.m_sGiverName);
 		e.m_bCarried = e.m_Carried != null;
 		if (e.m_Carried && e.m_Carried.FindComponent(RZ_MissionItemComponent))

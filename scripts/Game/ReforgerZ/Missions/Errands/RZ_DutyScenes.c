@@ -1,7 +1,8 @@
 //! Duty scenes (docs/ERRANDS.md, "Things that happen"): what a duty has you see, find and decide,
 //! in person. A scene is a run of beats. A beat is a moment at a spot: one line said as you reach
-//! it, and one to three things you can do about it, each its own work site side by side (a hold, the
-//! hands, the world showing it). What you choose is applied at once and remembered: the giver's
+//! it, and one to three things you can do about it, each a work site (a hold, the hands, the world
+//! showing it); several at the one spot stand as one prompt, the spot's name, whose press lists them
+//! (RZ_WorkSites.Gather), and a place of its own to go and look at keeps its own prompt. What you choose is applied at once and remembered: the giver's
 //! regard, a local made, a line someone says to you later, a record in the world's memory, the
 //! place's food or morale, a town's infection, your Favor for the job, small Fame or Infamy.
 //! A shady choice costs only if it's seen: their people within 20 m, or the place itself within
@@ -122,9 +123,15 @@ class RZ_DutyBeat
 	static const int AT_FAR = 4;		// 180-350 m
 	static const int AT_SAME = 5;		// where the last beat was
 	static const int AT_NEAR = 6;		// 12-30 m from where the last beat was (off the path)
+	static const int AT_NEAR_DOOR = 9;	// a house's outside door 12-60 m from the last beat (else 5-150 m), on its doorstep: "the door of ..."
+	static const int AT_FAR_DOOR = 8;	// a house's outside door 180-350 m off (else 100-600 m), on its doorstep: "the far door"
+	static const int AT_ENTRY = 7;		// the way in: the place's gate, else a road where it comes in (RZ_DutyScenes.Entrance)
 
 	string m_sKey;
 	string m_sLine;				// said as the player reaches it
+	string m_sName;				// its spot's name, the one prompt when its options are together ("The bed"); "" from the line (RZ_DutyScenes.SpotName)
+	string m_sGoal;				// the tracker's objective from this beat on, till the next beat with one (docs/UI.md, "The tracker"); "" carries on
+
 	int m_iWhere = AT_SAME;
 	vector m_vAt;
 	ResourceName m_sProp;		// what stands there (the first option's before look)
@@ -137,6 +144,11 @@ class RZ_DutyBeat
 	int m_iPicked;
 	string m_sGroup;			// the interaction it belongs to (its flags are its own)
 	string m_sPassed;			// said when it's left alone past its timeout ("" the plain line)
+	string m_sTalk;				// someone stands here to talk to: their conversations are for duty:<this> ("swap:ring")
+	string m_sTalkName;			// who they are, the talk screen's name ("A woman with a ring")
+	ResourceName m_sThing;		// what stands on the table or the ground in front (a display copy, RZ_DutyThings)
+	int m_iBody = -1;			// the scene's own person who is already there (m_aBodies: a patient in a bed) is this beat's person to talk to
+	float m_fFace = -1;			// >= 0: the bearing of the side to stand on (a bed against a wall): the options set out (m_fOut) spread along that side only
 	ref array<ref RZ_DutyOption> m_aOptions = {};
 
 	//------------------------------------------------------------------------------------------------
@@ -189,6 +201,19 @@ class RZ_DutyScene
 	int m_iWrong;
 	int m_iReported;				// finds put in the report
 	int m_iSeen;					// shady choices that were seen
+	IEntity m_Person;				// the open beat's person to talk to (m_sTalk), only while it's open
+	IEntity m_Thing;				// the open beat's thing on show (m_sThing), only while it's open
+	ResourceName m_sDress;			// what stands beside the scene's first beat until it's over (the lock-up's pen)
+	ref map<string, int> m_mStock = new map<string, int>();	// a line's stocks by count (fill:water=4, use:water)
+	int m_iCarry;					// carrying something by its rules (1 time, 2 no running or drops): the cold chain
+	float m_fCarryFrom;
+	float m_fJoltAt;
+	vector m_vCarryLast;
+	int m_iJolts;
+	bool m_bLate;
+	IEntity m_Dress;
+	ref array<IEntity> m_aBodies = {};	// people the scene put there itself, lying where they are from start to end (The Round's sick)
+	ref array<IEntity> m_aProps = {};	// what the scene stood there itself (their beds, the tent), until it's dropped
 
 	//------------------------------------------------------------------------------------------------
 	bool Has(string flag)
@@ -221,7 +246,16 @@ class RZ_DutyScenes
 	protected static const float SAY_RANGE = 9;			// a beat's line is said this close
 	protected static const float SEEN_SQUAD = 20;		// their people see what your hands do within this
 	protected static const float SEEN_HOME = 25;		// and so does the place
+	protected static const float DOORSTEP = 1.5;		// a door beat stands this far out from the doorway
+	protected static const float SAME_SPOT = 3;			// an option set out no further than this is still at the beat's spot (round a bed)
 	protected static const float OPTION_STEP = 0.9;		// between a beat's options, side by side
+	static const float FACE_ARC = 140;					// degrees an open side's options spread over
+	static const int TAG_PERSON = -18;					// RZ_PuzzleObjectComponent mission id: a duty's person to talk to (object index: the errand)
+	protected static const float PERSON_OFF = 1.8;
+	protected static const float DRESS_OFF = 6;
+	protected static const float CARRY_RUN = 5.2;		// m in a second: a sprint, or a ride
+	protected static const float CARRY_DROP = 1.6;		// m up or down in a second: a jump, a fall, a scramble
+	protected static const float CARRY_TIME = 360;		// s on the road before what can't wait warms			// the lock-up's pen stands this far to the side		// a beat's person stands this far behind its options
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Errands m_Dealer;
@@ -284,6 +318,67 @@ class RZ_DutyScenes
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The scene's steps for the tracker, one objective each (docs/WRITING.md, "Objective lines"):
+	//! every beat with a goal starts one. Those behind are ticked, the one under way is current at
+	//! its beat's place, those ahead are dim (one that waits on a flag the scene hasn't got is left
+	//! out). All ticked when `done`. False: there's no scene or it names no goals.
+	bool Objectives(RZ_Errand e, notnull RZ_ObjList list, float radius, bool done)
+	{
+		RZ_DutyScene s = Find(e.m_iId);
+		if (!s)
+			return false;
+
+		int count = s.m_aBeats.Count();
+		int at = s.m_iBeat;
+		if (s.m_bDone || done)
+			at = count;
+
+		// The step under way: the last goal at or before the current beat (the first, before any)
+		int current = -1;
+		int first = -1;
+		foreach (int i, RZ_DutyBeat b : s.m_aBeats)
+		{
+			if (b.m_sGoal.IsEmpty())
+				continue;
+
+			if (first < 0)
+				first = i;
+
+			if (i <= at)
+				current = i;
+		}
+
+		if (first < 0)
+			return false;
+
+		if (current < 0)
+			current = first;
+
+		vector here = e.m_vPlace;
+		if (at < count && s.m_aBeats[at].m_vAt != vector.Zero)
+			here = s.m_aBeats[at].m_vAt;
+
+		foreach (int j, RZ_DutyBeat g : s.m_aBeats)
+		{
+			if (g.m_sGoal.IsEmpty())
+				continue;
+
+			if (j != current && !Holds(s, g))
+				continue;
+
+			string text = e.Fill(g.m_sGoal);
+			if (j < current || (j == current && at >= count))
+				list.Add(text, RZ_EObjState.DONE);
+			else if (j == current)
+				list.Add(text, RZ_EObjState.CURRENT, RZ_ObjPlace.Spot(here, radius));
+			else
+				list.Add(text, RZ_EObjState.NEXT);
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Drop(int errandId)
 	{
 		for (int i = m_aScenes.Count() - 1; i >= 0; i--)
@@ -292,6 +387,21 @@ class RZ_DutyScenes
 				continue;
 
 			CloseBeat(m_aScenes[i]);
+			if (m_aScenes[i].m_Dress)
+				RZ_Util.DeleteUnit(m_aScenes[i].m_Dress);
+
+			foreach (IEntity body : m_aScenes[i].m_aBodies)
+			{
+				if (body)
+					RZ_Util.DeleteUnit(body);
+			}
+
+			foreach (IEntity prop : m_aScenes[i].m_aProps)
+			{
+				if (prop)
+					SCR_EntityHelper.DeleteEntityAndChildren(prop);
+			}
+
 			m_aScenes.Remove(i);
 		}
 	}
@@ -302,6 +412,7 @@ class RZ_DutyScenes
 		RZ_WorkSites sites = RZ_WorkSites.Get();
 		if (sites)
 		{
+			sites.Scatter(SpotKey(s));
 			foreach (string key : s.m_aKeys)
 			{
 				sites.Close(key);
@@ -310,6 +421,154 @@ class RZ_DutyScenes
 
 		s.m_aKeys.Clear();
 		s.m_bOpen = false;
+		// The scene's own people stay where they lie; a beat's caller goes
+		if (s.m_Person && !s.m_aBodies.Contains(s.m_Person))
+			RZ_Util.DeleteUnit(s.m_Person);
+
+		if (s.m_Thing)
+			RZ_Util.DeleteUnit(s.m_Thing);
+
+		s.m_Person = null;
+		s.m_Thing = null;
+	}
+
+	// ================================================================ Talking at a beat
+	//------------------------------------------------------------------------------------------------
+	//! The scene whose open beat has this person to talk to (RZ_TalkDutyPerson). null if it's gone.
+	RZ_DutyScene ByPerson(int errandId)
+	{
+		RZ_DutyScene s = Find(errandId);
+		if (!s || !s.m_bOpen || s.m_iBeat >= s.m_aBeats.Count() || !s.m_Person)
+			return null;
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The open beat of this scene (null when none is open).
+	static RZ_DutyBeat OpenBeatOf(RZ_DutyScene s)
+	{
+		if (!s || !s.m_bOpen || s.m_iBeat >= s.m_aBeats.Count())
+			return null;
+
+		return s.m_aBeats[s.m_iBeat];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A conversation at the beat's person picked option `index` (call:slot:N): the same as doing it
+	//! with your hands at its work site. Only the scene's own player; not an option already done, nor
+	//! a look past the beat's picks. What follows is said into the talk screen.
+	bool TalkPick(int errandId, int index, int playerId, IEntity user)
+	{
+		RZ_DutyScene s = ByPerson(errandId);
+		if (!s || s.m_iPlayer != playerId)
+			return false;
+
+		RZ_DutyBeat b = OpenBeatOf(s);
+		if (!b || index < 0 || index >= b.m_aOptions.Count())
+			return false;
+
+		RZ_DutyOption o = b.m_aOptions[index];
+		if (o.m_bDone)
+		{
+			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, "You've asked that already.");
+			return false;
+		}
+
+		if (b.m_iPicks > 1 && !o.m_bEnds && b.m_iPicked >= b.m_iPicks)
+		{
+			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, "There's no more to find out. Make the call.");
+			return false;
+		}
+
+		if (o.m_iItems > 0 && RZ_Errands.CountItems(user, o.m_eItem) < o.m_iItems)
+		{
+			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, string.Format("You haven't got that on you: %1.", RZ_Errands.ItemNeed(o.m_eItem, o.m_iItems)));
+			return false;
+		}
+
+		s.m_bSaid = true;
+		Choose(s, b, o, user);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why option `index` of this person's beat can't be picked now ("" it can): a conversation's
+	//! reply that runs it shows locked with it.
+	string TalkLock(int errandId, int index, int playerId)
+	{
+		RZ_DutyScene s = ByPerson(errandId);
+		RZ_DutyBeat b = OpenBeatOf(s);
+		if (!b || s.m_iPlayer != playerId)
+			return "Not yours to settle";
+
+		if (index < 0 || index >= b.m_aOptions.Count())
+			return "Not here";
+
+		RZ_DutyOption o = b.m_aOptions[index];
+		if (o.m_bDone)
+			return "Asked already";
+
+		if (!o.m_bEnds && b.m_iPicks > 1 && b.m_iPicked >= b.m_iPicks)
+			return "No more to find out";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The person at a beat: a civilian (Missions > Errands > Props > Duty person, else Puzzles >
+	//! Civilian) a step behind its options, facing them, entered in the body budget as an errand's,
+	//! and tagged so the talk screen knows whose they are. With no room in the budget, no prefab, or
+	//! no conversation trees, nobody stands there: the beat is done with your hands at its work sites.
+	protected void PlacePerson(RZ_DutyScene s, RZ_DutyBeat b, vector at, float yaw)
+	{
+		// Someone the scene put there already (a patient in their bed) is the one to talk to
+		if (b.m_iBody >= 0 && b.m_iBody < s.m_aBodies.Count() && s.m_aBodies[b.m_iBody])
+		{
+			s.m_Person = s.m_aBodies[b.m_iBody];
+			return;
+		}
+
+		if (b.m_sTalk.IsEmpty() || !RZ_DialogueTrees.Get())
+			return;
+
+		ResourceName prefab = RZ_ErrandSettings.Get().Props().m_sDutyPerson;
+		if (prefab.IsEmpty())
+			prefab = m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
+
+		RZ_Shared shared = m_GM.GetShared();
+		if (prefab.IsEmpty() || (shared && !shared.CanSpawnBody(RZ_BodyBudget.ERRAND, at)))
+			return;
+
+		s.m_Person = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(at), yaw);
+		if (!s.m_Person)
+			return;
+
+		if (shared)
+			shared.AddBody(RZ_BodyBudget.ERRAND, s.m_Person);
+
+		RZ_PuzzleObjectComponent.Tag(s.m_Person, TAG_PERSON, s.m_iErrand, "", "");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What's on show at the beat: a display copy (nothing to pick up), on the ground in front.
+	protected void PlaceThing(RZ_DutyScene s, RZ_DutyBeat b, vector at, float yaw)
+	{
+		if (b.m_sThing.IsEmpty())
+			return;
+
+		s.m_Thing = RZ_Util.SpawnPrefab(b.m_sThing, RZ_Util.GroundPos(at) + Vector(0, 0.05, 0), yaw);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What stands beside the scene (the lock-up's pen or room), on the ground, once: it stays until
+	//! the errand is dropped.
+	protected void PlaceDress(RZ_DutyScene s, vector at, float yaw)
+	{
+		if (s.m_Dress || s.m_sDress.IsEmpty())
+			return;
+
+		s.m_Dress = RZ_Util.SpawnPrefab(s.m_sDress, RZ_Util.GroundPos(at), yaw);
 	}
 
 	// ================================================================ Running
@@ -329,6 +588,44 @@ class RZ_DutyScenes
 				continue;
 
 			Step(s, players[idx]);
+			Carry(s, players[idx]);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Carrying something with rules you feel (the cold chain): sprinting, a drop or a climb of more
+	//! than a man's height in a second jolts it, and too long on the road warms it. Each counts as a
+	//! wrong call, two at most, and is said once.
+	protected void Carry(RZ_DutyScene s, IEntity me)
+	{
+		if (s.m_iCarry <= 0 || !me)
+			return;
+
+		vector at = me.GetOrigin();
+		if (s.m_vCarryLast != vector.Zero && s.m_fClock - s.m_fJoltAt > 6 && (s.m_iCarry & 2) != 0)
+		{
+			float moved = RZ_Util.DistXZ(at, s.m_vCarryLast);
+			float drop = Math.AbsFloat(at[1] - s.m_vCarryLast[1]);
+			if (moved > CARRY_RUN || drop > CARRY_DROP)
+			{
+				s.m_fJoltAt = s.m_fClock;
+				s.m_iJolts++;
+				if (s.m_iJolts <= 2)
+				{
+					s.m_iScored++;
+					s.m_iWrong++;
+					m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, "Everything in the box rings at once. That was too hard for it.");
+				}
+			}
+		}
+
+		s.m_vCarryLast = at;
+		if (!s.m_bLate && (s.m_iCarry & 1) != 0 && s.m_fClock - s.m_fCarryFrom > CARRY_TIME)
+		{
+			s.m_bLate = true;
+			s.m_iScored++;
+			s.m_iWrong++;
+			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, "The box is warm through the canvas now. It's been on the road too long.");
 		}
 	}
 
@@ -395,6 +692,7 @@ class RZ_DutyScenes
 				vector spot = sites.PosOf(key);
 				sites.Close(key);
 				sites.Open(key, o.m_eWork, o.m_sLabel, o.m_fHold, spot, s.m_iPlayer);
+				sites.SetNeeds(key, o.m_eItem, o.m_iItems);
 				continue;
 			}
 
@@ -432,7 +730,142 @@ class RZ_DutyScenes
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The key of the beat's spot when its options stand as one prompt (RZ_WorkSites.Gather).
+	protected static string SpotKey(RZ_DutyScene s)
+	{
+		return string.Format("errand.%1.b%2.spot", s.m_iErrand, s.m_iBeat);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The name of a beat's spot, for its one prompt: its own name, else who stands there to talk to,
+	//! else what the line names first when that's a thing ("The far door. No lamp over it." gives
+	//! "The far door"), else the duty's title.
+	static string SpotName(RZ_DutyScene s, RZ_DutyBeat b)
+	{
+		if (!b.m_sName.IsEmpty())
+			return b.m_sName;
+
+		if (!b.m_sTalkName.IsEmpty())
+			return b.m_sTalkName;
+
+		string named = NameIn(b.m_sLine);
+		if (!named.IsEmpty())
+			return named;
+
+		return s.m_sTitle;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The thing a line names first: its words up to the first stop or comma, when they're a short
+	//! naming ("The far door", "The book", "The list", "A hollow under a fallen beech") and not a
+	//! sentence ("The bridge is out"). "" when they aren't.
+	static string NameIn(string line)
+	{
+		int cut = line.Length();
+		array<string> stops = {".", ",", ":", "?", "!"};
+		foreach (string stop : stops)
+		{
+			int at = line.IndexOf(stop);
+			if (at >= 0 && at < cut)
+				cut = at;
+		}
+
+		string head = line.Substring(0, cut).Trim();
+		if (!head.StartsWith("The ") && !head.StartsWith("A ") && !head.StartsWith("An "))
+			return "";
+
+		array<string> words = {};
+		head.Split(" ", words, true);
+		if (words.Count() < 2 || words.Count() > 6)
+			return "";
+
+		array<string> verbs = {"is", "are", "has", "have", "was", "were", "turns", "puts", "says", "comes", "stops", "steps", "rings", "drops", "looks", "holds"};
+		foreach (string w : words)
+		{
+			if (verbs.Contains(w) || w.Contains("'s"))
+				return "";
+		}
+
+		return head;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A beat at the way in (AT_ENTRY): by the gate or the road in, logged.
+	protected vector EntrySpot(RZ_DutyScene s, RZ_DutyBeat b)
+	{
+		vector gate;
+		vector inside;
+		string how = Entrance(s.m_vHome, gate, inside);
+		RZ_Log.Info(string.Format("Duty scene: errand %1, %2 at the way in: %3 (%4).", s.m_iErrand, b.m_sKey, how, RZ_SettlementScanner.GridReference(gate)));
+		return RZ_WorkSites.Spot(gate, 1, 4);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The way into the place at `home`, for what's said at a gate (a line, a barrier, a toll): the
+	//! faction place's own gate within 120 m (its road entry, RZ_CampLife.GateNear); else the road
+	//! where it comes into the town, the road point 25-120 m from `home` farthest from the town's
+	//! middle; else `home` itself (the giver's own door). `inside` is a few steps in from it. Says
+	//! which, for the log.
+	static string Entrance(vector home, out vector gate, out vector inside)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm && gm.GetCampLife() && gm.GetCampLife().GateNear(home, 120, gate, inside))
+		{
+			inside = Toward(gate, inside, 6);
+			return "the place's gate";
+		}
+
+		vector middle = home;
+		if (gm)
+		{
+			RZ_Settlement town = gm.GetSettlement(gm.FindNearestSettlement(home));
+			if (town)
+				middle = town.m_vCenter;
+		}
+
+		array<vector> points = {};
+		RZ_Perimeter.RoadPointsNear(home, 120, points);
+		float best = -1;
+		foreach (vector p : points)
+		{
+			float d = RZ_Util.DistXZ(p, home);
+			if (d < 25 || RZ_Util.IsWater(p))
+				continue;
+
+			float outward = RZ_Util.DistXZ(p, middle);
+			if (outward > best)
+			{
+				best = outward;
+				gate = RZ_Util.GroundPos(p);
+			}
+		}
+
+		if (best >= 0)
+		{
+			inside = Toward(gate, home, 6);
+			return "the road into the town";
+		}
+
+		gate = home;
+		inside = home;
+		return "no gate or road in near: the giver's own door";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `dist` m from `from` toward `to` (on the ground), or `from` when they're the same spot.
+	static vector Toward(vector from, vector to, float dist)
+	{
+		vector flat = Vector(to[0] - from[0], 0, to[2] - from[2]);
+		float len = flat.Length();
+		if (len < 0.1)
+			return from;
+
+		return RZ_Util.GroundPos(from + flat * (Math.Min(dist, len) / len));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Where a beat is, from the scene's home or the last beat.
+
 	protected vector Place(RZ_DutyScene s, RZ_DutyBeat b)
 	{
 		RZ_PlaceNeed need = RZ_PlaceNeeds.Get("errand.out");
@@ -442,9 +875,25 @@ class RZ_DutyScenes
 			case RZ_DutyBeat.AT_SET: return b.m_vAt;
 			case RZ_DutyBeat.AT_HERE: return RZ_WorkSites.Spot(s.m_vHome, 3, 8);
 			case RZ_DutyBeat.AT_GATE: return RZ_WorkSites.Spot(s.m_vHome, 12, 25);
+			case RZ_DutyBeat.AT_ENTRY: return EntrySpot(s, b);
 			case RZ_DutyBeat.AT_OUT: at = RZ_PlaceFind.Near(s.m_vHome, 60, 140, need); break;
 			case RZ_DutyBeat.AT_FAR: at = RZ_PlaceFind.Near(s.m_vHome, 180, 350, need); break;
 			case RZ_DutyBeat.AT_NEAR: return RZ_WorkSites.Spot(s.m_vLast, 12, 30);
+			case RZ_DutyBeat.AT_NEAR_DOOR:
+			{
+				if (DoorStep(s.m_vLast, 12, 60, at) || DoorStep(s.m_vLast, 5, 150, at))
+					return at;
+
+				return RZ_WorkSites.Spot(s.m_vLast, 12, 30);
+			}
+			case RZ_DutyBeat.AT_FAR_DOOR:
+			{
+				if (DoorStep(s.m_vHome, 180, 350, at) || DoorStep(s.m_vHome, 100, 600, at))
+					return at;
+
+				at = RZ_PlaceFind.Near(s.m_vHome, 180, 350, need);
+				break;
+			}
 			case RZ_DutyBeat.AT_SAME: return s.m_vLast;
 		}
 
@@ -452,6 +901,49 @@ class RZ_DutyScenes
 			at = RZ_WorkSites.Spot(s.m_vHome, 20, 40);
 
 		return at;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The doorstep of a house's outside door lo-hi m from `home` (the door finder the locks and
+	//! Traces use, RZ_DoorGeometry): a beat whose words name a door, a step or a hatch stands there.
+	protected static bool DoorStep(vector home, float lo, float hi, out vector at)
+	{
+		array<IEntity> buildings = {};
+		RZ_BuildingQuery.FindBuildings(home, hi, buildings, 200);
+		array<IEntity> houses = {};
+		foreach (IEntity b : buildings)
+		{
+			float d = RZ_Util.DistXZ(home, b.GetOrigin());
+			if (d >= lo && d <= hi && RZ_PlaceCheck.IsHouse(b) && !RZ_LockedSpots.IsLockedBuilding(b))
+				houses.Insert(b);
+		}
+
+		for (int tries = 0; tries < 8 && !houses.IsEmpty(); tries++)
+		{
+			int pick = Math.RandomInt(0, houses.Count());
+			IEntity house = houses[pick];
+			houses.Remove(pick);
+			array<IEntity> doors = {};
+			RZ_DoorGeometry.FindDoors(house, 0, doors);
+			foreach (IEntity door : doors)
+			{
+				if (!RZ_DoorGeometry.IsOuterDoor(house, door))
+					continue;
+
+				vector normal = RZ_DoorGeometry.WallNormal(house, door);
+				if (normal == vector.Zero)
+					continue;
+
+				vector step = RZ_Util.GroundPos(RZ_DoorGeometry.DoorwayCentre(door) + normal * DOORSTEP);
+				if (RZ_PlaceCheck.IsWet(step))
+					continue;
+
+				at = step;
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -470,11 +962,23 @@ class RZ_DutyScenes
 		float rad = yaw * Math.DEG2RAD;
 		vector axis = Vector(Math.Cos(rad), 0, -Math.Sin(rad));
 		int count = b.m_aOptions.Count();
+		array<string> together = {};		// the options at the one spot: one prompt and a list
+		vector middle = vector.Zero;
 		foreach (int i, RZ_DutyOption o : b.m_aOptions)
 		{
 			vector at = b.m_vAt + axis * ((i - (count - 1) * 0.5) * OPTION_STEP);
 			// A place of its own to go and look at: out from the beat, spread round it
-			if (o.m_fOut > 0)
+			if (o.m_fOut > 0 && b.m_fFace >= 0)
+			{
+				// Along one side, over FACE_ARC degrees centred on it (a bearing: clockwise from north)
+				float spread = 0;
+				if (count > 1)
+					spread = (i / (count - 1.0) - 0.5) * FACE_ARC;
+
+				float bearing = (b.m_fFace + spread) * Math.DEG2RAD;
+				at = b.m_vAt + Vector(Math.Sin(bearing), 0, Math.Cos(bearing)) * o.m_fOut;
+			}
+			else if (o.m_fOut > 0)
 			{
 				float turn = (yaw + i * 360 / count) * Math.DEG2RAD;
 				at = b.m_vAt + Vector(Math.Cos(turn), 0, -Math.Sin(turn)) * o.m_fOut;
@@ -485,9 +989,35 @@ class RZ_DutyScenes
 			if (i == 0)
 				prop = b.m_sProp;
 
+			// A thing to take stands there: the duty tray (a case of vials), else the crate; with both
+			// empty, the work sites' own base-game box
+			if (prop.IsEmpty() && o.m_eWork == RZ_EWork.TAKE)
+			{
+				prop = RZ_ErrandSettings.Get().Props().m_sDutyTray;
+				if (prop.IsEmpty())
+					prop = RZ_ErrandSettings.Get().Props().m_sCrate;
+			}
+
 			sites.Open(key, o.m_eWork, o.m_sLabel, o.m_fHold, at, s.m_iPlayer, prop, "", yaw);
+			sites.SetNeeds(key, o.m_eItem, o.m_iItems);
 			s.m_aKeys.Insert(key);
+			if (o.m_fOut <= SAME_SPOT)
+			{
+				together.Insert(key);
+				middle = middle + at;
+			}
 		}
+
+		// Several things to do at the one spot (side by side, or round a bed): one prompt where they
+		// stood, its name, and the list. A place of its own to go and look at keeps its own prompt.
+		if (together.Count() > 1)
+			sites.Gather(SpotKey(s), SpotName(s, b), together, middle * (1.0 / together.Count()), b.m_sLine, yaw);
+
+		// Someone to talk to a step behind the options; what's on show a step in front
+		vector back = Vector(Math.Sin(rad), 0, Math.Cos(rad));
+		PlacePerson(s, b, b.m_vAt - back * PERSON_OFF, yaw);
+		PlaceThing(s, b, b.m_vAt + back, yaw);
+		PlaceDress(s, b.m_vAt + axis * DRESS_OFF, yaw);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -673,6 +1203,41 @@ class RZ_DutyScenes
 		array<int> who = {s.m_iPlayer};
 		foreach (string f : fx)
 		{
+			// fill:<stock>=N: a stock of the scene's own, full (the decon line's tank); use:<stock>: one
+			// used, and at none left the flag <stock>out is set for a beat that waits on it
+			if (f.StartsWith("fill:"))
+			{
+				int at = f.IndexOf("=");
+				if (at > 5)
+				{
+					string stock = f.Substring(5, at - 5);
+					s.m_mStock.Set(stock, f.Substring(at + 1, f.Length() - at - 1).ToInt());
+					s.m_aFlags.RemoveItem(stock + "out");
+				}
+
+				continue;
+			}
+
+			if (f.StartsWith("use:"))
+			{
+				string used = f.Substring(4, f.Length() - 4);
+				int left = s.m_mStock.Get(used) - 1;
+				s.m_mStock.Set(used, left);
+				if (left <= 0 && !s.Has(used + "out"))
+					s.m_aFlags.Insert(used + "out");
+
+				continue;
+			}
+
+			// carry:<rules> starts carrying by them (1 time, 2 no jolts); carry:0 stops
+			if (f.StartsWith("carry:"))
+			{
+				s.m_iCarry = f.Substring(6, f.Length() - 6).ToInt();
+				s.m_fCarryFrom = s.m_fClock;
+				s.m_vCarryLast = vector.Zero;
+				continue;
+			}
+
 			// set:<counter>=<value>: one of the errands' saved counters (a garden bed's state)
 			if (f.StartsWith("set:"))
 			{
@@ -788,6 +1353,48 @@ class RZ_DutyScenes
 					ResourceName bottle = RZ_ErrandSettings.Get().Props().m_sDutyVodka;
 					if (!bottle.IsEmpty())
 						RZ_ItemHelper.Give(bottle, me, me.GetOrigin());
+
+					break;
+				}
+
+				// The ward's charts all true: a little research, once a place a season day
+				case "research":
+				{
+					string key = string.Format("ward.research.%1", s.m_iHouse);
+					int today = RZ_SeasonClock.Day();
+					if (s.m_iWrong > 0 || !m_GM.GetCure() || m_Dealer.Counter(key) == today)
+						break;
+
+					m_Dealer.SetCounter(key, today);
+					m_GM.GetCure().AddResearch(1, "The observation ward's charts came in true today, every bed. The lab counted them.");
+					break;
+				}
+
+				// Someone to walk beside you (the toll's merchant): one body that follows, while it can
+				case "walker":
+				{
+					RZ_Errand walked = m_Dealer.FindById(s.m_iErrand);
+					if (walked && me)
+						m_Dealer.GetSquads().Start(walked, s.m_sTitle, "the merchant", me.GetOrigin(), null, m_GM.GetSurvivorGroupPrefab());
+
+					break;
+				}
+
+				case "walker_end": m_Dealer.GetSquads().Drop(s.m_iErrand); break;
+
+				// One dose off a stock that exists, to someone of the place (never the player): the
+				// black market's for the Red Hand, the lab's for the rest
+				case "dose":
+				{
+					RZ_CureResearch cure = m_GM.GetCure();
+					bool given = false;
+					if (cure && s.m_iFaction == RZ_EFaction.BANDITS)
+						given = cure.TakeStolenAntidote();
+					else if (cure)
+						given = cure.TakeLabAntidote();
+
+					if (!given)
+						m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, "The case is empty when it reaches the bed. Somebody got to the stock first.");
 
 					break;
 				}

@@ -206,7 +206,7 @@ class RZ_Holding
 			for (int i = 0; i < s.people.Count() && i < s.roles.Count(); i++)
 			{
 				h.m_aPeople.Insert(s.people[i]);
-				h.m_aRoles.Insert(s.roles[i]);
+				h.m_aRoles.Insert(RZ_FactionVoice.FitRole(h.m_eFaction, s.people[i], s.roles[i]));
 			}
 		}
 
@@ -667,9 +667,13 @@ class RZ_Territory
 
 		string dead = h.m_aPeople[idx];
 		RZ_Rng rng = new RZ_Rng(m_iSeed + h.m_iId * 6007 + idx * 131 + RZ_Util.RoundToInt(m_fClock));
-		string name = RZ_FactionVoice.PersonName(rng, h.m_eFaction);
+		string role = "";
+		if (idx < h.m_aRoles.Count())
+			role = h.m_aRoles[idx];
+
+		string name = RZ_FactionVoice.PersonNameFor(rng, h.m_eFaction, role);
 		if (h.m_aPeople.Contains(name) || name == dead)
-			name = RZ_FactionVoice.PersonName(rng, h.m_eFaction);
+			name = RZ_FactionVoice.PersonNameFor(rng, h.m_eFaction, role);
 
 		h.m_aPeople[idx] = name;
 		return dead;
@@ -685,12 +689,14 @@ class RZ_Territory
 		int count = 3;
 		for (int i = 0; i < count; i++)
 		{
-			string name = RZ_FactionVoice.PersonName(rng, h.m_eFaction);
+			// The role first, so the name fits it (only the doctor is "Dr")
+			string job = RZ_FactionVoice.PersonRole(rng, h.m_eFaction);
+			string name = RZ_FactionVoice.PersonNameFor(rng, h.m_eFaction, job);
 			if (h.m_aPeople.Contains(name))
-				name = RZ_FactionVoice.PersonName(rng, h.m_eFaction);
+				name = RZ_FactionVoice.PersonNameFor(rng, h.m_eFaction, job);
 
 			h.m_aPeople.Insert(name);
-			h.m_aRoles.Insert(RZ_FactionVoice.PersonRole(rng, h.m_eFaction));
+			h.m_aRoles.Insert(job);
 		}
 	}
 

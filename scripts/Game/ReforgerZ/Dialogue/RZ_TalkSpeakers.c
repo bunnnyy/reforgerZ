@@ -24,6 +24,10 @@ class RZ_TalkSpeaker
 		if (obj && obj.GetMissionId() == RZ_Strangers.TAG)
 			return new RZ_TalkStranger(owner, obj.GetObjectIndex());
 
+		// A duty's person: a trader at the swap table, a passer-by at the toll, an arrival at the gate
+		if (obj && obj.GetMissionId() == RZ_DutyScenes.TAG_PERSON)
+			return new RZ_TalkDutyPerson(owner, obj.GetObjectIndex());
+
 		// An opening's contact, someone from before (Guidance/RZ_Openings.c)
 		if (obj && obj.GetMissionId() == RZ_Openings.TAG)
 			return new RZ_TalkOpening(owner, obj.GetObjectIndex());

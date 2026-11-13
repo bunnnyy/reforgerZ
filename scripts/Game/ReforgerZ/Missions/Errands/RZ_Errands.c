@@ -38,6 +38,12 @@ class RZ_ErrandProps
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Carried (optional): what a carried way puts in your pack (His Effects' effects, The Name on the Tag's ID): an item with RZ_MissionItemComponent that can't be equipped. Empty = the mission item", "et")]
 	ResourceName m_sCarried;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Soldier's ID (optional): the card The Patrol That Didn't Come Back carries home, an item with RZ_MissionItemComponent (RZ_SoldiersID_Carried.et). Empty = Carried", "et")]
+	ResourceName m_sSoldiersID;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Forged papers (optional): the set False Hope at the Line buys off the forger as proof, an item with RZ_MissionItemComponent (RZ_Passport_Forged.et). Empty = Carried", "et")]
+	ResourceName m_sForgedPapers;
+
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Watch (optional): The Last Tin's watch, a real wristwatch traded for two tins. Empty = a common find", "et")]
 	ResourceName m_sWatch;
 
@@ -47,11 +53,20 @@ class RZ_ErrandProps
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty person (optional): someone waiting in the line at the gate, a standing civilian with no weapon and no AI, or a prop figure. Empty = Puzzles > Civilian", "et")]
 	ResourceName m_sDutyPerson;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty person looks (optional): people in their own clothes for the line at the gate, so no two waiting side by side are the same; each picks one by the errand and its place in the line. Empty = three vanilla civilians and the Duty person", "et")]
+	ref array<ResourceName> m_aDutyPersonLooks;
+
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty tray (optional): a sample tray on Halcyon's bench, a small rack or case of vials. Empty = Crate", "et")]
 	ResourceName m_sDutyTray;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty vodka (optional): the bottle the Red Hand's still gives whoever ran the batch (BanditGear's vodka bottle). Empty = no bottle, only the pay", "et")]
 	ResourceName m_sDutyVodka;
+
+	[Attribute("{C9CFDED29542A968}Prefabs/Props/Military/Furniture/CotMilitary_US_01.et", UIWidgets.ResourcePickerThumbnail, "Round bed (optional): the cot each of The Round's sick lies on, indoors, under the tent or in the yard. Only a prop measured in tools/camp_kit/footprints.json and known to RZ_DutyRound.Box is used. Empty or unmeasured = no cots: they lie on the floor in the tent or yard, and never indoors", "et")]
+	ResourceName m_sRoundBed;
+
+	[Attribute("{6204943E9EC70EC2}Prefabs/Structures/Military/Camps/Canvas_Covers/US/CanvasCover_Medium_US.et", UIWidgets.ResourcePickerThumbnail, "Round tent (optional): the shelter The Round's sick lie under by the safehouse wall when the house has no room for them, with the cots (Round bed) laid out under it as JTF Bronze Props' casualty point lays them. Only a prop measured in tools/camp_kit/footprints.json and known to RZ_DutyRound.Box is used. Empty or unmeasured = the yard by the wall", "et")]
+	ResourceName m_sRoundTent;
 
 	//------------------------------------------------------------------------------------------------
 	ResourceName For(RZ_EErrandProp kind)
@@ -96,6 +111,9 @@ class RZ_ErrandSettings
 
 	[Attribute("2", UIWidgets.Slider, "Cards (the hand-written errands, once per player per season) a player may be dealt a real day", "0 10 1")]
 	int m_iCardsPerDay;
+
+	[Attribute("1500", desc: "Errand reach (m): a giver deals an errand whose subject lies further than this from them only when no nearer one is true, and then says it's a long walk. Kept to 500-10000; 0 = off")]
+	float m_fErrandReach;
 
 	[Attribute("1", UIWidgets.Slider, "Pay scale: errand Favor is multiplied by this", "0 3 0.05")]
 	float m_fPayScale;
@@ -196,6 +214,9 @@ class RZ_ErrandSettings
 	[Attribute(desc: "Props a step's place shows while it's open (all optional; empty = words only)")]
 	ref RZ_ErrandProps m_Props;
 
+	[Attribute(desc: "Things on show at a duty: display copies with nothing to pick up, and the lock-up's dressing (all optional; empty = words only)")]
+	ref RZ_DutyThingProps m_Things;
+
 	protected static ref RZ_ErrandSettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------
@@ -205,6 +226,15 @@ class RZ_ErrandSettings
 			m_Props = RZ_ErrandProps.Cast(RZ_Util.NewWithDefaults("RZ_ErrandProps"));
 
 		return m_Props;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_DutyThingProps Things()
+	{
+		if (!m_Things)
+			m_Things = RZ_DutyThingProps.Cast(RZ_Util.NewWithDefaults("RZ_DutyThingProps"));
+
+		return m_Things;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -271,6 +301,7 @@ class RZ_Fallout
 class RZ_Errands
 {
 	protected static const float SLOW_TICK = 30;
+	protected static const float INSIDE_RADIUS = 60;	// an indoor work site: the nearest fitting building this far from the place
 	protected static const float TALK_SECONDS = 90;
 	protected static const float TALK_RANGE = 20;
 	protected static const float OFFER_MINUTES = 10;
@@ -1116,6 +1147,27 @@ class RZ_Errands
 		else if (w.m_eWork == RZ_EWork.FILL)
 			at = RZ_WorkSites.Spot(e.m_vPlace, 1.5, 3);
 
+		// Work the words put indoors (a sick man, a bench, a search of a shop): on a ground floor near
+		// the place, else beside it in the open as before
+		bool inside;
+		if (!w.m_sInside.IsEmpty())
+		{
+			string kind = w.m_sInside;
+			if (kind == "any")
+				kind = "";
+
+			vector room;
+			if (RZ_WorkSites.Indoors(e.m_vPlace, INSIDE_RADIUS, kind, room))
+			{
+				at = room;
+				inside = true;
+			}
+		}
+
+		// A place its picker put on a floor (the openings' search, inside the building it names)
+		if (!inside && at[1] > RZ_Util.GroundPos(at)[1] + 0.3)
+			inside = true;
+
 		ResourceName before;
 		if (w.m_eProp != RZ_EErrandProp.NONE)
 			before = m_Settings.Props().For(w.m_eProp);
@@ -1125,14 +1177,32 @@ class RZ_Errands
 		if (hold <= 0)
 			hold = RZ_WorkSites.HoldFor(w.m_fSeconds);
 
-		if (sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, at, e.m_iAsker, before) < 0)
+		if (sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, at, e.m_iAsker, before, "", -1, inside) < 0)
 			return false;
+
+		if (w.m_bPerson)
+			sites.SetPerson(key, PersonPrefab());
 
 		if (w.m_bUnseen)
 			sites.SetUnseen(key);
 
 		e.m_vPlace = at;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who stands at a work site the words put someone at: Props > Duty person, else Puzzles > Civilian.
+	protected ResourceName PersonPrefab()
+	{
+		ResourceName prefab = m_Settings.Props().m_sDutyPerson;
+		if (!prefab.IsEmpty())
+			return prefab;
+
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!gm)
+			return "";
+
+		return gm.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1537,13 +1607,13 @@ class RZ_Errands
 			return string.Format("Nothing while you're Watched with %1, except to make amends", RZ_Factions.GetShortName(p.m_iFaction));
 
 		if (dealWhy.Contains(NO_MINE))
-			return "You've a job here already. Finish that one";
+			return "You've a chore of theirs already. Finish that one";
 
 		if (dealWhy.Contains(NO_GAP))
 			return string.Format("You've done your shift. Ask again in a while (%1 min at most)", RZ_Util.RoundToInt(m_Settings.m_fDutyGapMinutes));
 
 		if (dealWhy.Contains(NO_TAKEN))
-			return "Every job here is taken. Ask again when one is done";
+			return "Every chore here is taken. Ask again when one is done";
 
 		return WHY_NOTHING;
 	}
@@ -1831,12 +1901,15 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Errands this player holds. An opening's chain step is the life's first quest, not an errand
+	//! (errands and quests are separate: docs/ERRANDS.md, "Errands and jobs are separate"), so it
+	//! never counts against the errands a player may hold.
 	protected int CountHeld(int playerId)
 	{
 		int n = 0;
 		foreach (RZ_Errand e : m_aErrands)
 		{
-			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.HELD)
+			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.HELD && !e.IsOpening())
 				n++;
 		}
 
@@ -1844,11 +1917,45 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected float ErrandReach()
+	{
+		if (m_Settings.m_fErrandReach <= 0)
+			return 0;
+
+		return Math.Clamp(m_Settings.m_fErrandReach, 500, 10000);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errand's subject lies past errand reach from its giver (docs/ERRANDS.md, "Errand reach").
+	bool IsFar(RZ_Errand e)
+	{
+		float reach = ErrandReach();
+		if (reach <= 0 || e.m_vSubject == vector.Zero || e.m_vGiver == vector.Zero)
+			return false;
+
+		return RZ_Util.DistXZ(e.m_vSubject, e.m_vGiver) > reach;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "It's a long walk: about 3 km north-east." for a far errand; empty otherwise.
+	protected string FarLine(RZ_Errand e)
+	{
+		if (!IsFar(e))
+			return "";
+
+		int km = RZ_Util.RoundToInt(RZ_Util.DistXZ(e.m_vGiver, e.m_vSubject) / 1000);
+		if (km < 1)
+			km = 1;
+
+		return string.Format("It's a long walk: about %1 km %2.", km, RZ_Compass.DirectionWord(RZ_Compass.Bearing(e.m_vGiver, e.m_vSubject)));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool HasOpenOffer(int playerId)
 	{
 		foreach (RZ_Errand e : m_aErrands)
 		{
-			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.OFFERED)
+			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.OFFERED && !e.IsOpening())
 				return true;
 		}
 
@@ -1871,6 +1978,10 @@ class RZ_Errands
 			Say(e, "Where were you on Tuesday? Never mind. Don't answer that.", false);
 
 		Say(e, Pick(e.m_Def.m_aOffer), false);
+		string farLine = FarLine(e);
+		if (!farLine.IsEmpty())
+			Say(e, farLine, false);
+
 		if (!owner)
 			return;
 
@@ -2250,6 +2361,7 @@ class RZ_Errands
 
 		array<ref RZ_Errand> made = {};
 		array<float> scores = {};
+		array<bool> far = {};
 		string place = PlaceKey(p);
 		// Chore slots: 1 + 1 per 5 players online (3 at most) routines live at a holding or house at once,
 		// and one of them per player there
@@ -2337,6 +2449,7 @@ class RZ_Errands
 
 					made.Insert(e);
 					scores.Insert(score);
+					far.Insert(IsFar(e));
 				}
 			}
 
@@ -2360,6 +2473,26 @@ class RZ_Errands
 
 			made.Remove(md);
 			scores.Remove(md);
+			far.Remove(md);
+		}
+
+		// Errand reach: one whose subject is a long walk off is dealt only when nothing nearer is
+		bool anyNear;
+		foreach (bool isFar : far)
+		{
+			if (!isFar)
+				anyNear = true;
+		}
+
+		for (int fd = made.Count() - 1; fd >= 0 && anyNear; fd--)
+		{
+			if (!far[fd])
+				continue;
+
+			why += string.Format("%1: a long walk. ", made[fd].m_Def.m_sKey);
+			made.Remove(fd);
+			scores.Remove(fd);
+			far.Remove(fd);
 		}
 
 		if (made.IsEmpty())
@@ -2850,7 +2983,7 @@ class RZ_Errands
 		int n = 0;
 		foreach (RZ_Errand e : m_aErrands)
 		{
-			if (e.m_eState == RZ_EErrandState.DONE || !e.m_Def || e.m_Def.m_bCard || (playerId > 0 && e.m_iAsker != playerId))
+			if (e.m_eState == RZ_EErrandState.DONE || !e.m_Def || e.m_Def.m_bCard || e.IsOpening() || (playerId > 0 && e.m_iAsker != playerId))
 				continue;
 
 			// A duty is one of yours here, but takes none of the place's chore slots
@@ -3787,6 +3920,15 @@ class RZ_Errands
 	vector GiverAt(RZ_Errand e)
 	{
 		vector giverAt = e.m_vGiver;
+
+		// Their body where it stands now, when it's out: the point is the person, not their spot
+		if (m_People)
+		{
+			IEntity body = m_People.BodyOf(e.m_sGiver);
+			if (body)
+				return body.GetOrigin();
+		}
+
 		vector walking;
 		if (e.m_iWanderer >= 0 && m_GM.GetWanderers() && m_GM.GetWanderers().GetPosition(e.m_iWanderer, walking))
 			giverAt = walking;
@@ -3909,6 +4051,11 @@ class RZ_Errands
 
 		if (e.m_bStepDone && !w.m_bEndsThere)
 			return e.Fill("Done. Go back to {giver} at {here}.");
+
+		// A sorting under way: where to take the one you're leading, or the rules (RZ_DutyGames.NowLine)
+		string now = m_Games.NowLine(e.m_iId);
+		if (!now.IsEmpty())
+			return e.Fill(w.StepText()) + "\n" + now;
 
 		return e.Fill(w.StepText());
 	}

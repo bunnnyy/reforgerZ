@@ -203,10 +203,10 @@ adapters in `Dialogue/RZ_TalkSpeakers.c` and `RZ_TalkStaff.c`, `RZ_Mission.LockR
   | A faction's quartermaster | The same list (the seat leader's own job while they're in the chair); the safehouse radio only names the Haven's, with "ask the quartermaster here" |
   | A safehouse's or a holding's named person, a wanderer | The errand they have for you, named (looked at without dealing it: the one named is the one dealt when you pick it, while it's true); yours already: *[Errand] About Water for Morton.* or, its step done, *[Errand] It's done: Water for Morton.* |
   | A mission's or a stage's person | Their choices move the job you're on (first in the list), each locked with what it needs (`ChoiceLock`: *Ask for Jonas Weber's number (Needs Known with Halcyon)*, a scene's rank, items and Favor, "Done already"); a hand-over is tagged by the job's kind (*[Quest] Hand over Bastion's rations*) and locked without the thing on you ("Needs the page on you") |
-  | A stranger, an opening's contact | Their ask's ways and their step, as built (both are errands handed in person) |
+  | A stranger, an opening's contact | Their ask's ways and their step, as built (both are errands handed in person); an opening's hand-over step (the cut, the fever, the clock) is a reply of its own, first in the list: *[Errand] Hold still. Let me dress that hand.*, locked "Needs a dressing, or anything medical" without it, and only picking it hands the thing over (`RZ_TalkOpening`, `RZ_Openings.HandOver`) |
 
-- **Handing things in is talk.** With the talk screen on, a done errand is handed in with the giver's
-  *[Errand] It's done: ...* reply, not by walking up to them; something carried back must be on you
+- **Handing things in is a reply you pick, never the talk opening.** With the talk screen on, a done errand is handed in with the giver's
+  *[Errand] It's done: ...* reply, not by walking up to them or opening the talk; something carried back must be on you
   or a helper beside you, and is taken off them. A questline's hand-over (the page, the crates, the
   sack, the black box, the fuel) is a reply on the person who takes it, which takes that very item
   from your inventory. The ways that pay in items (*[Errand] I'll hand over two tins. [2 food]*) take
@@ -408,12 +408,25 @@ behind it.
 | Strangers ([below](#strangers)) | `stranger:<routine>` (`stranger:tin`, `stranger:digger`...), `stranger` | `stranger:<visit>` | their ask's ways, as built ([ERRANDS.md](ERRANDS.md#strangers)) |
 | The open channel ([below](#the-radio)) | `radio:open`, `radio` | `radio:open` | none |
 | A cracked secure net ([below](#the-radio)) | `radio:bastion`, `radio:redhand`, `radio:halcyon`, `radio:secure` | `radio:open` | none |
-| An opening's contact: someone from before, a stranger, or a wanderer from an earlier life ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) | `opening` (they talk only to the player they waited for) | `opening:<id>` | What was it you needed? (their step again). They call you over and "Talk to *their name*" is tracked; when you talk to them, the step that waited for you starts: its piece of the story and its ask are the built greeting |
+| An opening's contact: someone from before, a stranger, or a wanderer from an earlier life ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) | `opening` (they talk only to the player they waited for) | `opening:<id>` | What was it you needed? (the live step again, word for word, then their own short line). They call you over and "Talk to *their name*" is tracked; when you talk to them, the step that waited for you starts: its piece of the story and its ask are the built greeting |
 
+| A duty's person (below): a trader at the Haven's swap table, a passer-by at the Red Hand's toll, an arrival at Bastion's gate, one of The Round's sick | `duty:<duty>:<key>` (`duty:swap:ring`, `duty:toll:courier`, `duty:gate:nurse`, `duty:round:fever`), `duty:<duty>`, `duty` | `duty:<errand>:<duty>:<key>` | none: a conversation's `call:slot:N` is the beat's option N |
 | A contract's or questline stage's people | `quest:<questline>` (`quest:every_name`), `quest`; `mission` for a contract's | `mission:<id>:<index>` | their built choices, as built: a conversation picks one with `call:slot:N`, so the stage resolves (and starts anything physical) as built |
 
 Factions are written `haven`, `bastion`, `redhand`, `halcyon`, and `none` for factionless checks.
 Strangers, an opening's contact and the open channel are factionless; a mission's people speak for its giver.
+
+**A duty's person.** At a duty beat that has someone to talk to (`RZ_DutyBeat.m_sTalk`), a
+civilian stands a step behind its work sites while the beat is open: **Missions > Errands > Props >
+Duty person**, else **Puzzles > Civilian**, entered in the one body budget as an errand's (none with
+no room: the beat is done with your hands). Their talk screen opens on what they've brought or want
+(the beat's line), and their conversations are `for duty:<duty>:<key>`. A reply with `call:slot:N`
+does the beat's option N exactly as holding its work site does (`RZ_DutyScenes.TalkPick`): a
+question counts against the beat's looks, a call settles it, and what follows is said into the
+screen. Only the duty's own player can settle it; anyone else is told it's settled. Where a scene
+has several of its own people lying there at once (The Round's sick, `RZ_DutyBeat.m_iBody`), only the
+open beat's answers; the others say their turn is coming. Code:
+`Dialogue/RZ_TalkDuty.c`.
 
 **The post speaker.** With Trees on, one of the crew stands at the barrier of a Bastion checkpoint
 or a Red Hand roadblock once a player is within 100 m: the faction's territory occupant prefab
@@ -1015,7 +1028,7 @@ always` (an ordinary lie, believable and never true).
 
 ## The conversations
 
-✅ 228 conversations, 606 nodes (`python3 tools/dialogue_pack.py --list`), 17 of them barks.
+✅ 284 conversations, 730 nodes (`python3 tools/dialogue_pack.py --list`), 17 of them barks.
 
 | Speaker | Conversations |
 |---|---|
@@ -1036,6 +1049,7 @@ always` (an ordinary lie, believable and never true).
 | Post speakers | Bastion's search (persuade with [Soldier], [Police]: the pole goes up); the Red Hand's toll (pay it, or threaten: Fear, +3 Red Hand Infamy); "Which unit?" and "Say you're crew." in their kit (a look, or the truth); "Word?" at Bastion's (three words, one right); the greet at 35 m that reads the kit's marks; a name who'll stand for you at Bastion's and what the crew calls you at the Red Hand's (a cover detail, then a look), your own crew name at the Red Hand's, and a notebook number to Halcyon's people (`posts/cover.rzd`, `posts/opens.rzd`) |
 | The Long Table | The host on the road (speaking first at 12 m; where you're headed, and is anyone expecting you; "Put out, were you?" to an exile); the mother at the farm (is the boy hers; [Bitten]: declare it, as built) |
 | Strangers | Calling out at 10 m; where any stranger's headed; and for 15 routines, who they are: the girl at the tin man's house, the wife who drove to market, the pram of pans, the one shut in since Tuesday, the kids in the back seat, who the grave is for, the sleeve rolled down ([Doctor], [Nurse]), the farm (and why the seed potatoes matter), the sister in a barn, the husband across the line, the debt in the book (and why they asked you), the one who hid, the one who got there first, the scratch off a fence |
+| A duty's person (`duties/swap.rzd`, `duties/toll.rzd`, `duties/gate.rzd`, `duties/round.rzd`) | The swap table's sixteen traders, each their own (the ring, the dead man's watch, the coat, the false antibiotics, the stolen spoon, the hoarder, the girl for her gran, the Red Hand customer, the banknotes, the pearls for a place on the list, the travel papers, the chisels, the boots, the gritty salt, the letter to a burned street, the girl's knife): what it is, two questions (where from, who for), then the three calls. The toll's and the gate's working conversations, shared by everyone at the pole and the barrier (ask where they're bound or their business, then the three calls); and a word of their own for twelve at the toll and six at the gate (who they are, settling nothing). The Round's ten sick, each their own (the fever, the cut, the hidden bite, the hunger, the fall, the child, the old man, the chest, the burn, the wound too far gone): what they say, what happened to them (the bed's look, `call:slot:4`) and what they need; what you do for them is done with your hands |
 | An opening's contact (`openings/openings.rzd`, `openings/steps.rzd`) | Their greeting while the first step runs, once: a stranger's by why today (the bolt going, your lot leaving with a map, their chalk on your door); a wanderer from an earlier life's ("You look like someone I knew.", by what they remember); someone from before's by your background and why today (13 backgrounds, each with a line for the hiding place, the group gone and the fever; in the hiding place: the patient's mother, the nurse from your ward, the van you fixed twice, the farmer's top field, the apple every morning, the cellmate, your name read at the lab gate, the night band's weather, the money, the private who never made it back to the line, the watch you took, the children who asked, a face from everywhere); who else made it (the roads); who's in charge now (the four in a sentence each, and the lab); on the walk, where they'll go now (not to the Red Hand); by why today, how long it's been (who else came out), where the others went (ask at a safehouse), what happened to you (not to the lab yet); a wanderer from an earlier life, who they think you are; the Elder's step 2, two families over the coal (persuade 1, [Elder] +1: settled, or half); the hand-over steps, chosen in talk before the item is taken: See to the boy (the Nurse's fever), Look at the hand (the cut), Give him the antidote and Keep him going (the Doctor's clock) |
 | The open channel, during an opening (`openings/steps.rzd`) | The Radio Operator's step 2: answer someone who has called since it got light (on air) |
 | The radio | Call in what you've seen (a rumour, on air); listen for anyone calling (by the night and the mood); ask the crews about the toll; answer a distress call; on the secure nets, Bastion's command net (the word), the boss's channel (the toll), the lab's channel (the count) |

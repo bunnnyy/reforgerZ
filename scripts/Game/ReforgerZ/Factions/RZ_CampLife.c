@@ -2129,6 +2129,31 @@ class RZ_CampLife
 	RZ_SiteAudit GetAudit() { return m_Audit; }
 	RZ_CampLifeSettings GetSettings() { return m_Settings; }
 
+	//------------------------------------------------------------------------------------------------
+	//! The gate of the faction place nearest `at` within `range` (RZ_SiteAudit.GatePoint: its road
+	//! entry, else out toward its approach), and where its people gather inside. False: none near.
+	bool GateNear(vector at, float range, out vector gate, out vector inside)
+	{
+		RZ_CampPlace best;
+		float bestDist = range;
+		foreach (RZ_CampPlace p : m_aPlaces)
+		{
+			float d = Math.Min(RZ_Util.DistXZ(at, p.m_vPos), RZ_Util.DistXZ(at, p.m_vHome));
+			if (d <= bestDist)
+			{
+				bestDist = d;
+				best = p;
+			}
+		}
+
+		if (!best)
+			return false;
+
+		gate = RZ_SiteAudit.GatePoint(best);
+		inside = best.m_vHome;
+		return true;
+	}
+
 	// ================================================================ For the solver (RZ_SiteSolver)
 	//------------------------------------------------------------------------------------------------
 	RZ_CampFit ReadFitFor(RZ_CampPlace p, RZ_CampGround ground) { return ReadFit(p, ground); }
@@ -2812,6 +2837,39 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One measured box fits at `pos` (a work site's look or person, docs/DESIGN.md "Work site"): the
+	//! same checks the camps' pieces get. Indoors: a floor under every corner and nothing in the way
+	//! (FitsIndoors). Outdoors: nothing in it at knee or chest height (Blocked), nothing overhead,
+	//! and the ground under its corners within LEVEL_STEP of each other.
+	static bool BoxFits(vector pos, float yaw, vector fmin, vector fmax, bool indoors)
+	{
+		if (indoors)
+			return FitsIndoors(pos, yaw, fmin, fmax);
+
+		array<vector> quad = {};
+		Quad(pos, yaw, fmin, fmax, 0, quad);
+		float low = float.MAX;
+		float high = -float.MAX;
+		foreach (vector c : quad)
+		{
+			float y = RZ_Util.GroundPos(c)[1];
+			low = Math.Min(low, y);
+			high = Math.Max(high, y);
+		}
+
+		if (high - low > LEVEL_STEP)
+			return false;
+
+		vector mid = RZ_Util.GroundPos(pos);
+		if (TraceHits(mid + Vector(0, 0.3, 0), mid + Vector(0, 4, 0), false))
+			return false;
+
+		return !Blocked(quad);
+	}
+
+	protected static const float LEVEL_STEP = 0.4;	// BoxFits outdoors: most a box's corners may differ in height
+
+	//------------------------------------------------------------------------------------------------
 	//! Something stands in one of the footprint's props' boxes: flat traces across both its
 	//! diagonals at knee and chest height (boxes under 0.3 m either way are left to the grid).
 	protected static bool BlockedFoot(vector pos, float yaw, RZ_SiteFoot foot)
@@ -2844,7 +2902,7 @@ class RZ_CampLife
 	//------------------------------------------------------------------------------------------------
 	//! Something stands in the footprint: a wall, a fence, a tree, a car, another system's prop.
 	//! Flat traces along its four sides and across both diagonals, at knee and chest height.
-	protected static bool Blocked(array<vector> quad)
+	static bool Blocked(array<vector> quad)
 	{
 		array<vector> ground = {};
 		foreach (vector c : quad)
@@ -2871,7 +2929,7 @@ class RZ_CampLife
 	//------------------------------------------------------------------------------------------------
 	//! Indoors (a quartermaster's counter): a floor under every corner and nothing in the way at the
 	//! counter's height or above it (walls, furniture), traced along its sides and across it.
-	protected static bool FitsIndoors(vector pos, float yaw, vector fmin, vector fmax)
+	static bool FitsIndoors(vector pos, float yaw, vector fmin, vector fmax)
 	{
 		array<vector> quad = {};
 		Quad(pos, yaw, fmin, fmax, 0, quad);
@@ -2899,7 +2957,7 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! A physics trace hits something (entities; with `world` the terrain too). Characters don't count.
-	protected static bool TraceHits(vector from, vector to, bool world)
+	static bool TraceHits(vector from, vector to, bool world)
 	{
 		TraceParam param = new TraceParam();
 		param.Start = from;
@@ -2929,7 +2987,7 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! A footprint's four corners (grown by `grow`), added to `quad`.
-	protected static void Quad(vector pos, float yaw, vector fmin, vector fmax, float grow, notnull array<vector> quad)
+	static void Quad(vector pos, float yaw, vector fmin, vector fmax, float grow, notnull array<vector> quad)
 	{
 		quad.Insert(FramePoint(pos, yaw, fmin[0] - grow, fmin[2] - grow));
 		quad.Insert(FramePoint(pos, yaw, fmax[0] + grow, fmin[2] - grow));
@@ -2939,7 +2997,7 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! Two rectangles (four corners each, from `ai` and `bi`) overlap on the ground.
-	protected static bool QuadsOverlap(notnull array<vector> a, int ai, notnull array<vector> b, int bi)
+	static bool QuadsOverlap(notnull array<vector> a, int ai, notnull array<vector> b, int bi)
 	{
 		return !Separated(a, ai, b, bi) && !Separated(b, bi, a, ai);
 	}

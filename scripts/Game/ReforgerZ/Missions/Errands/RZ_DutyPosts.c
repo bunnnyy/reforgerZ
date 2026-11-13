@@ -61,10 +61,25 @@ class RZ_DutyPosts
 	//! or nothing, and the line says enough to tell, if you think about it.
 	static void Watch(RZ_GameModeComponent gm, RZ_Errand e, RZ_DutyScene scene)
 	{
-		RZ_DutyBeat post = new RZ_DutyBeat("post", "", RZ_DutyBeat.AT_GATE);
+		RZ_DutyBeat post = new RZ_DutyBeat("post", "", RZ_DutyBeat.AT_ENTRY);
 		post.m_bAlone = true;
 		post.Opt("Take the post", "You have the post. Three things will come by before you're relieved. Each is a threat, or someone, or nothing: stand the gate to, send someone out, or let it pass.").Work(RZ_EWork.HANDS, 5);
 		scene.m_aBeats.Insert(post);
+		RZ_WorldFacts facts = gm.GetFacts();
+		// The Red Hand's quiet hour at night is kept by ear: no lamp, and only sounds come by
+		if (e.m_iFaction == RZ_EFaction.BANDITS && facts && facts.IsNight())
+		{
+			ByEar(scene);
+			return;
+		}
+
+		// Bastion's stag at the wire: choose a sector, and what comes by is what that sector sees
+		if (e.m_iFaction == RZ_EFaction.MILITARY)
+		{
+			Sectors(scene);
+			return;
+		}
+
 		array<ref RZ_DutyBeat> pool = {};
 		pool.Insert(Sighting("stands", "A shape on the road, slow, alone. It stops at the marker and stands there, facing nothing.", 0, 0));
 		pool.Insert(Sighting("sits", "A shape on the road, slow, alone. It stops at the marker and sits down on its pack.", 1, 0));
@@ -93,6 +108,93 @@ class RZ_DutyPosts
 		}
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! The Red Hand's night watch, by ear: three sounds, and the same three calls.
+	protected static void ByEar(RZ_DutyScene scene)
+	{
+		array<ref RZ_DutyBeat> pool = {};
+		pool.Insert(Sighting("gravel", "Gravel on the road, one step, then nothing, then one step. Nobody walks like that.", 0, 0));
+		pool.Insert(Sighting("cough", "A cough in the ditch, stifled in a sleeve, and a child saying shh.", 1, 0));
+		pool.Insert(Sighting("owl", "An owl, then another answering. Then the first one again, nearer.", 2, 0));
+		pool.Insert(Sighting("tins", "The tins on the wire knock together at the far post. Then a breath. Then they knock again, harder.", 0, 0));
+		pool.Insert(Sighting("whistle", "Two notes whistled, low, the crew's call. Wrong way round.", 1, 0));
+		pool.Insert(Sighting("gate", "The farm gate across the road, swinging and banging on its post in the wind.", 2, 0));
+		pool.Insert(Sighting("breath", "Breathing, close, under the hedge. Wet and slow and no rhythm to it at all.", 0, 0));
+		pool.Insert(Sighting("cart", "A cart, a long way off, one wheel squealing, and a man singing to keep himself company.", 1, 0));
+		pool.Insert(Sighting("rats", "Scratching in the woodpile. A squeal. Scratching again.", 2, 0));
+		Relief(scene, pool, 3);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bastion's stag: the road, the wood line or the gap in the wire. Four come by in the one you
+	//! watch, and what came by the others is told after.
+	protected static void Sectors(RZ_DutyScene scene)
+	{
+		RZ_DutyBeat pick = new RZ_DutyBeat("sector", "Three sectors, and one pair of eyes. The corporal says take one, and keep it.", RZ_DutyBeat.AT_SAME);
+		pick.m_bAlone = true;
+		pick.Opt("Watch the road", "The road, then. Your rifle on the sandbag, pointing where the lamps used to be.").Flag("road");
+		pick.Opt("Watch the wood line", "The wood line. Dark on dark, and every bush a man until it isn't.").Flag("wood");
+		pick.Opt("Watch the gap in the wire", "The gap. Where they'd come, if they knew.").Flag("gap");
+		scene.m_aBeats.Insert(pick);
+		array<string> sectors = {"road", "wood", "gap"};
+		foreach (string sector : sectors)
+		{
+			array<ref RZ_DutyBeat> pool = {};
+			if (sector == "road")
+			{
+				pool.Insert(Sighting("stands", "A shape on the road, slow, alone. It stops at the marker and stands there, facing nothing.", 0, 0));
+				pool.Insert(Sighting("sits", "A shape on the road, slow, alone. It stops at the marker and sits down on its pack.", 1, 0));
+				pool.Insert(Sighting("feet", "Feet on the road, a great many, not in step. And no voices at all.", 0, 0));
+				pool.Insert(Sighting("cart", "A cart with one wheel squealing, and somebody swearing at it under their breath.", 1, 0));
+				pool.Insert(Sighting("crawl", "Something on the road on its hands, coming steadily, never once lifting its head.", 0, 0));
+				pool.Insert(Sighting("door", "A door banging across the road, every few seconds, in time with the wind.", 2, 0));
+			}
+			else if (sector == "wood")
+			{
+				pool.Insert(Sighting("lamp", "A light in the field, low, moving left to right, and held still when the wind gets up.", 1, 0));
+				pool.Insert(Sighting("hedge", "Three shapes close together, keeping to the hedge, and stopping each time the cloud clears.", 1, 0));
+				pool.Insert(Sighting("birds", "Every bird in the far wood goes up at once. Then nothing, for a long time.", 2, 0));
+				pool.Insert(Sighting("voice", "A voice, far off, calling one name over and over. A woman's.", 1, 0));
+				pool.Insert(Sighting("deer", "Deer at the wood's edge, grazing, heads coming up together and going down again.", 2, 0));
+				pool.Insert(Sighting("trees", "Something between the trees, upright, not moving with the wind when everything else does.", 0, 0));
+			}
+			else
+			{
+				pool.Insert(Sighting("wire", "Something at the fence, low, pushing. The wire sings. Not a sound from whatever it is.", 0, 0));
+				pool.Insert(Sighting("fox", "Something at the fence, low, pushing. A whine, and the wire goes slack again.", 2, 0));
+				pool.Insert(Sighting("strand", "A strand hangs loose that was tight at dusk. Then a hand on the next one, testing it.", 0, 0));
+				pool.Insert(Sighting("sorry", "The tins on the wire rattle at the far post, and somebody says sorry, quietly.", 1, 0));
+				pool.Insert(Sighting("paper", "A sheet of newspaper, caught on the wire, flapping like something trying to get through.", 2, 0));
+			}
+
+			foreach (RZ_DutyBeat b : pool)
+			{
+				b.m_sIf = sector;
+			}
+
+			Relief(scene, pool, 4);
+		}
+
+		RZ_DutyBeat after = new RZ_DutyBeat("relieved", "Relieved. The next man says what came by the sectors you weren't watching. Most nights, nothing.", RZ_DutyBeat.AT_SAME);
+		after.m_bAlone = true;
+		after.Opt("Hand over the sector", "Handed over. Your eyes ache from one direction.");
+		scene.m_aBeats.Insert(after);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `count` of the pool, a while apart, into the scene.
+	protected static void Relief(RZ_DutyScene scene, array<ref RZ_DutyBeat> pool, int count)
+	{
+		for (int i = 0; i < count && !pool.IsEmpty(); i++)
+		{
+			int pick = Math.RandomInt(0, pool.Count());
+			RZ_DutyBeat b = pool[pick];
+			pool.Remove(pick);
+			b.m_fWait = 25 + Math.RandomInt(0, 20);
+			scene.m_aBeats.Insert(b);
+		}
+	}
+
 	// ================================================================ The lock-up
 	//------------------------------------------------------------------------------------------------
 	//! A night's watch on someone held. They talk. Keep the watch, pass on what they said, or open
@@ -103,6 +205,10 @@ class RZ_DutyPosts
 		string who = Name(rng);
 		RZ_DutyBeat door = new RZ_DutyBeat("door", "", RZ_DutyBeat.AT_GATE);
 		door.m_bAlone = true;
+		if (e.m_iFaction != RZ_EFaction.INSTITUTE)
+			door.m_sThing = RZ_DutyThings.For("lockup:door");
+
+		scene.m_sDress = RZ_DutyThings.LockUp(e.m_iFaction);
 		door.Opt("Take the watch at the door", string.Format("You have the door. %1 is behind it. Nobody else is awake.", who)).Work(RZ_EWork.HANDS, 5);
 		scene.m_aBeats.Insert(door);
 		string says;
@@ -117,6 +223,11 @@ class RZ_DutyPosts
 			says = string.Format("%1, through the boards. I owe the crew forty tins and I've a girl at the Haven who'll starve paying it. Tell the boss I'll work it off. Or don't tell him anything.", who);
 			freed = "I got to her. We're paying it off, slower than the boss would like. You're the reason there's anyone left to pay.";
 		}
+		else if (e.m_iFaction == RZ_EFaction.INSTITUTE)
+		{
+			says = string.Format("%1, through the hatch. My readings are normal. They were normal yesterday. They'll be normal tomorrow, and I'll still be in here, because the protocol says three days and nobody reads the readings. Read them. They're on the clipboard.", who);
+			freed = "I walked out through the clean room in a borrowed coat. Three days later I was still normal. I'd like the protocol to know.";
+		}
 		else
 		{
 			says = string.Format("%1, through the door. I'm not bitten. I'm frightened, and they can't tell the difference in the dark. Let me sit where there's a window.", who);
@@ -126,6 +237,7 @@ class RZ_DutyPosts
 		RZ_DutyBeat talk = new RZ_DutyBeat("talk", says, RZ_DutyBeat.AT_SAME);
 		talk.m_fWait = 30;
 		talk.m_bAlone = true;
+		talk.m_sThing = door.m_sThing;
 		RZ_DutyOption o = talk.Opt("Keep the watch", "You keep the door until you're relieved. The talking stops, after a while.");
 		o = talk.Opt("Write down what was said", "Written down, word for word, for whoever reads the watch book.");
 		o.Fx("report,record").Pay(0, 1).Told("What you wrote in the watch book was read out this morning. It changed what happens to them. I won't say how.");

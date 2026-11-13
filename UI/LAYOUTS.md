@@ -143,20 +143,16 @@ Frame  (root, full screen)
 │           │  └─ Text   RadioLineChannel  condensed italic 20, dim ("Bastion net")
 │           ├─ Text  RadioLineSpeaker  condensed bold 22, tinted; hidden without a name
 │           └─ Text  RadioLineText     condensed 26, bone, wraps
-├─ HorizontalLayout NoisePanel  anchor bottom-left, offset (552, -62), 10 apart, 85% opacity
-│  ├─ Image   (status_noise icon, 26 × 26, bone, static)
+├─ HorizontalLayout NoisePanel  anchor bottom-left, offset (552, -62), 10 apart, 85% opacity; the one stealth bar, hidden until the server sends a level (Stealth on)
+│  ├─ Image   NoiseIcon         status_noise, 26 × 26, bone; shown only while noise is part of the bar
 │  ├─ HorizontalLayout (3 apart)
-│  │  └─ Image Noise1 … Noise6  14 × 8 each, no texture (tinted lit or dim)
-│  └─ Text    NoiseText         mono bold 18, dim (QUIET, HEARD, LOUD, VERY LOUD)
+│  │  └─ Image Noise1 … Noise6  14 × 8 each, no texture (tinted lit, dim, green for HIDDEN, red from IN PLAIN SIGHT)
+│  └─ Text    NoiseText         mono bold 18, dim (HIDDEN, LOW, NOTICEABLE, SEEN, IN PLAIN SIGHT, LOUD)
 ├─ HorizontalLayout StandPanel  anchor bottom-left, offset (552, -30), 90% opacity; hidden unless the cure finale's stand line is fresh
 │  └─ Text    StandText         mono bold 18, bone ("CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00.")
 ├─ HorizontalLayout LookPanel   anchor bottom-left, offset (552, -122), 8 apart, 95% opacity; hidden unless borrowed kit's look is coming (RZ_Hud_Look)
 │  ├─ Image   LookIcon          24 × 24, the tier_watched eye (static Texture and Image, set again by code), gold
 │  └─ Text    LookText          bold 20 (min 18), bone ("PASS AS BASTION: 2 OF 2", or "PASS AS BASTION: SEEN THROUGH")
-├─ HorizontalLayout SeenPanel   anchor bottom-left, offset (588, -90), 10 apart, 85% opacity; hidden until the server sends a visibility (Stealth on)
-│  ├─ HorizontalLayout (3 apart)
-│  │  └─ Image Seen1 … Seen5    14 × 8 each, no texture (tinted lit, dim, or green when hidden)
-│  └─ Text    SeenText          mono bold 18, dim (HIDDEN, LOW, SEEN, IN PLAIN SIGHT)
 ├─ VerticalLayout TrackerPanel  the quest tracker (the tracked job only): 360 wide, anchor top-left, offset (24, 24), fits its content, hidden
 │  │                            (the script moves it to (24, 126) while RadioPanel shows; UI.md, "The quest tracker").
 │  │                            No box: text straight on the world with a 2-px black shadow (each font's ShadowSize 2, ShadowOffset 1 1)

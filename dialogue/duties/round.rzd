@@ -1,0 +1,215 @@
+# The Round (docs/ERRANDS.md, "The routines"; Missions/Errands/RZ_DutyRound.c): the sick at a Haven
+# house with no medic, lying on cots, in their own words. Only the bed you're at answers; the others
+# are waiting their turn (RZ_TalkDutyPerson). Asking what happened is the bed's option 4 (one of its
+# three looks, call:slot:4); what you do for them is done with your hands at the bed, not in talk.
+# What they need is said here and settles nothing.
+
+conv duty.round.fever
+for duty:round:fever
+topic "How are you feeling?"
+prio quest
+voice haven
+
+node start
+  say Cold. I know I'm hot, I can feel it on my own face, and I'm cold. It's a stupid thing for a body to do.
+  > @what What happened to you? -> told   do call:slot:4
+  > @need What do you need? -> need
+  > @lie Lie still. I'll look you over. -> end
+
+node told
+  say It came round the houses like the post used to. The well first, then next door, then us. Mother had it last week. She's up and complaining now, so I'll live.
+  > @need2 What do you need? -> need
+  > @lie2 Lie still. I'll look you over. -> end
+
+node need
+  say Water that isn't warm. And somebody to open that window. They keep it shut for the smoke and I'm cooking in here.
+  > @lie3 Lie still. I'll look you over. -> end
+
+conv duty.round.cut
+for duty:round:cut
+topic "Let's see that hand."
+prio quest
+voice plain
+
+node start
+  say It's only a hand. I've got two. Sorry. I talk when it throbs.
+  > @what What happened to you? -> told   do call:slot:4
+  > @need What do you need? -> need
+  > @lie Lie still. I'll look you over. -> end
+
+node told
+  say A tin of peaches. Four days ago. The opener went the way of everything, so I used a knife, and the knife went the way of the tin. It was fine yesterday. It's not fine today.
+  > @need2 What do you need? -> need
+  > @lie2 Lie still. I'll look you over. -> end
+
+node need
+  say Tell me it's not going to come off. Then do whatever you like to it.
+  > @lie3 Lie still. I'll look you over. -> end
+
+conv duty.round.bite
+for duty:round:bite
+topic "How long have you been lying here?"
+prio quest
+voice plain
+
+node start
+  say Me? I'm fine. A cold. They put me in here so I don't give it to the children. See to the others first, honestly.
+  > @what What happened to you? -> told   do call:slot:4
+  > @need What do you need? -> need
+  > @lie Lie still. I'll look you over. -> end
+
+node told
+  say Nothing happened. I was out for wood, it rained, I got a chill. That's all. Why are you looking at my arm?
+  > @need2 What do you need? -> need
+  > @lie2 Lie still. I'll look you over. -> end
+
+node need
+  say Sleep. Just sleep. And for nobody to make a fuss. Please.
+  > @lie3 Lie still. I'll look you over. -> end
+
+conv duty.round.hunger
+for duty:round:hunger
+topic "When did you last eat?"
+prio quest
+voice haven
+
+node start
+  say I'm sorry to be any trouble. I'm sure there are people worse off than me in here.
+  > @what What happened to you? -> told   do call:slot:4
+  > @need What do you need? -> need
+  > @lie Lie still. I'll look you over. -> end
+
+node told
+  say I gave mine to the little ones. Just this week. Well, the week before too. Nobody noticed, which was the idea. Then I stood up too fast at the stove, and here I am.
+  > @need2 What do you need? -> need
+  > @lie2 Lie still. I'll look you over. -> end
+
+node need
+  say Nothing. Really. Well. If there was a spoon of something going spare. But only if it's spare.
+  > @lie3 Lie still. I'll look you over. -> end
+
+conv duty.round.fall
+for duty:round:fall
+topic "Show me the arm."
+prio quest
+voice plain
+
+node start
+  say Don't touch it. I mean, do, you're the one who knows. Just tell me first.
+  > @what What happened to you? -> told   do call:slot:4
+  > @need What do you need? -> need
+  > @lie Lie still. I'll look you over. -> end
+
+node told
+  say The stairs, in the dark. I put my hand out for the rail and the rail wasn't there any more. Somebody burned it in the winter. I'd have burned it too.
+  > @need2 What do you need? -> need
+  > @lie2 Lie still. I'll look you over. -> end
+
+node need
+  say Something to hold it still. Every time I turn over it moves on its own.
+  > @lie3 Lie still. I'll look you over. -> end
+
+conv duty.round.child
+for duty:round:child
+topic "Hello there."
+prio quest
+voice haven
+
+node start
+  say They don't turn round. A small voice says to the wall that they're not supposed to talk to people they don't know.
+  > @what What happened to you? -> told   do call:slot:4
+  > @need What do you need? -> need
+  > @lie I'll just have a look at you. -> end
+
+node told
+  say Mama went for water at the far well, because ours tastes funny now. She said wait here. So I'm waiting here. I'm good at waiting.
+  > @need2 What do you need? -> need
+  > @lie2 I'll just have a look at you. -> end
+
+node need
+  say For Mama to come back. And my dog. He's not allowed in. He's outside. He's called Rubel.
+  > @lie3 I'll just have a look at you. -> end
+
+conv duty.round.old
+for duty:round:old
+topic "How are you keeping?"
+prio quest
+voice plain
+
+node start
+  say Don't waste it on me. Whatever you've got. I've had a long go. Give it to somebody who's still using theirs.
+  > @what What happened to you? -> told   do call:slot:4
+  > @need What do you need? -> need
+  > @lie Let me look at you anyway. -> end
+
+node told
+  say Nothing happened. That's the trouble. I had a shop and a family and a bad knee. Now I've the knee. I stopped getting up, and nobody could think of a reason I should.
+  > @need2 What do you need? -> need
+  > @lie2 Let me look at you anyway. -> end
+
+node need
+  say Somebody to argue with. The clerk won't. Too polite. You don't look polite.
+  > @lie3 Let me look at you anyway. -> end
+
+conv duty.round.chest
+for duty:round:chest
+topic "That's a bad cough."
+prio quest
+voice plain
+
+node start
+  say They wave the rag at you instead of answering, cough into it, and try again. Sorry. Every time I lie down it comes back up.
+  > @what What happened to you? -> told   do call:slot:4
+  > @need What do you need? -> need
+  > @lie Lie still. I'll look you over. -> end
+
+node told
+  say Weeks of it. The roof leaks right over my bed, so I moved the bed, and the leak followed. Lying flat's the worst. I don't sleep. I lie here and count drips.
+  > @need2 What do you need? -> need
+  > @lie2 Lie still. I'll look you over. -> end
+
+node need
+  say To sleep one night through. Just one. I'd trade you my boots for it.
+  > @lie3 Lie still. I'll look you over. -> end
+
+conv duty.round.burn
+for duty:round:burn
+topic "What's under the towel?"
+prio quest
+voice haven
+
+node start
+  say Don't take the towel off. It's the only thing that's helping. It was cold when they put it on.
+  > @what What happened to you? -> told   do call:slot:4
+  > @need What do you need? -> need
+  > @lie Lie still. I'll look you over. -> end
+
+node told
+  say Supper. The big pot. The handle came away and I caught it, which was stupid, but I caught it. Everybody ate. Nobody else got burned. I'd do it again.
+  > @need2 What do you need? -> need
+  > @lie2 Lie still. I'll look you over. -> end
+
+node need
+  say Something cold on it that stays cold. And not to have to cook tomorrow. Somebody else can.
+  > @lie3 Lie still. I'll look you over. -> end
+
+conv duty.round.toofar
+for duty:round:toofar
+topic "Can you hear me?"
+prio quest
+voice plain
+
+node start
+  say Their eyes come round to you slowly, as if from a long way off. It takes them a while to find the words.
+  > @what What happened to you? -> told   do call:slot:4
+  > @need What do you need? -> need
+  > @lie Lie still. I'll look you over. -> end
+
+node told
+  say A fence, on a run. A nail. I dressed it myself, I was proud of it. That was nine days ago. It smells now. I can smell it from here, so you can.
+  > @need2 What do you need? -> need
+  > @lie2 Lie still. I'll look you over. -> end
+
+node need
+  say Somebody who knows what they're doing. No offence. You know what I mean.
+  > @lie3 Lie still. I'll look you over. -> end

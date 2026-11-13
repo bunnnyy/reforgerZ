@@ -13,8 +13,8 @@
 //!   stood anywhere in a town's ring, on a wooded slope as often as not).
 //! - Towns within 3 km of where the chain will end (RZ_Openings.EndPoints: the ending faction's
 //!   holdings, Halcyon's lab, or the Haven's safehouses) are tried first, so the walk stays short.
-//! - A building with houses 50-250 m from it comes first (docs/PLACES.md, opening.start: step 1
-//!   searches "the house over the way"); a lone one only when no town tried has better.
+//! - A building with houses 150-450 m from it comes first (docs/PLACES.md, opening.start: step 1
+//!   searches "the house down the road"); a lone one only when no town tried has better.
 //! - The fallback chain: no fitting building in any town tried, any house in one (the scene still
 //!   comes); nothing at all, the spawn point the spawn screen asked for (the contact only).
 //!
@@ -34,7 +34,7 @@ class RZ_OpeningPlace
 	bool m_bFits;			// one of the background's kinds (false: any house, the first fallback)
 	bool m_bScene;			// a door was found: the scene and the contact (false: a spawn point, the contact only)
 	bool m_bRelaxed;		// found by the second pass, at half the distances
-	int m_iRank;			// 0 a fitting building with houses over the way, 1 a house with them, 2 a lone fitting one, 3 a lone house
+	int m_iRank;			// 0 a fitting building with houses down the road, 1 a house with them, 2 a lone fitting one, 3 a lone house
 	IEntity m_Door;			// weak: the door you come out of
 }
 
@@ -51,8 +51,8 @@ class RZ_OpeningRoll
 	protected static const float TOWN_QUERY = 350;		// buildings within this of a town's centre (its radius if smaller)
 	protected static const int TOWN_BUILDINGS = 400;
 	protected static const int TOWNS_TRIED = 12;
-	protected static const float OVER_MIN = 50;		// houses over the way: this far from the building...
-	protected static const float OVER_MAX = 250;	// ...and no further (step 1's search, RZ_Openings.PickSearch)
+	protected static const float OVER_MIN = 150;		// houses down the road: this far from the building...
+	protected static const float OVER_MAX = 450;	// ...and no further (step 1's search, RZ_Openings.PickSearch)
 	protected static const float NEW_INFECTION = 60;	// a brand-new player's town is under this
 	protected static const float ANY_INFECTION = 80;
 	protected static const float NEAR_END = 3000;		// towns this close to where the chain ends go first
@@ -213,8 +213,8 @@ class RZ_OpeningRoll
 
 	//------------------------------------------------------------------------------------------------
 	//! The town's buildings with an outside door at a clear point: one of the background's kinds with
-	//! houses over the way at random, else null and `fallback` the best of the rest by rank (a house
-	//! with houses over the way, a lone fitting building, a lone house).
+	//! houses down the road at random, else null and `fallback` the best of the rest by rank (a house
+	//! with houses down the road, a lone fitting building, a lone house).
 	protected RZ_OpeningPlace InTown(int town, array<string> kinds, RZ_PlayerProfile profile, RZ_Rng rng, out RZ_OpeningPlace fallback)
 	{
 		fallback = null;
@@ -303,19 +303,43 @@ class RZ_OpeningRoll
 		int slot = RZ_DoorSlots.KindOf(b);
 		foreach (string k : kinds)
 		{
-			switch (k)
+			// The words must be true of it too (RZ_PlaceCheck.WordsTrue): an army medical hut is no chemist's
+			if (k == "house")
 			{
-				case "clinic": if (slot == RZ_EDoorWant.CLINIC) return k; break;
-				case "shop": if (slot == RZ_EDoorWant.SHOP) return k; break;
-				case "garage": if (slot == RZ_EDoorWant.GARAGE) return k; break;
-				case "farm": if (slot == RZ_EDoorWant.FARM) return k; break;
-				case "public": if (slot == RZ_EDoorWant.PUBLIC) return k; break;
-				case "house": if (RZ_PlaceCheck.IsHouse(b)) return k; break;
-				default: if (RZ_LandmarkFinder.Matches(k, name)) return k; break;
+				if (RZ_PlaceCheck.IsHouse(b))
+					return k;
+			}
+			else if (RZ_PlaceCheck.IsDoorKind(k))
+			{
+				if (slot == DoorWant(k) && RZ_PlaceCheck.WordsTrue(k, b))
+					return k;
+			}
+			else if (RZ_LandmarkFinder.Matches(k, name))
+			{
+				return k;
 			}
 		}
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The door slots' kind a door kind's words need ("aid" is the clinic slot's army half).
+	protected static int DoorWant(string kind)
+	{
+		if (kind == "clinic" || kind == "aid")
+			return RZ_EDoorWant.CLINIC;
+
+		if (kind == "shop")
+			return RZ_EDoorWant.SHOP;
+
+		if (kind == "garage")
+			return RZ_EDoorWant.GARAGE;
+
+		if (kind == "farm")
+			return RZ_EDoorWant.FARM;
+
+		return RZ_EDoorWant.PUBLIC;
 	}
 
 	//------------------------------------------------------------------------------------------------

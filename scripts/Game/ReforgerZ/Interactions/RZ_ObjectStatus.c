@@ -145,7 +145,19 @@ class RZ_ObjectStatus
 		{
 			case RZ_ESpotKind.RADIO: return hub.GetRadio().HouseRadioLock(playerId, s, option, user, reason, tag);
 			case RZ_ESpotKind.GENERATOR: return hub.GetTraps().FoundGeneratorLock(playerId, s, option, user, reason, tag);
-			case RZ_ESpotKind.STOVE: return hub.GetCrafting().StoveLock(option, user, reason, tag);
+			case RZ_ESpotKind.STOVE:
+			{
+				// A fireplace that isn't burning cooks nothing: every row says why
+				string fireWhy = hub.GetCrafting().FireOutWhy(s);
+				if (!fireWhy.IsEmpty())
+				{
+					reason = fireWhy;
+					tag = "FIRE OUT";
+					return true;
+				}
+
+				return hub.GetCrafting().StoveLock(option, user, reason, tag);
+			}
 			case RZ_ESpotKind.WELL: return hub.GetCrafting().WellLock(option, user, reason, tag);
 		}
 

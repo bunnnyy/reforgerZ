@@ -287,9 +287,25 @@ Shots nearby still spoil a sneak. In a questline stage, a person who sees anyone
 
 ### The HUD
 
-Above the noise meter, five segments and a word: **HIDDEN** (under 0.35: the infected can lose
-you), **LOW**, **SEEN**, **IN PLAIN SIGHT** (0.9 and up: the infected see you better than before).
-It's sent only when it changes, and not shown with Stealth off ([UI.md](UI.md#screens)). There's no
+One bar, bottom left: how much the infected notice you right now, six segments and a word, in the
+bands this code acts on (`RZ_Stealth.HudLevel`). Visibility already holds your noise (a shot adds 1
+and fades over 10 s; a loud noise within 15 m counts as 0.7), so the bar is the number stealth uses:
+
+| Bar | Word | Visibility | What it means |
+|---|---|---|---|
+| One green segment | **HIDDEN** | under 0.35 (**Hidden below**) | They can lose you |
+| 1 | **LOW** | 0.35 to 0.6 | They see you less well than before |
+| 2 | **NOTICEABLE** | 0.6 to 0.75 | As before |
+| 3 | **SEEN** | 0.75 to 0.9 | As before |
+| 4 (red) | **IN PLAIN SIGHT** | over 0.9 | They see you better than before |
+| 5 (red) | **IN PLAIN SIGHT** | 1 (in a vehicle, sprinting in daylight) | |
+| 6 (red) | **LOUD** | noise left at 0.5 or more | A fresh shot or a loud noise where you stand: they can't lose you |
+
+The speaker icon shows while any noise is part of it. It's sent only when it changes, and not
+shown with Stealth off or **UI > Noise meter** off ([UI.md](UI.md#screens)). *Tuning to know:*
+lying prone and keeping still in daylight is 0.5 × 0.7 = 0.35, exactly the hidden line, so it
+reads LOW (one segment), not HIDDEN; with the engine's light below full (shade, dusk) it drops under.
+Stealth has no cover input, so tall grass doesn't count. There's no
 cue when a group loses you or gives up: you see them go.
 
 *Simplified:* speed is how far you moved between updates, so a sprint that stops just before an
@@ -1403,6 +1419,13 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
 - **The thing.** At the step's place stands its **before** look (a marked pit, a pile of planks, a
   crate, a toolbox), with one world prompt on an invisible box: the step's own words (*Dig the
   latrine*, *Board up the doors*, *Fill and stack the sandbags*).
+- **Several at one spot.** An owner with several things to do at one spot gathers their sites
+  (`Gather`): one box stands for them, the spot's name its prompt (*The far door*); a press opens
+  the object menu with each as a row ([UI.md](UI.md#default-first-then-menus), "One spot, one
+  prompt"), and the row picked is the box's hold from then, for whoever picked it, counted as that
+  site's work. Walk off past reach + 1 m, or leave it 60 s, and it's the list again; with one site
+  left, its plain hold. Without the object menu, or for a client that failed one, each stands as
+  its own prompt. Used by every duty beat and each sorting subject ([ERRANDS.md](ERRANDS.md#things-that-happen)).
 - **The hold.** Hold the prompt (vanilla's hold-progress bar, [UI.md](UI.md#the-hold-prompt)) for the
   work's time, 5 to 20 s (a step that used to take 2 minutes or more there: 20 s; a background's way
   that was quicker stays quicker). Move more than 1.5 m or get hurt and the bar starts again.
@@ -1414,9 +1437,14 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
   - **Digging** (**Dig with the tool**, on): at a latrine, a grave or a dig, a carried
     entrenching tool is taken in hand and vanilla's building animation plays with it. The tool is
     never needed: the work takes the same time and is done the same without one.
-  - **Any other work, or digging with no tool** (**Hands animation**, on): the animation
-    vanilla plays at a mine being disarmed, kneeling at the thing with empty hands. If the engine
-    won't play it at a work site, nothing plays and the lock still holds.
+  - **Any other work, or digging with no tool** (**Hands animation**, on): crouched when the thing
+    is low (under 0.9 m above your feet: the stance vanilla's crouch key sets, stood up again at
+    the end if you're still crouched), reaching down and taking hold over and over: vanilla's
+    pick-up gesture (what it plays when you take something off the ground into the pack, which
+    needs no item), played again every 1.6 s while the bar runs. Only if the engine won't play that,
+    the item use vanilla plays at a mine being disarmed, on the thing itself. That item use was the
+    first build's only animation, and with no tool nothing played: the site's box isn't an
+    inventory item (a mine is), so the engine refuses it. Whatever plays, the lock still holds.
   - **Let go, always.** The hold's end, letting go, the site going, death, unconsciousness or
     another body release both at once. A hit frees the hands and legs for a second and a half
     (time to turn and run) before the bar starts again. As a net, the HUD's tick releases a hold
@@ -1434,6 +1462,24 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
 - **Where.** At the step's own place, picked through its place need; a spot beside it (at the
   giver's place, at water, by an engine, a well, a gate or a door) goes through the need `work.site`
   (dry, not steep, not behind a lock), and every site is checked live ([PLACES.md](PLACES.md#the-needs)).
+  Work its words put indoors (a bench, a sick man, a search of a house or a shop) is on the ground
+  floor of the nearest building of that kind near the place, at the loose loot's anchors on its
+  lowest floor (`RZ_WorkSites.Indoors`), kept at the floor's height; with no such building, or no
+  room in it, it stays in the open beside the place.
+- **It fits, or it's left out.** Before a look is put out, its real box (measured on the server the
+  first time: spawned out of sight at heading 0, its parts' boxes joined, deleted; logged as
+  `Work sites: measured <look>: W x D m`) must fit where it goes, by the same checks a camp's pieces get
+  (`RZ_CampLife.BoxFits`, [SITES.md](SITES.md)): outdoors nothing in it at knee or chest height,
+  nothing overhead and its corners within 0.4 m of level, on the ground; indoors a floor under every
+  corner and nothing in the way. Its own spot and heading first, then the other three headings, then
+  spots around it (1 and 2 m off outdoors, 0.75 m indoors), and the prompt moves with it. Nowhere:
+  the look is left out and only the prompt stands there (drop, don't squeeze). The after look gets
+  the same check where the work was. Anything in a look a player could use is stripped, as camp
+  dressing is.
+- **Someone it's for.** Where the words name a person (the newcomer, the bitten man), that person
+  stands by the site facing it while a player is near (Props > Duty person, else Puzzles >
+  Civilian; a body in the errands' budget), wherever a person's 0.6 m box fits on one of its four
+  sides; none fits, or no room in the budget: nobody, and the work is done the same.
 - **Near players only.** Its props spawn within the marks' spawn radius (150 m) and go past the
   despawn radius, like marks; **Sites at once** (40) drops the oldest whose step is over first,
   never one under way. The hold's time × **Time scale**.
@@ -2633,8 +2679,8 @@ picked-over one is thin.
 | Garage (garage, workshop, repair, fire station) | Jerrycans, the wrench kit, torches, work gloves, a hard hat, a fireman's helmet, overalls, a spade, maps; rare: a fire axe, a gas mask, an oxygen tank, a backpack | 10 |
 | Farm (farm, barn, stable, shed, vet clinic) | Food, raw meat, water, canteens, wood, wool gloves and hats, overalls, raincoats, a spade, jerrycans; rare: a fire axe, a machete, a knife, binoculars, a compass, a backpack | 9 |
 | Police (police, gendarmerie) | Pistol and rifle magazines, torches, dressings, tourniquets, caps, gloves, a holster, police trousers, a prisoner's uniform; rare: a pistol (PM or M9), a Vz. 58 rifle, smoke grenades, a vest, a helmet, a radio | 10 |
-| Shop (shop, store, market, kiosk, petrol station, pub) | Food, water, canteens, vodka, cigarettes, torches, watches, maps, gloves, hats and caps, a waist pack; rare: binoculars, a compass, a hiking backpack | 9 |
-| House (anything else) | Food, water, dressings, aspirin, a torch, a watch, a map, wood, clothes, someone's belongings; rare: a knife, binoculars, a compass, a backpack | 6 |
+| Shop (shop, store, market, kiosk, petrol station, pub) | Food, water, canteens, vodka, cigarettes, watches, maps, gloves, hats and caps, a waist pack; rare: binoculars, a compass, a hiking backpack | 9 |
+| House (anything else) | Food, water, dressings, aspirin, a watch, a map, wood, clothes, someone's belongings; rare: a knife, binoculars, a compass, a backpack | 6 |
 
 Every destructible building has loot, whatever else its name makes it (a petrol station's
 building is a shop).
@@ -2652,11 +2698,19 @@ building is a shop).
   less of each: the slots per building were raised with the extra finds to keep food and medicine
   as common as before. The log's `Search:` lines give each table's size and how many extra finds
   were added.
-- **Food counts twice with Metabolism loaded** (an accident, kept for now): the mod brings its own
-  copies of the MRE, the crackers and the dried meat, spelled `prefabs/...`, so the pool's entries
-  and the built-in `Prefabs/...` ones don't match and both go into the table. Each of the three is
-  twice as likely as any other everyday find (the house table is 34 long, not 31). Matching them
-  by GUID would halve food in houses, shops and farms.
+- **One entry a prefab, by its GUID.** Two spellings of one prefab (Metabolism's copies of the
+  MRE, the crackers and the dried meat are `prefabs/...`, the base game's `Prefabs/...`) are one
+  entry. **Food weighs double:** each food item (a prefab under `/food/`) is in the everyday list
+  twice (**Search > Food weight** 2), so a house holds about 0.8 food items, a shop 2.2 and a farm
+  2.4 (before the GUID match, by accident, 0.75, 1.9 and 2.1).
+- **Keywords mean what they say.** "can" isn't a keyword (it caught jerrycans and canteens): jerrycans
+  are a garage's, a farm's and a wreck's, canteens where the built-in lists put them. Torches are
+  electronics (10% of finds, 15% where the power's on) and a garage's, a police station's and a
+  wreck's everyday find, no longer every house's and shop's: about 0.5 a house and 0.7 a shop,
+  from 0.7 and 1.0.
+- **Not every "building" is a room.** The map counts piers, bollards, retaining walls, ruins'
+  rubble and wells as destructible buildings; they get no loot (**Search > Not buildings**, name
+  keywords).
 - **Rolled once, then data.** The first time a player comes near, each of the building's slots
   holds something **75%** of the time (**Loot > Slot chance**) × the town's loot level, half that
   in a faction's town (a holding within 150 m). The first two slots (**Sure items**) always do
@@ -3007,6 +3061,26 @@ and run through the stove's own code. Without the layout, or where the screen ca
 stove's first four are its actions (**Boil water**, **Brew a home remedy**, **Cook: ...**) in the
 object menu, as before.
 
+#### Fireplaces and campfires
+
+A fireplace is a stove that burns only while it's lit (`Interactions/RZ_Fires.c`): a campfire a
+player built with Make Fire Campfire & Wood ([MOD_STACK.md](MOD_STACK.md#fire-and-weather)), and
+any map fireplace with vanilla's fireplace component. Its fire is read through vanilla's component
+(lit while its fire is on), so no class of the mod is named.
+
+- **Found** as a stove by the look-around: a player-built one isn't a map object, so the look also
+  asks what moves near a player (within the 30 m spot radius) and keeps only fireplaces.
+- **Cooks only while lit.** Light it with its own prompt (the mod's **Light fire**, or vanilla's on
+  a map fireplace) first. Out, every row of its object menu and cooking screen is locked *FIRE
+  OUT* ("The fire's out. Put wood on it and light it first."); taken apart, it says so. Its strip
+  reads FIRE LIT or OUT and FUEL ITS OWN WOOD.
+- **Heat:** a lit fireplace a player built, found in the minute's look within 60 m of a player,
+  makes **4** heat a minute where it stands (**World > Placed things > Fire heat**), twice that
+  between dusk and dawn (**Fire heat at night** 2). Boiling or cooking on it adds the stove's own 2
+  on top.
+- *Simplified:* a map fireplace makes no heat of its own while lit (only the boiling's 2), and a
+  cold map fireplace no longer boils water by itself: light it first.
+
 ### Barricades, traps and generators
 
 | Kit | Per player | Lasts | What it does |
@@ -3156,7 +3230,7 @@ it's handed over, and the world streams in there.
   pack's lair, outside the errands' quiet places, and 2 km from this player's last two starts.
 - **Near where it ends:** towns within 3 km of where the chain will end are tried first, so the walk
   stays short; up to 12 towns are tried.
-- **Houses over the way:** a building with another house 50–250 m from it comes first, so step 1
+- **Houses down the road:** a building with another house 50–250 m from it comes first, so step 1
   has somewhere to send you; a lone one only when no town tried has better
   ([PLACES.md](PLACES.md#how-a-picker-uses-a-need)).
 - **Fallback:** no fitting building, any house in one of those towns (the scene still comes);
@@ -3232,12 +3306,19 @@ with their name (*"Hey. Over here. It's me."*), and your first objective is trac
 to Vera Holm.* (their name; the errand *Outside the Door*, on the HUD tracker and as the map's diamond on
 them). The talk screen never opens by itself ([DIALOGUE.md](DIALOGUE.md#who-opens-a-conversation)):
 it opens when you talk to them, and then the first step starts in that conversation: their greeting,
-that step's piece of the story, then the step's ask, and the step is yours and tracked. Each later
-step waits for you the same way: once a step is done (you're back by them), *Back to Vera Holm*
-is tracked, they call you over (*"Come here a minute. There's something else."*), and talking to
-them gives the next piece of the story and the ask. Already talking to them when it's due, it comes
-into the same screen. Without the talk screen, **Talk to** says the same lines as subtitles. Their one
-built reply is "What was it you needed?" (the step again, short). Two minutes into a wait without
+that step's piece of the story, then the step's ask, and the step is yours and tracked. **The chain
+never sends you back:** every step is done where it's done (`m_bEndsThere`), and the next one
+starts from there, at a new place, in one of two ways by your background:
+
+| Pattern | Backgrounds | How you move on |
+|---|---|---|
+| **They walk with you** (escort) | Mechanic, Hunter, Lab Technician, Unemployed, Raider, Ex-Con, Radio Operator: steps out and about (a pump, a pack's ground, the remains, the road, a door that owes, a toll, the channel) | Once the first ask is out and the talk screen is shut, the contact comes with you (*"I'm coming with you. ... You lead."*): their body becomes an escort ([building blocks](#mission-building-blocks), `RZ_Escort`) of **Guidance > Companion** (`RZ_OpeningCompanion.et`, a one-man civilian group) that follows 4 m behind you, stops while infected are within 25 m of them or nobody's within 150 m, and can be killed. Each next step starts as soon as they're within 30 m of you, said by them as subtitles; not caught up within a minute, it starts anyway, on its card. They walk you to the end and say one line there (*"This is it. I'll find a corner."*). No escort room (**Contracts > Max escorts**) or no prefab: they stay where they stood, and each next step starts where you are, on its card |
+| **They send you on** (hand-off) | Nurse, Doctor, Elder, Soldier, Police Officer, Drifter (a plan with steps 1 and 2) | When step 1 starts, its giver picks the next person: a house 200–600 m on from step 1's place (the one nearest where the chain ends first), 150 m or more from them, not locked, the spot outside its side facing step 1's place meeting `opening.search`; named, and who they are by your background (*the mother with the sick boy*, *the man whose friend was bitten*, *the woman between two families*, *the one keeping the gate*, *the shopkeeper who kept your station's keys*, else *someone who heard you help*). With the ask they say *"When you're done there, don't come back for me. Go on to Ruth, the mother with the sick boy, at Ruth's house in Morton."* Step 1 done, Ruth stands there (a body tagged as the first was) and *Find Ruth* is tracked ("Find Ruth at Ruth's house in Morton. Talk to them."); within 25 m she calls you over (*"You're the one Vera sent? Over here."*), and talking to her gives step 2. Step 2 done, the walk starts where you are. The first giver stays behind (talked to, *"Go on. Ruth's waiting for you, not me."*) and goes once nobody's within 150 m. No house fits: step 2 is theirs, *Back to Vera Holm*, the only way back left |
+
+With neither (levels 2–3, one step and the lead, or the Drifter's second and third asks), each next
+step starts where you are, said by them when they're within 30 m, else only its card. Already talking
+to them when it's due, it comes into the same screen. Without the talk screen, **Talk to** says the same lines as subtitles. Their one
+built reply is "What was it you needed?": the live step said again in their words, word for word from the tracker ("Like I said. Go to Halcyon's field station at ..."), then a short line of their own, so a missed ask is never lost (`RZ_Openings.Remind`). Talking to them while a step runs says the same. Two minutes into a wait without
 talking to them, while you're within 30 m, they call once more; leave a step 1 alone for two minutes
 by them and they say it once more (a subtitle). Nobody comes to talk within 45 minutes: the opening
 ends. With nobody outside, or once they're dead, a step starts by itself, tracked: the chain's steps
@@ -3247,7 +3328,7 @@ are the **only job in the game handed to you rather than asked for**; its errand
 **The chain** is steps on the errand engine, handed straight to you
 ([ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain)), so the tracker follows each one as it
 starts (the HUD and the Quests tab), with the giver's lines on the talk screen; with someone outside,
-a talk objective comes before each step (above). By experience
+a talk objective comes before the first step, and before a next person's step (above). By experience
 ([levels](#experience-levels)):
 
 | Level | The chain |
@@ -3263,8 +3344,8 @@ there, one line on arrival ("Someone with a list looks up."), and no Fame. All t
 
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
-| 1. Across the Road | Search a building 50–250 m from them: a work site's **Search it, quietly** (8 s; 6 s for a learning player, level 1; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot outside its side facing them, and come back. One of your background's kinds when one is there (below), else a house; no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
-| 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold, and back), else The Cut (dress their hand with anything medical you carry, once you've chosen **Look at the hand.** on the talk screen) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
+| 1. Down the Road | Search a building 150–450 m from them: a work site's **Search it, quietly** (8 s; 6 s for a learning player, level 1; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot inside it, on its ground floor; done there. One of your background's kinds when one is there (below), else a house, named for what it really is ([PLACES.md](PLACES.md#a-place-is-what-its-words-say)); no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
+| 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold), else The Cut (dress their hand with anything medical you carry: the hand-over reply on their talk screen) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
 | 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
 No step 2 (yours can't run here, no well near and nothing medical on you): straight to the walk.
@@ -3276,24 +3357,26 @@ today opens the first step, when you first talk to them.
 **Step 2 by background** (`RZ_OpeningSteps.c`). Each runs on the
 errand engine like the other steps; while it runs, `RZ_ErrandDef.StepCounts` lets the background's
 own system say whether its clock runs. The first that can run here is yours; else water, else The
-Cut. Step 1's building is of your background's kind when one is 50–250 m off. Each step's place
+Cut. Step 1's building is of your background's kind when one is 150–450 m off. Step 2's place is
+measured from whoever gives it: the next person (handed on) or where the contact walking with you
+stands, so it's a new place, never back where you began. Each step's place
 meets its need ([PLACES.md](PLACES.md#the-needs)) or the step can't run here.
 
 | Background | Step 1's building | Step 2 | What it needs to run | Done when |
 |---|---|---|---|---|
-| Nurse | the chemist's (clinic) | **The Fever**: treat their boy | something medical on you | you choose to see to him on the talk screen (**See to the boy.**, `opening.tend_fever`), then one medical item handed over at the contact |
-| | | else **Water for the Fever** | a well within 400 m | **Fill what you can carry** at the well (8 s), and back (it'll be boiled) |
-| Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, 10 minutes before it lapses | an antidote on you | **Give him the antidote.** on the talk screen (`opening.tend_clock`), then the antidote handed over at the contact |
-| | | else **The Clock** with a dressing | something medical | **Keep him going.** on the talk screen (`opening.tend_clock_med`), then one medical item handed over |
-| Mechanic | a garage or petrol station | **The Pump**: fuel from the nearest petrol station within 800 m | a petrol station near | 5 s at the pump with 5 litres in a can, and back |
+| Nurse | the chemist's, else the old aid post, the vet's farm or the doctor's house | **The Fever**: treat their boy | something medical on you | you pick the hand-over reply on their talk screen (*[Errand] Show me the boy. I've got something.*, first in the list, locked "Needs a dressing, or anything medical" without it); one medical item is taken then, never just for opening the talk |
+| | | else **Water for the Fever** | a well within 400 m | **Fill what you can carry** at the well (8 s) (it'll be boiled) |
+| Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, 10 minutes before it lapses | an antidote on you | the hand-over reply (*[Errand] Here's the antidote. Roll his sleeve up.*, locked "Needs the antidote"); the antidote is taken then |
+| | | else **The Clock** with a dressing | something medical | the hand-over reply (*[Errand] Let me clean it and bind it. That buys time.*); one medical item is taken then |
+| Mechanic | a garage or petrol station | **The Pump**: fuel from the nearest petrol station within 800 m | a petrol station near | 5 s at the pump with 5 litres in a can |
 | Hunter | a farm | **Downwind**: watch a pack's ground, unseen | 150 m short of the nearest pack's lair within 1.6 km, else a tree line 150–250 m out (four trees within 40 m) | 30 s within 25 m, hidden (built stealth), quiet; back |
-| Police Officer | a police post or hall | **The Station Keys**: the contact gives you the key to a locked building 40–300 m off | locks and the key prefab, a real lock near | inside that building, and back |
-| Ex-Con | — | **The Toll**: walk up to a Red Hand toll and away again, no fight | a Red Hand roadblock or camp gate within 1.5 km; not while the Red Hand hunts you | 10 s within 30 m with no shot within 80 m in the last minute, and back |
-| Lab Technician | a school or clinic | **A Sample**: from what's left of a big one 80–250 m out, on a road's verge, else in a yard by a house: a special that doesn't burst (**Zombies > Special prefabs**) is made and killed there when the step starts, the sample (**Cure > Sample prefab**) beside it; the body is kept from the corpse cleanup until the opening ends | the sample prefab and such a special; not after the cure | at the remains with a sample in your pack, and back |
-| Radio Operator | the hut under a mast | **Open Channel**: answer someone calling on the open channel (**Call on the open channel**, `opening.channel`) | Dialogue > Trees and Radio calls on, a radio on you | answered, and back |
-| Unemployed | a shop | **A Fair Swap**: catch the nearest wanderer on the road within 1.5 km | a wanderer near | 5 s with them (the place follows them), and back: a tin you carry is swapped for 3 Haven Favor (small pay) |
-| Soldier | an old barracks or hall | **Hold the Gate** 15–25 m out for a minute: the gate's noise (heat 12, again every 20 s) draws the infected | ground there that isn't steep | 60 s within 15 m, and back |
-| Raider | — | **The Debt**: collect at a house 60–250 m off (the errands' crate prop at its door) | a house that far off | 10 s at the door, and back: +1 Infamy with the Haven (the word getting round, small) |
+| Police Officer | a police post or hall | **The Station Keys**: the contact gives you the key to a locked building 40–300 m off | locks and the key prefab, a real lock near | inside that building |
+| Ex-Con | — | **The Toll**: walk up to a Red Hand toll and away again, no fight | a Red Hand roadblock or camp gate within 1.5 km; not while the Red Hand hunts you | 10 s within 30 m with no shot within 80 m in the last minute |
+| Lab Technician | a school or clinic | **A Sample**: from what's left of a big one 80–250 m out, on a road's verge, else in a yard by a house: a special that doesn't burst (**Zombies > Special prefabs**) is made and killed there when the step starts, the sample (**Cure > Sample prefab**) beside it; the body is kept from the corpse cleanup until the opening ends | the sample prefab and such a special; not after the cure | at the remains with a sample in your pack |
+| Radio Operator | the hut under a mast | **Open Channel**: answer someone calling on the open channel (**Call on the open channel**, `opening.channel`) | Dialogue > Trees and Radio calls on, a radio on you | answered |
+| Unemployed | a shop | **A Fair Swap**: catch the nearest wanderer on the road within 1.5 km | a wanderer near | 5 s with them (the place follows them): a tin you carry is swapped for 3 Haven Favor (small pay) |
+| Soldier | an old barracks or hall | **Hold the Gate** 15–25 m out for a minute: the gate's noise (heat 12, again every 20 s) draws the infected | ground there that isn't steep | 60 s within 15 m |
+| Raider | — | **The Debt**: collect at a house 60–250 m off (the errands' crate prop at its door) | a house that far off | 10 s at the door: +1 Infamy with the Haven (the word getting round, small) |
 | Elder | — | **Two Families**: hear them out with the contact, persuade 1 (factionless, [Elder] +1: `opening.settle`) | Dialogue > Trees on | the talk settled it (a Short settles it by half, said) |
 | Drifter | — | **Three asks**: up to three in a row of the gate, downwind, the swap, the debt, the two families, water and the cut, shuffled, each that can run here | — | each as above; the second and third come "from" the street's other people |
 
@@ -3498,7 +3581,9 @@ research missions (data, readings, live specimens) ─────────�
   the antidote prefab), one dose per sale, and refuses when the lab has none. The Red Hand's
   Steal the Antidotes moves up to two doses from the lab to the Red Hand's black market (4 at
   most), and a Red Hand antidote shop action sells only those. Stabilisers are a second, smaller
-  stock at the same quartermaster. All three stocks are saved.
+  stock at the same quartermaster. All three stocks are saved. A Trusted duty, a dose, can give one
+  dose from the lab's stock or the black market to someone of a place, never to a player
+  ([ERRANDS.md](ERRANDS.md#the-trusted-rung)).
 - **The final stand** sends one horde every 2.5 minutes, plus one more per 6 players at the lab
   (3 at most), so about five steady players can hold it. Its clock stands still while nobody is
   online; a restart during the stand starts it again from 15 minutes, and players joining are told
@@ -3834,6 +3919,8 @@ is cleared the same way once its prefab's name is in the list: no mod gives play
   every one is in sight, the oldest record is forgotten and its thing left standing.
 - **Saved** in `state.json`: the records, never the things. After a restart a record finds its
   thing again by prefab and place the first time a player comes near.
+- **A lit fire** among them makes heat while a player is near
+  ([Fireplaces and campfires](#fireplaces-and-campfires)).
 
 *Simplified:* the mode doesn't see a thing being built, it finds it standing, so the clock starts
 at the first look that sees it. Whether a restart keeps a built fireplace depends on the server's

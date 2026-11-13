@@ -50,6 +50,9 @@ class RZ_ErrandRegistry
 		list.Insert(new RZ_Errand_OfficersCoat());
 		// Disguise phases 2 and 3: the side jobs (docs/ERRANDS.md, the cards)
 		list.Insert(new RZ_Errand_NameOnTheTape());
+		// The props work: a soldier's card brought home, a forger at the line
+		list.Insert(new RZ_Errand_PatrolNotBack());
+		list.Insert(new RZ_Errand_FalseHope());
 		list.Insert(new RZ_Errand_SpotTheTells());
 		list.Insert(new RZ_Errand_Paint());
 		list.Insert(new RZ_Errand_WrongWayRound());

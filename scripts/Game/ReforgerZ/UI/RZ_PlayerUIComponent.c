@@ -37,12 +37,12 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected int m_iListenFaction = -1;
 	protected float m_fListenLeft;
 	protected float m_fListenStamp;
-	protected int m_iNoise;
 	protected string m_sStand;			// the stand's HUD line (client)
 	protected string m_sLook;			// borrowed kit's look-coming line (client), "" hidden
 	protected float m_fStandUntil;
 	protected int m_iSeen = -1;			// visibility 0 (hidden) to 5; -1 = none (Stealth off): not shown
 	protected bool m_bSeenHidden;
+	protected bool m_bSeenNoisy;		// noise is part of the bar (a shot, a loud noise where you stand)
 	protected string m_sStanding;
 	protected string m_sJournal;
 	protected string m_sDetail;			// the selected journal row's detail (RZ_UIFeed.BuildDetail)
@@ -158,15 +158,6 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void SendNoise(int level)
-	{
-		if (IsLocalOwner())
-			RpcDo_Noise(level);
-		else
-			Rpc(RpcDo_Noise, level);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	void SendNewLife()
 	{
 		if (IsLocalOwner())
@@ -270,13 +261,14 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! level: 0 hidden to 5 in plain sight (RZ_UIFeed.PushVisibility); hidden: under Stealth > Hidden below.
-	void SendVisibility(int level, bool hidden)
+	//! level: the HUD's one bar, 0 hidden to 6 loud (RZ_Stealth.HudLevel); hidden: under Stealth >
+	//! Hidden below; noisy: noise is part of it.
+	void SendVisibility(int level, bool hidden, bool noisy)
 	{
 		if (IsLocalOwner())
-			RpcDo_Visibility(level, hidden);
+			RpcDo_Visibility(level, hidden, noisy);
 		else
-			Rpc(RpcDo_Visibility, level, hidden);
+			Rpc(RpcDo_Visibility, level, hidden, noisy);
 	}
 
 	// ================================================================ Client: receive
@@ -303,17 +295,11 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_Noise(int level)
-	{
-		m_iNoise = level;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_Visibility(int level, bool hidden)
+	protected void RpcDo_Visibility(int level, bool hidden, bool noisy)
 	{
 		m_iSeen = level;
 		m_bSeenHidden = hidden;
+		m_bSeenNoisy = noisy;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -357,9 +343,9 @@ class RZ_PlayerUIComponent : ScriptComponent
 		m_iRadioVersion++;
 		m_iInfState = RZ_EInfectionUI.NONE;
 		m_iListenFaction = -1;
-		m_iNoise = 0;
 		m_iSeen = -1;
 		m_bSeenHidden = false;
+		m_bSeenNoisy = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1067,10 +1053,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	int GetNoise() { return m_iNoise; }
-	//! Visibility 0 (hidden) to 5, or -1: none sent (Stealth off, or not yet this life).
+	//! The HUD's one bar, 0 (hidden) to 6 (loud), or -1: none sent (Stealth off, or not yet this life).
 	int GetSeen() { return m_iSeen; }
 	bool IsSeenHidden() { return m_bSeenHidden; }
+	bool IsSeenNoisy() { return m_bSeenNoisy; }
 	string GetStanding() { return m_sStanding; }
 	string GetJournal() { return m_sJournal; }
 	string GetTracker() { return m_sTracker; }

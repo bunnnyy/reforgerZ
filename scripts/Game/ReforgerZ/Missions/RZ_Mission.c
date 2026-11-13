@@ -30,6 +30,7 @@ class RZ_Mission
 	string m_sBrief;
 	int m_iSettlement = -1;
 	vector m_vPos;
+	vector m_vAskedAt;				// made on asking (MakeFor): where; that giver always offers it (RZ_OfferReach)
 
 	bool m_bContract = true;		// false = world event, open to everyone
 	bool m_bGlobal;					// no single location (Every Ridge Calls, Storm...)
@@ -1221,9 +1222,11 @@ class RZ_Mission
 				candidates.Insert(i);
 		}
 
+		RZ_OfferReach.NarrowTowns(gm, candidates);
 		if (!candidates.IsEmpty())
 			return candidates.GetRandomElement();
 
+		RZ_OfferReach.NarrowTowns(gm, atLine);
 		if (atLine.IsEmpty())
 			return -1;
 
@@ -1255,9 +1258,11 @@ class RZ_Mission
 				candidates.Insert(i);
 		}
 
+		RZ_OfferReach.NarrowTowns(gm, candidates);
 		if (!candidates.IsEmpty())
 			return candidates.GetRandomElement();
 
+		RZ_OfferReach.NarrowTowns(gm, atLine);
 		if (atLine.IsEmpty())
 			return -1;
 

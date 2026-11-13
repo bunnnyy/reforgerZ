@@ -1,0 +1,13 @@
+GenericEntity {
+ ID "CC92F6A97DB549A1"
+ components {
+  MeshObject "{4D3B24DA3354DC90}" {
+   Object "{F1A50CD6AC96F047}Assets/Models/Oxy-Pills.xob"
+  }
+  RplComponent "{157A7A69EED56034}" {
+  }
+  Hierarchy "{53F8AA4A0C56F088}" {
+  }
+ }
+ coords 0 0 0
+}

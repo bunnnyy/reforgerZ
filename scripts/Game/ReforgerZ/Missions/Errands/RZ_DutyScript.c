@@ -127,6 +127,8 @@ class RZ_DutyScript
 				o.m_eWork = RZ_EWork.CARE;
 			else if (c == "search")
 				o.m_eWork = RZ_EWork.SEARCH;
+			else if (c == "take")
+				o.m_eWork = RZ_EWork.TAKE;
 			else if (fx.IsEmpty())
 				fx = c;
 			else

@@ -15,10 +15,10 @@ and one way to end it: **research the cure.**
 - **Openings:** every life starts somewhere random that suits who you were, coming out of a door
   for a reason (the last bottle empty, your group gone three days, the fever broken), and whoever's
   outside calls you over: someone who knew you before, a stranger, or a wanderer who met an earlier
-  life of yours. Your first objective is to talk to them (nobody opens the talk screen on you). Their small asks (the second your background's own: a fever to treat, a pump, a
+  life of yours. Your first objective is to talk to them (nobody opens the talk screen on you). Their small asks move you from place to place, never back: they walk with you, or send you on to the next person (the second ask your background's own: a fever to treat, a pump, a
   gate to hold, a locked door) teach the Zone, tell its story and walk you to the Haven or the
   faction your background belongs with; experienced players get less of it. Every place a task
-  sends you is true to its words (a house over the way, the remains by the road, the well in the
+  sends you is true to its words (a house down the road, the remains by the road, the well in the
   town it names), never on an island, checked live and by a place audit on the map.
 - **The Director** moves the server through four outbreak stages over a season of about 45
   real days, spreads infection from town to town and sends hordes toward noise. The infected adapt
@@ -122,8 +122,9 @@ and one way to end it: **research the cure.**
   the line at the gate and the dead (sorted in person: go to each, look where you choose with fewer
   looks than places, carry it to the pyre, the table or the grave, and a bitten one let through
   costs you), a watch, a patrol with their people, for the Known a hunt with the hunter, the
-  stores and Halcyon's sample bench, and for the Trusted the lock-up, the names of the dead, the
-  trial list and a cull. Each faction has five of its own besides (the Haven's garden and swap
+  stores and Halcyon's sample bench, and for the Trusted the lock-up, the names (of the dead, in the
+  Red Hand's debt book, on Halcyon's week report), the trial list, who gets a dose, a cull and the
+  animal house. Each faction has five of its own besides (the Haven's garden and swap
   table, Bastion's gate duty and kit inspection, the Red Hand's toll and still, Halcyon's decon line
   and observation ward...), most of them worked out from what you find, with the call yours.
   Something happens on the way (a mark on a door, someone
@@ -208,7 +209,7 @@ and one way to end it: **research the cure.**
 The game scripts, about 246,500 lines of Enforce Script under `scripts/Game/ReforgerZ/`, **compile
 without errors or warnings** against Arma Reforger 1.9 and run with no script exceptions in the
 server's runtime test and in Workbench play on Everon and Arland; every approved design is built
-(the last, the sites design: each site's ground read on a grid with real footprints and its surroundings, the placement rules and the solver, building in layers by each faction's doctrine, the camps' people at their posts and on their rounds, each site's story, and the site audit), simplified as each doc says; one waits in `designs/` (duties: what the built duties still want, such as the swap table's conversations as `.rzd` trees and real things standing on the tables; the duties themselves are built: work from the first day, the four rungs of the trust ladder, the sorting duties played in the world, patrols and hunts with a place's own people, things that happen on the way, the Trusted rung, and five duties of each faction's own). The repo holds 267 prefabs (many on stand-in bases), the worlds and the
+(the last, the sites design: each site's ground read on a grid with real footprints and its surroundings, the placement rules and the solver, building in layers by each faction's doctrine, the camps' people at their posts and on their rounds, each site's story, and the site audit), simplified as each doc says; none waits in `designs/`. The repo holds 285 prefabs (many on stand-in bases), the worlds and the
 UI; before it can be called working it needs real prefabs in place of the stand-ins, the `VERIFY`
 behaviours checked and a play-test with a game client (on a Linux server, Special Zombies stops the
 mode loading: [MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
@@ -307,7 +308,7 @@ scripts/Game/ReforgerZ/
                  side (View radio), a medic slowing a bite
   Persistence/   save and load of mode state, the hall of fame
   Dialogue/      the talk screen's engine: conversations, adapters for each kind of person
-                 (strangers, the open channel, the quartermasters and the medic too), what a reply
+                 (strangers, the open channel, the quartermasters, the medic and a duty's people too), what a reply
                  needs, who's near each player for the nametags; the trees (hubs,
                  nodes, checks, effects), conditions, memory (dialogue.json: promises, callbacks,
                  lies told), scenes and sittings, barks, Make it right, greets that open, the secure

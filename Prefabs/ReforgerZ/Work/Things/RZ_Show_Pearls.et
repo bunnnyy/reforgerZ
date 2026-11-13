@@ -1,0 +1,13 @@
+GenericEntity {
+ ID "00E04AA647787716"
+ components {
+  MeshObject "{F72BAD11C434AB03}" {
+   Object "{684AD9D7E8F4EE8A}Assets/Models/PearlNecklace.xob"
+  }
+  RplComponent "{0126522EA09305A1}" {
+  }
+  Hierarchy "{5E031C786110BD26}" {
+  }
+ }
+ coords 0 0 0
+}

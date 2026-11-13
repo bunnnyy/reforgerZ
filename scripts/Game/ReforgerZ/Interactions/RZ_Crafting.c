@@ -863,12 +863,26 @@ class RZ_Crafting
 	void StoveStatus(int playerId, RZ_Spot s, notnull RZ_ObjectStatus st)
 	{
 		RZ_TimedTask work = StoveWork(playerId, s.m_iId);
-		if (work)
-			st.Add("FIRE", "LIT", RZ_ObjectStatus.STATE_OK);
-		else
-			st.Add("FIRE", "COLD", RZ_ObjectStatus.STATE_DIM);
+		// A fireplace (a campfire) burns on its own wood: lit or out, whatever's on it
+		if (s.m_bWasFire)
+		{
+			if (RZ_Fires.IsLit(s.m_Fire))
+				st.Add("FIRE", "LIT", RZ_ObjectStatus.STATE_OK);
+			else
+				st.Add("FIRE", "OUT", RZ_ObjectStatus.STATE_OFF);
 
-		st.Add("FUEL", "ENOUGH", RZ_ObjectStatus.STATE_OK);
+			st.Add("FUEL", "ITS OWN WOOD", RZ_ObjectStatus.STATE_OK);
+		}
+		else
+		{
+			if (work)
+				st.Add("FIRE", "LIT", RZ_ObjectStatus.STATE_OK);
+			else
+				st.Add("FIRE", "COLD", RZ_ObjectStatus.STATE_DIM);
+
+			st.Add("FUEL", "ENOUGH", RZ_ObjectStatus.STATE_OK);
+		}
+
 		array<ref RZ_Recipe> list = RecipesFor(true);
 		int idx = -1;
 		if (work)
@@ -1147,6 +1161,14 @@ class RZ_Crafting
 		if (!s || option < 0 || option >= list.Count())
 			return;
 
+		// A fireplace cooks only while it burns: lit with its own prompt first
+		string fireWhy = FireOutWhy(s);
+		if (!fireWhy.IsEmpty())
+		{
+			m_GM.NotifyPlayer(playerId, m_Hub.Title(s), fireWhy);
+			return;
+		}
+
 		RZ_Recipe r = list[option];
 		if (r.m_iStove == STOVE_BOIL)
 			StartBoil(playerId, s, user);
@@ -1154,6 +1176,22 @@ class RZ_Crafting
 			StartBrew(playerId, s, user);
 		else
 			StartCook(playerId, s, option, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why a fireplace can't cook now, "" when it can (or it's a stove).
+	string FireOutWhy(RZ_Spot s)
+	{
+		if (!s || !s.m_bWasFire)
+			return "";
+
+		if (!s.m_Fire)
+			return "The fireplace is gone. Somebody took it apart.";
+
+		if (!RZ_Fires.IsLit(s.m_Fire))
+			return "The fire's out. Put wood on it and light it first.";
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------

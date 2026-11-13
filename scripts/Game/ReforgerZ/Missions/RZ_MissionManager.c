@@ -599,6 +599,9 @@ class RZ_MissionManager
 			if (c.m_Req.m_eGiver != faction || !c.m_sReservedFor.IsEmpty() || !c.CanOfferAt(m_GM, player.GetOrigin()))
 				continue;
 
+			if (RZ_OfferReach.DecideFor(m_GM, c, faction, player.GetOrigin()) == RZ_OfferReach.ELSEWHERE)
+				continue;
+
 			string need = c.LockReason(m_GM, playerId);
 			if (!need.IsEmpty() && need != "Not for you now")
 				locked.Insert(c);
@@ -613,8 +616,9 @@ class RZ_MissionManager
 	//! and the world can run (the same checks as the random pick, in the same weighted order), so a
 	//! newcomer isn't left to the two contracts the shared pool happens to hold. Tried once per
 	//! ASK_GAP for a player and giver; never past the server's contract cap, nor ASK_PER_GIVER of that
-	//! giver's alive at once. True if one was made.
-	bool MakeFor(int playerId, RZ_EFaction faction)
+	//! giver's alive at once. True if one was made. With `at` (where the giver stands), its town is
+	//! picked within offer reach of it when one fits (RZ_OfferReach), and that giver always offers it.
+	bool MakeFor(int playerId, RZ_EFaction faction, vector at = vector.Zero)
 	{
 		string askKey = playerId.ToString() + ":" + faction.ToString();
 		float askedAt;
@@ -682,8 +686,15 @@ class RZ_MissionManager
 			}
 
 			RZ_Mission mission = candidates[pick];
-			if (StartMission(mission))
+			mission.m_vAskedAt = at;
+			RZ_OfferReach.SetNear(m_GM, at);
+			bool started = StartMission(mission);
+			RZ_OfferReach.ClearNear();
+			if (started)
 			{
+				if (at != vector.Zero)
+					RZ_Log.Info(string.Format("Reach: made on asking %1 '%2', %3 m from the giver", mission.m_iId, mission.m_sTitle, RZ_Util.RoundToInt(RZ_Util.DistXZ(at, mission.m_vPos))));
+
 				RZ_Log.Info(string.Format("Mission %1 '%2' made on asking: %3 asked %4.", mission.m_iId, mission.m_sTitle, RZ_Util.PlayerName(playerId), RZ_Factions.GetShortName(faction)));
 				return true;
 			}
@@ -708,7 +719,11 @@ class RZ_MissionManager
 		if (!ours && c.m_Mirror && c.m_Mirror.m_iFaction == faction)
 			ours = c.m_Mirror.IsSide(m_GM, playerId);
 
-		return ours && c.CanOfferAt(m_GM, player.GetOrigin());
+		if (!ours || !c.CanOfferAt(m_GM, player.GetOrigin()))
+			return false;
+
+		// Offer reach: a contract another giver of the faction has within reach is theirs
+		return RZ_OfferReach.DecideFor(m_GM, c, faction, player.GetOrigin()) != RZ_OfferReach.ELSEWHERE;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -726,7 +741,7 @@ class RZ_MissionManager
 		}
 
 		// Ask and you get: nothing open for them, so the giver makes one now
-		if (offers.IsEmpty() && MakeFor(playerId, faction))
+		if (offers.IsEmpty() && MakeFor(playerId, faction, player.GetOrigin()))
 		{
 			foreach (RZ_Mission made : m_aActive)
 			{

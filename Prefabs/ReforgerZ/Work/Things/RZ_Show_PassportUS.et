@@ -1,0 +1,13 @@
+GenericEntity {
+ ID "91CF774C3197F9C8"
+ components {
+  MeshObject "{CCA9642EA3C9C3E2}" {
+   Object "{9672FA2F3EB2B1FF}Assets/Models/US-Passport.xob"
+  }
+  RplComponent "{3ACB2AA890CE1920}" {
+  }
+  Hierarchy "{3EDA6AF3C145FB58}" {
+  }
+ }
+ coords 0 0 0
+}
