@@ -7123,7 +7123,9 @@
     "m_fUnusedDays": "3",
     "m_fUseRadius": "15",
     "m_fClearDistance": "100",
-    "m_iMaxTracked": "40"
+    "m_iMaxTracked": "40",
+    "m_fFireHeat": "4",
+    "m_fFireNightMult": "2"
    }
   },
   {

@@ -2063,7 +2063,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **175** lines with the tag, all but one in the game scripts (one is the comment in
+There are **177** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, two the hold prompt's and four its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2113,9 +2113,11 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_Wildlife.c:478` | deleting one of WildlifeExpansion's deer on the server (a `GenericEntity` with an `RplComponent` and the mod's per-frame script) removes it on every client, shot or not | Deer stay standing, or lie dead, after everyone has left and come back: the log says herds were put out but never more than two, yet the country fills with deer. Turn **World > Wildlife** off and report it |
 | `World/RZ_Wildlife.c:515` | `InputManager.GetActionTriggered("CharacterFire")` is true on the frame the local player fires (the action WildlifeExpansion's own kill check reads, after `WeaponFire`) | A deer falls to a shot and no meat lies by it, with no `Wildlife: player N shot a deer` line: the client never reports. Say which weapon and whether a pad was used |
 | `World/RZ_Wildlife.c:554` | a line from the camera (world and entities, default layers, 500 m) stops on a deer's box collider as the mod's own trace does, so both agree which deer was hit | Meat for a deer that still stands, or none for one that fell; try at 30 m and at 200 m, and through grass |
-| `World/RZ_PlacedThings.c:84` | `QueryEntitiesBySphere` with `EQueryEntitiesFlags.ALL` returns a thing a mod spawned at run time (Make Fire's fireplace, built on the editable `E_Fireplace_01` prop), and its prefab data gives its own prefab's path (`.../FM_Campfire_01.et`), not its parent's | A fireplace is never cleared and the log never says `Placed things: cleared`: build one, stand by it for two minutes with **Unused days** at 0.001, walk 150 m off and wait. If nothing happens the look doesn't see it: say so, and what the fireplace's prefab is called in the entity browser |
-| `World/RZ_PlacedThings.c:295` | a thing a player's action spawned stands alone (no parent entity), while the pieces of a camp's or a scene's composition have the composition as their parent | With a keyword that also names a camp's piece: a camp's tent or fire is cleared (it must never be), or a player's is never found. Keep **Placed prefabs** to names only player-built things carry and report it |
-| `World/RZ_PlacedThings.c:438` | `SCR_EntityHelper.DeleteEntityAndChildren` on the server removes a mod's replicated thing (the fireplace, its fire and light) on every client | The log says a fireplace was cleared but a player still sees it, or its fire burns on with nothing under it |
+| `Interactions/RZ_Fires.c:26` | `SCR_FireplaceComponent.IsOn()` on the server reads a player-built fireplace's fire as on from **Light fire** until it's put out or burns down (the campfire mod turns vanilla's fire with `ToggleLight`) | A lit campfire's menu still says FIRE OUT and nothing cooks, or a dead one cooks; and no heat comes from a lit one |
+| `Interactions/RZ_Interactions.c:880` | a fireplace spawned at run time (the campfire mod's) is found by the look-around's dynamic sphere query, not the static one | A lit campfire never gets a stove prompt or menu |
+| `World/RZ_PlacedThings.c:90` | `QueryEntitiesBySphere` with `EQueryEntitiesFlags.ALL` returns a thing a mod spawned at run time (Make Fire's fireplace, built on the editable `E_Fireplace_01` prop), and its prefab data gives its own prefab's path (`.../FM_Campfire_01.et`), not its parent's | A fireplace is never cleared and the log never says `Placed things: cleared`: build one, stand by it for two minutes with **Unused days** at 0.001, walk 150 m off and wait. If nothing happens the look doesn't see it: say so, and what the fireplace's prefab is called in the entity browser |
+| `World/RZ_PlacedThings.c:324` | a thing a player's action spawned stands alone (no parent entity), while the pieces of a camp's or a scene's composition have the composition as their parent | With a keyword that also names a camp's piece: a camp's tent or fire is cleared (it must never be), or a player's is never found. Keep **Placed prefabs** to names only player-built things carry and report it |
+| `World/RZ_PlacedThings.c:467` | `SCR_EntityHelper.DeleteEntityAndChildren` on the server removes a mod's replicated thing (the fireplace, its fire and light) on every client | The log says a fireplace was cleared but a player still sees it, or its fire burns on with nothing under it |
 | `Interactions/RZ_FuelPumps.c:172` | a fuel pump station (`RZ_FuelPumpStation.et`): `SetTotalFuelPercentage` on the server replicates its litres, and a held vanilla jerrycan beside a petrol pump offers **Refuel canister**, drawing from it until it's empty | At a petrol pump with a vanilla jerrycan in hand: no Refuel canister, or it never runs dry. Empty **Cars > Fuel pump station**: the pump is the hand pump again, in the object menu |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:1169` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
@@ -4327,6 +4329,11 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   the timed job: about 45 s (15 s as a Mechanic), draws infected, and fails about one time in three (rarely for
   a Mechanic) with "The wires spit..."; trying again can work. Keys are rare. Starting it gives a
   drivable car and the log line `Cars: ... fixed by player N.`
+- [ ] A campfire is a stove (**World > Placed things > Fire heat** 4, **Fire heat at night** 2): build
+  one, look at it cold (FIRE OUT, every row locked), light it, then boil water, brew and cook meat on
+  it with a pad; put it out mid-way and try again. Stand near it lit for a few minutes at night and
+  watch the heat (the infected drift in more than by day). A map fireplace: light it with vanilla's
+  prompt first, then boil.
 - [ ] Things players build are cleared (**World > Placed things**, with Make Fire Campfire & Wood):
   set **Unused days** to 0.004 (about six minutes) for the test. Build two fireplaces 300 m apart.
   Stand by the first for two minutes, then stay at the second: within about eight minutes the log

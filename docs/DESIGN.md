@@ -3011,6 +3011,26 @@ and run through the stove's own code. Without the layout, or where the screen ca
 stove's first four are its actions (**Boil water**, **Brew a home remedy**, **Cook: ...**) in the
 object menu, as before.
 
+#### Fireplaces and campfires
+
+A fireplace is a stove that burns only while it's lit (`Interactions/RZ_Fires.c`): a campfire a
+player built with Make Fire Campfire & Wood ([MOD_STACK.md](MOD_STACK.md#fire-and-weather)), and
+any map fireplace with vanilla's fireplace component. Its fire is read through vanilla's component
+(lit while its fire is on), so no class of the mod is named.
+
+- **Found** as a stove by the look-around: a player-built one isn't a map object, so the look also
+  asks what moves near a player (within the 30 m spot radius) and keeps only fireplaces.
+- **Cooks only while lit.** Light it with its own prompt (the mod's **Light fire**, or vanilla's on
+  a map fireplace) first. Out, every row of its object menu and cooking screen is locked *FIRE
+  OUT* ("The fire's out. Put wood on it and light it first."); taken apart, it says so. Its strip
+  reads FIRE LIT or OUT and FUEL ITS OWN WOOD.
+- **Heat:** a lit fireplace a player built, found in the minute's look within 60 m of a player,
+  makes **4** heat a minute where it stands (**World > Placed things > Fire heat**), twice that
+  between dusk and dawn (**Fire heat at night** 2). Boiling or cooking on it adds the stove's own 2
+  on top.
+- *Simplified:* a map fireplace makes no heat of its own while lit (only the boiling's 2), and a
+  cold map fireplace no longer boils water by itself: light it first.
+
 ### Barricades, traps and generators
 
 | Kit | Per player | Lasts | What it does |
@@ -3838,6 +3858,8 @@ is cleared the same way once its prefab's name is in the list: no mod gives play
   every one is in sight, the oldest record is forgotten and its thing left standing.
 - **Saved** in `state.json`: the records, never the things. After a restart a record finds its
   thing again by prefab and place the first time a player comes near.
+- **A lit fire** among them makes heat while a player is near
+  ([Fireplaces and campfires](#fireplaces-and-campfires)).
 
 *Simplified:* the mode doesn't see a thing being built, it finds it standing, so the clock starts
 at the first look that sees it. Whether a restart keeps a built fireplace depends on the server's

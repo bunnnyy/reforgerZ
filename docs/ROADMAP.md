@@ -215,8 +215,6 @@ else waits is play, engine checks and the author's calls.
   pad not yet. Deploy with a pad, a locked background, the respawn timer, and the
   map key's Y; and textures for the icons the scripts never swap ([UI.md](UI.md)).
 
-- **Fire and the rest of the mod** (not built): a lit campfire makes no heat for the infected, and
-  boiling water or cooking at one isn't wired to it ([MOD_STACK.md](MOD_STACK.md#fire-and-weather)).
 - **More for the loot** (a candidate, not added): a farm rifle (MM Vz. 52, 18 MB). The only
   crowbar on the Workshop is in Melee Combat Extended Lite, which can't be used
   ([MOD_STACK.md](MOD_STACK.md#not-used)): forcing a lock still needs a crowbar of our own. Nothing
