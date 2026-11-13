@@ -4799,6 +4799,60 @@
    "notes": ""
   },
   {
+   "id": "WildlifeDoe",
+   "kind": "external",
+   "system": "Power grid and radio station",
+   "path": "",
+   "basePrefab": "{3EE72002BECFD29C}Prefabs/RedStagDoe.et",
+   "baseFind": "",
+   "baseHint": "WildlifeExpansion's doe (Workshop 68B3771125D0A209)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_WildlifeSettings.m_sDoePrefab"],
+   "listSlot": false,
+   "slotLabel": "World > Wildlife > Doe",
+   "required": false,
+   "minimum": false,
+   "use": "the does of a deer herd put out near players in the country (empty = no wildlife at all)",
+   "notes": ""
+  },
+  {
+   "id": "WildlifeBuck",
+   "kind": "external",
+   "system": "Power grid and radio station",
+   "path": "",
+   "basePrefab": "{581B5CBCADF6ECFA}Prefabs/RedStag_v2.et",
+   "baseFind": "",
+   "baseHint": "WildlifeExpansion's buck",
+   "components": [],
+   "actions": [],
+   "slots": ["m_WildlifeSettings.m_sBuckPrefab"],
+   "listSlot": false,
+   "slotLabel": "World > Wildlife > Buck",
+   "required": false,
+   "minimum": false,
+   "use": "the buck that stands off from most herds (empty = does only)",
+   "notes": ""
+  },
+  {
+   "id": "WildlifeMeat",
+   "kind": "external",
+   "system": "Power grid and radio station",
+   "path": "",
+   "basePrefab": "{128A19AA9F731095}Prefabs/Items/Food/MeatLeg_01.et",
+   "baseFind": "",
+   "baseHint": "the base game's raw meat leg (the attribute's default; Metabolism makes it food)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_WildlifeSettings.m_sMeatPrefab"],
+   "listSlot": false,
+   "slotLabel": "World > Wildlife > Meat",
+   "required": false,
+   "minimum": false,
+   "use": "what a shot deer leaves, one or two beside it; the stove's Cook meat takes it (empty = no meat)",
+   "notes": ""
+  },
+  {
    "id": "InteractionSpot",
    "kind": "create",
    "system": "World interactions",
@@ -6590,6 +6644,12 @@
   },
   {
    "category": "World",
+   "object": "Wildlife",
+   "field": "m_WildlifeSettings",
+   "covers": "**Doe** and **Buck** prefabs (WildlifeExpansion's; no doe = off), **Meat** (the raw meat leg), herds on the server (2), does a herd (up to 3), buck chance (0.7), chance a minute for a player in the country (0.25; ×0.5 at night), minutes before the same player gets another (20), put out 150 to 300 m away and put away past 450 m, margin from towns and faction places (150 m), meat a deer (1 to 2), shot range (260 m), deer a minute that leave meat (4) ([DESIGN.md](DESIGN.md#wildlife))"
+  },
+  {
+   "category": "World",
    "object": "Long Table",
    "field": "m_LongTableSettings",
    "covers": "**Enabled**, **Chance** a season has one (0.75), hunger per hour (6), take hours (3, ÷ season speed), body radius (300 m), the host on the road (on), the **guest rule** (on), **trade keywords** (ammunition and medicine) ([DESIGN.md](DESIGN.md#the-long-table))"
@@ -6950,6 +7010,29 @@
    "label": "Radio station",
    "cls": "RZ_RadioStationSettings",
    "defaults": {"m_bEnabled": "1", "m_fTakeoverSeconds": "30", "m_fCooldownMinutes": "10"}
+  },
+  {
+   "field": "m_WildlifeSettings",
+   "category": "World",
+   "label": "Wildlife",
+   "cls": "RZ_WildlifeSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_iMaxHerds": "2",
+    "m_iMaxDoes": "3",
+    "m_fBuckChance": "0.7",
+    "m_fChancePerMinute": "0.25",
+    "m_fNightMult": "0.5",
+    "m_fPlayerMinutes": "20",
+    "m_fNearMin": "150",
+    "m_fNearMax": "300",
+    "m_fAwayRadius": "450",
+    "m_fTownMargin": "150",
+    "m_iMeatMin": "1",
+    "m_iMeatMax": "2",
+    "m_fShotRange": "260",
+    "m_iMeatPerMinute": "4"
+   }
   },
   {
    "field": "m_LongTableSettings",

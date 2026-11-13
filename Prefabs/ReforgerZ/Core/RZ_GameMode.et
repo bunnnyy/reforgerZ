@@ -3531,6 +3531,10 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
      }
     }
    }
+   m_WildlifeSettings RZ_WildlifeSettings "{5A3C91E7B04D26F8}" {
+    m_sDoePrefab "{3EE72002BECFD29C}Prefabs/RedStagDoe.et"
+    m_sBuckPrefab "{581B5CBCADF6ECFA}Prefabs/RedStag_v2.et"
+   }
    m_TraceSettings RZ_TraceSettings "{1306D313FE32D2A6}" {
     m_Kit RZ_TraceKit "{F7E59D74238B20A4}" {
      m_sGrave "{C72DF84B576CC834}Prefabs/ReforgerZ/Traces/RZ_Trace_Grave.et"

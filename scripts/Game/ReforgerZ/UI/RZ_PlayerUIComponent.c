@@ -721,6 +721,29 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! This player's shot met a deer that stood at `at` (RZ_WildlifeClient). The server decides
+	//! whether to believe it (RZ_Wildlife.OnDeerShot).
+	void SendDeerShot(vector at)
+	{
+		if (Replication.IsServer())
+			RpcAsk_DeerShot(at);
+		else
+			Rpc(RpcAsk_DeerShot, at);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_DeerShot(vector at)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int playerId = OwnerPlayerId();
+		if (!gm || playerId <= 0 || !gm.GetWildlife())
+			return;
+
+		gm.GetWildlife().OnDeerShot(playerId, at);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Buy (or ask for) row `index` of the shop screen with this serial.
 	void SendShopBuy(int serial, int index)
 	{

@@ -351,6 +351,9 @@ Settings under **Zombies > Tribes**; they apply with either switch on.
 | Tracked units | 60, as before |
 | The engine's active-AI limit | It covers **all** AI (faction AI, wanderers and trucks share it). 128 by default; raised to **160** at start with Tribes on |
 
+Deer aren't in it: a herd's animals ([DESIGN.md](DESIGN.md#wildlife)) are plain entities with the
+mod's own script, not AI agents, so they count toward neither this budget nor the engine's limit.
+
 Mission infected count toward the budget but are never removed for it. Nothing is trimmed to fit: the
 budget only stops new spawns.
 

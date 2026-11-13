@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **337 prefab fields**: 46 on `RZ_GameModeComponent`, 274 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **309 entries**: 183 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 92 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **340 prefab fields**: 46 on `RZ_GameModeComponent`, 277 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **312 entries**: 183 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 92 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 48 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -742,6 +742,9 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | an empty GenericEntity with an RplComponent, a SignalsManagerComponent and a StaticSoundComponent on vanilla's `Structures_DieselGenerator_01.acp` (the events SOUND_DIESELGENERATOR_ENGINE and SOUND_DIESELGENERATOR_HUM, as `DieselGenerator_01_active.et` has them); no mesh (`RZ_PowerGeneratorSound.et`) | — | World > Power grid > Generator sound prefab | optional | the power station's generator, heard from the moment it catches (spinning up, ready, running) while a player is within 300 m: at the map's own generator sets there (a power plant's two), else at the control; empty = silent. Built as text (set in the game mode). It plays by itself on every client that has it; nothing to script |
 | (existing prefab) | a composition like camp life's (an empty root with an RplComponent, vanilla props as children): a pallet with two fuel drums, a third drum, two jerrycans and vanilla's industrial entry-forbidden sign on its pole, its front (+Z) facing out from the wall (`RZ_PowerDressing.et`); nothing with physics, storage, fuel or actions | — | World > Power grid > Dressing prefab | optional | the power station's dressing: stood 2.4 m along the wall from the control (in line with the map's cabinet when that carries it) while a player is within 300 m, at every step; empty = none. Built as text (set in the game mode). Look-only: it goes through the dressing guard, so a prop a player could use is removed. No dry, flat spot outside every building among the twelve tried beside the control = none there (the log's Power grid line says what was in the way) |
 | `RZ_RadioConsole.et` | a radio set on a desk | the generic set | World > Radio station > Console prefab | optional | the radio station (falls back to the radio mast, then the puzzle object) |
+| (existing prefab) | WildlifeExpansion's doe (Workshop 68B3771125D0A209) | — | World > Wildlife > Doe | optional | the does of a deer herd put out near players in the country (empty = no wildlife at all) |
+| (existing prefab) | WildlifeExpansion's buck | — | World > Wildlife > Buck | optional | the buck that stands off from most herds (empty = does only) |
+| (existing prefab) | the base game's raw meat leg (the attribute's default; Metabolism makes it food) | — | World > Wildlife > Meat | optional | what a shot deer leaves, one or two beside it; the stove's Cook meat takes it (empty = no meat) |
 
 #### World interactions
 
@@ -1515,6 +1518,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
 | World | Power grid | `m_PowerSettings` | Control prefab, **Use cabinets** (on: the map's own electrical cabinet at the station carries the control as an invisible spot), **Control yaw** (0: turns the control prefab if its front doesn't face out from the wall), **Generator sound prefab** and **Dressing prefab** (both set; empty = that part is off), **Street lamps** (on: the map's own lamps stay dark at night but in towns with power; off = left as the map has them), region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
 | World | Radio station | `m_RadioStationSettings` | Console prefab, takeover (30 s), cooldown (10 min, halved with power) |
+| World | Wildlife | `m_WildlifeSettings` | **Doe** and **Buck** prefabs (WildlifeExpansion's; no doe = off), **Meat** (the raw meat leg), herds on the server (2), does a herd (up to 3), buck chance (0.7), chance a minute for a player in the country (0.25; ×0.5 at night), minutes before the same player gets another (20), put out 150 to 300 m away and put away past 450 m, margin from towns and faction places (150 m), meat a deer (1 to 2), shot range (260 m), deer a minute that leave meat (4) ([DESIGN.md](DESIGN.md#wildlife)) |
 | World | Long Table | `m_LongTableSettings` | **Enabled**, **Chance** a season has one (0.75), hunger per hour (6), take hours (3, ÷ season speed), body radius (300 m), the host on the road (on), the **guest rule** (on), **trade keywords** (ammunition and medicine) ([DESIGN.md](DESIGN.md#the-long-table)) |
 | World | Traces | `m_TraceSettings` | **Enabled** (on), **Door marks** (on), doors a town (6, 8 in a stronghold's town), layers a door (3), live writes a season day (20, 2 a town), **First days** (on), **Player traces** (on), **First days' scenes** (on: the column, the gym, the church, the roadblock, the squares' notices, Rudi's shutter, the hill, the crosses and the Day 1 sheets), **Vignettes** (on), at once (12) and dealt a season day (3), **Live traces** (on) at once (24), **Sound and light** (on), **Lit windows** (off until the spike), **Door drawing** (Decals: from the kit's atlas, boards without it, else text; Boards; Text), props on the server (40) and a cluster (12), **Debug** (off: logs every door read; lets admins write a mark), and the **Kit** of optional prefabs and materials ([TRACES.md](TRACES.md)) |
 | Director | Stages (list) |  | Per-stage overrides; empty = the built-in four (40, 80 and 120 hours played, spread 0.01 to 0.02 a minute; [DESIGN.md](DESIGN.md#the-director-outbreak-stages-and-spread)) |
@@ -1607,14 +1611,16 @@ repo into a test addon folder, starts the server just long enough to compile, an
 ReforgerZ errors and warnings. Exit code 0 means the Game module compiled. Run it before every
 commit that touches scripts.
 
-**It leaves Special Zombies out.** On a Linux dedicated server, with Special Zombies as a
+**It leaves Special Zombies and WildlifeExpansion out.** On a Linux dedicated server, with Special
+Zombies (or WildlifeExpansion, whose scripts are also in `Scripts/`) as a
 dependency, ReforgerZ's scripts don't load at all, without an error (verified with this check;
 the cause, how it was found and what to do are in
 [MOD_STACK.md](MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)). So for a
-real server, host on Windows or drop Special Zombies until it's resolved. The check removes it
-from its throwaway copy of `addon.gproj`, and plants a sentinel script with one known warning: if
+real server, host on Windows or drop both until it's resolved. The check removes them
+from its throwaway copy of `addon.gproj` (`rz_strip_capital_scripts`, with its list of such mods, in
+`tools/strip_missing_deps.sh`), and plants a sentinel script with one known warning: if
 the log doesn't show that warning, nothing of ReforgerZ was compiled and the check fails. The
-runtime test and the zombie lab drop Special Zombies the same way.
+runtime test and the zombie lab drop them the same way.
 
 ```bash
 tools/compile_check.sh
@@ -1924,8 +1930,8 @@ listens on UDP 2001 (it ignores `-bindPort`), so on Linux the lab runs it in its
 | Bacon's sight, sharing, hearing, speeds and idle behaviour against a spawned character; group and waypoint plumbing; health; server cost per agent | A real player (a client's movement, noise, camera), Bacon's behaviour under the mod's own spawner and settings, other zombie mods |
 
 None of this is part of the mod: the lab's files are copied into a throwaway addon folder whose
-`addon.gproj` gains Bacon Zombies as a dependency. The lab drops Special Zombies from that copy: with
-it among the dependencies, the 1.9 server compiles none of the addon's scripts, without an error
+`addon.gproj` gains Bacon Zombies as a dependency. The lab drops Special Zombies and WildlifeExpansion from that copy: with
+either among the dependencies, the 1.9 server compiles none of the addon's scripts, without an error
 (the lab tests Bacon only). On Linux it also drops any other dependency missing from
 `EXTRA_ADDONS_DIR`, as the [compile check](#compile-check-without-workbench) does.
 
@@ -1995,7 +2001,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **163** lines with the tag, all but one in the game scripts (one is the comment in
+There are **166** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 40 are in `UI/`: [the UI's](#the-ui-37), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's and two the hold prompt's in `Interactions/`), but one: the sites plugin's in
@@ -2042,6 +2048,9 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_Interactions.c:418` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
 | `Interactions/RZ_WreckBoots.c:30` | a wreck's boot (`RZ_WreckBoot.et`): the server's fill (`TryInsertItem` through the box's `SCR_InventoryStorageManagerComponent`) shows its things in vanilla's inventory on every client when **Open the boot** is used, and `RZ_WreckBootStorageComponent.CanStoreItem` refuses only what's dragged in from a character's inventory | Open a wreck's boot on a dedicated server with a second client: both see the same things, and dragging one of your own items in is refused. If the boot shows empty, delete the `CanStoreItem` override (the boot then takes anything, and what's put in comes back as a fresh copy of its prefab); with **Cars > Wreck boot prefab** empty, wrecks hold nothing |
 | `Interactions/RZ_CarRoom.c:111` | a flat trace (entities only) that starts inside a building's wall or under its floor reports a hit, so a car's box inside a house is refused; a trace straight up from 1.8 m stops on a roof, a porch and a bridge deck | A fixable car still stands in a wall or indoors (report where), or no car ever shows and the log repeats `Cars: no room for ... yet` in open ground |
+| `World/RZ_Wildlife.c:478` | deleting one of WildlifeExpansion's deer on the server (a `GenericEntity` with an `RplComponent` and the mod's per-frame script) removes it on every client, shot or not | Deer stay standing, or lie dead, after everyone has left and come back: the log says herds were put out but never more than two, yet the country fills with deer. Turn **World > Wildlife** off and report it |
+| `World/RZ_Wildlife.c:515` | `InputManager.GetActionTriggered("CharacterFire")` is true on the frame the local player fires (the action WildlifeExpansion's own kill check reads, after `WeaponFire`) | A deer falls to a shot and no meat lies by it, with no `Wildlife: player N shot a deer` line: the client never reports. Say which weapon and whether a pad was used |
+| `World/RZ_Wildlife.c:554` | a line from the camera (world and entities, default layers, 500 m) stops on a deer's box collider as the mod's own trace does, so both agree which deer was hit | Meat for a deer that still stands, or none for one that fell; try at 30 m and at 200 m, and through grass |
 | `Interactions/RZ_FuelPumps.c:172` | a fuel pump station (`RZ_FuelPumpStation.et`): `SetTotalFuelPercentage` on the server replicates its litres, and a held vanilla jerrycan beside a petrol pump offers **Refuel canister**, drawing from it until it's empty | At a petrol pump with a vanilla jerrycan in hand: no Refuel canister, or it never runs dry. Empty **Cars > Fuel pump station**: the pump is the hand pump again, in the object menu |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:1155` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
@@ -2400,6 +2409,10 @@ Warnings worth acting on:
 | `Puzzle clue prefab has no RZ_ClueComponent ...` / `Puzzle object prefab has no RZ_PuzzleObjectComponent ...` | A puzzle prefab is missing its component |
 | `Mission item prefab has no RZ_MissionItemComponent ...` | The mission item is missing its component |
 | `Key prefab is empty, has no RZ_KeyItemComponent or didn't spawn: no keys ...` | Set **Search > Key prefab** to an item with `RZ_KeyItemComponent`; until then no keys are given or placed |
+| `Wildlife: on. At most 2 herds of up to 3 does (a buck 7 times in 10), 150 to 300 m from a player, put away past 450 m; 1 to 2 meat a deer, 4 deer a minute.` | At start, with **World > Wildlife > Doe** set. `Wildlife: off (no doe prefab, or turned off).` otherwise |
+| `Wildlife: a herd of <n> put out at <grid>, <d> m from player <id> (<k> out).` | A herd was put out for a player in the country. None after ten minutes' walking in open country: the chance (one in four a minute), the caps, or no spot far enough from towns on a small map |
+| `Wildlife: the doe prefab didn't spawn (is WildlifeExpansion loaded, and World > Wildlife > Doe its RedStagDoe.et?). Wildlife is off until the next start.` | The slot names a prefab the server can't find: the mod isn't loaded (on Linux it never is, see the compile check), or the slot is wrong |
+| `Wildlife: player <id> shot a deer at <grid>; <m> meat (<t> of <n> from that herd).` | The server believed a client's report of a shot deer and laid the meat. Missing after a deer fell: the VERIFY rows for `World/RZ_Wildlife.c` |
 | `Loose loot: off.` | Expected only if you turned **Loot > Loose loot** off: nothing lies in houses |
 | `Loot: put out <key> (<type>, <building>) at <x z>: <a> anchors (<f> on furniture), rolled\|kept <n> items, <s> spawned: <items>` | With **Loot > Loot log** on, one line each time a building's loot is put out: its record's key (the same building under two keys is a building rolled twice: report it), its type and prefab, its spots (how many on vanilla's item spots or furniture), whether it was rolled now or put out as it was left, and what lies there (`note`, `key` or the prefab's name). 0 anchors: nothing can lie there (a box the floor traces miss). 0 on furniture in every building: the furniture isn't found (the VERIFY on `RZ_Loot.c`'s children walk, and the sphere query): loot still lies on the floors |
 | `Loot: <n> items lying in <b> buildings out; <k> known, <c> kept clear by faction places, <p> parts of another building. Last 2 min: ...` | With **Loot > Loot log** on, every 2 minutes while anything is out: the totals, and since the last one the buildings put out, items placed and taken, buildings with no anchors, and sightings of a building's parts (doors, its light probe, its furniture prefab) counted as the building or as nothing. Many with no anchors, or nothing put out while you walk a town: report the lines |
@@ -4156,6 +4169,15 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   the timed job: about 45 s (15 s as a Mechanic), draws infected, and fails about one time in three (rarely for
   a Mechanic) with "The wires spit..."; trying again can work. Keys are rare. Starting it gives a
   drivable car and the log line `Cars: ... fixed by player N.`
+- [ ] Deer (**World > Wildlife**, with WildlifeExpansion loaded and its doe and buck in the two
+  slots): walk in open country away from towns until the log says `Wildlife: a herd of ... put out`
+  (set **Chance a minute** to 1 for the test). The herd stands 150 to 300 m off, not where you
+  were looking; it grazes, and runs when you come close or fire. Shoot one within 250 m: it falls,
+  one or two raw meat legs lie by it (the log line `Wildlife: player N shot a deer`), you pick
+  them up with vanilla's Pick up, and Cook meat at a stove takes one. Walk 500 m away and back:
+  the herd and the carcass are gone. With a second client: does the other player see the same
+  deer in the same place, and see it fall? Report what each saw. With a pad: the shot still gives
+  meat. No herd in or by a town, a faction's place or the line, and none on an island.
 - [ ] Where fixable cars stand: visit each one (the season's five or six). None in a building,
   through a wall or fence, under a porch or half up a step, and you can walk round each. A
   `Cars: ... had no room at <grid> (a wall, a roof or a step); moved N m.` line names one that was

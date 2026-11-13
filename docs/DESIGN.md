@@ -604,6 +604,43 @@ Its day count ("Day 14") is 11 plus the real days since the season started, so a
 about 45 days runs from Day 11 to about Day 56; without the server's clock, a day is 8 hours
 played. Notes, journals, the radio station and Bastion's orders use the same count.
 
+### Wildlife
+
+Code: `World/RZ_Wildlife.c`. Deer in the country, to see and to hunt. The animals come from the
+Workshop mod WildlifeExpansion ([MOD_STACK.md](MOD_STACK.md#wildlife)): a doe and a buck that graze,
+lie down, run from people and gunfire, and fall to a shot. The mod puts none on a map, so ReforgerZ
+does. Off while **World > Wildlife > Doe** is empty.
+
+- **Herds are data until someone is out there.** Once a minute, a player out in the country has a
+  one-in-four chance (half that at night) of a herd near them: two or three does standing together
+  and, seven times in ten, a buck 20 to 30 m off. It's put out **150 to 300 m** away, out of the
+  player's sight where a spot is found (one traced line; else a spot past 220 m in the open), and
+  at least 150 m from every other player.
+- **Only in the country.** Never within 150 m of a town's edge, a faction's place, a safehouse, a
+  road post or the lab, never by the line, never on an island, never in water.
+- **Caps.** Two herds on the server, 400 m apart; one herd a player every 20 minutes. A herd is
+  put away (its deer deleted, shot ones too) once every player is 450 m from where it was put out.
+  Nothing is saved: after a restart there are none until the next one is put out.
+- **Not AI.** A deer is a plain entity moved by the mod's own script every frame, with no AI agent,
+  no group and no navmesh. Herds take nothing from the infected's
+  [agent budget](INFECTED.md#the-agent-budget) and nothing from the engine's active-AI limit; ten
+  deer at most cost ten small scripts a frame. Nothing in ReforgerZ sets the infected on them, and
+  the mod's deer react only to players and gunfire.
+- **Meat.** A shot deer leaves **one or two raw meat legs** beside it (the item the stove's Cook
+  meat takes), at most four deer a minute on the server. They're loose items: picked up with
+  vanilla's Pick up, cleaned up like any [loose item](#loose-items). The shot makes heat as any
+  shot does.
+
+*Simplified:* the mod decides a kill on the shooter's own machine (their fire key and a line from
+their camera, within 250 m) and tells nobody, so the server never learns a deer died. The shooter's
+client makes the same test and reports it; the server believes it only from a living player whose
+own shot it heard in the last few seconds, within 260 m of the place, while a herd put out within
+650 m still has a deer to give, and lays the meat there. A deer has no inventory, so the meat lies
+beside it, not in it. The mod replicates neither a deer's place nor its state: each machine moves
+its own copy, so two players may see a herd in different places once it has run, and a deer one
+player shot may still stand for another. A click on an empty gun kills a deer for the mod but gives
+no meat, since the server heard no shot. None of this has been seen in play.
+
 ## Backgrounds and personal goals
 
 Code: `Backgrounds/RZ_Background.c`, `Backgrounds/RZ_Objectives.c`, `Backgrounds/RZ_PlayerProfile.c`.

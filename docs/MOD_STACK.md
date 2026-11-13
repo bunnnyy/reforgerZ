@@ -32,6 +32,9 @@ needs Bacon Zombies; it leaves Special Zombies out, see [below](#special-zombies
 
 ### Special Zombies stops ReforgerZ loading on a Linux server
 
+WildlifeExpansion ([Wildlife](#wildlife)) does the same, for the same reason: what's said of Special
+Zombies here goes for it too.
+
 **On a Linux dedicated server, with Special Zombies as a dependency, none of ReforgerZ's scripts
 load.** There's no error: the server starts, and the game mode simply isn't there. Special Zombies
 keeps its scripts in `Scripts/` (capital S); ours are in lowercase `scripts/`, which the
@@ -113,6 +116,29 @@ Not built: a fire that draws the infected (heat), boiling water or cooking at a 
 clearing away a fire nobody uses. A built fireplace stays until someone dismantles it or the server
 restarts.
 
+## Wildlife
+
+A dependency in `addon.gproj` since 2026-11-13. Not seen in play yet.
+
+| Mod | Workshop ID | Size | Licence | What we use | What we don't |
+|---|---|---|---|---|---|
+| [WildlifeExpansion](https://reforger.armaplatform.com/workshop/68B3771125D0A209) | `68B3771125D0A209` | 10.4 MB | APL | Two prefabs, in **World > Wildlife**: the doe (`Prefabs/RedStagDoe.et`) and the buck (`Prefabs/RedStag_v2.et`). ReforgerZ puts herds of them out near players in the country and gives a shot deer its meat ([DESIGN.md](DESIGN.md#wildlife)) | Its herd object (we place the deer ourselves, to be able to take them away again), its Game Master entries, and its wolf, goat and test scripts, which nothing spawns |
+
+Three things to know about it:
+
+- **Its scripts are in `Scripts/`** (capital S), like Special Zombies', so on a Linux server it
+  stops ReforgerZ loading ([above](#special-zombies-stops-reforgerz-loading-on-a-linux-server): the
+  same cause, the same two ways out). The compile check, the runtime test and the zombie lab drop
+  it from their throwaway `addon.gproj` with Special Zombies (the list is in
+  `tools/strip_missing_deps.sh`); no ReforgerZ script names anything of the mod, so they lose
+  nothing by it.
+- **It's built for one machine.** A deer's moves, and its death, are worked out on each machine by
+  itself and never sent: see the simplifications in [DESIGN.md](DESIGN.md#wildlife).
+- **It overrides a few vanilla files:** seven blood and smoke particle files (a
+  look only), and `Prefabs/Editor/Modes/EditorModeEdit.et` (Game Master's list of placeable
+  things; Special Zombies, MoreGMProps and IH_Better_GM_Props change the same file, and whichever
+  loads last wins there). It also mods `SCR_PlayerController` for a kill box its deer don't use.
+
 ## What the stack gives the loot
 
 No extra download: these mods are dependencies already, and some of their items are **Extra finds**
@@ -132,6 +158,8 @@ kind of place it belongs. Checked against the mods' own files: every one is a pi
 
 From Make Fire Campfire & Wood: wood, in farms and houses.
 
+From WildlifeExpansion: nothing lies in houses, but a shot deer leaves raw meat ([Wildlife](#wildlife)).
+
 From the base game, also as extra finds: a raw meat leg (farms; the stove's Cook meat), smoke
 grenades, the M9 pistol and a Vz. 58 rifle (police, rare), entrenching tools, a pistol holster and
 personal belongings; and the trousers, boots and Veshmeshok backpack the pool's keywords never reached.
@@ -142,6 +170,9 @@ personal belongings; and the trousers, boots and Veshmeshok backpack the pool's 
 |---|---|
 | [DarcMissions](https://reforger.armaplatform.com/workshop/5ED0FAC84A48D018) | Its convoys, occupations and crash sites assume forces from outside; they don't fit the sealed Zone |
 | [Ambient Zombies](https://reforger.armaplatform.com/workshop/692172F6EADE0B44) | Overlaps the ReforgerZ spawner, which already keeps roaming infected around each player |
+| [ASAPsMeleeWeapons](https://reforger.armaplatform.com/workshop/673517886D70621E) (a baseball bat, 4 MB, APL) | Tried as a dependency on 2026-11-13 and taken out. With it loaded the Linux server compiles only vanilla scripts: nothing of ReforgerZ, Bacon Zombies or Metabolism (the compile check's sentinel fails), though the mod has no scripts of its own; the cause isn't known. Its animation set also names pistol animations game 1.9 no longer has (last built for 1.7), and the bat hits for 500 against the knives' 300. Worth another look only if Workbench on Windows loads the mode with it |
+| [Melee Combat Extended Lite](https://reforger.armaplatform.com/workshop/661920E177402992) (17.7 MB, APL) | Asked for so players could punch; it has no punching (a crowbar, a tomahawk, a sledgehammer, a shield, usable bayonets). It replaces the player's animation files, two of them the same files Functional Knives replaces (`Combat.agf`, `player_main.aw`), so one mod's attacks would break; it overrides `Character_Base.et` alongside four mods in the stack, mods twenty vanilla classes (the character controller, the inventory screen, pick-up and equip actions), and keeps its scripts in `Scripts/`, the Linux problem above |
+| DZ Restored (both listings) | Its licence allows it only on the official DZ Restored servers; 2.3 to 2.8 GB with about 60 dependencies |
 
 ## Persistence
 
