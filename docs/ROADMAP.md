@@ -104,8 +104,10 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 
 ## Next
 
-Everything below is approved. Every approved design is built (simplified as each doc says); none
-waits in [designs/](../designs/README.md). What waits is play, engine checks and the author's calls.
+Everything below is approved. One design waits in [designs/](../designs/README.md): duties
+([DUTIES.md](../designs/DUTIES.md): work from the first day and a trust ladder of repeatable
+duties), built in phases. Every other approved design is built (simplified as each doc says). What
+else waits is play, engine checks and the author's calls.
 
 ### Get it playable
 - **Special Zombies on a Linux server (open issue).** With it as a dependency, a Linux dedicated

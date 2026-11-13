@@ -6,5 +6,8 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 
 ## Order of work
 
-None waits today: the last, the sites design, is built ([docs/SITES.md](../docs/SITES.md)). A new
-approved design goes here with its place in the order.
+| Order | Design | What it is |
+|---|---|---|
+| 1 | [DUTIES.md](DUTIES.md) | Work from the first day: contracts and errands on asking, and a trust ladder of repeatable duties (the kitchen, the line at the gate, the dead, patrols and hunts with a place's people, the bench). Built in phases; each phase's part moves into the docs |
+
+A new approved design goes here with its place in the order.
