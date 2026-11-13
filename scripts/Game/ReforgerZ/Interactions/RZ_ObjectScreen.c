@@ -17,6 +17,10 @@
 //! caught for the status line. Without the slot, or when the client can't open the menu, every
 //! action is a world prompt as before.
 //!
+//! A menu can also be fed rows as data (RZ_ObjectRows, OpenRows): a work site's choice, where one
+//! prompt at a spot stands for several things to do there (RZ_WorkSites.Gather: a duty beat's
+//! options, a sorting game's subject). The rows' own Pick decides what a row does.
+//!
 //! Payload (RZ_UIFeed.PAYLOAD_OBJECT): O|serial|title|sub|text|status|working|left|total|read label|
 //! hint, then S|label|value|state|left per status tile (RZ_ObjectStatus) and R|index|label|enabled|
 //! reason|tag per row (enabled 0: locked, with the full reason and a short tag); X|reason closes;
@@ -293,6 +297,32 @@ class RZ_ActionMenus
 }
 
 //------------------------------------------------------------------------------------------------
+//! Rows given as data rather than an entity's actions (RZ_ObjectScreen.OpenRows). Server only.
+class RZ_ObjectRows
+{
+	//------------------------------------------------------------------------------------------------
+	//! The rows now, in order (their labels as the prompt said them).
+	void Labels(notnull array<string> labels) {}
+
+	//------------------------------------------------------------------------------------------------
+	//! Row `index` can't be done now: why, in full, and a short tag.
+	bool Locked(int index, IEntity user, out string reason, out string tag) { return false; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Row `index` picked by `user` (checked: it's there and not locked). What it says goes to the
+	//! menu's status line; it may close the menu.
+	void Pick(int index, IEntity user) {}
+
+	//------------------------------------------------------------------------------------------------
+	//! The description under the title, as it stands now.
+	string Text() { return ""; }
+
+	//------------------------------------------------------------------------------------------------
+	//! This player's client couldn't open the menu: the rows become world prompts for them.
+	void Failed(int playerId) {}
+}
+
+//------------------------------------------------------------------------------------------------
 //! The object menu, server side: who has one open, on what, and what a pick does.
 class RZ_ObjectScreen
 {
@@ -303,6 +333,7 @@ class RZ_ObjectScreen
 	protected static ref map<int, string> s_mTitle;
 	protected static ref map<int, string> s_mText;
 	protected static ref array<int> s_aNoMenu;		// players whose client couldn't open it: prompts for them
+	protected static ref map<int, ref RZ_ObjectRows> s_mRows;	// a menu fed as data (OpenRows)
 	protected static int s_iNextSerial = 1;
 	protected static int s_iWrapping = -1;
 
@@ -323,7 +354,64 @@ class RZ_ObjectScreen
 		s_mSerial = new map<int, int>();
 		s_mTitle = new map<int, string>();
 		s_mText = new map<int, string>();
+		s_mRows = new map<int, ref RZ_ObjectRows>();
 		s_aNoMenu = {};
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A menu can be opened for this player now: the slot is set and their client hasn't failed one.
+	static bool MenuFor(int playerId)
+	{
+		if (!Available())
+			return false;
+
+		Ensure();
+		return !s_aNoMenu.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Opens a menu of data rows on `owner` (the thing the prompt is on) for `playerId`, titled
+	//! `title`. False: no menu for them (no slot, their client failed one, or another screen is up).
+	static bool OpenRows(int playerId, IEntity owner, string title, RZ_ObjectRows rows)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!gm || !owner || !rows || playerId <= 0 || !MenuFor(playerId))
+			return false;
+
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+		RZ_ScreenGuard guard = gm.GetScreenGuard();
+		if (!ui || !guard)
+			return false;
+
+		if (!guard.Open(playerId, RZ_ScreenGuard.KIND_OBJECT, owner, title, -1))
+		{
+			ui.SendPayload(RZ_UIFeed.PAYLOAD_OBJECT, "F|busy");
+			return false;
+		}
+
+		string sub = "";
+		RZ_Settlement here = gm.GetSettlement(gm.FindNearestSettlement(owner.GetOrigin()));
+		if (here && RZ_Util.DistXZ(here.m_vCenter, owner.GetOrigin()) < 600)
+			sub = here.m_sName;
+
+		s_mOwner.Set(playerId, owner);
+		s_mSerial.Set(playerId, s_iNextSerial);
+		s_iNextSerial++;
+		s_mTitle.Set(playerId, title + RZ_UIText.SEP + sub);
+		s_mText.Set(playerId, rows.Text());
+		s_mRows.Set(playerId, rows);
+		Send(gm, playerId, "");
+		RZ_Log.Info(string.Format("Object menu: %1 for player %2 (a choice).", title, playerId));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Closes the player's menu (a row was picked that's done in the world now).
+	static void CloseFor(int playerId)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm && IsOpenFor(playerId))
+			Close(gm, playerId, "done");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -412,6 +500,7 @@ class RZ_ObjectScreen
 		s_mSerial.Remove(playerId);
 		s_mTitle.Remove(playerId);
 		s_mText.Remove(playerId);
+		s_mRows.Remove(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -431,6 +520,15 @@ class RZ_ObjectScreen
 		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (gm && gm.GetScreenGuard())
 			gm.GetScreenGuard().Close(playerId);
+
+		// Data rows: their owner turns them into prompts
+		RZ_ObjectRows data;
+		if (s_mRows.Find(playerId, data) && data)
+		{
+			OnScreenGone(playerId);
+			data.Failed(playerId);
+			return;
+		}
 
 		array<RZ_GroupedAction> members = {};
 		RZ_ActionMenus.Members(owner, user, members);
@@ -509,10 +607,19 @@ class RZ_ObjectScreen
 		RZ_UIText.Split(head, RZ_UIText.SEP, parts);
 
 		// The status strip: the thing's tiles, what would change them, and a label over the read
-		array<RZ_GroupedAction> members = {};
-		RZ_ActionMenus.Members(owner, user, members);
+		RZ_ObjectRows data;
+		s_mRows.Find(playerId, data);
 		RZ_ObjectStatus st = new RZ_ObjectStatus();
-		RZ_ObjectStatus.Fill(owner, user, playerId, RZ_ActionMenus.Opener(members), st);
+		if (data)
+		{
+			text = data.Text();
+		}
+		else
+		{
+			array<RZ_GroupedAction> members = {};
+			RZ_ActionMenus.Members(owner, user, members);
+			RZ_ObjectStatus.Fill(owner, user, playerId, RZ_ActionMenus.Opener(members), st);
+		}
 
 		string payload = "O" + RZ_UIText.SEP + serial.ToString() + RZ_UIText.SEP + RZ_UIText.Clean(RZ_UIText.Str(parts, 0), 80)
 			+ RZ_UIText.SEP + RZ_UIText.Clean(RZ_UIText.Str(parts, 1), 80) + RZ_UIText.SEP + Flat(text, 1400)
@@ -522,6 +629,29 @@ class RZ_ObjectScreen
 		payload += st.Records();
 
 		// The rows: one it can't do now is locked, with its full reason and a short tag
+		if (data)
+		{
+			array<string> labels = {};
+			data.Labels(labels);
+			foreach (int r, string rowLabel : labels)
+			{
+				if (r >= MAX_ROWS)
+					break;
+
+				int rowOn = 1;
+				string rowReason = "";
+				string rowTag = "";
+				if (data.Locked(r, user, rowReason, rowTag))
+					rowOn = 0;
+
+				payload += "\nR" + RZ_UIText.SEP + r.ToString() + RZ_UIText.SEP + RZ_UIText.Clean(rowLabel, 90) + RZ_UIText.SEP + rowOn.ToString()
+					+ RZ_UIText.SEP + RZ_UIText.Clean(rowReason, 200) + RZ_UIText.SEP + RZ_UIText.Clean(rowTag, 16);
+			}
+
+			ui.SendPayload(RZ_UIFeed.PAYLOAD_OBJECT, payload);
+			return;
+		}
+
 		array<RZ_GroupedAction> rows = {};
 		Rows(owner, user, rows);
 		foreach (int i, RZ_GroupedAction ga : rows)
@@ -580,6 +710,14 @@ class RZ_ObjectScreen
 		if (RZ_Util.DistXZ(user.GetOrigin(), owner.GetOrigin()) > RZ_DialogueSettings.Get().m_fRange)
 			return;
 
+		// Data rows: their own Pick, after the same checks
+		RZ_ObjectRows data;
+		if (s_mRows.Find(playerId, data) && data)
+		{
+			PickData(gm, playerId, data, index, user);
+			return;
+		}
+
 		array<RZ_GroupedAction> rows = {};
 		Rows(owner, user, rows);
 		if (index < 0 || index >= rows.Count())
@@ -606,6 +744,31 @@ class RZ_ObjectScreen
 			return;
 		}
 
+		if (s_mOwner.Contains(playerId))
+			Send(gm, playerId, said);
+		else if (!said.IsEmpty())
+			gm.NotifyPlayer(playerId, RZ_ScreenCapture.LastTitle(), said);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void PickData(RZ_GameModeComponent gm, int playerId, RZ_ObjectRows data, int index, IEntity user)
+	{
+		array<string> labels = {};
+		data.Labels(labels);
+		if (index < 0 || index >= labels.Count() || index >= MAX_ROWS)
+			return;
+
+		string reason;
+		string tag;
+		if (data.Locked(index, user, reason, tag))
+		{
+			Send(gm, playerId, reason);
+			return;
+		}
+
+		RZ_ScreenCapture.Begin(playerId);
+		data.Pick(index, user);
+		string said = RZ_ScreenCapture.End();
 		if (s_mOwner.Contains(playerId))
 			Send(gm, playerId, said);
 		else if (!said.IsEmpty())

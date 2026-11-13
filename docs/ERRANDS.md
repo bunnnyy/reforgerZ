@@ -574,22 +574,28 @@ with your hands**, never on a screen (`RZ_DutyGames`, `RZ_DutyGame`; the rule is
 the result. The server holds the truth and judges.
 
 **How it plays, in three lines.** Three or four subjects wait in a row at the place (bodies, people,
-trays); walking up to one tells you its tell, and beside it are three places to look, a 2 s hold
-each (*Look at the arms*, *Look at the neck*, *Check the papers against the tag*), but you have
-fewer looks than there are places (subjects + 2), so the tells say where to spend them. Then you
-take it up (*Lift onto the stretcher*, 3 s) and three spots appear a few metres off: where you put
-it down is the verdict (*Put on the pyre*, *Lay on the holding table*, *Dig the grave and lower them
-in*, 8 s with the spade if you carry one). Right pays in full, too careful pays half, too careless
-pays nothing, and a bad one let through is the dangerous miss.
+trays). Each has **one prompt, its name** (*A courier*, *Tag 114*): it opens the
+[object menu](UI.md#the-object-menu) with its three places to look, a 2 s hold each once picked
+(*Look at the arms*, *Look at the neck*, *Check the papers against the tag*), and taking it up
+(*Take them by the arm*, 3 s), under its tell, what you've seen of it, the looks left and the
+rules. You have fewer looks than there are places (subjects + 2), so the tells say where to spend
+them. Three **named places** stand within 10 m (*the gate*, *the wash*, *the holding room*), each a
+thing that reads as what it is; carry one there and leave it (*Leave them here: the wash*): where
+you leave it is the verdict. Right pays in full, too careful pays half, too careless pays nothing,
+and a bad one let through is the dangerous miss.
 
 | | |
 |---|---|
 | Subjects | 3, or 4 from the Collapse stage on. Each is **clean**, **odd** (the third place: papers that don't match, a fever, a label that doesn't match) or **bad** (one of the first two places: a bite; the line's clouded eyes; the bench's broken seal or turned colour) |
 | How many are bad | Each is bad at 15% + the infection of the sickest town within 2.5 km ÷ 300 + 4% a stage (50% at most), odd at 22%. Never a row with nothing to find |
 | The tell | One short line, said as you come within 4 m: calm (*Died in bed, family there*), odd (*The tag is written twice*) or risky (*Found in the street at Morton*: the sick town, by name). It points the right way three times in four |
-| Looking | A subject's three places open while you stand within 5 m of it, side by side along it, and close when you walk off. A look is said as a line (*A bite on the arm, wrapped in cloth. 3 looks left.*) and is gone for good. At the line in the rain: one look fewer. With none left the places close |
-| Taking and putting down | One at a time. The three spots are 6 to 10 m from the row and only there while you carry something; each one put down stays where it was put (the next grave is beside the last), by the work sites' own looks: a grave is the Grave look, the pyre the Burn look, the holding table the Care look, the rack the Bench look |
-| The clipboard | *Read the clipboard*, by the row: the goal in three lines, the looks left, and each subject with its tell, what you've seen and where you put it, on a sheet in [the reader](UI.md#subtitles-and-the-reader). The one paper in the game, and you never need it |
+| Looking | A subject's one prompt lists its places to look while it has looks left, then only taking it up. A look picked is held at the subject (2 s, the hands animation) and said as a line (*A bite on the arm, wrapped in cloth. 3 looks left.*); it's gone from the list for good. At the line in the rain: one look fewer. Without the object menu (UI > Object row layout empty) the three places stand as their own prompts beside it while you're within 5 m, as before |
+| The rules, where you are | Never a note to go back to: the rules (*A bite or clouded eyes goes to the holding room. Only a fever goes to the wash. All clear goes through the gate.*) are at the foot of every subject's menu, in the line when you take one up, and in the tracker under the step with the looks left |
+| The places | Within 10 m of the row, each with its thing standing, a vanilla prop measured in `tools/camp_kit/footprints.json`, set where its box is clear, level within 0.5 m and apart from the others (10 tries; one that won't fit is dropped and logged, and its place is still there): the line's gate a road barrier, the wash a shower stand, the holding room a white tent; the dead's graves a grave, holding table a medical table, pyre a woodpile; the bench's rack a long table, bath an old sink, bin a rusty drum; the stores' counted stack a pallet pile, write-off pile a crate, query table a long table. Gone when the sorting ends |
+| Taking and leaving | One at a time. While you lead one, each place has its prompt in front of its thing (*Leave them here: the wash*; *Bury them here: the graves*, 8 s with the spade if you carry one; *Set it down here: the bin*), the tracker's line names the three with their distance and way (*The gate: 8 m NE.*) and its map point sits between them. Each one left stays where it was put (the next grave beside the last), by the work sites' own looks |
+| The line at a gate | The people waiting stand at the place's real way in: the faction place's own gate within 120 m (its road entry), else the road where it comes into the town (the road point 25 to 120 m from the giver farthest from the town's middle), queued along it outside, facing in. The barrier is beside the road at the gate, the wash and the holding room 6 m inside, either side. With neither, the giver's own door, and the log says so (`Duty sorting: the line for errand N stands at ...`) |
+| Who waits | People in the line each wear their own clothes: **Props > Duty person looks** (optional) by the errand and their place in it, else three of vanilla's civilians and the Duty person, so no two side by side are the same |
+| The clipboard | *Read the clipboard*, by the row: the goal in three lines, the looks left, and each subject with its tell, what you've seen and where you put it, on a sheet in [the reader](UI.md#subtitles-and-the-reader). There if you want it; the menus and the tracker say all of it |
 | The verdicts | In order of care: pass (the grave, the gate, the rack), check (the holding table, the wash, the bath), stop (the pyre, the holding room, the bin). The one that matches is **right**; a more careful one is **too careful**; a less careful one **missed**, or **let through** if the subject was bad |
 | The score | Judged when the last one is put down. Right 1, too careful ½, the others 0, over the number of subjects. Favor is the way's × the score (1 at least); Fame only for a perfect row, which is also a record in the world's memory (`duty.<kind>`, the giver's name) and the giver says so |
 | The dangerous miss | No pay. 2 Infamy with the giver's faction, and the place pays a little: the town is 2 more infected (the dead, the line), or the faction's morale is 1 down (the bench, the stores). It comes out when you report, or when the errand ends any other way |
@@ -721,12 +727,21 @@ checks of three on each: about ten minutes.
 The author's rule: *"something interesting should happen or see something or whatever. Doesn't
 just have to be shooting."* A duty has things on the way to see, find and decide, in person
 (`RZ_DutyScenes`, the beats in `RZ_DutyFinds`). A **beat** is a moment at a spot: one line said as
-you come within 9 m, and one to three things you can do about it, each its own
-[work site](#work-sites) side by side, a hold with your hands. What you choose is applied at once
-and remembered by whoever it concerns.
+you come within 9 m, and one to three things you can do about it, each a [work site](#work-sites),
+a hold with your hands. **Several at the one spot are one prompt** (the rule:
+[UI.md](UI.md#default-first-then-menus), "One spot, one prompt"): its name (*The far door*, a
+patient's name), opening the object menu with each thing to do as a row; the row picked is then
+that prompt's hold, so it's still done with your hands. A thing set out at a place of its own to go
+and look at (more than 3 m off, a patrol's finds) keeps its own prompt there. What you choose is
+applied at once and remembered by whoever it concerns.
 
 | | |
 |---|---|
+| The spot's name | The beat's own name if it has one, else who stands there to talk to (*Someone at the barrier*), else what its line names first when that's a thing (*"The far door. No lamp over it."* gives *The far door*), else the duty's title |
+| A row you can't do | One needing something from your pack you haven't got is greyed, with why (*You haven't got that on you: a tin of food.*) |
+| Changing your mind | Walk off a few steps, or leave it a minute, and the prompt is the list again. With one thing left at the spot, it's that thing's plain hold |
+| At the way in | What's said at a gate stands at the place's real way in (`AT_ENTRY`): the decon line, gate duty's barrier, the toll's bar and what comes to it, a watch's post. The faction place's own gate within 120 m, else the road where it comes into the town, else the giver's door, and the log says which (`Duty scene: errand N, <beat> at the way in: ...`) |
+| Without the object menu | UI > Object row layout empty, or a player whose client couldn't open it: each thing stands as its own prompt side by side, as before |
 | What a choice can change | The giver's regard (up or down); a **local** made at the nearest house who remembers you; a line the giver says to you some hours later (a callback); a record in the world's memory; a rumour for 6 hours; the place's food or its faction's morale; the nearest town's infection (by 2); noise where you stand; a found hook for the [strangers](#strangers) (someone hiding there); a thing in your pack (a leg of meat, a post's ration, Props > Watch); the job's Favor; small Fame; Infamy |
 | A find reported | Each find put in the report is the giver's regard up, and 1 more Favor for the job (twice at most). What you reported can come back as what the giver says when you hand in (*"They brought that truck's load in this morning. That was yours."*) |
 | A shady choice | Pocketing, or keeping something from the people you work for, costs only **if it's seen**: their people within 20 m of you, or the place itself within 25 m. Seen: it's undone, 1 or 2 Infamy with the faction, the giver's regard down, and they say so when you report. Unseen: it's yours, and nobody knows |

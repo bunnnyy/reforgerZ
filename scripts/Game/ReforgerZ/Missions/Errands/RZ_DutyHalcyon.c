@@ -160,7 +160,7 @@ class RZ_DutyHalcyon
 		}
 
 		RZ_DutyScript.Into(scene.m_aBeats);
-		RZ_DutyScript.T("line", "", RZ_DutyBeat.AT_GATE);
+		RZ_DutyScript.T("line", "", RZ_DutyBeat.AT_ENTRY);
 		RZ_DutyScript.O("Open the decon line", "Spray, brush, rinse, the lamp, the seals, the log. Five are coming through. The tank on the roof holds four rinses and the drum six sprays: run anyone through twice and it's sooner. Two of the three checks on each is all the clock allows.", "hold:4 fill:water=4 fill:drum=6");
 		foreach (int n, int person : arrivals)
 		{

@@ -226,7 +226,7 @@ class RZ_DutyRedHand
 	protected static void Pass(string key, bool when, string line, string pack, string them, string bound, int right, string took, string waved, string turned)
 	{
 		RZ_DutyScript.G(key, when);
-		RZ_DutyBeat b = RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_GATE, 2,
+		RZ_DutyBeat b = RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_ENTRY, 2,
 			RZ_DutyScript.A("Look in what they carry", "Look at their hands and boots", "Ask where they're bound"),
 			RZ_DutyScript.A(pack, them, bound),
 			RZ_DutyScript.A("Take the toll", "Wave them through", "Turn them back"),
@@ -330,7 +330,7 @@ class RZ_DutyRedHand
 		Extension(scene, force);
 		RZ_DutyScript.Into(scene.m_aBeats);
 		Marked(dealer, e);
-		RZ_DutyScript.T("boss", "The boss, come down to count the take. He looks in the box, and then at you.", RZ_DutyBeat.AT_GATE);
+		RZ_DutyScript.T("boss", "The boss, come down to count the take. He looks in the box, and then at you.", RZ_DutyBeat.AT_ENTRY);
 		RZ_DutyScript.O("Hand him the box", "He counts it with one finger. He grunts. From him, that's a speech.", "regard+");
 		RZ_DutyScript.O("Hand it over, one thing short", "One thing stays in your coat. He counts with one finger, and stops, and starts again.", "shady2 give");
 		return pool;
@@ -357,7 +357,7 @@ class RZ_DutyRedHand
 			if (day <= 0 || today - day > 2)
 				continue;
 
-			RZ_DutyScript.T("marked", came[t], RZ_DutyBeat.AT_GATE);
+			RZ_DutyScript.T("marked", came[t], RZ_DutyBeat.AT_ENTRY);
 			RZ_DutyScript.O("Hear him out", "He tells it twice, the second time with more in it.", string.Format("morale+ rumour set:%1=0", key), "", came[t]);
 			return;
 		}
@@ -374,7 +374,7 @@ class RZ_DutyRedHand
 		RZ_DutyScript.Into(scene.m_aBeats);
 		if (which == 0)
 		{
-			RZ_DutyScript.T("escort", "A merchant with a mule and a strongbox. He'll pay double for a man to walk him through to the far marker.", RZ_DutyBeat.AT_GATE);
+			RZ_DutyScript.T("escort", "A merchant with a mule and a strongbox. He'll pay double for a man to walk him through to the far marker.", RZ_DutyBeat.AT_ENTRY);
 			RZ_DutyScript.O("Walk him through yourself", "You'll walk him. The lads keep the bar. He falls in beside you with the mule.", "flag:walk walker");
 			RZ_DutyScript.O("He pays the toll like anyone", "The toll, and no more. He goes on alone, looking at the hedges.");
 			RZ_DutyScript.T("marker", "", RZ_DutyBeat.AT_FAR, "walk");
@@ -389,7 +389,7 @@ class RZ_DutyRedHand
 		}
 		else if (which == 2)
 		{
-			RZ_DutyScript.T("follow", "One who paid without a word turns off the road forty yards on, into the wood, where there's no path.", RZ_DutyBeat.AT_GATE);
+			RZ_DutyScript.T("follow", "One who paid without a word turns off the road forty yards on, into the wood, where there's no path.", RZ_DutyBeat.AT_ENTRY);
 			RZ_DutyScript.O("Follow, and see where they go", "You leave the bar to the lads and go after, quietly.", "flag:follow");
 			RZ_DutyScript.O("They paid. Let them go", "Paid is paid. The wood closes behind them.");
 			RZ_DutyScript.T("cache", "A hollow under a fallen beech. They've been coming here a while. Tins, in rows, and a list of who gets them.", RZ_DutyBeat.AT_OUT, "follow");
@@ -398,7 +398,7 @@ class RZ_DutyRedHand
 		}
 		else
 		{
-			RZ_DutyScript.T("patrol", "Bastion, coming up the road. Six, in step, a corporal in front. They've seen the bar.", RZ_DutyBeat.AT_GATE);
+			RZ_DutyScript.T("patrol", "Bastion, coming up the road. Six, in step, a corporal in front. They've seen the bar.", RZ_DutyBeat.AT_ENTRY);
 			RZ_DutyScript.O("Lift the bar and stand aside", "They go through without paying, without looking. The lads spit when they've gone.", "morale-");
 			RZ_DutyScript.O("Hold the bar, and name the toll", "You name it. The corporal looks at you, then at the lads on the bank he hadn't counted. He pays. In cigarettes.", "+2 fame1 morale+");
 			RZ_DutyScript.O("Tell him the road's sick ahead", "You tell him there's fever at the camp. He looks at your face a while. They turn back.", "+1", "", "", "Bastion think we've fever. They've kept off the road for a week. That was your lie, and a good one, until one of us needs their doctor.");

@@ -14,7 +14,7 @@ class RZ_DutyBastion
 		if (right != 0)
 			codes[0] = "infamy1";
 
-		RZ_DutyBeat b = RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_GATE, 2,
+		RZ_DutyBeat b = RZ_DutyScript.Case(key, line, RZ_DutyBeat.AT_ENTRY, 2,
 			RZ_DutyScript.A("Hold the stamp to the light", "Read the dates and the name", "Ask their business"),
 			RZ_DutyScript.A(stamp, dates, business),
 			RZ_DutyScript.A("Lift the barrier", "Turn them back", "Hold them for the sergeant"),

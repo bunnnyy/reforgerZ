@@ -6843,6 +6843,7 @@
     "m_aQuartermasterBastionLooks",
     "m_aQuartermasterRedHandLooks",
     "m_aQuartermasterHalcyonLooks",
+    "m_ErrandSettings.m_Props.m_aDutyPersonLooks",
     "m_aBastionHunterLooks",
     "m_aRedHandHunterLooks"
    ],

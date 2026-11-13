@@ -40,10 +40,14 @@ class RZ_WorkSiteComponent : ScriptComponent
 	[RplProp()]
 	protected int m_iLook;			// RZ_WorkHold.LOOK_* bits: the lock, the hands, digging with the tool
 
+	[RplProp()]
+	protected bool m_bMenu;			// a choice's prompt: a press opens the object menu, no hold (RZ_WorkSites.Gather)
+
 	//------------------------------------------------------------------------------------------------
 	//! Server only.
-	void Set(int site, string label, float seconds, float fastSeconds, string fast, int only, int look)
+	void Set(int site, string label, float seconds, float fastSeconds, string fast, int only, int look, bool menu = false)
 	{
+		m_bMenu = menu;
 		m_iLook = look;
 		m_iSite = site;
 		m_sLabel = label;
@@ -56,6 +60,7 @@ class RZ_WorkSiteComponent : ScriptComponent
 
 	int GetSite() { return m_iSite; }
 	int GetLook() { return m_iLook; }
+	bool IsMenu() { return m_bMenu; }
 	string GetLabel() { return m_sLabel; }
 
 	//------------------------------------------------------------------------------------------------
@@ -75,7 +80,9 @@ class RZ_WorkSiteComponent : ScriptComponent
 }
 
 //------------------------------------------------------------------------------------------------
-//! The hold prompt. Its label is the site's ("Dig the latrine").
+//! The hold prompt. Its label is the site's ("Dig the latrine"). On a choice (several things to do at
+//! one spot, RZ_WorkSites.Gather) it is the spot's name ("The far door") and a press opens the object
+//! menu of them; the row picked becomes this prompt's hold.
 class RZ_WorkSiteAction : ScriptedUserAction
 {
 	protected static const float DRIFT = 1.5;
@@ -152,7 +159,7 @@ class RZ_WorkSiteAction : ScriptedUserAction
 	protected void Hold(IEntity user)
 	{
 		RZ_WorkSiteComponent c = Comp();
-		if (!c || !user || RZ_WorkHold.Paused())
+		if (!c || !user || c.IsMenu() || RZ_WorkHold.Paused())
 			return;
 
 		RZ_WorkHold.Begin(this, user, GetOwner(), c.SecondsFor(SCR_PlayerController.GetLocalPlayerId()), c.GetLook());
@@ -192,6 +199,12 @@ class RZ_WorkSiteAction : ScriptedUserAction
 		IEntity me = SCR_PlayerController.GetLocalControlledEntity();
 		if (!c || !me)
 			return fProgress + timeSlice;
+
+		// A choice's prompt: no work, the press opens its list at once. VERIFY: a timed action whose
+		// progress comes back at its full Duration finishes on that frame.
+		if (c.IsMenu())
+			return GetActionDuration() + 1;
+
 
 		if (fProgress <= 0 && m_fStartHealth < 0)
 			Anchor(me);
