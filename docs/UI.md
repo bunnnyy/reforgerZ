@@ -567,7 +567,7 @@ screen **opens straight on step 2**, your replies, with no line.
    with a 2 px outline in the faction colour), holding only your choices (regular 28), **at most
    five**: the selected one with a fill and an outline in the faction colour; a reply's tag before
    it in the faction colour, in brackets ("[Job]", "[Quest]", "[Errand]" in front of a reply that starts
-   a job, "[news]", "[trade]", "[Speech - Bastion 2/3]"); a reply you can't take **locked**: faint, its
+   a job, "[News]", "[Trade]", "[Speech - Bastion 2/3]"); a reply you can't take **locked**: faint, its
    tag too, the object menu's lock (`ReplyLock`: `status_door_locked`, 24, faint; only with the icon imageset)
    before it and what it needs after it ("(Needs Known with Halcyon)", "(you have 1)"), and A on it
    does nothing; a reply with nothing new behind it **grey** (it still works). No reply has a

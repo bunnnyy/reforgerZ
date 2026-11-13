@@ -168,6 +168,13 @@ adapters in `Dialogue/RZ_TalkSpeakers.c` and `RZ_TalkStaff.c`, `RZ_Mission.LockR
   answer), **[Errand]** for an errand. No event starts
   by talk. The reply is the job's title: *[Job] Recover the Bus*, *[Quest] The Other Two: his number*,
   *[Errand] Water for Morton*.
+- **Nobody pitches work they don't have.** A conversation's node that ends in the speaker's job
+  (a choice with `call:slot:N` on their job slot: *I'm in. Give me the task.*) is checked when you
+  reach it. With nothing behind the slot for you now, its lines aren't said: the person says so
+  instead (*Nothing I can give you today. Ask me again later.*; *You've got everything I had. Finish
+  what you took first.*; or that there's nothing they can hand you, with the reason as a note), and
+  the job's choice isn't listed under it (`RZ_DialogueTrees.DryPitch`, `RZ_TalkJobs.NothingSaid`).
+  The hub's own job reply still shows locked with its reason, so you know before you ask.
 - **Picking it explains it** (the pitch: what and why, where, the pay, the danger), and *I'll do it.*
   takes it at once: it's on your Quests tab, the start card shows ([UI.md](UI.md#notices)), and that's
   the whole of it: one conversation, no second talk, no world action after. *Not today.* leaves it

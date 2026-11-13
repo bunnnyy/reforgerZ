@@ -1153,11 +1153,11 @@ class RZ_TalkNeeds
 		if (l.Contains("work") || l == "ask about cars")
 			return "[Job]";
 		if (l.Contains("news") || l.Contains("heard anything") || l.Contains("how things are") || l.Contains("rumour"))
-			return "news";
+			return "News";
 		if (l.StartsWith("rob "))
 			return "Haven Infamy";
 		if (l.StartsWith("trade") || l.StartsWith("buy"))
-			return "trade";
+			return "Trade";
 
 		return "";
 	}
