@@ -2681,7 +2681,8 @@ scene, `Duty scene: errand N, <player> at <beat>: <what they chose> (seen false|
 `Work sites: errand.N.b0.0 ...`, and a house marked by a patrol, `Errands: found hook hiding at <grid>
 from a duty`; a cull, `Duty squad: cull at <grid>, N strays (errand N).`; a duty's people, `Duty
 squad: the patrol out with <player> from <grid>, N points (errand N).`; a contract
-a giver made because they were asked, `Mission N '<title>' made on asking: <player> asked <faction>.`; while running, `Errands:
+a giver made because they were asked, `Mission N '<title>' made on asking: <player> asked <faction>.`, after
+`Reach: made on asking N '<title>', D m from the giver` (its distance; offer reach, [MISSIONS.md](MISSIONS.md#who-gets-offered-what)); while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
 (<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
 <player> overtaken`, `Work sites: errand.N "Dig the latrine" (LATRINE, 15 s) at <grid>` and
@@ -4573,6 +4574,16 @@ on the talk screen says why something wasn't dealt)
   yourself" pays after 3 minutes at the gate and the guard is back next visit.
 - [ ] Walk past a house or post: a named person waves you over (once, then not again for 8
   minutes); never while infected are within 30 m or someone fired near you.
+- [ ] Errands and jobs are separate: with the opening's chain still running, and with a contract
+  taken from a holding's leader, ask a named person at that holding **Anything need doing?**: an
+  errand or a duty is offered (never "You've a chore of theirs already" unless you hold one of
+  their errands or duties), and the leader still lists his jobs.
+- [ ] Offer reach: ask a quartermaster for work with none open: the log's `Reach: made on asking`
+  says under 2500 m when a town fits. A shared-pool job whose place is near another giver of the
+  same faction isn't listed at the far one; a job no giver of theirs has within 2.5 km is still
+  listed, and its pitch ends *It's a long walk: about N km <direction>.*
+- [ ] Errand reach: at a giver whose only true errand is about something over 1.5 km off, the offer
+  adds *It's a long walk: about N km <direction>.*; with a nearer one true, the nearer one is dealt.
 - [ ] A held errand whose fact stops holding (the truck comes in, the fault is fixed by someone
   else) ends with the giver's line and no pay.
 - [ ] Errand Fame stops at 39 with a faction and at 10 a season day; at 15+ Infamy an errand pays

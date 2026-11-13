@@ -122,6 +122,13 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
   *Needs 2 food*, *Needs 8 Haven Favor*); a Trust check or a threat isn't a lock, its tag shows the
   score. While the ways show, the giver's topics wait (they're waiting on your answer). The labels
   above stay the world prompt's.
+- **Errands and jobs are separate** (the author's rule). Errands and duties count only against
+  errands and duties: the errands you may hold at once (**Errands one player may hold**, 2), one at a
+  time from a giver, one chore of yours at a place. A contract, a leader's job, a questline stage
+  and the opening's chain never count against them, and an errand never counts against a job: a
+  holding's leader offers its [Job]s and its named people their [Errand]s and [Duty]s side by side,
+  whatever you already hold from the place (`RZ_Errands.CountHeld`, `HasOpenOffer` and `ChoresAt`
+  leave the opening's handed steps out).
 - **The reason in their voice.** Asked when nothing's true, or when it isn't safe, the giver says
   why: *"Not while that lot's at the fence."*, *"You've your hands full already."*, *"Nothing on the
   board for you. Check back after the shift change."*
@@ -163,6 +170,13 @@ the giver) is within 600 m of you, ×0.85 past 1.2 km; **freshness**, ×1.2 when
 its subject (a death, a bite, a fire, shells in the last 2 played hours); and ×0.8 for a real day from a
 faction a dead life of yours lied to (below). The pick is weighted among the top three. At most 12
 errands live on the server.
+
+**Errand reach.** Most players run: an errand whose subject (the person, lair, house or body it's
+about) lies further than **Errand reach** from its giver (`RZ_ErrandSettings`, 1.5 km) is dealt only
+when no nearer one is true at that giver (the deal's reason says *a long walk*), and then the giver
+adds *It's a long walk: about 3 km north-east.* An errand can't move to another giver (it's about
+that person's own place), so it stays theirs. The ways' own places are picked near the giver already
+(on Everon all within 1.3 km, [PLACES.md](PLACES.md#offer-reach)).
 
 **The context cache** (`Missions/Errands/RZ_ErrandsDealer.c`, `RZ_ErrandContext`): per online player,
 remade every 30 s: the settlement you're in and who holds it, a holding within 600 m, a pack's range
@@ -758,8 +772,8 @@ and the refusals in [Being asked](#being-asked)):
 | Shown | When |
 |---|---|
 | *You've done your shift. Ask again in a while (20 min at most)* | Every duty you could have is on its gap |
-| *You've a job here already. Finish that one* | You hold an errand or a duty at this place |
-| *Every job here is taken. Ask again when one is done* | Three duties are live at the place |
+| *You've a chore of theirs already. Finish that one* | You hold an errand or a duty at this place (a job, a quest or the opening's chain never counts) |
+| *Every chore here is taken. Ask again when one is done* | Three duties are live at the place |
 | *Needs Known with Bastion* (on a way's reply, not the ask) | The patrol's long round, below rung 3 |
 | *Everyone has work in hand. Ask again shortly* | The server's 12 live errands are all out |
 | *Nothing while you're Watched with Bastion, except to make amends* | Watched, and no amends work is true |

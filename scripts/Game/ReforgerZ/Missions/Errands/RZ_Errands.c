@@ -109,6 +109,9 @@ class RZ_ErrandSettings
 	[Attribute("2", UIWidgets.Slider, "Cards (the hand-written errands, once per player per season) a player may be dealt a real day", "0 10 1")]
 	int m_iCardsPerDay;
 
+	[Attribute("1500", desc: "Errand reach (m): a giver deals an errand whose subject lies further than this from them only when no nearer one is true, and then says it's a long walk. Kept to 500-10000; 0 = off")]
+	float m_fErrandReach;
+
 	[Attribute("1", UIWidgets.Slider, "Pay scale: errand Favor is multiplied by this", "0 3 0.05")]
 	float m_fPayScale;
 
@@ -1561,13 +1564,13 @@ class RZ_Errands
 			return string.Format("Nothing while you're Watched with %1, except to make amends", RZ_Factions.GetShortName(p.m_iFaction));
 
 		if (dealWhy.Contains(NO_MINE))
-			return "You've a job here already. Finish that one";
+			return "You've a chore of theirs already. Finish that one";
 
 		if (dealWhy.Contains(NO_GAP))
 			return string.Format("You've done your shift. Ask again in a while (%1 min at most)", RZ_Util.RoundToInt(m_Settings.m_fDutyGapMinutes));
 
 		if (dealWhy.Contains(NO_TAKEN))
-			return "Every job here is taken. Ask again when one is done";
+			return "Every chore here is taken. Ask again when one is done";
 
 		return WHY_NOTHING;
 	}
@@ -1855,12 +1858,15 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Errands this player holds. An opening's chain step is the life's first quest, not an errand
+	//! (errands and quests are separate: docs/ERRANDS.md, "Errands and jobs are separate"), so it
+	//! never counts against the errands a player may hold.
 	protected int CountHeld(int playerId)
 	{
 		int n = 0;
 		foreach (RZ_Errand e : m_aErrands)
 		{
-			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.HELD)
+			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.HELD && !e.IsOpening())
 				n++;
 		}
 
@@ -1868,11 +1874,45 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected float ErrandReach()
+	{
+		if (m_Settings.m_fErrandReach <= 0)
+			return 0;
+
+		return Math.Clamp(m_Settings.m_fErrandReach, 500, 10000);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errand's subject lies past errand reach from its giver (docs/ERRANDS.md, "Errand reach").
+	bool IsFar(RZ_Errand e)
+	{
+		float reach = ErrandReach();
+		if (reach <= 0 || e.m_vSubject == vector.Zero || e.m_vGiver == vector.Zero)
+			return false;
+
+		return RZ_Util.DistXZ(e.m_vSubject, e.m_vGiver) > reach;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "It's a long walk: about 3 km north-east." for a far errand; empty otherwise.
+	protected string FarLine(RZ_Errand e)
+	{
+		if (!IsFar(e))
+			return "";
+
+		int km = RZ_Util.RoundToInt(RZ_Util.DistXZ(e.m_vGiver, e.m_vSubject) / 1000);
+		if (km < 1)
+			km = 1;
+
+		return string.Format("It's a long walk: about %1 km %2.", km, RZ_Compass.DirectionWord(RZ_Compass.Bearing(e.m_vGiver, e.m_vSubject)));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool HasOpenOffer(int playerId)
 	{
 		foreach (RZ_Errand e : m_aErrands)
 		{
-			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.OFFERED)
+			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.OFFERED && !e.IsOpening())
 				return true;
 		}
 
@@ -1895,6 +1935,10 @@ class RZ_Errands
 			Say(e, "Where were you on Tuesday? Never mind. Don't answer that.", false);
 
 		Say(e, Pick(e.m_Def.m_aOffer), false);
+		string farLine = FarLine(e);
+		if (!farLine.IsEmpty())
+			Say(e, farLine, false);
+
 		if (!owner)
 			return;
 
@@ -2274,6 +2318,7 @@ class RZ_Errands
 
 		array<ref RZ_Errand> made = {};
 		array<float> scores = {};
+		array<bool> far = {};
 		string place = PlaceKey(p);
 		// Chore slots: 1 + 1 per 5 players online (3 at most) routines live at a holding or house at once,
 		// and one of them per player there
@@ -2361,6 +2406,7 @@ class RZ_Errands
 
 					made.Insert(e);
 					scores.Insert(score);
+					far.Insert(IsFar(e));
 				}
 			}
 
@@ -2384,6 +2430,26 @@ class RZ_Errands
 
 			made.Remove(md);
 			scores.Remove(md);
+			far.Remove(md);
+		}
+
+		// Errand reach: one whose subject is a long walk off is dealt only when nothing nearer is
+		bool anyNear;
+		foreach (bool isFar : far)
+		{
+			if (!isFar)
+				anyNear = true;
+		}
+
+		for (int fd = made.Count() - 1; fd >= 0 && anyNear; fd--)
+		{
+			if (!far[fd])
+				continue;
+
+			why += string.Format("%1: a long walk. ", made[fd].m_Def.m_sKey);
+			made.Remove(fd);
+			scores.Remove(fd);
+			far.Remove(fd);
 		}
 
 		if (made.IsEmpty())
@@ -2874,7 +2940,7 @@ class RZ_Errands
 		int n = 0;
 		foreach (RZ_Errand e : m_aErrands)
 		{
-			if (e.m_eState == RZ_EErrandState.DONE || !e.m_Def || e.m_Def.m_bCard || (playerId > 0 && e.m_iAsker != playerId))
+			if (e.m_eState == RZ_EErrandState.DONE || !e.m_Def || e.m_Def.m_bCard || e.IsOpening() || (playerId > 0 && e.m_iAsker != playerId))
 				continue;
 
 			// A duty is one of yours here, but takes none of the place's chore slots

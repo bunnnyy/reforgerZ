@@ -12,6 +12,10 @@ class RZ_ContractSettings
 	[Attribute("500", desc: "The exact spot is revealed to a player who comes this close (m) to it")]
 	float m_fRevealDistance;
 
+	// ---------------------------------------------------------------- Offer reach (RZ_OfferReach)
+	[Attribute("2500", desc: "Offer reach (m): a giver offers contracts whose place is within this of them. A contract made on asking is placed within it when a town fits; a fixed place further off is offered by the giver of its faction nearest it, and with none in reach, as before with 'It's a long walk' in its pitch. Kept to 1000-10000; 0 = off")]
+	float m_fOfferReach;
+
 	// ---------------------------------------------------------------- Arriving (RZ_Arrive)
 	[Attribute("15", desc: "Arrive radius (m): a step done by getting to a spot (a job's points, an errand's or an opening's place, a chain's step, a meeting) counts this close, or within the step's own radius if that's wider. Kept to 5-40")]
 	float m_fArriveRadius;

@@ -1701,6 +1701,14 @@ class RZ_Leaders
 		else if (!where.IsEmpty())
 			text += "\n" + string.Format("It's at %1.", where);
 
+		// Past offer reach (no giver of theirs has it nearer): said plainly
+		if (!m.m_bGlobal)
+		{
+			string far = RZ_OfferReach.FarLine(m_GM, from, m.GetAreaFor(m_GM, playerId, from));
+			if (!far.IsEmpty())
+				text += "\n" + far;
+		}
+
 		text += "\n" + RZ_LeaderVoice.PayLine(f, m.m_iFavorReward, m.m_iFameReward);
 		if (m.m_bRogueJob)
 			text += "\n" + RZ_LeaderVoice.RogueWarning(f);

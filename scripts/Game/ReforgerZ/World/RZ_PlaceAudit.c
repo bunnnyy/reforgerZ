@@ -51,13 +51,15 @@ class RZ_PlaceAudit
 	static int s_iRolls = 3;		// the openings' place roll, this many times per background
 	static int s_iGivers = 6;		// errand givers asked per anchor
 	static int s_iShown = 8;		// failing places printed per kind
+	static int s_iReachPicks = 8;	// contract towns picked per giver for the offer reach line
 
 	protected static const int PHASE_STARTS = 0;
 	protected static const int PHASE_STEPS = 1;
 	protected static const int PHASE_ERRANDS = 2;
 	protected static const int PHASE_SPAWNS = 3;
 	protected static const int PHASE_WORLD = 4;
-	protected static const int PHASE_DONE = 5;
+	protected static const int PHASE_REACH = 5;
+	protected static const int PHASE_DONE = 6;
 
 	protected RZ_GameModeComponent m_GM;
 	protected ref array<ref RZ_PlaceAuditKind> m_aKinds = {};
@@ -166,6 +168,19 @@ class RZ_PlaceAudit
 		{
 			AskWorld();
 			NextPhase();
+			return;
+		}
+
+		if (m_iPhase == PHASE_REACH)
+		{
+			if (m_iNext >= RZ_Factions.COUNT)
+			{
+				NextPhase();
+				return;
+			}
+
+			AskReach(m_iNext);
+			m_iNext++;
 		}
 	}
 
@@ -659,6 +674,114 @@ class RZ_PlaceAudit
 
 		RZ_Log.Info(string.Format("Places audit: %1 kinds, %2 places, %3 fail, score %4; %5 under %6: %7", m_aKinds.Count(), placed, placed - passed, score, underCount, s_iThreshold, under));
 		return underCount;
+	}
+
+	// ================================================================ Offer reach
+	//------------------------------------------------------------------------------------------------
+	//! The offer reach line (docs/PLACES.md, "Offer reach"): from each giver of `faction`, contract
+	//! towns picked as the shared pool picks them (anywhere) and as a giver asked picks them (near
+	//! hint). Before: the pool's town from the giver that would have offered it. After: from the
+	//! giver that offers it now (moved to the nearest in reach, or left far), and the asked picks.
+	protected void AskReach(int faction)
+	{
+		array<vector> givers = {};
+		RZ_OfferReach.Givers(m_GM, faction, givers);
+		float reach = RZ_OfferReach.JobReach(m_GM);
+		if (givers.IsEmpty() || reach <= 0)
+		{
+			RZ_Log.Info(string.Format("Reach jobs: %1: %2 givers, reach %3 m: nothing to measure", RZ_Factions.GetShortName(faction), givers.Count(), Num(reach)));
+			return;
+		}
+
+		array<float> before = {};
+		array<float> after = {};
+		array<float> asked = {};
+		int here = 0;
+		int moved = 0;
+		int far = 0;
+		int askedFar = 0;
+		foreach (vector g : givers)
+		{
+			for (int k = 0; k < s_iReachPicks; k++)
+			{
+				RZ_OfferReach.ClearNear();
+				int town = RZ_Mission.PickSettlement(m_GM, 0, 100);
+				if (town < 0)
+					continue;
+
+				vector pos = m_GM.GetSettlements()[town].m_vCenter;
+				float d = RZ_Util.DistXZ(g, pos);
+				before.Insert(d);
+				int decide = RZ_OfferReach.Decide(m_GM, faction, g, pos);
+				if (decide == RZ_OfferReach.HERE)
+				{
+					here++;
+					after.Insert(d);
+				}
+				else if (decide == RZ_OfferReach.ELSEWHERE)
+				{
+					moved++;
+					after.Insert(NearestGiver(givers, pos));
+				}
+				else
+				{
+					far++;
+					after.Insert(d);
+				}
+
+				RZ_OfferReach.SetNear(m_GM, g);
+				int near = RZ_Mission.PickSettlement(m_GM, 0, 100);
+				RZ_OfferReach.ClearNear();
+				if (near < 0)
+					continue;
+
+				float dn = RZ_Util.DistXZ(g, m_GM.GetSettlements()[near].m_vCenter);
+				asked.Insert(dn);
+				if (dn > reach)
+					askedFar++;
+			}
+		}
+
+		RZ_Log.Info(string.Format("Reach jobs: %1: %2 givers, reach %3 m; pool before: median %4 max %5; after: median %6 max %7 (%8 kept, %9 moved to a nearer giver)",
+			RZ_Factions.GetShortName(faction), givers.Count(), Num(reach), Num(Median(before)), Num(Max(before)), Num(Median(after)), Num(Max(after)), here, moved));
+		RZ_Log.Info(string.Format("Reach jobs: %1: %2 left far (no giver in reach); made on asking: median %3 max %4, %5 of %6 past reach",
+			RZ_Factions.GetShortName(faction), far, Num(Median(asked)), Num(Max(asked)), askedFar, asked.Count()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static float NearestGiver(array<vector> givers, vector pos)
+	{
+		float best = float.MAX;
+		foreach (vector g : givers)
+		{
+			best = Math.Min(best, RZ_Util.DistXZ(g, pos));
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static float Median(array<float> values)
+	{
+		if (values.IsEmpty())
+			return 0;
+
+		array<float> sorted = {};
+		sorted.Copy(values);
+		sorted.Sort();
+		return sorted[sorted.Count() / 2];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static float Max(array<float> values)
+	{
+		float best = 0;
+		foreach (float v : values)
+		{
+			best = Math.Max(best, v);
+		}
+
+		return best;
 	}
 
 	//------------------------------------------------------------------------------------------------

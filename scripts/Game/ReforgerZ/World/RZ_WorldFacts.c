@@ -671,6 +671,7 @@ class RZ_WorldFacts
 	{
 		array<int> towns = {};
 		CollectTowns(filter, towns, asker);
+		RZ_OfferReach.NarrowTowns(m_GM, towns);
 		if (towns.IsEmpty())
 			return -1;
 

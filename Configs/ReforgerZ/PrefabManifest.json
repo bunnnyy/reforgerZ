@@ -7953,6 +7953,7 @@
    "defaults": {
     "m_fRoughRadius": "500",
     "m_fRevealDistance": "500",
+    "m_fOfferReach": "2500",
     "m_fArriveRadius": "15",
     "m_fArriveAreaMargin": "25",
     "m_iMaxEscorts": "3",
@@ -7994,6 +7995,7 @@
     "m_fOfferGapMinutes": "8",
     "m_iMaxHeld": "2",
     "m_iCardsPerDay": "2",
+    "m_fErrandReach": "1500",
     "m_fPayScale": "1",
     "m_iFameCeiling": "39",
     "m_iFamePerDay": "10",
