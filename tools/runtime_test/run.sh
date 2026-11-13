@@ -4,7 +4,16 @@
 #   SERVER_DIR=... tools/runtime_test/run.sh [seconds]     # default 5400 (all missions, all questlines, then the route)
 #   SERVER_DIR=... tools/runtime_test/run.sh sites [arland] [everon] [cain]   # the site audit only (default arland)
 #   SERVER_DIR=... tools/runtime_test/run.sh tasks [arland] [everon] [cain]   # the task place audit only (default arland)
+#   SERVER_DIR=... EXTRA_ADDONS_DIR=... tools/runtime_test/run.sh layer   # the behaviour layer test only (needs Bacon Zombies)
 #   EXTRA_ADDONS_DIR=...                                   # a folder holding the Workshop dependencies in addon.gproj
+#
+# The behaviour layer test (docs/WORKBENCH_SETUP.md, "Behaviour layer test without Workbench"): "layer"
+# boots the site audit's Arland world with the mod's own game mode settings, two tribe slots, Bacon's
+# faction, Arland's navmesh and a perception manager (layer.py prepare), puts the fake player near the
+# tribe, starts a hunt with the function /tribes hunt calls and walks the layer through its modes at
+# noon and at night (layer/scripts/Game/RZLayer/RZB_Layer.c): the pack put out and steered, releases
+# on a strike, a shot and contact, the fight, take-back and recover, the walk home, a shot heard, the
+# bodies put away. layer.py summary prints the results table. 17 to 30 minutes.
 #
 # The site audit (docs/SITES.md, "The audit"): "sites" boots each map's own world (a sub-scene with
 # the map's AI world, so its roads, and camp life's kits from RZ_GameMode.et), waits for the land
@@ -66,6 +75,7 @@ set -u
 MODE=full
 if [ "${1:-}" = "sites" ]; then MODE=sites; shift; fi
 if [ "${1:-}" = "tasks" ]; then MODE=tasks; shift; fi
+if [ "${1:-}" = "layer" ]; then MODE=layer; shift; fi
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 HERE="$ROOT/tools/runtime_test"
 WORK="${WORK_DIR:-$HOME/rz_check}"
@@ -87,6 +97,7 @@ fi
 
 [ "$MODE" = sites ] && ADDON="$WORK/sites_addons/ReforgerZ"
 [ "$MODE" = tasks ] && ADDON="$WORK/tasks_addons/ReforgerZ"
+[ "$MODE" = layer ] && ADDON="$WORK/layer_addons/ReforgerZ"
 rm -rf "$ADDON" "$PROFILE/profile/ReforgerZ" && mkdir -p "$ADDON"
 cp "$ROOT/addon.gproj" "$ADDON/"
 . "$ROOT/tools/strip_missing_deps.sh"
@@ -97,6 +108,11 @@ cp -r "$ROOT/scripts" "$ROOT/Configs" "$ADDON/"
 if [ "$MODE" = tasks ]; then
 	cp -r "$ROOT/Prefabs" "$HERE/sites/Worlds" "$HERE/sites/Missions" "$ADDON/"
 	cp -r "$HERE/tasks/." "$ADDON/"
+elif [ "$MODE" = layer ]; then
+	cp -r "$ROOT/Prefabs" "$HERE/sites/Worlds" "$HERE/sites/Missions" "$ADDON/"
+	cp -r "$HERE/layer/." "$ADDON/"
+	mkdir -p "$ADDON/scripts/Game/RZTest"
+	cp "$HERE/files/scripts/Game/RZTest/RZT_Fake.c" "$ADDON/scripts/Game/RZTest/"
 else
 	cp -r "$HERE/sites/." "$ADDON/"
 fi
@@ -133,6 +149,32 @@ if [ "$MODE" = tasks ]; then
 		[ -n "$UNDER" ] && [ "$UNDER" != "0" ] && { echo "FAILED: $UNDER kinds of task under the threshold"; FAIL=1; }
 		"$PY" "$HERE/places.py" draw "$LOG" "$WORK/task_places_$MAP.html"
 	done
+	exit $FAIL
+fi
+
+if [ "$MODE" = layer ]; then
+	grep -q 622120A5448725E3 "$ADDON/addon.gproj" || { echo "The layer test needs Bacon Zombies (622120A5448725E3) in EXTRA_ADDONS_DIR: without its bodies there is no layer to test"; exit 2; }
+	"$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
+	"$PY" "$HERE/places.py" prepare "$ADDON" Worlds/RZSites_Arland/RZSites_Arland.ent || exit 2
+	"$PY" "$HERE/layer.py" prepare "$ADDON" Worlds/RZSites_Arland/RZSites_Arland.ent || exit 2
+	WRAP=""
+	if command -v unshare > /dev/null 2>&1 && unshare -n true > /dev/null 2>&1; then
+		WRAP="unshare -n"
+	fi
+	LPROFILE="$WORK/layer_profile"
+	rm -rf "$LPROFILE"
+	( cd "$SERVER" && $WRAP timeout "${TIMEOUT:-4200}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$LPROFILE" \
+		-server "{7A1C2E3F4B5D6E90}Missions/RZSites_Arland.conf" -logStats 0 -maxFPS 30 -noBackend > /dev/null 2>&1 )
+	LOG="$(ls -td "$LPROFILE"/logs/logs_* | head -1)/console.log"
+	echo "Log: $LOG"
+	[ -n "$RZ_STRIP_NOTE" ] && echo "Ran${RZ_STRIP_NOTE#;}"
+	FAIL=0
+	EXC="$(grep -c 'Virtual Machine Exception' "$LOG")"
+	echo "Script exceptions: $EXC"
+	# The summary tells ReforgerZ's exceptions (a failure) from the game's own (listed, not a failure)
+	[ "$EXC" != "0" ] && grep -A6 'Virtual Machine Exception' "$LOG" | grep -E 'Reason|Function|scripts/' | sort | uniq -c | head -10
+	grep -q "RZB done" "$LOG" || { echo "The test didn't finish (see the log)"; FAIL=1; }
+	"$PY" "$HERE/layer.py" summary "$LOG" || FAIL=1
 	exit $FAIL
 fi
 

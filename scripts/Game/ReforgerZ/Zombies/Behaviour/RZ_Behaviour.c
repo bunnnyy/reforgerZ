@@ -277,7 +277,7 @@ class RZ_Behaviour
 	static const float STAIRS_ACROSS = 15;
 	static const float STAIRS_WAIT = 20;
 	static const float STUCK_MOVE = 1.5;
-	static const float STUCK_SECONDS = 10;
+	static const float STUCK_SECONDS = 15;		// longer than Bacon's own pause between two moves (its Roam idles 1-2 s before a move and 3-8 s after it; at 10 s the layer test counted 50 false unsticks in 12 minutes)
 	static const float MAX_SPEED = 4.4;			// m/s a cap of 1 means (B7)
 
 	//------------------------------------------------------------------------------------------------

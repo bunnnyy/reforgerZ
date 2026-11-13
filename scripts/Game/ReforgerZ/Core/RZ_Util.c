@@ -1100,6 +1100,20 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The character's last damage was its own doing: a fall, a trip, a bump (the damage manager
+	//! names the character itself as the one who did it). False without a damage manager, and when
+	//! it names nobody.
+	static bool HurtItself(IEntity e)
+	{
+		ChimeraCharacter c = ChimeraCharacter.Cast(e);
+		if (!c || !c.GetDamageManager())
+			return false;
+
+		Instigator who = c.GetDamageManager().GetInstigator(); // VERIFY: a player's bullet or blow leaves that player as the last instigator (the layer test saw a body's own falls name itself and another infected's swing name that infected; it has no real player to shoot)
+		return who && who.GetInstigatorEntity() == e;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static int RoundToInt(float f)
 	{
 		int i = Math.Round(f);
