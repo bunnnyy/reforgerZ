@@ -292,7 +292,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vPlan 0 0 26
         m_vFootMin -2.7 0 -2.64
         m_vFootMax 2.72 0 2.42
-        m_sFoot "0.02 1.81 3.43 1.22 0; -2.09 0.18 3.43 1.22 90; 2.11 0.18 3.43 1.22 90; -0.01 -0.59 0.82 1.23 6; 0.8 -0.5 0.88 1.46 10; -1.29 -1.52 2.04 1.33 80; s -0.2 0.5"
+        m_sFoot "0.02 1.81 3.43 1.22 0; -2.09 0.18 3.43 1.22 90; 2.11 0.18 3.43 1.22 90; -0.01 -0.59 0.82 1.23 6; 0.68 -0.5 0.88 1.46 10; -1.29 -1.52 2.04 1.33 80; s -0.2 0.5"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
        }
@@ -343,11 +343,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SIT
         m_iSeats 4
         m_vPlan 5 0 -3
-        m_vFootMin -2.6 0 -3.54
-        m_vFootMax 4.68 0 2.27
-        m_sFoot "1.75 0.35 0.34 6.01 74; -1.51 -0.63 0.34 6.01 18; 0.4 -1.8 0.88 1.46 8; -0.58 1.78 0.79 0.54 140; 2.65 -1.32 0.46 0.66 102; 0.9 0.9 0.43 0.42 0; 1.2 -1.1 0.1 0.1 0; -0.18 0.08 1.94 1.41 0; s 1.7 0.4; s -1.5 -0.6; s 0.4 -1.8; s -0.6 1.7"
+        m_vFootMin -2.1 0 -2.53
+        m_vFootMax 2.72 0 1.99
+        m_sFoot "0.06 0.08 1.47 1.41 0; 1.87 0.57 0.47 0.49 -105; -1.65 -0.71 0.47 0.49 65; 0.59 -1.92 0.88 1.46 75; 2.35 -1.32 0.46 0.66 102; 1.3 1.3 0.43 0.42 0; 1 -0.9 0.1 0.1 0; -0.8 1.42 0.96 1.14 0; s 1.88 0.57; s -1.65 -0.72; s 0.59 -1.92; s -0.78 1.53"
         m_iTier 3
-        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot|FieldKitchen 4; flat 6"
+        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot|FieldKitchen 4; flat 6; soil"
        }
        RZ_DressingPiece "{1D335671031240D5}" {
         m_sPrefab "{5C121A788CD4C5B4}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Barricade_Sandbag.et"
@@ -356,9 +356,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -10.5 0 24.5
         m_fPlanYaw 4
-        m_vFootMin -3.29 0 -1.26
-        m_vFootMax 3.43 0 1.45
-        m_sFoot "-1.03 0.01 3.45 1.22 3; 0.96 0.1 3.45 1.22 -6; 2.22 0.36 2.04 1.33 -30; -2.22 0.05 2.04 1.33 185; 0.3 -0.82 0.83 0.44 40"
+        m_vFootMin -3.84 0 -1.46
+        m_vFootMax 3.91 0 1.07
+        m_sFoot "-0.03 0.01 3.45 1.22 2; 2.77 0.21 2.04 1.33 -12; -2.79 0.04 2.04 1.33 183; 0.3 -1.02 0.83 0.44 40"
         m_iTier 1
         m_eZone WIRE
         m_sRules "faces out"
@@ -370,9 +370,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 10.5 0 24.5
         m_fPlanYaw -6
-        m_vFootMin -3.29 0 -1.26
-        m_vFootMax 3.43 0 1.45
-        m_sFoot "-1.03 0.01 3.45 1.22 3; 0.96 0.1 3.45 1.22 -6; 2.22 0.36 2.04 1.33 -30; -2.22 0.05 2.04 1.33 185; 0.3 -0.82 0.83 0.44 40"
+        m_vFootMin -3.84 0 -1.46
+        m_vFootMax 3.91 0 1.07
+        m_sFoot "-0.03 0.01 3.45 1.22 2; 2.77 0.21 2.04 1.33 -12; -2.79 0.04 2.04 1.33 183; 0.3 -1.02 0.83 0.44 40"
         m_iTier 1
         m_eZone WIRE
         m_sRules "faces out"
@@ -384,9 +384,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 4
         m_vPlan -4 0 -4
         m_fPlanYaw 12
-        m_vFootMin -1.72 0 -1.31
-        m_vFootMax 2.36 0 1.31
-        m_sFoot "0 0.01 1.99 2.38 7; 1.6 0.2 0.88 1.46 95; -1.5 -1.1 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
+        m_vFootMin -1.72 0 -1.81
+        m_vFootMax 2.05 0 1.31
+        m_sFoot "0 0.01 1.99 2.38 7; 1.52 -0.18 0.88 1.46 7; -1.5 -1.6 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
         m_iTier 3
         m_sRules "near CookPot|FieldKitchen|FirePit 8; flat 5; noline"
        }
@@ -396,9 +396,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse WORK
         m_iSeats 1
         m_vPlan 10 0 33
-        m_vFootMin -3.73 0 -3.84
-        m_vFootMax 3.58 0 5.88
-        m_sFoot "-0.21 0.12 3.16 7.62 6; 2.5 2.2 0.76 0.76 0; 3.2 2 0.76 0.76 0; -2.73 -2.41 2.02 2.27 0; 2.6 -0.6 0.88 1.46 15; 0.3 5 0.82 1.7 186; -2 1.6 0.34 0.52 20; 2.78 1.25 0.68 0.5 0; s 2 0.4"
+        m_vFootMin -4.46 0 -3.84
+        m_vFootMax 3.58 0 5.9
+        m_sFoot "-0.21 0.12 3.16 7.62 6; 2.57 1.25 0.16 0.38 30; 3.1 1.13 0.16 0.38 -10; -3.45 -2.41 2.02 2.27 0; 2.6 -0.6 0.88 1.46 15; 0.3 5.01 0.82 1.7 186; -1.87 1.59 0.34 0.52 20; 2.85 2.1 1.46 0.96 0; s 2 0.4"
         m_iTier 3
         m_eZone GATE
         m_sRules "faces road; away gate 4; flat 6"
@@ -412,7 +412,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_fPlanYaw -10
         m_vFootMin -2.18 0 -3.13
         m_vFootMax 4.21 0 2.25
-        m_sFoot "0.01 0 2.15 4.5 0; 2.3 0.6 1.31 0.79 85; 1.5 1.6 0.41 0.41 0; 2.6 -1.9 2.31 0.86 4; 3.93 -1.32 0.54 0.52 0; 2.6 -2.9 1.07 0.43 2; 3.6 0.91 0.41 0.47 0; -1.6 1.05 1.16 1.91 0; s 1.5 0.7"
+        m_sFoot "0.01 0 2.15 4.5 0; 2.3 0.6 1.31 0.79 85; 1.48 1.63 0.41 0.41 0; 2.6 -1.9 2.31 0.86 4; 3.93 -1.32 0.54 0.52 0; 2.6 -2.9 1.07 0.43 2; 3.6 0.91 0.41 0.47 0; -1.6 1.05 1.16 1.91 0; s 1.5 0.7"
         m_iTier 3
         m_eZone SICK
         m_sRules "away CookPot|FieldKitchen 8; flat 5; soil"
@@ -424,9 +424,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -14 0 -10
         m_fPlanYaw 4
-        m_vFootMin -1.34 0 -2.25
-        m_vFootMax 1.9 0 2.25
-        m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
+        m_vFootMin -1.59 0 -2.25
+        m_vFootMax 2.3 0 2.25
+        m_sFoot "0.01 0 2.15 4.5 0; 1.8 0.9 1.01 1.01 0; -1.37 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5; soil; row"
@@ -438,9 +438,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -9 0 -12.5
         m_fPlanYaw -3
-        m_vFootMin -1.34 0 -2.25
-        m_vFootMax 1.9 0 2.25
-        m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
+        m_vFootMin -1.59 0 -2.25
+        m_vFootMax 2.3 0 2.25
+        m_sFoot "0.01 0 2.15 4.5 0; 1.8 0.9 1.01 1.01 0; -1.37 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5; soil; row"
@@ -454,7 +454,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_fPlanYaw 2
         m_vFootMin -3.38 0 -3.77
         m_vFootMax 3.5 0 6.17
-        m_sFoot "0 1.2 6.35 9.94 0; -0.01 3.91 0.82 1.23 0; -0.01 4.71 0.82 1.23 0; 3 1.5 1.01 1.01 0; 3 0.4 1.01 1.01 0; -3 2.6 0.76 0.76 0"
+        m_sFoot "0 1.2 6.35 9.94 0; -0.01 3.91 0.82 1.23 0; -0.01 4.71 0.82 1.23 0; 3 1.5 1.01 1.01 0; 3 0.5 1.01 1.01 0; -3 2.6 0.76 0.76 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5; soil"
@@ -480,12 +480,12 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 17.5 0 -11.5
         m_fPlanYaw 60
-        m_vFootMin -4.97 0 -1.6
-        m_vFootMax 2 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -2.24 0 -1.6
+        m_vFootMax 3.89 0 3.8
+        m_sFoot "-1.53 0.09 1.34 1.22 4; -1.53 1.65 1.34 1.22 -3; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; 2.98 2.64 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot|FieldKitchen 7; flat 6"
+        m_sRules "by CookPot|FieldKitchen|FirePit 8; flat 6"
        }
        RZ_DressingPiece "{D1ABA5796EAB77FF}" {
         m_sPrefab "{3C94F02F30F3573A}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_ShavingStand.et"
@@ -496,7 +496,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_fPlanYaw 90
         m_vFootMin -0.45 0 -0.37
         m_vFootMax 1.57 0 1.55
-        m_sFoot "-0.01 0.01 0.14 0.13 0; 0.1 0.5 0.41 0.41 0; 1 0.2 1.01 1.01 -8; -0.4 0.4 0.1 0.1 0; s 0.05 1.1"
+        m_sFoot "-0.01 -0.03 0.14 0.13 0; -0.04 0.5 0.41 0.41 0; 1 0.2 1.01 1.01 -8; -0.4 0.4 0.1 0.1 0; s 0.05 1.1"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "near WaterBarrel|CookPot|FieldKitchen 5; flat 6"
@@ -508,9 +508,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 4
         m_vPlan 10 0 3
         m_fPlanYaw 20
-        m_vFootMin -2.23 0 -1.92
-        m_vFootMax 1.94 0 1.86
-        m_sFoot "0 0 1.01 1.01 8; 0.1 1.1 0.88 1.46 4; -0.05 -1.15 0.88 1.46 -6; 1.2 0.1 0.88 1.46 92; -1.4 -0.2 0.88 1.46 70; s 0.1 1.1; s -0.05 -1.15; s 1.2 0.1; s -1.4 -0.2"
+        m_vFootMin -2.2 0 -1.92
+        m_vFootMax 1.98 0 1.86
+        m_sFoot "0 0 1.01 1.01 8; 0.1 1.1 0.88 1.46 4; -0.05 -1.15 0.88 1.46 -6; 1.24 0.21 0.88 1.46 92; -1.36 -0.3 0.88 1.46 70; s 0.1 1.1; s -0.05 -1.15; s 1.24 0.21; s -1.36 -0.3"
         m_iTier 3
         m_sRules "near FirePit 6; flat 6"
        }
@@ -537,7 +537,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_fPlanYaw 25
         m_vFootMin -1.88 0 -1.51
         m_vFootMax 1.56 0 1.69
-        m_sFoot "-0.51 -0.29 0.82 1.23 8; 0.9 0.6 0.88 1.46 20; -1.3 1.1 1.01 1.01 -10; 0.1 0.9 0.41 0.41 0; -1.4 -1.3 0.43 0.42 0; s -0.6 0.4; s 0.2 -0.9"
+        m_sFoot "-0.51 -0.29 0.82 1.23 8; 0.9 0.6 0.88 1.46 20; -1.3 1.1 1.01 1.01 -10; 0 0.94 0.41 0.41 0; -1.4 -1.3 0.43 0.42 0; s -0.6 0.4; s 0.2 -0.9"
         m_iTier 3
         m_eZone WORK
         m_sRules "wall 3; faces wall"
@@ -550,9 +550,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 10 0 -13
         m_fPlanYaw -8
-        m_vFootMin -1.34 0 -2.25
-        m_vFootMax 1.9 0 2.25
-        m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
+        m_vFootMin -1.59 0 -2.25
+        m_vFootMax 2.3 0 2.25
+        m_sFoot "0.01 0 2.15 4.5 0; 1.8 0.9 1.01 1.01 0; -1.37 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5; soil; row"
@@ -578,9 +578,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -22 0 -18
         m_fPlanYaw 140
-        m_vFootMin -1.57 0 -3.06
-        m_vFootMax 3.06 0 1.64
-        m_sFoot "1.53 1.46 3.06 0.21 3; -1.41 -1.53 3.06 0.21 88; -0.6 0.8 0.43 0.42 0; 0.63 0.92 0.79 0.54 70"
+        m_vFootMin -0.21 0 -0.07
+        m_vFootMax 3.06 0 3.2
+        m_sFoot "1.53 0.04 3.06 0.21 0; -0.11 1.67 3.06 0.21 -90; 0.71 1.06 0.82 1.23 0; 0.72 1.05 0.43 0.42 0; 1.93 0.87 0.79 0.54 70"
         m_iTier 3
         m_sRules "away CookPot|FieldKitchen|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"
        }
@@ -641,8 +641,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_vFootMin -2.12 0 -2.02
-        m_vFootMax 2.56 0 2.35
-        m_sFoot "-0.05 0.16 2.27 4.09 -8; 1.9 0.6 0.88 1.46 20; -1.7 1.2 0.85 0.84 0; 1.8 -0.5 0.16 0.38 15"
+        m_vFootMax 2.69 0 2.35
+        m_sFoot "-0.05 0.16 2.27 4.09 -8; 2.03 0.62 0.88 1.46 20; -1.7 1.2 0.85 0.84 0; 1.79 -0.55 0.16 0.38 15"
         m_iTier 4
         m_eZone GATE
         m_sRules "by MotorPool 10; faces road; away gate 4; flat 6"
@@ -654,9 +654,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen SUPPLIED
-        m_vFootMin -1.59 0 -0.98
+        m_vFootMin -1.59 0 -0.94
         m_vFootMax 2.18 0 0.58
-        m_sFoot "0 0.02 1.98 1.05 0; 1.7 0.2 0.76 0.76 0; 1.8 -0.6 0.76 0.76 0; -1.4 0.3 0.16 0.38 15; -1.45 -0.1 0.16 0.38 -20"
+        m_sFoot "0 0.02 1.98 1.05 0; 1.7 0.2 0.76 0.76 0; 1.8 -0.56 0.76 0.76 0; -1.4 0.3 0.16 0.38 15; -1.45 -0.1 0.16 0.38 -20"
         m_iTier 4
         m_sRules "by MotorPool|FuelDump 10; away FirePit|FireBarrel|CookPot|FieldKitchen 8; flat 6"
        }
@@ -667,8 +667,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_vFootMin -0.94 0 -1.14
-        m_vFootMax 1.53 0 1.52
-        m_sFoot "0.07 -0.01 2.02 2.27 0; 1.1 0.3 0.85 0.84 0; -0.2 1.1 0.85 0.84 0"
+        m_vFootMax 1.08 0 1.52
+        m_sFoot "0.07 -0.01 2.02 2.27 0; -0.2 1.1 0.85 0.84 0"
         m_iTier 5
         m_sRules "by MotorPool|JeepWreck|ChopShop|WreckGate|FuelDump|Barricade_Scrap 8"
        }
@@ -680,7 +680,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_bExtra 1
         m_vFootMin -5.19 0 -3.79
         m_vFootMax 7.31 0 1.75
-        m_sFoot "0 -2.52 2.54 7.34 90; -2.39 -0.01 0.99 1.45 2; -0.79 0.04 0.99 1.45 -3; 0.81 -0.01 0.99 1.45 4; 5.62 -1.6 3.38 1.23 0; -4.4 0.4 0.88 1.46 80; -4.75 -1.6 0.86 1.56 0; 2.66 0.3 1.43 2.31 0; s -4.4 1.3"
+        m_sFoot "0 -2.52 2.54 7.34 90; -2.39 -0.01 0.99 1.45 2; -0.79 0.04 0.99 1.45 -3; 0.81 -0.01 0.99 1.45 4; 5.62 -1.6 3.38 1.23 0; -4.4 0.4 0.88 1.46 80; -4.75 -1.62 0.86 1.52 0; 2.66 0.24 1.42 2.2 0; s -4.4 1.3"
         m_iTier 3
         m_eZone WORK
         m_sRules "wall 12; faces wall; away gate 10; away door 4; flat 5"
@@ -758,9 +758,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.34 0 -2.25
-        m_vFootMax 1.9 0 2.25
-        m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
+        m_vFootMin -1.59 0 -2.25
+        m_vFootMax 2.3 0 2.25
+        m_sFoot "0.01 0 2.15 4.5 0; 1.8 0.9 1.01 1.01 0; -1.37 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5; soil; row"
@@ -771,9 +771,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.34 0 -2.25
-        m_vFootMax 1.9 0 2.25
-        m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
+        m_vFootMin -1.59 0 -2.25
+        m_vFootMax 2.3 0 2.25
+        m_sFoot "0.01 0 2.15 4.5 0; 1.8 0.9 1.01 1.01 0; -1.37 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5; soil; row"
@@ -784,9 +784,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.34 0 -2.25
-        m_vFootMax 1.9 0 2.25
-        m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
+        m_vFootMin -1.59 0 -2.25
+        m_vFootMax 2.3 0 2.25
+        m_sFoot "0.01 0 2.15 4.5 0; 1.8 0.9 1.01 1.01 0; -1.37 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5; soil; row"
@@ -797,9 +797,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.34 0 -2.25
-        m_vFootMax 1.9 0 2.25
-        m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
+        m_vFootMin -1.59 0 -2.25
+        m_vFootMax 2.3 0 2.25
+        m_sFoot "0.01 0 2.15 4.5 0; 1.8 0.9 1.01 1.01 0; -1.37 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5; soil; row"
@@ -812,7 +812,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_bExtra 1
         m_vFootMin -3.38 0 -3.77
         m_vFootMax 3.5 0 6.17
-        m_sFoot "0 1.2 6.35 9.94 0; -0.01 3.91 0.82 1.23 0; -0.01 4.71 0.82 1.23 0; 3 1.5 1.01 1.01 0; 3 0.4 1.01 1.01 0; -3 2.6 0.76 0.76 0"
+        m_sFoot "0 1.2 6.35 9.94 0; -0.01 3.91 0.82 1.23 0; -0.01 4.71 0.82 1.23 0; 3 1.5 1.01 1.01 0; 3 0.5 1.01 1.01 0; -3 2.6 0.76 0.76 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5; soil"
@@ -835,9 +835,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SIT
         m_iSeats 2
         m_bExtra 1
-        m_vFootMin -1.21 0 -1.3
-        m_vFootMax 1.2 0 1.3
-        m_sFoot "0 0 2.41 1 0; -0.1 0.85 1.45 0.4 0; 0.1 -0.85 1.45 0.4 0; s -0.5 0.85; s 0.5 -0.85"
+        m_vFootMin -1.21 0 -1.25
+        m_vFootMax 1.2 0 1.25
+        m_sFoot "0 0 2.41 1 0; -0.1 0.8 1.45 0.4 -180; 0.1 -0.8 1.45 0.4 0; s -0.1 0.8; s 0.1 -0.8"
         m_iTier 4
         m_eZone KITCHEN
         m_sRules "by CookPot|FieldKitchen 10; row; flat 5"
@@ -848,9 +848,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SIT
         m_iSeats 2
         m_bExtra 1
-        m_vFootMin -1.21 0 -1.3
-        m_vFootMax 1.2 0 1.3
-        m_sFoot "0 0 2.41 1 0; -0.1 0.85 1.45 0.4 0; 0.1 -0.85 1.45 0.4 0; s -0.5 0.85; s 0.5 -0.85"
+        m_vFootMin -1.21 0 -1.25
+        m_vFootMax 1.2 0 1.25
+        m_sFoot "0 0 2.41 1 0; -0.1 0.8 1.45 0.4 -180; 0.1 -0.8 1.45 0.4 0; s -0.1 0.8; s 0.1 -0.8"
         m_iTier 4
         m_eZone KITCHEN
         m_sRules "by CookPot|FieldKitchen 10; row; flat 5"
@@ -863,7 +863,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_bExtra 1
         m_vFootMin -3.8 0 -2.2
         m_vFootMax 3.8 0 4.39
-        m_sFoot "0 1.09 7.6 6.58 0; 1.6 0 1.31 0.79 90; 2.5 0 0.41 0.41 0; s 2.5 0"
+        m_sFoot "0 1.09 7.6 6.58 0; 1.6 0 1.31 0.79 90; 2.3 0 0.41 0.41 -90; s 2.3 0"
         m_iTier 4
         m_eZone WORK
         m_sRules "wall 4; faces in; flat 5"
@@ -874,9 +874,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse WORK
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.56 0 -1.35
-        m_vFootMax 1.04 0 1.57
-        m_sFoot "0 0 0.53 0.99 0; 0.02 0.9 2.04 1.33 0; 0.8 0.2 0.16 0.38 30; -1 0.1 0.88 1.46 10; s 0 -0.9"
+        m_vFootMin -1.86 0 -1.35
+        m_vFootMax 1.04 0 2.02
+        m_sFoot "0 -0.06 0.53 0.99 0; 0.02 1.35 2.04 1.33 0; 0.8 0.2 0.16 0.38 30; -1.3 -0.3 0.88 1.46 10; s 0 -0.9"
         m_iTier 4
         m_sRules "wall 3; away use:Sleep 8"
        }
@@ -929,9 +929,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen HIT
-        m_vFootMin -0.96 0 -0.38
-        m_vFootMax 1.66 0 1.77
-        m_sFoot "0.01 -0.02 0.83 0.44 0; 0.56 0.08 0.83 0.44 8; 0.23 0.04 0.83 0.44 90; -0.5 0.38 0.83 0.44 40; 0.22 0.8 2.04 1.33 20; 1.22 0.52 0.79 0.54 60"
+        m_vFootMin -0.4 0 -0.67
+        m_vFootMax 3.19 0 0.2
+        m_sFoot "0.01 -0.02 0.83 0.44 0; 1.68 -0.02 0.83 0.44 0; 0.01 -0.46 0.83 0.44 0; 1.68 -0.46 0.83 0.44 0; 0.43 -0.24 0.83 0.44 0; 1.26 -0.24 0.83 0.44 0; 2.79 -0.17 0.79 0.54 0; 0.84 -0.24 0.83 0.87 0"
         m_iTier 5
         m_sRules "by Bunker_Bastion|SentryNest_Bastion|SandbagWall|Barricade_Sandbag 7"
        }
@@ -942,9 +942,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen HIT
-        m_vFootMin -0.96 0 -0.38
-        m_vFootMax 1.66 0 1.77
-        m_sFoot "0.01 -0.02 0.83 0.44 0; 0.56 0.08 0.83 0.44 8; 0.23 0.04 0.83 0.44 90; -0.5 0.38 0.83 0.44 40; 0.22 0.8 2.04 1.33 20; 1.22 0.52 0.79 0.54 60"
+        m_vFootMin -0.4 0 -0.67
+        m_vFootMax 3.19 0 0.2
+        m_sFoot "0.01 -0.02 0.83 0.44 0; 1.68 -0.02 0.83 0.44 0; 0.01 -0.46 0.83 0.44 0; 1.68 -0.46 0.83 0.44 0; 0.43 -0.24 0.83 0.44 0; 1.26 -0.24 0.83 0.44 0; 2.79 -0.17 0.79 0.54 0; 0.84 -0.24 0.83 0.87 0"
         m_iTier 5
         m_sRules "by Bunker_Bastion|SentryNest_Bastion|SandbagWall|Barricade_Sandbag 7"
        }
@@ -1024,6 +1024,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 -0.03 1.74 1.67 12"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{9ED677363567EF23}" {
@@ -1031,9 +1032,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eRole APPROACH
         m_eUse NONE
         m_iSeats 1
-        m_vFootMin -3.52 0 -1.83
-        m_vFootMax 3.65 0 0.82
-        m_sFoot "-1.75 0.02 1.38 3.55 90; 1.85 0.07 1.38 3.55 88; 0.02 -1.29 1.08 3.45 90"
+        m_vFootMin -3.52 0 -1.75
+        m_vFootMax 3.62 0 0.82
+        m_sFoot "-1.75 0.02 1.38 3.55 90; 1.82 0.07 1.38 3.55 88; 0.02 -1.21 1.08 3.45 90"
         m_iTier 1
         m_eZone WIRE
         m_eLayer BLOCK
@@ -1072,6 +1073,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 -0.03 1.74 1.67 12"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer BLOCK
        }
        RZ_DressingPiece "{69A6703B6A439D6F}" {
@@ -1092,7 +1094,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vFootMin -0.7 0 -0.04
         m_vFootMax 0.73 0 0.4
-        m_sFoot "-0.29 0.18 0.83 0.44 0; 0.31 0.18 0.83 0.44 0; -0.29 0.18 0.83 0.44 0; 0.31 0.18 0.83 0.44 0"
+        m_sFoot "-0.29 0.18 0.83 0.44 0; 0.31 0.18 0.83 0.44 0; -0.29 0.18 0.83 0.44 0; 0.31 0.18 0.83 0.44 0; 0.01 0.18 0.83 0.44 0"
         m_iTier 1
         m_eLayer DOOR
        }
@@ -1101,9 +1103,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eRole APPROACH
         m_eUse WATCH
         m_iSeats 1
-        m_vFootMin -3.02 0 -1.34
+        m_vFootMin -3.02 0 -1.71
         m_vFootMax 2.98 0 2.47
-        m_sFoot "-0.04 1.31 3.45 1.22 0; -1.42 0.78 3.45 1.22 48; 1.37 0.73 3.45 1.22 -48; -1.99 -0.22 2.04 1.33 80; 2 -0.18 2.04 1.33 -80; 0.7 -0.5 0.88 1.46 10; s 0 0.2"
+        m_sFoot "-0.04 1.31 3.45 1.22 0; -1.42 0.78 3.45 1.22 48; 1.37 0.73 3.45 1.22 -48; -1.99 -0.22 2.04 1.33 80; 2 -0.18 2.04 1.33 -80; 0.12 -1.21 0.88 1.46 85; s 0 0.2"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
         m_eLayer LOOKOUT
@@ -1158,9 +1160,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse WATCH
         m_iSeats 1
         m_vPlan 0 0 20
-        m_vFootMin -3.02 0 -1.34
+        m_vFootMin -3.02 0 -1.71
         m_vFootMax 2.98 0 2.47
-        m_sFoot "-0.04 1.31 3.45 1.22 0; -1.42 0.78 3.45 1.22 48; 1.37 0.73 3.45 1.22 -48; -1.99 -0.22 2.04 1.33 80; 2 -0.18 2.04 1.33 -80; 0.7 -0.5 0.88 1.46 10; s 0 0.2"
+        m_sFoot "-0.04 1.31 3.45 1.22 0; -1.42 0.78 3.45 1.22 48; 1.37 0.73 3.45 1.22 -48; -1.99 -0.22 2.04 1.33 80; 2 -0.18 2.04 1.33 -80; 0.12 -1.21 0.88 1.46 85; s 0 0.2"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
        }
@@ -1170,22 +1172,22 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SIT
         m_iSeats 4
         m_vPlan 4 0 0
-        m_vFootMin -2.6 0 -3.54
-        m_vFootMax 4.68 0 2.27
-        m_sFoot "1.75 0.35 0.34 6.01 74; -1.51 -0.63 0.34 6.01 18; 0.4 -1.8 0.88 1.46 8; -0.58 1.78 0.79 0.54 140; 2.65 -1.32 0.46 0.66 102; 0.9 0.9 0.43 0.42 0; 1.2 -1.1 0.1 0.1 0; -0.18 0.08 1.94 1.41 0; s 1.7 0.4; s -1.5 -0.6; s 0.4 -1.8; s -0.6 1.7"
+        m_vFootMin -2.1 0 -2.53
+        m_vFootMax 2.72 0 1.99
+        m_sFoot "0.06 0.08 1.47 1.41 0; 1.87 0.57 0.47 0.49 -105; -1.65 -0.71 0.47 0.49 65; 0.59 -1.92 0.88 1.46 75; 2.35 -1.32 0.46 0.66 102; 1.3 1.3 0.43 0.42 0; 1 -0.9 0.1 0.1 0; -0.8 1.42 0.96 1.14 0; s 1.88 0.57; s -1.65 -0.72; s 0.59 -1.92; s -0.78 1.53"
         m_iTier 3
-        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot|FieldKitchen 4; flat 6"
+        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot|FieldKitchen 4; flat 6; soil"
        }
        RZ_DressingPiece "{810C3794A85C9A1B}" {
         m_sPrefab "{5C121A788CD4C5B4}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Barricade_Sandbag.et"
         m_eRole APPROACH
         m_eUse NONE
         m_iSeats 1
-        m_vPlan -7 0 18.5
+        m_vPlan -7.5 0 18.5
         m_fPlanYaw 6
-        m_vFootMin -3.29 0 -1.26
-        m_vFootMax 3.43 0 1.45
-        m_sFoot "-1.03 0.01 3.45 1.22 3; 0.96 0.1 3.45 1.22 -6; 2.22 0.36 2.04 1.33 -30; -2.22 0.05 2.04 1.33 185; 0.3 -0.82 0.83 0.44 40"
+        m_vFootMin -3.84 0 -1.46
+        m_vFootMax 3.91 0 1.07
+        m_sFoot "-0.03 0.01 3.45 1.22 2; 2.77 0.21 2.04 1.33 -12; -2.79 0.04 2.04 1.33 183; 0.3 -1.02 0.83 0.44 40"
         m_iTier 1
         m_eZone WIRE
         m_sRules "faces out"
@@ -1197,9 +1199,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -8 0 -8
         m_fPlanYaw 6
-        m_vFootMin -1.34 0 -2.25
-        m_vFootMax 1.9 0 2.25
-        m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
+        m_vFootMin -1.59 0 -2.25
+        m_vFootMax 2.3 0 2.25
+        m_sFoot "0.01 0 2.15 4.5 0; 1.8 0.9 1.01 1.01 0; -1.37 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5; soil; row"
@@ -1211,9 +1213,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -3 0 -10.5
         m_fPlanYaw -4
-        m_vFootMin -1.34 0 -2.25
-        m_vFootMax 1.9 0 2.25
-        m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
+        m_vFootMin -1.59 0 -2.25
+        m_vFootMax 2.3 0 2.25
+        m_sFoot "0.01 0 2.15 4.5 0; 1.8 0.9 1.01 1.01 0; -1.37 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5; soil; row"
@@ -1239,9 +1241,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 4
         m_vPlan -5 0 -2
         m_fPlanYaw 10
-        m_vFootMin -1.72 0 -1.31
-        m_vFootMax 2.36 0 1.31
-        m_sFoot "0 0.01 1.99 2.38 7; 1.6 0.2 0.88 1.46 95; -1.5 -1.1 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
+        m_vFootMin -1.72 0 -1.81
+        m_vFootMax 2.05 0 1.31
+        m_sFoot "0 0.01 1.99 2.38 7; 1.52 -0.18 0.88 1.46 7; -1.5 -1.6 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
         m_iTier 3
         m_sRules "near CookPot|FieldKitchen|FirePit 8; flat 5; noline"
        }
@@ -1252,9 +1254,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 14 0 -3
         m_fPlanYaw 30
-        m_vFootMin -2.46 0 -1.84
+        m_vFootMin -2.5 0 -1.84
         m_vFootMax 2.1 0 1.75
-        m_sFoot "0.06 0.08 1.47 1.41 0; 0.49 0.01 0.14 0.13 0; -0.26 0.44 0.14 0.13 0; -0.26 -0.42 0.14 0.13 0; 1.4 0.6 1.36 0.41 28; -1.6 0.4 0.88 1.46 82; -1.7 -0.6 0.88 1.46 95; 1.12 -1.37 0.79 0.54 40; s 0.1 1.3"
+        m_sFoot "0.49 0.01 0.14 0.13 0; -0.26 0.44 0.14 0.13 0; -0.26 -0.42 0.14 0.13 0; 1.4 0.6 1.36 0.41 28; -1.72 0.4 0.88 1.46 82; -1.7 -0.6 0.88 1.46 95; 1.12 -1.37 0.79 0.54 40; 0.06 0.08 1.47 1.41 0; s 0.1 1.3"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "door side 4; away Latrine 15; away use:Sleep 6; flat 6"
@@ -1266,12 +1268,12 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 13 0 -11
         m_fPlanYaw 60
-        m_vFootMin -4.97 0 -1.6
-        m_vFootMax 2 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -2.24 0 -1.6
+        m_vFootMax 3.89 0 3.8
+        m_sFoot "-1.53 0.09 1.34 1.22 4; -1.53 1.65 1.34 1.22 -3; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; 2.98 2.64 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot|FieldKitchen 7; flat 6"
+        m_sRules "by CookPot|FieldKitchen|FirePit 8; flat 6"
        }
        RZ_DressingPiece "{F08CC1E737D55F26}" {
         m_sPrefab "{3C94F02F30F3573A}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_ShavingStand.et"
@@ -1282,7 +1284,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_fPlanYaw 90
         m_vFootMin -0.45 0 -0.37
         m_vFootMax 1.57 0 1.55
-        m_sFoot "-0.01 0.01 0.14 0.13 0; 0.1 0.5 0.41 0.41 0; 1 0.2 1.01 1.01 -8; -0.4 0.4 0.1 0.1 0; s 0.05 1.1"
+        m_sFoot "-0.01 -0.03 0.14 0.13 0; -0.04 0.5 0.41 0.41 0; 1 0.2 1.01 1.01 -8; -0.4 0.4 0.1 0.1 0; s 0.05 1.1"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "near WaterBarrel|CookPot|FieldKitchen 5; flat 6"
@@ -1305,11 +1307,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eRole APPROACH
         m_eUse NONE
         m_iSeats 1
-        m_vPlan 7 0 19.5
+        m_vPlan 7.5 0 19.5
         m_fPlanYaw -6
-        m_vFootMin -3.29 0 -1.26
-        m_vFootMax 3.43 0 1.45
-        m_sFoot "-1.03 0.01 3.45 1.22 3; 0.96 0.1 3.45 1.22 -6; 2.22 0.36 2.04 1.33 -30; -2.22 0.05 2.04 1.33 185; 0.3 -0.82 0.83 0.44 40"
+        m_vFootMin -3.84 0 -1.46
+        m_vFootMax 3.91 0 1.07
+        m_sFoot "-0.03 0.01 3.45 1.22 2; 2.77 0.21 2.04 1.33 -12; -2.79 0.04 2.04 1.33 183; 0.3 -1.02 0.83 0.44 40"
         m_iTier 1
         m_eZone WIRE
         m_sRules "faces out"
@@ -1319,7 +1321,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eRole INNER
         m_eUse NONE
         m_iSeats 1
-        m_vPlan -4.5 0 -6
+        m_vPlan -2 0 -6
         m_vFootMin -0.67 0 -1.7
         m_vFootMax 0.69 0 1.74
         m_sFoot "0.01 -1.29 0.82 1.23 90; 0.06 0.01 0.82 1.23 92; -0.04 1.31 0.82 1.23 88"
@@ -1332,9 +1334,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.34 0 -2.25
-        m_vFootMax 1.9 0 2.25
-        m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
+        m_vFootMin -1.59 0 -2.25
+        m_vFootMax 2.3 0 2.25
+        m_sFoot "0.01 0 2.15 4.5 0; 1.8 0.9 1.01 1.01 0; -1.37 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5; soil; row"
@@ -1345,9 +1347,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.34 0 -2.25
-        m_vFootMax 1.9 0 2.25
-        m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
+        m_vFootMin -1.59 0 -2.25
+        m_vFootMax 2.3 0 2.25
+        m_sFoot "0.01 0 2.15 4.5 0; 1.8 0.9 1.01 1.01 0; -1.37 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5; soil; row"
@@ -1359,9 +1361,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen HIT
-        m_vFootMin -0.96 0 -0.38
-        m_vFootMax 1.66 0 1.77
-        m_sFoot "0.01 -0.02 0.83 0.44 0; 0.56 0.08 0.83 0.44 8; 0.23 0.04 0.83 0.44 90; -0.5 0.38 0.83 0.44 40; 0.22 0.8 2.04 1.33 20; 1.22 0.52 0.79 0.54 60"
+        m_vFootMin -0.4 0 -0.67
+        m_vFootMax 3.19 0 0.2
+        m_sFoot "0.01 -0.02 0.83 0.44 0; 1.68 -0.02 0.83 0.44 0; 0.01 -0.46 0.83 0.44 0; 1.68 -0.46 0.83 0.44 0; 0.43 -0.24 0.83 0.44 0; 1.26 -0.24 0.83 0.44 0; 2.79 -0.17 0.79 0.54 0; 0.84 -0.24 0.83 0.87 0"
         m_iTier 5
         m_sRules "by Bunker_Bastion|SentryNest_Bastion|SandbagWall|Barricade_Sandbag 7"
        }
@@ -1372,9 +1374,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen HIT
-        m_vFootMin -0.96 0 -0.38
-        m_vFootMax 1.66 0 1.77
-        m_sFoot "0.01 -0.02 0.83 0.44 0; 0.56 0.08 0.83 0.44 8; 0.23 0.04 0.83 0.44 90; -0.5 0.38 0.83 0.44 40; 0.22 0.8 2.04 1.33 20; 1.22 0.52 0.79 0.54 60"
+        m_vFootMin -0.4 0 -0.67
+        m_vFootMax 3.19 0 0.2
+        m_sFoot "0.01 -0.02 0.83 0.44 0; 1.68 -0.02 0.83 0.44 0; 0.01 -0.46 0.83 0.44 0; 1.68 -0.46 0.83 0.44 0; 0.43 -0.24 0.83 0.44 0; 1.26 -0.24 0.83 0.44 0; 2.79 -0.17 0.79 0.54 0; 0.84 -0.24 0.83 0.87 0"
         m_iTier 5
         m_sRules "by Bunker_Bastion|SentryNest_Bastion|SandbagWall|Barricade_Sandbag 7"
        }
@@ -1412,9 +1414,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen SUPPLIED
-        m_vFootMin -1.08 0 -0.91
-        m_vFootMax 1.47 0 1.03
-        m_sFoot "0 0 0.76 0.76 0; 0.7 0.1 0.76 0.76 0; 0.35 0.65 0.76 0.76 0; -0.7 0.3 0.76 0.76 0; 1.3 0.5 0.16 0.38 25; 1.35 0.1 0.16 0.38 -10; -0.3 -0.7 0.43 0.42 0"
+        m_vFootMin -1.13 0 -1.06
+        m_vFootMax 1.7 0 1.16
+        m_sFoot "0 0 0.76 0.76 0; 0.75 0.1 0.76 0.76 0; 0.4 0.78 0.76 0.76 0; -0.75 0.3 0.76 0.76 0; 1.55 0.55 0.16 0.38 25; 1.54 0.16 0.16 0.38 -10; -0.3 -0.85 0.43 0.42 0"
         m_iTier 5
         m_sRules "by MotorPool|FuelPoint|FuelDump|Generator|GeneratorPost|CookPot|FieldKitchen 8; flat 8"
        }
@@ -1484,6 +1486,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 -0.03 1.74 1.67 12"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{FCCFDB8496AD1482}" {
@@ -1504,7 +1507,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vFootMin -0.7 0 -0.04
         m_vFootMax 0.73 0 0.4
-        m_sFoot "-0.29 0.18 0.83 0.44 0; 0.31 0.18 0.83 0.44 0; -0.29 0.18 0.83 0.44 0; 0.31 0.18 0.83 0.44 0"
+        m_sFoot "-0.29 0.18 0.83 0.44 0; 0.31 0.18 0.83 0.44 0; -0.29 0.18 0.83 0.44 0; 0.31 0.18 0.83 0.44 0; 0.01 0.18 0.83 0.44 0"
         m_iTier 1
         m_eLayer DOOR
        }
@@ -1513,9 +1516,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eRole APPROACH
         m_eUse WATCH
         m_iSeats 1
-        m_vFootMin -3.02 0 -1.34
+        m_vFootMin -3.02 0 -1.71
         m_vFootMax 2.98 0 2.47
-        m_sFoot "-0.04 1.31 3.45 1.22 0; -1.42 0.78 3.45 1.22 48; 1.37 0.73 3.45 1.22 -48; -1.99 -0.22 2.04 1.33 80; 2 -0.18 2.04 1.33 -80; 0.7 -0.5 0.88 1.46 10; s 0 0.2"
+        m_sFoot "-0.04 1.31 3.45 1.22 0; -1.42 0.78 3.45 1.22 48; 1.37 0.73 3.45 1.22 -48; -1.99 -0.22 2.04 1.33 80; 2 -0.18 2.04 1.33 -80; 0.12 -1.21 0.88 1.46 85; s 0 0.2"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
         m_eLayer LOOKOUT
@@ -1532,9 +1535,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse WATCH
         m_iSeats 1
         m_vPlan 7.5 0 2
-        m_vFootMin -3.02 0 -1.34
+        m_vFootMin -3.02 0 -1.71
         m_vFootMax 2.98 0 2.47
-        m_sFoot "-0.04 1.31 3.45 1.22 0; -1.42 0.78 3.45 1.22 48; 1.37 0.73 3.45 1.22 -48; -1.99 -0.22 2.04 1.33 80; 2 -0.18 2.04 1.33 -80; 0.7 -0.5 0.88 1.46 10; s 0 0.2"
+        m_sFoot "-0.04 1.31 3.45 1.22 0; -1.42 0.78 3.45 1.22 48; 1.37 0.73 3.45 1.22 -48; -1.99 -0.22 2.04 1.33 80; 2 -0.18 2.04 1.33 -80; 0.12 -1.21 0.88 1.46 85; s 0 0.2"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
        }
@@ -1544,9 +1547,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse NONE
         m_iSeats 1
         m_vPlan -7.5 0 2.5
-        m_vFootMin -3.29 0 -1.26
-        m_vFootMax 3.43 0 1.45
-        m_sFoot "-1.03 0.01 3.45 1.22 3; 0.96 0.1 3.45 1.22 -6; 2.22 0.36 2.04 1.33 -30; -2.22 0.05 2.04 1.33 185; 0.3 -0.82 0.83 0.44 40"
+        m_vFootMin -3.84 0 -1.46
+        m_vFootMax 3.91 0 1.07
+        m_sFoot "-0.03 0.01 3.45 1.22 2; 2.77 0.21 2.04 1.33 -12; -2.79 0.04 2.04 1.33 183; 0.3 -1.02 0.83 0.44 40"
         m_iTier 1
         m_eZone WIRE
         m_sRules "faces out"
@@ -1573,7 +1576,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_fPlanYaw 10
         m_vFootMin -1.88 0 -1.51
         m_vFootMax 1.56 0 1.69
-        m_sFoot "-0.51 -0.29 0.82 1.23 8; 0.9 0.6 0.88 1.46 20; -1.3 1.1 1.01 1.01 -10; 0.1 0.9 0.41 0.41 0; -1.4 -1.3 0.43 0.42 0; s -0.6 0.4; s 0.2 -0.9"
+        m_sFoot "-0.51 -0.29 0.82 1.23 8; 0.9 0.6 0.88 1.46 20; -1.3 1.1 1.01 1.01 -10; 0 0.94 0.41 0.41 0; -1.4 -1.3 0.43 0.42 0; s -0.6 0.4; s 0.2 -0.9"
         m_iTier 3
         m_eZone WORK
         m_sRules "wall 3; faces wall"
@@ -1607,9 +1610,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 2
         m_vPlan -2 0 25
         m_fPlanYaw 6
-        m_vFootMin -2.95 0 -0.65
-        m_vFootMax 3.28 0 1.92
-        m_sFoot "0.06 1.53 0.34 6.01 92; -1.6 1.5 0.85 0.84 0; 1.7 1.4 0.85 0.84 0; 2.27 -0.23 0.49 0.56 205; 2.9 0.7 0.76 0.76 0; s -1.8 0.5; s 2.3 -0.2"
+        m_vFootMin -2.95 0 -0.81
+        m_vFootMax 3.28 0 1.91
+        m_sFoot "0.06 1.53 0.34 6.01 92; 0.26 1.54 0.34 6.01 86; 2.9 0.7 0.76 0.76 0; 2.18 -0.34 0.49 0.56 35; s 2.14 -0.36; s -1.8 0.5"
         m_iTier 2
         m_eZone GATE
         m_sRules "faces road; flat 8"
@@ -1631,12 +1634,12 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sPrefab "{65CF0FD454B5A3B9}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Sofa.et"
         m_eRole CENTRE
         m_eUse SIT
-        m_iSeats 3
+        m_iSeats 2
         m_vPlan -4 0 -2.5
         m_fPlanYaw 160
-        m_vFootMin -2.02 0 -0.52
-        m_vFootMax 2.49 0 1.88
-        m_sFoot "0 0 2.04 0.91 4; 1.93 1.32 0.71 0.87 238; 0.9 1.5 0.76 0.76 0; -0.6 1.1 0.09 0.08 0; 1.4 0.4 0.09 0.08 0; -1.6 1.4 0.85 0.84 0; s -0.5 0.4; s 0.5 0.4; s 1.9 1.3"
+        m_vFootMin -1.44 0 -1.72
+        m_vFootMax 1.63 0 0.38
+        m_sFoot "0 0 0.76 0.76 0; -0.1 -1.18 2.04 0.91 5; 1.16 -0.1 0.71 0.87 -85; -1.4 -0.5 0.09 0.08 0; 0.6 -0.8 0.09 0.08 0; s -0.1 -1.19; s 1.12 -0.1"
         m_iTier 3
         m_sRules "by FireBarrel 4; faces FireBarrel; flat 6"
        }
@@ -1647,9 +1650,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 9 0 22
         m_fPlanYaw -20
-        m_vFootMin -1.83 0 -1.23
-        m_vFootMax 3.07 0 2.37
-        m_sFoot "-0.83 0.99 2.02 2.27 0; 1.68 0.57 3.45 1.22 -60; 0 0.04 0.71 0.87 175; 0.9 -0.4 0.45 0.33 0; s 0 0.1"
+        m_vFootMin -1.83 0 -0.93
+        m_vFootMax 3.47 0 3.02
+        m_sFoot "-0.83 1.89 2.02 2.27 0; 2.08 0.87 3.45 1.22 -60; 0 0.04 0.71 0.87 175; -0.8 -0.4 0.45 0.33 0; s 0 0.1"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
        }
@@ -1660,9 +1663,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 3
         m_vPlan 6 0 6
         m_fPlanYaw 35
-        m_vFootMin -1.98 0 -0.96
-        m_vFootMax 1.55 0 1.76
-        m_sFoot "0.01 0 1.71 0.91 12; 0.1 1 0.88 1.46 5; 1.1 -0.2 0.47 0.47 260; -1.1 -0.4 0.88 1.46 80; -1.6 1.2 0.76 0.76 0; s 0.1 1; s 1.1 -0.2; s -1.1 -0.4"
+        m_vFootMin -2.18 0 -0.72
+        m_vFootMax 1.62 0 1.88
+        m_sFoot "0.01 0 1.71 0.91 12; 0.21 0.97 0.88 1.46 102; 1.17 -0.25 0.47 0.47 -78; -1.51 0.33 0.88 1.46 12; -1.8 1.5 0.76 0.76 0; s 1.17 -0.24; s 0.1 1; s -1.46 -0.27"
         m_iTier 3
         m_sRules "by FireBarrel|Sofa 7; flat 6"
        }
@@ -1674,9 +1677,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eAt GATE
         m_vPlan -10 0 21
         m_fPlanYaw 25
-        m_vFootMin -1.94 0 -2.99
-        m_vFootMax 2.19 0 2.21
-        m_sFoot "-0.93 -0.01 2.02 2.27 0; 1.17 0.09 2.02 2.27 0; 0.2 -0.39 2.19 4.72 25"
+        m_vFootMin -1.94 0 -1.14
+        m_vFootMax 2.09 0 1.22
+        m_sFoot "-0.93 -0.01 2.02 2.27 0; 1.08 0.09 2.02 2.27 0"
         m_iTier 4
         m_eZone GATE
         m_sRules "faces road; flat 8"
@@ -1687,7 +1690,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse NONE
         m_iSeats 1
         m_eAt GATE
-        m_vPlan 9 0 31
+        m_vPlan 9 0 31.5
         m_vFootMin -3.18 0 -5
         m_vFootMax 3.98 0 1.72
         m_sFoot "0.04 -0.01 1.83 4.6 78; 2.97 0.59 2.02 2.27 0; -2.8 0.7 0.76 0.76 0; 0.77 -3.23 2.27 4.09 110"
@@ -1702,8 +1705,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 19 0 6
         m_vFootMin -1.33 0 -1.55
-        m_vFootMax 1.58 0 0.88
-        m_sFoot "-0.01 0.01 0.82 1.23 5; -0.3 0.1 0.76 0.76 0; 0.35 -0.1 0.76 0.76 0; 1.2 0.5 0.76 0.76 0; -1.1 0.6 0.16 0.38 20; -1.1 0.2 0.16 0.38 8; -1.2 -0.2 0.16 0.38 -15; 0.9 -1.1 0.85 0.84 0; s 0.9 -1.1"
+        m_vFootMax 1.48 0 0.88
+        m_sFoot "-0.01 0.01 0.82 1.23 5; -0.3 0.1 0.76 0.76 0; 0.35 -0.1 0.76 0.76 0; 1.1 0.5 0.76 0.76 0; -1.1 0.6 0.16 0.38 20; -1.1 0.2 0.16 0.38 8; -1.2 -0.2 0.16 0.38 -15; 0.9 -1.1 0.85 0.84 0; s 0.9 -1.1"
         m_iTier 4
         m_sRules "wall 8; away FirePit|FireBarrel|CookPot|FieldKitchen 8; flat 6"
        }
@@ -1714,9 +1717,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 15 0 16
         m_fPlanYaw -40
-        m_vFootMin -5.1 0 -1.62
+        m_vFootMin -5.5 0 -2.34
         m_vFootMax 4.33 0 2.63
-        m_sFoot "0.72 -0.12 3.06 0.21 6; 2.84 0.91 3.06 0.21 -18; 3.27 0.89 2.02 2.27 0; -2.83 0.51 3.62 2.82 30"
+        m_sFoot "0.72 -0.12 3.06 0.21 6; 2.84 0.91 3.06 0.21 -18; 3.27 -1.21 2.02 2.27 0; -3.23 0.51 3.62 2.82 30"
         m_iTier 1
         m_eZone WIRE
         m_sRules "faces out"
@@ -1728,9 +1731,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -12 0 -9
         m_fPlanYaw 30
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -1742,9 +1745,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -6 0 -13
         m_fPlanYaw -15
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -1756,9 +1759,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 4 0 -14
         m_fPlanYaw 10
-        m_vFootMin -1.49 0 -1.18
-        m_vFootMax 1.26 0 1.24
-        m_sFoot "-0.3 0.03 2.22 2.28 4; 0.16 0.12 1.92 1.74 10; 0.6 0.9 0.2 0.18 0"
+        m_vFootMin -1.11 0 -1.14
+        m_vFootMax 1.11 0 1.62
+        m_sFoot "0 0 2.22 2.28 0; 0.5 1.53 0.2 0.18 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 6"
@@ -1770,9 +1773,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 13 0 -5
         m_fPlanYaw 60
-        m_vFootMin -2.46 0 -1.84
+        m_vFootMin -2.5 0 -1.84
         m_vFootMax 2.1 0 1.75
-        m_sFoot "0.06 0.08 1.47 1.41 0; 0.49 0.01 0.14 0.13 0; -0.26 0.44 0.14 0.13 0; -0.26 -0.42 0.14 0.13 0; 1.4 0.6 1.36 0.41 28; -1.6 0.4 0.88 1.46 82; -1.7 -0.6 0.88 1.46 95; 1.12 -1.37 0.79 0.54 40; s 0.1 1.3"
+        m_sFoot "0.49 0.01 0.14 0.13 0; -0.26 0.44 0.14 0.13 0; -0.26 -0.42 0.14 0.13 0; 1.4 0.6 1.36 0.41 28; -1.72 0.4 0.88 1.46 82; -1.7 -0.6 0.88 1.46 95; 1.12 -1.37 0.79 0.54 40; 0.06 0.08 1.47 1.41 0; s 0.1 1.3"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "door side 4; away Latrine 15; away use:Sleep 6; flat 6"
@@ -1784,12 +1787,12 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 17.5 0 -12
         m_fPlanYaw 80
-        m_vFootMin -4.97 0 -1.6
-        m_vFootMax 2 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -2.24 0 -1.6
+        m_vFootMax 3.89 0 3.8
+        m_sFoot "-1.53 0.09 1.34 1.22 4; -1.53 1.65 1.34 1.22 -3; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; 2.98 2.64 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot|FieldKitchen 7; flat 6"
+        m_sRules "by CookPot|FieldKitchen|FirePit 8; flat 6"
        }
        RZ_DressingPiece "{949B1CC327085399}" {
         m_sPrefab "{4B17C267BBBF2FD4}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_TrophyWall.et"
@@ -1799,9 +1802,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eAt GATE
         m_vPlan -19 0 4
         m_fPlanYaw 95
-        m_vFootMin -0.01 0 -1.03
-        m_vFootMax 6.05 0 2.86
-        m_sFoot "3.02 -0.15 6.05 0.4 4; 2.47 0.92 3.62 2.82 20"
+        m_vFootMin -0.01 0 -0.56
+        m_vFootMax 6.05 0 4.36
+        m_sFoot "3.02 -0.15 6.05 0.4 4; 2.67 2.42 3.62 2.82 20"
         m_iTier 4
         m_eZone GATE
         m_sRules "by TollBarrier|RedHandSheet|WreckGate 12; faces road; flat 8"
@@ -1839,11 +1842,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SIT
         m_iSeats 4
         m_vPlan -6 0 10
-        m_vFootMin -2.6 0 -3.54
-        m_vFootMax 4.68 0 2.27
-        m_sFoot "1.75 0.35 0.34 6.01 74; -1.51 -0.63 0.34 6.01 18; 0.4 -1.8 0.88 1.46 8; -0.58 1.78 0.79 0.54 140; 2.65 -1.32 0.46 0.66 102; 0.9 0.9 0.43 0.42 0; 1.2 -1.1 0.1 0.1 0; -0.18 0.08 1.94 1.41 0; s 1.7 0.4; s -1.5 -0.6; s 0.4 -1.8; s -0.6 1.7"
+        m_vFootMin -2.1 0 -2.53
+        m_vFootMax 2.72 0 1.99
+        m_sFoot "0.06 0.08 1.47 1.41 0; 1.87 0.57 0.47 0.49 -105; -1.65 -0.71 0.47 0.49 65; 0.59 -1.92 0.88 1.46 75; 2.35 -1.32 0.46 0.66 102; 1.3 1.3 0.43 0.42 0; 1 -0.9 0.1 0.1 0; -0.8 1.42 0.96 1.14 0; s 1.88 0.57; s -1.65 -0.72; s 0.59 -1.92; s -0.78 1.53"
         m_iTier 3
-        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot|FieldKitchen 4; flat 6"
+        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot|FieldKitchen 4; flat 6; soil"
        }
        RZ_DressingPiece "{3900F94864920846}" {
         m_sPrefab "{246DFC7CF5548873}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Large_Civilian.et"
@@ -1852,9 +1855,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 10 0 -17
         m_fPlanYaw -20
-        m_vFootMin -2.8 0 -2.54
-        m_vFootMax 3.71 0 2.9
-        m_sFoot "0 0.01 5.36 3.63 4; 1 2.6 0.47 0.47 200; 2.49 -1.41 1.96 1.48 30; -1.9 -1.8 0.43 0.42 0"
+        m_vFootMin -2.8 0 -2.81
+        m_vFootMax 5.41 0 3
+        m_sFoot "0 0.01 5.36 3.63 4; 1 2.7 0.47 0.47 200; 4.19 -1.21 1.96 1.48 30; -2 -2.6 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil"
@@ -1866,9 +1869,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 22.5 0 -20.5
         m_fPlanYaw 200
-        m_vFootMin -1.57 0 -3.06
-        m_vFootMax 3.06 0 1.64
-        m_sFoot "1.53 1.46 3.06 0.21 3; -1.41 -1.53 3.06 0.21 88; -0.6 0.8 0.43 0.42 0; 0.63 0.92 0.79 0.54 70"
+        m_vFootMin -0.21 0 -0.07
+        m_vFootMax 3.06 0 3.2
+        m_sFoot "1.53 0.04 3.06 0.21 0; -0.11 1.67 3.06 0.21 -90; 0.71 1.06 0.82 1.23 0; 0.72 1.05 0.43 0.42 0; 1.93 0.87 0.79 0.54 70"
         m_iTier 3
         m_sRules "away CookPot|FieldKitchen|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"
        }
@@ -1877,11 +1880,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eRole APPROACH
         m_eUse NONE
         m_iSeats 1
-        m_vPlan -17 0 17
+        m_vPlan -16.5 0 17
         m_fPlanYaw 30
-        m_vFootMin -5.1 0 -1.62
+        m_vFootMin -5.5 0 -2.34
         m_vFootMax 4.33 0 2.63
-        m_sFoot "0.72 -0.12 3.06 0.21 6; 2.84 0.91 3.06 0.21 -18; 3.27 0.89 2.02 2.27 0; -2.83 0.51 3.62 2.82 30"
+        m_sFoot "0.72 -0.12 3.06 0.21 6; 2.84 0.91 3.06 0.21 -18; 3.27 -1.21 2.02 2.27 0; -3.23 0.51 3.62 2.82 30"
         m_iTier 1
         m_eZone WIRE
         m_sRules "faces out"
@@ -1892,9 +1895,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse WORK
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -2.61 0 -2.47
-        m_vFootMax 2.74 0 3.77
-        m_sFoot "0.01 -0.06 1.88 3.78 8; 0.2 2.9 0.82 1.7 184; -1.4 0.9 0.34 0.52 30; 1.84 -1.36 0.81 0.51 35; 1.7 0.5 0.55 0.24 -15; -1.94 -1.82 1.06 1 20; 2.27 1.89 0.93 0.94 0; s 1.3 1.2"
+        m_vFootMin -2.49 0 -2.49
+        m_vFootMax 2.74 0 3.85
+        m_sFoot "0.01 -0.06 1.88 3.78 8; 0.21 2.97 0.82 1.7 184; -1.4 0.9 0.34 0.52 30; 1.84 -1.36 0.81 0.51 35; 1.7 0.5 0.55 0.24 -15; -1.82 -1.84 1.06 1 20; 2.27 1.89 0.93 0.94 0; s 1.3 1.2"
         m_iTier 3
         m_sRules "wall 10; away gate 8; away door 4; flat 6"
        }
@@ -1929,9 +1932,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse NONE
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.59 0 -0.98
+        m_vFootMin -1.59 0 -0.94
         m_vFootMax 2.18 0 0.58
-        m_sFoot "0 0.02 1.98 1.05 0; 1.7 0.2 0.76 0.76 0; 1.8 -0.6 0.76 0.76 0; -1.4 0.3 0.16 0.38 15; -1.45 -0.1 0.16 0.38 -20"
+        m_sFoot "0 0.02 1.98 1.05 0; 1.7 0.2 0.76 0.76 0; 1.8 -0.56 0.76 0.76 0; -1.4 0.3 0.16 0.38 15; -1.45 -0.1 0.16 0.38 -20"
         m_iTier 4
         m_sRules "by MotorPool|FuelDump 10; away FirePit|FireBarrel|CookPot|FieldKitchen 8; flat 6"
        }
@@ -1942,9 +1945,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen SUPPLIED
-        m_vFootMin -1.08 0 -0.91
-        m_vFootMax 1.47 0 1.03
-        m_sFoot "0 0 0.76 0.76 0; 0.7 0.1 0.76 0.76 0; 0.35 0.65 0.76 0.76 0; -0.7 0.3 0.76 0.76 0; 1.3 0.5 0.16 0.38 25; 1.35 0.1 0.16 0.38 -10; -0.3 -0.7 0.43 0.42 0"
+        m_vFootMin -1.13 0 -1.06
+        m_vFootMax 1.7 0 1.16
+        m_sFoot "0 0 0.76 0.76 0; 0.75 0.1 0.76 0.76 0; 0.4 0.78 0.76 0.76 0; -0.75 0.3 0.76 0.76 0; 1.55 0.55 0.16 0.38 25; 1.54 0.16 0.16 0.38 -10; -0.3 -0.85 0.43 0.42 0"
         m_iTier 5
         m_sRules "by MotorPool|FuelPoint|FuelDump|Generator|GeneratorPost|CookPot|FieldKitchen 8; flat 8"
        }
@@ -1955,9 +1958,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen SUPPLIED
-        m_vFootMin -1.08 0 -0.91
-        m_vFootMax 1.47 0 1.03
-        m_sFoot "0 0 0.76 0.76 0; 0.7 0.1 0.76 0.76 0; 0.35 0.65 0.76 0.76 0; -0.7 0.3 0.76 0.76 0; 1.3 0.5 0.16 0.38 25; 1.35 0.1 0.16 0.38 -10; -0.3 -0.7 0.43 0.42 0"
+        m_vFootMin -1.13 0 -1.06
+        m_vFootMax 1.7 0 1.16
+        m_sFoot "0 0 0.76 0.76 0; 0.75 0.1 0.76 0.76 0; 0.4 0.78 0.76 0.76 0; -0.75 0.3 0.76 0.76 0; 1.55 0.55 0.16 0.38 25; 1.54 0.16 0.16 0.38 -10; -0.3 -0.85 0.43 0.42 0"
         m_iTier 5
         m_sRules "by MotorPool|FuelPoint|FuelDump|Generator|GeneratorPost|CookPot|FieldKitchen 8; flat 8"
        }
@@ -1968,8 +1971,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_vFootMin -0.94 0 -1.14
-        m_vFootMax 1.53 0 1.52
-        m_sFoot "0.07 -0.01 2.02 2.27 0; 1.1 0.3 0.85 0.84 0; -0.2 1.1 0.85 0.84 0"
+        m_vFootMax 1.08 0 1.52
+        m_sFoot "0.07 -0.01 2.02 2.27 0; -0.2 1.1 0.85 0.84 0"
         m_iTier 5
         m_sRules "by MotorPool|JeepWreck|ChopShop|WreckGate|FuelDump|Barricade_Scrap 8"
        }
@@ -1980,8 +1983,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_vFootMin -0.94 0 -1.14
-        m_vFootMax 1.53 0 1.52
-        m_sFoot "0.07 -0.01 2.02 2.27 0; 1.1 0.3 0.85 0.84 0; -0.2 1.1 0.85 0.84 0"
+        m_vFootMax 1.08 0 1.52
+        m_sFoot "0.07 -0.01 2.02 2.27 0; -0.2 1.1 0.85 0.84 0"
         m_iTier 5
         m_sRules "by MotorPool|JeepWreck|ChopShop|WreckGate|FuelDump|Barricade_Scrap 8"
        }
@@ -1993,8 +1996,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_bExtra 1
         m_eWhen HIT
         m_vFootMin -0.94 0 -1.14
-        m_vFootMax 1.53 0 1.52
-        m_sFoot "0.07 -0.01 2.02 2.27 0; 1.1 0.3 0.85 0.84 0; -0.2 1.1 0.85 0.84 0"
+        m_vFootMax 1.08 0 1.52
+        m_sFoot "0.07 -0.01 2.02 2.27 0; -0.2 1.1 0.85 0.84 0"
         m_iTier 5
         m_sRules "by MotorPool|JeepWreck|ChopShop|WreckGate|FuelDump|Barricade_Scrap 8"
        }
@@ -2004,9 +2007,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -2017,9 +2020,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -2030,9 +2033,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -2043,9 +2046,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.49 0 -1.18
-        m_vFootMax 1.26 0 1.24
-        m_sFoot "-0.3 0.03 2.22 2.28 4; 0.16 0.12 1.92 1.74 10; 0.6 0.9 0.2 0.18 0"
+        m_vFootMin -1.11 0 -1.14
+        m_vFootMax 1.11 0 1.62
+        m_sFoot "0 0 2.22 2.28 0; 0.5 1.53 0.2 0.18 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 6"
@@ -2056,9 +2059,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.61 0 -0.91
-        m_vFootMax 1.61 0 1.57
-        m_sFoot "-0.59 0.02 1.92 1.74 4; 0.61 0.12 1.92 1.74 -3; -0.59 1.13 0.79 0.54 30; 0.58 1.18 0.79 0.54 -20; 0 1.3 0.17 0.16 0"
+        m_vFootMin -1.98 0 -0.88
+        m_vFootMax 2 0 1.72
+        m_sFoot "-0.99 0.02 1.92 1.74 2; 1.01 0.12 1.92 1.74 -2; -0.99 1.28 0.79 0.54 30; 0.98 1.33 0.79 0.54 -20; 0 1.1 0.17 0.16 0"
         m_iTier 5
         m_eZone SLEEP
         m_sRules "by use:Sleep 6; away FirePit|FireBarrel|CookPot|FieldKitchen 4; flat 5; soil"
@@ -2069,9 +2072,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.61 0 -0.91
-        m_vFootMax 1.61 0 1.57
-        m_sFoot "-0.59 0.02 1.92 1.74 4; 0.61 0.12 1.92 1.74 -3; -0.59 1.13 0.79 0.54 30; 0.58 1.18 0.79 0.54 -20; 0 1.3 0.17 0.16 0"
+        m_vFootMin -1.98 0 -0.88
+        m_vFootMax 2 0 1.72
+        m_sFoot "-0.99 0.02 1.92 1.74 2; 1.01 0.12 1.92 1.74 -2; -0.99 1.28 0.79 0.54 30; 0.98 1.33 0.79 0.54 -20; 0 1.1 0.17 0.16 0"
         m_iTier 5
         m_eZone SLEEP
         m_sRules "by use:Sleep 6; away FirePit|FireBarrel|CookPot|FieldKitchen 4; flat 5; soil"
@@ -2202,10 +2205,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse NONE
         m_iSeats 1
         m_vFootMin -2.3 0 -1.25
-        m_vFootMax 2.23 0 1.32
-        m_sFoot "-0.03 -0.01 2.49 4.53 90; 1.2 0.9 0.85 0.84 0"
+        m_vFootMax 2.23 0 1.24
+        m_sFoot "-0.03 -0.01 2.49 4.53 90"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{5DE2A23018934D66}" {
@@ -2218,6 +2222,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 2.21 0.52 0"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{576FC17DBB3EC9FB}" {
@@ -2230,6 +2235,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0.07 -0.01 2.02 2.27 0"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{CA70A05765DAC287}" {
@@ -2242,6 +2248,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0.01 0.01 0.82 1.23 90"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{8EFD5096371EBE71}" {
@@ -2254,6 +2261,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-0.8 0.22 3.16 7.62 90; 4.37 0.19 2.02 2.27 0"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer BLOCK
        }
        RZ_DressingPiece "{59F284D3A19129B0}" {
@@ -2266,6 +2274,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0.04 -0.01 1.83 4.6 90"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer BLOCK
        }
        RZ_DressingPiece "{0BD9FCCCBD840535}" {
@@ -2278,6 +2287,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 2.21 0.52 0; 0.3 0.7 0.85 0.84 0"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer BLOCK
        }
        RZ_DressingPiece "{19A49F90ACC6BED8}" {
@@ -2290,6 +2300,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0.07 -0.01 2.02 2.27 0"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer BLOCK
        }
        RZ_DressingPiece "{EA946C2299F776F9}" {
@@ -2298,8 +2309,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse NONE
         m_iSeats 1
         m_vFootMin -1.5 0 -0.02
-        m_vFootMax 1.56 0 0.92
-        m_sFoot "0.03 0.09 3.06 0.21 0; 0.4 0.5 0.85 0.84 0"
+        m_vFootMax 1.56 0 0.19
+        m_sFoot "0.03 0.09 3.06 0.21 0"
         m_iTier 1
         m_eLayer DOOR
        }
@@ -2308,9 +2319,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eRole APPROACH
         m_eUse WATCH
         m_iSeats 1
-        m_vFootMin -1.83 0 -1.23
-        m_vFootMax 3.07 0 2.37
-        m_sFoot "-0.83 0.99 2.02 2.27 0; 1.68 0.57 3.45 1.22 -60; 0 0.04 0.71 0.87 175; 0.9 -0.4 0.45 0.33 0; s 0 0.1"
+        m_vFootMin -1.83 0 -0.93
+        m_vFootMax 3.47 0 3.02
+        m_sFoot "-0.83 1.89 2.02 2.27 0; 2.08 0.87 3.45 1.22 -60; 0 0.04 0.71 0.87 175; -0.8 -0.4 0.45 0.33 0; s 0 0.1"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
         m_eLayer LOOKOUT
@@ -2341,9 +2352,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse LEAN
         m_iSeats 2
         m_vPlan 0 0 20
-        m_vFootMin -2.95 0 -0.65
-        m_vFootMax 3.28 0 1.92
-        m_sFoot "0.06 1.53 0.34 6.01 92; -1.6 1.5 0.85 0.84 0; 1.7 1.4 0.85 0.84 0; 2.27 -0.23 0.49 0.56 205; 2.9 0.7 0.76 0.76 0; s -1.8 0.5; s 2.3 -0.2"
+        m_vFootMin -2.95 0 -0.81
+        m_vFootMax 3.28 0 1.91
+        m_sFoot "0.06 1.53 0.34 6.01 92; 0.26 1.54 0.34 6.01 86; 2.9 0.7 0.76 0.76 0; 2.18 -0.34 0.49 0.56 35; s 2.14 -0.36; s -1.8 0.5"
         m_iTier 2
         m_eZone GATE
         m_sRules "faces road; flat 8"
@@ -2365,12 +2376,12 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sPrefab "{65CF0FD454B5A3B9}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Sofa.et"
         m_eRole CENTRE
         m_eUse SIT
-        m_iSeats 3
+        m_iSeats 2
         m_vPlan -3.5 0 -2.5
         m_fPlanYaw 160
-        m_vFootMin -2.02 0 -0.52
-        m_vFootMax 2.49 0 1.88
-        m_sFoot "0 0 2.04 0.91 4; 1.93 1.32 0.71 0.87 238; 0.9 1.5 0.76 0.76 0; -0.6 1.1 0.09 0.08 0; 1.4 0.4 0.09 0.08 0; -1.6 1.4 0.85 0.84 0; s -0.5 0.4; s 0.5 0.4; s 1.9 1.3"
+        m_vFootMin -1.44 0 -1.72
+        m_vFootMax 1.63 0 0.38
+        m_sFoot "0 0 0.76 0.76 0; -0.1 -1.18 2.04 0.91 5; 1.16 -0.1 0.71 0.87 -85; -1.4 -0.5 0.09 0.08 0; 0.6 -0.8 0.09 0.08 0; s -0.1 -1.19; s 1.12 -0.1"
         m_iTier 3
         m_sRules "by FireBarrel 4; faces FireBarrel; flat 6"
        }
@@ -2381,9 +2392,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 8 0 17
         m_fPlanYaw -20
-        m_vFootMin -1.83 0 -1.23
-        m_vFootMax 3.07 0 2.37
-        m_sFoot "-0.83 0.99 2.02 2.27 0; 1.68 0.57 3.45 1.22 -60; 0 0.04 0.71 0.87 175; 0.9 -0.4 0.45 0.33 0; s 0 0.1"
+        m_vFootMin -1.83 0 -0.93
+        m_vFootMax 3.47 0 3.02
+        m_sFoot "-0.83 1.89 2.02 2.27 0; 2.08 0.87 3.45 1.22 -60; 0 0.04 0.71 0.87 175; -0.8 -0.4 0.45 0.33 0; s 0 0.1"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
        }
@@ -2394,9 +2405,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 3
         m_vPlan 6 0 5
         m_fPlanYaw 35
-        m_vFootMin -1.98 0 -0.96
-        m_vFootMax 1.55 0 1.76
-        m_sFoot "0.01 0 1.71 0.91 12; 0.1 1 0.88 1.46 5; 1.1 -0.2 0.47 0.47 260; -1.1 -0.4 0.88 1.46 80; -1.6 1.2 0.76 0.76 0; s 0.1 1; s 1.1 -0.2; s -1.1 -0.4"
+        m_vFootMin -2.18 0 -0.72
+        m_vFootMax 1.62 0 1.88
+        m_sFoot "0.01 0 1.71 0.91 12; 0.21 0.97 0.88 1.46 102; 1.17 -0.25 0.47 0.47 -78; -1.51 0.33 0.88 1.46 12; -1.8 1.5 0.76 0.76 0; s 1.17 -0.24; s 0.1 1; s -1.46 -0.27"
         m_iTier 3
         m_sRules "by FireBarrel|Sofa 7; flat 6"
        }
@@ -2406,7 +2417,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse NONE
         m_iSeats 1
         m_eAt GATE
-        m_vPlan 8 0 26
+        m_vPlan 8 0 26.5
         m_vFootMin -3.18 0 -5
         m_vFootMax 3.98 0 1.72
         m_sFoot "0.04 -0.01 1.83 4.6 78; 2.97 0.59 2.02 2.27 0; -2.8 0.7 0.76 0.76 0; 0.77 -3.23 2.27 4.09 110"
@@ -2421,9 +2432,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -9 0 -9
         m_fPlanYaw 30
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -2433,11 +2444,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eRole INNER
         m_eUse SLEEP
         m_iSeats 1
-        m_vPlan -3 0 -11
+        m_vPlan -2.5 0 -11
         m_fPlanYaw -15
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -2449,9 +2460,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 10.5 0 -4
         m_fPlanYaw 60
-        m_vFootMin -2.46 0 -1.84
+        m_vFootMin -2.5 0 -1.84
         m_vFootMax 2.1 0 1.75
-        m_sFoot "0.06 0.08 1.47 1.41 0; 0.49 0.01 0.14 0.13 0; -0.26 0.44 0.14 0.13 0; -0.26 -0.42 0.14 0.13 0; 1.4 0.6 1.36 0.41 28; -1.6 0.4 0.88 1.46 82; -1.7 -0.6 0.88 1.46 95; 1.12 -1.37 0.79 0.54 40; s 0.1 1.3"
+        m_sFoot "0.49 0.01 0.14 0.13 0; -0.26 0.44 0.14 0.13 0; -0.26 -0.42 0.14 0.13 0; 1.4 0.6 1.36 0.41 28; -1.72 0.4 0.88 1.46 82; -1.7 -0.6 0.88 1.46 95; 1.12 -1.37 0.79 0.54 40; 0.06 0.08 1.47 1.41 0; s 0.1 1.3"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "door side 4; away Latrine 15; away use:Sleep 6; flat 6"
@@ -2463,12 +2474,12 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 14.5 0 -11.5
         m_fPlanYaw 80
-        m_vFootMin -4.97 0 -1.6
-        m_vFootMax 2 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -2.24 0 -1.6
+        m_vFootMax 3.89 0 3.8
+        m_sFoot "-1.53 0.09 1.34 1.22 4; -1.53 1.65 1.34 1.22 -3; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; 2.98 2.64 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot|FieldKitchen 7; flat 6"
+        m_sRules "by CookPot|FieldKitchen|FirePit 8; flat 6"
        }
        RZ_DressingPiece "{AEF8C9AB23B529AC}" {
         m_sPrefab "{4E44857251B9F7C5}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_RedHandSheet.et"
@@ -2478,9 +2489,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eAt GATE
         m_vPlan -8 0 17
         m_fPlanYaw 25
-        m_vFootMin -1.94 0 -2.99
-        m_vFootMax 2.19 0 2.21
-        m_sFoot "-0.93 -0.01 2.02 2.27 0; 1.17 0.09 2.02 2.27 0; 0.2 -0.39 2.19 4.72 25"
+        m_vFootMin -1.94 0 -1.14
+        m_vFootMax 2.09 0 1.22
+        m_sFoot "-0.93 -0.01 2.02 2.27 0; 1.08 0.09 2.02 2.27 0"
         m_iTier 4
         m_eZone GATE
         m_sRules "faces road; flat 8"
@@ -2504,9 +2515,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 3 0 -12
         m_fPlanYaw 10
-        m_vFootMin -1.49 0 -1.18
-        m_vFootMax 1.26 0 1.24
-        m_sFoot "-0.3 0.03 2.22 2.28 4; 0.16 0.12 1.92 1.74 10; 0.6 0.9 0.2 0.18 0"
+        m_vFootMin -1.11 0 -1.14
+        m_vFootMax 1.11 0 1.62
+        m_sFoot "0 0 2.22 2.28 0; 0.5 1.53 0.2 0.18 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 6"
@@ -2518,8 +2529,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_vFootMin -0.94 0 -1.14
-        m_vFootMax 1.53 0 1.52
-        m_sFoot "0.07 -0.01 2.02 2.27 0; 1.1 0.3 0.85 0.84 0; -0.2 1.1 0.85 0.84 0"
+        m_vFootMax 1.08 0 1.52
+        m_sFoot "0.07 -0.01 2.02 2.27 0; -0.2 1.1 0.85 0.84 0"
         m_iTier 5
         m_sRules "by MotorPool|JeepWreck|ChopShop|WreckGate|FuelDump|Barricade_Scrap 8"
        }
@@ -2530,8 +2541,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_vFootMin -0.94 0 -1.14
-        m_vFootMax 1.53 0 1.52
-        m_sFoot "0.07 -0.01 2.02 2.27 0; 1.1 0.3 0.85 0.84 0; -0.2 1.1 0.85 0.84 0"
+        m_vFootMax 1.08 0 1.52
+        m_sFoot "0.07 -0.01 2.02 2.27 0; -0.2 1.1 0.85 0.84 0"
         m_iTier 5
         m_sRules "by MotorPool|JeepWreck|ChopShop|WreckGate|FuelDump|Barricade_Scrap 8"
        }
@@ -2542,9 +2553,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen SUPPLIED
-        m_vFootMin -1.08 0 -0.91
-        m_vFootMax 1.47 0 1.03
-        m_sFoot "0 0 0.76 0.76 0; 0.7 0.1 0.76 0.76 0; 0.35 0.65 0.76 0.76 0; -0.7 0.3 0.76 0.76 0; 1.3 0.5 0.16 0.38 25; 1.35 0.1 0.16 0.38 -10; -0.3 -0.7 0.43 0.42 0"
+        m_vFootMin -1.13 0 -1.06
+        m_vFootMax 1.7 0 1.16
+        m_sFoot "0 0 0.76 0.76 0; 0.75 0.1 0.76 0.76 0; 0.4 0.78 0.76 0.76 0; -0.75 0.3 0.76 0.76 0; 1.55 0.55 0.16 0.38 25; 1.54 0.16 0.16 0.38 -10; -0.3 -0.85 0.43 0.42 0"
         m_iTier 5
         m_sRules "by MotorPool|FuelPoint|FuelDump|Generator|GeneratorPost|CookPot|FieldKitchen 8; flat 8"
        }
@@ -2554,9 +2565,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -2567,9 +2578,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.61 0 -0.91
-        m_vFootMax 1.61 0 1.57
-        m_sFoot "-0.59 0.02 1.92 1.74 4; 0.61 0.12 1.92 1.74 -3; -0.59 1.13 0.79 0.54 30; 0.58 1.18 0.79 0.54 -20; 0 1.3 0.17 0.16 0"
+        m_vFootMin -1.98 0 -0.88
+        m_vFootMax 2 0 1.72
+        m_sFoot "-0.99 0.02 1.92 1.74 2; 1.01 0.12 1.92 1.74 -2; -0.99 1.28 0.79 0.54 30; 0.98 1.33 0.79 0.54 -20; 0 1.1 0.17 0.16 0"
         m_iTier 5
         m_eZone SLEEP
         m_sRules "by use:Sleep 6; away FirePit|FireBarrel|CookPot|FieldKitchen 4; flat 5; soil"
@@ -2661,10 +2672,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse NONE
         m_iSeats 1
         m_vFootMin -2.3 0 -1.25
-        m_vFootMax 2.23 0 1.32
-        m_sFoot "-0.03 -0.01 2.49 4.53 90; 1.2 0.9 0.85 0.84 0"
+        m_vFootMax 2.23 0 1.24
+        m_sFoot "-0.03 -0.01 2.49 4.53 90"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{C2612A1E348DB5EC}" {
@@ -2677,6 +2689,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 2.21 0.52 0"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{DA1BF53E9FD8F705}" {
@@ -2689,6 +2702,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0.07 -0.01 2.02 2.27 0"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{CFE3F5629F99186A}" {
@@ -2701,6 +2715,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0.01 0.01 0.82 1.23 90"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{64D443D814F80C91}" {
@@ -2708,9 +2723,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eRole APPROACH
         m_eUse WATCH
         m_iSeats 1
-        m_vFootMin -1.83 0 -1.23
-        m_vFootMax 3.07 0 2.37
-        m_sFoot "-0.83 0.99 2.02 2.27 0; 1.68 0.57 3.45 1.22 -60; 0 0.04 0.71 0.87 175; 0.9 -0.4 0.45 0.33 0; s 0 0.1"
+        m_vFootMin -1.83 0 -0.93
+        m_vFootMax 3.47 0 3.02
+        m_sFoot "-0.83 1.89 2.02 2.27 0; 2.08 0.87 3.45 1.22 -60; 0 0.04 0.71 0.87 175; -0.8 -0.4 0.45 0.33 0; s 0 0.1"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
         m_eLayer LOOKOUT
@@ -2741,9 +2756,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 3
         m_vPlan 8 0 4
         m_fPlanYaw 90
-        m_vFootMin -1.98 0 -0.96
-        m_vFootMax 1.55 0 1.76
-        m_sFoot "0.01 0 1.71 0.91 12; 0.1 1 0.88 1.46 5; 1.1 -0.2 0.47 0.47 260; -1.1 -0.4 0.88 1.46 80; -1.6 1.2 0.76 0.76 0; s 0.1 1; s 1.1 -0.2; s -1.1 -0.4"
+        m_vFootMin -2.18 0 -0.72
+        m_vFootMax 1.62 0 1.88
+        m_sFoot "0.01 0 1.71 0.91 12; 0.21 0.97 0.88 1.46 102; 1.17 -0.25 0.47 0.47 -78; -1.51 0.33 0.88 1.46 12; -1.8 1.5 0.76 0.76 0; s 1.17 -0.24; s 0.1 1; s -1.46 -0.27"
         m_iTier 3
         m_sRules "by FireBarrel|Sofa 7; flat 6"
        }
@@ -2753,9 +2768,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse NONE
         m_iSeats 1
         m_vPlan -8 0 4
-        m_vFootMin -5.1 0 -1.62
+        m_vFootMin -5.5 0 -2.34
         m_vFootMax 4.33 0 2.63
-        m_sFoot "0.72 -0.12 3.06 0.21 6; 2.84 0.91 3.06 0.21 -18; 3.27 0.89 2.02 2.27 0; -2.83 0.51 3.62 2.82 30"
+        m_sFoot "0.72 -0.12 3.06 0.21 6; 2.84 0.91 3.06 0.21 -18; 3.27 -1.21 2.02 2.27 0; -3.23 0.51 3.62 2.82 30"
         m_iTier 1
         m_eZone WIRE
         m_sRules "faces out"
@@ -2769,7 +2784,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_fPlanYaw 15
         m_vFootMin -1.88 0 -1.51
         m_vFootMax 1.56 0 1.69
-        m_sFoot "-0.51 -0.29 0.82 1.23 8; 0.9 0.6 0.88 1.46 20; -1.3 1.1 1.01 1.01 -10; 0.1 0.9 0.41 0.41 0; -1.4 -1.3 0.43 0.42 0; s -0.6 0.4; s 0.2 -0.9"
+        m_sFoot "-0.51 -0.29 0.82 1.23 8; 0.9 0.6 0.88 1.46 20; -1.3 1.1 1.01 1.01 -10; 0 0.94 0.41 0.41 0; -1.4 -1.3 0.43 0.42 0; s -0.6 0.4; s 0.2 -0.9"
         m_iTier 3
         m_eZone WORK
         m_sRules "wall 3; faces wall"
@@ -2843,9 +2858,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 4
         m_vPlan 2 0 3
         m_fPlanYaw 6
-        m_vFootMin -1.72 0 -1.31
-        m_vFootMax 2.36 0 1.31
-        m_sFoot "0 0.01 1.99 2.38 7; 1.6 0.2 0.88 1.46 95; -1.5 -1.1 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
+        m_vFootMin -1.72 0 -1.81
+        m_vFootMax 2.05 0 1.31
+        m_sFoot "0 0.01 1.99 2.38 7; 1.52 -0.18 0.88 1.46 7; -1.5 -1.6 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
         m_iTier 2
         m_sRules "near CookPot|FieldKitchen|FirePit 8; flat 5; noline"
        }
@@ -2856,9 +2871,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 9 0 -2
         m_fPlanYaw 40
-        m_vFootMin -2.46 0 -1.84
+        m_vFootMin -2.5 0 -1.84
         m_vFootMax 2.1 0 1.75
-        m_sFoot "0.06 0.08 1.47 1.41 0; 0.49 0.01 0.14 0.13 0; -0.26 0.44 0.14 0.13 0; -0.26 -0.42 0.14 0.13 0; 1.4 0.6 1.36 0.41 28; -1.6 0.4 0.88 1.46 82; -1.7 -0.6 0.88 1.46 95; 1.12 -1.37 0.79 0.54 40; s 0.1 1.3"
+        m_sFoot "0.49 0.01 0.14 0.13 0; -0.26 0.44 0.14 0.13 0; -0.26 -0.42 0.14 0.13 0; 1.4 0.6 1.36 0.41 28; -1.72 0.4 0.88 1.46 82; -1.7 -0.6 0.88 1.46 95; 1.12 -1.37 0.79 0.54 40; 0.06 0.08 1.47 1.41 0; s 0.1 1.3"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "door side 4; away Latrine 15; away use:Sleep 6; flat 6"
@@ -2928,7 +2943,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vPlan 6 0 -9
         m_vFootMin -0.81 0 -0.38
         m_vFootMax 1.08 0 1.45
-        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.6 0.6 0.43 0.42 0; 0.4 0.8 0.43 0.42 0; s 0 1"
+        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.59 0 0.43 0.42 0; 0.72 0.82 0.43 0.42 0; s 0 1"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "near CookPot|FieldKitchen 5; kind well 25; flat 6"
@@ -2940,9 +2955,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 3 0 -11
         m_fPlanYaw 10
-        m_vFootMin -0.81 0 -0.21
-        m_vFootMax 0.59 0 1.65
-        m_sFoot "-0.01 0.01 0.14 0.13 0; 0.1 0.55 0.88 1.46 4; -0.6 0.7 0.43 0.42 0; s 0.05 1.2"
+        m_vFootMin -1.46 0 -0.06
+        m_vFootMax 0.72 0 1.81
+        m_sFoot "-0.01 0.01 0.14 0.13 0; -0.01 0.51 0.88 1.46 90; -1.25 0.51 0.43 0.42 90; s -0.01 1.36"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "near WaterBarrel 3; flat 6"
@@ -2968,9 +2983,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -16 0 -6
         m_fPlanYaw 80
-        m_vFootMin -2.31 0 -2.84
-        m_vFootMax 2.71 0 2.01
-        m_sFoot "-0.98 0.13 2.55 2.28 3; 0.6 0.33 2.55 2.28 -4; 2.01 1.13 0.79 0.54 30; 2.33 0.61 0.79 0.54 75; 1.56 -1.92 0.87 2.16 60; -0.2 1.8 0.43 0.42 0; s -0.2 1.5"
+        m_vFootMin -2.75 0 -3.54
+        m_vFootMax 3.99 0 2.25
+        m_sFoot "-1.43 0.13 2.55 2.28 2; 1.46 0.23 2.55 2.28 -2; 3.45 1.03 0.79 0.54 30; 3.63 0.31 0.79 0.54 75; 0.16 -2.62 0.87 2.16 60; -0.1 1.9 0.43 0.42 0; s 0.6 1.8"
         m_iTier 4
         m_sRules "soil; flat 4; away gate 10; row"
        }
@@ -2982,8 +2997,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vPlan -8 0 23
         m_fPlanYaw 8
         m_vFootMin -3.41 0 -0.28
-        m_vFootMax 4 0 2.12
-        m_sFoot "1.96 -0.07 4.07 0.22 3; -2.7 0.69 0.99 1.45 20; -0.93 0.99 2.02 2.27 0"
+        m_vFootMax 4 0 2
+        m_sFoot "1.96 -0.07 4.07 0.22 3; -2.7 0.69 0.99 1.45 20; -1 1.2 0.88 1.46 12"
         m_iTier 1
         m_eZone WIRE
         m_sRules "faces out"
@@ -2996,9 +3011,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eAt FRONT
         m_vPlan 14 0 9
         m_fPlanYaw -30
-        m_vFootMin -1.72 0 -1.45
-        m_vFootMax 3.07 0 1.54
-        m_sFoot "0.14 -0.07 2.53 1.3 0; -0.6 -0.2 0.88 1.46 6; 0.6 -0.2 0.88 1.46 -4; 1.89 0.51 1.96 1.48 20; -1.5 0.3 0.43 0.42 0; 0.32 -1.07 0.49 0.56 10; s 0 -1"
+        m_vFootMin -1.82 0 -1.72
+        m_vFootMax 3.17 0 1.94
+        m_sFoot "0.14 -0.07 2.53 1.3 0; -0.6 -0.2 0.88 1.46 6; 0.66 -0.2 0.88 1.46 -4; 1.99 0.91 1.96 1.48 20; -1.6 0.6 0.43 0.42 0; 0.27 -1.23 0.49 0.56 0; s 0.25 -1.27"
         m_iTier 4
         m_eZone COURT
         m_sRules "faces front; flat 5"
@@ -3024,12 +3039,12 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 13.5 0 -9
         m_fPlanYaw 70
-        m_vFootMin -4.97 0 -1.6
-        m_vFootMax 2 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -2.24 0 -1.6
+        m_vFootMax 3.89 0 3.8
+        m_sFoot "-1.53 0.09 1.34 1.22 4; -1.53 1.65 1.34 1.22 -3; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; 2.98 2.64 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot|FieldKitchen 7; flat 6"
+        m_sRules "by CookPot|FieldKitchen|FirePit 8; flat 6"
        }
        RZ_DressingPiece "{48008D204A434F28}" {
         m_sPrefab "{22B8DA94254353A4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FirePit.et"
@@ -3037,11 +3052,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SIT
         m_iSeats 4
         m_vPlan -2 0 -4
-        m_vFootMin -2.6 0 -3.54
-        m_vFootMax 4.68 0 2.27
-        m_sFoot "1.75 0.35 0.34 6.01 74; -1.51 -0.63 0.34 6.01 18; 0.4 -1.8 0.88 1.46 8; -0.58 1.78 0.79 0.54 140; 2.65 -1.32 0.46 0.66 102; 0.9 0.9 0.43 0.42 0; 1.2 -1.1 0.1 0.1 0; -0.18 0.08 1.94 1.41 0; s 1.7 0.4; s -1.5 -0.6; s 0.4 -1.8; s -0.6 1.7"
+        m_vFootMin -2.1 0 -2.53
+        m_vFootMax 2.72 0 1.99
+        m_sFoot "0.06 0.08 1.47 1.41 0; 1.87 0.57 0.47 0.49 -105; -1.65 -0.71 0.47 0.49 65; 0.59 -1.92 0.88 1.46 75; 2.35 -1.32 0.46 0.66 102; 1.3 1.3 0.43 0.42 0; 1 -0.9 0.1 0.1 0; -0.8 1.42 0.96 1.14 0; s 1.88 0.57; s -1.65 -0.72; s 0.59 -1.92; s -0.78 1.53"
         m_iTier 3
-        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot|FieldKitchen 4; flat 6"
+        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot|FieldKitchen 4; flat 6; soil"
        }
        RZ_DressingPiece "{BDFDB55CECE99357}" {
         m_sPrefab "{1893A854370DF417}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Small_Civilian.et"
@@ -3050,9 +3065,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 15.5 0 -16
         m_fPlanYaw -25
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -3064,11 +3079,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 3
         m_vPlan -3 0 -10
         m_fPlanYaw 10
-        m_vFootMin -2.18 0 -0.85
-        m_vFootMax 1.96 0 1.45
-        m_sFoot "0 0 0.88 1.46 14; 0.08 0.97 0.49 0.56 190; 1 -0.3 0.47 0.47 255; -1 -0.4 0.41 0.41 0; 1.89 1.11 0.14 0.13 0; -2.11 1.31 0.14 0.13 0; s 0.1 1; s 1 -0.3; s -1 -0.4"
+        m_vFootMin -2.18 0 -0.81
+        m_vFootMax 1.96 0 1.67
+        m_sFoot "0 0 0.88 1.46 14; 0.7 -0.17 0.49 0.56 -76; 0.33 0.9 0.47 0.47 -166; -0.67 -0.04 0.41 0.41 104; 1.89 1.61 0.14 0.13 0; -2.11 1.31 0.14 0.13 0; s 0.73 -0.19; s 0.33 0.9; s -0.67 -0.04"
         m_iTier 3
-        m_sRules "near FirePit|CookPot|FieldKitchen 8; flat 6"
+        m_sRules "by FirePit|CookPot|FieldKitchen|Table 7; flat 6"
        }
        RZ_DressingPiece "{3C77CFCC11143911}" {
         m_sPrefab "{972C9B0757FDC5B6}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Barricade_Fence.et"
@@ -3078,8 +3093,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vPlan 8 0 23
         m_fPlanYaw -6
         m_vFootMin -3.41 0 -0.28
-        m_vFootMax 4 0 2.12
-        m_sFoot "1.96 -0.07 4.07 0.22 3; -2.7 0.69 0.99 1.45 20; -0.93 0.99 2.02 2.27 0"
+        m_vFootMax 4 0 2
+        m_sFoot "1.96 -0.07 4.07 0.22 3; -2.7 0.69 0.99 1.45 20; -1 1.2 0.88 1.46 12"
         m_iTier 1
         m_eZone WIRE
         m_sRules "faces out"
@@ -3089,11 +3104,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eRole INNER
         m_eUse SLEEP
         m_iSeats 1
-        m_vPlan 8 0 -17
+        m_vPlan 6 0 -15
         m_fPlanYaw 10
-        m_vFootMin -2.8 0 -2.54
-        m_vFootMax 3.71 0 2.9
-        m_sFoot "0 0.01 5.36 3.63 4; 1 2.6 0.47 0.47 200; 2.49 -1.41 1.96 1.48 30; -1.9 -1.8 0.43 0.42 0"
+        m_vFootMin -2.8 0 -2.81
+        m_vFootMax 5.41 0 3
+        m_sFoot "0 0.01 5.36 3.63 4; 1 2.7 0.47 0.47 200; 4.19 -1.21 1.96 1.48 30; -2 -2.6 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil"
@@ -3120,9 +3135,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -20 0 -18
         m_fPlanYaw 130
-        m_vFootMin -1.57 0 -3.06
-        m_vFootMax 3.06 0 1.64
-        m_sFoot "1.53 1.46 3.06 0.21 3; -1.41 -1.53 3.06 0.21 88; -0.6 0.8 0.43 0.42 0; 0.63 0.92 0.79 0.54 70"
+        m_vFootMin -0.21 0 -0.07
+        m_vFootMax 3.06 0 3.2
+        m_sFoot "1.53 0.04 3.06 0.21 0; -0.11 1.67 3.06 0.21 -90; 0.71 1.06 0.82 1.23 0; 0.72 1.05 0.43 0.42 0; 1.93 0.87 0.79 0.54 70"
         m_iTier 3
         m_sRules "away CookPot|FieldKitchen|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"
        }
@@ -3132,9 +3147,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -3145,9 +3160,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -3158,9 +3173,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -3171,9 +3186,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -2.8 0 -2.54
-        m_vFootMax 3.71 0 2.9
-        m_sFoot "0 0.01 5.36 3.63 4; 1 2.6 0.47 0.47 200; 2.49 -1.41 1.96 1.48 30; -1.9 -1.8 0.43 0.42 0"
+        m_vFootMin -2.8 0 -2.81
+        m_vFootMax 5.41 0 3
+        m_sFoot "0 0.01 5.36 3.63 4; 1 2.7 0.47 0.47 200; 4.19 -1.21 1.96 1.48 30; -2 -2.6 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil"
@@ -3184,9 +3199,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.61 0 -0.91
-        m_vFootMax 1.61 0 1.57
-        m_sFoot "-0.59 0.02 1.92 1.74 4; 0.61 0.12 1.92 1.74 -3; -0.59 1.13 0.79 0.54 30; 0.58 1.18 0.79 0.54 -20; 0 1.3 0.17 0.16 0"
+        m_vFootMin -1.98 0 -0.88
+        m_vFootMax 2 0 1.72
+        m_sFoot "-0.99 0.02 1.92 1.74 2; 1.01 0.12 1.92 1.74 -2; -0.99 1.28 0.79 0.54 30; 0.98 1.33 0.79 0.54 -20; 0 1.1 0.17 0.16 0"
         m_iTier 5
         m_eZone SLEEP
         m_sRules "by use:Sleep 6; away FirePit|FireBarrel|CookPot|FieldKitchen 4; flat 5; soil"
@@ -3197,9 +3212,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse WORK
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -2.31 0 -2.84
-        m_vFootMax 2.71 0 2.01
-        m_sFoot "-0.98 0.13 2.55 2.28 3; 0.6 0.33 2.55 2.28 -4; 2.01 1.13 0.79 0.54 30; 2.33 0.61 0.79 0.54 75; 1.56 -1.92 0.87 2.16 60; -0.2 1.8 0.43 0.42 0; s -0.2 1.5"
+        m_vFootMin -2.75 0 -3.54
+        m_vFootMax 3.99 0 2.25
+        m_sFoot "-1.43 0.13 2.55 2.28 2; 1.46 0.23 2.55 2.28 -2; 3.45 1.03 0.79 0.54 30; 3.63 0.31 0.79 0.54 75; 0.16 -2.62 0.87 2.16 60; -0.1 1.9 0.43 0.42 0; s 0.6 1.8"
         m_iTier 4
         m_sRules "soil; flat 4; away gate 10; row"
        }
@@ -3209,9 +3224,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse WORK
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -2.31 0 -2.84
-        m_vFootMax 2.71 0 2.01
-        m_sFoot "-0.98 0.13 2.55 2.28 3; 0.6 0.33 2.55 2.28 -4; 2.01 1.13 0.79 0.54 30; 2.33 0.61 0.79 0.54 75; 1.56 -1.92 0.87 2.16 60; -0.2 1.8 0.43 0.42 0; s -0.2 1.5"
+        m_vFootMin -2.75 0 -3.54
+        m_vFootMax 3.99 0 2.25
+        m_sFoot "-1.43 0.13 2.55 2.28 2; 1.46 0.23 2.55 2.28 -2; 3.45 1.03 0.79 0.54 30; 3.63 0.31 0.79 0.54 75; 0.16 -2.62 0.87 2.16 60; -0.1 1.9 0.43 0.42 0; s 0.6 1.8"
         m_iTier 4
         m_sRules "soil; flat 4; away gate 10; row"
        }
@@ -3221,9 +3236,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse WORK
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -2.31 0 -2.84
-        m_vFootMax 2.71 0 2.01
-        m_sFoot "-0.98 0.13 2.55 2.28 3; 0.6 0.33 2.55 2.28 -4; 2.01 1.13 0.79 0.54 30; 2.33 0.61 0.79 0.54 75; 1.56 -1.92 0.87 2.16 60; -0.2 1.8 0.43 0.42 0; s -0.2 1.5"
+        m_vFootMin -2.75 0 -3.54
+        m_vFootMax 3.99 0 2.25
+        m_sFoot "-1.43 0.13 2.55 2.28 2; 1.46 0.23 2.55 2.28 -2; 3.45 1.03 0.79 0.54 30; 3.63 0.31 0.79 0.54 75; 0.16 -2.62 0.87 2.16 60; -0.1 1.9 0.43 0.42 0; s 0.6 1.8"
         m_iTier 4
         m_sRules "soil; flat 4; away gate 10; row"
        }
@@ -3247,7 +3262,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_bExtra 1
         m_vFootMin -0.81 0 -0.38
         m_vFootMax 1.08 0 1.45
-        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.6 0.6 0.43 0.42 0; 0.4 0.8 0.43 0.42 0; s 0 1"
+        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.59 0 0.43 0.42 0; 0.72 0.82 0.43 0.42 0; s 0 1"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "near CookPot|FieldKitchen 5; kind well 25; flat 6"
@@ -3260,7 +3275,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_bExtra 1
         m_vFootMin -0.81 0 -0.38
         m_vFootMax 1.08 0 1.45
-        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.6 0.6 0.43 0.42 0; 0.4 0.8 0.43 0.42 0; s 0 1"
+        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.59 0 0.43 0.42 0; 0.72 0.82 0.43 0.42 0; s 0 1"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "near CookPot|FieldKitchen 5; kind well 25; flat 6"
@@ -3284,12 +3299,12 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse CHOP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -4.97 0 -1.6
-        m_vFootMax 2 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -2.24 0 -1.6
+        m_vFootMax 3.89 0 3.8
+        m_sFoot "-1.53 0.09 1.34 1.22 4; -1.53 1.65 1.34 1.22 -3; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; 2.98 2.64 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot|FieldKitchen 7; flat 6"
+        m_sRules "by CookPot|FieldKitchen|FirePit 8; flat 6"
        }
        RZ_DressingPiece "{6EC79DEACF99F26C}" {
         m_sPrefab "{0AA08FC6D5A6FF79}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Firewood.et"
@@ -3298,12 +3313,12 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen SUPPLIED
-        m_vFootMin -4.97 0 -1.6
-        m_vFootMax 2 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -2.24 0 -1.6
+        m_vFootMax 3.89 0 3.8
+        m_sFoot "-1.53 0.09 1.34 1.22 4; -1.53 1.65 1.34 1.22 -3; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; 2.98 2.64 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot|FieldKitchen 7; flat 6"
+        m_sRules "by CookPot|FieldKitchen|FirePit 8; flat 6"
        }
        RZ_DressingPiece "{53F8A771AF40B142}" {
         m_sPrefab "{5AAE19ADE6DFD2F7}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CrateChairs.et"
@@ -3311,11 +3326,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SIT
         m_iSeats 3
         m_bExtra 1
-        m_vFootMin -2.18 0 -0.85
-        m_vFootMax 1.96 0 1.45
-        m_sFoot "0 0 0.88 1.46 14; 0.08 0.97 0.49 0.56 190; 1 -0.3 0.47 0.47 255; -1 -0.4 0.41 0.41 0; 1.89 1.11 0.14 0.13 0; -2.11 1.31 0.14 0.13 0; s 0.1 1; s 1 -0.3; s -1 -0.4"
+        m_vFootMin -2.18 0 -0.81
+        m_vFootMax 1.96 0 1.67
+        m_sFoot "0 0 0.88 1.46 14; 0.7 -0.17 0.49 0.56 -76; 0.33 0.9 0.47 0.47 -166; -0.67 -0.04 0.41 0.41 104; 1.89 1.61 0.14 0.13 0; -2.11 1.31 0.14 0.13 0; s 0.73 -0.19; s 0.33 0.9; s -0.67 -0.04"
         m_iTier 3
-        m_sRules "near FirePit|CookPot|FieldKitchen 8; flat 6"
+        m_sRules "by FirePit|CookPot|FieldKitchen|Table 7; flat 6"
        }
        RZ_DressingPiece "{45A7CD86A38D3B9E}" {
         m_sPrefab "{5AAE19ADE6DFD2F7}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CrateChairs.et"
@@ -3323,11 +3338,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SIT
         m_iSeats 3
         m_bExtra 1
-        m_vFootMin -2.18 0 -0.85
-        m_vFootMax 1.96 0 1.45
-        m_sFoot "0 0 0.88 1.46 14; 0.08 0.97 0.49 0.56 190; 1 -0.3 0.47 0.47 255; -1 -0.4 0.41 0.41 0; 1.89 1.11 0.14 0.13 0; -2.11 1.31 0.14 0.13 0; s 0.1 1; s 1 -0.3; s -1 -0.4"
+        m_vFootMin -2.18 0 -0.81
+        m_vFootMax 1.96 0 1.67
+        m_sFoot "0 0 0.88 1.46 14; 0.7 -0.17 0.49 0.56 -76; 0.33 0.9 0.47 0.47 -166; -0.67 -0.04 0.41 0.41 104; 1.89 1.61 0.14 0.13 0; -2.11 1.31 0.14 0.13 0; s 0.73 -0.19; s 0.33 0.9; s -0.67 -0.04"
         m_iTier 3
-        m_sRules "near FirePit|CookPot|FieldKitchen 8; flat 6"
+        m_sRules "by FirePit|CookPot|FieldKitchen|Table 7; flat 6"
        }
        RZ_DressingPiece "{3A94846A2C62641E}" {
         m_sPrefab "{A3F1F7AEE36A81E4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CrateStack.et"
@@ -3500,6 +3515,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 1.01 1.01 4"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{2BF8F88473872392}" {
@@ -3512,6 +3528,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-1.24 -0.01 2.27 4.57 90; 1.9 0 1.01 1.01 5; 3 0.1 1.01 1.01 -4"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer BLOCK
        }
        RZ_DressingPiece "{521689512963F253}" {
@@ -3520,10 +3537,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse NONE
         m_iSeats 1
         m_vFootMin -2 0 -1.3
-        m_vFootMax 2.04 0 0.04
-        m_sFoot "0.02 -0.03 4.04 0.13 0; -0.8 -0.75 1.01 1.01 6; 0.6 -0.75 1.01 1.01 -5"
+        m_vFootMax 2.04 0 -0.07
+        m_sFoot "0.02 -0.14 4.04 0.13 0; -0.8 -0.75 1.01 1.01 6; 0.6 -0.75 1.01 1.01 -5"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer BLOCK
        }
        RZ_DressingPiece "{6214C88B0D97E36C}" {
@@ -3536,6 +3554,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-0.52 0 1.01 1.01 4; 0.52 0 1.01 1.01 -3"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer BLOCK
        }
        RZ_DressingPiece "{11933B8330F92F0D}" {
@@ -3625,9 +3644,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 4
         m_vPlan 2 0 2
         m_fPlanYaw 6
-        m_vFootMin -1.72 0 -1.31
-        m_vFootMax 2.36 0 1.31
-        m_sFoot "0 0.01 1.99 2.38 7; 1.6 0.2 0.88 1.46 95; -1.5 -1.1 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
+        m_vFootMin -1.72 0 -1.81
+        m_vFootMax 2.05 0 1.31
+        m_sFoot "0 0.01 1.99 2.38 7; 1.52 -0.18 0.88 1.46 7; -1.5 -1.6 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
         m_iTier 2
         m_sRules "near CookPot|FieldKitchen|FirePit 8; flat 5; noline"
        }
@@ -3638,9 +3657,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 9 0 -3
         m_fPlanYaw 40
-        m_vFootMin -2.46 0 -1.84
+        m_vFootMin -2.5 0 -1.84
         m_vFootMax 2.1 0 1.75
-        m_sFoot "0.06 0.08 1.47 1.41 0; 0.49 0.01 0.14 0.13 0; -0.26 0.44 0.14 0.13 0; -0.26 -0.42 0.14 0.13 0; 1.4 0.6 1.36 0.41 28; -1.6 0.4 0.88 1.46 82; -1.7 -0.6 0.88 1.46 95; 1.12 -1.37 0.79 0.54 40; s 0.1 1.3"
+        m_sFoot "0.49 0.01 0.14 0.13 0; -0.26 0.44 0.14 0.13 0; -0.26 -0.42 0.14 0.13 0; 1.4 0.6 1.36 0.41 28; -1.72 0.4 0.88 1.46 82; -1.7 -0.6 0.88 1.46 95; 1.12 -1.37 0.79 0.54 40; 0.06 0.08 1.47 1.41 0; s 0.1 1.3"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "door side 4; away Latrine 15; away use:Sleep 6; flat 6"
@@ -3653,7 +3672,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vPlan 5 0 -9
         m_vFootMin -0.81 0 -0.38
         m_vFootMax 1.08 0 1.45
-        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.6 0.6 0.43 0.42 0; 0.4 0.8 0.43 0.42 0; s 0 1"
+        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.59 0 0.43 0.42 0; 0.72 0.82 0.43 0.42 0; s 0 1"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "near CookPot|FieldKitchen 5; kind well 25; flat 6"
@@ -3693,9 +3712,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 2 0 -11
         m_fPlanYaw 10
-        m_vFootMin -0.81 0 -0.21
-        m_vFootMax 0.59 0 1.65
-        m_sFoot "-0.01 0.01 0.14 0.13 0; 0.1 0.55 0.88 1.46 4; -0.6 0.7 0.43 0.42 0; s 0.05 1.2"
+        m_vFootMin -1.46 0 -0.06
+        m_vFootMax 0.72 0 1.81
+        m_sFoot "-0.01 0.01 0.14 0.13 0; -0.01 0.51 0.88 1.46 90; -1.25 0.51 0.43 0.42 90; s -0.01 1.36"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "near WaterBarrel 3; flat 6"
@@ -3721,9 +3740,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -13 0 -4
         m_fPlanYaw 80
-        m_vFootMin -2.31 0 -2.84
-        m_vFootMax 2.71 0 2.01
-        m_sFoot "-0.98 0.13 2.55 2.28 3; 0.6 0.33 2.55 2.28 -4; 2.01 1.13 0.79 0.54 30; 2.33 0.61 0.79 0.54 75; 1.56 -1.92 0.87 2.16 60; -0.2 1.8 0.43 0.42 0; s -0.2 1.5"
+        m_vFootMin -2.75 0 -3.54
+        m_vFootMax 3.99 0 2.25
+        m_sFoot "-1.43 0.13 2.55 2.28 2; 1.46 0.23 2.55 2.28 -2; 3.45 1.03 0.79 0.54 30; 3.63 0.31 0.79 0.54 75; 0.16 -2.62 0.87 2.16 60; -0.1 1.9 0.43 0.42 0; s 0.6 1.8"
         m_iTier 4
         m_sRules "soil; flat 4; away gate 10; row"
        }
@@ -3749,12 +3768,12 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 12.5 0 -10.5
         m_fPlanYaw 70
-        m_vFootMin -4.97 0 -1.6
-        m_vFootMax 2 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -2.24 0 -1.6
+        m_vFootMax 3.89 0 3.8
+        m_sFoot "-1.53 0.09 1.34 1.22 4; -1.53 1.65 1.34 1.22 -3; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; 2.98 2.64 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot|FieldKitchen 7; flat 6"
+        m_sRules "by CookPot|FieldKitchen|FirePit 8; flat 6"
        }
        RZ_DressingPiece "{D1B187ED313FA9C4}" {
         m_sPrefab "{972C9B0757FDC5B6}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Barricade_Fence.et"
@@ -3764,8 +3783,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vPlan -7 0 19
         m_fPlanYaw 8
         m_vFootMin -3.41 0 -0.28
-        m_vFootMax 4 0 2.12
-        m_sFoot "1.96 -0.07 4.07 0.22 3; -2.7 0.69 0.99 1.45 20; -0.93 0.99 2.02 2.27 0"
+        m_vFootMax 4 0 2
+        m_sFoot "1.96 -0.07 4.07 0.22 3; -2.7 0.69 0.99 1.45 20; -1 1.2 0.88 1.46 12"
         m_iTier 1
         m_eZone WIRE
         m_sRules "faces out"
@@ -3777,9 +3796,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 14.5 0 -17.5
         m_fPlanYaw -25
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -3804,9 +3823,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SLEEP
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -1.91 0 -2.19
-        m_vFootMax 1.86 0 2.19
-        m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
+        m_vFootMin -2.81 0 -2.19
+        m_vFootMax 2.46 0 2.19
+        m_sFoot "0 0 2.22 4.17 -6; 2.02 0.92 0.79 0.54 60; -2.2 1 0.88 1.46 15; 1.8 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
         m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; soil; noline"
@@ -3817,9 +3836,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse WORK
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -2.31 0 -2.84
-        m_vFootMax 2.71 0 2.01
-        m_sFoot "-0.98 0.13 2.55 2.28 3; 0.6 0.33 2.55 2.28 -4; 2.01 1.13 0.79 0.54 30; 2.33 0.61 0.79 0.54 75; 1.56 -1.92 0.87 2.16 60; -0.2 1.8 0.43 0.42 0; s -0.2 1.5"
+        m_vFootMin -2.75 0 -3.54
+        m_vFootMax 3.99 0 2.25
+        m_sFoot "-1.43 0.13 2.55 2.28 2; 1.46 0.23 2.55 2.28 -2; 3.45 1.03 0.79 0.54 30; 3.63 0.31 0.79 0.54 75; 0.16 -2.62 0.87 2.16 60; -0.1 1.9 0.43 0.42 0; s 0.6 1.8"
         m_iTier 4
         m_sRules "soil; flat 4; away gate 10; row"
        }
@@ -3829,9 +3848,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse WORK
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -2.31 0 -2.84
-        m_vFootMax 2.71 0 2.01
-        m_sFoot "-0.98 0.13 2.55 2.28 3; 0.6 0.33 2.55 2.28 -4; 2.01 1.13 0.79 0.54 30; 2.33 0.61 0.79 0.54 75; 1.56 -1.92 0.87 2.16 60; -0.2 1.8 0.43 0.42 0; s -0.2 1.5"
+        m_vFootMin -2.75 0 -3.54
+        m_vFootMax 3.99 0 2.25
+        m_sFoot "-1.43 0.13 2.55 2.28 2; 1.46 0.23 2.55 2.28 -2; 3.45 1.03 0.79 0.54 30; 3.63 0.31 0.79 0.54 75; 0.16 -2.62 0.87 2.16 60; -0.1 1.9 0.43 0.42 0; s 0.6 1.8"
         m_iTier 4
         m_sRules "soil; flat 4; away gate 10; row"
        }
@@ -3843,7 +3862,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_bExtra 1
         m_vFootMin -0.81 0 -0.38
         m_vFootMax 1.08 0 1.45
-        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.6 0.6 0.43 0.42 0; 0.4 0.8 0.43 0.42 0; s 0 1"
+        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.59 0 0.43 0.42 0; 0.72 0.82 0.43 0.42 0; s 0 1"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "near CookPot|FieldKitchen 5; kind well 25; flat 6"
@@ -3855,12 +3874,12 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen SUPPLIED
-        m_vFootMin -4.97 0 -1.6
-        m_vFootMax 2 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -2.24 0 -1.6
+        m_vFootMax 3.89 0 3.8
+        m_sFoot "-1.53 0.09 1.34 1.22 4; -1.53 1.65 1.34 1.22 -3; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; 2.98 2.64 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot|FieldKitchen 7; flat 6"
+        m_sRules "by CookPot|FieldKitchen|FirePit 8; flat 6"
        }
        RZ_DressingPiece "{23C9EC96D9C20F70}" {
         m_sPrefab "{A3F1F7AEE36A81E4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CrateStack.et"
@@ -3981,6 +4000,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 1.01 1.01 4"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{F8AD34E601B7D487}" {
@@ -4047,9 +4067,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 4
         m_vPlan 2 0 2
         m_fPlanYaw 6
-        m_vFootMin -1.72 0 -1.31
-        m_vFootMax 2.36 0 1.31
-        m_sFoot "0 0.01 1.99 2.38 7; 1.6 0.2 0.88 1.46 95; -1.5 -1.1 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
+        m_vFootMin -1.72 0 -1.81
+        m_vFootMax 2.05 0 1.31
+        m_sFoot "0 0.01 1.99 2.38 7; 1.52 -0.18 0.88 1.46 7; -1.5 -1.6 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
         m_iTier 2
         m_sRules "near CookPot|FieldKitchen|FirePit 8; flat 5; noline"
        }
@@ -4060,9 +4080,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 8 0 -2
         m_fPlanYaw 40
-        m_vFootMin -2.46 0 -1.84
+        m_vFootMin -2.5 0 -1.84
         m_vFootMax 2.1 0 1.75
-        m_sFoot "0.06 0.08 1.47 1.41 0; 0.49 0.01 0.14 0.13 0; -0.26 0.44 0.14 0.13 0; -0.26 -0.42 0.14 0.13 0; 1.4 0.6 1.36 0.41 28; -1.6 0.4 0.88 1.46 82; -1.7 -0.6 0.88 1.46 95; 1.12 -1.37 0.79 0.54 40; s 0.1 1.3"
+        m_sFoot "0.49 0.01 0.14 0.13 0; -0.26 0.44 0.14 0.13 0; -0.26 -0.42 0.14 0.13 0; 1.4 0.6 1.36 0.41 28; -1.72 0.4 0.88 1.46 82; -1.7 -0.6 0.88 1.46 95; 1.12 -1.37 0.79 0.54 40; 0.06 0.08 1.47 1.41 0; s 0.1 1.3"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "door side 4; away Latrine 15; away use:Sleep 6; flat 6"
@@ -4075,7 +4095,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vPlan 5 0 -8
         m_vFootMin -0.81 0 -0.38
         m_vFootMax 1.08 0 1.45
-        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.6 0.6 0.43 0.42 0; 0.4 0.8 0.43 0.42 0; s 0 1"
+        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.59 0 0.43 0.42 0; 0.72 0.82 0.43 0.42 0; s 0 1"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "near CookPot|FieldKitchen 5; kind well 25; flat 6"
@@ -4115,9 +4135,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -11 0 -2
         m_fPlanYaw 80
-        m_vFootMin -2.31 0 -2.84
-        m_vFootMax 2.71 0 2.01
-        m_sFoot "-0.98 0.13 2.55 2.28 3; 0.6 0.33 2.55 2.28 -4; 2.01 1.13 0.79 0.54 30; 2.33 0.61 0.79 0.54 75; 1.56 -1.92 0.87 2.16 60; -0.2 1.8 0.43 0.42 0; s -0.2 1.5"
+        m_vFootMin -2.75 0 -3.54
+        m_vFootMax 3.99 0 2.25
+        m_sFoot "-1.43 0.13 2.55 2.28 2; 1.46 0.23 2.55 2.28 -2; 3.45 1.03 0.79 0.54 30; 3.63 0.31 0.79 0.54 75; 0.16 -2.62 0.87 2.16 60; -0.1 1.9 0.43 0.42 0; s 0.6 1.8"
         m_iTier 4
         m_sRules "soil; flat 4; away gate 10; row"
        }
@@ -4128,12 +4148,12 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 11.5 0 -9.5
         m_fPlanYaw 70
-        m_vFootMin -4.97 0 -1.6
-        m_vFootMax 2 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -2.24 0 -1.6
+        m_vFootMax 3.89 0 3.8
+        m_sFoot "-1.53 0.09 1.34 1.22 4; -1.53 1.65 1.34 1.22 -3; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; 2.98 2.64 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot|FieldKitchen 7; flat 6"
+        m_sRules "by CookPot|FieldKitchen|FirePit 8; flat 6"
        }
        RZ_DressingPiece "{BB33FED90A03CAA5}" {
         m_sPrefab "{54693ACA3D1C3A9F}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Garden.et"
@@ -4141,9 +4161,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse WORK
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -2.31 0 -2.84
-        m_vFootMax 2.71 0 2.01
-        m_sFoot "-0.98 0.13 2.55 2.28 3; 0.6 0.33 2.55 2.28 -4; 2.01 1.13 0.79 0.54 30; 2.33 0.61 0.79 0.54 75; 1.56 -1.92 0.87 2.16 60; -0.2 1.8 0.43 0.42 0; s -0.2 1.5"
+        m_vFootMin -2.75 0 -3.54
+        m_vFootMax 3.99 0 2.25
+        m_sFoot "-1.43 0.13 2.55 2.28 2; 1.46 0.23 2.55 2.28 -2; 3.45 1.03 0.79 0.54 30; 3.63 0.31 0.79 0.54 75; 0.16 -2.62 0.87 2.16 60; -0.1 1.9 0.43 0.42 0; s 0.6 1.8"
         m_iTier 4
         m_sRules "soil; flat 4; away gate 10; row"
        }
@@ -4155,7 +4175,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_bExtra 1
         m_vFootMin -0.81 0 -0.38
         m_vFootMax 1.08 0 1.45
-        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.6 0.6 0.43 0.42 0; 0.4 0.8 0.43 0.42 0; s 0 1"
+        m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.59 0 0.43 0.42 0; 0.72 0.82 0.43 0.42 0; s 0 1"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "near CookPot|FieldKitchen 5; kind well 25; flat 6"
@@ -4167,12 +4187,12 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen SUPPLIED
-        m_vFootMin -4.97 0 -1.6
-        m_vFootMax 2 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -2.24 0 -1.6
+        m_vFootMax 3.89 0 3.8
+        m_sFoot "-1.53 0.09 1.34 1.22 4; -1.53 1.65 1.34 1.22 -3; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; 2.98 2.64 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot|FieldKitchen 7; flat 6"
+        m_sRules "by CookPot|FieldKitchen|FirePit 8; flat 6"
        }
        RZ_DressingPiece "{C845B4A0FBBF6F2A}" {
         m_sPrefab "{A3F1F7AEE36A81E4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CrateStack.et"
@@ -4253,6 +4273,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 1.01 1.01 4"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{6869A92F98991004}" {
@@ -4315,9 +4336,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse WATCH
         m_iSeats 2
         m_vPlan 0 0 26
-        m_vFootMin -1.76 0 -0.45
+        m_vFootMin -1.76 0 -0.44
         m_vFootMax 2.39 0 1.72
-        m_sFoot "-0.04 1.11 3.45 1.22 0; -0.5 0.1 0.41 0.41 0; 0.6 0 0.41 0.41 0; 1.6 0.3 0.88 1.46 80; s -0.5 0.1; s 0.6 0"
+        m_sFoot "-0.04 1.11 3.45 1.22 0; -0.5 0.03 0.41 0.41 0; 0.68 0.01 0.41 0.41 0; 1.6 0.3 0.88 1.46 80; s -0.5 0.03; s 0.68 0.01"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3"
        }
@@ -4342,9 +4363,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_eAt GATE
         m_vPlan 0 0 22
-        m_vFootMin -0.88 0 -0.23
-        m_vFootMax 1.96 0 1.44
-        m_sFoot "-0.81 0.01 0.14 0.13 0; 0.79 0.06 0.14 0.13 0; 1.3 0.6 0.88 1.46 20"
+        m_vFootMin -0.73 0 -1.32
+        m_vFootMax 0.73 0 0.05
+        m_sFoot "0 0 0.7 0.09 0; 0 -0.88 0.88 1.46 90"
         m_iTier 4
         m_eZone GATE
         m_sRules "faces road; flat 8"
@@ -4356,9 +4377,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_eAt GATE
         m_vPlan 14 0 17
-        m_vFootMin -2.21 0 -1.35
-        m_vFootMax 2.47 0 1.16
-        m_sFoot "0 0 1.31 0.79 0; -0.5 -0.9 0.41 0.41 0; 0.6 0.95 0.41 0.41 0; 1.9 0.2 1.01 1.01 8; -1.9 0.6 1.07 0.43 80; -1.77 -0.62 0.54 0.52 0; 1.1 -0.89 0.41 0.47 0; s -0.5 -0.9"
+        m_vFootMin -2.21 0 -1.18
+        m_vFootMax 2.33 0 1.16
+        m_sFoot "0 0 1.31 0.79 0; 0.43 -0.7 0.41 0.41 0; -0.6 0.7 0.41 0.41 -180; 1.76 0 1.01 1.01 8; -1.9 0.6 1.07 0.43 80; -1.77 -0.62 0.54 0.52 0; 1.09 -0.94 0.41 0.47 0; s 0.43 -0.7"
         m_iTier 3
         m_eZone GATE
         m_sRules "faces road; flat 6"
@@ -4384,9 +4405,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 2
         m_vPlan -2 0 4
         m_fPlanYaw 3
-        m_vFootMin -0.65 0 -1.25
-        m_vFootMax 2.24 0 1.25
-        m_sFoot "0 0 1.31 0.79 0; 0.1 0.8 0.41 0.41 0; -0.2 -0.8 0.41 0.41 0; 1.7 -0.1 1.01 1.01 4; s 0.1 0.8; s -0.2 -0.8"
+        m_vFootMin -0.65 0 -1.16
+        m_vFootMax 1.72 0 1.15
+        m_sFoot "0 0 1.31 0.79 0; 0.1 0.7 0.41 0.41 -180; 0.18 -0.71 0.41 0.41 0; 1.18 0 1.01 1.01 4; s 0.1 0.7; s 0.18 -0.71"
         m_iTier 3
         m_eZone WORK
         m_sRules "wall 4; faces in; flat 5"
@@ -4413,9 +4434,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 2
         m_vPlan 3.5 0 3
         m_fPlanYaw -8
-        m_vFootMin -0.65 0 -1.25
-        m_vFootMax 2.24 0 1.25
-        m_sFoot "0 0 1.31 0.79 0; 0.1 0.8 0.41 0.41 0; -0.2 -0.8 0.41 0.41 0; 1.7 -0.1 1.01 1.01 4; s 0.1 0.8; s -0.2 -0.8"
+        m_vFootMin -0.65 0 -1.16
+        m_vFootMax 1.72 0 1.15
+        m_sFoot "0 0 1.31 0.79 0; 0.1 0.7 0.41 0.41 -180; 0.18 -0.71 0.41 0.41 0; 1.18 0 1.01 1.01 4; s 0.1 0.7; s 0.18 -0.71"
         m_iTier 3
         m_eZone WORK
         m_sRules "wall 4; faces in; flat 5"
@@ -4427,9 +4448,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse NONE
         m_iSeats 1
         m_vPlan -17 0 6
-        m_vFootMin -0.08 0 -0.64
+        m_vFootMin -0.04 0 -0.64
         m_vFootMax 1.41 0 1.05
-        m_sFoot "-0.01 0.01 0.14 0.13 0; 0.7 0.2 0.88 1.46 25"
+        m_sFoot "0.02 -0.01 0.14 0.13 0; 0.7 0.2 0.88 1.46 25"
         m_iTier 4
         m_sRules "flat 8"
        }
@@ -4441,9 +4462,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eAt DOOR
         m_vPlan -8 0 -9
         m_fPlanYaw 10
-        m_vFootMin -1.42 0 -3.26
-        m_vFootMax 1.38 0 2.78
-        m_sFoot "-0.01 0.01 0.82 1.23 0; 0 0 2.2 2.2 0; 0.79 -1.73 3.06 0.21 90; -0.71 -1.73 3.06 0.21 90; -1.2 1.1 0.43 0.42 0; 0.2 1.69 2.22 2.03 4; s 0 0"
+        m_vFootMin -1.66 0 -3.26
+        m_vFootMax 1.38 0 3.58
+        m_sFoot "-0.01 0.01 0.82 1.23 0; 0 0 2.2 2.2 0; 0.79 -1.73 3.06 0.21 90; -0.71 -1.73 3.06 0.21 90; -1.45 1.29 0.43 0.42 0; 0.2 2.49 2.22 2.03 4; s 0 0"
         m_iTier 2
         m_eZone COURT
         m_sRules "door front 3; faces out"
@@ -4483,9 +4504,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 2
         m_vPlan 7 0 -7
         m_fPlanYaw -15
-        m_vFootMin -0.75 0 -1.28
-        m_vFootMax 1.69 0 1.05
-        m_sFoot "0 -0.3 1.31 0.79 0; 0.3 -0.35 0.88 1.46 2; 1.6 -1.2 0.17 0.16 0; s -0.3 0.6; s 0.6 0.6"
+        m_vFootMin -0.75 0 -1.04
+        m_vFootMax 1.76 0 1.05
+        m_sFoot "-0.07 -0.3 1.31 0.79 0; 1.3 -0.3 0.88 1.46 2; s -0.3 0.6; s 0.6 0.6"
         m_iTier 2
         m_eZone WORK
         m_sRules "guarded; flat 5"
@@ -4499,7 +4520,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vPlan 16 0 3
         m_vFootMin -3.8 0 -2.2
         m_vFootMax 3.8 0 4.39
-        m_sFoot "0 1.09 7.6 6.58 0; 1 0.6 0.88 1.46 15; 1.1 1.3 0.41 0.41 0; s 1.1 1.3"
+        m_sFoot "0 1.09 7.6 6.58 0; 1 0.6 0.88 1.46 15; 1.62 0.44 0.41 0.41 -75; s 1.62 0.44"
         m_iTier 4
         m_sRules "high"
        }
@@ -4511,8 +4532,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vPlan -7 0 21
         m_fPlanYaw 3
         m_vFootMin -3.41 0 -0.28
-        m_vFootMax 4 0 2.12
-        m_sFoot "1.96 -0.07 4.07 0.22 3; -2.7 0.69 0.99 1.45 20; -0.93 0.99 2.02 2.27 0"
+        m_vFootMax 4 0 2
+        m_sFoot "1.96 -0.07 4.07 0.22 3; -2.7 0.69 0.99 1.45 20; -1 1.2 0.88 1.46 12"
         m_iTier 1
         m_eZone WIRE
         m_sRules "faces out"
@@ -4525,8 +4546,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vPlan 7 0 21
         m_fPlanYaw -3
         m_vFootMin -3.41 0 -0.28
-        m_vFootMax 4 0 2.12
-        m_sFoot "1.96 -0.07 4.07 0.22 3; -2.7 0.69 0.99 1.45 20; -0.93 0.99 2.02 2.27 0"
+        m_vFootMax 4 0 2
+        m_sFoot "1.96 -0.07 4.07 0.22 3; -2.7 0.69 0.99 1.45 20; -1 1.2 0.88 1.46 12"
         m_iTier 1
         m_eZone WIRE
         m_sRules "faces out"
@@ -4553,9 +4574,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 10 0 8
         m_fPlanYaw -20
-        m_vFootMin -1.99 0 -0.96
-        m_vFootMax 0.89 0 1.3
-        m_sFoot "0.01 0 1.71 0.91 -4; 0.04 0.81 0.49 0.56 172; -1.2 -0.4 0.88 1.46 80; s 0.05 0.85"
+        m_vFootMin -2.04 0 -0.86
+        m_vFootMax 0.89 0 1.57
+        m_sFoot "0.01 0 1.71 0.91 -4; -0.07 1.09 0.49 0.56 176; -1.55 -0.11 0.88 1.46 -4; s -0.06 1.12"
         m_iTier 3
         m_eZone WORK
         m_sRules "wall 3; faces in"
@@ -4570,7 +4591,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_fPlanYaw 35
         m_vFootMin -1.88 0 -1.51
         m_vFootMax 1.56 0 1.69
-        m_sFoot "-0.51 -0.29 0.82 1.23 8; 0.9 0.6 0.88 1.46 20; -1.3 1.1 1.01 1.01 -10; 0.1 0.9 0.41 0.41 0; -1.4 -1.3 0.43 0.42 0; s -0.6 0.4; s 0.2 -0.9"
+        m_sFoot "-0.51 -0.29 0.82 1.23 8; 0.9 0.6 0.88 1.46 20; -1.3 1.1 1.01 1.01 -10; 0 0.94 0.41 0.41 0; -1.4 -1.3 0.43 0.42 0; s -0.6 0.4; s 0.2 -0.9"
         m_iTier 3
         m_eZone WORK
         m_sRules "wall 3; faces wall"
@@ -4583,9 +4604,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan -18 0 -16
         m_fPlanYaw 120
-        m_vFootMin -1.57 0 -3.06
-        m_vFootMax 3.06 0 1.64
-        m_sFoot "1.53 1.46 3.06 0.21 3; -1.41 -1.53 3.06 0.21 88; -0.6 0.8 0.43 0.42 0; 0.63 0.92 0.79 0.54 70"
+        m_vFootMin -0.21 0 -0.07
+        m_vFootMax 3.06 0 3.2
+        m_sFoot "1.53 0.04 3.06 0.21 0; -0.11 1.67 3.06 0.21 -90; 0.71 1.06 0.82 1.23 0; 0.72 1.05 0.43 0.42 0; 1.93 0.87 0.79 0.54 70"
         m_iTier 3
         m_sRules "away CookPot|FieldKitchen|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"
        }
@@ -4595,11 +4616,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse SIT
         m_iSeats 3
         m_vPlan -3 0 -2
-        m_vFootMin -2.18 0 -0.85
-        m_vFootMax 1.96 0 1.45
-        m_sFoot "0 0 0.88 1.46 14; 0.08 0.97 0.49 0.56 190; 1 -0.3 0.47 0.47 255; -1 -0.4 0.41 0.41 0; 1.89 1.11 0.14 0.13 0; -2.11 1.31 0.14 0.13 0; s 0.1 1; s 1 -0.3; s -1 -0.4"
+        m_vFootMin -2.18 0 -0.81
+        m_vFootMax 1.96 0 1.67
+        m_sFoot "0 0 0.88 1.46 14; 0.7 -0.17 0.49 0.56 -76; 0.33 0.9 0.47 0.47 -166; -0.67 -0.04 0.41 0.41 104; 1.89 1.61 0.14 0.13 0; -2.11 1.31 0.14 0.13 0; s 0.73 -0.19; s 0.33 0.9; s -0.67 -0.04"
         m_iTier 3
-        m_sRules "near FirePit|CookPot|FieldKitchen 8; flat 6"
+        m_sRules "by FirePit|CookPot|FieldKitchen|Table 7; flat 6"
         m_bIndoors 1
        }
        RZ_DressingPiece "{2513D78B00819E9D}" {
@@ -4609,9 +4630,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 2
         m_vPlan -16 0 -9
         m_fPlanYaw 70
-        m_vFootMin -1.39 0 -1.06
+        m_vFootMin -1.27 0 -1.06
         m_vFootMax 1.45 0 1.04
-        m_sFoot "0 -0.01 2.22 2.03 2; 1.3 0.4 0.1 0.1 0; 1.4 0.2 0.1 0.1 0; -1.3 0.3 0.17 0.16 0; s -0.35 0.3; s 0.35 0.3"
+        m_sFoot "0 -0.01 2.22 2.03 2; 1.3 0.4 0.1 0.1 0; 1.4 0.2 0.1 0.1 0; -1.18 0.3 0.17 0.16 0; s -0.35 0.3; s 0.35 0.3"
         m_iTier 5
         m_sRules "door back 4; faces wall"
        }
@@ -4648,8 +4669,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_vFootMin -2.02 0 -1.17
-        m_vFootMax 1.71 0 1.12
-        m_sFoot "0 0.7 2.31 0.86 0; 0 -0.7 2.31 0.86 2; 1.43 -0.02 0.54 0.52 0; -1.8 0 1.07 0.43 90"
+        m_vFootMax 2 0 1.12
+        m_sFoot "0 0.7 2.31 0.86 0; 0 -0.7 2.31 0.86 2; 1.72 0 0.54 0.52 0; -1.8 0 1.07 0.43 90"
         m_iTier 4
         m_eZone GATE
         m_sRules "by Triage 8; flat 6"
@@ -4690,7 +4711,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_bExtra 1
         m_vFootMin -5.19 0 -3.79
         m_vFootMax 7.31 0 1.75
-        m_sFoot "0 -2.52 2.54 7.34 90; -2.39 -0.01 0.99 1.45 2; -0.79 0.04 0.99 1.45 -3; 0.81 -0.01 0.99 1.45 4; 5.62 -1.6 3.38 1.23 0; -4.4 0.4 0.88 1.46 80; -4.75 -1.6 0.86 1.56 0; 2.66 0.3 1.43 2.31 0; s -4.4 1.3"
+        m_sFoot "0 -2.52 2.54 7.34 90; -2.39 -0.01 0.99 1.45 2; -0.79 0.04 0.99 1.45 -3; 0.81 -0.01 0.99 1.45 4; 5.62 -1.6 3.38 1.23 0; -4.4 0.4 0.88 1.46 80; -4.75 -1.62 0.86 1.52 0; 2.66 0.24 1.42 2.2 0; s -4.4 1.3"
         m_iTier 3
         m_eZone WORK
         m_sRules "wall 12; faces wall; away gate 10; away door 4; flat 5"
@@ -4795,9 +4816,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen SUPPLIED
-        m_vFootMin -1.08 0 -0.91
-        m_vFootMax 1.47 0 1.03
-        m_sFoot "0 0 0.76 0.76 0; 0.7 0.1 0.76 0.76 0; 0.35 0.65 0.76 0.76 0; -0.7 0.3 0.76 0.76 0; 1.3 0.5 0.16 0.38 25; 1.35 0.1 0.16 0.38 -10; -0.3 -0.7 0.43 0.42 0"
+        m_vFootMin -1.13 0 -1.06
+        m_vFootMax 1.7 0 1.16
+        m_sFoot "0 0 0.76 0.76 0; 0.75 0.1 0.76 0.76 0; 0.4 0.78 0.76 0.76 0; -0.75 0.3 0.76 0.76 0; 1.55 0.55 0.16 0.38 25; 1.54 0.16 0.16 0.38 -10; -0.3 -0.85 0.43 0.42 0"
         m_iTier 5
         m_sRules "by MotorPool|FuelPoint|FuelDump|Generator|GeneratorPost|CookPot|FieldKitchen 8; flat 8"
        }
@@ -4807,9 +4828,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse NONE
         m_iSeats 1
         m_bExtra 1
-        m_vFootMin -0.08 0 -0.64
+        m_vFootMin -0.04 0 -0.64
         m_vFootMax 1.41 0 1.05
-        m_sFoot "-0.01 0.01 0.14 0.13 0; 0.7 0.2 0.88 1.46 25"
+        m_sFoot "0.02 -0.01 0.14 0.13 0; 0.7 0.2 0.88 1.46 25"
         m_iTier 4
         m_sRules "flat 8"
        }
@@ -4889,6 +4910,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 0.7 0.09 0"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{4F80B4036022DE57}" {
@@ -4937,6 +4959,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 0.7 0.09 0"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer BLOCK
        }
        RZ_DressingPiece "{9E461D75FBA9A892}" {
@@ -4966,9 +4989,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eRole APPROACH
         m_eUse WATCH
         m_iSeats 2
-        m_vFootMin -1.76 0 -0.45
+        m_vFootMin -1.76 0 -0.44
         m_vFootMax 2.39 0 1.72
-        m_sFoot "-0.04 1.11 3.45 1.22 0; -0.5 0.1 0.41 0.41 0; 0.6 0 0.41 0.41 0; 1.6 0.3 0.88 1.46 80; s -0.5 0.1; s 0.6 0"
+        m_sFoot "-0.04 1.11 3.45 1.22 0; -0.5 0.03 0.41 0.41 0; 0.68 0.01 0.41 0.41 0; 1.6 0.3 0.88 1.46 80; s -0.5 0.03; s 0.68 0.01"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3"
         m_eLayer LOOKOUT
@@ -5024,9 +5047,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eUse WATCH
         m_iSeats 2
         m_vPlan 5 0 18
-        m_vFootMin -1.76 0 -0.45
+        m_vFootMin -1.76 0 -0.44
         m_vFootMax 2.39 0 1.72
-        m_sFoot "-0.04 1.11 3.45 1.22 0; -0.5 0.1 0.41 0.41 0; 0.6 0 0.41 0.41 0; 1.6 0.3 0.88 1.46 80; s -0.5 0.1; s 0.6 0"
+        m_sFoot "-0.04 1.11 3.45 1.22 0; -0.5 0.03 0.41 0.41 0; 0.68 0.01 0.41 0.41 0; 1.6 0.3 0.88 1.46 80; s -0.5 0.03; s 0.68 0.01"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3"
        }
@@ -5037,9 +5060,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_eAt GATE
         m_vPlan 0 0 16
-        m_vFootMin -0.88 0 -0.23
-        m_vFootMax 1.96 0 1.44
-        m_sFoot "-0.81 0.01 0.14 0.13 0; 0.79 0.06 0.14 0.13 0; 1.3 0.6 0.88 1.46 20"
+        m_vFootMin -0.73 0 -1.32
+        m_vFootMax 0.73 0 0.05
+        m_sFoot "0 0 0.7 0.09 0; 0 -0.88 0.88 1.46 90"
         m_iTier 4
         m_eZone GATE
         m_sRules "faces road; flat 8"
@@ -5079,9 +5102,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 2
         m_vPlan -2 0 3
         m_fPlanYaw 3
-        m_vFootMin -0.65 0 -1.25
-        m_vFootMax 2.24 0 1.25
-        m_sFoot "0 0 1.31 0.79 0; 0.1 0.8 0.41 0.41 0; -0.2 -0.8 0.41 0.41 0; 1.7 -0.1 1.01 1.01 4; s 0.1 0.8; s -0.2 -0.8"
+        m_vFootMin -0.65 0 -1.16
+        m_vFootMax 1.72 0 1.15
+        m_sFoot "0 0 1.31 0.79 0; 0.1 0.7 0.41 0.41 -180; 0.18 -0.71 0.41 0.41 0; 1.18 0 1.01 1.01 4; s 0.1 0.7; s 0.18 -0.71"
         m_iTier 3
         m_eZone WORK
         m_sRules "wall 4; faces in; flat 5"
@@ -5120,7 +5143,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vPlan 11 0 2
         m_vFootMin -3.8 0 -2.2
         m_vFootMax 3.8 0 4.39
-        m_sFoot "0 1.09 7.6 6.58 0; 1 0.6 0.88 1.46 15; 1.1 1.3 0.41 0.41 0; s 1.1 1.3"
+        m_sFoot "0 1.09 7.6 6.58 0; 1 0.6 0.88 1.46 15; 1.62 0.44 0.41 0.41 -75; s 1.62 0.44"
         m_iTier 4
         m_sRules "high"
        }
@@ -5132,9 +5155,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eAt DOOR
         m_vPlan -7 0 -6
         m_fPlanYaw 10
-        m_vFootMin -1.42 0 -3.26
-        m_vFootMax 1.38 0 2.78
-        m_sFoot "-0.01 0.01 0.82 1.23 0; 0 0 2.2 2.2 0; 0.79 -1.73 3.06 0.21 90; -0.71 -1.73 3.06 0.21 90; -1.2 1.1 0.43 0.42 0; 0.2 1.69 2.22 2.03 4; s 0 0"
+        m_vFootMin -1.66 0 -3.26
+        m_vFootMax 1.38 0 3.58
+        m_sFoot "-0.01 0.01 0.82 1.23 0; 0 0 2.2 2.2 0; 0.79 -1.73 3.06 0.21 90; -0.71 -1.73 3.06 0.21 90; -1.45 1.29 0.43 0.42 0; 0.2 2.49 2.22 2.03 4; s 0 0"
         m_iTier 2
         m_eZone COURT
         m_sRules "door front 3; faces out"
@@ -5215,9 +5238,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_bExtra 1
         m_eWhen SUPPLIED
-        m_vFootMin -1.08 0 -0.91
-        m_vFootMax 1.47 0 1.03
-        m_sFoot "0 0 0.76 0.76 0; 0.7 0.1 0.76 0.76 0; 0.35 0.65 0.76 0.76 0; -0.7 0.3 0.76 0.76 0; 1.3 0.5 0.16 0.38 25; 1.35 0.1 0.16 0.38 -10; -0.3 -0.7 0.43 0.42 0"
+        m_vFootMin -1.13 0 -1.06
+        m_vFootMax 1.7 0 1.16
+        m_sFoot "0 0 0.76 0.76 0; 0.75 0.1 0.76 0.76 0; 0.4 0.78 0.76 0.76 0; -0.75 0.3 0.76 0.76 0; 1.55 0.55 0.16 0.38 25; 1.54 0.16 0.16 0.38 -10; -0.3 -0.85 0.43 0.42 0"
         m_iTier 5
         m_sRules "by MotorPool|FuelPoint|FuelDump|Generator|GeneratorPost|CookPot|FieldKitchen 8; flat 8"
        }
@@ -5297,6 +5320,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 0.7 0.09 0"
         m_iTier 1
         m_eZone WIRE
+        m_sRules "level"
         m_eLayer WIRE
        }
        RZ_DressingPiece "{AC26345E82AD97EA}" {
@@ -5315,9 +5339,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eRole APPROACH
         m_eUse WATCH
         m_iSeats 2
-        m_vFootMin -1.76 0 -0.45
+        m_vFootMin -1.76 0 -0.44
         m_vFootMax 2.39 0 1.72
-        m_sFoot "-0.04 1.11 3.45 1.22 0; -0.5 0.1 0.41 0.41 0; 0.6 0 0.41 0.41 0; 1.6 0.3 0.88 1.46 80; s -0.5 0.1; s 0.6 0"
+        m_sFoot "-0.04 1.11 3.45 1.22 0; -0.5 0.03 0.41 0.41 0; 0.68 0.01 0.41 0.41 0; 1.6 0.3 0.88 1.46 80; s -0.5 0.03; s 0.68 0.01"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3"
         m_eLayer LOOKOUT

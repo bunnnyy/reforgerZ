@@ -46,7 +46,7 @@ GenericEntity {
     Hierarchy "{81F7178AE0A3AEA2}" {
     }
    }
-   coords 3.0 0 0.4
+   coords 3.0 0 0.496
    angles 0 0 0
   }
   GenericEntity : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {

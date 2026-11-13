@@ -23,7 +23,7 @@ GenericEntity {
     Hierarchy "{2CCCF24FD668FE76}" {
     }
    }
-   coords 0 0.15 0
+   coords 0 0.14 0
    angles 0 180 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{67C2C15E793A1C9C}" {
     }
    }
-   coords 0 0.6 0
+   coords -0.015 0.64 -0.018
    angles 0 180 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
@@ -50,7 +50,7 @@ GenericEntity {
     Hierarchy "{3DD6643D8CA974CC}" {
     }
    }
-   coords 0.9 1.6 0.4
+   coords 0.9 1.41 0.4
    angles 0 0 0
   }
   GenericEntity {

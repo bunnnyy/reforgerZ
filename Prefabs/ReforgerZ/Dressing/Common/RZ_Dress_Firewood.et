@@ -8,32 +8,32 @@ GenericEntity {
  }
  coords 0 0 0
  {
-  GenericEntity : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+  GenericEntity : "{6A130E5B3DD3EAA9}Prefabs/Props/Forest/WoodPile/WoodPile_02_end_A.et" {
    ID "34DDA821DA6A9A3E"
    components {
     Hierarchy "{E7A9FB703ADE7E86}" {
     }
    }
-   coords -1.6 0 0.2
-   angles 0 86 0
+   coords -1.6 0 0.1
+   angles 0 4 0
   }
-  GenericEntity : "{6105032F794BA64B}Prefabs/Props/Civilian/LogChopping_01.et" {
+  GenericEntity : "{6A130E5B3DD3EAA9}Prefabs/Props/Forest/WoodPile/WoodPile_02_end_A.et" {
    ID "87B555471D688D49"
    components {
     Hierarchy "{8225DFACE9D4774E}" {
     }
    }
-   coords 0.7 0 0.3
-   angles 0 0 0
+   coords -1.603 0 1.653
+   angles 0 -3 0
   }
-  GenericEntity : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
+  GenericEntity : "{6105032F794BA64B}Prefabs/Props/Civilian/LogChopping_01.et" {
    ID "3B177FF4756CA7E6"
    components {
     Hierarchy "{D473BB3AE01BD189}" {
     }
    }
-   coords 1.6 0 -0.5
-   angles 0 31 0
+   coords 0.7 0 0.3
+   angles 0 0 0
   }
   GenericEntity : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
    ID "1C62581E40F77F9B"
@@ -41,8 +41,8 @@ GenericEntity {
     Hierarchy "{C725FF41E1F338CD}" {
     }
    }
-   coords 1.5 0 0.9
-   angles 0 77 0
+   coords 1.6 0 -0.5
+   angles 0 31 0
   }
   GenericEntity : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
    ID "AD0DB1837FB516FD"
@@ -50,29 +50,38 @@ GenericEntity {
     Hierarchy "{485BC98926A82344}" {
     }
    }
-   coords 0.2 0 -1.2
-   angles 0 120 0
+   coords 1.5 0 0.9
+   angles 0 77 0
   }
-  GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+  GenericEntity : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
    ID "94705885192F6925"
    components {
     Hierarchy "{2D9A3D8BA734E97D}" {
     }
    }
-   coords -0.4 0 1.8
+   coords 0.2 0 -1.2
+   angles 0 120 0
+  }
+  GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+   ID "80C768EB94EC2047"
+   components {
+    Hierarchy "{7A0501C283EC46BF}" {
+    }
+   }
+   coords 3.0 0 2.6
    angles 0 150 0
   }
   GenericEntity {
-   ID "80C768EB94EC2047"
+   ID "9E9D6FD6F1AFE6FA"
    components {
-    SCR_AISmartActionSentinelComponent "{7A0501C283EC46BF}" {
+    SCR_AISmartActionSentinelComponent "{07A29838472CB089}" {
      Tags {
       "RZ_Chop"
      }
      m_vLookPosition 0 1.6 -0.8
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{9E9D6FD6F1AFE6FA}" {
+    Hierarchy "{7AED3603C1982D53}" {
     }
    }
    coords 0.7 0 1.1

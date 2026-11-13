@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{5D8B1F5D55C482E8}" {
     }
    }
-   coords 2.3 0.78 0.9
+   coords 2.3 0.9 0.9
    angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
@@ -59,7 +59,7 @@ GenericEntity {
     Hierarchy "{AC8628778ACF710A}" {
     }
    }
-   coords -1.6 0.62 1.2
+   coords -1.6 0.83 1.2
    angles 0 12 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
@@ -68,7 +68,7 @@ GenericEntity {
     Hierarchy "{AABF43AEE2AB3A46}" {
     }
    }
-   coords 1.5 0 1.6
+   coords 1.479 0 1.626
    angles 0 0 0
   }
   GenericEntity : "{C9CFDED29542A968}Prefabs/Props/Military/Furniture/CotMilitary_US_01.et" {

@@ -23,7 +23,7 @@ GenericEntity {
     Hierarchy "{08E7FEF72648B081}" {
     }
    }
-   coords 0.2 0.35 1.5
+   coords 0.2 0.25 1.5
    angles 0 86 0
   }
   GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{48CDB3AD8F65C64F}" {
     }
    }
-   coords -1.6 0 1.5
+   coords -1.6 0.42 1.5
    angles 90 0 0
   }
   GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
@@ -41,35 +41,35 @@ GenericEntity {
     Hierarchy "{3F3DB2092AE91669}" {
     }
    }
-   coords 1.7 0 1.4
+   coords 1.7 0.42 1.4
    angles 90 0 0
   }
-  GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
+  GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
    ID "33803E41B8313D8F"
    components {
     Hierarchy "{8A8C9350AD970577}" {
-    }
-   }
-   coords 2.3 0 -0.2
-   angles 0 205 0
-  }
-  GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
-   ID "135B089388CBA254"
-   components {
-    Hierarchy "{B006D0F5C8A3BAF5}" {
     }
    }
    coords 2.9 0 0.7
    angles 0 0 0
   }
   ParticleEffectEntity : "{899360C930DA3EE3}Prefabs/Particles/Campfire_burning.et" {
+   ID "135B089388CBA254"
+   components {
+    Hierarchy "{B006D0F5C8A3BAF5}" {
+    }
+   }
+   coords 2.9 1.1 0.7
+   angles 0 0 0
+  }
+  GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
    ID "9BBDD910BE3C35CF"
    components {
     Hierarchy "{D83AC176ED21B2B5}" {
     }
    }
-   coords 2.9 0.9 0.7
-   angles 0 0 0
+   coords 2.144 0 -0.358
+   angles 0 35.0 0
   }
   GenericEntity {
    ID "EFAA4ED84DC274B5"
@@ -78,13 +78,13 @@ GenericEntity {
      Tags {
       "RZ_Lean"
      }
-     m_vLookPosition 0 1.6 3
-     m_eLoiterAnimation LEAN_LEFT
+     m_vLookPosition 2.9 1.6 0.7
+     m_eLoiterAnimation SMOKING
     }
     Hierarchy "{C475E899C8C5F4B5}" {
     }
    }
-   coords -1.8 0 0.5
+   coords 2.144 0 -0.358
   }
   GenericEntity {
    ID "4C7247E972DB3152"
@@ -94,12 +94,12 @@ GenericEntity {
       "RZ_Lean"
      }
      m_vLookPosition 0 1.6 3
-     m_eLoiterAnimation SMOKING
+     m_eLoiterAnimation LEAN_LEFT
     }
     Hierarchy "{CFF13A68C4483E25}" {
     }
    }
-   coords 2.3 0 -0.2
+   coords -1.8 0 0.5
   }
  }
 }

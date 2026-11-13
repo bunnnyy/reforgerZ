@@ -23,8 +23,8 @@ GenericEntity {
     Hierarchy "{08EB84F031345F50}" {
     }
    }
-   coords 0.1 0 1.0
-   angles 0 5 0
+   coords 0.212 0 0.974
+   angles 0 102 0
   }
   GenericEntity : "{4A4B245D7CAC341B}Prefabs/Props/Furniture/ChairOld_02.et" {
    ID "5ADAC514ADDD8C0D"
@@ -32,8 +32,8 @@ GenericEntity {
     Hierarchy "{CC34E63C9FF84A72}" {
     }
    }
-   coords 1.1 0 -0.2
-   angles 0 260 0
+   coords 1.168 0 -0.245
+   angles 0 -78.0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "E5DAF9A9689F9204"
@@ -41,12 +41,12 @@ GenericEntity {
     Hierarchy "{6BC6FF09E2750A85}" {
     }
    }
-   coords -1.1 0 -0.4
-   angles 0 80 0
+   coords -1.514 0 0.325
+   angles 0 12 0
   }
   GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
    ID "69A90392D45A0FA2"
-   coords 0.25 0.78 0.1
+   coords 0.25 0.9 0.1
    angles 0 0 0
   }
   GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
@@ -55,7 +55,7 @@ GenericEntity {
     Hierarchy "{6971DBFAF51E1275}" {
     }
    }
-   coords -0.35 0.78 -0.1
+   coords -0.35 0.9 -0.1
    angles 0 0 0
   }
   GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
@@ -64,7 +64,7 @@ GenericEntity {
     Hierarchy "{E8C73720C5A30BA6}" {
     }
    }
-   coords -1.6 0 1.2
+   coords -1.8 0 1.5
    angles 0 0 0
   }
   GenericEntity {
@@ -74,13 +74,13 @@ GenericEntity {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition 0 1.6 -1.0
+     m_vLookPosition 0.01 1.6 0.0
      m_eLoiterAnimation SIT
     }
     Hierarchy "{C61A8627CE890E37}" {
     }
    }
-   coords 0.1 0 1.0
+   coords 1.168 0 -0.245
   }
   GenericEntity {
    ID "CB77E9CD7A0150E4"
@@ -89,13 +89,13 @@ GenericEntity {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition -1.1 1.6 0.2
+     m_vLookPosition 0 1.6 -1.0
      m_eLoiterAnimation SIT
     }
     Hierarchy "{C44B71C4CEE7FDD6}" {
     }
    }
-   coords 1.1 0 -0.2
+   coords 0.1 0 1.0
   }
   GenericEntity {
    ID "3D1DED590BF86CAB"
@@ -110,7 +110,7 @@ GenericEntity {
     Hierarchy "{95BF0225DF2C7626}" {
     }
    }
-   coords -1.1 0 -0.4
+   coords -1.456 0 -0.266
   }
  }
 }

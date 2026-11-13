@@ -23,7 +23,7 @@ GenericEntity {
     Hierarchy "{6FEF55F49DE559A7}" {
     }
    }
-   coords -0.1 0.15 0
+   coords -0.1 0.14 0
    angles 0 3 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
@@ -41,7 +41,7 @@ GenericEntity {
     Hierarchy "{D69D5ADA967F30B8}" {
     }
    }
-   coords -0.2 1.15 0
+   coords -0.2 1.15 0.0
    angles 0 0 0
   }
   GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {

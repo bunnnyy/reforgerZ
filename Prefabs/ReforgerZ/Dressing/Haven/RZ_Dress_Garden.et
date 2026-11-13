@@ -14,8 +14,8 @@ GenericEntity {
     Hierarchy "{90DD2852461FE13D}" {
     }
    }
-   coords -1.0 0 0
-   angles 0 3 0
+   coords -1.45 0 0
+   angles 0 2 0
   }
   StaticModelEntity : "{7839491ACC2102B9}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_small.et" {
    ID "FB24184C127A23B2"
@@ -23,8 +23,8 @@ GenericEntity {
     Hierarchy "{CD41B6E7869B35D9}" {
     }
    }
-   coords 0.6 0 0.2
-   angles 0 -4 0
+   coords 1.45 0 0.1
+   angles 0 -2 0
   }
   GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
    ID "A637DB19B522B061"
@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{5ED62335CCD30FA6}" {
     }
    }
-   coords 2.0 0 1.1
+   coords 3.436 0 1.001
    angles 0 30 0
   }
   GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
@@ -41,7 +41,7 @@ GenericEntity {
     Hierarchy "{8E2CCF925ADD1667}" {
     }
    }
-   coords 2.3 0 0.6
+   coords 3.6 0 0.3
    angles 0 75 0
   }
   GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
@@ -50,7 +50,7 @@ GenericEntity {
     Hierarchy "{9431780DC9B0DA16}" {
     }
    }
-   coords 1.6 0 -1.9
+   coords 0.2 0 -2.6
    angles 0 60 0
   }
   GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
@@ -59,7 +59,7 @@ GenericEntity {
     Hierarchy "{A29F6FEBB55E1394}" {
     }
    }
-   coords -0.2 0 1.8
+   coords -0.1 0 1.9
    angles 0 0 0
   }
   GenericEntity {
@@ -69,13 +69,13 @@ GenericEntity {
      Tags {
       "RZ_Work"
      }
-     m_vLookPosition 0 1.6 -1.0
+     m_vLookPosition 0.6 1.6 0
      m_eLoiterAnimation LOITERING
     }
     Hierarchy "{661607B8808F58B6}" {
     }
    }
-   coords -0.2 0 1.5
+   coords 0.6 0 1.8
   }
  }
 }

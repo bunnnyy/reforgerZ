@@ -41,7 +41,7 @@ GenericEntity {
     Hierarchy "{E0CCBA6D3B2D4605}" {
     }
    }
-   coords 2.6 0 1.3
+   coords 2.57 0 1.248
    angles 0 30 0
   }
   GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
@@ -50,7 +50,7 @@ GenericEntity {
     Hierarchy "{8DAC238E4ECC66A8}" {
     }
    }
-   coords 3.0 0 1.2
+   coords 3.099 0 1.136
    angles 0 -10 0
   }
   GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
@@ -59,7 +59,7 @@ GenericEntity {
     Hierarchy "{1E3D5256B70ED76F}" {
     }
    }
-   coords -2.8 0 -2.4
+   coords -3.521 0 -2.4
    angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
@@ -77,7 +77,7 @@ GenericEntity {
     Hierarchy "{E38232D0698EA3ED}" {
     }
    }
-   coords 2.6 0.84 -0.6
+   coords 2.6 0.83 -0.6
    angles 0 25 0
   }
   GenericEntity : "{90A74133C1DC6226}Prefabs/Props/Industrial/Repair/EngineCrane_01.et" {
@@ -86,7 +86,7 @@ GenericEntity {
     Hierarchy "{CA389CA76A12F0AB}" {
     }
    }
-   coords 0.3 0 5.0
+   coords 0.302 0 5.019
    angles 0 186 0
   }
   GenericEntity : "{B557358F8F64AE31}Prefabs/Props/Industrial/Repair/HydraulicCarJack_01.et" {
@@ -95,7 +95,7 @@ GenericEntity {
     Hierarchy "{34366A41673C7E5F}" {
     }
    }
-   coords -2.0 0 1.6
+   coords -1.872 0 1.587
    angles 0 20 0
   }
   GenericEntity {

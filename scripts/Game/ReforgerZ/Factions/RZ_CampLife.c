@@ -1027,7 +1027,7 @@ class RZ_CampLife
 	{
 		foreach (RZ_CampPlace p : m_aPlaces)
 		{
-			if (p.m_eKind != RZ_ECampPlace.ROAD_POST && RZ_Util.DistXZ(p.m_vPos, pos) <= radius && !m_mLayouts.Contains(p.m_sKey))
+			if (p.m_eKind != RZ_ECampPlace.ROAD_POST && RZ_Util.DistXZ(p.m_vPos, pos) <= radius && !m_mLayouts.Contains(p.m_sKey) && !IsDressedNear(p))
 				return false;
 		}
 

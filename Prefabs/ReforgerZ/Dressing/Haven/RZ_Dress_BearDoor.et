@@ -17,28 +17,19 @@ GenericEntity {
    coords 0 0 0
    angles 0 0 0
   }
-  GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
    ID "413912A13758AD48"
    components {
     Hierarchy "{873CF1EAB1620378}" {
     }
    }
-   coords 0 0.9 0.3
-   angles 0 2 80
+   coords 0 0.61 0.143
+   angles 80 0 0
   }
-  GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
+  SCR_DestructibleEntity : "{9E939BD958DD48D1}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et" {
    ID "F68B686544724EAA"
    components {
     Hierarchy "{00378A4743729350}" {
-    }
-   }
-   coords 0.3 0.9 0.3
-   angles 0 4 82
-  }
-  SCR_DestructibleEntity : "{9E939BD958DD48D1}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et" {
-   ID "1D09CD724CD76080"
-   components {
-    Hierarchy "{6216A8A168495000}" {
     }
    }
    coords 0.9 0 0.6

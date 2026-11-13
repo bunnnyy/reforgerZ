@@ -41,7 +41,7 @@ GenericEntity {
     Hierarchy "{A8C85AD0863AE94D}" {
     }
    }
-   coords 0.3 0.25 0.2
+   coords 0.3 0.29 0.2
    angles 30 55 0
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {

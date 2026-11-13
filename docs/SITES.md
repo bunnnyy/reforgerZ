@@ -22,7 +22,7 @@ Workbench plugins.
 - [Where a place stands](#where-a-place-stands)
 - [From the reference board](#from-the-reference-board)
 - [The site grid](#the-site-grid)
-- [Real footprints](#real-footprints)
+- [Real footprints](#real-footprints) ([Spacing](#spacing))
 - [The world-building kit](#the-world-building-kit)
 - [The surroundings and the threat](#the-surroundings-and-the-threat)
 - [The rules](#the-rules)
@@ -153,8 +153,11 @@ line, the traces) is in [The solver](#the-solver).
 ## Real footprints
 
 Every prop a camp-kit piece uses has its real box in `tools/camp_kit/footprints.json`: width, depth,
-height, the box's middle from the prop's origin, and whether its origin is at its feet. Two things
-write it:
+height, the box's middle from the prop's origin, whether its origin is at its feet, its **six faces**
+from its origin (`x0` left, `x1` right, `z0` back, `z1` front, `y0` base, `y1` top of the box), its
+**top** (where something stood on it stands: a trace straight down at the box's middle, so a chair's
+seat, not its back) and its height near each face (`tz0`, `tz1`, `tx0`, `tx1`, a tenth of the way in;
+−100 where the trace finds nothing). Nothing about a prop's size is typed. Two things write it:
 
 | Tool | Where |
 |---|---|
@@ -183,6 +186,46 @@ concertina coil is 3.45 m long down its own z (so a run turns it 90°), the chai
 and tin sections are 3, 4, 6 and 8 m with their origin at one end. Some of the mods' prefabs carry a
 turn of their own (MoreGMProps' walls a quarter turn): `build.py` writes every prop's turn, a zero
 too, so none shows through (the first walls tried stood side-on, like dominoes).
+
+### Spacing
+
+**Every prop is placed by its measured faces, never by a typed centre** (`tools/camp_kit/pieces.py`).
+Pieces say what touches what and how far apart things stand; the measurements give the numbers:
+
+| Helper | What it places |
+|---|---|
+| `SEAT(seat, table, …, side)` | a seat pulled up to one side of a table (or a crate used as one), square to it, its **front** a stated gap off the table's edge, with the sitting spot looking at the table |
+| `RING(seat, fire, …, bearing)` | a seat round a fire or a barrel side table, its front a stated gap off the fire's edge |
+| `ROW(prop, …, count)` | props end to end, each one's right face against the next one's left (sandbags, crates) |
+| `BESIDE(prop, other, …, side)` | a prop against one face of another, a stated gap between their faces (a crate against the table's end, a bucket against the barrel) |
+| `TOP(prop)` | the height a prop stood on another stands at (its measured top) |
+
+A seat's **front** is measured: the side opposite its back, the face whose edge stands highest (a back
+that leans out past the seat leaves nothing under the trace: with the other three level, that side is
+the back). A seat with no back (a stool, a stump, a crate) faces its +z.
+
+| Gap | Metres | Why |
+|---|---|---|
+| A seat in use | 0.1 | its front just out from the table's edge: knees under the table |
+| A seat pushed back | 0.35 | someone got up |
+| Round a fire | 0.9 | warm, feet out of the ashes (0.35 round a barrel side table, an arm's reach) |
+| Touching | 0.03 or less | faces that meet: sandbags, a crate against a wall, a stack |
+| Apart | 0.25 or more | the least gap that reads as meant (a step, a hand's reach) |
+
+Every piece is **settled** when it's built: two props on the ground with a sliver between them (more
+than touching, less than apart: reads as a mistake) are closed up to touch (under half the range) or
+opened to 0.25 m, the smaller one moved the shortest way, with whatever stands on it. A prop stood on
+another is slid over it until it stands wholly on it (a crate on a crate). Props leaning more than 10°
+(a tripod's poles), flat ones under 0.3 m high (blankets, single sandbags, litter) and the ones others
+stand under (tents, nets, a mast, a stall, a tower) aren't asked.
+
+`build.py` then refuses a piece that breaks any of it, naming the props: two props in each other
+(over 30% of the smaller, both on the ground), a sliver between two, a seat by a table more than
+0.45 m off it or turned away from it, a prop hanging more than a quarter off what it stands on (one
+hung on a wall or set on a post's top isn't asked).
+
+The barrier and the road blocks are placed the same way on the ground: each run starts where the last
+one's measured end face is ([Close it off](#close-it-off)).
 
 ## The world-building kit
 
@@ -313,7 +356,7 @@ Each piece's rules are a line of text, `;` between them (`m_sRules`):
 | **Faces** | `faces <front\|road\|threat\|out\|in\|gate\|door\|wall\|<what>>` | its turn | nests and gate pieces face out along the road; the sofa faces the fire barrel; boards face out from the wall |
 | **Behind** | `behind threat` | soft | the generator and the latrine on the building's far side from the threat |
 | **Guarded** | `guarded` | soft | the cold box and the sorting table: far from the wire, near the entrance, against the building |
-| **Spacing** | every piece's cells grown by a cell as it's placed (a gap of about 0.7 m between footprints); at most one piece of work and life per 12 m² of the yard inside the wire | hard | |
+| **Spacing** | every piece's cells grown by a cell as it's placed (a gap of about 0.7 m between footprints; the barrier's runs and road blocks take only their measured box, so they meet); at most one piece of work and life per 12 m² of the yard inside the wire | hard | |
 | **Varied** | `jitter` (turned 0–8° and moved 0–0.5 m by the seed), `noline` (two of a kind not in one line) | soft | clutter jittered; the tables and the Haven's tents never in a row |
 | **Row** | `row` | its turn, and soft (+14) | set out beside another of its kind, 1.2 m apart and turned the same; the first of a row squared to the building (to the road in on open ground): Bastion's tent line and mess tables, Halcyon's ward tents, the Haven's garden beds |
 
@@ -403,7 +446,7 @@ off ground that a wall or a fence already closes:
 
 | Rule | What |
 |---|---|
-| Walled already | a side with less than 60% closed where it stands looks up to 40 m further out (a depot's or a factory yard's own wall: the Red Hand's tin ring once stood inside a walled depot): the first distance at which a wall, a fence, a hedge or buildings close 60% of it becomes that side, so the line is the churchyard's wall or the compound's fence, not a second line inside it |
+| Walled already | a side with less than 60% closed where it stands looks for a wall first nearer the building (down to 4 m from it: the Haven's camp once spilled past its churchyard's wall onto the car park), then up to 40 m further out (a depot's or a factory yard's own wall: the Red Hand's tin ring once stood inside a walled depot): the first distance at which a wall, a fence, a hedge or buildings close 60% of it becomes that side, so the line is the churchyard's wall or the compound's fence, not a second line inside it |
 | What stands just outside | a gap with a wall, a fence, a hedge or a building within 6 m outside it, along most of a 3 m stretch, counts as closed already: no sandbags a step inside a garden fence |
 Every 0.5 m along the sides the doctrine closes, a **station** says what closes it:
 
@@ -428,12 +471,15 @@ entrance can walk to. Then, in order:
    along the road.
 3. **The other roads closed** (a stronghold's **Block** layer, [Checkpoints](#checkpoints)).
 4. **The barricades** (Zone **Wire**): beside the other gates first, then over the widest gaps on
-   the threat front, each slid a metre or two along the line to fit, else anywhere within a metre of
-   the line.
-5. **The barrier**: each side's gaps filled with the faction's runs, the longest that fits first
-   (about 10, 6, 3 and 2 m, then a filler about a metre long: a basket of earth, a pallet stood on
-   its edge, a crate, a no-entry sign), each nudged half a metre in or out where the line itself is
-   blocked. A
+   the threat front, each slid a metre or two along the line to fit. A barricade stands where it
+   closes something or not at all (one once stood in the open on a car park); one with nowhere to
+   go isn't counted as dropped.
+5. **The barrier**: each side's gaps filled with the faction's runs **end to end**: from the gap's
+   first edge, each run starts where the last one's measured end face is, the longest that fits
+   first (about 10, 6, 3 and 2 m, then a filler about a metre long: a basket of earth, a pallet stood
+   on its edge, a crate, a no-entry sign); where none fits, half a metre on. Each is nudged half a
+   metre in or out where the line itself is blocked. A run takes its measured box on the grid and no
+   more, and is tested 5 cm inside it, so two runs' faces meet (pieces keep their half-metre gap). A
    run may stand on steep ground and banks but not on water, a building, something standing, a road,
    other scenery or a path kept clear; it's **tilted** to follow the ground along it (up to 20°, no
    point of the ground more than 0.25 m off its line; it doesn't bend). The site's log and audit line
@@ -447,7 +493,7 @@ stronghold) is shut all round, with a way through for a truck:
 | Rule | How |
 |---|---|
 | Which roads stay open | its main gate, and of its other road crossings the furthest from it, up to **Checkpoints** in all: a road through the town comes in at one and leaves at the other |
-| Every other road | closed with the faction's road blocks, the longest that fits first, side by side across it, squared to the line, the ground read under all of each (no wheel over a kerb); a road running along the line too. A slit under 1.5 m still counts as closed. A closed road is no gate any more |
+| Every other road | closed with the faction's road blocks, the longest that fits first, end to end across it (each one's end face against the last one's, measured), squared to the line, the ground read under all of each (no wheel over a kerb); a road running along the line too. A slit under 1.5 m still counts as closed. A closed road is no gate any more |
 | Razor wire, not concrete | Bastion: knife rests of razor wire end to end with a coil behind them (7 m, 3.5 m), a short coil, a hedgehog. The lab: its own security mesh (6 m, 3 m), a coil, a no-entry sign. The Red Hand: a truck on its rims (10 m), a van, a steel block, tyres. The Haven: a van and crates, a braced fence panel, stacked crates |
 | Always someone there | each other checkpoint gets a sentry's post just inside it, beside the way in ([Posts](#posts): a gate post, manned in the gate's order), and the kit's lookout piece (the nest, the guard post, the lookout's chair) beside the road facing out along it, before the lookouts toward the threatened sides |
 | Inside the line | nothing stands on a road, as ever: the streets inside stay clear for what drives in |

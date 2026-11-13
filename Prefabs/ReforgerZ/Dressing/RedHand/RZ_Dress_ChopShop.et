@@ -23,7 +23,7 @@ GenericEntity {
     Hierarchy "{0C838D4C869A072D}" {
     }
    }
-   coords 0.2 0 2.9
+   coords 0.21 0 2.975
    angles 0 184 0
   }
   GenericEntity : "{B557358F8F64AE31}Prefabs/Props/Industrial/Repair/HydraulicCarJack_01.et" {
@@ -59,7 +59,7 @@ GenericEntity {
     Hierarchy "{76C514D07FE78361}" {
     }
    }
-   coords -2.0 0 -1.7
+   coords -1.878 0 -1.717
    angles 0 20 0
   }
   GenericEntity : "{061EFBBB385DAF01}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469_pile.et" {

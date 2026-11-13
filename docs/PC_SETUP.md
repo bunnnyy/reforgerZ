@@ -143,7 +143,7 @@ Ask first (one batch), then:
 | Tools or Server | Open `steam://install/1874910` or `steam://install/1874900` ([how](#how-claude-drives-the-pc)); the author picks the library and clicks **Install**. Check every few minutes in the background, in every library, until its `StateFlags` is 4 |
 | Python 3 | `winget install --id Python.Python.3.12 -e --source winget --scope user --accept-package-agreements --accept-source-agreements` (when asking, say this accepts Python's licence and winget's terms). The running shell won't see it until Claude Code restarts: ask the author to restart it, or pass `PYTHON=<its python.exe>` to the runtime test |
 | Pillow (only `tools/icon_atlas.py` needs it) | `py -m pip install --user pillow` |
-| Workshop mods | The author subscribes in the game (**Workshop** tab, search, **Subscribe**) to the mods in [MOD_STACK.md](MOD_STACK.md) |
+| Workshop mods | The author subscribes in the game (**Workshop** tab, search, **Subscribe**) to the mods in [MOD_STACK.md](MOD_STACK.md). Or, for the compile check only, the dedicated server fetches them with no sign-in: a server config whose `game.mods` lists them (`modId`, `name`), run as `ArmaReforgerServer.exe -config <config.json> -profile <scratch folder> -addonDownloadDir "<Documents>\My Games\ArmaReforger" -logStats 0`, then stopped (`taskkill`) once the log shows them downloaded (used 2026-11-13 for the eight scenery mods) |
 
 On this PC, run the Python tools with `py` (`py tools/pacing_sim.py`), even where a doc writes
 `python3`.

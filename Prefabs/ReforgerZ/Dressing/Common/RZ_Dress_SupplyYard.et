@@ -59,7 +59,7 @@ GenericEntity {
     Hierarchy "{3D921BF6F0A64155}" {
     }
    }
-   coords 2.7 0 0.9
+   coords 2.691 0 0.792
    angles 0 -4 0
   }
   GenericEntity : "{0A395427C0D4725B}Prefabs/Props/BIGProps/Forklift_orange.et" {
@@ -95,7 +95,7 @@ GenericEntity {
     Hierarchy "{DE76278E893F0EF6}" {
     }
    }
-   coords -4.8 0 -1.2
+   coords -4.8 0 -1.243
    angles 0 0 0
   }
   GenericEntity {

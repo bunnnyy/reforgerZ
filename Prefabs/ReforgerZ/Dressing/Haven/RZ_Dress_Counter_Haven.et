@@ -23,7 +23,7 @@ GenericEntity {
     Hierarchy "{9F0174170EC441CE}" {
     }
    }
-   coords 0.3 0.78 0.05
+   coords 0.3 0.9 0.05
    angles 0 10 0
   }
   GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{CCAEC70A1253B77F}" {
     }
    }
-   coords -0.4 0.78 0.1
+   coords -0.4 0.9 0.1
    angles 0 0 0
   }
   GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {

@@ -23,8 +23,8 @@ GenericEntity {
     Hierarchy "{86FEAFE8FF513C72}" {
     }
    }
-   coords -0.1 0 0.85
-   angles 0 0 0
+   coords -0.102 0 0.8
+   angles 0 -180.0 0
   }
   GenericEntity : "{8BB5855208F77724}Prefabs/Props/Furniture/BenchWooden_01.et" {
    ID "34B80C17A1F543F2"
@@ -32,8 +32,8 @@ GenericEntity {
     Hierarchy "{4D8C59F6E18D0A4D}" {
     }
    }
-   coords 0.1 0 -0.85
-   angles 0 0 0
+   coords 0.098 0 -0.8
+   angles 0 0.0 0
   }
   GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
    ID "1EC04CF5AE59491C"
@@ -56,7 +56,7 @@ GenericEntity {
     Hierarchy "{80935691DDD06FB7}" {
     }
    }
-   coords 0 0.9 0.05
+   coords 0.0 0.9 0.05
    angles 0 0 0
   }
   GenericEntity : "{627F29E940C7A12A}Prefabs/Props/Civilian/CarrierFood_01/CarrierFood_01.et" {
@@ -75,13 +75,13 @@ GenericEntity {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition -0.5 1.6 0
+     m_vLookPosition 0.1 1.6 -0.8
      m_eLoiterAnimation SIT
     }
     Hierarchy "{DD4EDC77AB12A100}" {
     }
    }
-   coords -0.5 0 0.85
+   coords -0.102 0 0.8
   }
   GenericEntity {
    ID "C7287A35C50F0472"
@@ -90,13 +90,13 @@ GenericEntity {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition 0.5 1.6 0
+     m_vLookPosition -0.1 1.6 0.8
      m_eLoiterAnimation SIT
     }
     Hierarchy "{9FDB39F530DC1EA2}" {
     }
    }
-   coords 0.5 0 -0.85
+   coords 0.098 0 -0.8
   }
  }
 }

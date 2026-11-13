@@ -129,6 +129,28 @@ modded class RZ_GameModeComponent
 		vector hi = Vector(-float.MAX, -float.MAX, -float.MAX);
 		RZS_Bounds(e, 0, lo, hi);
 		vector origin = e.GetOrigin();
+		// Its top surface at the box's middle (where a lamp stood on it stands): a trace straight down
+		// onto it; -100 if the trace finds nothing (no collider there)
+		float top = -100;
+		// And its height near each face (a tenth of the way in from the back, front, left and right):
+		// a chair's back is the side that stands high, so its front is measured, not assumed
+		float tz0 = -100;
+		float tz1 = -100;
+		float tx0 = -100;
+		float tx1 = -100;
+		if (lo[0] <= hi[0])
+		{
+			float midX = (lo[0] + hi[0]) * 0.5;
+			float midZ = (lo[2] + hi[2]) * 0.5;
+			float inX = (hi[0] - lo[0]) * 0.1;
+			float inZ = (hi[2] - lo[2]) * 0.1;
+			top = RZS_TopAt(midX, midZ, lo, hi, origin);
+			tz0 = RZS_TopAt(midX, lo[2] + inZ, lo, hi, origin);
+			tz1 = RZS_TopAt(midX, hi[2] - inZ, lo, hi, origin);
+			tx0 = RZS_TopAt(lo[0] + inX, midZ, lo, hi, origin);
+			tx1 = RZS_TopAt(hi[0] - inX, midZ, lo, hi, origin);
+		}
+
 		SCR_EntityHelper.DeleteEntityAndChildren(e);
 		if (lo[0] > hi[0])
 		{
@@ -142,7 +164,24 @@ modded class RZ_GameModeComponent
 		float ox = (lo[0] + hi[0]) * 0.5 - origin[0];
 		float oz = (lo[2] + hi[2]) * 0.5 - origin[2];
 		float base = lo[1] - origin[1];
-		Print(string.Format("RZS footprint %1 %2 %3 %4 %5 %6 %7", FilePath.StripPath(prefab.GetPath()), w, d, h, ox, oz, base));
+		Print(string.Format("RZS footprint %1 %2 %3 %4 %5 %6 %7 %8", FilePath.StripPath(prefab.GetPath()), w, d, h, ox, oz, base, top));
+		Print(string.Format("RZS faces %1 %2 %3 %4 %5", FilePath.StripPath(prefab.GetPath()), tz0, tz1, tx0, tx1));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The prop's surface height at (x, z) from its origin: a trace straight down; -100 if nothing is hit.
+	protected float RZS_TopAt(float x, float z, vector lo, vector hi, vector origin)
+	{
+		TraceParam param = new TraceParam();
+		param.Start = Vector(x, hi[1] + 0.5, z);
+		param.End = Vector(x, lo[1] - 0.2, z);
+		param.LayerMask = EPhysicsLayerPresets.Projectile;
+		param.Flags = TraceFlags.ENTS;
+		float frac = GetGame().GetWorld().TraceMove(param, null);
+		if (frac >= 1)
+			return -100;
+
+		return param.Start[1] + (param.End[1] - param.Start[1]) * frac - origin[1];
 	}
 
 	//------------------------------------------------------------------------------------------------

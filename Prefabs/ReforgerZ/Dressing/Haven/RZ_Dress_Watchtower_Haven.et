@@ -41,7 +41,7 @@ GenericEntity {
     Hierarchy "{FC122C52D3A2A982}" {
     }
    }
-   coords -1.7 1.6 0.6
+   coords -1.7 1.41 0.6
    angles 0 0 0
   }
   GenericEntity {

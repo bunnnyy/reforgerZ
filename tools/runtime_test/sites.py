@@ -59,15 +59,35 @@ def prepare(addon, worlds):
 
 def footprints(log, out):
     props = {}
+    faces = {}
     for line in open(log, encoding="utf-8", errors="replace"):
-        m = re.search(r"RZS footprint (\S+\.et) (\S+) (\S+) (\S+) (\S+) (\S+) (\S+)", line)
+        f = re.search(r"RZS faces (\S+\.et) (\S+) (\S+) (\S+) (\S+)", line)
+        if f:
+            faces[f.group(1)] = [float(v) for v in f.groups()[1:]]
+            continue
+        m = re.search(r"RZS footprint (\S+\.et) (\S+) (\S+) (\S+) (\S+) (\S+) (\S+)(?: (\S+))?", line)
         if not m:
             continue
         name = m.group(1)
-        w, d, h, ox, oz, base = (float(v) for v in m.groups()[1:])
+        w, d, h, ox, oz, base = (float(v) for v in m.groups()[1:7])
         if w < 0.01 and d < 0.01:
             continue
-        props[name] = {"w": round(w, 3), "d": round(d, 3), "h": round(h, 3), "ox": round(ox, 3), "oz": round(oz, 3), "feet": abs(base) < 0.1}
+        # "top": where something stood on it stands, from its origin: the trace's hit at the box's middle,
+        # else the box's own top (pieces.ON reads it)
+        top = base + h
+        if m.group(8) and float(m.group(8)) > -50:
+            top = float(m.group(8))
+        # Its six faces from its origin (unturned): left/right (x0, x1), back/front (z0, z1), base and top of
+        # the box (y0, y1). Pieces space props from these: a chair's front to a table's edge, a wall's end to
+        # the next wall's end (tools/camp_kit/pieces.py)
+        props[name] = {"w": round(w, 3), "d": round(d, 3), "h": round(h, 3), "ox": round(ox, 3), "oz": round(oz, 3), "feet": abs(base) < 0.1, "top": round(top, 3),
+                       "x0": round(ox - w / 2, 3), "x1": round(ox + w / 2, 3), "z0": round(oz - d / 2, 3), "z1": round(oz + d / 2, 3), "y0": round(base, 3), "y1": round(base + h, 3)}
+    # Its height near each face (tz0 back, tz1 front, tx0 left, tx1 right; -100 where nothing was hit):
+    # a seat's back is its high side
+    for name, hts in faces.items():
+        if name in props:
+            for key, v in zip(("tz0", "tz1", "tx0", "tx1"), hts):
+                props[name][key] = round(v, 3)
     data = {"version": 1, "source": "tools/runtime_test/run.sh sites (the dedicated server's boxes; the Workbench plugin ReforgerZ: Measure prop footprints writes the same)", "props": dict(sorted(props.items()))}
     with open(out, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=1)

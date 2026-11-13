@@ -23,7 +23,7 @@ GenericEntity {
     Hierarchy "{B8BDD10A2806CC3D}" {
     }
    }
-   coords 0.7 0 0.1
+   coords 0.754 0 0.1
    angles 0 0 0
   }
   GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{0A6196A474DA3A94}" {
     }
    }
-   coords 0.35 0 0.65
+   coords 0.4 0 0.78
    angles 0 0 0
   }
   GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
@@ -41,7 +41,7 @@ GenericEntity {
     Hierarchy "{90A9B0186DD4AA53}" {
     }
    }
-   coords -0.7 0 0.3
+   coords -0.754 0 0.3
    angles 0 0 0
   }
   GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
@@ -50,7 +50,7 @@ GenericEntity {
     Hierarchy "{952D76EABDCCAF03}" {
     }
    }
-   coords 1.3 0 0.5
+   coords 1.546 0 0.55
    angles 0 25 0
   }
   GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
@@ -59,7 +59,7 @@ GenericEntity {
     Hierarchy "{408E235D2C028238}" {
     }
    }
-   coords 1.35 0 0.1
+   coords 1.54 0 0.158
    angles 0 -10 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
@@ -68,7 +68,7 @@ GenericEntity {
     Hierarchy "{FBDB58890B60D050}" {
     }
    }
-   coords -0.3 0 -0.7
+   coords -0.3 0 -0.851
    angles 0 0 0
   }
  }

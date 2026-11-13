@@ -76,18 +76,345 @@ def S(tag, x, z, anim, lx, lz):
 
 # Each piece: folder, use, role, one line of intent, [parts]
 C = {}
+# Measured, never typed (docs/SITES.md, "Real footprints"): every prop's box, its base and the top surface at its
+# middle are in footprints.json (the dedicated server spawns each prop and reads them). A prop stood on another
+# stands on that one's measured top; a board or a pallet stood on its edge is lifted by half its measured side.
+import json as _json
+import math as _math
+import os as _os
+
+_BOX = _json.load(open(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "footprints.json"), encoding="utf-8"))["props"]
+
+
+def TOP(prop):
+    """Where something stood on `prop` stands, from the prop's origin: the measured top at its middle (the seat of a
+    chair, the top of a table), or the top of its box where the trace fell through (an open barrel)."""
+    b = _BOX[prop]
+    top = b.get("top", b["h"])
+    if top < 0.05:
+        return b["h"]
+    return top
+
+
+def _holds(prop, x, z, yaw, px, pz):
+    b = _BOX.get(prop)
+    if not b:
+        return False
+    a = _math.radians(yaw)
+    cs, sn = _math.cos(a), _math.sin(a)
+    cx = x + b["ox"] * cs + b["oz"] * sn
+    cz = z - b["ox"] * sn + b["oz"] * cs
+    dx, dz = px - cx, pz - cz
+    lx = dx * cs - dz * sn
+    lz = dx * sn + dz * cs
+    return abs(lx) <= b["w"] / 2 + 0.05 and abs(lz) <= b["d"] / 2 + 0.05
+
+
+def _snap(name, parts):
+    """Every prop's height from measurements: on the ground, on the measured top of the prop under it (the one whose
+    top is nearest the height typed for it), or stood on its edge. A prop hung on a wall or a post keeps its height."""
+    props = sorted([i for i, q in enumerate(parts) if q[0] == "p"], key=lambda i: parts[i][5])
+    down = []
+    for i in props:
+        _, prop, x, z, yaw, y, pitch, roll = parts[i]
+        b = _BOX.get(prop)
+        if b and (abs(pitch) > 20 or abs(roll) > 20):
+            # stood on its edge: its lowest edge on the ground (only where the typed height meant that)
+            lift = (b["w"] / 2) * abs(_math.sin(_math.radians(roll)))
+            if abs(pitch) > 20:
+                lift = (b["d"] / 2) * abs(_math.sin(_math.radians(pitch)))
+            if b["h"] < 0.4 and abs(lift - y) <= 0.5:
+                y = round(lift, 2)
+        elif y >= 0.05:
+            best = None
+            for prop2, x2, z2, yaw2, y2 in down:
+                if _holds(prop2, x2, z2, yaw2, x, z):
+                    top = y2 + TOP(prop2)
+                    if best is None or abs(top - y) < abs(best - y):
+                        best = top
+            if best is not None and abs(best - y) <= 0.6:
+                y = round(best, 2)
+        parts[i] = ("p", prop, x, z, yaw, y, pitch, roll)
+        if abs(pitch) <= 20 and abs(roll) <= 20:
+            down.append((prop, x, z, yaw, y))
+    return parts
+
+
+# Spacing from measured faces (docs/SITES.md, "Spacing"): a seat stands off a table's edge, a fire's edge or the next
+# prop in a row by a stated gap between their measured faces, never by a typed centre.
+SEAT_GAP = 0.1    # a seat in use: its front 0.1 m out from the table's edge (knees under the table)
+SEAT_LEFT = 0.35  # a seat pushed back by someone who got up
+FIRE_GAP = 0.9    # a seat's front 0.9 m from a fire's edge: warm, feet out of the ashes
+ROW_TOUCH = 0.0   # sandbags, walls, a bench of crates: face to face
+
+
+def _rot(yaw, lx, lz):
+    a = _math.radians(yaw)
+    cs, sn = _math.cos(a), _math.sin(a)
+    return lx * cs + lz * sn, -lx * sn + lz * cs
+
+
+def _yaw_of(dx, dz):
+    return _math.degrees(_math.atan2(dx, dz))
+
+
+def FRONT(prop):
+    """A seat's front, measured: the side opposite its back (the face whose edge stands highest, tz0/tz1/tx0/tx1 in
+    footprints.json). Returns the front's local direction (x, z), that face's distance from the origin and the box
+    centre's offset across it. A seat with no back (a stool, a crate, a stump) faces +z."""
+    b = _BOX[prop]
+    edges = {k: b.get(k) for k in ("tz0", "tz1", "tx0", "tx1")}
+    if b["h"] > 0.7 and any(v is None for v in edges.values()):
+        raise SystemExit("%s has a back but its edges aren't measured (FOOTPRINTS=1 tools/runtime_test/run.sh sites)" % prop)
+    sides = {"tz0": ((0, 1), b["z1"], b["ox"]), "tz1": ((0, -1), -b["z0"], b["ox"]),
+             "tx0": ((1, 0), b["x1"], b["oz"]), "tx1": ((-1, 0), -b["x0"], b["oz"])}
+    if b["h"] > 0.7:
+        # a back that leans out past the seat leaves nothing under the trace near that face (-100): with the other
+        # three level, that open side is the back (ChairOld_01)
+        missed = [k for k, v in edges.items() if v < -50]
+        rest = [v for k, v in edges.items() if v >= -50]
+        if len(missed) == 1 and rest and max(rest) - min(rest) < 0.05:
+            return sides[missed[0]]
+        high = max(edges, key=lambda k: edges[k])
+        rest = sorted(v for k, v in edges.items() if k != high)
+        if edges[high] - rest[-1] > 0.2 or edges[high] - rest[0] > 0.2:
+            return sides[high]
+    return sides["tz0"]
+
+
+def _face(prop, x, z, yaw, side, along):
+    """A point on one face of a placed prop's measured box (side: front +z, back -z, right +x, left -x), `along`
+    metres along that face from its middle, and the face's outward direction."""
+    b = _BOX[prop]
+    n, dist, mid = {"front": ((0, 1), b["z1"], b["ox"]), "back": ((0, -1), -b["z0"], b["ox"]),
+                    "right": ((1, 0), b["x1"], b["oz"]), "left": ((-1, 0), -b["x0"], b["oz"])}[side]
+    if n[0] == 0:
+        lx, lz = mid + along, n[1] * dist
+    else:
+        lx, lz = n[0] * dist, mid + along
+    wx, wz = _rot(yaw, lx, lz)
+    nx, nz = _rot(yaw, n[0], n[1])
+    return x + wx, z + wz, nx, nz
+
+
+def _stand_off(seat, fx, fz, nx, nz, gap, turn):
+    """A seat whose front faces back along (nx, nz), its front face `gap` from the point (fx, fz)."""
+    (sx, sz), fd, across = FRONT(seat)
+    yaw = _yaw_of(-nx, -nz) - _yaw_of(sx, sz) + turn
+    b = _BOX[seat]
+    # the face toward the point (its front, or a side when turned), and the box's centre across it, so the seat
+    # sits square on the point
+    lx, lz = _rot(-yaw, -nx, -nz)
+    if abs(lx) > abs(lz):
+        fd = b["x1"] if lx > 0 else -b["x0"]
+        cx, cz = 0, b["oz"]
+    else:
+        fd = b["z1"] if lz > 0 else -b["z0"]
+        cx, cz = b["ox"], 0
+    ox, oz = _rot(yaw, cx, cz)
+    px = fx + nx * (gap + fd) - ox
+    pz = fz + nz * (gap + fd) - oz
+    return round(px, 3), round(pz, 3), round(((yaw + 180) % 360) - 180, 1)
+
+
+def SEAT(seat, table, tx, tz, tyaw, side, along=0.0, gap=SEAT_GAP, slot="RZ_Sit", anim="sit", turn=0):
+    """A seat pulled up to one side of a table, measured: its front `gap` from the table's edge, square to it,
+    `along` metres from the side's middle. With `slot`, the sitting spot on it, looking at the table."""
+    fx, fz, nx, nz = _face(table, tx, tz, tyaw, side, along)
+    px, pz, yaw = _stand_off(seat, fx, fz, nx, nz, gap, turn)
+    parts = [P(seat, px, pz, yaw)]
+    if slot:
+        tb = _BOX[table]
+        cx, cz = _rot(tyaw, tb["ox"], tb["oz"])
+        parts.append(S(slot, px, pz, anim, round(tx + cx, 2), round(tz + cz, 2)))
+    return parts
+
+
+def RING(seat, fire, x, z, bearing, gap=FIRE_GAP, slot="RZ_Sit", anim="sit", turn=0):
+    """A seat round a fire at `bearing` degrees (0 = +z), its front `gap` from the fire's measured edge."""
+    b = _BOX[fire]
+    r = max(b["w"], b["d"]) / 2
+    nx, nz = _math.sin(_math.radians(bearing)), _math.cos(_math.radians(bearing))
+    px, pz, yaw = _stand_off(seat, x + b["ox"] + nx * r, z + b["oz"] + nz * r, nx, nz, gap, turn)
+    parts = [P(seat, px, pz, yaw)]
+    if slot:
+        parts.append(S(slot, px, pz, anim, x, z))
+    return parts
+
+
+def ROW(prop, x, z, yaw, count, gap=ROW_TOUCH, start=0):
+    """`count` of one prop end to end along its own x, the first one's origin at (x, z): each one's right face
+    `gap` from the next one's left face, measured."""
+    b = _BOX[prop]
+    step = b["w"] + gap
+    parts = []
+    for i in range(start, start + count):
+        dx, dz = _rot(yaw, step * i, 0)
+        parts.append(P(prop, round(x + dx, 3), round(z + dz, 3), yaw))
+    return parts
+
+
+def BESIDE(prop, other, ox_, oz_, oyaw, side, along=0.0, gap=ROW_TOUCH, yaw=None):
+    """`prop` set against one face of `other` (placed at ox_, oz_, oyaw), `gap` between their measured faces, turned
+    like `other` unless `yaw` is given: a crate against the container, a case against the wall."""
+    fx, fz, nx, nz = _face(other, ox_, oz_, oyaw, side, along)
+    if yaw is None:
+        yaw = oyaw
+    b = _BOX[prop]
+    # the prop's own face toward `other`, in its local frame
+    lx, lz = _rot(-yaw, -nx, -nz)
+    if abs(lx) > abs(lz):
+        fd = b["x1"] if lx > 0 else -b["x0"]
+        cx, cz = 0, b["oz"]
+    else:
+        fd = b["z1"] if lz > 0 else -b["z0"]
+        cx, cz = b["ox"], 0
+    ox2, oz2 = _rot(yaw, cx, cz)
+    return P(prop, round(fx + nx * (gap + fd) - ox2, 3), round(fz + nz * (gap + fd) - oz2, 3), yaw)
+
+
+# ------------------------------------------------------------------- Settling: every prop by its measured faces
+TOUCH = 0.03      # two faces this close touch
+APART = 0.25      # the least gap that reads as meant (a step, a hand's reach)
+HOLLOW = ("CamoNet", "Tent", "Antenna", "MarketStand", "ShowerBeach", "GuardTower", "CanvasCover", "LifeGuardTower")
+TABLES = ("TableOld_01.et", "TableOld_01_white.et", "TableLong_01.et", "TableMilitary_US_01.et", "PicnicTable_01.et")
+
+
+def QUAD(prop, x, z, yaw):
+    """A placed prop's measured box on the ground, as its four corners."""
+    b = _BOX.get(prop)
+    if not b:
+        return None
+    cx, cz = _rot(yaw, b["ox"], b["oz"])
+    hw, hd = b["w"] / 2, b["d"] / 2
+    return [(x + cx + px, z + cz + pz) for px, pz in (_rot(yaw, lx, lz) for lx, lz in ((-hw, -hd), (hw, -hd), (hw, hd), (-hw, hd)))]
+
+
+def _closest(qa, qb):
+    """The shortest way from box a to box b: (distance, (dx, dz) unit from a to b)."""
+    best = None
+    for p_, q_ in ((qa, qb), (qb, qa)):
+        for pt in p_:
+            for i in range(4):
+                a, b = q_[i], q_[(i + 1) % 4]
+                ax, az = b[0] - a[0], b[1] - a[1]
+                t = max(0.0, min(1.0, ((pt[0] - a[0]) * ax + (pt[1] - a[1]) * az) / (ax * ax + az * az or 1)))
+                cx, cz = a[0] + t * ax, a[1] + t * az
+                d = _math.hypot(pt[0] - cx, pt[1] - cz)
+                if best is None or d < best[0]:
+                    dx, dz = (cx - pt[0], cz - pt[1]) if p_ is qa else (pt[0] - cx, pt[1] - cz)
+                    best = (d, (dx / (d or 1), dz / (d or 1)))
+    return best
+
+
+def _inside(pt, quad):
+    sign = 0
+    for i in range(4):
+        a, b = quad[i], quad[(i + 1) % 4]
+        c = (b[0] - a[0]) * (pt[1] - a[1]) - (b[1] - a[1]) * (pt[0] - a[0])
+        if c != 0:
+            if sign and (c > 0) != (sign > 0):
+                return False
+            sign = c
+    return True
+
+
+def GAP(qa, qb):
+    """The gap between two measured boxes; 0 where they meet or overlap."""
+    if any(_inside(p_, qb) for p_ in qa) or any(_inside(p_, qa) for p_ in qb):
+        return 0.0
+    return _closest(qa, qb)[0]
+
+
+def _ground(q):
+    b = _BOX.get(q[1])
+    return (q[0] == "p" and b and q[5] < 0.3 and abs(q[6]) <= 10 and abs(q[7]) <= 10 and b["h"] >= 0.3
+            and not any(w in q[1] for w in HOLLOW))
+
+
+def _seated(a, b, gap):
+    """A seat pulled up to a table keeps its stated gap (SEAT_GAP, SEAT_LEFT)."""
+    if a[1] in TABLES or b[1] in TABLES:
+        return any(abs(gap - g) <= 0.02 for g in (SEAT_GAP, SEAT_LEFT))
+    return False
+
+
+def _settle(parts):
+    """No sliver between two props on the ground: a pair whose measured faces are more than TOUCH and less than
+    APART apart is closed up to touch (the nearer half of that range) or opened to APART, the smaller one moved
+    along the shortest way between them, with whatever stands on it. Props a piece places by SEAT, RING, ROW or
+    BESIDE are where those put them already."""
+    for _ in range(10):
+        moved = False
+        ground = [i for i, q in enumerate(parts) if _ground(q)]
+        for ii in range(len(ground)):
+            for jj in range(ii + 1, len(ground)):
+                a, b = parts[ground[ii]], parts[ground[jj]]
+                qa, qb = QUAD(a[1], a[2], a[3], a[4]), QUAD(b[1], b[2], b[3], b[4])
+                gap = GAP(qa, qb)
+                if gap <= TOUCH or gap >= APART or _seated(a, b, gap):
+                    continue
+                d, (dx, dz) = _closest(qa, qb)
+                shift = -gap if gap < APART / 2 else APART + 0.01 - gap
+                # move the smaller one (b moves along a->b; a moves the other way)
+                small, sign = (ground[jj], 1) if _BOX[b[1]]["w"] * _BOX[b[1]]["d"] <= _BOX[a[1]]["w"] * _BOX[a[1]]["d"] else (ground[ii], -1)
+                mx, mz = dx * shift * sign, dz * shift * sign
+                if gap < APART / 2:
+                    mx, mz = mx - dx * 0.005 * sign, mz - dz * 0.005 * sign   # a hair into contact, not a hair off
+                q = parts[small]
+                for k, r in enumerate(parts):
+                    if r[0] == "p" and (k == small or (r[5] >= 0.05 and _holds(q[1], q[2], q[3], q[4], r[2], r[3]))):
+                        parts[k] = ("p", r[1], round(r[2] + mx, 3), round(r[3] + mz, 3), r[4], r[5], r[6], r[7])
+                    elif r[0] == "s" and _holds(q[1], q[2], q[3], q[4], r[2], r[3]):
+                        parts[k] = ("s", r[1], round(r[2] + mx, 3), round(r[3] + mz, 3), r[4], r[5], r[6])
+                moved = True
+        if not moved:
+            break
+    return parts
+
+
+def _seat_on(parts):
+    """A prop stood on another stands over it: at most a quarter of it hangs off (a crate on a crate). One hung on
+    a wall or a post (its base under the support's top, or the support a post) isn't asked."""
+    ups = [i for i, q in enumerate(parts) if q[0] == "p" and q[5] >= 0.3 and abs(q[6]) <= 20 and abs(q[7]) <= 20 and _BOX.get(q[1])]
+    for i in ups:
+        _, prop, x, z, yaw, y, pitch, roll = parts[i]
+        under = [q for q in parts if q[0] == "p" and q is not parts[i] and q[5] < y and _BOX.get(q[1]) and _holds(q[1], q[2], q[3], q[4], x, z)]
+        if not under:
+            continue
+        g = max(under, key=lambda q: q[5])
+        gb = _BOX[g[1]]
+        if y < g[5] + TOP(g[1]) - 0.02 or (gb["w"] <= 0.2 and gb["d"] <= 0.2):
+            continue
+        sx, sz = _rot(g[4], gb["ox"], gb["oz"])
+        sx, sz = g[2] + sx, g[3] + sz
+        b = _BOX[prop]
+        bx, bz = _rot(yaw, b["ox"], b["oz"])
+        for step in range(21):
+            t = step / 20
+            nx, nz = x + (sx - (x + bx)) * t, z + (sz - (z + bz)) * t
+            qa = QUAD(prop, nx, nz, yaw)
+            if all(_inside(p_, QUAD(g[1], g[2], g[3], g[4])) for p_ in qa) or t == 1:
+                parts[i] = ("p", prop, round(nx, 3), round(nz, 3), yaw, y, pitch, roll)
+                break
+    return parts
+
+
 def piece(name, folder, use, role, intent, parts):
+    parts = _settle(list(parts))
+    parts = _snap(name, parts)
+    parts = _seat_on(parts)
     C[name] = (folder, use, role, intent, parts)
 
 # ------------------------------------------------------------------- Common
-piece("FirePit", "Common", "Sit", "Centre", "A fire ringed by whatever people sat on: logs, a crate, a sack. Wood stacked to one side, a kettle bucket.", [
-    P("Fireplace_01.et", 0, 0), P("WoodLog_01_A.et", 1.7, 0.3, 74), P("WoodLog_01_A.et", -1.5, -0.7, 18), P("CrateWooden_01_plain.et", 0.4, -1.8, 8),
-    P("SackUniversal_01.et", -0.6, 1.8, 140), P("WoodKindling_01.et", 2.6, -1.3, 102), P("Bucket_01.et", 0.9, 0.9), P("LitterInterior_USSR_01_mug.et", -1.1, 0.6),
-    P("LitterInterior_USSR_01_tincan_V1.et", 1.2, -1.1),
-    S("RZ_Sit", 1.7, 0.4, "sit", 0, 0), S("RZ_Sit", -1.5, -0.6, "sit", 0, 0), S("RZ_Sit", 0.4, -1.8, "sit", 0, 0), S("RZ_Sit", -0.6, 1.7, "sit", 0, 0)])
-piece("Table", "Common", "Sit", "Centre", "The meal's table: a picnic table set a little crooked, a lamp, tins and mugs left on it, a bench of crates at the end.", [
+piece("FirePit", "Common", "Sit", "Centre", "A fire ringed by whatever people sat on: two stumps, a crate, a sack, each a measured 0.9 m off the fire's edge. Kindling to one side, a kettle bucket.", [
+    P("Fireplace_01.et", 0, 0), *RING("LogChopping_01.et", "Fireplace_01.et", 0, 0, 75), *RING("LogChopping_01.et", "Fireplace_01.et", 0, 0, 245),
+    *RING("CrateWooden_01_plain.et", "Fireplace_01.et", 0, 0, 165, turn=90), *RING("SackUniversal_01.et", "Fireplace_01.et", 0, 0, 330, gap=0.7),
+    P("WoodKindling_01.et", 2.3, -1.3, 102), P("Bucket_01.et", 1.3, 1.3), P("LitterInterior_USSR_01_mug.et", -1.1, 0.9),
+    P("LitterInterior_USSR_01_tincan_V1.et", 1.0, -0.9)])
+piece("Table", "Common", "Sit", "Centre", "The meal's table: a picnic table set a little crooked, a lamp, tins and mugs left on it, a crate pulled up across its end as one more seat.", [
     P("PicnicTable_01.et", 0, 0, 7), P("LampKerosene_01_green.et", 0.4, 0.05, 0, 0.78), P("LitterInterior_USSR_01_bowl.et", -0.4, 0.1, 0, 0.78),
-    P("LitterInterior_USSR_01_mug.et", 0.1, -0.15, 0, 0.78), P("CrateWooden_01_plain.et", 1.6, 0.2, 95), P("Bucket_02.et", -1.5, -1.1),
+    P("LitterInterior_USSR_01_mug.et", 0.1, -0.15, 0, 0.78), BESIDE("CrateWooden_01_plain.et", "PicnicTable_01.et", 0, 0, 7, "right", gap=SEAT_GAP), P("Bucket_02.et", -1.5, -1.6),
     S("RZ_Sit", -0.5, 0.8, "sit", -0.5, 0), S("RZ_Sit", 0.5, 0.85, "sit", 0.5, 0), S("RZ_Sit", -0.4, -0.8, "sit", -0.4, 0), S("RZ_Sit", 0.6, -0.75, "sit", 0.6, 0)])
 piece("Tarp", "Common", "Work", "Inner", "A net strung over a work spot: crates stacked unevenly, a pallet as a floor, a stool.", [
     P("CamoNet_Small_US.et", 0, 0, 12), P("Pallet_01.et", -0.5, -0.3, 8), P("CrateWooden_01_plain.et", 0.9, 0.6, 20), P("CrateWooden_01_plain.et", 1.0, 0.5, 35, 0.62),
@@ -98,72 +425,91 @@ piece("FireBarrel", "Common", "Lean", "Centre", "A burning barrel with a pallet 
     P("BeerBottle_01_empty_brown.et", -1.0, -0.6, 0, 0.62), P("BeerBottle_01_empty_brown.et", 0.6, -0.9),
     S("RZ_Lean", 0.9, 0.3, "lean_l", 0, 0), S("RZ_Lean", -0.8, 0.5, "lean_r", 0, 0)])
 piece("Tent_Small_Civilian", "Common", "Sleep", "Inner", "A small tent, its flap side lived in: boots, a bag, a blanket airing on a crate.", [
-    P("TentSmall_02_red.et", 0, 0, -6), P("SackUniversal_01.et", 1.4, 0.9, 60), P("BlanketFolded_01_green.et", -1.3, 1.0, 20), P("CrateWooden_01_plain.et", -1.3, 1.0, 15),
-    P("Bucket_02.et", 1.2, -1.0)])
+    P("TentSmall_02_red.et", 0, 0, -6), P("SackUniversal_01.et", 2.0, 0.9, 60), P("BlanketFolded_01_green.et", -2.2, 1.0, 20, 0.83), P("CrateWooden_01_plain.et", -2.2, 1.0, 15),
+    P("Bucket_02.et", 1.8, -1.0)])
 piece("Tent_Large_Civilian", "Common", "Sleep", "Inner", "A big family tent, a chair at the door with a blanket over it, the sacks and the water bucket by its side.", [
-    P("TentBig_01_orange.et", 0, 0, 4), P("ChairOld_02.et", 1.0, 2.6, 200), P("BlanketFolded_01_green.et", 1.0, 2.6, 200, 0.45),
-    P("SackUniversal_01_Pile.et", 2.4, -1.4, 30), P("Bucket_01.et", -1.9, -1.8)])
-piece("Firewood", "Common", "Chop", "Inner", "A chopping block in a scatter of split logs, the stack behind it.", [
-    P("WoodPile_01_A.et", -1.6, 0.2, 86), P("LogChopping_01.et", 0.7, 0.3), P("WoodKindling_01.et", 1.6, -0.5, 31), P("WoodKindling_01.et", 1.5, 0.9, 77),
-    P("WoodKindling_01.et", 0.2, -1.2, 120), P("Wheelbarrow_01.et", -0.4, 1.8, 150),
+    P("TentBig_01_orange.et", 0, 0, 4), P("ChairOld_02.et", 1.0, 2.7, 200), P("BlanketFolded_01_green.et", 1.0, 2.7, 200, 0.45),
+    P("SackUniversal_01_Pile.et", 4.1, -1.2, 30), P("Bucket_01.et", -2.0, -2.6)])
+piece("Firewood", "Common", "Chop", "Inner", "A chopping block in a scatter of split logs, two stacks of cut wood behind it, the wheelbarrow.", [
+    P("WoodPile_02_end_A.et", -1.6, 0.1, 4), P("WoodPile_02_end_A.et", -1.6, 1.6, -3), P("LogChopping_01.et", 0.7, 0.3), P("WoodKindling_01.et", 1.6, -0.5, 31),
+    P("WoodKindling_01.et", 1.5, 0.9, 77), P("WoodKindling_01.et", 0.2, -1.2, 120), P("Wheelbarrow_01.et", 3.0, 2.6, 150),
     S("RZ_Chop", 0.7, 1.1, "loiter", 0, -0.8)])
 piece("CookPot", "Common", "Cook", "Inner", "A pot over a fire on a pole tripod, a grill for meat, crates as a counter, bowls drying.", [
     P("Fireplace_01.et", 0, 0), P("WoodenFenceOld_01_pole.et", 0.5, 0, 0, 0, 0, -20), P("WoodenFenceOld_01_pole.et", -0.25, 0.43, 0, 0, 18, 10), P("WoodenFenceOld_01_pole.et", -0.25, -0.43, 0, 0, -18, 10),
     P("Bucket_01.et", 0, 0, 0, 0.5), P("SkewerGrill_01.et", 1.4, 0.6, 28), P("CrateWooden_01_plain.et", -1.6, 0.4, 82), P("CrateWooden_01_plain.et", -1.7, -0.6, 95),
     P("LitterInterior_USSR_01_bowl.et", -1.6, 0.3, 0, 0.62), P("LitterInterior_USSR_01_bowl.et", -1.7, -0.5, 0, 0.62), P("SackUniversal_01.et", 1.1, -1.4, 40),
     S("RZ_Cook", 0.1, 1.3, "loiter", 0, -1.3)])
-piece("WashStand", "Common", "Wash", "Inner", "A mirror nailed to a post, a basin and a folded towel on a crate below it, a bucket of water; puddled ground.", [
-    P("WoodenFenceOld_01_pole.et", 0, 0), P("MirrorBathroom_01.et", 0, 0.08, 0, 1.5), P("CrateWooden_01_plain.et", 0.1, 0.55, 4), P("Bucket_02.et", -0.05, 0.55, 0, 0.62),
-    P("BlanketFolded_01_green.et", 0.35, 0.55, 8, 0.62), P("Bucket_01.et", -0.6, 0.7),
-    S("RZ_Wash", 0.05, 1.2, "loiter", 0, -1.2)])
-piece("Latrine", "Common", "None", "Edge", "Two tin sheets in an L for privacy, a plank over a bucket, a sack of lime.", [
-    P("TinWall_01_3m.et", 0, 1.5, 3), P("TinWall_01_3m.et", -1.5, 0, 88), P("Bucket_01.et", -0.6, 0.8), P("Junk_01_single_planks.et", -0.6, 0.8, 5, 0.35),
-    P("SackUniversal_01.et", 0.6, 0.9, 70)])
+# The wash stand: the crate's back face against the post, the mirror's back against the post's front face, hung so
+# its top ends 5 cm under the post's measured top; a bucket of water a step off the crate's end
+_WASH_CRATE = BESIDE("CrateWooden_01_plain.et", "WoodenFenceOld_01_pole.et", 0, 0, 0, "front", yaw=90)
+piece("WashStand", "Common", "Wash", "Inner", "A mirror nailed to a post, a basin and a folded towel on a crate pushed against it, a bucket of water; puddled ground.", [
+    P("WoodenFenceOld_01_pole.et", 0, 0), _WASH_CRATE,
+    P("MirrorBathroom_01.et", 0, round(_BOX["WoodenFenceOld_01_pole.et"]["z1"] - _BOX["MirrorBathroom_01.et"]["z0"], 3), 0,
+      round(TOP("WoodenFenceOld_01_pole.et") - _BOX["MirrorBathroom_01.et"]["h"] - 0.05, 2)),
+    P("Bucket_02.et", _WASH_CRATE[2] - 0.3, _WASH_CRATE[3], 0, 0.83), P("BlanketFolded_01_green.et", _WASH_CRATE[2] + 0.3, _WASH_CRATE[3], 8, 0.83),
+    BESIDE("Bucket_01.et", "CrateWooden_01_plain.et", _WASH_CRATE[2], _WASH_CRATE[3], 90, "back", gap=0.3),
+    S("RZ_Wash", _WASH_CRATE[2], _WASH_CRATE[3] + 0.85, "loiter", 0, -1.2)])
+# Two tin sheets in an L whose faces meet at the corner (the sheet's origin is at its end, measured): one along +x,
+# the other along +z with its outer face flush with the first one's end and its end against the first one's face
+_TIN = _BOX["TinWall_01_3m.et"]
+piece("Latrine", "Common", "None", "Edge", "Two tin sheets in an L for privacy, the bucket in its corner on a pallet, a sack of lime beside it.", [
+    P("TinWall_01_3m.et", 0, 0, 0), P("TinWall_01_3m.et", round(_TIN["z0"], 3), round(_TIN["z1"], 3), -90),
+    P("Pallet_01.et", round(0.3 - _BOX["Pallet_01.et"]["x0"], 3), round(_TIN["z1"] + 0.3 - _BOX["Pallet_01.et"]["z0"], 3), 0),
+    P("Bucket_01.et", round(0.3 - _BOX["Pallet_01.et"]["x0"], 3), round(_TIN["z1"] + 0.3 - _BOX["Pallet_01.et"]["z0"], 3), 0, 0.14),
+    P("SackUniversal_01.et", 1.9, 0.8, 70)])
 piece("DryingLine", "Common", "Work", "Edge", "A clothesline frame with its lines strung, a laundry basket and a stool to stand on.", [
     P("ClotheslineFrame_01.et", 0, 0, 4), P("BasketLaundry_01.et", -0.4, 0.8, 18), P("Stool_01.et", 0.7, 0.9),
     S("RZ_Work", 0.2, 1.0, "loiter", 0, -1.0)])
 
 piece("Duckboards", "Common", "None", "Inner", "Pallets laid flat end to end: a dry walk from the tents to the fire, the ground under it trodden bare.", [
     P("Pallet_01.et", 0, -1.3, 90), P("Pallet_01.et", 0.05, 0, 92), P("Pallet_01.et", -0.05, 1.3, 88)])
-piece("CrateChairs", "Common", "Sit", "Centre", "Mismatched chairs round a crate table, a lantern on it, two more lanterns on poles.", [
-    P("CrateWooden_01_plain.et", 0, 0, 14), P("ChairOld_01.et", 0.1, 1.0, 190), P("ChairOld_02.et", 1.0, -0.3, 255), P("Stool_01.et", -1.0, -0.4),
-    P("LanternMilitary_US_01.et", 0.1, 0, 0, 0.62), P("WoodenFenceOld_01_pole.et", 1.9, 1.1), P("WoodenFenceOld_01_pole.et", -2.1, 1.3),
-    P("LanternMilitary_US_01.et", 1.9, 1.1, 0, 1.6), P("LanternMilitary_US_01.et", -2.1, 1.3, 0, 1.6), P("BeerBottle_01_empty_brown.et", -0.3, 0.2, 0, 0.62),
-    S("RZ_Sit", 0.1, 1.0, "sit", 0, -1.0), S("RZ_Sit", 1.0, -0.3, "sit", -1.0, 0.3), S("RZ_Sit", -1.0, -0.4, "sit", 1.0, 0.4)])
+piece("CrateChairs", "Common", "Sit", "Centre", "Mismatched chairs pulled up to a crate for a table, a lantern on it, two more lanterns on poles.", [
+    P("CrateWooden_01_plain.et", 0, 0, 14), *SEAT("ChairOld_01.et", "CrateWooden_01_plain.et", 0, 0, 14, "right"),
+    *SEAT("ChairOld_02.et", "CrateWooden_01_plain.et", 0, 0, 14, "front", along=0.1), *SEAT("Stool_01.et", "CrateWooden_01_plain.et", 0, 0, 14, "left", along=-0.2),
+    P("LanternMilitary_US_01.et", 0.1, 0, 0, 0.62), P("WoodenFenceOld_01_pole.et", 1.9, 1.6), P("WoodenFenceOld_01_pole.et", -2.1, 1.3),
+    P("LanternMilitary_US_01.et", 1.9, 1.6, 0, 1.6), P("LanternMilitary_US_01.et", -2.1, 1.3, 0, 1.6), P("BeerBottle_01_empty_brown.et", -0.1, 0.3, 0, 0.62)])
 piece("Clutter", "Common", "None", "Inner", "Life left lying about: sacks, a guitar on one, tins, bottles, a wheelbarrow tipped on a crate.", [
     P("SackUniversal_01.et", 0, 0, 30), P("SackUniversal_01.et", 0.5, 0.4, 70), P("BlanketFolded_01_green.et", 1.1, -0.3, 10), P("Guitar_01.et", 0.3, 0.2, 55, 0.25, 30, 0),
     P("LitterInterior_USSR_01_tincan_V1.et", -0.6, 0.5), P("LitterInterior_USSR_01_tincan_V2.et", -0.75, 0.3), P("BeerBottle_01_empty_brown.et", -0.4, -0.5),
     P("CrateWooden_01_plain.et", 1.9, -1.0, 40), P("Wheelbarrow_01.et", 1.6, -0.2, 120, 0, 0, 25)])
-piece("RadioTable", "Common", "Sit", "Centre", "A kitchen table with a radio, a lamp and a chair pulled out; a notebook of frequencies.", [
+piece("RadioTable", "Common", "Sit", "Centre", "A kitchen table with a radio, a lamp and a chair pulled out; a notebook of frequencies, a crate against its end.", [
     P("TableOld_01.et", 0, 0, -4), P("RadioSmall_01_black.et", 0, -0.1, 180, 0.78), P("LampKerosene_01_green.et", 0.45, 0.1, 0, 0.78), P("Notebook_01_Stack.et", -0.35, 0.05, 20, 0.78),
-    P("ChairOld_01.et", 0.05, 0.85, 172), P("CrateWooden_01_plain.et", -1.2, -0.4, 80),
-    S("RZ_Sit", 0.05, 0.85, "sit", 0, -0.8)])
-piece("ScrapShelter", "Common", "Sleep", "Inner", "A lean-to of pallets and a tin roof over a mattress; a blanket and a lamp inside.", [
-    P("Pallet_01.et", -0.9, 0, 88, 0.6, 0, 90), P("Pallet_01.et", 0.95, 0.1, 94, 0.6, 0, 90), P("TinWall_01_3m.et", 0, -0.1, 2, 1.3, 75, 0),
-    P("Junk_01_single_mattress.et", 0, 0, 4), P("BlanketBeach_01_brown.et", 0.15, 0.1, 10, 0.08), P("LampKerosene_01_green.et", 0.6, 0.9)])
-piece("Barricade_Fence", "Common", "None", "Approach", "An old fence panel braced with stood-up pallets, a pile of spares.", [
+    *SEAT("ChairOld_01.et", "TableOld_01.et", 0, 0, -4, "front", gap=SEAT_LEFT), BESIDE("CrateWooden_01_plain.et", "TableOld_01.et", 0, 0, -4, "left", gap=0.15)])
+# The mattress's box is off its origin (x0 -1.42, x1 0.80): set so its box is centred, a pallet stood on edge
+# against each long side, face to face with it, two to a side (their measured 1.23 m)
+_MAT = _BOX["Junk_01_single_mattress.et"]
+_MAT_X = round(-(_MAT["x0"] + _MAT["x1"]) / 2, 3)
+_MAT_Z = round(-(_MAT["z0"] + _MAT["z1"]) / 2, 3)
+_PAL = _BOX["Pallet_01.et"]
+_PAL_X = round(_MAT["w"] / 2 + _PAL["h"] / 2, 3)
+piece("ScrapShelter", "Common", "Sleep", "Inner", "A windbreak of pallets stood on edge either side of a mattress; a blanket on it and a lamp at its head.", [
+    P("Junk_01_single_mattress.et", _MAT_X, _MAT_Z, 0), P("BlanketBeach_01_brown.et", 0.1, 0.1, 10, 0.4),
+    P("Pallet_01.et", -_PAL_X, -_PAL["d"] / 2, 0, 0.41, 0, 90), P("Pallet_01.et", -_PAL_X, _PAL["d"] / 2, 0, 0.41, 0, 90),
+    P("Pallet_01.et", _PAL_X, -_PAL["d"] / 2, 0, 0.41, 0, 90), P("Pallet_01.et", _PAL_X, _PAL["d"] / 2, 0, 0.41, 0, 90),
+    P("LampKerosene_01_green.et", 0.5, round(_MAT["d"] / 2 + 0.3 + 0.09, 2))])
+piece("Barricade_Fence", "Common", "None", "Approach", "An old fence panel braced with stood-up pallets, a pile of spares and a crate behind it.", [
     P("WoodenFenceOld_01_4m.et", 0, 0, 3), P("Pallet_01.et", 2.3, 0.1, 96, 0.6, 0, 90), P("Pallet_01.et", 2.5, 0.5, 110, 0.6, 0, 90), P("Pallet_01_Pile.et", -2.7, 0.7, 20),
-    P("TirePile_01_small.et", -1.0, 1.0)])
+    P("CrateWooden_01_plain.et", -1.0, 1.2, 12)])
 piece("Kennel", "Common", "None", "Edge", "A dog house with a bowl and a chewed blanket. No dog.", [
     P("DogHouse_01.et", 0, 0, 12), P("LitterInterior_USSR_01_bowl.et", 0.6, 0.9), P("BlanketFolded_01_green.et", -0.6, 0.8, 40)])
 
 # ------------------------------------------------------------------- Bastion
 piece("Tent_Small_Bastion", "Bastion", "Sleep", "Inner", "A two-man tent squared to the line, kit by the flap, a sandbag holding the corner.", [
-    P("TentSmallUS_01.et", 0, 0), P("CrateWooden_02_1x1x1.et", 1.4, 0.9, 0), P("Sandbag_01_single_burlap.et", -1.1, -1.3, 90), P("BlanketFolded_01_green.et", 1.4, 0.9, 0, 1.0)])
+    P("TentSmallUS_01.et", 0, 0), P("CrateWooden_02_1x1x1.et", 1.8, 0.9, 0), P("Sandbag_01_single_burlap.et", -1.35, -1.3, 90), P("BlanketFolded_01_green.et", 1.8, 0.9, 0, 1.0)])
 piece("Tent_Large_Bastion", "Bastion", "Sleep", "Inner", "The barrack tent, a duckboard of pallets at its door, a rack of crates down one side.", [
     P("TentUS_01_Assembled.et", 0, 0), P("Pallet_01.et", 0, 3.9, 0), P("Pallet_01.et", 0, 4.7, 0), P("CrateWooden_02_1x1x1.et", 3.0, 1.5, 0), P("CrateWooden_02_1x1x1.et", 3.0, 0.4, 0),
     P("BarrelMetal_01_grey.et", -3.0, 2.6)])
 piece("SentryNest_Bastion", "Bastion", "Watch", "Approach", "A curved sandbag nest, two layers high at the front, a crate seat and an ammo-coloured crate.", [
     P("Sandbag_01_long_burlap.et", 0, 1.3, 0), P("Sandbag_01_long_burlap.et", 0, 1.3, 0, 0.45), P("Sandbag_01_long_burlap.et", -1.4, 0.75, 48), P("Sandbag_01_long_burlap.et", 1.4, 0.75, -48),
-    P("Sandbag_01_end_burlap.et", -2.0, -0.2, 80), P("Sandbag_01_end_burlap.et", 2.0, -0.2, -80), P("CrateWooden_01_plain.et", 0.7, -0.5, 10), P("LitterInterior_USSR_01_mug.et", 0.6, -0.5, 0, 0.62),
+    P("Sandbag_01_end_burlap.et", -2.0, -0.2, 80), P("Sandbag_01_end_burlap.et", 2.0, -0.2, -80), P("CrateWooden_01_plain.et", 0.2, -1.3, 85), P("LitterInterior_USSR_01_mug.et", 0.2, -1.3, 0, 0.83),
     S("RZ_Watch", 0, 0.2, "loiter", 0, 10)])
 piece("RosterBoard", "Bastion", "Gather", "Centre", "The roll-call board, sheets pinned unevenly, a crate with the clipboard; people stand in a loose arc.", [
     P("ChalkBoard_01.et", 0, 0), P("Notice_A4_Vertical_V1.et", 0.3, -0.04, 180, 1.3), P("Notice_A4_Vertical_V1.et", -0.25, -0.04, 176, 1.25), P("CrateWooden_01_plain.et", 1.2, -0.6, 25),
     P("FileOffice_01_Stack.et", 1.2, -0.6, 10, 0.62),
     S("RZ_Gather", -1.3, -1.7, "loiter", 1.3, 1.7), S("RZ_Gather", -0.4, -2.0, "loiter", 0.4, 2.0), S("RZ_Gather", 0.6, -1.9, "loiter", -0.6, 1.9), S("RZ_Gather", 1.5, -1.5, "loiter", -1.5, 1.5)])
-piece("Barricade_Sandbag", "Bastion", "None", "Approach", "A sandbag wall with a slight dog-leg, ends tapered, a spare bag dropped.", [
-    P("Sandbag_01_long_burlap.et", -1.0, 0, 3), P("Sandbag_01_long_burlap.et", 1.0, 0.1, -6), P("Sandbag_01_long_burlap.et", -1.0, 0, 3, 0.45), P("Sandbag_01_end_burlap.et", 2.2, 0.35, -30),
-    P("Sandbag_01_end_burlap.et", -2.2, 0.05, 185), P("Sandbag_01_single_burlap.et", 0.3, -0.8, 40)])
+piece("Barricade_Sandbag", "Bastion", "None", "Approach", "A sandbag wall, its ends tapered and turned in a little, a spare bag dropped behind it.", [
+    P("Sandbag_01_long_burlap.et", 0, 0, 2), P("Sandbag_01_end_burlap.et", 2.75, 0.2, -12), P("Sandbag_01_end_burlap.et", -2.85, 0.05, 183),
+    P("Sandbag_01_single_burlap.et", 0.3, -1.0, 40)])
 piece("FlagPole", "Bastion", "None", "Centre", "An empty flag pole in a ring of sandbags. The Zone flies none.", [
     P("FlagPole_01_empty.et", 0, 0), P("Sandbag_01_single_burlap.et", 0.4, 0, 0), P("Sandbag_01_single_burlap.et", -0.38, 0.1, 10), P("Sandbag_01_single_burlap.et", 0.05, 0.4, 92),
     P("Sandbag_01_single_burlap.et", -0.05, -0.4, 85)])
@@ -181,42 +527,43 @@ piece("DutyBoard", "Bastion", "Gather", "Centre", "The duty rota on a chalkboard
 
 # ------------------------------------------------------------------- Red Hand
 piece("SentryNest_RedHand", "RedHand", "Watch", "Approach", "A lookout behind a tyre pile and a tipped pallet, an armchair someone dragged out to sit in.", [
-    P("TirePile_01_small.et", -0.9, 1.0), P("Pallet_01.et", 0.6, 1.3, -8, 0.6, 0, 85), P("Sandbag_01_long_burlap.et", 1.7, 0.6, -60), P("Armchair_01.et", 0, 0, 175),
-    P("BeerBottle_01_group.et", 0.9, -0.4),
+    P("TirePile_01_small.et", -0.9, 1.9), P("Pallet_01.et", 0.6, 1.3, -8, 0.6, 0, 85), P("Sandbag_01_long_burlap.et", 2.1, 0.9, -60), P("Armchair_01.et", 0, 0, 175),
+    P("BeerBottle_01_group.et", -0.8, -0.4),
     S("RZ_Watch", 0, 0.1, "sit", 0, 10)])
-piece("CardTable", "RedHand", "Sit", "Centre", "A kitchen table, crates and a chair round it, bottles and a lamp; a barrel as a bin.", [
-    P("TableOld_01.et", 0, 0, 12), P("CrateWooden_01_plain.et", 0.1, 1.0, 5), P("ChairOld_02.et", 1.1, -0.2, 260), P("CrateWooden_01_plain.et", -1.1, -0.4, 80),
-    P("BeerBottle_01_group.et", 0.25, 0.1, 0, 0.78), P("LampKerosene_01_green.et", -0.35, -0.1, 0, 0.78), P("BarrelMetal_01_rust.et", -1.6, 1.2),
-    S("RZ_Sit", 0.1, 1.0, "sit", 0, -1.0), S("RZ_Sit", 1.1, -0.2, "sit", -1.1, 0.2), S("RZ_Sit", -1.1, -0.4, "sit", 1.1, 0.4)])
-piece("TollBarrier", "RedHand", "Lean", "Approach", "Logs dragged across the road on tyres, a chair and a barrel fire for whoever takes the toll.", [
+piece("CardTable", "RedHand", "Sit", "Centre", "A kitchen table, crates pulled up as benches and a chair round it, bottles and a lamp; a barrel as a bin.", [
+    P("TableOld_01.et", 0, 0, 12), BESIDE("CrateWooden_01_plain.et", "TableOld_01.et", 0, 0, 12, "front", gap=SEAT_GAP, yaw=102),
+    *SEAT("ChairOld_02.et", "TableOld_01.et", 0, 0, 12, "right"), BESIDE("CrateWooden_01_plain.et", "TableOld_01.et", 0, 0, 12, "left", gap=SEAT_GAP),
+    P("BeerBottle_01_group.et", 0.25, 0.1, 0, 0.78), P("LampKerosene_01_green.et", -0.35, -0.1, 0, 0.78), P("BarrelMetal_01_rust.et", -1.8, 1.5),
+    S("RZ_Sit", 0.1, 1.0, "sit", 0, -1.0), S("RZ_Sit", -1.3, -0.3, "sit", 1.1, 0.4)])
+piece("TollBarrier", "RedHand", "Lean", "Approach", "Logs dragged across the road on tyres, a chair by a barrel fire for whoever takes the toll.", [
     P("WoodLog_01_A.et", 0, 1.5, 92), P("WoodLog_01_A.et", 0.2, 1.5, 86, 0.35), P("Tire_UAZ469.et", -1.6, 1.5, 0, 0, 90), P("Tire_UAZ469.et", 1.7, 1.4, 0, 0, 90),
-    P("ChairOld_01.et", 2.3, -0.2, 205), P("BarrelMetal_01_rust.et", 2.9, 0.7), P("Campfire_burning.et", 2.9, 0.7, 0, 0.9),
-    S("RZ_Lean", -1.8, 0.5, "lean_l", 0, 3), S("RZ_Lean", 2.3, -0.2, "smoke", 0, 3)])
-piece("Barricade_Scrap", "RedHand", "None", "Approach", "Tin sheets lashed at angles, a tyre pile and junk, a pallet wedged in.", [
-    P("TinWall_01_3m.et", -0.8, 0, 6), P("TinWall_01_3m.et", 1.4, 0.4, -18), P("TirePile_01_small.et", 3.2, 0.9), P("Junk_01_pile_small.et", -2.9, 0.5, 30), P("Pallet_01.et", 0.4, -0.3, 10, 0.6, 0, 80)])
+    P("BarrelMetal_01_rust.et", 2.9, 0.7), P("Campfire_burning.et", 2.9, 0.7, 0, 0.9), *RING("ChairOld_01.et", "BarrelMetal_01_rust.et", 2.9, 0.7, 215, gap=0.6, slot="RZ_Lean", anim="smoke"),
+    S("RZ_Lean", -1.8, 0.5, "lean_l", 0, 3)])
+piece("Barricade_Scrap", "RedHand", "None", "Approach", "Tin sheets lashed at angles, a tyre pile behind them and junk at one end, a pallet wedged in.", [
+    P("TinWall_01_3m.et", -0.8, 0, 6), P("TinWall_01_3m.et", 1.4, 0.4, -18), P("TirePile_01_small.et", 3.2, -1.2), P("Junk_01_pile_small.et", -3.3, 0.5, 30), P("Pallet_01.et", 0.4, -0.3, 10, 0.6, 0, 80)])
 piece("RedHandSheet", "RedHand", "None", "Approach", "A tin sheet stood on two tyre piles, facing the road (the red hand decal still to come).", [
-    P("TirePile_01_small.et", -1.0, 0), P("TirePile_01_small.et", 1.1, 0.1), P("TinWall_01_3m.et", 0, 0.05, 2, 0.6), P("Junk_01_single_planks.et", 0.2, -0.5, 25)])
-piece("TrophyWall", "RedHand", "None", "Approach", "A long tin wall by the way in, hung with skulls on boards that look out at whoever comes up the road; a tyre leaning on it, junk at its foot.", [
+    P("TirePile_01_small.et", -1.0, 0), P("TirePile_01_small.et", 1.1, 0.1), P("TinWall_01_3m.et", 0, 0.05, 2, 0.6)])
+piece("TrophyWall", "RedHand", "None", "Approach", "A long tin wall by the way in, hung with skulls on boards that look out at whoever comes up the road; a tyre leaning on it, junk in front of it.", [
     P("TinWall_01_6m_A.et", 0, 0, 4), P("DeerSkull_01_board.et", -1.6, 0.32, 184, 1.6), P("DeerSkull_01_board.et", 0.3, 0.34, 184, 1.8), P("DeerSkull_01_board.et", 1.9, 0.36, 184, 1.5),
-    P("Tire_UAZ469.et", -2.6, 0.5, 0, 0.3, 75), P("Junk_01_pile_small.et", 2.4, 0.9, 20)])
-piece("Sofa", "RedHand", "Sit", "Centre", "A sofa and armchair round a barrel side table, bottles everywhere.", [
-    P("Sofa_02_green.et", 0, 0, 4), P("Armchair_01.et", 1.9, 1.3, 238), P("BarrelMetal_01_rust.et", 0.9, 1.5), P("BeerBottle_01_group.et", 0.9, 1.5, 0, 0.9),
-    P("BeerBottle_01_empty_brown.et", -0.6, 1.1), P("BeerBottle_01_empty_brown.et", 1.4, 0.4), P("Tire_UAZ469.et", -1.6, 1.4, 0, 0, 90),
-    S("RZ_Sit", -0.5, 0.4, "sit", 0.9, 1.5), S("RZ_Sit", 0.5, 0.4, "sit", 0.9, 1.5), S("RZ_Sit", 1.9, 1.3, "sit", -0.9, 0.2)])
+    P("Tire_UAZ469.et", -2.6, 0.5, 0, 0.3, 75), P("Junk_01_pile_small.et", 2.6, 2.4, 20)])
+piece("Sofa", "RedHand", "Sit", "Centre", "A sofa and an armchair turned to a barrel side table, each an arm's reach off it, bottles everywhere.", [
+    P("BarrelMetal_01_rust.et", 0, 0), P("BeerBottle_01_group.et", 0, 0, 0, 0.9), *RING("Sofa_02_green.et", "BarrelMetal_01_rust.et", 0, 0, 185, gap=0.35),
+    *RING("Armchair_01.et", "BarrelMetal_01_rust.et", 0, 0, 95, gap=0.35),
+    P("BeerBottle_01_empty_brown.et", -1.4, -0.5), P("BeerBottle_01_empty_brown.et", 0.6, -0.8), P("Tire_UAZ469.et", -2.0, 0.2, 0, 0, 90)])
 
 # ------------------------------------------------------------------- Haven
 piece("WashingLine", "Haven", "Work", "Edge", "Two clothesline frames end to end across the yard, the washing on them, a basket and a bucket.", [
     P("ClotheslineFrame_01.et", -1.7, 0, 2), P("ClotheslineFrame_01.et", 1.7, 0.1, -2), P("BasketLaundry_01.et", -0.7, 0.9, 15), P("Bucket_01.et", 0.5, 1.0),
     S("RZ_Work", -0.2, 1.0, "loiter", 0, -1.0)])
-piece("Garden", "Haven", "Work", "Edge", "Two vegetable beds side by side, sacks of seed and a bucket at their end, the wheelbarrow beside them.", [
-    P("VegetableBed_01_small.et", -1.0, 0, 3), P("VegetableBed_01_small.et", 0.6, 0.2, -4), P("SackUniversal_01.et", 2.0, 1.1, 30), P("SackUniversal_01.et", 2.3, 0.6, 75),
-    P("Wheelbarrow_01.et", 1.6, -1.9, 60), P("Bucket_02.et", -0.2, 1.8),
-    S("RZ_Work", -0.2, 1.5, "loiter", 0, -1.0)])
+piece("Garden", "Haven", "Work", "Edge", "Two vegetable beds side by side with a step between them, sacks of seed and a bucket at their end, the wheelbarrow beside them.", [
+    P("VegetableBed_01_small.et", -1.45, 0, 2), P("VegetableBed_01_small.et", 1.45, 0.1, -2), P("SackUniversal_01.et", 3.4, 1.0, 30), P("SackUniversal_01.et", 3.6, 0.3, 75),
+    P("Wheelbarrow_01.et", 0.2, -2.6, 60), P("Bucket_02.et", -0.1, 1.9),
+    S("RZ_Work", 0.6, 1.8, "loiter", 0.6, 0)])
 piece("WaterBarrel", "Haven", "Work", "Inner", "A rain barrel and a second one beside it, buckets, a ladle mug on the lid.", [
-    P("BarrelMetal_01_blue.et", 0, 0), P("BarrelMetal_01_grey.et", 0.7, 0.2), P("Bucket_01.et", -0.6, 0.6), P("Bucket_02.et", 0.4, 0.8), P("LitterInterior_USSR_01_mug.et", 0, 0, 0, 0.9),
+    P("BarrelMetal_01_blue.et", 0, 0), P("BarrelMetal_01_grey.et", 0.7, 0.2), BESIDE("Bucket_01.et", "BarrelMetal_01_blue.et", 0, 0, 0, "left"), BESIDE("Bucket_02.et", "BarrelMetal_01_grey.et", 0.7, 0.2, 0, "front"), P("LitterInterior_USSR_01_mug.et", 0, 0, 0, 0.9),
     S("RZ_Work", 0, 1.0, "loiter", 0, -1.0)])
-piece("BearDoor", "Haven", "None", "Approach", "A door-sized plank board leaned on a post at the way in (the bear decal still to come), a flowerpot.", [
-    P("WoodenFenceOld_01_pole.et", 0, 0), P("Junk_01_single_planks.et", 0, 0.3, 2, 0.9, 0, 80), P("Junk_01_single_planks.et", 0.3, 0.3, 4, 0.9, 0, 82),
+piece("BearDoor", "Haven", "None", "Approach", "A pallet stood against a post at the way in for a board (the bear decal still to come), a flowerpot.", [
+    P("WoodenFenceOld_01_pole.et", 0, 0), P("Pallet_01.et", 0, round(_BOX["WoodenFenceOld_01_pole.et"]["z1"] + _BOX["Pallet_01.et"]["h"] / 2, 3), 0, 0.62, 80),
     P("FlowerpotFlowers_01_begonia_white.et", 0.9, 0.6)])
 piece("Memorial", "Haven", "Work", "Centre", "A white table with candles, photos and names; flowers in front.", [
     P("TableOld_01_white.et", 0, 0, -3), P("CandleHolderDecorative_01.et", -0.4, 0, 0, 0.78), P("CandleHolderDecorative_01.et", 0, 0.12, 0, 0.78), P("CandleHolderDecorative_01.et", 0.4, -0.05, 0, 0.78),
@@ -226,42 +573,41 @@ piece("Memorial", "Haven", "Work", "Centre", "A white table with candles, photos
 piece("ChildrensCorner", "Haven", "None", "Inner", "A low chalkboard, a blanket on the ground, two stools, chalk tins.", [
     P("ChalkBoard_01.et", 0, 0, 5), P("BlanketBeach_01_red.et", 0.1, 1.3, 70), P("Stool_01.et", -0.9, 1.0), P("Stool_01.et", 0.9, 1.2),
     P("LitterInterior_USSR_01_tincan_V2.et", 0.3, 0.6)])
-piece("VegStall", "Haven", "Work", "Edge", "A market stand with crates and sacks, a bucket of water, a chair behind.", [
-    P("MarketStand_01.et", 0, 0), P("CrateWooden_01_plain.et", -0.6, -0.2, 6), P("CrateWooden_01_plain.et", 0.6, -0.2, -4), P("SackUniversal_01_Pile.et", 1.8, 0.5, 20),
-    P("Bucket_01.et", -1.5, 0.3), P("ChairOld_01.et", 0.3, -1.1, 10),
-    S("RZ_Work", 0, -1.0, "loiter", 0, 1.0)])
+piece("VegStall", "Haven", "Work", "Edge", "A market stand with crates and sacks, a bucket of water, a chair behind it for whoever minds it.", [
+    P("MarketStand_01.et", 0, 0), P("CrateWooden_01_plain.et", -0.6, -0.2, 6), P("CrateWooden_01_plain.et", 0.6, -0.2, -4), P("SackUniversal_01_Pile.et", 1.9, 0.9, 20),
+    P("Bucket_01.et", -1.6, 0.6), *SEAT("ChairOld_01.et", "MarketStand_01.et", 0, 0, 0, "back", gap=0.3, slot="RZ_Work", anim="loiter")])
 
 # ------------------------------------------------------------------- Halcyon
 piece("Tent_Halcyon", "Halcyon", "Work", "Inner", "The ward tent, its flap to the yard: a field table out front with a sample drum and a lamp, a crate of cases by the door.", [
     P("TentFIA_01.et", 0, 0), P("TableMilitary_US_01.et", 0, 3.4), P("ToolsSurgical_01_autoclavedrum.et", 0.5, 3.4, 0, 0.78),
     P("LampKerosene_01_green.et", -0.6, 3.45, 0, 0.78), P("CrateWooden_02_1x1x1.et", 2.0, 2.9, 6),
     S("RZ_Work", 0, 4.2, "loiter", 0, -1.0)])
-piece("FieldTable", "Halcyon", "Sit", "Centre", "A field table with notebooks and a sample drum, two stools, the cases stacked at its end with a lantern on top.", [
+piece("FieldTable", "Halcyon", "Sit", "Centre", "A field table with notebooks and a sample drum, two stools pulled up, the cases stacked against its end with a lantern on top.", [
     P("TableMilitary_US_01.et", 0, 0), P("Notebook_01_Stack.et", 0.4, 0, 10, 0.78), P("FileOffice_01_Stack.et", -0.5, 0.1, -5, 0.78), P("ToolsSurgical_01_autoclavedrum.et", 0, -0.1, 0, 0.78),
-    P("Stool_01.et", 0.1, 0.8), P("Stool_01.et", -0.2, -0.8), P("CrateWooden_02_1x1x1.et", 1.7, -0.1, 4), P("LanternMilitary_US_01.et", 1.7, -0.1, 0, 1.0),
-    S("RZ_Sit", 0.1, 0.8, "sit", 0, -0.8), S("RZ_Sit", -0.2, -0.8, "sit", 0, 0.8)])
+    *SEAT("Stool_01.et", "TableMilitary_US_01.et", 0, 0, 0, "front", along=0.1), *SEAT("Stool_01.et", "TableMilitary_US_01.et", 0, 0, 0, "back", along=0.2),
+    BESIDE("CrateWooden_02_1x1x1.et", "TableMilitary_US_01.et", 0, 0, 0, "right", gap=0.1, yaw=4), P("LanternMilitary_US_01.et", 1.27, 0, 0, 1.0)])
 piece("ColdBox", "Halcyon", "Work", "Inner", "The cold store: sample cases stacked on a pallet off the wet ground, a drum on top, a barrel of cooling water beside it.", [
     P("Pallet_01.et", 0, 0, 3), P("CrateWooden_02_1x1x1.et", -0.1, 0, 3, 0.15), P("CrateWooden_01_plain.et", 0.5, 0.05, -8, 1.15), P("ToolsSurgical_01_autoclavedrum.et", -0.2, 0, 0, 1.15),
     P("BarrelMetal_01_blue.et", 1.2, 0.1),
     S("RZ_Work", 0, 1.0, "loiter", 0, -1.0)])
-piece("Antenna", "Halcyon", "Work", "Edge", "The antenna on a stand with a radio on a crate and a cable run to the generator.", [
-    P("Antenna_R161_01.et", 0, 0), P("CrateWooden_01_plain.et", 1.0, 0.6, 15), P("RadioSmall_01_black.et", 1.0, 0.6, 195, 0.62), P("Stool_01.et", 1.1, 1.3),
-    S("RZ_Work", 1.1, 1.3, "loiter", -0.1, -0.7)])
+piece("Antenna", "Halcyon", "Work", "Edge", "The antenna on a stand with a radio on a crate and a stool pulled up to it; a cable run to the generator.", [
+    P("Antenna_R161_01.et", 0, 0), P("CrateWooden_01_plain.et", 1.0, 0.6, 15), P("RadioSmall_01_black.et", 1.0, 0.6, 195, 0.62),
+    *SEAT("Stool_01.et", "CrateWooden_01_plain.et", 1.0, 0.6, 15, "right", slot="RZ_Work", anim="loiter")])
 piece("Generator", "Halcyon", "Work", "Edge", "The generator on a pallet behind a row of sandbags, a fuel-coloured barrel, a toolbox crate.", [
     P("Pallet_01.et", 0, 0, 5), P("GeneratorPortable_US_01_Off.et", 0, 0, 5, 0.15), P("BarrelMetal_01_grey.et", -1.1, 0.4), P("CrateWooden_01_plain.et", 1.0, -0.6, 70),
     P("Sandbag_01_long_burlap.et", 0.1, -1.6, 2),
     S("RZ_Work", 0, 1.0, "loiter", 0, -1.0)])
 piece("SampleTable", "Halcyon", "Work", "Inner", "The sorting table under a net: sample drums and the log on a field table, the cases under it, worked standing.", [
     P("CamoNet_Small_US.et", 0, 0, 4), P("TableMilitary_US_01.et", 0, -0.3), P("ToolsSurgical_01_autoclavedrum.et", -0.5, -0.3, 0, 0.78), P("ToolsSurgical_01_autoclavedrum.et", -0.2, -0.35, 0, 0.78),
-    P("Notebook_01_Stack.et", 0.5, -0.25, 12, 0.78), P("CrateWooden_01_plain.et", 0.3, -0.35, 2), P("LanternMilitary_US_01.et", 1.6, -1.2),
+    P("Notebook_01_Stack.et", 0.5, -0.25, 12, 0.78), P("CrateWooden_01_plain.et", 1.3, -0.3, 2), P("LanternMilitary_US_01.et", 1.3, -0.3, 0, 0.83),
     S("RZ_Work", -0.3, 0.6, "loiter", 0, -1.0), S("RZ_Work", 0.6, 0.6, "loiter", 0, -1.0)])
 piece("DeconShower", "Halcyon", "Wash", "Inner", "A shower on a pallet floor, a tin sheet stood up on each side for a screen, buckets and a bench for the clothes.", [
     P("Pallet_01.et", 0, 0), P("ShowerBeach_01.et", 0, 0, 0, 0.15), P("TinWall_01_3m.et", 0.75, -0.2, 90), P("TinWall_01_3m.et", -0.75, -0.2, 90),
-    P("Bucket_02.et", -1.2, 1.1), P("ForestBench_01.et", 0.2, 1.7, 4),
+    P("Bucket_02.et", -1.4, 1.3), P("ForestBench_01.et", 0.2, 2.5, 4),
     S("RZ_Wash", 0, 0, "loiter", 0, 1.0)])
-piece("PlagueBoard", "Halcyon", "None", "Approach", "A plank board on two posts at the way in (the beak stencil still to come), a white crate.", [
-    P("WoodenFenceOld_01_pole.et", -0.8, 0), P("WoodenFenceOld_01_pole.et", 0.8, 0.05), P("Junk_01_single_planks.et", 0, 0.06, 2, 0.9), P("Junk_01_single_planks.et", 0, 0.07, 2, 1.25),
-    P("CrateWooden_01_plain.et", 1.3, 0.6, 20)])
+piece("PlagueBoard", "Halcyon", "None", "Approach", "A no-entry sign on its pole at the way in (the beak stencil still to come), a white crate at its foot.", [
+    P("SignIndustrial_USSR_02_warnings_entryforbidden_pole.et", 0, 0, 0),
+    BESIDE("CrateWooden_01_plain.et", "SignIndustrial_USSR_02_warnings_entryforbidden_pole.et", 0, 0, 0, "back", gap=0.4, yaw=90)])
 piece("NotebookBench", "Halcyon", "Sit", "Centre", "A bench with notebooks and files, a lamp and a crate of sample drums.", [
     P("ForestBench_01.et", 0, 0, 3), P("Notebook_01_Stack.et", 0.7, 0.05, 10, 0.45), P("FileOffice_01_Stack.et", -0.7, 0, 0, 0.45), P("LampKerosene_01_green.et", 1.2, 0.3),
     P("CrateWooden_01_plain.et", -1.3, 0.8, 25), P("ToolsSurgical_01_autoclavedrum.et", -1.3, 0.8, 0, 0.62),
@@ -283,7 +629,7 @@ piece("Bunker_Bastion", "Bastion", "Watch", "Approach", "The gate's bunker: ches
     S("RZ_Watch", -0.2, 0.5, "loiter", 0, 10)])
 piece("MotorPool", "Bastion", "Work", "Edge", "The workshop on the forecourt: a dead truck kept for parts, an engine crane at its nose, a jack, fuel drums and jerrycans by the cab, a stack of tyres, a crate with the toolbox on it.", [
     P("Ural4320_wreck_static.et", 0, 0, 6), P("BarrelMetal_01_grey.et", 2.5, 2.2), P("BarrelMetal_01_grey.et", 3.2, 2.0), P("Jerrycan_01.et", 2.6, 1.3, 30), P("Jerrycan_01.et", 3.0, 1.2, -10),
-    P("TirePile_01_small.et", -2.8, -2.4), P("CrateWooden_01_plain.et", 2.6, -0.6, 15), P("ToolBox_01_red.et", 2.6, -0.6, 25, 0.84),
+    P("TirePile_01_small.et", -3.4, -2.4), P("CrateWooden_01_plain.et", 2.6, -0.6, 15), P("ToolBox_01_red.et", 2.6, -0.6, 25, 0.84),
     P("EngineCrane_01.et", 0.3, 5.0, 186), P("HydraulicCarJack_01.et", -2.0, 1.6, 20),
     S("RZ_Work", 2.0, 0.4, "loiter", 0, 0.4)])
 piece("FieldKitchen", "Bastion", "Cook", "Inner", "The field kitchen on its trailer, still serving: a table for the mess tins, a water drum, kindling (dinner is still served at the blockade).", [
@@ -319,11 +665,11 @@ piece("WarningSigns", "Halcyon", "None", "Approach", "No-entry signs on the way 
     P("SignIndustrial_USSR_02_warnings_entryforbidden_pole.et", -0.8, 0, 6), P("SignIndustrial_USSR_02_warnings_entryforbidden_pole.et", 0.8, 0.1, -8), P("ConeTraffic_01_red.et", 0, 0.5)])
 piece("Loudspeaker_Halcyon", "Halcyon", "None", "Edge", "A loudspeaker on a post, wired to the generator (the order that loops once the power is back).", [
     P("WoodenFenceOld_01_pole.et", 0, 0), P("Loudspeaker.et", 0, 0, 0, 1.7), P("CrateWooden_01_plain.et", 0.7, 0.2, 25)])
-piece("Triage", "Halcyon", "Work", "Approach", "Triage inside the gate: a table where everyone is looked at before they go further, two stools, a screen to be looked at behind, a drip stand, a crate of forms, a sample drum, a bin.", [
-    P("TableMilitary_US_01.et", 0, 0, 0), P("Stool_01.et", -0.5, -0.9), P("Stool_01.et", 0.6, 0.95), P("FileOffice_01_Stack.et", 0.5, 0, 0, 0.78),
-    P("ToolsSurgical_01_autoclavedrum.et", -0.5, 0.05, 0, 0.78), P("CrateWooden_02_1x1x1.et", 1.9, 0.2, 8),
-    P("MedicalScreen_01.et", -1.9, 0.6, 80), P("InfusionStand_01.et", -1.7, -0.6), P("BinMedical_01.et", 1.1, -0.9),
-    S("RZ_Work", -0.5, -0.9, "sit", -0.5, 0)])
+piece("Triage", "Halcyon", "Work", "Approach", "Triage inside the gate: a table where everyone is looked at before they go further, a stool each side of it, a screen to be looked at behind, a drip stand, a crate of forms, a sample drum, a bin.", [
+    P("TableMilitary_US_01.et", 0, 0, 0), *SEAT("Stool_01.et", "TableMilitary_US_01.et", 0, 0, 0, "back", along=0.5, slot="RZ_Work"),
+    *SEAT("Stool_01.et", "TableMilitary_US_01.et", 0, 0, 0, "front", along=-0.6, slot=""), P("FileOffice_01_Stack.et", 0.5, 0, 0, 0.78),
+    P("ToolsSurgical_01_autoclavedrum.et", -0.5, 0.05, 0, 0.78), BESIDE("CrateWooden_02_1x1x1.et", "TableMilitary_US_01.et", 0, 0, 0, "right", gap=0.6, yaw=8),
+    P("MedicalScreen_01.et", -1.9, 0.6, 80), P("InfusionStand_01.et", -1.7, -0.6), P("BinMedical_01.et", 1.1, -0.9)])
 
 # ------------------------------------------------------------------- Dense sites (docs/SITES.md, "Dense sites")
 # Small set dressing a dense kit repeats many times: stores, fuel, tyres, cover, light, beds.
@@ -333,34 +679,35 @@ piece("CrateStack", "Common", "None", "Inner", "Crates stacked against a wall, o
 piece("PalletStack", "Common", "None", "Inner", "Pallets piled, a second pile beside them, sacks stacked at the end.", [
     P("Pallet_01_Pile.et", 0, 0, 4), P("Pallet_01_Pile.et", 1.4, 0.1, -6), P("SackUniversal_01_Pile.et", 0.1, 1.3, 20)])
 piece("BarrelGroup", "Common", "None", "Inner", "Fuel and water drums stood together, two jerrycans, a bucket.", [
-    P("BarrelMetal_01_grey.et", 0, 0), P("BarrelMetal_01_grey.et", 0.7, 0.1), P("BarrelMetal_01_blue.et", 0.35, 0.65), P("BarrelMetal_01_rust.et", -0.7, 0.3),
-    P("Jerrycan_01.et", 1.3, 0.5, 25), P("Jerrycan_01.et", 1.35, 0.1, -10), P("Bucket_01.et", -0.3, -0.7)])
+    P("BarrelMetal_01_grey.et", 0, 0), P("BarrelMetal_01_grey.et", 0.82, 0.1), P("BarrelMetal_01_blue.et", 0.4, 0.78), P("BarrelMetal_01_rust.et", -0.82, 0.3),
+    P("Jerrycan_01.et", 1.5, 0.55, 25), P("Jerrycan_01.et", 1.55, 0.1, -10), P("Bucket_01.et", -0.3, -0.75)])
 piece("TyreStack", "Common", "None", "Inner", "Tyres stacked, one leaning on the stack, one on the ground.", [
     P("TirePile_01_small.et", 0, 0), P("Tire_UAZ469.et", 1.1, 0.3, 0, 0, 90), P("Tire_UAZ469.et", -0.2, 1.1)])
 piece("Bedrolls", "Common", "Sleep", "Inner", "Blankets laid out under the sky, packs at their heads, a lantern between them.", [
-    P("BlanketBeach_01_brown.et", -0.6, 0, 4), P("BlanketBeach_01_red.et", 0.6, 0.1, -3), P("SackUniversal_01.et", -0.6, 1.1, 30), P("SackUniversal_01.et", 0.6, 1.15, -20),
-    P("LanternMilitary_US_01.et", 0, 1.3)])
-piece("SandbagPile", "Bastion", "None", "Inner", "Filled sandbags waiting to be laid, spare sacks beside them.", [
-    P("Sandbag_01_single_burlap.et", 0, 0), P("Sandbag_01_single_burlap.et", 0.55, 0.1, 8), P("Sandbag_01_single_burlap.et", 0.25, 0.05, 90, 0.17), P("Sandbag_01_single_burlap.et", -0.5, 0.4, 40),
-    P("Sandbag_01_end_burlap.et", 0.2, 0.8, 20), P("SackUniversal_01.et", 1.2, 0.5, 60)])
+    P("BlanketBeach_01_brown.et", -1.0, 0, 2), P("BlanketBeach_01_red.et", 1.0, 0.1, -2), P("SackUniversal_01.et", -1.0, 1.25, 30), P("SackUniversal_01.et", 1.0, 1.3, -20),
+    P("LanternMilitary_US_01.et", 0, 1.1)])
+# Filled sandbags laid end to end in two rows that touch, a second layer over the joints, the spare sacks a step off
+_BAG = _BOX["Sandbag_01_single_burlap.et"]
+piece("SandbagPile", "Bastion", "None", "Inner", "Filled sandbags waiting to be laid: two rows end to end, a second layer on top, spare sacks beside them.", [
+    *ROW("Sandbag_01_single_burlap.et", 0, 0, 0, 3), *ROW("Sandbag_01_single_burlap.et", 0, round(_BAG["z0"] - _BAG["z1"], 3), 0, 3),
+    *[P(q[1], round(q[2] + _BAG["w"] / 2, 3), q[3], 0, 0.24) for q in ROW("Sandbag_01_single_burlap.et", 0, round((_BAG["z0"] - _BAG["z1"]) / 2, 3), 0, 2)],
+    P("SackUniversal_01.et", round(_BAG["x0"] + 3 * _BAG["w"] + 0.3 - _BOX["SackUniversal_01.et"]["x0"], 3), -0.2, 0)])
 piece("SandbagWall", "Bastion", "None", "Inner", "A chest-high sandbag wall two sections long inside the wire: cover between the gate and the door.", [
     P("Sandbag_01_long_high_burlap.et", -1.7, 0, 0), P("Sandbag_01_long_high_burlap.et", 1.7, 0.05, 2)])
-piece("MessTable", "Bastion", "Sit", "Centre", "A mess table: a long table with a bench down each side, tins, mugs, the food carrier and a lamp left on it.", [
-    P("TableLong_01.et", 0, 0, 0), P("BenchWooden_01.et", -0.1, 0.85, 0), P("BenchWooden_01.et", 0.1, -0.85, 0),
+piece("MessTable", "Bastion", "Sit", "Centre", "A mess table: a long table with a bench pulled up down each side, tins, mugs, the food carrier and a lamp left on it.", [
+    P("TableLong_01.et", 0, 0, 0), *SEAT("BenchWooden_01.et", "TableLong_01.et", 0, 0, 0, "front", along=-0.1), *SEAT("BenchWooden_01.et", "TableLong_01.et", 0, 0, 0, "back", along=0.1),
     P("LitterInterior_USSR_01_bowl.et", -0.6, 0.1, 0, 0.9), P("LitterInterior_USSR_01_mug.et", 0.2, -0.1, 0, 0.9),
-    P("LitterInterior_USSR_01_tincan_V1.et", 0.6, 0.15, 0, 0.9), P("LanternMilitary_US_01.et", 0, 0.05, 0, 0.9), P("CarrierFood_01.et", -0.9, -0.15, 0, 0.9),
-    S("RZ_Sit", -0.5, 0.85, "sit", -0.5, 0), S("RZ_Sit", 0.5, -0.85, "sit", 0.5, 0)])
+    P("LitterInterior_USSR_01_tincan_V1.et", 0.6, 0.15, 0, 0.9), P("LanternMilitary_US_01.et", 0, 0.05, 0, 0.9), P("CarrierFood_01.et", -0.9, -0.15, 0, 0.9)])
 piece("CheckpointSign", "Bastion", "None", "Approach", "A stop sign on its stand, a cone either side, a lamp at its foot.", [
     P("SignCheckpoint_01_stop.et", 0, 0, 0), P("ConeTraffic_01_red.et", -0.9, 0.2), P("ConeTraffic_01_red.et", 0.9, 0.3), P("LanternMilitary_US_01.et", 0.4, -0.3)])
 piece("JeepWreck", "Bastion", "None", "Edge", "A jeep that will never run again, kept for its parts: a wheel off, a crate of tools, a jerrycan.", [
     P("UAZ469_wreck_rusty_static.et", 0, 0, -8), P("CrateWooden_01_plain.et", 1.9, 0.6, 20), P("Tire_UAZ469.et", -1.7, 1.2), P("Jerrycan_01.et", 1.8, -0.5, 15)])
 piece("GeneratorPost", "Bastion", "Work", "Edge", "A generator behind a sandbag end, its fuel beside it, a crate of cable.", [
-    P("GeneratorPortable_US_01_Off.et", 0, 0, 0), P("Sandbag_01_end_burlap.et", 0, 0.9, 0), P("Jerrycan_01.et", 0.8, 0.2, 30), P("CrateWooden_01_plain.et", -1.0, 0.1, 10),
+    P("GeneratorPortable_US_01_Off.et", 0, 0, 0), P("Sandbag_01_end_burlap.et", 0, 1.35, 0), P("Jerrycan_01.et", 0.8, 0.2, 30), P("CrateWooden_01_plain.et", -1.3, -0.3, 10),
     S("RZ_Work", 0, -0.9, "loiter", 0, 0)])
-piece("RadioMast", "Bastion", "Work", "Inner", "The radio: a mast, a table with the set and a lamp, a stool.", [
-    P("Antenna_R161_01.et", 0, 0), P("TableMilitary_US_01.et", 1.6, 0, 90), P("RadioStation_ANPRC77_01.et", 1.6, 0.2, 0, 0.9), P("Stool_01.et", 2.5, 0),
-    P("LanternMilitary_US_01.et", 1.6, -0.5, 0, 0.78),
-    S("RZ_Work", 2.5, 0, "sit", 1.6, 0)])
+piece("RadioMast", "Bastion", "Work", "Inner", "The radio: a mast, a table with the set and a lamp, a stool pulled up to it.", [
+    P("Antenna_R161_01.et", 0, 0), P("TableMilitary_US_01.et", 1.6, 0, 90), P("RadioStation_ANPRC77_01.et", 1.6, 0.2, 0, 0.9),
+    *SEAT("Stool_01.et", "TableMilitary_US_01.et", 1.6, 0, 90, "front", slot="RZ_Work"), P("LanternMilitary_US_01.et", 1.6, -0.5, 0, 0.78)])
 
 # ------------------------------------------------------------------- From the mods the project loads already (docs/MOD_STACK.md, "The camps' look")
 # Pieces no vanilla prop gives: riot fencing (MoreGMProps), security
@@ -387,7 +734,7 @@ piece("ChopShop", "RedHand", "Work", "Inner", "What the crew does with what it t
     S("RZ_Work", 1.3, 1.2, "loiter", 0, 1.0)])
 piece("Scarecrow", "Haven", "None", "Inner", "A scarecrow over the beds: the birds get nothing the village can eat.", [P("Scarecrow_01.et", 0, 0, 0)])
 piece("WaitingCots", "Halcyon", "None", "Approach", "Those waiting to be seen: two cots by triage, a drip stand between them, a screen.", [
-    P("CotMilitary_US_01.et", 0, 0.7, 0), P("CotMilitary_US_01.et", 0, -0.7, 2), P("InfusionStand_01.et", 1.5, 0), P("MedicalScreen_01.et", -1.8, 0, 90)])
+    P("CotMilitary_US_01.et", 0, 0.7, 0), P("CotMilitary_US_01.et", 0, -0.7, 2), BESIDE("InfusionStand_01.et", "CotMilitary_US_01.et", 0, 0.7, 0, "right", along=-0.7, gap=0.3), P("MedicalScreen_01.et", -1.8, 0, 90)])
 piece("LootContainer", "RedHand", "Sit", "Inner", "What the crew took, shut in a container along the wall: a chair in front of it for whoever has the key, a crate, bottles.", [
     P("Container_openable.et", 1.29, -1.4, 90), P("ChairOld_01.et", -1.0, 1.1, 170), P("CrateWooden_01_plain.et", 0.3, 1.0, 80), P("BeerBottle_01_group.et", 0.3, 1.0, 0, 0.83),
     S("RZ_Sit", -1.0, 1.1, "sit", -1.0, 6)])
@@ -501,19 +848,19 @@ FIRES = "FirePit|FireBarrel|CookPot"
 SEATS = "Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable"
 RULES = {
     # Common
-    "FirePit": (3, "yard", "near " + SEATS + " 8; away use:Sleep 6; away CookPot 4; flat 6"),
+    "FirePit": (3, "yard", "near " + SEATS + " 8; away use:Sleep 6; away CookPot 4; flat 6; soil"),
     "Table": (3, "yard", "near CookPot|FirePit 8; flat 5; noline"),
     "Tarp": (3, "work", "wall 3; faces wall"),
     "FireBarrel": (3, "court", "door front 10; flat 8"),
     "Tent_Small_Civilian": (3, "sleep", "away " + FIRES + " 6; flat 5; soil; noline"),
     "Tent_Large_Civilian": (3, "sleep", "away " + FIRES + " 6; flat 5; soil"),
-    "Firewood": (3, "kitchen", "near CookPot 7; flat 6"),
+    "Firewood": (3, "kitchen", "by CookPot|FirePit 8; flat 6"),
     "CookPot": (3, "kitchen", "door side 4; away Latrine 15; away use:Sleep 6; flat 6"),
     "WashStand": (3, "kitchen", "near WaterBarrel 3; flat 6"),
     "Latrine": (3, "yard", "away CookPot|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"),
     "DryingLine": (4, "sleep", "flat 5; soil"),
     "Duckboards": (4, "yard", "by use:Sleep 5; soil"),
-    "CrateChairs": (3, "yard", "near FirePit|CookPot 8; flat 6"),
+    "CrateChairs": (3, "yard", "by FirePit|CookPot|Table 7; flat 6"),
     "Clutter": (5, "yard", "by use:Sit 4; jitter"),
     "RadioTable": (3, "work", "wall 3; faces in"),
     "ScrapShelter": (3, "sleep", "away " + FIRES + " 6; flat 6"),
@@ -561,10 +908,10 @@ RULES = {
     "GuardPost_Halcyon": (1, "yard", "covers gate; covers road; faces road; away gate 3"),
     "SmokingBench": (5, "yard", "door back 4; faces wall"),
     # The layers' own pieces
-    "Wire_Bastion_L": (1, "wire", ""), "Wire_Bastion_M": (1, "wire", ""), "Wire_Bastion_S": (1, "wire", ""), "Wire_Bastion_XS": (1, "wire", ""),
+    "Wire_Bastion_L": (1, "wire", ""), "Wire_Bastion_M": (1, "wire", ""), "Wire_Bastion_S": (1, "wire", ""), "Wire_Bastion_XS": (1, "wire", "level"),
     "Sandbags_Bastion_L": (1, "wire", ""), "Sandbags_Bastion_M": (1, "wire", ""),
-    "Scrap_RedHand_L": (1, "wire", ""), "Scrap_RedHand_M": (1, "wire", ""), "Scrap_RedHand_S": (1, "wire", ""), "Scrap_RedHand_XS": (1, "wire", ""),
-    "Fence_Haven_L": (1, "wire", ""), "Fence_Haven_M": (1, "wire", ""), "Fence_Haven_S": (1, "wire", ""), "Fence_Haven_XS": (1, "wire", ""),
+    "Scrap_RedHand_L": (1, "wire", ""), "Scrap_RedHand_M": (1, "wire", ""), "Scrap_RedHand_S": (1, "wire", "level"), "Scrap_RedHand_XS": (1, "wire", "level"),
+    "Fence_Haven_L": (1, "wire", ""), "Fence_Haven_M": (1, "wire", ""), "Fence_Haven_S": (1, "wire", ""), "Fence_Haven_XS": (1, "wire", "level"),
     "Fence_Halcyon_L": (1, "wire", ""), "Fence_Halcyon_M": (1, "wire", ""), "Fence_Halcyon_S": (1, "wire", ""), "Fence_Halcyon_XS": (1, "wire", ""),
     "Floodlight": (3, "yard", "faces out"),
     "BoardWindow": (1, "yard", ""), "BoardDoor": (1, "yard", ""), "BoardDoor_Bastion": (1, "yard", ""), "BoardDoor_RedHand": (1, "yard", ""),
@@ -575,7 +922,7 @@ RULES = {
     "FieldKitchen": (3, "kitchen", "door side 4; away Latrine 15; away use:Sleep 6; flat 6"),
     "AidPost": (3, "sick", "away CookPot 8; flat 5; soil"),
     "Floodlight_Bastion": (3, "yard", "faces out"),
-    "Scrap_RedHand_Wreck": (1, "wire", ""), "Scrap_RedHand_XXS": (1, "wire", ""), "Fence_Halcyon_XXS": (1, "wire", ""),
+    "Scrap_RedHand_Wreck": (1, "wire", "level"), "Scrap_RedHand_XXS": (1, "wire", "level"), "Fence_Halcyon_XXS": (1, "wire", "level"),
     "WreckGate": (2, "gate", "faces road; flat 8"),
     "FuelDump": (4, "yard", "wall 8; away " + FIRES + " 8; flat 6"),
     "Watchtower_Haven": (1, "yard", "covers gate; covers road; faces road; away gate 3"),
@@ -610,8 +957,8 @@ RULES = {
     "RiotLine": (4, "gate", "by Triage 9; faces road; flat 8"),
     "SecFence_Halcyon_L": (1, "wire", ""), "SecFence_Halcyon_M": (1, "wire", ""), "SecFence_Halcyon_S": (1, "wire", ""),
     "Block_Bastion_L": (1, "wire", ""), "Block_Bastion_M": (1, "wire", ""), "Block_Halcyon_L": (1, "wire", ""), "Block_Halcyon_M": (1, "wire", ""),
-    "Block_RedHand_L": (1, "wire", ""), "Block_RedHand_M": (1, "wire", ""), "Block_RedHand_S": (1, "wire", ""),
-    "Block_Haven_L": (1, "wire", ""), "Block_Haven_M": (1, "wire", ""), "Block_Haven_S": (1, "wire", ""),
+    "Block_RedHand_L": (1, "wire", "level"), "Block_RedHand_M": (1, "wire", "level"), "Block_RedHand_S": (1, "wire", "level"),
+    "Block_Haven_L": (1, "wire", "level"), "Block_Haven_M": (1, "wire", "level"), "Block_Haven_S": (1, "wire", "level"),
     # Counters (laid by the quartermaster, not by the solver)
     "Counter_Bastion": (1, "court", ""), "Counter_RedHand": (1, "court", ""), "Counter_Haven": (1, "court", ""), "Counter_Halcyon": (1, "court", ""),
 }
@@ -685,19 +1032,19 @@ KITS = [
         ("Tent_Large_Bastion", 1, -16, 2), ("FieldKitchen", 17, -1, 30), ("Firewood", 17.5, -11.5, 60), ("ShavingStand", -16, -3, 90), ("CrateSeats", 10, 3, 20),
         ("DutyBoard", -8, 4, 10), ("Tarp", 15, 8, 25), ("Tent_Small_Bastion", 10, -13, -8), ("DryingLine", 21.5, -16.5, 35), ("Latrine", -22, -18, 140), ("Duckboards", -5, -8.5, 0)]),
     ("MILITARY", "OUTPOST", "A section at a farm on the junction: a nest and a sandbag run on the road, two tents squared to it, the fire, the table and the roll board in the yard.", [
-        ("Counter_Bastion", -10, 7, 0), ("SentryNest_Bastion", 0, 20, 0), ("FirePit", 4, 0, 0), ("Barricade_Sandbag", -7, 18.5, 6), ("Tent_Small_Bastion", -8, -8, 6),
+        ("Counter_Bastion", -10, 7, 0), ("SentryNest_Bastion", 0, 20, 0), ("FirePit", 4, 0, 0), ("Barricade_Sandbag", -7.5, 18.5, 6), ("Tent_Small_Bastion", -8, -8, 6),
         ("Tent_Small_Bastion", -3, -10.5, -4), ("RosterBoard", -4, 4, 6), ("Table", -5, -2, 10), ("CookPot", 14, -3, 30), ("Firewood", 13, -11, 60),
-        ("ShavingStand", -12, -2, 90), ("FlagPole", 2, 6, 0), ("Barricade_Sandbag", 7, 19.5, -6), ("Duckboards", -4.5, -6, 0)]),
+        ("ShavingStand", -12, -2, 90), ("FlagPole", 2, 6, 0), ("Barricade_Sandbag", 7.5, 19.5, -6), ("Duckboards", -2, -6, 0)]),
     ("MILITARY", "ROAD_POST", "The checkpoint: a nest beside the barrier facing down the road, a sandbag run on the other verge, a fire barrel and a net to wait under.", [
         ("SentryNest_Bastion", 7.5, 2, 0), ("Barricade_Sandbag", -7.5, 2.5, 0), ("FireBarrel", 7.5, -4.5, 0), ("Tarp", -8.5, -4.5, 10)]),
     ("BANDITS", "STRONGHOLD", "A squat, not a camp: things where they were dropped, but round the fire. The toll on the road, the sofa round the barrel, tents tucked behind scrap, the fence's table by the way in.", [
         ("Counter_RedHand", -9, 4, 20), ("TollBarrier", -2, 25, 6), ("FireBarrel", 1, 2, 0), ("Sofa", -4, -2.5, 160), ("SentryNest_RedHand", 9, 22, -20),
-        ("CardTable", 6, 6, 35), ("RedHandSheet", -10, 21, 25), ("WreckGate", 9, 31, 0), ("FuelDump", 19, 6, 0), ("Barricade_Scrap", 15, 16, -40), ("Tent_Small_Civilian", -12, -9, 30), ("Tent_Small_Civilian", -6, -13, -15),
+        ("CardTable", 6, 6, 35), ("RedHandSheet", -10, 21, 25), ("WreckGate", 9, 31.5, 0), ("FuelDump", 19, 6, 0), ("Barricade_Scrap", 15, 16, -40), ("Tent_Small_Civilian", -12, -9, 30), ("Tent_Small_Civilian", -6, -13, -15),
         ("ScrapShelter", 4, -14, 10), ("CookPot", 13, -5, 60), ("Firewood", 17.5, -12, 80), ("TrophyWall", -19, 4, 95), ("Clutter", 8, -1, 0),
-        ("Kennel", -16, 12, 40), ("FirePit", -6, 10, 0), ("Tent_Large_Civilian", 10, -17, -20), ("Latrine", 22.5, -20.5, 200), ("Barricade_Scrap", -17, 17, 30)]),
+        ("Kennel", -16, 12, 40), ("FirePit", -6, 10, 0), ("Tent_Large_Civilian", 10, -17, -20), ("Latrine", 22.5, -20.5, 200), ("Barricade_Scrap", -16.5, 17, 30)]),
     ("BANDITS", "OUTPOST", "A crew camp on the road: the toll barrier and a lookout behind tyres, the fire barrel and the sofa, the card table, two tents at the back.", [
         ("Counter_RedHand", -7, 3, 20), ("TollBarrier", 0, 20, 0), ("FireBarrel", 1, 2, 0), ("Sofa", -3.5, -2.5, 160), ("SentryNest_RedHand", 8, 17, -20),
-        ("CardTable", 6, 5, 35), ("WreckGate", 8, 26, 0), ("Tent_Small_Civilian", -9, -9, 30), ("Tent_Small_Civilian", -3, -11, -15), ("CookPot", 10.5, -4, 60), ("Firewood", 14.5, -11.5, 80),
+        ("CardTable", 6, 5, 35), ("WreckGate", 8, 26.5, 0), ("Tent_Small_Civilian", -9, -9, 30), ("Tent_Small_Civilian", -2.5, -11, -15), ("CookPot", 10.5, -4, 60), ("Firewood", 14.5, -11.5, 80),
         ("RedHandSheet", -8, 17, 25), ("Clutter", 4.5, -2, 0), ("ScrapShelter", 3, -12, 10)]),
     ("BANDITS", "ROAD_POST", "A roadblock for the toll: the fire barrel and the card table on one verge, scrap and a net on the other.", [
         ("FireBarrel", 7, -2, 0), ("CardTable", 8, 4, 90), ("Barricade_Scrap", -8, 4, 0), ("Tarp", -8.5, -3, 15)]),
@@ -706,7 +1053,7 @@ KITS = [
         ("WorkBoard", 10, 28, 0), ("LanternPost", -3, 15, 0), ("LanternPost", 2, 18, 0),
         ("WaterBarrel", 6, -9, 0), ("WashStand", 3, -11, 10), ("WashingLine", -9, -14, 12), ("Garden", -16, -6, 80), ("Barricade_Fence", -8, 23, 8),
         ("VegStall", 14, 9, -30), ("ChildrensCorner", -10, 2, 35), ("Firewood", 13.5, -9, 70), ("FirePit", -2, -4, 0), ("Tent_Small_Civilian", 15.5, -16, -25),
-        ("CrateChairs", -3, -10, 10), ("Barricade_Fence", 8, 23, -6), ("Tent_Large_Civilian", 8, -17, 10), ("Kennel", -14, 12, 30), ("Latrine", -20, -18, 130)]),
+        ("CrateChairs", -3, -10, 10), ("Barricade_Fence", 8, 23, -6), ("Tent_Large_Civilian", 6, -15, 10), ("Kennel", -14, 12, 30), ("Latrine", -20, -18, 130)]),
     ("SURVIVORS", "OUTPOST", "A farmyard: the table and the memorial, the cook pot and the water, the washing and the garden at the back, a tent for whoever came last.", [
         ("Counter_Haven", 5, 9, -10), ("Lookout_Haven", 5, 22, 0), ("BearDoor", 0, 20, 0), ("Table", 2, 2, 6), ("CookPot", 9, -3, 40), ("WaterBarrel", 5, -9, 0),
         ("LanternPost", -3, 13, 0), ("WorkBoard", -11, 24, 0),
@@ -856,7 +1203,7 @@ TRACES = {
     'm_sNoticeWall': ('RZ_Trace_NoticeWall', [P('WoodenFenceOld_01_pole.et', -0.8, 0), P('WoodenFenceOld_01_pole.et', 0.8, 0), P('Junk_01_single_planks.et', 0, 0.06, 0, 1.3), P('Notice_A4_Vertical_V1.et', -0.5, 0.1, 0, 1.35), P('Notice_A4_Vertical_V1.et', -0.2, 0.11, 0, 1.4, 0, 6), P('Notice_A4_Vertical_V1.et', 0.1, 0.12, 0, 1.33), P('Notice_A4_Vertical_V1.et', 0.35, 0.13, 0, 1.42, 0, -4), P('Notice_A4_Vertical_V1.et', 0.6, 0.14, 0, 1.36)]),
     'm_sShutter': ('RZ_Trace_Shutter', [P('WoodenFenceOld_01_pole.et', -1.5, 0), P('WoodenFenceOld_01_pole.et', 1.5, 0), P('TinWall_01_3m.et', 0, 0.05)]),
     'm_sObservationPost': ('RZ_Trace_OP', [P('BlanketBeach_01_brown.et', 0, 0), P('LitterInterior_USSR_01_tincan_V2.et', 0.6, 0.4), P('WoodenFenceOld_01_pole.et', -1.0, 0.8)]),
-    'm_sLastMeal': ('RZ_Trace_LastMeal', [P('PicnicTable_01.et', 0, 0), P('Chair_01_white.et', -0.5, 1.1, 180), P('Chair_01_white.et', 0.5, 1.1, 180), P('Chair_01_white.et', -0.5, -1.1), P('Chair_01_white.et', 0.6, -1.2, 30), P('LitterInterior_USSR_01_bowl.et', -0.3, 0.2, 0, 0.78), P('LitterInterior_USSR_01_bowl.et', 0.3, -0.2, 0, 0.78), P('LitterInterior_USSR_01_mug.et', 0, 0, 0, 0.78), P('RadioSmall_01_black.et', 0.8, 0, 0, 0.78)]),
+    'm_sLastMeal': ('RZ_Trace_LastMeal', [P('TableOld_01.et', 0, 0), *SEAT('Chair_01_white.et', 'TableOld_01.et', 0, 0, 0, 'front', along=-0.4, slot=''), *SEAT('Chair_01_white.et', 'TableOld_01.et', 0, 0, 0, 'front', along=0.4, slot=''), *SEAT('Chair_01_white.et', 'TableOld_01.et', 0, 0, 0, 'back', along=0.4, slot=''), *SEAT('Chair_01_white.et', 'TableOld_01.et', 0, 0, 0, 'back', along=-0.5, gap=SEAT_LEFT, turn=30, slot=''), P('LitterInterior_USSR_01_bowl.et', -0.3, 0.2, 0, 0.78), P('LitterInterior_USSR_01_bowl.et', 0.3, -0.2, 0, 0.78), P('LitterInterior_USSR_01_mug.et', 0, 0, 0, 0.78), P('RadioSmall_01_black.et', 0.8, 0, 0, 0.78)]),
     'm_sHeldOut': ('RZ_Trace_HeldOut', [P('Junk_01_single_planks.et', 0, 0, 0, 0, 0, 70), P('Junk_01_single_planks.et', 0.8, 0.1, 10, 0, 0, 65), P('Junk_01_single_planks.et', -0.9, 0.3)]),
     'm_sEdgeChair': ('RZ_Trace_EdgeChair', [P('ChairOld_01.et', 0, 0), P('BlanketFolded_01_green.et', 0, 0, 0, 0.45), P('CandleHolderDecorative_01.et', 0.5, 0.3)]),
     'm_sIOUs': ('RZ_Trace_IOUs', [P('WoodenFenceOld_01_pole.et', -0.6, 0), P('WoodenFenceOld_01_pole.et', 0.6, 0), P('Junk_01_single_planks.et', 0, 0.06, 0, 1.3), P('Notice_A4_Vertical_V1.et', -0.3, 0.1, 0, 1.35), P('Notice_A4_Vertical_V1.et', 0, 0.11, 0, 1.38), P('Notice_A4_Vertical_V1.et', 0.3, 0.12, 0, 1.34), P('CrateWooden_01_plain.et', 0, 0.8), P('LitterInterior_USSR_01_tincan_V1.et', 0, 0.8, 0, 0.62)]),
@@ -884,7 +1231,7 @@ OPENINGS = {
     'hiding.2': ('RZ_Opening_Hiding_Pantry', [P('CrateWooden_01_plain.et', 0, 0, 5), P('LitterInterior_USSR_01_tincan_V2.et', -0.2, 0, 0, 0.62), P('LitterInterior_USSR_01_tincan_V1.et', 0.15, 0.1, 0, 0.62), P('LampKerosene_01_green.et', 0.3, -0.1, 0, 0.62), P('Junk_01_single_mattress.et', 1.6, 0.4, 85)]),
     'hiding.3': ('RZ_Opening_Hiding_Bolthole', [P('Junk_01_single_planks.et', 0, 0, 15), P('Junk_01_single_planks.et', 0.3, 0.5, 40), P('ChairOld_01.et', -1.1, 0.3, 70, 0.25, 0, 90), P('Bucket_01.et', 1.3, -0.2)]),
     'group.1': ('RZ_Opening_Group_Bedrolls', [P('BlanketBeach_01_brown.et', 0, 0, 5), P('BlanketBeach_01_brown.et', 1.1, 0.1, -5), P('BlanketBeach_01_red.et', -1.1, 0, 10), P('BlanketFolded_01_green.et', 2.1, 0.6), P('SackUniversal_01.et', 0.5, 1.4, 70)]),
-    'group.2': ('RZ_Opening_Group_Table', [P('TableOld_01.et', 0, 0, 8), P('Notebook_01_Stack.et', -0.2, 0.05, 30, 0.78), P('LampKerosene_01_green.et', 0.4, -0.1, 0, 0.78), P('ChairOld_01.et', -0.8, 0.1, 90), P('ChairOld_02.et', 0.8, 0.2, -90), P('Chair_01_white.et', 0.1, 0.8, 180), P('Stool_01.et', 0, -0.8)]),
+    'group.2': ('RZ_Opening_Group_Table', [P('TableOld_01.et', 0, 0, 8), P('Notebook_01_Stack.et', -0.2, 0.05, 30, 0.78), P('LampKerosene_01_green.et', 0.4, -0.1, 0, 0.78), *SEAT('ChairOld_01.et', 'TableOld_01.et', 0, 0, 8, 'left', slot=''), *SEAT('ChairOld_02.et', 'TableOld_01.et', 0, 0, 8, 'right', slot=''), *SEAT('Chair_01_white.et', 'TableOld_01.et', 0, 0, 8, 'front', slot=''), *SEAT('Stool_01.et', 'TableOld_01.et', 0, 0, 8, 'back', slot='')]),
     'group.3': ('RZ_Opening_Group_Packs', [P('Suitcase_01.et', 0, 0, 10), P('Suitcase_01.et', 0.5, 0.4, 80, 0, 90), P('SackUniversal_01_Pile.et', -1.0, 0.2, 20), P('Wheelbarrow_01.et', 1.5, -0.2, 30), P('BlanketFolded_01_green.et', 0.1, -0.6)]),
     'fever.1': ('RZ_Opening_Fever_Barricade', [P('Junk_01_single_planks.et', 0, 0, 0), P('Junk_01_single_planks.et', 0.2, 0.3, 20), P('Junk_01_single_planks.et', -0.4, 0.5, 70), P('ChairOld_02.et', 1.2, 0.4, 200), P('Pallet_01.et', -1.3, 0.2, 90, 0.6, 0, 80), P('Bucket_01.et', 0.9, -0.6)]),
     'fever.2': ('RZ_Opening_Fever_Sickbed', [P('Junk_01_single_mattress.et', 0, 0, 90), P('Bucket_02.et', 1.3, 0.3), P('LitterInterior_USSR_01_mug.et', 1.1, -0.3), P('LitterInterior_USSR_01_bowl.et', 1.4, -0.5), P('BlanketFolded_01_green.et', -0.2, 0.1, 30, 0.12)]),
@@ -895,7 +1242,7 @@ OPENINGS = {
     'hunter': ('RZ_Opening_Props_Hunter', [P('WoodLog_01_A.et', 0, 0, 80), P('SackUniversal_01.et', 0.6, 0.6, 30), P('DeerSkull_01_board.et', -0.8, 0.5, 200), P('BlanketFolded_01_green.et', 0.9, -0.3)]),
     'police': ('RZ_Opening_Props_Police', [P('ChairOld_02.et', 0, 0, 190), P('CrateWooden_01_plain.et', 0.8, 0.2, 5), P('FileOffice_01_Stack.et', 0.8, 0.2, 40, 0.62), P('WoodenFenceOld_01_pole.et', -0.9, 0.4), P('Notice_A4_Vertical_V1.et', -0.9, 0.48, 0, 1.3)]),
     'excon': ('RZ_Opening_Props_ExCon', [P('Junk_01_single_mattress.et', 0, 0, 85), P('BeerBottle_01_empty_brown.et', 1.2, 0.3), P('LitterInterior_USSR_01_tincan_V1.et', 1.0, -0.4), P('Stool_01.et', -1.3, 0.2)]),
-    'labtech': ('RZ_Opening_Props_LabTech', [P('TableOld_01_white.et', 0, 0, 5), P('Notebook_01_Stack.et', -0.3, 0, 20, 0.78), P('ToolsSurgical_01_autoclavedrum.et', 0.35, 0.1, 0, 0.78), P('Chair_01_white.et', 0, -0.8)]),
+    'labtech': ('RZ_Opening_Props_LabTech', [P('TableOld_01_white.et', 0, 0, 5), P('Notebook_01_Stack.et', -0.3, 0, 20, 0.78), P('ToolsSurgical_01_autoclavedrum.et', 0.35, 0.1, 0, 0.78), *SEAT('Chair_01_white.et', 'TableOld_01_white.et', 0, 0, 5, 'back', slot='')]),
     'radioham': ('RZ_Opening_Props_Radio', [P('CrateWooden_01_plain.et', 0, 0, 10), P('RadioSmall_01_black.et', 0, 0, 30, 0.62), P('Antenna_R161_01.et', -1.0, 0.4), P('GeneratorPortable_US_01_Off.et', 1.1, 0.2, 75)]),
     'unemployed': ('RZ_Opening_Props_Unemployed', [P('BlanketBeach_01_brown.et', 0, 0, 80), P('Suitcase_04_open.et', 1.3, 0.3, 20), P('LitterInterior_USSR_01_tincan_V2.et', -0.6, 0.6), P('LitterInterior_USSR_01_mug.et', -0.4, 0.8)]),
     'soldier': ('RZ_Opening_Props_Soldier', [P('Sandbag_01_single_burlap.et', 0, 0, 10), P('Sandbag_01_single_burlap.et', 0.1, 0, 30, 0.17), P('CrateWooden_02_1x1x1.et', 1.2, 0.4, 15), P('LanternMilitary_US_01.et', 1.2, 0.4, 0, 1.0)]),

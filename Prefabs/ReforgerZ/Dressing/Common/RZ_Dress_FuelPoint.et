@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{D6505A6623A76975}" {
     }
    }
-   coords 1.8 0 -0.6
+   coords 1.8 0 -0.557
    angles 0 0 0
   }
   GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {

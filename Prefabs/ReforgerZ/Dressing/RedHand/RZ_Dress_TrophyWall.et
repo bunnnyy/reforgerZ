@@ -50,7 +50,7 @@ GenericEntity {
     Hierarchy "{27B667178B05CB2A}" {
     }
    }
-   coords -2.6 0.3 0.5
+   coords -2.6 0.41 0.5
    angles 75 0 0
   }
   GenericEntity : "{74D1DB7828061BD7}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_pile_small.et" {
@@ -59,7 +59,7 @@ GenericEntity {
     Hierarchy "{C432B821F20458AB}" {
     }
    }
-   coords 2.4 0 0.9
+   coords 2.6 0 2.4
    angles 0 20 0
   }
  }

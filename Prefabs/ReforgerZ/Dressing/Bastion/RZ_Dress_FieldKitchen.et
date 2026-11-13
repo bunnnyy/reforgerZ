@@ -28,12 +28,12 @@ GenericEntity {
   }
   GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
    ID "F43EC07D94906098"
-   coords 2.7 0.78 0.4
+   coords 2.7 0.9 0.4
    angles 0 0 0
   }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
    ID "B94236EA23E94678"
-   coords 2.6 0.78 -0.3
+   coords 2.6 0.9 -0.3
    angles 0 0 0
   }
   GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {

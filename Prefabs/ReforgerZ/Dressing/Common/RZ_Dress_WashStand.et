@@ -17,23 +17,23 @@ GenericEntity {
    coords 0 0 0
    angles 0 0 0
   }
-  GenericEntity : "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et" {
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "E8210631CBA6982F"
    components {
     Hierarchy "{0CF26D1C01DC47B7}" {
     }
    }
-   coords 0 1.5 0.08
-   angles 0 0 0
+   coords -0.013 0 0.509
+   angles 0 90 0
   }
-  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+  GenericEntity : "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et" {
    ID "2206779596BBE101"
    components {
     Hierarchy "{8D0C2C1A9406A146}" {
     }
    }
-   coords 0.1 0 0.55
-   angles 0 4 0
+   coords 0 0.83 0.073
+   angles 0 0 0
   }
   GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
    ID "BF0AEABA49EBEF48"
@@ -41,7 +41,7 @@ GenericEntity {
     Hierarchy "{7FFF0A538F8FF839}" {
     }
    }
-   coords -0.05 0.62 0.55
+   coords -0.313 0.83 0.509
    angles 0 0 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
@@ -50,7 +50,7 @@ GenericEntity {
     Hierarchy "{71885F7B65F64751}" {
     }
    }
-   coords 0.35 0.62 0.55
+   coords 0.287 0.83 0.509
    angles 0 8 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
@@ -59,8 +59,8 @@ GenericEntity {
     Hierarchy "{527F65E6D9F520D9}" {
     }
    }
-   coords -0.6 0 0.7
-   angles 0 0 0
+   coords -1.248 0 0.51
+   angles 0 90 0
   }
   GenericEntity {
    ID "996B57E5E13A11D9"
@@ -75,7 +75,7 @@ GenericEntity {
     Hierarchy "{628FF53585EA57B4}" {
     }
    }
-   coords 0.05 0 1.2
+   coords -0.013 0 1.359
   }
  }
 }

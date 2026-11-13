@@ -23,7 +23,7 @@ GenericEntity {
     Hierarchy "{E7EB96C333343A67}" {
     }
    }
-   coords -0.4 0.78 0
+   coords -0.4 0.9 0.0
    angles 0 0 0
   }
   GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{0AED7C6016C8F5D9}" {
     }
    }
-   coords 0 0.78 0.12
+   coords 0.0 0.9 0.12
    angles 0 0 0
   }
   GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
@@ -41,7 +41,7 @@ GenericEntity {
     Hierarchy "{2DFB5246540909AA}" {
     }
    }
-   coords 0.4 0.78 -0.05
+   coords 0.4 0.9 -0.05
    angles 0 0 0
   }
   GenericEntity : "{D8EF213A192382E0}Prefabs/Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01.et" {
@@ -50,7 +50,7 @@ GenericEntity {
     Hierarchy "{3E17DCC74CE1D2B7}" {
     }
    }
-   coords 0.2 0.78 -0.2
+   coords 0.2 0.9 -0.2
    angles 0 180 0
   }
   GenericEntity : "{2AEAA31471171A50}Prefabs/Props/Military/Photos/Photo_Square_01/Photo_Square_01_V1.et" {
@@ -59,12 +59,12 @@ GenericEntity {
     Hierarchy "{5FB1AE4592663382}" {
     }
    }
-   coords -0.2 0.79 -0.2
+   coords -0.2 0.9 -0.2
    angles 0 10 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
    ID "FD23681B63DD1009"
-   coords 0 0.79 0.25
+   coords 0.0 0.9 0.25
    angles 0 0 0
   }
   SCR_DestructibleEntity : "{9E939BD958DD48D1}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et" {

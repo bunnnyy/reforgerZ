@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{A6820A5538176E76}" {
     }
    }
-   coords 0.5 1.0 0
+   coords -0.0 1.01 0.0
    angles 0 6 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
@@ -50,7 +50,7 @@ GenericEntity {
     Hierarchy "{9B05B246E0B09E67}" {
     }
    }
-   coords -1.0 0.62 0.1
+   coords -1.0 0.83 0.1
    angles 0 -8 0
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
@@ -59,7 +59,7 @@ GenericEntity {
     Hierarchy "{8FC3DDAD4ADD1CA1}" {
     }
    }
-   coords 1.9 0.55 0.2
+   coords 1.9 0.4 0.2
    angles 0 80 78
   }
  }

@@ -244,7 +244,15 @@ class RZ_FactionPerks
 			vector spot;
 			int tier;
 			if (!camp.BestSpotIn(f, RZ_ECampPlace.STRONGHOLD, s.m_vCenter, Math.Clamp(s.m_fRadius, 80, 220), spot, tier))
+			{
+				if (atLeast > 0)
+					RZ_Log.Info(string.Format("Quartermasters: %1 has no building with room for %2's yard.", s.m_sName, RZ_Factions.GetName(f)));
+
 				continue;
+			}
+
+			if (atLeast > 0)
+				RZ_Log.Info(string.Format("Quartermasters: %1 has a building with room for %2's yard (suits it %3 of 3).", s.m_sName, RZ_Factions.GetName(f), tier));
 
 			if (tier > bestTier)
 			{

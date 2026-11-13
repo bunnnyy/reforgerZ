@@ -23,7 +23,7 @@ GenericEntity {
     Hierarchy "{5BA6CD105776A7D9}" {
     }
    }
-   coords 1.1 0 0.3
+   coords 1.1 0.42 0.3
    angles 90 0 0
   }
   GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {

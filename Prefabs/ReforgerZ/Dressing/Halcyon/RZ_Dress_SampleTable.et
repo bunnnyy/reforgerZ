@@ -19,7 +19,7 @@ GenericEntity {
     Hierarchy "{79C05EABB5B65F40}" {
     }
    }
-   coords 0 0 -0.3
+   coords -0.069 0 -0.298
    angles 0 0 0
   }
   GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
@@ -28,7 +28,7 @@ GenericEntity {
     Hierarchy "{C6734E5EE4333809}" {
     }
    }
-   coords -0.5 0.78 -0.3
+   coords -0.569 0.9 -0.298
    angles 0 0 0
   }
   GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
@@ -37,7 +37,7 @@ GenericEntity {
     Hierarchy "{F9492C0AB4F72B8D}" {
     }
    }
-   coords -0.2 0.78 -0.35
+   coords -0.269 0.9 -0.348
    angles 0 0 0
   }
   GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
@@ -46,7 +46,7 @@ GenericEntity {
     Hierarchy "{2B10D1DC3610142E}" {
     }
    }
-   coords 0.5 0.78 -0.25
+   coords 0.431 0.9 -0.248
    angles 0 12 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
@@ -55,7 +55,7 @@ GenericEntity {
     Hierarchy "{D2AFD2D037456B30}" {
     }
    }
-   coords 0.3 0 -0.35
+   coords 1.3 0 -0.3
    angles 0 2 0
   }
   GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
@@ -64,7 +64,7 @@ GenericEntity {
     Hierarchy "{F36B051FE38BD8DD}" {
     }
    }
-   coords 1.6 0 -1.2
+   coords 1.3 0.83 -0.3
    angles 0 0 0
   }
   GenericEntity {

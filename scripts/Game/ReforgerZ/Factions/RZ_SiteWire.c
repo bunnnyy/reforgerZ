@@ -317,10 +317,23 @@ class RZ_SiteWire
 				}
 			}
 
-			// Walled already (a churchyard, a fenced garden): the wall is the line
+			// Walled already (a churchyard, a fenced garden): the wall is the line. A wall nearer the
+			// building than the line was wanted first (the yard is what the wall holds: the Haven's camp
+			// once spilled past its churchyard's wall onto the car park), then one further out
 			if (ClosedShare(grid, f, bestOff) < WALLED_SHARE)
 			{
-				for (int far = 7; far <= WALLED_REACH; far++)
+				bool walled = false;
+				for (float near = want[f] - 4; near >= 4; near -= 1)
+				{
+					if (ClosedShare(grid, f, near) >= WALLED_SHARE)
+					{
+						bestOff = near;
+						walled = true;
+						break;
+					}
+				}
+
+				for (int far = 7; far <= WALLED_REACH && !walled; far++)
 				{
 					if (ClosedShare(grid, f, want[f] + far) >= WALLED_SHARE)
 					{
@@ -525,7 +538,29 @@ class RZ_SiteWire
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A road in that the faction closed (docs/SITES.md, "One way in"): its stations `from` to `to`
+	//! Something closes the way at a station already: a wall, a fence, a gate or a building within
+	//! SHADOW metres of it, out or in along the way through (a track that ends at a garden gate).
+	bool Shadowed(RZ_SiteGrid grid, int station)
+	{
+		vector across = RZ_Compass.PointAt(vector.Zero, FaceOut(m_aFace[station]), 1);
+		for (int side = -1; side <= 1; side += 2)
+		{
+			for (float d = 1; d <= SHADOW; d += RZ_SiteGrid.CELL)
+			{
+				int g = grid.FlagsAt(m_aAt[station] + across * (d * side));
+				if (g == RZ_SiteGrid.OUTSIDE)
+					break;
+
+				if (g & (RZ_SiteGrid.INSIDE | RZ_SiteGrid.SOLID))
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A road in that the faction closed (docs/SITES.md, "Checkpoints"): its stations `from` to `to`
 	//! are the barrier now.
 	void Seal(int from, int to)
 	{

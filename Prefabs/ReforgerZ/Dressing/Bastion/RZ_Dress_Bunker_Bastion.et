@@ -41,7 +41,7 @@ GenericEntity {
     Hierarchy "{FFD4927658783EC4}" {
     }
    }
-   coords 0 1.2 1.8
+   coords 0.058 1.28 1.801
    angles 0 0 0
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
@@ -59,7 +59,7 @@ GenericEntity {
     Hierarchy "{355B77EC42FE097E}" {
     }
    }
-   coords 0.8 0 -0.5
+   coords 0.683 0 -0.5
    angles 0 10 0
   }
   GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
@@ -68,7 +68,7 @@ GenericEntity {
     Hierarchy "{ACAC027038BF47A8}" {
     }
    }
-   coords 0.8 0.62 -0.5
+   coords 0.683 0.83 -0.5
    angles 0 0 0
   }
   GenericEntity : "{CC5453CCC311603B}Prefabs/Props/Military/Sandbags/Sandbag_01_end_burlap.et" {

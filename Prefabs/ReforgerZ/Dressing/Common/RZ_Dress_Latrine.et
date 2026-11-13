@@ -14,8 +14,8 @@ GenericEntity {
     Hierarchy "{00B0DED03BC7EA11}" {
     }
    }
-   coords 0 0 1.5
-   angles 0 3 0
+   coords 0 0 0
+   angles 0 0 0
   }
   SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
    ID "27404AE93B91BA68"
@@ -23,26 +23,26 @@ GenericEntity {
     Hierarchy "{5149060C18AA162B}" {
     }
    }
-   coords -1.5 0 0
-   angles 0 88 0
+   coords -0.069 0 0.144
+   angles 0 -90 0
   }
-  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
    ID "BFEA62F958AD80E9"
    components {
     Hierarchy "{64BB687D20F895CD}" {
     }
    }
-   coords -0.6 0 0.8
+   coords 0.716 0 1.048
    angles 0 0 0
   }
-  GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
    ID "0294EA3F5DBCDDD7"
    components {
     Hierarchy "{F4543BC52ADEF56B}" {
     }
    }
-   coords -0.6 0.35 0.8
-   angles 0 5 0
+   coords 0.716 0.14 1.048
+   angles 0 0 0
   }
   GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
    ID "F7B5C572CBF917EC"
@@ -50,7 +50,7 @@ GenericEntity {
     Hierarchy "{8C54924A7783D30D}" {
     }
    }
-   coords 0.6 0 0.9
+   coords 1.9 0 0.853
    angles 0 70 0
   }
  }

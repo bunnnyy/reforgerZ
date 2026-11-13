@@ -8,58 +8,67 @@ GenericEntity {
  }
  coords 0 0 0
  {
-  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+  GenericEntity : "{A8D8015D0E2B600A}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_mattress.et" {
    ID "B6ECF20F8AA1E137"
    components {
     Hierarchy "{17B34D5AD236AA8B}" {
     }
    }
-   coords -0.9 0.6 0
-   angles 0 88 90
+   coords 0.306 0 -0.01
+   angles 0 0 0
   }
-  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+  GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
    ID "C542FFD3BACDAB65"
    components {
     Hierarchy "{8C8CF4CD9188FD38}" {
     }
    }
-   coords 0.95 0.6 0.1
-   angles 0 94 90
+   coords 0.001 0.4 -0.008
+   angles 0 10 0
   }
-  SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
    ID "110798EDF0CDB36A"
    components {
     Hierarchy "{1C922A55E1191C90}" {
     }
    }
-   coords 0 1.3 -0.1
-   angles 75 2 0
+   coords -1.183 0.41 -0.616
+   angles 0 0 90
   }
-  GenericEntity : "{A8D8015D0E2B600A}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_mattress.et" {
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
    ID "1A5B81F2E6045C59"
    components {
     Hierarchy "{A4D72533D38D578A}" {
     }
    }
-   coords 0 0 0
-   angles 0 4 0
+   coords -1.183 0.41 0.616
+   angles 0 0 90
   }
-  GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
    ID "C4D577453E940001"
    components {
     Hierarchy "{B21A8B20EE4AEC91}" {
     }
    }
-   coords 0.15 0.08 0.1
-   angles 0 10 0
+   coords 1.183 0.41 -0.616
+   angles 0 0 90
   }
-  GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
    ID "6CE0B6D6C47A5D96"
    components {
     Hierarchy "{AC2081467BAF7503}" {
     }
    }
-   coords 0.6 0 0.9
+   coords 1.183 0.41 0.616
+   angles 0 0 90
+  }
+  GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
+   ID "01F1E79C6B7A530B"
+   components {
+    Hierarchy "{57938125219A6A97}" {
+    }
+   }
+   coords 0.5 0 1.53
    angles 0 0 0
   }
  }

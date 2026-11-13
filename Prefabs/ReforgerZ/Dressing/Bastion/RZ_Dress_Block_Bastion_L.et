@@ -23,7 +23,7 @@ GenericEntity {
     Hierarchy "{4B56BDB057155329}" {
     }
    }
-   coords 1.8 0 0.05
+   coords 1.765 0 0.05
    angles 0 88 0
   }
   StaticModelEntity : "{18822FB3F0D2ED00}Prefabs/Structures/Walls/BarbedWire/BarbedTape_01/BarbedTape_01_Long.et" {
@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{3405F5C889903F64}" {
     }
    }
-   coords 0 0 -1.3
+   coords 0.0 0 -1.218
    angles 0 90 0
   }
  }

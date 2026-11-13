@@ -8,7 +8,7 @@ GenericEntity {
  }
  coords 0 0 0
  {
-  SCR_DestructibleEntity : "{C8A5C92E74ABB5EA}Prefabs/Props/Civilian/PicnicTable/PicnicTable_01.et" {
+  GenericEntity : "{2DB729170DBCE7BE}Prefabs/Props/Furniture/TableOld_01/TableOld_01.et" {
    ID "C29C7DEFDE7A9A96"
    components {
     Hierarchy "{D6F5230AF3B7CD70}" {
@@ -23,8 +23,8 @@ GenericEntity {
     Hierarchy "{DF8E731ECE94AB9A}" {
     }
    }
-   coords -0.5 0 1.1
-   angles 0 180 0
+   coords -0.394 0 0.806
+   angles 0 -180.0 0
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
    ID "8A765465973E7C31"
@@ -32,8 +32,8 @@ GenericEntity {
     Hierarchy "{DFD66152244F7692}" {
     }
    }
-   coords 0.5 0 1.1
-   angles 0 180 0
+   coords 0.406 0 0.806
+   angles 0 -180.0 0
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
    ID "8A970635FB921A38"
@@ -41,8 +41,8 @@ GenericEntity {
     Hierarchy "{60C7E3F3C93D08C8}" {
     }
    }
-   coords -0.5 0 -1.1
-   angles 0 0 0
+   coords 0.406 0 -0.799
+   angles 0 0.0 0
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
    ID "7BE9BE528C19C8D3"
@@ -50,8 +50,8 @@ GenericEntity {
     Hierarchy "{723D50EEFB465423}" {
     }
    }
-   coords 0.6 0 -1.2
-   angles 0 30 0
+   coords -0.494 0 -1.049
+   angles 0 30.0 0
   }
   GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
    ID "F8D3B3EE5A6CC109"

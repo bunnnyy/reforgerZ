@@ -23,7 +23,7 @@ GenericEntity {
     Hierarchy "{7D7A5D3A0E0DF099}" {
     }
    }
-   coords 0 0.78 -0.1
+   coords 0.0 0.9 -0.1
    angles 0 180 0
   }
   GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{5ED9BF529000A618}" {
     }
    }
-   coords 0.45 0.78 0.1
+   coords 0.45 0.9 0.1
    angles 0 0 0
   }
   GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
@@ -41,7 +41,7 @@ GenericEntity {
     Hierarchy "{C745144C53D5DE6D}" {
     }
    }
-   coords -0.35 0.78 0.05
+   coords -0.35 0.9 0.05
    angles 0 20 0
   }
   GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
@@ -50,8 +50,8 @@ GenericEntity {
     Hierarchy "{A949B0CC196D38A3}" {
     }
    }
-   coords 0.05 0 0.85
-   angles 0 172 0
+   coords -0.06 0 1.125
+   angles 0 176.0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "7E4C29AA143BE92E"
@@ -59,8 +59,8 @@ GenericEntity {
     Hierarchy "{C52B49B54E84767C}" {
     }
    }
-   coords -1.2 0 -0.4
-   angles 0 80 0
+   coords -1.545 0 -0.106
+   angles 0 -4 0
   }
   GenericEntity {
    ID "C8DAE94F79E1C874"
@@ -69,13 +69,13 @@ GenericEntity {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition 0 1.6 -0.8
+     m_vLookPosition 0.01 1.6 0.0
      m_eLoiterAnimation SIT
     }
     Hierarchy "{D54354F43647119F}" {
     }
    }
-   coords 0.05 0 0.85
+   coords -0.06 0 1.125
   }
  }
 }

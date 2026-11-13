@@ -41,8 +41,8 @@ GenericEntity {
     Hierarchy "{142FE5DDA971F04F}" {
     }
    }
-   coords 2.5 0 0
-   angles 0 0 0
+   coords 2.304 0 0.001
+   angles 0 -90.0 0
   }
   GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
    ID "8A5C47DE07A76519"
@@ -50,7 +50,7 @@ GenericEntity {
     Hierarchy "{B000B44FFB0E34A3}" {
     }
    }
-   coords 1.6 0.78 -0.5
+   coords 1.6 0.9 -0.5
    angles 0 0 0
   }
   GenericEntity {
@@ -60,13 +60,13 @@ GenericEntity {
      Tags {
       "RZ_Work"
      }
-     m_vLookPosition 1.6 1.6 0
+     m_vLookPosition 1.6 1.6 0.0
      m_eLoiterAnimation SIT
     }
     Hierarchy "{2C5AB6C9A9C35541}" {
     }
    }
-   coords 2.5 0 0
+   coords 2.304 0 0.001
   }
  }
 }

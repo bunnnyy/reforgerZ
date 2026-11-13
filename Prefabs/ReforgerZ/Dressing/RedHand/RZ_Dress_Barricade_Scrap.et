@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{DE2B765A4050FBBA}" {
     }
    }
-   coords 3.2 0 0.9
+   coords 3.2 0 -1.2
    angles 0 0 0
   }
   GenericEntity : "{74D1DB7828061BD7}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_pile_small.et" {
@@ -41,7 +41,7 @@ GenericEntity {
     Hierarchy "{EFA341551A322FCB}" {
     }
    }
-   coords -2.9 0 0.5
+   coords -3.3 0 0.5
    angles 0 30 0
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
@@ -50,7 +50,7 @@ GenericEntity {
     Hierarchy "{412D544CCBFDE9CA}" {
     }
    }
-   coords 0.4 0.6 -0.3
+   coords 0.4 0.4 -0.3
    angles 0 10 80
   }
  }

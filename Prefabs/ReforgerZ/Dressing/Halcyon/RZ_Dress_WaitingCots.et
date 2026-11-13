@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{37249B273DDBE624}" {
     }
    }
-   coords 1.5 0 0
+   coords 1.791 0 0.013
    angles 0 0 0
   }
   GenericEntity : "{F06EAC6F2F97767F}Prefabs/Props/Medical/MedicalScreen_01.et" {

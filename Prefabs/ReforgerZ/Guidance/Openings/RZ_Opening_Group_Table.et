@@ -41,8 +41,8 @@ GenericEntity {
     Hierarchy "{7FAE5814468FCFD8}" {
     }
    }
-   coords -0.8 0 0.1
-   angles 0 90 0
+   coords -1.253 0 0.192
+   angles 0 98.0 0
   }
   GenericEntity : "{4A4B245D7CAC341B}Prefabs/Props/Furniture/ChairOld_02.et" {
    ID "30CC86FDDDD2ABFE"
@@ -50,8 +50,8 @@ GenericEntity {
     Hierarchy "{F0675BFE8927A3DD}" {
     }
    }
-   coords 0.8 0 0.2
-   angles 0 -90 0
+   coords 1.182 0 -0.163
+   angles 0 -82.0 0
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
    ID "EC1BA2041A59B22B"
@@ -59,8 +59,8 @@ GenericEntity {
     Hierarchy "{EDC9E1094A0CFFC2}" {
     }
    }
-   coords 0.1 0 0.8
-   angles 0 180 0
+   coords 0.118 0 0.797
+   angles 0 -172.0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "4058C9E9CB5C9BBD"
@@ -68,8 +68,8 @@ GenericEntity {
     Hierarchy "{6368037138FDBFD3}" {
     }
    }
-   coords 0 0 -0.8
-   angles 0 0 0
+   coords -0.099 0 -0.752
+   angles 0 8.0 0
   }
  }
 }

@@ -41,6 +41,8 @@ class RZ_SiteSolver
 	protected static const float ROUGH_SLOPE = 0.36;	// a tier 1 piece's second pass, and a piece that may stand on a bank: 20 degrees...
 	protected static const float ROUGH_SPREAD = 0.6;	// ...and a prop's ground up to this
 	protected static const float ROW_GAP = 1.2;			// between two of a kind set out in a row
+	protected static const float LEVEL_SLOPE = 0.05;	// a level barrier (crates, tyres, a wreck) stands on ground no steeper than this along it (3 degrees)
+	protected static const float CLOSED_SHARE = 0.6;	// a road this much closed already by a wall, a fence or a gate needs no road block
 
 	ref RZ_CampPlace m_Place;			// held: the job may hand its place over to a newer one (Survey) while this one is solved
 	ref RZ_SiteResult m_Result;
@@ -530,46 +532,9 @@ class RZ_SiteSolver
 			}
 		}
 
-		// Anywhere along the ring (a side the doctrine leaves open too), on it or a metre in
-		array<vector> near = {};
-		array<float> nearYaw = {};
-		for (int k = 0; k < 4; k++)
-		{
-			float ax;
-			float az;
-			float bx;
-			float bz;
-			m_Wire.FaceEnds(k, ax, az, bx, bz);
-			float outB = m_Wire.FaceOut(k);
-			float len = Math.Sqrt((bx - ax) * (bx - ax) + (bz - az) * (bz - az));
-			int count = Math.Max(1, Math.Floor(len / 3));
-			for (int c = 1; c < count; c++)
-			{
-				float t = c / count;
-				vector onLine = m_Wire.Point(ax + (bx - ax) * t, az + (bz - az) * t);
-				for (int d = 0; d <= 1; d++)
-				{
-					near.Insert(LinePose(e, RZ_Compass.PointAt(onLine, outB + 180, d), outB));
-					nearYaw.Insert(outB);
-				}
-			}
-		}
-
-		if (PlaceBest(e, e.Rules(), near, nearYaw, false, m_vGate, WireMask(), RZ_ESiteLayer.PLAN, 0, false))
-		{
-			RZ_SitePlaced last = m_Result.m_aPlaced[m_Result.m_aPlaced.Count() - 1];
-			int face = 0;
-			m_Wire.LinePointToward(RZ_Compass.Bearing(m_vMid, last.m_vPos), face);
-			m_Wire.Cover(face, last.m_vPos, half);
-			return;
-		}
-
-		// On rough ground, then anywhere inside the wire (a barricade in depth)
-		m_bRough = true;
-		bool rough = PlaceBest(e, e.Rules(), near, nearYaw, false, m_vGate, WireMask(), RZ_ESiteLayer.PLAN, 0, false);
-		m_bRough = false;
-		if (!rough)
-			Anywhere(e, e.Rules(), RZ_SiteGrid.BLOCKS_LIFE);
+		// Nothing to close: no gate to stand beside and no gap it fits. A barricade stands where it
+		// closes something or not at all (one once stood in the open on the Haven's car park); it
+		// isn't counted as dropped
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -675,6 +640,60 @@ class RZ_SiteSolver
 	//------------------------------------------------------------------------------------------------
 	//! A barrier may stand on steep ground and banks (it's tilted to follow them, RunFails) but not on
 	//! water, a building, something solid, a road, other scenery, a piece or a path kept clear.
+	//! Runs are tested this far inside their measured box: two runs whose end faces meet don't block
+	//! each other
+	static const float RUN_TOUCH = 0.05;
+
+	//------------------------------------------------------------------------------------------------
+	//! A point along a run of stations, `dist` metres from the run's first edge (half a station before
+	//! station `first`), and the run's direction. Runs are laid end to end from there by their measured
+	//! lengths, so each one's end face meets the next one's (docs/SITES.md, "Spacing").
+	protected vector RunPoint(int first, int last, float dist, out vector dir)
+	{
+		dir = vector.Zero;
+		if (last > first)
+		{
+			dir = m_Wire.m_aAt[last] - m_Wire.m_aAt[first];
+			dir[1] = 0;
+			dir.Normalize();
+		}
+
+		vector at = m_Wire.m_aAt[first] + dir * (dist - RZ_SiteWire.STATION * 0.5);
+		return at;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A run's own length axis (its x at `yaw`), pointing the way `dir` goes: the next run is laid on
+	//! along it, so their end faces meet square even where the line's stations run a few degrees off.
+	protected static vector RunAxis(float yaw, vector dir)
+	{
+		vector axis = RZ_SiteGrid.Frame(vector.Zero, yaw, 1, 0);
+		axis[1] = 0;
+		axis.Normalize();
+		if (axis[0] * dir[0] + axis[2] * dir[2] < 0)
+			axis = -axis;
+
+		return axis;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The turn that lays a run's length along `dir` (the line's real direction, which can run a few
+	//! degrees off its side's bearing), of the two such turns the one nearer `yaw` (its face out).
+	protected static float AlongLine(float yaw, vector dir)
+	{
+		if (dir[0] == 0 && dir[2] == 0)
+			return yaw;
+
+		// A run's x at turn t is (cos t, -sin t)
+		float t = Math.Atan2(-dir[2], dir[0]) * Math.RAD2DEG;
+		float off = Math.Repeat(t - yaw + 180, 360) - 180;
+		if (Math.AbsFloat(off) > 90)
+			t += 180;
+
+		return Math.Repeat(t, 360);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static int WireMask()
 	{
 		return (RZ_SiteGrid.BLOCKS | RZ_SiteGrid.CLEAR) & ~(RZ_SiteGrid.STEEP | RZ_SiteGrid.STEP);
@@ -694,7 +713,7 @@ class RZ_SiteSolver
 		if (onRoad)
 			wireMask = wireMask & ~(RZ_SiteGrid.ROAD | RZ_SiteGrid.CLEAR);
 
-		int blocks = m_Grid.FirstBlock(pos, yaw, e.Foot(), wireMask, lo, hi);
+		int blocks = m_Grid.FirstBlock(pos, yaw, e.Foot(), wireMask, lo, hi, -RUN_TOUCH);
 		if (blocks != 0)
 			return RZ_SiteGrid.FlagName(blocks);
 
@@ -779,42 +798,77 @@ class RZ_SiteSolver
 				j++;
 			}
 
+			// The gap filled end to end from its first edge: each run starts where the last one's
+			// measured end face is, the longest that fits first; where none fits, half a station on
 			float run = (j - i + 1) * RZ_SiteWire.STATION;
-			bool placed = false;
-			foreach (RZ_DressingPiece w : m_aWires)
+			float used = 0;
+			vector lineDir;
+			RunPoint(i, j, 0, lineDir);
+			float yaw = AlongLine(m_Wire.FaceOut(face), lineDir);
+			// Where the last run's end face is, while runs follow on one from another
+			vector chainEnd;
+			bool chained = false;
+			while (run - used > 0.3)
 			{
-				float len = Length(w);
-				if (len > run + 0.3)
-					continue;
+				if (m_iLayerLaid >= m_iLayerCap)
+					return;
 
-				int count = Math.Max(1, RZ_Util.RoundToInt(len / RZ_SiteWire.STATION));
-				int last = Math.Min(j, i + count - 1);
-				vector mid = (m_Wire.m_aAt[i] + m_Wire.m_aAt[last]) * 0.5;
-				float yaw = m_Wire.FaceOut(face);
-				array<float> nudges = {0, -0.5, 0.5, -1.0, 1.0, -1.5};
-				foreach (float nudge : nudges)
+				bool placed = false;
+				foreach (RZ_DressingPiece w : m_aWires)
 				{
-					vector at = RZ_Compass.PointAt(mid, yaw, nudge);
-					vector pos = LinePose(w, at, yaw);
-					float slope;
-					if (!RunFails(w, pos, yaw, slope).IsEmpty())
+					float len = Length(w);
+					if (len > run - used + 0.3)
 						continue;
 
-					Take(w, pos, yaw, RZ_ESiteLayer.WIRE, false);
-					m_Result.m_aPlaced[m_Result.m_aPlaced.Count() - 1].m_fSlope = slope;
-					m_iLayerLaid++;
-					m_Wire.Cover(face, mid, len * 0.5);
-					placed = true;
-					i = last + 1;
-					break;
+					vector dir;
+					vector mid = RunPoint(i, j, used + len * 0.5, dir);
+					vector axis = RunAxis(yaw, dir);
+					if (j == i)
+						mid = m_Wire.m_aAt[i];
+					else if (chained)
+						mid = chainEnd + axis * (len * 0.5);
+
+					array<float> nudges = {0, -0.5, 0.5, -1.0, 1.0, -1.5};
+					foreach (float nudge : nudges)
+					{
+						vector at = RZ_Compass.PointAt(mid, yaw, nudge);
+						vector pos = LinePose(w, at, yaw);
+						float slope;
+						if (!RunFails(w, pos, yaw, slope).IsEmpty())
+							continue;
+
+						// Crates, tyres and wrecks sit level or not at all: only wire and fences tilt
+						if (w.Rules().m_bLevel)
+						{
+							if (Math.AbsFloat(slope) > LEVEL_SLOPE)
+								continue;
+
+							slope = 0;
+						}
+
+						Take(w, pos, yaw, RZ_ESiteLayer.WIRE, false);
+						m_Result.m_aPlaced[m_Result.m_aPlaced.Count() - 1].m_fSlope = slope;
+						m_iLayerLaid++;
+						m_Wire.Cover(face, mid, len * 0.5);
+						placed = true;
+						used += len;
+						chained = nudge == 0;
+						chainEnd = mid + axis * (len * 0.5);
+						break;
+					}
+
+					if (placed)
+						break;
 				}
 
-				if (placed)
-					break;
+				if (!placed)
+				{
+					used += RZ_SiteWire.STATION;
+					chained = false;
+				}
 			}
 
-			if (!placed)
-				i++;
+			i = j + 1;
 		}
 	}
 
@@ -895,55 +949,95 @@ class RZ_SiteSolver
 				continue;
 
 			int stop = runTo[run];
-			float yaw = m_Wire.FaceOut(m_Wire.m_aFace[start]);
-			int left = 0;
-			int k = start;
-			while (k <= stop)
+			// A way something closes already (a track that ends at a garden gate, a lane walled off)
+			// gets no road block in front of it
+			int shut = 0;
+			for (int q = start; q <= stop; q++)
 			{
-				bool placed = false;
-				float room = (stop - k + 1) * RZ_SiteWire.STATION;
+				if (m_Wire.Shadowed(m_Grid, q))
+					shut++;
+			}
+
+			if (shut >= (stop - start + 1) * CLOSED_SHARE)
+			{
+				m_Wire.Seal(start, stop);
+				m_Wire.DropGate((m_Wire.m_aAt[start] + m_Wire.m_aAt[stop]) * 0.5, RZ_SiteWire.GATE_MAX);
+				continue;
+			}
+
+			// Side by side across the road from its first edge, each block's end face against the
+			// last one's (measured), the longest that fits first
+			vector roadDir;
+			RunPoint(start, stop, 0, roadDir);
+			float yaw = AlongLine(m_Wire.FaceOut(m_Wire.m_aFace[start]), roadDir);
+			float width = (stop - start + 1) * RZ_SiteWire.STATION;
+			float done = 0;
+			float left = 0;
+			vector blockEnd;
+			bool joined = false;
+			while (width - done > 0.25)
+			{
+				bool laid = false;
 				foreach (RZ_DressingPiece w : m_aBlocks)
 				{
 					if (m_iLayerLaid >= m_iLayerCap)
 						break;
 
-					float len = Length(w);
-					if (len > room + 0.6)
+					float blockLen = Length(w);
+					if (blockLen > width - done + 0.6)
 						continue;
 
-					int count = Math.Max(1, RZ_Util.RoundToInt(len / RZ_SiteWire.STATION));
-					int last = Math.Min(stop, k + count - 1);
-					vector mid = (m_Wire.m_aAt[k] + m_Wire.m_aAt[last]) * 0.5;
-					array<float> nudges = {0, -0.5, 0.5, -1.0, 1.0};
-					foreach (float nudge : nudges)
+					vector across;
+					vector centre = RunPoint(start, stop, done + blockLen * 0.5, across);
+					vector blockAxis = RunAxis(yaw, across);
+					if (stop == start)
+						centre = m_Wire.m_aAt[start];
+					else if (joined)
+						centre = blockEnd + blockAxis * (blockLen * 0.5);
+
+					array<float> shifts = {0, -0.5, 0.5, -1.0, 1.0};
+					foreach (float shift : shifts)
 					{
-						vector pos = LinePose(w, RZ_Compass.PointAt(mid, yaw, nudge), yaw);
-						float slope;
-						if (!RunFails(w, pos, yaw, slope, true).IsEmpty())
+						vector spot = LinePose(w, RZ_Compass.PointAt(centre, yaw, shift), yaw);
+						float tilt;
+						if (!RunFails(w, spot, yaw, tilt, true).IsEmpty())
 							continue;
 
-						Take(w, pos, yaw, RZ_ESiteLayer.BLOCK, false);
-						m_Result.m_aPlaced[m_Result.m_aPlaced.Count() - 1].m_fSlope = slope;
+						if (w.Rules().m_bLevel)
+						{
+							if (Math.AbsFloat(tilt) > LEVEL_SLOPE)
+								continue;
+
+							tilt = 0;
+						}
+
+						Take(w, spot, yaw, RZ_ESiteLayer.BLOCK, false);
+						m_Result.m_aPlaced[m_Result.m_aPlaced.Count() - 1].m_fSlope = tilt;
 						m_iLayerLaid++;
-						m_Wire.Seal(k, last);
-						placed = true;
-						k = last + 1;
+						int sealFrom = Math.Min(stop, start + RZ_Util.RoundToInt(Math.Floor(done / RZ_SiteWire.STATION)));
+						int sealTo = Math.Min(stop, start + RZ_Util.RoundToInt(Math.Ceil((done + blockLen) / RZ_SiteWire.STATION)) - 1);
+						m_Wire.Seal(sealFrom, sealTo);
+						laid = true;
+						done += blockLen;
+						joined = shift == 0;
+						blockEnd = centre + blockAxis * (blockLen * 0.5);
 						break;
 					}
 
-					if (placed)
+					if (laid)
 						break;
 				}
 
-				if (!placed)
+				if (!laid)
 				{
-					left++;
-					k++;
+					left += RZ_SiteWire.STATION;
+					done += RZ_SiteWire.STATION;
+					joined = false;
 				}
 			}
 
 			// A slit a body can pass (under 1.5 m) still counts as closed: nothing drives through it
-			if (left * RZ_SiteWire.STATION < 1.5)
+			if (left < 1.5)
 				m_Wire.DropGate((m_Wire.m_aAt[start] + m_Wire.m_aAt[stop]) * 0.5, RZ_SiteWire.GATE_MAX);
 		}
 	}
@@ -2442,7 +2536,10 @@ class RZ_SiteSolver
 	//! A piece placed: as data, its cells taken; `wall`: it stands on the building's wall.
 	protected void Take(RZ_DressingPiece e, vector pos, float yaw, RZ_ESiteLayer layer, bool wall)
 	{
-		m_Grid.Paint(pos, yaw, e.Foot(), RZ_SiteGrid.TAKEN);
+		// A barrier run or a road block takes no more than its measured box past its ends: the next run
+		// meets its end face (docs/SITES.md, "Spacing")
+		bool line = layer == RZ_ESiteLayer.WIRE || layer == RZ_ESiteLayer.BLOCK;
+		m_Grid.Paint(pos, yaw, e.Foot(), RZ_SiteGrid.TAKEN, line);
 		RZ_SitePlaced placed = Record(e, pos, yaw, layer);
 		placed.m_bWall = wall;
 	}

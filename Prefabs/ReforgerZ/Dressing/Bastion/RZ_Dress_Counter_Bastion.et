@@ -23,7 +23,7 @@ GenericEntity {
     Hierarchy "{0B27ACA9412FA067}" {
     }
    }
-   coords 0.45 0.78 0.05
+   coords 0.45 0.9 0.05
    angles 0 6 0
   }
   GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{5355404036F0C2A7}" {
     }
    }
-   coords -0.7 0.78 0.05
+   coords -0.56 0.9 0.04
    angles 0 0 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
@@ -50,7 +50,7 @@ GenericEntity {
     Hierarchy "{4529011C82C77C20}" {
     }
    }
-   coords 1.65 1.0 -0.1
+   coords 1.651 1.01 -0.099
    angles 0 -6 0
   }
  }

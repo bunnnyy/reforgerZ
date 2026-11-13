@@ -401,6 +401,30 @@ class RZ_PhotoTour
 				return;
 
 			RZ_Log.Info(string.Format("Photo tour: %1 has %2 camp pieces after %3 s", stop.m_sName, count, m_iWait));
+			// Each piece by name, metres east and north of the stop and its turn: to tell which piece a
+			// photo shows
+			string list = "";
+			int listed = 0;
+			foreach (IEntity piece : pieces)
+			{
+				if (!piece)
+					continue;
+
+				string prefab = FilePath.StripExtension(FilePath.StripPath(RZ_Util.GetPrefabName(piece)));
+				prefab.Replace("RZ_Dress_", "");
+				vector at = piece.GetOrigin() - stop.m_vPos;
+				list += string.Format("%1 %2 %3 %4; ", prefab, RZ_Util.RoundToInt(at[0]), RZ_Util.RoundToInt(at[2]), RZ_Util.RoundToInt(piece.GetYawPitchRoll()[0]));
+				listed++;
+				if (listed % 12 == 0)
+				{
+					RZ_Log.Info(string.Format("Photo tour pieces: %1: %2", stop.m_sName, list));
+					list = "";
+				}
+			}
+
+			if (!list.IsEmpty())
+				RZ_Log.Info(string.Format("Photo tour pieces: %1: %2", stop.m_sName, list));
+
 			PlanSiteShots(stop, pieces);
 		}
 
