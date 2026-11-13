@@ -22,6 +22,7 @@ Workbench plugins.
 - [Where a place stands](#where-a-place-stands)
 - [The site grid](#the-site-grid)
 - [Real footprints](#real-footprints)
+- [The world-building kit](#the-world-building-kit)
 - [The surroundings and the threat](#the-surroundings-and-the-threat)
 - [The rules](#the-rules)
 - [The solver](#the-solver)
@@ -128,6 +129,60 @@ so `build.py`'s overlap check passes with the real sizes. The firewood piece's s
 the scrap, the sandbags, the floodlight, the checkpoint's sign) were measured the same way: a
 concertina coil is 3.45 m long down its own z (so a run turns it 90°), the chain-link, plank fence
 and tin sections are 3, 4, 6 and 8 m with their origin at one end.
+
+## The world-building kit
+
+`tools/camp_kit/world_kit.txt` is the list to pick from when a place needs dressing beyond the camps'
+own pieces: a site, a Traces scene, a mission place, or the map itself in Workbench. It has 402
+lines, one prefab each: its ResourceName, its kind, the mod it comes from, where it suits, its size,
+what it is in a few words, and what the dedicated server logged when it spawned it. People read
+it, and a script that dresses places can read the same lines (fields split by ` | `; `#` starts a
+comment). The mods are in [MOD_STACK.md](MOD_STACK.md#scenery-night-sounds-and-small-things).
+
+| Kind | Lines | What it is | How it's used |
+|---|---|---|---|
+| `prop` | 246 | One object: MMHs IVY's 16 ivy pieces and 102 damaged props, four of Overgrown's car wrecks, and 124 base-game props (graves, skeletons, medical and checkpoint furniture, rubbish, wrecks) found behind JTF Bronze Props' Game Master entries | Also in `props.txt` with its class, and measured in `footprints.json`: name it in a piece in `pieces.py` and run `build.py` |
+| `composition` | 132 | A group to place whole: 111 of JTF Bronze Props' scenes, MMHs IVY's 20 wrecks and barricades under ivy, Overgrown's hidden camp | Place it in Workbench, or spawn it from a script with `RZ_Util.SpawnPrefab`. The notes say which have no `RplComponent` of their own: those only reach clients placed in the world or as a child of a piece |
+| `building` | 24 | A building or a big ruin: MMHs IVY's bunkers, houses and ruins under ivy, Overgrown's copies of base-game buildings | Place it by hand in Workbench where the map has room. They don't replace the map's own buildings |
+
+**Where a line suits** is one or more of twelve words, the same for every line:
+
+| Word | Means | Lines |
+|---|---|---|
+| `towns` | abandoned towns and their streets | 220 |
+| `roads` | roads and roadsides | 107 |
+| `checkpoints` | checkpoints and the Perimeter | 102 |
+| `indoors` | inside a building | 99 |
+| `bastion`, `haven`, `redhand` | that faction's places | 88, 75, 73 |
+| `wilds` | woods and open country | 66 |
+| `graves` | graves and the dead | 35 |
+| `halcyon` | Halcyon's lab and its places | 28 |
+| `farms`, `coast` | farms; the shore | 19, 8 |
+
+To find what suits a place: `grep "| graves" tools/camp_kit/world_kit.txt`, or `grep "checkpoints" ... | grep "| composition |"`.
+
+What to know before using a line:
+
+- **Nothing uses the new lines yet.** No piece in `pieces.py` names one of the 246 new props and no
+  script spawns a composition: the kit is what there is to pick from.
+- **Every line spawned on the dedicated server** (game 1.9, the mods loaded), and every prop has a
+  measured box. Nothing was seen: look at a piece in Workbench before building on it. Lines whose
+  look is a guess say so.
+- **Ivy, graves, fence poles and plants are the base game's old destructible entities** (`Tree`,
+  `SCR_DestructibleEntity`). Spawned at run time each logs an error line (`was spawned at runtime. It
+  won't take damage and wont replicate`) and can't be damaged. The camps' own fences, tin walls and flowerpots
+  are the same kind. Inside a piece they are part of the piece's prefab. Whether one spawned alone at
+  run time shows on a client of a dedicated server hasn't been checked: when in doubt, place it in the
+  world in Workbench.
+- **A line from a mod needs the mod.** A server without it (the Linux tools drop a dependency they
+  can't find) spawns nothing for that line: a script must take "didn't spawn" quietly.
+- **`props.txt` is `build.py`'s file.** It rewrites it, sorted by file name, with no comments: what a
+  prop is and where it's from is in `world_kit.txt`. A file name can be in it once, and a path with a
+  space can't be in it at all.
+- **Adding to the kit:** a prop goes in both files (its class and `hier` as "ReforgerZ: Dump
+  prefabs and classes" shows them), then measure it (`FOOTPRINTS=1 tools/runtime_test/run.sh sites`,
+  or the Workbench plugin above) and run `build.py`. A composition or a building goes in
+  `world_kit.txt` only.
 
 ## The surroundings and the threat
 

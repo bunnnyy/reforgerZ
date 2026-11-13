@@ -3295,7 +3295,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
        "{E7FF723379730BD5}Prefabs/Items/PersonalBelongings/PersonalBelongings_CIV.et" "{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et" "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et" "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et" "{2085CF5A65EFCD11}Prefabs/Characters/Uniforms/Shirt/Shirt2.et" "{3A948BD491BC06DE}Prefabs/Characters/Uniforms/Jacket_Tracksuit/Jacket_Tracksuit_Navy.et" "{821386465B3C63AB}Prefabs/Characters/Uniforms/Pants_Tracksuit/Pants_Tracksuit_Navy.et" "{72F5D322882653AF}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap.et" "{B5B3D0AFBB4DE757}Prefabs/Items/Core/FM_WoodStick.et"
       }
       m_aRare {
-       "{3DE0155EC9767B98}Prefabs/Items/Equipment/Backpacks/Backpack_Veshmeshok.et" "{3805C0B87B9D2AB0}prefabs/weapons/Melee/Knife.et"
+       "{3DE0155EC9767B98}Prefabs/Items/Equipment/Backpacks/Backpack_Veshmeshok.et" "{3805C0B87B9D2AB0}prefabs/weapons/Melee/Knife.et" "{0CF6E65BB0AAFDE6}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_PearlNecklace.et"
       }
      }
      RZ_LootTable "{1DC03D14FE15948B}" {
@@ -3304,7 +3304,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
        "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et" "{72F5D322882653AF}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap.et" "{DCDF534783F9C73D}Prefabs/Items/Medicine/Vodka_Bottle/Vodka_Bottle.et" "{FF742375E12302B4}Prefabs/Characters/Misc/Cigarette.et" "{0F7F7BD8A462D8F5}Prefabs/Characters/Waist/Waist_Pack.et" "{C542EA4B3ED3B61B}Prefabs/Characters/Uniforms/Pants_Cargo/Pants_Cargo_Tan.et"
       }
       m_aRare {
-       "{A870260CF6ECB936}Prefabs/Items/Equipment/Backpacks/Backpack_IIFS_FieldPack_hiking.et"
+       "{A870260CF6ECB936}Prefabs/Items/Equipment/Backpacks/Backpack_IIFS_FieldPack_hiking.et" "{696CC1F6BC5BE3F7}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_StackofCash.et"
       }
      }
      RZ_LootTable "{7AD0265CF776FD5D}" {
@@ -3340,7 +3340,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
        "{50084B2B2B8004FA}Prefabs/Items/Equipment/Accessories/Holster_PM/Holster_PM.et" "{CBE373D32DA18749}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_POLICE.et" "{EF0516E165E01874}Prefabs/Characters/Uniforms/Overalls/Prisoner_uniform.et"
       }
       m_aRare {
-       "{D41D22DD1B8E921E}Prefabs/Weapons/Grenades/M18/Smoke_M18_Green.et" "{77EAE5E07DC4678A}Prefabs/Weapons/Grenades/Smoke_RDG2.et" "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et" "{9C948630078D154D}Prefabs/Weapons/Rifles/VZ58/Rifle_VZ58P.et" "{1D0B60CC90DA7330}Prefabs/Characters/HeadGear/Helmet_M1_01/Helmet_M1_No Strap.et"
+       "{D41D22DD1B8E921E}Prefabs/Weapons/Grenades/M18/Smoke_M18_Green.et" "{77EAE5E07DC4678A}Prefabs/Weapons/Grenades/Smoke_RDG2.et" "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et" "{9C948630078D154D}Prefabs/Weapons/Rifles/VZ58/Rifle_VZ58P.et" "{1D0B60CC90DA7330}Prefabs/Characters/HeadGear/Helmet_M1_01/Helmet_M1_No Strap.et" "{7B605E8E4B952837}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_GoldBrick.et" "{D0476EFD1BB2CCB3}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_CreditCards.et"
       }
      }
      RZ_LootTable "{4BB93579379FFBCF}" {
@@ -3349,7 +3349,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
        "{E7FF723379730BD5}Prefabs/Items/PersonalBelongings/PersonalBelongings_CIV.et" "{DCDF534783F9C73D}Prefabs/Items/Medicine/Vodka_Bottle/Vodka_Bottle.et" "{FF742375E12302B4}Prefabs/Characters/Misc/Cigarette.et" "{C500301CF7AE1ACB}Prefabs/Characters/HeadGear/Balaclava/Balaclava_Wool_Black.et"
       }
       m_aRare {
-       "{77EAE5E07DC4678A}Prefabs/Weapons/Grenades/Smoke_RDG2.et" "{3805C0B87B9D2AB0}prefabs/weapons/Melee/Knife.et"
+       "{77EAE5E07DC4678A}Prefabs/Weapons/Grenades/Smoke_RDG2.et" "{3805C0B87B9D2AB0}prefabs/weapons/Melee/Knife.et" "{696CC1F6BC5BE3F7}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_StackofCash.et"
       }
      }
      RZ_LootTable "{A98A77B7E90A7EA6}" {

@@ -5568,7 +5568,7 @@
    "slotLabel": "Interactions > Search > Extra finds (each entry's three lists)",
    "required": false,
    "minimum": false,
-   "use": "items added to one building type's table on top of the pool and the built-in items (set: 41 items of the base game and the stack's mods; a list set by hand in Loot tables gets none)",
+   "use": "items added to one building type's table on top of the pool and the built-in items (set: 45 items of the base game and the stack's mods; a list set by hand in Loot tables gets none)",
    "notes": ""
   },
   {
