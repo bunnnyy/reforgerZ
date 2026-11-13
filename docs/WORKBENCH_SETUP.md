@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **361 prefab fields**: 46 on `RZ_GameModeComponent`, 298 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **339 entries**: 201 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 101 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **363 prefab fields**: 46 on `RZ_GameModeComponent`, 300 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **341 entries**: 201 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 103 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -555,6 +555,8 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | a standing civilian with no weapon and no AI, or a prop figure (`RZ_DutyPerson.et`) | — | Missions > Errands > Props > Duty person | optional | someone waiting in the line at the gate (The Line at the Door, The Wash-Down, The Look-Over, Intake): stands there until taken by the arm; empty = Puzzles > Civilian. A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | a small rack or case of vials (`RZ_DutyTray.et`; a vanilla medical case will do) | — | Missions > Errands > Props > Duty tray | optional | a sample tray set out for Bench Work; empty = Props > Crate. A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | BanditGear's vodka bottle (an existing prefab from the stack) | — | Missions > Errands > Props > Duty vodka | optional | the bottle The Still gives whoever ran the batch; empty = no bottle, only the pay. Put in the player's pack |
+| (existing prefab) | the base game's US army cot (set by default); only a prop measured in tools/camp_kit/footprints.json and known to RZ_DutyRound.Box is used | — | Missions > Errands > Props > Round bed | optional | the cot each of The Round's sick lies on, indoors, under the tent or in the yard; empty = no cots: they lie on the ground in the tent or yard, and never indoors. Placed by its measured box: dropped, never squeezed, where it doesn't fit. Gone when the errand ends |
+| (existing prefab) | the base game's medium US canvas shelter (set by default); only a prop measured in tools/camp_kit/footprints.json and known to RZ_DutyRound.Box is used | — | Missions > Errands > Props > Round tent | optional | the shelter The Round's sick lie under by the safehouse wall when the house has no room; empty = the yard by the wall. Placed by its measured box: clear, level, nothing over it. Gone when the errand ends |
 | `RZ_SoldiersID_Carried.et` | shipped as text: our item child with an RZ_MissionItemComponent added (it can't be equipped, no mission's drop takes it). Open it once in Workbench | `RZ_MissionItemComponent` | Missions > Errands > Props > Soldier's ID | optional | the card The Patrol That Didn't Come Back carries home; empty = Props > Carried. Put in the player's pack as a carried item |
 | `RZ_Passport_Forged.et` | shipped as text: our item child with an RZ_MissionItemComponent added (it can't be equipped, no mission's drop takes it). Open it once in Workbench | `RZ_MissionItemComponent` | Missions > Errands > Props > Forged papers | optional | the set False Hope at the Line buys off the forger; empty = Props > Carried. Put in the player's pack as a carried item |
 | `RZ_Show_Cash.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' StackofCash mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Cash | optional | banknotes on the swap table and the count's tarp; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
@@ -2086,7 +2088,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **177** lines with the tag, all but one in the game scripts (one is the comment in
+There are **179** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, two the hold prompt's and four its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2109,7 +2111,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (79)
+### Medium risk: big features, with a fallback (81)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2176,6 +2178,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Missions/Errands/RZ_Strangers.c:833` | the road network's `GetRoadsInAABB` gives a junction's roads as pieces that end at it (three ends within 25 m), so junctions of used roads count as crossroads | Strangers keep the road posts' crossroads; nothing else changes |
 | `Missions/Errands/RZ_Strangers.c:1209` | a dead stranger's inventory (`GetItems` on the body) shrinks when a player takes from it, so robbing one is told | No robbery is ever told; killing one still costs what it did |
 | `Missions/Errands/RZ_ErrandsDealer.c:260` | a local's labels set and cleared on its body as a knower comes and goes reach clients (the same labels for everyone near: per-player labels need an engine check) | A local shows to anyone near while a knower is there, as before |
+| `Missions/Errands/RZ_DutyRound.c:464` | `CharacterControllerComponent.SetUnconscious(true)` on a freshly spawned civilian with no AI, on the server, lays The Round's sick down for every client, they stay down, and the talk prompt on them still shows | They stand (or the prompt is gone): the beds are still seen to with your hands at their work sites; set **Props > Duty person** to a prop figure lying down, or lie them down another way |
+| `Missions/Errands/RZ_DutyRound.c:326` | a body laid down at a cot's top (0.45 m: its measured 0.51 less the sag) settles on it, not through it or floating over it | Lying in or over the cot: change `COT_TOP` in `RZ_DutyRound.c` |
 | `Missions/RZ_MissionGoods.c:6` | an item tagged as someone's goods keeps its entity through inventory moves, a body and a car's boot (the list holds entities, like the fence's bought list) | A tagged ration or carried item may count as ordinary food after a move; pay in kind can be left empty (**Props > Pay ration**) |
 | `Zombies/RZ_TribeProps.c:68`, `:354` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
 | `Zombies/RZ_TribeRest.c:987` | a dead leader's body withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stays where it fell through the vigil, and goes when it's inserted again at dawn | The body goes with the engine's usual cleanup; the vigil, its samples and its lines are unchanged |
@@ -2885,6 +2889,13 @@ session, tick off:
   the lab's stock, or on the Red Hand's black market): three beds, then the card; the stock is one
   less after, and nothing comes into your pack.
   Ask for any of the Trusted ones again the same season day: it isn't offered.
+- [ ] The Round ([ERRANDS.md](ERRANDS.md#the-round-at-the-beds)), as a Nurse or Doctor at a house with no
+  medic and 4+ people: the log's `Errands: The Round` lines say where the sick lie (indoors, under the
+  tent, in the yard) and every cot's fit or drop. Look: no cot or shelter in a wall, floating, sunk
+  into the floor or overlapping another; the sick lie still on the cots, not through them; the work
+  sites stand on the room side of each bed. Talk to the one you're at (the others say wait); a
+  wrong call on the hidden bite brings the turned line before the round ends. All of it is gone
+  when the errand ends.
 - [ ] The Haven's duties ([ERRANDS.md](ERRANDS.md#the-havens-duties)): by day at a safehouse, the
   school room (count, then four places to look 9 m off, each a prompt of its own) and the garden
   (dig a bed; ask again after the gap: the same bed now wants planting, then water, and two season

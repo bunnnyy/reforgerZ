@@ -35,7 +35,25 @@ class RZ_TalkDutyPerson : RZ_TalkGeneric
 		if (!scenes)
 			return null;
 
-		return RZ_DutyScenes.OpenBeatOf(scenes.ByPerson(m_iErrand));
+		// Several of a scene's own people can lie there at once (The Round's sick): only the open
+		// beat's is the one being seen to
+		RZ_DutyScene scene = scenes.ByPerson(m_iErrand);
+		if (scene && scene.m_Person != m_Owner)
+			return null;
+
+		return RZ_DutyScenes.OpenBeatOf(scene);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One of the scene's own people, waiting for their turn (a patient whose bed isn't the open one).
+	protected bool IsWaiting(RZ_GameModeComponent gm)
+	{
+		RZ_DutyScenes scenes = Scenes(gm);
+		if (!scenes)
+			return false;
+
+		RZ_DutyScene scene = scenes.Find(m_iErrand);
+		return scene && scene.m_aBodies.Contains(m_Owner) && scene.m_Person != m_Owner;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -45,7 +63,7 @@ class RZ_TalkDutyPerson : RZ_TalkGeneric
 		RZ_DutyScene scene = null;
 		RZ_DutyScenes scenes = Scenes(gm);
 		if (scenes)
-			scene = scenes.ByPerson(m_iErrand);
+			scene = scenes.Find(m_iErrand);
 
 		string name = "Someone";
 		if (b && !b.m_sTalkName.IsEmpty())
@@ -71,6 +89,12 @@ class RZ_TalkDutyPerson : RZ_TalkGeneric
 	override void Greet(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, IEntity user)
 	{
 		RZ_DutyBeat b = Beat(gm);
+		if (!b && IsWaiting(gm))
+		{
+			s.m_aNew.Insert("They open their eyes, see it's you, and close them again. Their turn is coming. See to the bed you're at first.");
+			return;
+		}
+
 		if (!b)
 		{
 			s.m_aNew.Insert("They've said their piece. It's settled now.");
@@ -91,7 +115,7 @@ class RZ_TalkDutyPerson : RZ_TalkGeneric
 		if (!b || b.m_sTalk.IsEmpty())
 			return false;
 
-		RZ_DutyScene scene = Scenes(gm).ByPerson(m_iErrand);
+		RZ_DutyScene scene = Scenes(gm).Find(m_iErrand);
 		ctx.m_aKinds.Insert("duty:" + b.m_sTalk);
 		int colon = b.m_sTalk.IndexOf(":");
 		if (colon > 0)
@@ -122,7 +146,7 @@ class RZ_TalkDutyPerson : RZ_TalkGeneric
 	override void Pick(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
 	{
 		RZ_DutyScenes scenes = Scenes(gm);
-		if (!scenes || !scenes.ByPerson(m_iErrand))
+		if (!scenes || !Beat(gm))
 		{
 			s.m_aNew.Insert("It's settled already.");
 			return;

@@ -291,17 +291,16 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("We've no medic at this house, and three coughing in the back room, one of them a child. You've the hands for it, I can see that. A minute at each bed?");
+		Offer("We've no medic at this house, and people lying sick. You've the hands for it, I can see that. Will you go round them? Talk to each one first. They'll tell you more than the fever will.");
 		Over("The medic from the next house came after all.");
 
-		RZ_ErrandWay w = Way("do");
+		RZ_ErrandWay w = Way("scene");
 		w.m_sLabel = "See to the sick";
 		w.m_sBackground = "nurse,doctor";
 		w.m_ePlace = RZ_EErrandPlace.HERE;
-		w.m_fSeconds = 120;
-		w.m_fRadius = 20;
-		w.m_sStep = "See to the sick at {house}, a minute at each bed (2 real minutes there).";
-		w.Work(RZ_EWork.CARE, "See to the sick");
+		w.m_fSeconds = 0;
+		w.m_fRadius = 40;
+		w.m_sStep = "Go round the sick at {house}: talk to each, look them over, and do the one thing that's right for them. Then tell {giver}.";
 		w.m_iFavor = 4;
 		w.Done("They'll sleep tonight. So will I, which is the real gift.");
 	}
@@ -995,8 +994,71 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The Round is played at the beds (RZ_DutyRound): its sick are laid out when it's taken.
+	override void Taken(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w)
+	{
+		if (m_sKey != "round" || w.m_sWay != "scene")
+			return;
+
+		RZ_DutyScene scene = dealer.GetScenes().Ensure(e, e.Fill(m_sTitle), e.m_vGiver, false);
+		scene.m_vLast = e.m_vPlace;
+		if (RZ_DutyRound.Build(dealer.GetGM(), e, scene))
+			return;
+
+		// Nowhere to lay them out: nothing to do and nothing to pay
+		e.m_iCap = 0;
+		e.m_iFameCap = 0;
+		dealer.Notify(e, "There's nowhere fit to lay them out today. Come back to me; it's not your doing.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Round's step is its beds seen to.
+	override bool StepCounts(RZ_Errands dealer, RZ_Errand e, IEntity me)
+	{
+		RZ_ErrandWay w = e.GetWay();
+		if (m_sKey != "round" || !w || w.m_sWay != "scene")
+			return true;
+
+		return dealer.GetScenes().IsDone(e.m_iId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Round: what was done at the beds decides the pay, as a duty's scored scene does; every
+	//! call right pays 2 more. What the house heard of it goes into `said`.
+	protected void ResolveRound(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w, int playerId, notnull array<string> said)
+	{
+		RZ_DutyScene scene = dealer.GetScenes().Find(e.m_iId);
+		if (!scene)
+			return;
+
+		e.m_iBonus = scene.m_iFavor;
+		foreach (string told : scene.m_aTold)
+		{
+			said.Insert(told);
+		}
+
+		if (scene.m_iScored <= 0)
+			return;
+
+		float score = scene.Score();
+		if (score < 0.99)
+		{
+			e.m_iFameCap = 0;
+			e.m_iCap = Math.Max(1, RZ_Util.RoundToInt((w.m_iFavor + Math.Min(scene.m_iFavor, 3)) * score));
+			said.Insert("Some of that helped. Some of it was a blanket on the wrong bed. You were kind about all of it, and that counts for something.");
+			return;
+		}
+
+		e.m_iBonus += 2;
+		said.Insert("Every bed, the right thing. I went round after you and there was nothing to change.");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Resolve(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w, int playerId, notnull array<string> said)
 	{
+		if (m_sKey == "round")
+			ResolveRound(dealer, e, w, playerId, said);
+
 		RZ_GameModeComponent gm = dealer.GetGM();
 		array<int> who = {playerId};
 		switch (w.m_iEffect)

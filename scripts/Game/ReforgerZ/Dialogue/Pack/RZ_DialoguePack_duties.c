@@ -6,6 +6,7 @@ class RZ_DialoguePack_duties
 		Add0(db);
 		Add1(db);
 		Add2(db);
+		Add3(db);
 	}
 
 	protected static void Add0(RZ_DialogueDB db)
@@ -48,6 +49,140 @@ class RZ_DialoguePack_duties
 		db.Node("start");
 		db.Say("", "Second company, the bridge detail. What's left of the bridge detail is me. I'm reporting in. Somebody should have, a week ago. I'm the somebody.");
 		db.Choice("back2", "Right.", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("duty.round.bite", "duty:round:bite", "", "How long have you been lying here?", 0, 0, "plain");
+		db.Node("start");
+		db.Say("", "Me? I'm fine. A cold. They put me in here so I don't give it to the children. See to the others first, honestly.");
+		db.Choice("what", "What happened to you?", "told", "", "", "", "", "", "call:slot:4", "", "");
+		db.Choice("need", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("told");
+		db.Say("", "Nothing happened. I was out for wood, it rained, I got a chill. That's all. Why are you looking at my arm?");
+		db.Choice("need2", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie2", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("need");
+		db.Say("", "Sleep. Just sleep. And for nobody to make a fuss. Please.");
+		db.Choice("lie3", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Conv("duty.round.burn", "duty:round:burn", "", "What's under the towel?", 0, 0, "haven");
+		db.Node("start");
+		db.Say("", "Don't take the towel off. It's the only thing that's helping. It was cold when they put it on.");
+		db.Choice("what", "What happened to you?", "told", "", "", "", "", "", "call:slot:4", "", "");
+		db.Choice("need", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("told");
+		db.Say("", "Supper. The big pot. The handle came away and I caught it, which was stupid, but I caught it. Everybody ate. Nobody else got burned. I'd do it again.");
+		db.Choice("need2", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie2", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("need");
+		db.Say("", "Something cold on it that stays cold. And not to have to cook tomorrow. Somebody else can.");
+		db.Choice("lie3", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Conv("duty.round.chest", "duty:round:chest", "", "That's a bad cough.", 0, 0, "plain");
+		db.Node("start");
+		db.Say("", "They wave the rag at you instead of answering, cough into it, and try again. Sorry. Every time I lie down it comes back up.");
+		db.Choice("what", "What happened to you?", "told", "", "", "", "", "", "call:slot:4", "", "");
+		db.Choice("need", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("told");
+		db.Say("", "Weeks of it. The roof leaks right over my bed, so I moved the bed, and the leak followed. Lying flat's the worst. I don't sleep. I lie here and count drips.");
+		db.Choice("need2", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie2", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("need");
+		db.Say("", "To sleep one night through. Just one. I'd trade you my boots for it.");
+		db.Choice("lie3", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Conv("duty.round.child", "duty:round:child", "", "Hello there.", 0, 0, "haven");
+		db.Node("start");
+		db.Say("", "They don't turn round. A small voice says to the wall that they're not supposed to talk to people they don't know.");
+		db.Choice("what", "What happened to you?", "told", "", "", "", "", "", "call:slot:4", "", "");
+		db.Choice("need", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie", "I'll just have a look at you.", "end", "", "", "", "", "", "", "", "");
+		db.Node("told");
+		db.Say("", "Mama went for water at the far well, because ours tastes funny now. She said wait here. So I'm waiting here. I'm good at waiting.");
+		db.Choice("need2", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie2", "I'll just have a look at you.", "end", "", "", "", "", "", "", "", "");
+		db.Node("need");
+		db.Say("", "For Mama to come back. And my dog. He's not allowed in. He's outside. He's called Rubel.");
+		db.Choice("lie3", "I'll just have a look at you.", "end", "", "", "", "", "", "", "", "");
+		db.Conv("duty.round.cut", "duty:round:cut", "", "Let's see that hand.", 0, 0, "plain");
+		db.Node("start");
+		db.Say("", "It's only a hand. I've got two. Sorry. I talk when it throbs.");
+		db.Choice("what", "What happened to you?", "told", "", "", "", "", "", "call:slot:4", "", "");
+		db.Choice("need", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("told");
+		db.Say("", "A tin of peaches. Four days ago. The opener went the way of everything, so I used a knife, and the knife went the way of the tin. It was fine yesterday. It's not fine today.");
+		db.Choice("need2", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie2", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("need");
+		db.Say("", "Tell me it's not going to come off. Then do whatever you like to it.");
+		db.Choice("lie3", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Conv("duty.round.fall", "duty:round:fall", "", "Show me the arm.", 0, 0, "plain");
+		db.Node("start");
+		db.Say("", "Don't touch it. I mean, do, you're the one who knows. Just tell me first.");
+		db.Choice("what", "What happened to you?", "told", "", "", "", "", "", "call:slot:4", "", "");
+		db.Choice("need", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("told");
+		db.Say("", "The stairs, in the dark. I put my hand out for the rail and the rail wasn't there any more. Somebody burned it in the winter. I'd have burned it too.");
+		db.Choice("need2", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie2", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("need");
+		db.Say("", "Something to hold it still. Every time I turn over it moves on its own.");
+		db.Choice("lie3", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Conv("duty.round.fever", "duty:round:fever", "", "How are you feeling?", 0, 0, "haven");
+		db.Node("start");
+		db.Say("", "Cold. I know I'm hot, I can feel it on my own face, and I'm cold. It's a stupid thing for a body to do.");
+		db.Choice("what", "What happened to you?", "told", "", "", "", "", "", "call:slot:4", "", "");
+		db.Choice("need", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("told");
+		db.Say("", "It came round the houses like the post used to. The well first, then next door, then us. Mother had it last week. She's up and complaining now, so I'll live.");
+		db.Choice("need2", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie2", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("need");
+		db.Say("", "Water that isn't warm. And somebody to open that window. They keep it shut for the smoke and I'm cooking in here.");
+		db.Choice("lie3", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Conv("duty.round.hunger", "duty:round:hunger", "", "When did you last eat?", 0, 0, "haven");
+		db.Node("start");
+		db.Say("", "I'm sorry to be any trouble. I'm sure there are people worse off than me in here.");
+		db.Choice("what", "What happened to you?", "told", "", "", "", "", "", "call:slot:4", "", "");
+		db.Choice("need", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("told");
+		db.Say("", "I gave mine to the little ones. Just this week. Well, the week before too. Nobody noticed, which was the idea. Then I stood up too fast at the stove, and here I am.");
+		db.Choice("need2", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie2", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("need");
+		db.Say("", "Nothing. Really. Well. If there was a spoon of something going spare. But only if it's spare.");
+		db.Choice("lie3", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Conv("duty.round.old", "duty:round:old", "", "How are you keeping?", 0, 0, "plain");
+		db.Node("start");
+		db.Say("", "Don't waste it on me. Whatever you've got. I've had a long go. Give it to somebody who's still using theirs.");
+		db.Choice("what", "What happened to you?", "told", "", "", "", "", "", "call:slot:4", "", "");
+		db.Choice("need", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie", "Let me look at you anyway.", "end", "", "", "", "", "", "", "", "");
+		db.Node("told");
+		db.Say("", "Nothing happened. That's the trouble. I had a shop and a family and a bad knee. Now I've the knee. I stopped getting up, and nobody could think of a reason I should.");
+	}
+
+	protected static void Add1(RZ_DialogueDB db)
+	{
+		db.Choice("need2", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie2", "Let me look at you anyway.", "end", "", "", "", "", "", "", "", "");
+		db.Node("need");
+		db.Say("", "Somebody to argue with. The clerk won't. Too polite. You don't look polite.");
+		db.Choice("lie3", "Let me look at you anyway.", "end", "", "", "", "", "", "", "", "");
+		db.Conv("duty.round.toofar", "duty:round:toofar", "", "Can you hear me?", 0, 0, "plain");
+		db.Node("start");
+		db.Say("", "Their eyes come round to you slowly, as if from a long way off. It takes them a while to find the words.");
+		db.Choice("what", "What happened to you?", "told", "", "", "", "", "", "call:slot:4", "", "");
+		db.Choice("need", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("told");
+		db.Say("", "A fence, on a run. A nail. I dressed it myself, I was proud of it. That was nine days ago. It smells now. I can smell it from here, so you can.");
+		db.Choice("need2", "What do you need?", "need", "", "", "", "", "", "", "", "");
+		db.Choice("lie2", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
+		db.Node("need");
+		db.Say("", "Somebody who knows what they're doing. No offence. You know what I mean.");
+		db.Choice("lie3", "Lie still. I'll look you over.", "end", "", "", "", "", "", "", "", "");
 		db.Conv("duty.swap.aspirin", "duty:swap:aspirin", "", "Let me see the packet.", 0, 0, "plain");
 		db.Node("start");
 		db.Say("", "Antibiotics. Real ones, sealed, from the hospital before it went. You can't get these for love.");
@@ -160,10 +295,6 @@ class RZ_DialoguePack_duties
 		db.Choice("take", "A bigger knife for yours.", "end", "", "", "", "", "", "call:slot:3", "", "");
 		db.Choice("no", "No knives for you.", "end", "", "", "", "", "", "call:slot:4", "", "");
 		db.Choice("third", "Keep both. Go and see the lookout.", "end", "", "", "", "", "", "call:slot:5", "", "");
-	}
-
-	protected static void Add1(RZ_DialogueDB db)
-	{
 		db.Conv("duty.swap.letter", "duty:swap:letter", "", "Who's the letter to?", 0, 0, "haven");
 		db.Node("start");
 		db.Say("", "To my daughter, Vera. She's in Saint-Philippe, on the street by the mill. The tin's for whoever carries it. It's a good tin, peaches.");
@@ -184,6 +315,10 @@ class RZ_DialoguePack_duties
 		db.Node("start");
 		db.Say("", "Travel papers. Stamped by the regional office, signed, the proper form. Show these at the line and you walk out.");
 		db.Say("", "Three sets. A week's food. That's a price for a life, isn't it?");
+	}
+
+	protected static void Add2(RZ_DialogueDB db)
+	{
 		db.Choice("where", "Have you seen them work?", "more", "", "", "", "", "", "call:slot:1", "", "");
 		db.Choice("who", "Who are these for?", "more", "", "", "", "", "", "call:slot:2", "", "");
 		db.Choice("terms", "Let's settle it.", "terms", "", "", "", "", "", "", "", "");
@@ -314,10 +449,6 @@ class RZ_DialoguePack_duties
 		db.Conv("duty.toll.child", "duty:toll:child", "", "Where are your people?", 4, 1, "plain");
 		db.Node("start");
 		db.Say("", "My aunt's in the next town. She has a blue door. I know the way. I've been once, before, in a car. It was quicker in a car.");
-	}
-
-	protected static void Add2(RZ_DialogueDB db)
-	{
 		db.Choice("back4", "Right.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("duty.toll.courier", "duty:toll:courier", "", "What's in the satchel?", 4, 1, "haven");
 		db.Node("start");
@@ -338,6 +469,10 @@ class RZ_DialoguePack_duties
 		db.Conv("duty.toll.oldman", "duty:toll:oldman", "", "What have you got for me?", 4, 1, "plain");
 		db.Node("start");
 		db.Say("", "Nothing but news, son. And the news is this: the ferry man at the river has stopped taking bread. He takes boots now. Remember that one. It's worth a toll.");
+	}
+
+	protected static void Add3(RZ_DialogueDB db)
+	{
 		db.Choice("back5", "Right.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("duty.toll.pedlar", "duty:toll:pedlar", "", "What are you selling?", 4, 1, "plain");
 		db.Node("start");

@@ -2815,7 +2815,7 @@ class RZ_CampLife
 	//------------------------------------------------------------------------------------------------
 	//! Something stands in the footprint: a wall, a fence, a tree, a car, another system's prop.
 	//! Flat traces along its four sides and across both diagonals, at knee and chest height.
-	protected static bool Blocked(array<vector> quad)
+	static bool Blocked(array<vector> quad)
 	{
 		array<vector> ground = {};
 		foreach (vector c : quad)
@@ -2842,7 +2842,7 @@ class RZ_CampLife
 	//------------------------------------------------------------------------------------------------
 	//! Indoors (a quartermaster's counter): a floor under every corner and nothing in the way at the
 	//! counter's height or above it (walls, furniture), traced along its sides and across it.
-	protected static bool FitsIndoors(vector pos, float yaw, vector fmin, vector fmax)
+	static bool FitsIndoors(vector pos, float yaw, vector fmin, vector fmax)
 	{
 		array<vector> quad = {};
 		Quad(pos, yaw, fmin, fmax, 0, quad);
@@ -2870,7 +2870,7 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! A physics trace hits something (entities; with `world` the terrain too). Characters don't count.
-	protected static bool TraceHits(vector from, vector to, bool world)
+	static bool TraceHits(vector from, vector to, bool world)
 	{
 		TraceParam param = new TraceParam();
 		param.Start = from;
@@ -2900,7 +2900,7 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! A footprint's four corners (grown by `grow`), added to `quad`.
-	protected static void Quad(vector pos, float yaw, vector fmin, vector fmax, float grow, notnull array<vector> quad)
+	static void Quad(vector pos, float yaw, vector fmin, vector fmax, float grow, notnull array<vector> quad)
 	{
 		quad.Insert(FramePoint(pos, yaw, fmin[0] - grow, fmin[2] - grow));
 		quad.Insert(FramePoint(pos, yaw, fmax[0] + grow, fmin[2] - grow));
@@ -2910,7 +2910,7 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! Two rectangles (four corners each, from `ai` and `bi`) overlap on the ground.
-	protected static bool QuadsOverlap(notnull array<vector> a, int ai, notnull array<vector> b, int bi)
+	static bool QuadsOverlap(notnull array<vector> a, int ai, notnull array<vector> b, int bi)
 	{
 		return !Separated(a, ai, b, bi) && !Separated(b, bi, a, ai);
 	}

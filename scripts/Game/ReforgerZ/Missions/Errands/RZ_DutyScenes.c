@@ -140,6 +140,8 @@ class RZ_DutyBeat
 	string m_sTalk;				// someone stands here to talk to: their conversations are for duty:<this> ("swap:ring")
 	string m_sTalkName;			// who they are, the talk screen's name ("A woman with a ring")
 	ResourceName m_sThing;		// what stands on the table or the ground in front (a display copy, RZ_DutyThings)
+	int m_iBody = -1;			// the scene's own person who is already there (m_aBodies: a patient in a bed) is this beat's person to talk to
+	float m_fFace = -1;			// >= 0: the bearing of the side to stand on (a bed against a wall): the options set out (m_fOut) spread along that side only
 	ref array<ref RZ_DutyOption> m_aOptions = {};
 
 	//------------------------------------------------------------------------------------------------
@@ -203,6 +205,8 @@ class RZ_DutyScene
 	int m_iJolts;
 	bool m_bLate;
 	IEntity m_Dress;
+	ref array<IEntity> m_aBodies = {};	// people the scene put there itself, lying where they are from start to end (The Round's sick)
+	ref array<IEntity> m_aProps = {};	// what the scene stood there itself (their beds, the tent), until it's dropped
 
 	//------------------------------------------------------------------------------------------------
 	bool Has(string flag)
@@ -236,6 +240,7 @@ class RZ_DutyScenes
 	protected static const float SEEN_SQUAD = 20;		// their people see what your hands do within this
 	protected static const float SEEN_HOME = 25;		// and so does the place
 	protected static const float OPTION_STEP = 0.9;		// between a beat's options, side by side
+	static const float FACE_ARC = 140;					// degrees an open side's options spread over
 	static const int TAG_PERSON = -18;					// RZ_PuzzleObjectComponent mission id: a duty's person to talk to (object index: the errand)
 	protected static const float PERSON_OFF = 1.8;
 	protected static const float DRESS_OFF = 6;
@@ -315,6 +320,18 @@ class RZ_DutyScenes
 			if (m_aScenes[i].m_Dress)
 				RZ_Util.DeleteUnit(m_aScenes[i].m_Dress);
 
+			foreach (IEntity body : m_aScenes[i].m_aBodies)
+			{
+				if (body)
+					RZ_Util.DeleteUnit(body);
+			}
+
+			foreach (IEntity prop : m_aScenes[i].m_aProps)
+			{
+				if (prop)
+					SCR_EntityHelper.DeleteEntityAndChildren(prop);
+			}
+
 			m_aScenes.Remove(i);
 		}
 	}
@@ -333,7 +350,8 @@ class RZ_DutyScenes
 
 		s.m_aKeys.Clear();
 		s.m_bOpen = false;
-		if (s.m_Person)
+		// The scene's own people stay where they lie; a beat's caller goes
+		if (s.m_Person && !s.m_aBodies.Contains(s.m_Person))
 			RZ_Util.DeleteUnit(s.m_Person);
 
 		if (s.m_Thing)
@@ -433,6 +451,13 @@ class RZ_DutyScenes
 	//! no conversation trees, nobody stands there: the beat is done with your hands at its work sites.
 	protected void PlacePerson(RZ_DutyScene s, RZ_DutyBeat b, vector at, float yaw)
 	{
+		// Someone the scene put there already (a patient in their bed) is the one to talk to
+		if (b.m_iBody >= 0 && b.m_iBody < s.m_aBodies.Count() && s.m_aBodies[b.m_iBody])
+		{
+			s.m_Person = s.m_aBodies[b.m_iBody];
+			return;
+		}
+
 		if (b.m_sTalk.IsEmpty() || !RZ_DialogueTrees.Get())
 			return;
 
@@ -675,7 +700,17 @@ class RZ_DutyScenes
 		{
 			vector at = b.m_vAt + axis * ((i - (count - 1) * 0.5) * OPTION_STEP);
 			// A place of its own to go and look at: out from the beat, spread round it
-			if (o.m_fOut > 0)
+			if (o.m_fOut > 0 && b.m_fFace >= 0)
+			{
+				// Along one side, over FACE_ARC degrees centred on it (a bearing: clockwise from north)
+				float spread = 0;
+				if (count > 1)
+					spread = (i / (count - 1.0) - 0.5) * FACE_ARC;
+
+				float bearing = (b.m_fFace + spread) * Math.DEG2RAD;
+				at = b.m_vAt + Vector(Math.Sin(bearing), 0, Math.Cos(bearing)) * o.m_fOut;
+			}
+			else if (o.m_fOut > 0)
 			{
 				float turn = (yaw + i * 360 / count) * Math.DEG2RAD;
 				at = b.m_vAt + Vector(Math.Cos(turn), 0, -Math.Sin(turn)) * o.m_fOut;

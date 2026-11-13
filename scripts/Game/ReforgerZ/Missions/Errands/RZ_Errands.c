@@ -59,6 +59,12 @@ class RZ_ErrandProps
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty vodka (optional): the bottle the Red Hand's still gives whoever ran the batch (BanditGear's vodka bottle). Empty = no bottle, only the pay", "et")]
 	ResourceName m_sDutyVodka;
 
+	[Attribute("{C9CFDED29542A968}Prefabs/Props/Military/Furniture/CotMilitary_US_01.et", UIWidgets.ResourcePickerThumbnail, "Round bed (optional): the cot each of The Round's sick lies on, indoors, under the tent or in the yard. Only a prop measured in tools/camp_kit/footprints.json and known to RZ_DutyRound.Box is used. Empty or unmeasured = no cots: they lie on the floor in the tent or yard, and never indoors", "et")]
+	ResourceName m_sRoundBed;
+
+	[Attribute("{6204943E9EC70EC2}Prefabs/Structures/Military/Camps/Canvas_Covers/US/CanvasCover_Medium_US.et", UIWidgets.ResourcePickerThumbnail, "Round tent (optional): the shelter The Round's sick lie under by the safehouse wall when the house has no room for them, with the cots (Round bed) laid out under it as JTF Bronze Props' casualty point lays them. Only a prop measured in tools/camp_kit/footprints.json and known to RZ_DutyRound.Box is used. Empty or unmeasured = the yard by the wall", "et")]
+	ResourceName m_sRoundTent;
+
 	//------------------------------------------------------------------------------------------------
 	ResourceName For(RZ_EErrandProp kind)
 	{
