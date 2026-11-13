@@ -77,6 +77,15 @@ class RZ_WorkSiteSettings
 	[Attribute("1", UIWidgets.Slider, "Time scale: every hold takes its time x this (each step sets its own, 5-20 s)", "0.25 3 0.05")]
 	float m_fTimeScale;
 
+	[Attribute("1", desc: "Lock movement: while the hold runs you can't walk (as with vanilla's building). It's let go the moment the hold ends, you're hit or you go down. Off = you can walk off, and past 1.5 m the bar starts again")]
+	bool m_bLockMovement;
+
+	[Attribute("1", desc: "Hands animation: while the hold runs you work with your hands at the thing (the animation vanilla plays at a mine being disarmed). Off = no animation unless digging with a tool")]
+	bool m_bHandsAnimation;
+
+	[Attribute("1", desc: "Dig with the tool: at a latrine, a grave or a dig, a carried entrenching tool is taken in hand and vanilla's building animation plays. The tool is never needed: without one, the hands animation")]
+	bool m_bDigWithTool;
+
 	[Attribute("40", UIWidgets.Slider, "Sites at once, server-wide. A new one past this drops the oldest whose step is over (its result still standing); one whose step is under way is never dropped", "8 200 1")]
 	int m_iMaxSites;
 
@@ -722,7 +731,29 @@ class RZ_WorkSites
 			return;
 		}
 
-		comp.Set(s.m_iId, s.m_sLabel, s.m_fSeconds, s.m_fFastSeconds, s.FastText(), s.m_iOnly);
+		comp.Set(s.m_iId, s.m_sLabel, s.m_fSeconds, s.m_fFastSeconds, s.FastText(), s.m_iOnly, LookFor(s.m_eKind));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How a hold at this kind of work looks on the holder's machine (RZ_WorkHold.LOOK_* bits): the
+	//! lock, the hands, and digging with an entrenching tool where the work is digging.
+	protected int LookFor(RZ_EWork kind)
+	{
+		RZ_WorkSiteSettings cfg = Settings();
+		if (!cfg)
+			return 0;
+
+		int look = 0;
+		if (cfg.m_bLockMovement)
+			look = look | RZ_WorkHold.LOOK_LOCK;
+
+		if (cfg.m_bHandsAnimation)
+			look = look | RZ_WorkHold.LOOK_HANDS;
+
+		if (cfg.m_bDigWithTool && (kind == RZ_EWork.LATRINE || kind == RZ_EWork.GRAVE || kind == RZ_EWork.DIG))
+			look = look | RZ_WorkHold.LOOK_DIG;
+
+		return look;
 	}
 
 	//------------------------------------------------------------------------------------------------

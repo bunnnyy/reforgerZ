@@ -34,7 +34,7 @@ Code paths are under `scripts/Game/ReforgerZ/`.
 24. [Cure research and the season's end](#cure-research-and-the-seasons-end)
 25. [Season pacing](#season-pacing)
 26. [Seasons](#seasons)
-27. [Loose items](#loose-items)
+27. [Loose items](#loose-items) (and [things players build](#things-players-build))
 28. [Persistence](#persistence)
 
 ## Principles
@@ -506,6 +506,9 @@ The game clock's night is 20:30 to 05:00.
   (no Last Helicopter contract), and wanderers shelter.
 - Players hear one line when rain or fog sets in, at most every 20 minutes each.
 - Fog, fog banks, rain and storms also make you harder to see ([Stealth](#stealth)).
+- The Atmospheric Weather Mod ([MOD_STACK.md](MOD_STACK.md#fire-and-weather)) replaces vanilla's
+  weather states with more fog, storm and wind. Only rain, fog and wind are read here, so its
+  weather counts like any other.
 - **Fog banks** (the Fog Bank event): one region at a time where heat added is ×0.6 and infected
   may spawn twice as close. The engine's fog is global, so it isn't touched; an optional mist
   prop is the only look.
@@ -601,6 +604,43 @@ Its day count ("Day 14") is 11 plus the real days since the season started, so a
 about 45 days runs from Day 11 to about Day 56; without the server's clock, a day is 8 hours
 played. Notes, journals, the radio station and Bastion's orders use the same count.
 
+### Wildlife
+
+Code: `World/RZ_Wildlife.c`. Deer in the country, to see and to hunt. The animals come from the
+Workshop mod WildlifeExpansion ([MOD_STACK.md](MOD_STACK.md#wildlife)): a doe and a buck that graze,
+lie down, run from people and gunfire, and fall to a shot. The mod puts none on a map, so ReforgerZ
+does. Off while **World > Wildlife > Doe** is empty.
+
+- **Herds are data until someone is out there.** Once a minute, a player out in the country has a
+  one-in-four chance (half that at night) of a herd near them: two or three does standing together
+  and, seven times in ten, a buck 20 to 30 m off. It's put out **150 to 300 m** away, out of the
+  player's sight where a spot is found (one traced line; else a spot past 220 m in the open), and
+  at least 150 m from every other player.
+- **Only in the country.** Never within 150 m of a town's edge, a faction's place, a safehouse, a
+  road post or the lab, never by the line, never on an island, never in water.
+- **Caps.** Two herds on the server, 400 m apart; one herd a player every 20 minutes. A herd is
+  put away (its deer deleted, shot ones too) once every player is 450 m from where it was put out.
+  Nothing is saved: after a restart there are none until the next one is put out.
+- **Not AI.** A deer is a plain entity moved by the mod's own script every frame, with no AI agent,
+  no group and no navmesh. Herds take nothing from the infected's
+  [agent budget](INFECTED.md#the-agent-budget) and nothing from the engine's active-AI limit; ten
+  deer at most cost ten small scripts a frame. Nothing in ReforgerZ sets the infected on them, and
+  the mod's deer react only to players and gunfire.
+- **Meat.** A shot deer leaves **one or two raw meat legs** beside it (the item the stove's Cook
+  meat takes), at most four deer a minute on the server. They're loose items: picked up with
+  vanilla's Pick up, cleaned up like any [loose item](#loose-items). The shot makes heat as any
+  shot does.
+
+*Simplified:* the mod decides a kill on the shooter's own machine (their fire key and a line from
+their camera, within 250 m) and tells nobody, so the server never learns a deer died. The shooter's
+client makes the same test and reports it; the server believes it only from a living player whose
+own shot it heard in the last few seconds, within 260 m of the place, while a herd put out within
+650 m still has a deer to give, and lays the meat there. A deer has no inventory, so the meat lies
+beside it, not in it. The mod replicates neither a deer's place nor its state: each machine moves
+its own copy, so two players may see a herd in different places once it has run, and a deer one
+player shot may still stand for another. A click on an empty gun kills a deer for the mod but gives
+no meat, since the server heard no shot. None of this has been seen in play.
+
 ## Backgrounds and personal goals
 
 Code: `Backgrounds/RZ_Background.c`, `Backgrounds/RZ_Objectives.c`, `Backgrounds/RZ_PlayerProfile.c`.
@@ -615,7 +655,7 @@ Starting standing is Fame (+) or Infamy (−) ([REPUTATION.md](REPUTATION.md)).
 | Background | Perk | Flaw | Starting standing |
 |---|---|---|---|
 | Nurse | Medical supplies. Treats other players in 8 s, even with a bandage. Infection takes 50% longer | Unarmed | Haven +10 |
-| Mechanic | Wrench and jerrycan. Hotwires a car in 15 s and rarely fails | 25% louder | — |
+| Mechanic | Wrench and jerrycan. One wrong wire is ruled out for them at a car's [loom](#hotwiring-the-loom) (the timed hotwire: 15 s, rarely fails) | 25% louder | — |
 | Hunter | Hunting rifle, 25% quieter | Little ammo | Bastion −10 |
 | Police Officer | Sidearm | — | Bastion +20 (Known), Red Hand −25 (Watched) |
 | Ex-Con | Knife | Infection kills 20% faster | Red Hand +25 (Known), Bastion −25 (Watched), Haven −10 |
@@ -1347,7 +1387,7 @@ Contracts** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 | Block | What it does | Used by |
 |---|---|---|
 | Hold, kill tagged, visit points, destroy, deliver, choice | The base classes: hold an area (optional waves and heat), kill what the mission spawned, stand at points, destroy a prop, carry the mission item to a drop, choose whose drop gets it. The first hand-in wins. If the item vanishes while it's in an inventory (the carrier left the server and took their character with them, or a body was cleared away), a new one is put on the ground where it was, up to 3 times, and everyone involved is told where; lost from the ground, it fails | most contracts |
-| **Escort** (`RZ_Escort`) | People who walk a route or follow one player. Data until a player is within 300 m, then an AI group (it walks to move waypoints) or a standing figure. They only move while a player is within 150 m and no infected is within 25 m of them; the mission can stop and resume them. If the player they follow leaves or dies, they follow the nearest player within 20 m instead (or wait for one). An AI body that dies fails the job. At most 3 escorts at once | Refugee Column, Rescue the Pilot, Escort the Scientist, Secure the Shipment, Struck Off, Bust Out, Desertion Route, Learning the Drones, The Pit's Debtor; questline stages in The Three Weeks and The Other Two |
+| **Escort** (`RZ_Escort`) | People who walk a route or follow one player. Data until a player is within 300 m, then an AI group (it walks to move waypoints) or a standing figure. They only move while a player is within 150 m and no infected is within 25 m of them; the mission can stop and resume them. If the player they follow leaves or dies, they follow the nearest player within 20 m instead (or wait for one). An AI body that dies fails the job. At most 3 escorts at once | Refugee Column, Rescue the Pilot, Escort the Scientist, Secure the Shipment, Struck Off, Bust Out, Desertion Route, Learning the Drones, The Pit's Debtor; questline stages in The Three Weeks and The Other Two Also the people who go out with a player on a duty: a patrol, a hunter ([ERRANDS.md](ERRANDS.md#with-their-people)) |
 | **Live capture** (`RZ_LiveCapture`) | A cage trap and a special, both spawned only when a player is near. Lure it into the cage and drop the door within 4 m, or wound it to a third of its health and get within 3 m to tie it. Hold it for 30 s while it fights (heat), then a transport case (the mission item) to deliver before it wakes (12 min). A case lost with a carrier who left is put back where they were, still sedated (up to 3 times). It leaves the world without a kill, so no sample. Killing it fails. At most 2 at once | Live Capture, Private Collection; The Three Weeks (Dr Wolff) |
 | **Vehicle zone** (`RZ_VehicleZone`, `RZ_ConvoyWatch`) | A specific vehicle, or any vehicle whose prefab name has a keyword (or is one of a list), driven into a zone by a player. Works with vehicles a mission spawns, fixed cars and supply trucks. The convoy watch asks the supply system for a faction's next truck to an outpost and reports whether it arrived, was robbed, destroyed, stolen or late | Recover the Bus, Car Theft, Mobile Lab, Tied Down and the Cargo questline (one van, `RZ_CargoVan`); Convoy Escort, Hijack the Convoy; questline stages in The Three Weeks and The Other Two |
 | **Health cost** (`RZ_HealthCost`) | Takes a share of a player's health (the bite detector's health accessor against the hit zone's maximum), refuses below a floor, once per life per giver. The bite detector forgets its last reading afterwards, so the drop never counts as a bite | Blood Drive |
@@ -1372,6 +1412,22 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
 - **The hold.** Hold the prompt (vanilla's hold-progress bar, [UI.md](UI.md#the-hold-prompt)) for the
   work's time, 5 to 20 s (a step that used to take 2 minutes or more there: 20 s; a background's way
   that was quicker stays quicker). Move more than 1.5 m or get hurt and the bar starts again.
+- **Working, and standing still.** While the bar runs you work at the thing and can't walk, as
+  with vanilla's building (`Interactions/RZ_WorkHold.c`, on the holder's own machine, with the
+  calls vanilla's own hold actions make):
+  - **The lock** (**Lock movement**, on): the legs are off for the hold only. You can still look
+    about.
+  - **Digging** (**Dig with the tool**, on): at a latrine, a grave or a dig, a carried
+    entrenching tool is taken in hand and vanilla's building animation plays with it. The tool is
+    never needed: the work takes the same time and is done the same without one.
+  - **Any other work, or digging with no tool** (**Hands animation**, on): the animation
+    vanilla plays at a mine being disarmed, kneeling at the thing with empty hands. If the engine
+    won't play it at a work site, nothing plays and the lock still holds.
+  - **Let go, always.** The hold's end, letting go, the site going, death, unconsciousness or
+    another body release both at once. A hit frees the hands and legs for a second and a half
+    (time to turn and run) before the bar starts again. As a net, the HUD's tick releases a hold
+    with no bar for three quarters of a second, or one that outlives its own time by 3 s.
+  - The server isn't asked and decides nothing here: it counts the work as before.
 - **Server-checked.** The server keeps, once a second, who has been within **Reach** (3 m) of each
   spawned site, unhurt (and hidden, for unseen work), since when. The hold's end counts only when
   that player has been at it for its time, less a second and a half; otherwise *"Not finished"*. Only
@@ -1391,6 +1447,12 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
   sensor: handed over after the hold, at the place). Nothing is given for the work itself.
 - **Off.** With **Work sites** off or no **Site prefab**, every such step is done as before: by
   staying at its place for its time.
+
+*Simplified:* there's one animation for all work that isn't digging (boarding up, painting and
+searching look the same), a tool put away takes a moment to reach the hand before the digging
+starts, and whether other players see the animation rests on the engine replicating an item use,
+as it does for vanilla's building: not seen in play yet. The hands animation is vanilla's at an
+item on the ground; at our invisible box it's a guess (the VERIFY list says what to turn off).
 
 | Kind | Before | After |
 |---|---|---|
@@ -1660,7 +1722,8 @@ hinted to <faction>`, `Mirror: <title> won by <faction>` (or `by both, half each
 
 ### Errands
 
-The small, personal jobs named people ask, each true right now: [ERRANDS.md](ERRANDS.md).
+The small, personal jobs named people ask, each true right now, and the duties (a place's own
+work, there from the first day, on a trust ladder): [ERRANDS.md](ERRANDS.md).
 
 ## Story arcs and headlines
 
@@ -2572,12 +2635,12 @@ picked-over one is thin.
 
 | Building type (from the prefab name) | What it tends to have | Items (slots) |
 |---|---|---|
-| Pharmacy (pharmacy, hospital, clinic) | Field dressings, gauze, aspirin, tourniquets, saline, medical gloves; rare: morphine, a medical bag | 8 |
-| Garage (garage, workshop, repair, fire station) | Jerrycans, the wrench kit, torches, work gloves, a hard hat, overalls, maps | 8 |
-| Farm (farm, barn, stable, shed, vet clinic) | Food, canteens, wool gloves and hats, raincoats, jerrycans; rare: binoculars, a compass, a backpack | 7 |
-| Police (police, gendarmerie) | Pistol and rifle magazines, torches, dressings, tourniquets, caps, gloves; rare: a pistol, a vest, a helmet, a radio | 8 |
-| Shop (shop, store, market, kiosk, petrol station, pub) | Food, canteens, torches, watches, maps, gloves and hats | 7 |
-| House (anything else) | Food, water, dressings, aspirin, a torch, a watch, a map, clothes | 5 |
+| Pharmacy (pharmacy, hospital, clinic) | Field dressings, gauze, aspirin, tourniquets, saline, medical gloves, face masks; rare: morphine, a medical bag, a gas mask, a hazmat suit | 10 |
+| Garage (garage, workshop, repair, fire station) | Jerrycans, the wrench kit, torches, work gloves, a hard hat, a fireman's helmet, overalls, a spade, maps; rare: a fire axe, a gas mask, an oxygen tank, a backpack | 10 |
+| Farm (farm, barn, stable, shed, vet clinic) | Food, raw meat, water, canteens, wood, wool gloves and hats, overalls, raincoats, a spade, jerrycans; rare: a fire axe, a machete, a knife, binoculars, a compass, a backpack | 9 |
+| Police (police, gendarmerie) | Pistol and rifle magazines, torches, dressings, tourniquets, caps, gloves, a holster, police trousers, a prisoner's uniform; rare: a pistol (PM or M9), a Vz. 58 rifle, smoke grenades, a vest, a helmet, a radio | 10 |
+| Shop (shop, store, market, kiosk, petrol station, pub) | Food, water, canteens, vodka, cigarettes, torches, watches, maps, gloves, hats and caps, a waist pack; rare: binoculars, a compass, a hiking backpack | 9 |
+| House (anything else) | Food, water, dressings, aspirin, a torch, a watch, a map, wood, clothes, someone's belongings; rare: a knife, binoculars, a compass, a backpack | 6 |
 
 Every destructible building has loot, whatever else its name makes it (a petrol station's
 building is a shop).
@@ -2586,14 +2649,25 @@ building is a shop).
   **Loot pool** items whose prefab names hold the type's keywords, always with the **built-in
   vanilla items** for the type added (the table above; `RZ_LootDefaults` in
   `Interactions/RZ_Search.c`), so a type's table is wide and no type is bare when the pool is
-  short or empty. A list set by hand is kept as it is, topped up with the built-in items only
-  while it's thin (fewer than 8 everyday finds, or 3 rare ones). The log's `Search:` line gives
-  each table's size.
+  short or empty. **Extra finds** (Search) then add items to one type's table on top: items no
+  keyword reaches, and items that belong in one kind of place only (a fire axe in garages and
+  farms). The game mode sets 45 of them, from the base game and from mods already in the stack
+  ([MOD_STACK.md](MOD_STACK.md#what-the-stack-gives-the-loot)). A list set by hand is kept as it
+  is: no extra finds, and topped up with the built-in items only while it's thin (fewer than 8
+  everyday finds, or 3 rare ones). Every item in a list is equally likely, so a longer list means
+  less of each: the slots per building were raised with the extra finds to keep food and medicine
+  as common as before. The log's `Search:` lines give each table's size and how many extra finds
+  were added.
+- **Food counts twice with Metabolism loaded** (an accident, kept for now): the mod brings its own
+  copies of the MRE, the crackers and the dried meat, spelled `prefabs/...`, so the pool's entries
+  and the built-in `Prefabs/...` ones don't match and both go into the table. Each of the three is
+  twice as likely as any other everyday find (the house table is 34 long, not 31). Matching them
+  by GUID would halve food in houses, shops and farms.
 - **Rolled once, then data.** The first time a player comes near, each of the building's slots
   holds something **75%** of the time (**Loot > Slot chance**) × the town's loot level, half that
   in a faction's town (a holding within 150 m). The first two slots (**Sure items**) always do
   while the town's loot level is 0.5 or more, one in a picked-over town. So a house in a fresh
-  town has 2 to 5 things, about 4, and one in a picked-over town one or two. No prefab is rolled
+  town has 3 to 6 things, about 5, and one in a picked-over town two or three. No prefab is rolled
   twice in one building unless it comes in twos (food, magazines, dressings, gauze, tablets): a
   slot that keeps drawing one already there stays empty. 10% of finds are rare (20% behind a
   lock), 10% electronics (×1.5 in powered towns). A locked place (a seeded lock on outside doors
@@ -2659,8 +2733,8 @@ a low shelf or in a corner. Wrecks' boots and bodies hold their things (below).
 
 | What | What it tends to have |
 |---|---|
-| Body (an infected killed within 60 m of a player) | Bandages, ammo, small things; sometimes a key or something to read |
-| A wreck's boot | Jerrycans, tools, rope, batteries, tyres; sometimes a car part |
+| Body (an infected killed within 60 m of a player) | Dressings, magazines, food, vodka, cigarettes, a watch, someone's belongings; rare: morphine, a knife, a smoke grenade; sometimes a key or something to read |
+| A wreck's boot | Jerrycans, the wrench kit, a spade, food, water, a torch, a map; rare: binoculars, a hiking backpack; sometimes a car part |
 
 **Bodies are looted with the vanilla inventory.** There's no prompt: when an infected dies within
 60 m of a player, what it carries is rolled at once: something 60% of the time, sometimes two
@@ -2812,12 +2886,20 @@ town); every other wreck is just a wreck, and is never fixable. A fixable car st
 as the car it will become (one of the **Car prefabs**, named after it: "the beige saloon"), parked
 and locked so nobody can get in, with its prompts in front of its grille.
 
+**It always has room to stand.** A car's box (a little wider and longer than the car, with the
+spot at its grille) must be on dry, near-level ground with nothing across it at bumper and window
+height and nothing overhead: no wall, fence, tree, step, roof or porch (`Interactions/RZ_CarRoom.c`).
+It's asked when the spot is picked and again the first time the car is put out near a player, when
+everything around it is there. A car with no room is moved to the nearest free spot within 40 m,
+at a heading that fits, and the log says so; a saved car standing in a wall is moved the same way.
+While no free spot is found it stays put away and is asked again.
+
 | Step | How | Settings (defaults) |
 |---|---|---|
 | **Look over the car** | Says what's missing: two or three of fuel, a battery, a tyre, spark plugs, all different (on the repair screen, below, where it's used) | **Min parts** 2, **Max parts** 3 |
 | **Fit parts** | Battery, tyre and spark plugs (carryable items) lie in garages, are sometimes in a wreck's boot (30%) and come from the Mechanic wanderer. Fitting one needs a tool in your pack (a wrench, spanner, toolkit or toolbox), which isn't used up. Without one, the look and Fit parts say so | **Tool keywords** (empty = no tool needed); 8 s |
 | **Fuel it** | Fuel from a can: a vanilla jerrycan gives 5 litres and is kept (filled at a petrol pump, [Fuel](#fuel)); an old-style full can found as loot is used up. Wrecks have no fuel in them. No tool needed | **Car fuel litres** 5 |
-| **Hotwire** | Long and loud: 45 s, half its heat when you start and all of it at the end. It fails about one time in three: the starter grinds, the heat is made all the same, and you try again. A Mechanic does it in 15 s and fails one time in ten | 45 s, Mechanic 15 s, 20 heat, fail 0.35, Mechanic 0.1 |
+| **Hotwire** | On the repair screen: pull the panel under the column, follow the wire that runs to the ignition and cut it ([the loom](#hotwiring-the-loom)). At the car's own prompt, where the screen isn't used, it's the timed job: 45 s, half its heat when you start and all of it at the end; it fails about one time in three (the starter grinds, the heat is made all the same, and you try again), and a Mechanic does it in 15 s and fails one time in ten | **Wire cutting** on, **Loom turns** 3, **Loom strikes** 2, **Wrong cut heat share** 0.5; timed: 45 s, Mechanic 15 s, 20 heat, fail 0.35, Mechanic 0.1 |
 | **Or its keys** | Only a fifth of cars have keys in a house in their town: each building rolled there holds them one time in ten, lying with its loot (picking them up is finding them). A Mechanic wanderer who likes you may hand them over | keys 0.2, find 0.1 |
 | **Start the engine** | 15 heat. The parked copy becomes the drivable car with a quarter tank, and from then on it's vanilla | |
 
@@ -2826,13 +2908,45 @@ they were missing.
 
 **The repair screen.** With **UI > Car job layout** set, **Look over the car** opens the car repair
 screen ([UI.md](UI.md#the-car-repair-screen)) instead of a notice, and the car's other prompts hide:
-five jobs (spark plugs, battery, tyre, fuel, ignition), each with what it needs or what you have
-and the button that does it, and **Start the engine**. Every job goes to the server, which checks
-that the screen is open on that car and you're beside it, then runs the same code as the actions
-above (the same tool, part, key and timer rules); what they would say shows in the screen. One job
-fits one part (the **Fit parts** action fits every part you carry at once). A job under way goes
-on if danger closes the screen. Without the layout, or where the screen can't open, the actions
-work as before.
+five jobs (spark plugs, battery, tyre, fuel, ignition), each tagged with what the car has (FITTED
+or MISSING, FUELLED or EMPTY, HOTWIRED, KEYS or NO KEYS), with what you need or have and the button
+that does it, and **Start the engine**. The header names what's missing. Every job goes to the
+server, which checks that the screen is open on that car and you're beside it, then runs the same
+code as the actions above (the same tool, part and key rules; the hotwire is the loom, below); what
+they would say shows in the screen. One job fits one part (the **Fit parts** action fits every part
+you carry at once). A job under way goes on if danger closes the screen. Without the layout, or
+where the screen can't open, the actions work as before.
+
+#### Hotwiring: the loom
+
+On the repair screen, **Hotwire** on a car with no keys opens the loom under the steering column
+(`Interactions/RZ_CarLoom.c`). It's a wire to follow, with nothing to read: four plugs along the
+top, four sockets along the bottom, and four wires running from the plugs down to the sockets
+through a tangle. One socket is lit: the ignition. You trace by eye which plug's wire ends there
+and cut that wire at its plug. There's no timer.
+
+| You cut | What happens |
+|---|---|
+| The wire that ends in the lit socket | The car is hotwired: all of **Hotwire heat** (20), as a hotwiring that worked always made |
+| Any other | A spark: **Wrong cut heat share** (0.5) of Hotwire heat, a strike, and that plug is dead (it can't be cut again) |
+| A wrong one at **Loom strikes** (2) | The loom shorts: all of Hotwire heat and the failed hotwiring's line. The next try starts on a fresh tangle |
+
+- **It can always be followed.** The four wires are one colour, so they're traced, never matched.
+  The tangle is **Loom turns** (3; 1 to 4) turns, each a shuffle of the four columns that moves at
+  least three wires and never just undoes the turn above. In a turn every wire drops, crosses at
+  its own height to the column it leaves by, and drops again; it comes into a turn a little left
+  of its column's middle and leaves a little right of it. So wires only cross at right angles and
+  no two ever run along the same line. The right wire never runs straight down: its plug isn't
+  over the lit socket.
+- **A Mechanic's edge.** One of the wrong plugs is dead from the start.
+- **The loom is the car's.** Whoever pulls the panel finds it as it was left, dead plugs and
+  strikes included, until the car is hotwired or the loom shorts. Backing out to the jobs keeps it.
+- **Decided on the server.** It rolls the tangle, sends it (the wires are what you see; only which
+  plug is right is worked out on the screen) and checks every cut, at most two a second.
+- **Not saved.** After a restart a car has a fresh loom.
+- With **Wire cutting** off the screen's Hotwire is the timed job too.
+
+*Simplified:* pulling the panel makes no heat (the timed job makes half its heat when it starts).
 
 ### Fuel
 
@@ -3699,6 +3813,38 @@ the oldest abandoned item goes early. Not saved: after a restart, older items ar
 *Simplified:* "in a pack" means the item has a parent entity or sits in an inventory slot. If a
 carried item is ever removed, set the minutes to 0.
 
+### Things players build
+
+Code: `World/RZ_PlacedThings.c`.
+
+What players build is cleared when nobody uses it, so nothing they leave behind stays in the world
+for good. Today that's the fireplace of Make Fire Campfire & Wood
+([MOD_STACK.md](MOD_STACK.md#fire-and-weather)). A tent or shelter a later mod lets players put up
+is cleared the same way once its prefab's name is in the list: no mod gives players one yet.
+
+- **Known by name.** **World > Placed things > Placed prefabs** is a list of keywords matched
+  against prefab names (`fm_campfire` by default). No script names a class of another mod.
+- **Found, not told.** Once a minute the server looks 60 m around each player. A thing with a
+  keyword in its name becomes a record (where, which prefab, when first seen, when last used)
+  unless it's ours: a prefab of ours, a part of any composition (a camp's pieces, a scene's props),
+  or anything within 10 m of a faction's own place. The map's own tents and the camps' are never
+  touched this way, but a keyword must still be a name only player-built things carry.
+- **Used** means a player within **15 m** (**Use radius**). Each look that finds one there sets
+  its last use to now.
+- **Cleared** after **3 real days** unused (**Unused days**), and only with no player within
+  **100 m** (**Clear distance**). The thing is deleted and its record dropped. It's silent: nobody
+  is told, and the log has a line. Real time counts across restarts and while the server is empty.
+- **Gone already.** A record whose thing isn't there when a player stands by it (someone
+  dismantled it, or a restart lost it) is dropped.
+- **Capped** at **40** records. Past that the longest-unused one out of sight is cleared early; if
+  every one is in sight, the oldest record is forgotten and its thing left standing.
+- **Saved** in `state.json`: the records, never the things. After a restart a record finds its
+  thing again by prefab and place the first time a player comes near.
+
+*Simplified:* the mode doesn't see a thing being built, it finds it standing, so the clock starts
+at the first look that sees it. Whether a restart keeps a built fireplace depends on the server's
+own persistence, not on this.
+
 ## Persistence
 
 Code: `Persistence/RZ_SaveData.c`.
@@ -3706,7 +3852,7 @@ Code: `Persistence/RZ_SaveData.c`.
 Mode state is saved every 2 minutes to `$profile:ReforgerZ/state.json`: the stage, every
 settlement's infection and town memory, cure progress, the lab's backlog and clock, breakthrough news nobody has heard yet, the pace by play's player-hours of the last week, antidote and stabiliser stock, player profiles (standing, Legacy,
 unlocks, guidance level), quartermaster positions, safehouses, wanderers, leaders, territory,
-supply stock, faction life, the Long Table, the power grid and radio station, story arcs, questlines,
+supply stock, faction life, the Long Table, the power grid and radio station, the things players built ([above](#things-players-build)), story arcs, questlines,
 headlines, world interactions, the crawlers' ledgers, stir and kill sites, the time of day
 ([The clock](#the-clock)), the world facts (the season's seed, flags, canon, gossip and world
 memory; claims aren't saved) and the shared engine (waiting callbacks, the season budget, the

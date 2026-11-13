@@ -34,6 +34,7 @@ class RZ_ScreenGuard
 	static const int KIND_COOK = 7;		// the cooking screen at a stove (Interactions/RZ_Crafting.c)
 	static const int KIND_RADIO = 8;	// the radio screen (Interactions/RZ_RadioScreen.c): read only, so never idle
 	static const int KIND_POWER = 20;	// the power station's panel (World/RZ_PowerPanel.c)
+	static const int KIND_DUTY = 21;	// a duty's table (Missions/Errands/RZ_DutyTable.c)
 
 	protected static const float HURT_DROP = 0.5;
 
@@ -141,6 +142,8 @@ class RZ_ScreenGuard
 			RZ_ObjectScreen.OnScreenGone(playerId);
 		else if (kind == KIND_POWER && m_GM.GetPowerGrid() && m_GM.GetPowerGrid().GetPanel())
 			m_GM.GetPowerGrid().GetPanel().OnScreenGone(playerId);
+		else if (kind == KIND_DUTY && m_GM.GetErrands())
+			m_GM.GetErrands().GetTables().OnScreenGone(playerId);
 
 		// The radio screen keeps nothing on the server
 	}
@@ -297,6 +300,8 @@ class RZ_ScreenGuard
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_OBJECT, "X|" + reason);
 			else if (kind == KIND_POWER)
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_POWER, "X|" + reason);
+			else if (kind == KIND_DUTY)
+				ui.SendPayload(RZ_UIFeed.PAYLOAD_DUTY, "X|" + reason);
 			else
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_READER, "");
 		}
@@ -335,6 +340,9 @@ class RZ_ScreenGuard
 
 		if (kind == KIND_POWER)
 			return "power panel";
+
+		if (kind == KIND_DUTY)
+			return "duty table";
 
 		return "reader";
 	}

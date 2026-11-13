@@ -6,5 +6,8 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 
 ## Order of work
 
-None waits today: the last, the sites design, is built ([docs/SITES.md](../docs/SITES.md)). A new
-approved design goes here with its place in the order.
+| Order | Design | What it is |
+|---|---|---|
+| 1 | [DUTIES.md](DUTIES.md) | The duties that wait: a watch and stock-taking, then the fourth rung's sensitive ones (the names, who gets a dose, the lock-up, a cull). Built in phases; each phase's part moves into the docs. Built so far: work from the first day and rungs 1 to 3, with the duty table and patrols and hunts with a place's people ([docs/ERRANDS.md](../docs/ERRANDS.md#duties)) |
+
+A new approved design goes here with its place in the order.

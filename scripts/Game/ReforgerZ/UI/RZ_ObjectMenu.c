@@ -40,6 +40,16 @@ class RZ_ObjectMenu : RZ_MenuBase
 	protected static const float PANEL_W = 1200;
 	protected static const float PANEL_H_STRIP = 940;
 	protected static const float PANEL_H_PLAIN = 810;
+	// What the last pick said sits under the read's text (ObjectText at y 30), above the options
+	protected static const float READ_X = 48;
+	protected static const float READ_W = 1104;
+	protected static const float READ_TEXT_Y = 30;
+	protected static const float READ_BOTTOM = 276;		// the options' label starts just below
+	protected static const float TEXT_LINE_H = 30;		// ObjectText, regular 24
+	protected static const float STATUS_LINE_H = 28;	// ObjectStatus, regular 22
+	protected static const int TEXT_PER_LINE = 110;		// about this many characters fit a line
+	protected static const int STATUS_PER_LINE = 120;
+	protected static const float STATUS_GAP = 10;
 
 	//------------------------------------------------------------------------------------------------
 	//! The object menu is used on this machine: UI > Object row layout set (the server checks the
@@ -237,6 +247,7 @@ class RZ_ObjectMenu : RZ_MenuBase
 
 		RZ_UIW.SetText(m_wRoot, "ObjectStatus", status);
 		RZ_UIW.Show(m_wRoot, "ObjectStatus", !status.IsEmpty());
+		PlaceStatus(text, status);
 
 		// Work under way: "Working on the boiling... 12 s" over a thin bar
 		float left = Math.Max(0, m_fLeft - (RZ_UIW.Now() - s_fDataAt));
@@ -251,6 +262,48 @@ class RZ_ObjectMenu : RZ_MenuBase
 		}
 
 		DrawRows();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the last pick said goes right under the read's text (a house radio's tuned-in lines
+	//! under LAST HEARD), never down by the footer prompts. Its place is worked out from how many
+	//! lines the read's text takes; when both are long it's kept above the options and may touch
+	//! the read's last line instead.
+	protected void PlaceStatus(string text, string status)
+	{
+		if (status.IsEmpty())
+			return;
+
+		float y = READ_TEXT_Y;
+		if (!text.IsEmpty())
+			y += LineCount(text, TEXT_PER_LINE) * TEXT_LINE_H + STATUS_GAP;
+
+		float height = LineCount(status, STATUS_PER_LINE) * STATUS_LINE_H;
+		if (y + height > READ_BOTTOM)
+			y = Math.Max(READ_TEXT_Y, READ_BOTTOM - height);
+
+		Widget w = RZ_UIW.Find(m_wRoot, "ObjectStatus");
+		RZ_UIW.SetPos(w, READ_X, y);
+		RZ_UIW.SetSize(w, READ_W, Math.Max(STATUS_LINE_H, height));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lines a wrapped text takes at about `perLine` characters a line, each paragraph on its own.
+	protected static int LineCount(string text, int perLine)
+	{
+		if (text.IsEmpty() || perLine <= 0)
+			return 0;
+
+		array<string> parts = {};
+		text.Split("\n", parts, false);
+		int lines = 0;
+		foreach (string part : parts)
+		{
+			float length = part.Length();
+			lines += Math.Max(1, RZ_Util.RoundToInt(Math.Ceil(length / perLine)));
+		}
+
+		return Math.Max(1, lines);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -71,17 +71,44 @@ GenericEntity {
    coords 2.6 0 -0.6
    angles 0 15 0
   }
-  GenericEntity {
+  GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
    ID "B9534C052FDF209F"
    components {
-    SCR_AISmartActionSentinelComponent "{E38232D0698EA3ED}" {
+    Hierarchy "{E38232D0698EA3ED}" {
+    }
+   }
+   coords 2.6 0.84 -0.6
+   angles 0 25 0
+  }
+  GenericEntity : "{90A74133C1DC6226}Prefabs/Props/Industrial/Repair/EngineCrane_01.et" {
+   ID "A68C46C498E465BB"
+   components {
+    Hierarchy "{CA389CA76A12F0AB}" {
+    }
+   }
+   coords 0.3 0 5.0
+   angles 0 186 0
+  }
+  GenericEntity : "{B557358F8F64AE31}Prefabs/Props/Industrial/Repair/HydraulicCarJack_01.et" {
+   ID "E8AF6C095F1EBE03"
+   components {
+    Hierarchy "{34366A41673C7E5F}" {
+    }
+   }
+   coords -2.0 0 1.6
+   angles 0 20 0
+  }
+  GenericEntity {
+   ID "C3790201BD691018"
+   components {
+    SCR_AISmartActionSentinelComponent "{66E239B2C8430437}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition 0 1.6 0.4
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{A68C46C498E465BB}" {
+    Hierarchy "{5B3BFDC176C0F35B}" {
     }
    }
    coords 2.0 0 0.4

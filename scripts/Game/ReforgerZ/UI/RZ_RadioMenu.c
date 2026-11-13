@@ -1,13 +1,14 @@
-//! The radio screen (docs/UI.md, "The radio screen"), in the crafting screen's style: every channel
-//! the radio can hear, each with its latest line, and under them the log of what you heard this
-//! life, filtered by the picked channel. Opened by the server when a player uses View radio
+//! The radio screen (docs/UI.md, "The radio screen"): every channel the radio can hear as a tile,
+//! all on the screen at once (four to a row, no list to scroll), and under them the picked
+//! channel's lines this life, a page at a time. Opened by the server when a player uses View radio
 //! (Interactions/RZ_RadioScreen.c). The log is the one this client keeps for the notebook's Radio
 //! tab (RZ_PlayerUIComponent.GetRadioLog), read here; the cracked channel is the HUD's feed. It
 //! sends nothing back but its closing.
 //!
-//! Keys: up/down pick a channel (the log follows), Q/E scroll the log, Esc closes. Pad: D-pad or
-//! left stick, LB/RB scroll the log, B closes. Mouse: click a channel, the wheel scrolls either
-//! list, the close button. You can't move while it's open; danger closes it (the server's screen guard).
+//! Keys: the arrows or WASD move over the tiles (the log follows), Q/E turn the log's page, Esc
+//! closes. Pad: D-pad or left stick, LB newer, RB older, B closes. Mouse: hover lights a tile, a
+//! click picks it, the < and > buttons turn the page, the close button. You can't move while it's
+//! open; danger closes it (the server's screen guard).
 
 //------------------------------------------------------------------------------------------------
 class RZ_RadioMenu : RZ_MenuBase
@@ -19,9 +20,14 @@ class RZ_RadioMenu : RZ_MenuBase
 	protected static float s_fFallbackUntil;	// the server was at its cap: View radio hides for a minute
 	protected static int s_iChannel;			// the picked channel, kept for the session (0: everything)
 
-	protected static const int LOG_ROWS = 60;
+	protected static const int COLS = 4;			// tiles to a row
+	protected static const int CELLS = 12;			// Cell0-Cell11 in the layout: three rows
+	protected static const int LOG_ROWS = 4;		// Log0-Log3 in the layout: lines to a page
+	protected static const int LOG_CHARS = 235;		// a line's text fits two rows of the log at 22 px
 
 	protected int m_iParsed = -1;
+	protected int m_iPage;						// the log's page, 0 the newest
+	protected int m_iPages = 1;
 	protected bool m_bDone;						// closed by the server: nothing to send back
 	protected ref array<string> m_aHead = {};
 	protected ref array<ref array<string>> m_aChannels = {};
@@ -80,10 +86,15 @@ class RZ_RadioMenu : RZ_MenuBase
 		InputManager input = GetGame().GetInputManager();
 		input.AddActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
 		input.AddActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
-		input.AddActionListener("MenuTabLeft", EActionTrigger.DOWN, OnLogUp);
-		input.AddActionListener("MenuTabRight", EActionTrigger.DOWN, OnLogDown);
+		input.AddActionListener("MenuLeft", EActionTrigger.DOWN, OnLeft);
+		input.AddActionListener("MenuRight", EActionTrigger.DOWN, OnRight);
+		input.AddActionListener("MenuTabLeft", EActionTrigger.DOWN, OnNewer);
+		input.AddActionListener("MenuTabRight", EActionTrigger.DOWN, OnOlder);
+		RZ_UIW.OnClick(m_wRoot, "LogNewer", m_Click);
+		RZ_UIW.OnClick(m_wRoot, "LogOlder", m_Click);
 		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuDown", "Channel");
-		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuTabRight", "Scroll the log") && prompts;
+		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuTabLeft", "Newer") && prompts;
+		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuTabRight", "Older") && prompts;
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", "Close") && prompts;
 		RZ_UIW.Show(m_wRoot, "PromptsText", !prompts);
 	}
@@ -94,8 +105,10 @@ class RZ_RadioMenu : RZ_MenuBase
 		InputManager input = GetGame().GetInputManager();
 		input.RemoveActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
 		input.RemoveActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
-		input.RemoveActionListener("MenuTabLeft", EActionTrigger.DOWN, OnLogUp);
-		input.RemoveActionListener("MenuTabRight", EActionTrigger.DOWN, OnLogDown);
+		input.RemoveActionListener("MenuLeft", EActionTrigger.DOWN, OnLeft);
+		input.RemoveActionListener("MenuRight", EActionTrigger.DOWN, OnRight);
+		input.RemoveActionListener("MenuTabLeft", EActionTrigger.DOWN, OnNewer);
+		input.RemoveActionListener("MenuTabRight", EActionTrigger.DOWN, OnOlder);
 		if (s_Open == this)
 			s_Open = null;
 
@@ -109,8 +122,8 @@ class RZ_RadioMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! New data from the server, a new line in the log, another channel, and the cracked
-	//! channel's minutes.
+	//! New data from the server, a new line in the log, another channel, another page, and the
+	//! cracked channel's minutes.
 	override protected int DataVersion()
 	{
 		int log = 0;
@@ -122,33 +135,85 @@ class RZ_RadioMenu : RZ_MenuBase
 			minutes = RZ_Util.RoundToInt(Math.Ceil(ui.GetListenLeft() / 60));
 		}
 
-		return s_iVersion * 100000 + log * 1000 + minutes * 40 + s_iChannel;
+		return ((s_iVersion % 500) * 1000 + (log % 1000)) * 2000 + (minutes % 10) * 200 + (m_iPage % 16) * 12 + (s_iChannel % CELLS);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void OnUp(float value = 0, EActionTrigger reason = 0)
 	{
-		Pick(s_iChannel - 1);
+		MoveRow(-1);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void OnDown(float value = 0, EActionTrigger reason = 0)
 	{
-		Pick(s_iChannel + 1);
+		MoveRow(1);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! LB / Q: the log a step up.
-	protected void OnLogUp(float value = 0, EActionTrigger reason = 0)
+	protected void OnLeft(float value = 0, EActionTrigger reason = 0)
 	{
-		RZ_UIW.Scroll(m_wRoot, "LogScroll", -1);
+		Step(-1);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! RB / E: the log a step down.
-	protected void OnLogDown(float value = 0, EActionTrigger reason = 0)
+	protected void OnRight(float value = 0, EActionTrigger reason = 0)
 	{
-		RZ_UIW.Scroll(m_wRoot, "LogScroll", 1);
+		Step(1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A row up or down in the same column, round the ends. The last row can be short: from above
+	//! an empty cell it's the row's last tile, never the empty cell.
+	protected void MoveRow(int dir)
+	{
+		int count = m_aChannels.Count();
+		if (count <= 0)
+			return;
+
+		int rows = (count + COLS - 1) / COLS;
+		int row = s_iChannel / COLS + dir;
+		if (row < 0)
+			row = rows - 1;
+		else if (row >= rows)
+			row = 0;
+
+		int target = row * COLS + s_iChannel % COLS;
+		if (target >= count)
+			target = count - 1;
+
+		Pick(target);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tile before or after, round the ends.
+	protected void Step(int dir)
+	{
+		int count = m_aChannels.Count();
+		if (count <= 0)
+			return;
+
+		int target = s_iChannel + dir;
+		if (target < 0)
+			target = count - 1;
+		else if (target >= count)
+			target = 0;
+
+		Pick(target);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! LB / Q, or the < button: the log's newer page.
+	protected void OnNewer(float value = 0, EActionTrigger reason = 0)
+	{
+		m_iPage = Math.Max(0, m_iPage - 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! RB / E, or the > button: the log's older page.
+	protected void OnOlder(float value = 0, EActionTrigger reason = 0)
+	{
+		m_iPage = Math.Min(Math.Max(0, m_iPages - 1), m_iPage + 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -160,17 +225,19 @@ class RZ_RadioMenu : RZ_MenuBase
 			return;
 
 		s_iChannel = picked;
-		ScrollLayoutWidget log = ScrollLayoutWidget.Cast(RZ_UIW.Find(m_wRoot, "LogScroll"));
-		if (log)
-			log.SetSliderPos(0, 0);
+		m_iPage = 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Mouse: a channel row picks it.
+	//! Mouse: a tile picks its channel; < and > turn the log's page.
 	override protected void OnClickOther(Widget w, string name)
 	{
 		if (name == "ChannelRow")
 			Pick(RZ_UIW.GetTag(w));
+		else if (name == "LogNewer")
+			OnNewer();
+		else if (name == "LogOlder")
+			OnOlder();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -253,12 +320,21 @@ class RZ_RadioMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Its latest line: what's on the air now (the server's), else the newest you heard on it.
-	protected string LatestOf(array<string> ch)
+	//! Nothing comes through on it: scrambled, or too faint for a set without power.
+	protected static bool Silent(string state)
 	{
-		string line = RZ_UIText.Str(ch, 5);
-		if (!line.IsEmpty())
-			return line;
+		return state == "SCRAMBLED" || state == "TOO FAINT";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tile's small note: when it was last heard, or why nothing is.
+	protected string NoteOf(array<string> ch, string state)
+	{
+		if (state == "SCRAMBLED")
+			return "operator only";
+
+		if (state == "TOO FAINT")
+			return "needs power";
 
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (ui)
@@ -266,14 +342,11 @@ class RZ_RadioMenu : RZ_MenuBase
 			foreach (RZ_RadioEntry e : ui.GetRadioLog())
 			{
 				if (Matches(ch, e))
-					return e.m_sText;
+					return "last " + e.m_sTime;
 			}
 		}
 
-		if (RZ_UIText.Int(ch, 1) == RZ_ENoticeKind.SECURE_CHANNEL)
-			return "Chopped into pieces. A Radio Operator could put it back together.";
-
-		return "Nothing yet.";
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -302,18 +375,28 @@ class RZ_RadioMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One tile per channel, each made in its own cell of the layout (Cell0 on: four to a row), so
+	//! every channel is on the screen and nothing scrolls.
 	protected void DrawChannels()
 	{
-		Widget list = RZ_UIW.Find(m_wRoot, "Channels");
-		RZ_UIW.ClearChildren(list);
 		m_aRows.Clear();
-		ResourceName rowLayout = RZ_UISettings.Get().m_sRadioChannelLayout;
-		foreach (int i, array<string> ch : m_aChannels)
+		ResourceName tileLayout = RZ_UISettings.Get().m_sRadioChannelLayout;
+		bool icons = !RZ_UISettings.Get().m_sIconImageset.IsEmpty();
+		for (int i = 0; i < CELLS; i++)
 		{
-			Widget row = RZ_UIW.Create(rowLayout, list);
-			if (!row)
+			Widget cell = RZ_UIW.Find(m_wRoot, "Cell" + i.ToString());
+			if (!cell)
+				continue;
+
+			RZ_UIW.ClearChildren(cell);
+			if (i >= m_aChannels.Count())
+				continue;
+
+			Widget tile = RZ_UIW.Create(tileLayout, cell); // VERIFY: a layout made under an Overlay cell (the tile's root in an OverlayWidgetSlot, both aligns Stretch) fills the cell
+			if (!tile)
 				return;
 
+			array<string> ch = m_aChannels[i];
 			string state = StateOf(ch);
 			Color accent = RZ_UIColor.Bone();
 			string icon = "glyph_radio";
@@ -324,103 +407,159 @@ class RZ_RadioMenu : RZ_MenuBase
 				icon = st.Icon();
 			}
 
-			RZ_UIW.SetText(row, "ChannelName", RZ_UIText.Str(ch, 3));
-			RZ_UIW.SetText(row, "ChannelState", state);
-			RZ_UIW.Tint(row, "ChannelState", accent);
-			RZ_UIW.SetText(row, "ChannelLine", RZ_UIText.Clean(LatestOf(ch), 110));
-			RZ_UIW.Show(row, "ChannelIcon", !RZ_UISettings.Get().m_sIconImageset.IsEmpty());
-			RZ_UIW.Icon(row, "ChannelIcon", icon);
-			RZ_UIW.Tint(row, "ChannelIcon", accent);
-			RZ_UIW.Tint(row, "ChannelBar", accent);
-			LightRow(row, state, i == s_iChannel || Hovered("ChannelRow", i));
-			RZ_UIW.SetTag(row, i);
-			RZ_UIW.OnClick(row, "", m_Click);
-			m_aRows.Insert(row);
+			RZ_UIW.SetText(tile, "ChannelName", RZ_UIText.Str(ch, 3));
+			RZ_UIW.SetText(tile, "ChannelState", state);
+			RZ_UIW.Tint(tile, "ChannelState", accent);
+			RZ_UIW.SetText(tile, "ChannelNote", NoteOf(ch, state));
+			RZ_UIW.Show(tile, "ChannelIcon", icons);
+			RZ_UIW.Icon(tile, "ChannelIcon", icon);
+			RZ_UIW.Tint(tile, "ChannelIcon", accent);
+			RZ_UIW.Tint(tile, "ChannelBar", accent);
+			LightTile(tile, state, i == s_iChannel, Hovered("ChannelRow", i));
+			RZ_UIW.SetTag(tile, i);
+			RZ_UIW.OnClick(tile, "", m_Click);
+			m_aRows.Insert(tile);
 		}
 
-		// Pad focus on the picked channel, kept in view
+		// Pad focus on the picked tile
 		if (s_iChannel >= 0 && s_iChannel < m_aRows.Count())
 			RZ_UIW.FocusWidget(m_aRows[s_iChannel]);
-
-		RZ_UIW.KeepInView(m_wRoot, "ChannelScroll", s_iChannel, m_aRows.Count());
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A channel row (its state now) lit or not: the picked row and the row under the mouse have a
-	//! lighter fill, the bar and bright text; dim when nothing comes through (scrambled, too faint, quiet).
-	protected void LightRow(Widget row, string state, bool on)
+	//! A tile as it stands: the picked one has the amber outline and a lighter fill, the one under
+	//! the mouse the lighter fill; one nothing comes through on (scrambled, too faint) is dim
+	//! unless it's picked or under the mouse.
+	protected void LightTile(Widget tile, string state, bool picked, bool hovered)
 	{
+		Color fill = RZ_UIW.Rgb(27, 31, 34);
+		if (picked || hovered)
+			fill = RZ_UIW.Rgb(38, 43, 47);
+
 		Color fg = RZ_UIColor.Bone();
-		if (state == "SCRAMBLED" || state == "TOO FAINT" || state == "QUIET")
-			fg = RZ_UIW.Rgb(110, 106, 96);
-		else if (on)
+		if (picked)
 			fg = RZ_UIW.Rgb(244, 240, 230);
 
-		RZ_UIW.Tint(row, "ChannelName", fg);
-		RZ_UIW.Show(row, "ChannelBg", on);
-		RZ_UIW.Show(row, "ChannelBar", on);
+		RZ_UIW.Show(tile, "ChannelFocus", picked);
+		RZ_UIW.Tint(tile, "ChannelBg", fill);
+		RZ_UIW.Tint(tile, "ChannelName", fg);
+		float alpha = 1;
+		if (Silent(state) && !picked && !hovered)
+			alpha = 0.45;
+
+		tile.SetOpacity(alpha);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Mouse: the channel under the cursor is lit like the picked one until the cursor leaves; a click
-	//! picks it (the log changes only then).
+	//! Mouse: the tile under the cursor is lit until the cursor leaves; a click picks it (the log
+	//! changes only then).
 	override protected bool OnHoverRow(Widget w, string name, int tag, bool on)
 	{
 		if (name != "ChannelRow")
 			return false;
 
 		if (tag >= 0 && tag < m_aChannels.Count())
-			LightRow(w, StateOf(m_aChannels[tag]), on || tag == s_iChannel);
+			LightTile(w, StateOf(m_aChannels[tag]), tag == s_iChannel, on);
 
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The picked channel's lines this life, newest first, in the notebook's radio rows.
+	//! The picked channel's lines, newest first: what's on the air on it now (the server's, unless
+	//! it's the newest line you heard), then what you heard on it this life.
+	protected void LinesOf(array<string> ch, notnull array<ref RZ_RadioEntry> lines)
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+		{
+			foreach (RZ_RadioEntry e : ui.GetRadioLog())
+			{
+				if (Matches(ch, e))
+					lines.Insert(e);
+			}
+		}
+
+		string now = RZ_UIText.Str(ch, 5);
+		if (now.IsEmpty() || RZ_UIText.Int(ch, 1) < 0)
+			return;
+
+		if (!lines.IsEmpty() && lines[0].m_sText == now)
+			return;
+
+		RZ_RadioEntry air = new RZ_RadioEntry();
+		air.m_sTime = "NOW";
+		air.m_iKind = RZ_UIText.Int(ch, 1);
+		air.m_iFaction = RZ_UIText.Int(ch, 2);
+		air.m_sTitle = "";
+		air.m_sText = now;
+		lines.InsertAt(air, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The picked channel's lines in the layout's four rows (Log0 on), a page at a time: no list to
+	//! scroll. Each line's text is cut to what two rows hold; the whole of it is in the notebook.
 	protected void DrawLog()
 	{
-		Widget list = RZ_UIW.Find(m_wRoot, "Log");
-		RZ_UIW.ClearChildren(list);
 		array<string> ch = null;
 		if (s_iChannel >= 0 && s_iChannel < m_aChannels.Count())
 			ch = m_aChannels[s_iChannel];
 
-		string head = "THE LOG";
+		string head = "THE RADIO";
+		string state = "";
+		array<ref RZ_RadioEntry> lines = {};
 		if (ch)
-			head = "THE LOG: " + RZ_UIText.Str(ch, 3);
+		{
+			head = RZ_UIText.Str(ch, 3);
+			state = StateOf(ch);
+			LinesOf(ch, lines);
+		}
 
 		head.ToUpper();
 		RZ_UIW.SetText(m_wRoot, "LogLabel", head);
-		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
-		int shown = 0;
-		ResourceName rowLayout = RZ_UISettings.Get().m_sRadioRowLayout;
-		if (ui && ch)
+		m_iPages = Math.Max(1, (lines.Count() + LOG_ROWS - 1) / LOG_ROWS);
+		m_iPage = Math.Clamp(m_iPage, 0, m_iPages - 1);
+		bool icons = !RZ_UISettings.Get().m_sIconImageset.IsEmpty();
+		for (int r = 0; r < LOG_ROWS; r++)
 		{
-			foreach (RZ_RadioEntry e : ui.GetRadioLog())
-			{
-				if (shown >= LOG_ROWS || !Matches(ch, e))
-					continue;
+			string idx = r.ToString();
+			int at = m_iPage * LOG_ROWS + r;
+			bool there = at < lines.Count();
+			RZ_UIW.Show(m_wRoot, "Log" + idx, there);
+			if (!there)
+				continue;
 
-				Widget row = RZ_UIW.Create(rowLayout, list);
-				if (!row)
-					break;
+			RZ_RadioEntry e = lines[at];
+			RZ_NoticeStyle st = new RZ_NoticeStyle();
+			st.m_iKind = e.m_iKind;
+			st.m_iFaction = e.m_iFaction;
+			Color accent = st.Accent();
+			string who = st.KindText();
+			if (e.m_sTime == "NOW")
+				who = "ON THE AIR NOW";
+			else if (!e.m_sTitle.IsEmpty())
+				who = who + "  ·  " + e.m_sTitle;
 
-				RZ_NoticeStyle st = new RZ_NoticeStyle();
-				st.m_iKind = e.m_iKind;
-				st.m_iFaction = e.m_iFaction;
-				Color accent = st.Accent();
-				RZ_UIW.Tint(row, "RowAccent", accent);
-				RZ_UIW.Tint(row, "RowIcon", accent);
-				RZ_UIW.Tint(row, "RowChannel", accent);
-				RZ_UIW.Icon(row, "RowIcon", st.Icon());
-				RZ_UIW.SetText(row, "RowTime", e.m_sTime);
-				RZ_UIW.SetText(row, "RowChannel", st.KindText());
-				RZ_UIW.SetText(row, "RowSpeaker", e.m_sTitle);
-				RZ_UIW.SetText(row, "RowText", e.m_sText);
-				shown++;
-			}
+			RZ_UIW.Tint(m_wRoot, "LogBar" + idx, accent);
+			RZ_UIW.Tint(m_wRoot, "LogIcon" + idx, accent);
+			RZ_UIW.Tint(m_wRoot, "LogHead" + idx, accent);
+			RZ_UIW.Show(m_wRoot, "LogIcon" + idx, icons);
+			RZ_UIW.Icon(m_wRoot, "LogIcon" + idx, st.Icon());
+			RZ_UIW.SetText(m_wRoot, "LogTime" + idx, e.m_sTime);
+			RZ_UIW.SetText(m_wRoot, "LogHead" + idx, RZ_UIText.Clean(who, 110));
+			RZ_UIW.SetText(m_wRoot, "LogText" + idx, RZ_UIText.Clean(e.m_sText, LOG_CHARS));
 		}
 
-		RZ_UIW.Show(m_wRoot, "LogEmpty", shown == 0);
+		string empty = "Nothing heard on it this life.";
+		if (state == "SCRAMBLED")
+			empty = "Chopped into pieces. A Radio Operator could put it back together.";
+		else if (state == "TOO FAINT")
+			empty = "Too faint for this set. With power it would come in.";
+
+		RZ_UIW.SetText(m_wRoot, "LogEmpty", empty);
+		RZ_UIW.Show(m_wRoot, "LogEmpty", lines.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "LogPage", string.Format("PAGE %1 / %2", m_iPage + 1, m_iPages));
+		RZ_UIW.Show(m_wRoot, "LogPage", m_iPages > 1);
+		RZ_UIW.Show(m_wRoot, "LogNewer", m_iPage > 0);
+		RZ_UIW.Show(m_wRoot, "LogOlder", m_iPage < m_iPages - 1);
 	}
 }

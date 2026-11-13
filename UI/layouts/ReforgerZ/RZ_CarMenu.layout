@@ -87,8 +87,8 @@ FrameWidgetClass "{38130A52A986C600}" {
       OffsetLeft 48
       PositionY 34
       OffsetTop 34
-      SizeX 900
-      OffsetRight -948
+      SizeX 600
+      OffsetRight -648
       SizeY 44
       OffsetBottom -78
       Alignment 0 0
@@ -105,18 +105,18 @@ FrameWidgetClass "{38130A52A986C600}" {
      Name "CarDone"
      Slot FrameWidgetSlot "{4518ED2964582BAA}" {
       Anchor 0 0 0 0
-      PositionX 1000
-      OffsetLeft 1000
+      PositionX 680
+      OffsetLeft 680
       PositionY 44
       OffsetTop 44
-      SizeX 320
+      SizeX 640
       OffsetRight -1320
       SizeY 30
       OffsetBottom -74
       Alignment 0 0
      }
-     Color 0.639 0.62 0.565 1
-     Text "2 of 5 done"
+     Color 0.851 0.341 0.298 1
+     Text "Missing: tyre, fuel"
      "Font Size" 22
      "Min Font Size" 22
      "Horizontal Alignment" Right
@@ -652,6 +652,1548 @@ FrameWidgetClass "{38130A52A986C600}" {
          }
         }
        }
+      }
+     }
+    }
+    FrameWidgetClass "{B651EF5D0DE82776}" {
+     Name "Loom"
+     Slot FrameWidgetSlot "{58E45100ABB5AB13}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 120
+      OffsetTop 120
+      SizeX 640
+      OffsetRight -688
+      SizeY 262
+      OffsetBottom -382
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     {
+      ImageWidgetClass "{0E1F4AE77BD5F382}" {
+       Name "LoomBg"
+       Slot FrameWidgetSlot "{ED24760BA96E649C}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 640
+        OffsetRight -640
+        SizeY 262
+        OffsetBottom -262
+        Alignment 0 0
+       }
+       Color 0.047 0.055 0.059 1
+       Size 1 1
+      }
+      PanelWidgetClass "{313AAFE2E2A5B46F}" {
+       Name "LoomLine"
+       Slot FrameWidgetSlot "{A1B867F862B32780}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 640
+        OffsetRight -640
+        SizeY 262
+        OffsetBottom -262
+        Alignment 0 0
+       }
+       Color 0.165 0.18 0.192 1
+       style outline_2px
+      }
+      ImageWidgetClass "{5CF384ABCFAAAD52}" {
+       Name "LoomBar0"
+       Slot FrameWidgetSlot "{7D7F1171FFD75ACF}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{47F259CADF922B16}" {
+       Name "LoomBar1"
+       Slot FrameWidgetSlot "{2A7CF7862EA93864}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{48911E8EC656602B}" {
+       Name "LoomBar2"
+       Slot FrameWidgetSlot "{579FF1D5F50565F1}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{244F972DDABB7693}" {
+       Name "LoomBar3"
+       Slot FrameWidgetSlot "{370542A997C5DA8D}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{9BEEAACD922CC86A}" {
+       Name "LoomBar4"
+       Slot FrameWidgetSlot "{C71DBCDA15204E6D}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{8DA54783356BBE86}" {
+       Name "LoomBar5"
+       Slot FrameWidgetSlot "{3AFE05967E0B7A4F}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{D18CCB9F25B4EC84}" {
+       Name "LoomBar6"
+       Slot FrameWidgetSlot "{DA08BE099B1CEB80}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{947FE38F991C5E18}" {
+       Name "LoomBar7"
+       Slot FrameWidgetSlot "{811D47F60F78902C}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{A1444AC3B49C26CD}" {
+       Name "LoomBar8"
+       Slot FrameWidgetSlot "{59A16B3D562950E0}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{7E3E879296331857}" {
+       Name "LoomBar9"
+       Slot FrameWidgetSlot "{3B4524A89F9D1E5C}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{A924616AFD253EDA}" {
+       Name "LoomBar10"
+       Slot FrameWidgetSlot "{584A7B0366D188A4}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{B079234B677885C6}" {
+       Name "LoomBar11"
+       Slot FrameWidgetSlot "{54EB3F54B49BEE1A}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{AE7025ABAB8EC298}" {
+       Name "LoomBar12"
+       Slot FrameWidgetSlot "{3C6880C904EC51B8}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{0F385B50D376096D}" {
+       Name "LoomBar13"
+       Slot FrameWidgetSlot "{5DB8E7A964E4A23A}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{60413BDDC41391C7}" {
+       Name "LoomBar14"
+       Slot FrameWidgetSlot "{C08544BB2D164572}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{56C7D21A16A6E689}" {
+       Name "LoomBar15"
+       Slot FrameWidgetSlot "{F0971D5CA8D5A535}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{366ABC1A5F083800}" {
+       Name "LoomBar16"
+       Slot FrameWidgetSlot "{D7E104A8C9C58B73}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{D60ED006E1A0CB09}" {
+       Name "LoomBar17"
+       Slot FrameWidgetSlot "{F02521F7DEBD5252}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{37741C469D7CEB5C}" {
+       Name "LoomBar18"
+       Slot FrameWidgetSlot "{A60F894F3EF02543}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{58D1A33F2E139B09}" {
+       Name "LoomBar19"
+       Slot FrameWidgetSlot "{64DE5827E238C9A8}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{3C25AD173DAD9FAE}" {
+       Name "LoomBar20"
+       Slot FrameWidgetSlot "{6C948C5E50E1E86F}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{5216D08272727A89}" {
+       Name "LoomBar21"
+       Slot FrameWidgetSlot "{1EBCC54D4DC1795C}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{98523B3C7F52AEA7}" {
+       Name "LoomBar22"
+       Slot FrameWidgetSlot "{05FDAE8D9A1A0BB3}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{38F96204B771A1CA}" {
+       Name "LoomBar23"
+       Slot FrameWidgetSlot "{FE8BBB5090752217}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{B58497BD89BF3720}" {
+       Name "LoomBar24"
+       Slot FrameWidgetSlot "{EF361B3C30E078F2}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{E42C6D2C26765B53}" {
+       Name "LoomBar25"
+       Slot FrameWidgetSlot "{76BD19FDC68AEAA7}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{FE8D8DA776EC976E}" {
+       Name "LoomBar26"
+       Slot FrameWidgetSlot "{0AAC441881C3BEEC}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{C6A9B80DF6B5EBDB}" {
+       Name "LoomBar27"
+       Slot FrameWidgetSlot "{B77725C43CCF713F}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{3D6C9C0D07752076}" {
+       Name "LoomBar28"
+       Slot FrameWidgetSlot "{F4FBD7D5AB65EEB2}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{B1ECE6F477C21C80}" {
+       Name "LoomBar29"
+       Slot FrameWidgetSlot "{14994993A669E3BE}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{C7DB7B4ED002EBC9}" {
+       Name "LoomBar30"
+       Slot FrameWidgetSlot "{41644A2BA8E06609}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{42C397E955AB3334}" {
+       Name "LoomBar31"
+       Slot FrameWidgetSlot "{AB5C4C266941A283}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{ED82EFC29F96968C}" {
+       Name "LoomBar32"
+       Slot FrameWidgetSlot "{6E1EB4192CDC2DBA}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{D214027C46A5BCBD}" {
+       Name "LoomBar33"
+       Slot FrameWidgetSlot "{134D22E22F221B7D}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{5FF046DDD78218A3}" {
+       Name "LoomBar34"
+       Slot FrameWidgetSlot "{EF81FB16081DC6EE}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{E0F488829E78AA3F}" {
+       Name "LoomBar35"
+       Slot FrameWidgetSlot "{15C46B7462E2C43A}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{53AE6E5BCB0814FC}" {
+       Name "LoomBar36"
+       Slot FrameWidgetSlot "{4BDE21DCC82A2C73}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{61F86437230DEF34}" {
+       Name "LoomBar37"
+       Slot FrameWidgetSlot "{4E773D10723F4692}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{E2B4E09CFC6D05C7}" {
+       Name "LoomBar38"
+       Slot FrameWidgetSlot "{B300D9AA2B0D43FA}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{176CCD6AD4734C57}" {
+       Name "LoomBar39"
+       Slot FrameWidgetSlot "{58969F57108BE491}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{16270E9AD0807DF5}" {
+       Name "LoomBar40"
+       Slot FrameWidgetSlot "{F20F3838616FAEBD}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{07F79AEF15BFFA85}" {
+       Name "LoomBar41"
+       Slot FrameWidgetSlot "{114101B8E5F87C5E}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{FC8FFD99F65C784E}" {
+       Name "LoomBar42"
+       Slot FrameWidgetSlot "{9C184695A57A740F}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{128A33B8AEDA680D}" {
+       Name "LoomBar43"
+       Slot FrameWidgetSlot "{04803B77F05C466D}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{EAE39203D5EB85DF}" {
+       Name "LoomBar44"
+       Slot FrameWidgetSlot "{9D6148155A218F7F}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{91A854932473BFE7}" {
+       Name "LoomBar45"
+       Slot FrameWidgetSlot "{E17D990020EAB632}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{751EE26DCB7DD1D4}" {
+       Name "LoomBar46"
+       Slot FrameWidgetSlot "{5C86D3A8621CB880}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      ImageWidgetClass "{5822961D0827004B}" {
+       Name "LoomBar47"
+       Slot FrameWidgetSlot "{029380850BCFC343}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 52
+        OffsetTop 52
+        SizeX 6
+        OffsetRight -6
+        SizeY 6
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.788 0.765 0.702 1
+       Size 1 1
+      }
+      FrameWidgetClass "{E044A5AC72AF4B33}" {
+       Name "PlugBox0"
+       Slot FrameWidgetSlot "{286F1423FC7663FA}" {
+        Anchor 0 0 0 0
+        PositionX 72
+        OffsetLeft 72
+        PositionY 22
+        OffsetTop 22
+        SizeX 76
+        OffsetRight -148
+        SizeY 36
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{1DA13BC8BE850B8F}" {
+         Name "PlugBody0"
+         Slot FrameWidgetSlot "{9838918CBAD8193D}" {
+          Anchor 0 0 0 0
+          PositionX 6
+          OffsetLeft 6
+          PositionY 6
+          OffsetTop 6
+          SizeX 64
+          OffsetRight -70
+          SizeY 24
+          OffsetBottom -30
+          Alignment 0 0
+         }
+         Color 0.788 0.765 0.702 1
+         Size 1 1
+        }
+        TextWidgetClass "{1E74FC10209C652B}" {
+         Name "PlugDead0"
+         Slot FrameWidgetSlot "{77B75EF03A5B4E5C}" {
+          Anchor 0 0 0 0
+          PositionX 6
+          OffsetLeft 6
+          PositionY 7
+          OffsetTop 7
+          SizeX 64
+          OffsetRight -70
+          SizeY 22
+          OffsetBottom -29
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.639 0.62 0.565 1
+         Text "X"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{AC86464191AFB255}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        PanelWidgetClass "{3DAA6C0FFFE6F9FC}" {
+         Name "PlugFocus0"
+         Slot FrameWidgetSlot "{8BA7E70401AF456F}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ButtonWidgetClass "{4D129E6C5E0A13CC}" {
+         Name "Plug0"
+         Slot FrameWidgetSlot "{F36C85480AD68456}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         style blank
+        }
+       }
+      }
+      FrameWidgetClass "{B7920550B855B562}" {
+       Name "PlugBox1"
+       Slot FrameWidgetSlot "{41B47CB5F9E70B77}" {
+        Anchor 0 0 0 0
+        PositionX 212
+        OffsetLeft 212
+        PositionY 22
+        OffsetTop 22
+        SizeX 76
+        OffsetRight -288
+        SizeY 36
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{D2DF5C198D0EAA44}" {
+         Name "PlugBody1"
+         Slot FrameWidgetSlot "{55CF952E20BC9D05}" {
+          Anchor 0 0 0 0
+          PositionX 6
+          OffsetLeft 6
+          PositionY 6
+          OffsetTop 6
+          SizeX 64
+          OffsetRight -70
+          SizeY 24
+          OffsetBottom -30
+          Alignment 0 0
+         }
+         Color 0.788 0.765 0.702 1
+         Size 1 1
+        }
+        TextWidgetClass "{EDCC5119F47A84CF}" {
+         Name "PlugDead1"
+         Slot FrameWidgetSlot "{5C7C982B7C5FDA2F}" {
+          Anchor 0 0 0 0
+          PositionX 6
+          OffsetLeft 6
+          PositionY 7
+          OffsetTop 7
+          SizeX 64
+          OffsetRight -70
+          SizeY 22
+          OffsetBottom -29
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.639 0.62 0.565 1
+         Text "X"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{1247D77EF1C7DFB1}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        PanelWidgetClass "{F27263BDEAA3D64B}" {
+         Name "PlugFocus1"
+         Slot FrameWidgetSlot "{08E0F9EE293C5763}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ButtonWidgetClass "{15CFDFF9FBE2B111}" {
+         Name "Plug1"
+         Slot FrameWidgetSlot "{411552E561456313}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         style blank
+        }
+       }
+      }
+      FrameWidgetClass "{EB2846D67DF856BD}" {
+       Name "PlugBox2"
+       Slot FrameWidgetSlot "{20C5A2B134BD7571}" {
+        Anchor 0 0 0 0
+        PositionX 352
+        OffsetLeft 352
+        PositionY 22
+        OffsetTop 22
+        SizeX 76
+        OffsetRight -428
+        SizeY 36
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{06E227FB01C34DF3}" {
+         Name "PlugBody2"
+         Slot FrameWidgetSlot "{9BB057136F37CE22}" {
+          Anchor 0 0 0 0
+          PositionX 6
+          OffsetLeft 6
+          PositionY 6
+          OffsetTop 6
+          SizeX 64
+          OffsetRight -70
+          SizeY 24
+          OffsetBottom -30
+          Alignment 0 0
+         }
+         Color 0.788 0.765 0.702 1
+         Size 1 1
+        }
+        TextWidgetClass "{CD33F12456C27E87}" {
+         Name "PlugDead2"
+         Slot FrameWidgetSlot "{466C76BB37C5D1B4}" {
+          Anchor 0 0 0 0
+          PositionX 6
+          OffsetLeft 6
+          PositionY 7
+          OffsetTop 7
+          SizeX 64
+          OffsetRight -70
+          SizeY 22
+          OffsetBottom -29
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.639 0.62 0.565 1
+         Text "X"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{8F6E6767AABEA3CC}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        PanelWidgetClass "{41A8978AA153F599}" {
+         Name "PlugFocus2"
+         Slot FrameWidgetSlot "{5990961B431D88D2}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ButtonWidgetClass "{F52879089492F259}" {
+         Name "Plug2"
+         Slot FrameWidgetSlot "{886AC35C3A062B52}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         style blank
+        }
+       }
+      }
+      FrameWidgetClass "{6034AEA6262B16F7}" {
+       Name "PlugBox3"
+       Slot FrameWidgetSlot "{CA3A14671F8BAFBD}" {
+        Anchor 0 0 0 0
+        PositionX 492
+        OffsetLeft 492
+        PositionY 22
+        OffsetTop 22
+        SizeX 76
+        OffsetRight -568
+        SizeY 36
+        OffsetBottom -58
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{ADE5587828DBE566}" {
+         Name "PlugBody3"
+         Slot FrameWidgetSlot "{FFF78D87B3563E68}" {
+          Anchor 0 0 0 0
+          PositionX 6
+          OffsetLeft 6
+          PositionY 6
+          OffsetTop 6
+          SizeX 64
+          OffsetRight -70
+          SizeY 24
+          OffsetBottom -30
+          Alignment 0 0
+         }
+         Color 0.788 0.765 0.702 1
+         Size 1 1
+        }
+        TextWidgetClass "{99672B454AFE156C}" {
+         Name "PlugDead3"
+         Slot FrameWidgetSlot "{29AC8C685F398D80}" {
+          Anchor 0 0 0 0
+          PositionX 6
+          OffsetLeft 6
+          PositionY 7
+          OffsetTop 7
+          SizeX 64
+          OffsetRight -70
+          SizeY 22
+          OffsetBottom -29
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.639 0.62 0.565 1
+         Text "X"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{EDE1A57E7D492E48}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        PanelWidgetClass "{E9098E612E2064A3}" {
+         Name "PlugFocus3"
+         Slot FrameWidgetSlot "{90E3F758A70B2943}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         style outline_2px
+        }
+        ButtonWidgetClass "{53E337440372F59C}" {
+         Name "Plug3"
+         Slot FrameWidgetSlot "{51F0EB7034888F23}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         style blank
+        }
+       }
+      }
+      ImageWidgetClass "{68484604A50838A1}" {
+       Name "Socket0"
+       Slot FrameWidgetSlot "{895B039BEADA18CE}" {
+        Anchor 0 0 0 0
+        PositionX 78
+        OffsetLeft 78
+        PositionY 218
+        OffsetTop 218
+        SizeX 64
+        OffsetRight -142
+        SizeY 24
+        OffsetBottom -242
+        Alignment 0 0
+       }
+       Color 0.227 0.243 0.259 1
+       Size 1 1
+      }
+      TextWidgetClass "{DCAB3367F971264B}" {
+       Name "SocketWord0"
+       Slot FrameWidgetSlot "{3C26D96F5D980B7E}" {
+        Anchor 0 0 0 0
+        PositionX 40
+        OffsetLeft 40
+        PositionY 243
+        OffsetTop 243
+        SizeX 140
+        OffsetRight -180
+        SizeY 18
+        OffsetBottom -261
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.89 0.639 0.231 1
+       Text "IGNITION"
+       "Font Size" 15
+       "Min Font Size" 15
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{64037286A86BC1FB}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      ImageWidgetClass "{BEEB1F7BAEE071CA}" {
+       Name "Socket1"
+       Slot FrameWidgetSlot "{993F0858BF766816}" {
+        Anchor 0 0 0 0
+        PositionX 218
+        OffsetLeft 218
+        PositionY 218
+        OffsetTop 218
+        SizeX 64
+        OffsetRight -282
+        SizeY 24
+        OffsetBottom -242
+        Alignment 0 0
+       }
+       Color 0.227 0.243 0.259 1
+       Size 1 1
+      }
+      TextWidgetClass "{13BE31F76E2F7D9B}" {
+       Name "SocketWord1"
+       Slot FrameWidgetSlot "{F9E2D8C4231CF23E}" {
+        Anchor 0 0 0 0
+        PositionX 180
+        OffsetLeft 180
+        PositionY 243
+        OffsetTop 243
+        SizeX 140
+        OffsetRight -320
+        SizeY 18
+        OffsetBottom -261
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.89 0.639 0.231 1
+       Text "IGNITION"
+       "Font Size" 15
+       "Min Font Size" 15
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{890A0643D6BBA60E}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      ImageWidgetClass "{3CBEBA4D39B4C59F}" {
+       Name "Socket2"
+       Slot FrameWidgetSlot "{3A62AAC949682D9B}" {
+        Anchor 0 0 0 0
+        PositionX 358
+        OffsetLeft 358
+        PositionY 218
+        OffsetTop 218
+        SizeX 64
+        OffsetRight -422
+        SizeY 24
+        OffsetBottom -242
+        Alignment 0 0
+       }
+       Color 0.227 0.243 0.259 1
+       Size 1 1
+      }
+      TextWidgetClass "{911440EA32CBA801}" {
+       Name "SocketWord2"
+       Slot FrameWidgetSlot "{22DC044FDC812268}" {
+        Anchor 0 0 0 0
+        PositionX 320
+        OffsetLeft 320
+        PositionY 243
+        OffsetTop 243
+        SizeX 140
+        OffsetRight -460
+        SizeY 18
+        OffsetBottom -261
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.89 0.639 0.231 1
+       Text "IGNITION"
+       "Font Size" 15
+       "Min Font Size" 15
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{8B8869035E133E01}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      ImageWidgetClass "{A896D4F6F83BB0FC}" {
+       Name "Socket3"
+       Slot FrameWidgetSlot "{95AD4BF4B932F9BF}" {
+        Anchor 0 0 0 0
+        PositionX 498
+        OffsetLeft 498
+        PositionY 218
+        OffsetTop 218
+        SizeX 64
+        OffsetRight -562
+        SizeY 24
+        OffsetBottom -242
+        Alignment 0 0
+       }
+       Color 0.227 0.243 0.259 1
+       Size 1 1
+      }
+      TextWidgetClass "{DCC66CF90A54F840}" {
+       Name "SocketWord3"
+       Slot FrameWidgetSlot "{E1AE759630163E5A}" {
+        Anchor 0 0 0 0
+        PositionX 460
+        OffsetLeft 460
+        PositionY 243
+        OffsetTop 243
+        SizeX 140
+        OffsetRight -600
+        SizeY 18
+        OffsetBottom -261
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.89 0.639 0.231 1
+       Text "IGNITION"
+       "Font Size" 15
+       "Min Font Size" 15
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{6BE6751F0BCC7E80}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{457F5FE3D5819A6B}" {
+       Name "LoomAsk"
+       Slot FrameWidgetSlot "{26CC2BF1320C1563}" {
+        Anchor 0 0 0 0
+        PositionX 14
+        OffsetLeft 14
+        PositionY 2
+        OffsetTop 2
+        SizeX 300
+        OffsetRight -314
+        SizeY 22
+        OffsetBottom -24
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text "WHICH WIRE?"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{FE9B69DD3417B7D0}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      ImageWidgetClass "{F64EF7F4C4B211E9}" {
+       Name "LoomPip0"
+       Slot FrameWidgetSlot "{7E5218F287BC56E6}" {
+        Anchor 0 0 0 0
+        PositionX 612
+        OffsetLeft 612
+        PositionY 6
+        OffsetTop 6
+        SizeX 14
+        OffsetRight -626
+        SizeY 14
+        OffsetBottom -20
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.227 0.243 0.259 1
+       Size 1 1
+      }
+      ImageWidgetClass "{D9DC998BCCC14CFD}" {
+       Name "LoomPip1"
+       Slot FrameWidgetSlot "{5184DF5CB565EFF7}" {
+        Anchor 0 0 0 0
+        PositionX 592
+        OffsetLeft 592
+        PositionY 6
+        OffsetTop 6
+        SizeX 14
+        OffsetRight -606
+        SizeY 14
+        OffsetBottom -20
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.227 0.243 0.259 1
+       Size 1 1
+      }
+      ImageWidgetClass "{F423397CD1F32DD8}" {
+       Name "LoomPip2"
+       Slot FrameWidgetSlot "{02029F4FD9A3A215}" {
+        Anchor 0 0 0 0
+        PositionX 572
+        OffsetLeft 572
+        PositionY 6
+        OffsetTop 6
+        SizeX 14
+        OffsetRight -586
+        SizeY 14
+        OffsetBottom -20
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.227 0.243 0.259 1
+       Size 1 1
+      }
+      ImageWidgetClass "{2682F39AACE3E564}" {
+       Name "LoomPip3"
+       Slot FrameWidgetSlot "{746EFE2EAA1DF820}" {
+        Anchor 0 0 0 0
+        PositionX 552
+        OffsetLeft 552
+        PositionY 6
+        OffsetTop 6
+        SizeX 14
+        OffsetRight -566
+        SizeY 14
+        OffsetBottom -20
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.227 0.243 0.259 1
+       Size 1 1
       }
      }
     }

@@ -62,17 +62,44 @@ GenericEntity {
    coords 1.9 0 0.2
    angles 0 8 0
   }
-  GenericEntity {
+  GenericEntity : "{F06EAC6F2F97767F}Prefabs/Props/Medical/MedicalScreen_01.et" {
    ID "B48A4A20E4E2D866"
    components {
-    SCR_AISmartActionSentinelComponent "{E83C14D46F1F2D7C}" {
+    Hierarchy "{E83C14D46F1F2D7C}" {
+    }
+   }
+   coords -1.9 0 0.6
+   angles 0 80 0
+  }
+  GenericEntity : "{2B6508FE121FCAC9}Prefabs/Props/Medical/InfusionStand_01/InfusionStand_01.et" {
+   ID "262CB451B5BA2BF5"
+   components {
+    Hierarchy "{261BAE63A2501345}" {
+    }
+   }
+   coords -1.7 0 -0.6
+   angles 0 0 0
+  }
+  GenericEntity : "{27EA47994266D9DD}Prefabs/Props/Services/Healthcare/BinMedical_01.et" {
+   ID "E60D81837109D00A"
+   components {
+    Hierarchy "{8B9E268CCA531C00}" {
+    }
+   }
+   coords 1.1 0 -0.9
+   angles 0 0 0
+  }
+  GenericEntity {
+   ID "03B4D1158A81C378"
+   components {
+    SCR_AISmartActionSentinelComponent "{5C1C4735FD04B8F8}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition -0.5 1.6 0
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{262CB451B5BA2BF5}" {
+    Hierarchy "{446FCE65084F049B}" {
     }
    }
    coords -0.5 0 -0.9

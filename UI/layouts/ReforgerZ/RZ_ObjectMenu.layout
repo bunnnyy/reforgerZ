@@ -746,12 +746,12 @@ FrameWidgetClass "{10A6A8538F708533}" {
         Anchor 0 0 0 0
         PositionX 48
         OffsetLeft 48
-        PositionY 186
-        OffsetTop 186
+        PositionY 236
+        OffsetTop 236
         SizeX 800
         OffsetRight -848
         SizeY 30
-        OffsetBottom -216
+        OffsetBottom -266
         Alignment 0 0
        }
        "Is Visible" 0
@@ -769,12 +769,12 @@ FrameWidgetClass "{10A6A8538F708533}" {
         Anchor 0 0 0 0
         PositionX 48
         OffsetLeft 48
-        PositionY 220
-        OffsetTop 220
+        PositionY 270
+        OffsetTop 270
         SizeX 400
         OffsetRight -448
         SizeY 6
-        OffsetBottom -226
+        OffsetBottom -276
         Alignment 0 0
        }
        "Is Visible" 0
@@ -789,12 +789,12 @@ FrameWidgetClass "{10A6A8538F708533}" {
         Anchor 0 0 0 0
         PositionX 48
         OffsetLeft 48
-        PositionY 232
-        OffsetTop 232
+        PositionY 282
+        OffsetTop 282
         SizeX 600
         OffsetRight -648
         SizeY 26
-        OffsetBottom -258
+        OffsetBottom -308
         Alignment 0 0
        }
        Color 0.639 0.62 0.565 1
@@ -811,12 +811,12 @@ FrameWidgetClass "{10A6A8538F708533}" {
         Anchor 0 0 0 0
         PositionX 48
         OffsetLeft 48
-        PositionY 262
-        OffsetTop 262
+        PositionY 312
+        OffsetTop 312
         SizeX 1104
         OffsetRight -1152
         SizeY 300
-        OffsetBottom -562
+        OffsetBottom -612
         Alignment 0 0
        }
        {
@@ -906,12 +906,12 @@ FrameWidgetClass "{10A6A8538F708533}" {
         Anchor 0 0 0 0
         PositionX 48
         OffsetLeft 48
-        PositionY 572
-        OffsetTop 572
+        PositionY 96
+        OffsetTop 96
         SizeX 1104
         OffsetRight -1152
-        SizeY 44
-        OffsetBottom -616
+        SizeY 130
+        OffsetBottom -226
         Alignment 0 0
        }
        "Is Visible" 0

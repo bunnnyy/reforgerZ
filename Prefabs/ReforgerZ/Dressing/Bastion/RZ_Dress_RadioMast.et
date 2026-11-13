@@ -26,13 +26,13 @@ GenericEntity {
    coords 1.6 0 0
    angles 0 90 0
   }
-  GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
+  GenericEntity : "{4417ED07902CE47E}Prefabs/Props/Military/Radios/RadioStation_ANPRC77_01.et" {
    ID "3F7F2A9E1AD9D465"
    components {
     Hierarchy "{7C5264E190565901}" {
     }
    }
-   coords 1.6 0.78 0.2
+   coords 1.6 0.9 0.2
    angles 0 0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {

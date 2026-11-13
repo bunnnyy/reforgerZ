@@ -109,6 +109,18 @@ class RZ_CarSettings
 	[Attribute("0.1", desc: "Chance a Mechanic's hotwiring fails")]
 	float m_fMechanicHotwireFailChance;
 
+	[Attribute("1", desc: "Wire cutting: on the repair screen, Hotwire opens the loom under the column: four wires in a tangle, and you cut the one that runs to the ignition (the timers and fail chances above are for the car's prompts, where the screen isn't used). Off = the timed hotwire on the screen too")]
+	bool m_bWireCutting;
+
+	[Attribute("2", desc: "Wire cutting: wrong cuts before the loom shorts and the attempt fails with all of Hotwire heat")]
+	int m_iLoomStrikes;
+
+	[Attribute("0.5", desc: "Wire cutting: share of Hotwire heat a wrong cut makes")]
+	float m_fWrongCutHeatShare;
+
+	[Attribute("3", desc: "Wire cutting: turns in the tangle, 1 to 4. Each turn shuffles the four wires once: more turns are harder to follow")]
+	int m_iLoomTurns;
+
 	[Attribute("15", desc: "Heat an engine starting makes")]
 	float m_fStartHeat;
 
@@ -186,7 +198,10 @@ class RZ_CarProject
 	int m_iMissionId = -1;	// a mission's car (Car Keys): not saved, not replaced
 	vector m_vKeyHouse;		// its keys are in the house here (mission cars)
 	bool m_bWired;			// started by hotwiring, not with its keys
+	ref RZ_CarLoom m_Loom;	// the wires under its column, once someone has pulled the panel (not saved)
 	int m_iCar = -1;		// index into Car prefabs (and Parked prefabs)
+	bool m_bRoom;			// its spot was checked for room where it's put out (RZ_CarRoom), this session
+	bool m_bNoRoomSaid;		// the log has said it found no room
 
 	IEntity m_Body;			// the interaction spot
 	IEntity m_Car;			// the parked, locked car (none if Parked prefabs has no entry for it)
@@ -204,11 +219,16 @@ class RZ_Cars
 	static const int PARTS_NOT_FUEL = 14;	// battery, tyre and spark plugs
 
 	protected static const float SHOW_RADIUS = 150;
+	protected static const float ROOM_REACH = 40;	// a car with no room is moved at most this far (m)
+	protected static const int ROOM_TRIES = 12;
 	protected static const float HIDE_RADIUS = 200;
 
 	//! The read label on a car project's spot. The client hides the car's action slots behind it
 	//! while it uses the repair screen (RZ_CarMenu.HidesSlotsOn).
 	static const string LOOK_LABEL = "Look over the car";
+
+	//! A hotwiring that failed: the timed one at its end, the loom when it shorts.
+	protected static const string HOTWIRE_FAILED = "The wires spit, the starter grinds and grinds, and then nothing. Everything nearby heard that. Strip them back and try again.";
 
 	//! The repair screen's jobs, in the order of the job card and the markers on the car.
 	static const int JOB_SPARK = 0;
@@ -218,12 +238,18 @@ class RZ_Cars
 	static const int JOB_IGNITION = 4;
 	static const int JOB_START = 5;		// not a row: the Start the engine button
 	static const int JOBS = 5;
+	static const int JOB_CUT = 10;		// not a row: cut the wire at plug JOB_CUT + n of the loom (0 to 3)
 
 	//! A job's state on the screen.
 	static const int STATE_DONE = 0;
 	static const int STATE_CAN = 1;		// you can do it now
 	static const int STATE_NEED = 2;	// you need something first
 	static const int STATE_WORKING = 3;	// you're doing it
+
+	//! What a job's tag says about the car, in words and a colour.
+	static const int TONE_HAVE = 0;		// it's there: FITTED, FUELLED, HOTWIRED (olive, a tick)
+	static const int TONE_NOW = 1;		// under way, or the key is on you (amber)
+	static const int TONE_MISSING = 2;	// it isn't: MISSING, EMPTY, NO KEYS (red, a cross)
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Interactions m_Hub;
@@ -376,7 +402,17 @@ class RZ_Cars
 			if (RZ_Util.IsWater(pos) || RZ_Perimeter.IsNearLineAt(pos))
 				continue;
 
-			m_aCars.Insert(Generate(idx, pos));
+			// With room to stand (RZ_CarRoom); asked again where it's first put out
+			RZ_CarProject made = Generate(idx, pos);
+			vector roomPos = made.m_vPos;
+			float roomYaw = made.m_fYaw;
+			if (RZ_CarRoom.Find(pos, ROOM_REACH, ROOM_TRIES, true, roomPos, roomYaw))
+			{
+				made.m_vPos = roomPos;
+				made.m_fYaw = roomYaw;
+			}
+
+			m_aCars.Insert(made);
 		}
 	}
 
@@ -547,6 +583,9 @@ class RZ_Cars
 	//! carries its actions just in front of its grille. Without a parked prefab, only the spot, on the ground.
 	protected void Show(RZ_CarProject c)
 	{
+		if (!MakeRoom(c))
+			return;
+
 		EnsureCar(c); // before the spot takes its name
 		c.m_iSpot = m_Hub.AddSpot(RZ_Interactions.KIND_CAR, c.m_vPos, "car", c.m_sNoun, c.m_iId, -1);
 		if (c.m_iSpot < 0)
@@ -570,6 +609,37 @@ class RZ_Cars
 		}
 
 		m_Hub.AttachLabels(s, c.m_Body);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first time a car is put out (a player is near, so what stands around it is there): it
+	//! has room where it is, or it's moved to the nearest spot that has (a saved car in a wall too).
+	//! False while no spot was found: it stays data and is asked again on the next tick.
+	protected bool MakeRoom(RZ_CarProject c)
+	{
+		if (c.m_bRoom)
+			return true;
+
+		vector was = c.m_vPos;
+		vector roomPos = c.m_vPos;
+		float roomYaw = c.m_fYaw;
+		if (!RZ_CarRoom.Find(was, ROOM_REACH, ROOM_TRIES, true, roomPos, roomYaw))
+		{
+			if (!c.m_bNoRoomSaid)
+				RZ_Log.Info(string.Format("Cars: no room for %1 at %2 yet; it stays put away.", c.m_sNoun, RZ_SettlementScanner.GridReference(was)));
+
+			c.m_bNoRoomSaid = true;
+			return false;
+		}
+
+		c.m_bRoom = true;
+		c.m_vPos = roomPos;
+		c.m_fYaw = roomYaw;
+		float moved = vector.DistanceXZ(was, c.m_vPos);
+		if (moved > 1)
+			RZ_Log.Info(string.Format("Cars: %1 had no room at %2 (a wall, a roof or a step); moved %3 m.", c.m_sNoun, RZ_SettlementScanner.GridReference(was), RZ_Util.RoundToInt(moved)));
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -645,7 +715,7 @@ class RZ_Cars
 			return;
 
 		string text = InspectText(playerId, s, c, user);
-		if (!OpenScreen(playerId, s, text))
+		if (!OpenScreen(playerId, s, ScreenText(c, user)))
 			m_GM.NotifyPlayer(playerId, m_Hub.Title(s), text);
 
 		if (!c.m_aInspected.Contains(playerId))
@@ -675,6 +745,17 @@ class RZ_Cars
 			keys = "No keys in it. A spare's often in a house nearby; or hotwire it.";
 
 		return string.Format("%1, under a layer of dust. Nothing wrong you can't fix. %2 %3", m_Hub.Title(s), needs, keys);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the repair screen opens on: short, since its rows and the line in its header say what's
+	//! there and what isn't. Only the tool is worth saying.
+	protected string ScreenText(RZ_CarProject c, IEntity user)
+	{
+		if ((c.m_iMissing & PARTS_NOT_FUEL) != 0 && NeedsTool(user))
+			return "Under a layer of dust. Nothing comes off or goes on without a wrench or a toolkit, and you've neither.";
+
+		return "Under a layer of dust. Nothing wrong you can't fix.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -859,13 +940,81 @@ class RZ_Cars
 
 		if (Math.RandomFloat01() < failChance)
 		{
-			m_GM.NotifyPlayer(playerId, c.m_sNoun, "The wires spit, the starter grinds and grinds, and then nothing. Everything nearby heard that. Strip them back and try again.");
+			m_GM.NotifyPlayer(playerId, c.m_sNoun, HOTWIRE_FAILED);
 			return;
 		}
 
+		HotwireWorked(playerId, c);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void HotwireWorked(int playerId, RZ_CarProject c)
+	{
 		c.m_bHotwired = true;
 		c.m_bWired = true;
+		c.m_Loom = null;
 		m_GM.NotifyPlayer(playerId, c.m_sNoun, "A spark, a cough from the starter. The wires are live.");
+	}
+
+	// ================================================================ The loom (the repair screen's hotwire)
+	//------------------------------------------------------------------------------------------------
+	//! The screen's Ignition job. With no key and Wire cutting on it pulls the panel under the
+	//! column: the car's loom is rolled the first time (RZ_CarLoom) and the screen shows it. With
+	//! the key, an ignition already sorted, or Wire cutting off, it's the car's own Hotwire prompt.
+	protected void Ignition(int playerId, RZ_Spot s, RZ_CarProject c, IEntity user)
+	{
+		if (!m_Settings.m_bWireCutting || c.m_bHotwired || m_Hub.GetSearch().HasKey(playerId, CarKey(c)))
+		{
+			HandleProject(playerId, s, 2, user);
+			return;
+		}
+
+		if (!c.m_Loom)
+			c.m_Loom = RZ_CarLoom.Make(m_Settings.m_iLoomTurns);
+
+		m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "The panel's off.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A cut on the screen's loom (the server's word on it: RZ_CarLoom.Cut). The wire that runs to
+	//! the ignition and the car is hotwired. Any other sparks: a share of Hotwire heat, a strike, and
+	//! that plug is dead. At Loom strikes the loom shorts: the attempt fails as a hotwiring always
+	//! could, and the next one starts on a fresh tangle.
+	protected void CutWire(int playerId, RZ_Spot s, RZ_CarProject c, int plug)
+	{
+		if (!c.m_Loom || c.m_bHotwired || !m_Settings.m_bWireCutting)
+			return;
+
+		float heat = m_Settings.m_fHotwireHeat;
+		int result = c.m_Loom.Cut(plug, RZ_Interactions.IsBackground(m_GM, playerId, "mechanic"));
+		if (result == RZ_CarLoom.RESULT_NOTHING)
+			return;
+
+		if (result == RZ_CarLoom.RESULT_DONE)
+		{
+			m_GM.GetHeat().AddHeat(c.m_vPos, heat);
+			HotwireWorked(playerId, c);
+			return;
+		}
+
+		if (c.m_Loom.m_iStrikes >= Math.Max(1, m_Settings.m_iLoomStrikes))
+		{
+			ShortLoom(playerId, c);
+			return;
+		}
+
+		m_GM.GetHeat().AddHeat(c.m_vPos, heat * Math.Clamp(m_Settings.m_fWrongCutHeatShare, 0, 1));
+		m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "A spark. Wrong wire.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The loom shorts: all of Hotwire heat, the failed hotwiring's line, and the car gets a fresh
+	//! loom the next time someone pulls the panel.
+	protected void ShortLoom(int playerId, RZ_CarProject c)
+	{
+		c.m_Loom = null;
+		m_GM.GetHeat().AddHeat(c.m_vPos, m_Settings.m_fHotwireHeat);
+		m_GM.NotifyPlayer(playerId, c.m_sNoun, HOTWIRE_FAILED);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1074,17 +1223,21 @@ class RZ_Cars
 			case JOB_BATTERY: Fit(playerId, s, c, PART_BATTERY, user); break;
 			case JOB_TYRE: Fit(playerId, s, c, PART_TYRE, user); break;
 			case JOB_FUEL: Fit(playerId, s, c, PART_FUEL, user); break;
-			case JOB_IGNITION: HandleProject(playerId, s, 2, user); break;
+			case JOB_IGNITION: Ignition(playerId, s, c, user); break;
 			case JOB_START: HandleProject(playerId, s, 3, user); break;
 		}
+
+		if (job >= JOB_CUT && job < JOB_CUT + RZ_CarLoom.PLUGS)
+			CutWire(playerId, s, c, job - JOB_CUT);
 
 		Release(playerId, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The screen's payload: C|serial|title|done|jobs|status|can start|start need, I|inspect text,
-	//! W|job|seconds left|seconds in all while a job is under way, then J|job|state|name|need|button
-	//! per job.
+	//! The screen's payload: C|serial|title|done|jobs|status|can start|start need|what's missing|1 if
+	//! anything is, I|inspect text, W|job|seconds left|seconds in all while a job is under way, then
+	//! J|job|state|name|need|button|tag|tone per job, and the loom's records while the panel under
+	//! the column is off (RZ_CarLoom.Records).
 	protected void SendScreen(int playerId, string status)
 	{
 		int spotId;
@@ -1125,12 +1278,17 @@ class RZ_Cars
 			string name;
 			string need;
 			string button;
-			JobRow(playerId, c, job, user, working, state, name, need, button);
+			string tag;
+			int tone;
+			JobRow(playerId, c, job, user, working, state, name, need, button, tag, tone);
 			if (state == STATE_DONE)
 				done++;
 
-			rows += string.Format("\nJ|%1|%2|%3|%4|%5", job, state, name, RZ_UIText.Clean(need, 80), button);
+			rows += string.Format("\nJ|%1|%2|%3|%4|%5|%6|%7", job, state, name, RZ_UIText.Clean(need, 80), button, tag, tone);
 		}
+
+		if (c.m_Loom && !c.m_bHotwired && m_Settings.m_bWireCutting)
+			rows += c.m_Loom.Records(Math.Max(1, m_Settings.m_iLoomStrikes), RZ_Interactions.IsBackground(m_GM, playerId, "mechanic"));
 
 		bool hasKey = m_Hub.GetSearch().HasKey(playerId, CarKey(c));
 		bool canStart = c.m_iMissing == 0 && (c.m_bHotwired || hasKey) && working < 0;
@@ -1144,8 +1302,16 @@ class RZ_Cars
 		if (canStart)
 			startFlag = 1;
 
-		string payload = string.Format("C|%1|%2|%3|%4|%5|%6|%7", serial, RZ_UIText.Clean(RZ_Util.Capitalize(c.m_sNoun), 60), done, JOBS,
-			RZ_UIText.Clean(status, 400), startFlag, startNeed);
+		string lacking = MissingLine(c, hasKey);
+		int lacks = 1;
+		if (lacking.IsEmpty())
+		{
+			lacking = "Nothing missing";
+			lacks = 0;
+		}
+
+		string payload = string.Format("C|%1|%2|%3|%4|%5|%6|%7|%8|%9", serial, RZ_UIText.Clean(RZ_Util.Capitalize(c.m_sNoun), 60), done, JOBS,
+			RZ_UIText.Clean(status, 400), startFlag, startNeed, lacking, lacks);
 		payload += "\nI|" + RZ_UIText.Clean(InspectText(playerId, s, c, user), 400);
 		if (working >= 0)
 			payload += string.Format("\nW|%1|%2|%3", working, Math.Max(0, task.m_fLeft), seconds);
@@ -1183,38 +1349,87 @@ class RZ_Cars
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One row of the job card: its state, name, what you need (or have) and the button's word.
-	protected void JobRow(int playerId, RZ_CarProject c, int job, IEntity user, int working, out int state, out string name, out string need, out string button)
+	//! The header's line: what the car still lacks, by name ("Missing: tyre, fuel, keys"), "" when
+	//! it lacks nothing.
+	protected string MissingLine(RZ_CarProject c, bool hasKey)
+	{
+		array<string> names = {};
+		if ((c.m_iMissing & PART_SPARK) != 0)
+			names.Insert("spark plugs");
+		if ((c.m_iMissing & PART_BATTERY) != 0)
+			names.Insert("battery");
+		if ((c.m_iMissing & PART_TYRE) != 0)
+			names.Insert("tyre");
+		if ((c.m_iMissing & PART_FUEL) != 0)
+			names.Insert("fuel");
+		if (!c.m_bHotwired && !hasKey)
+			names.Insert("keys");
+
+		if (names.IsEmpty())
+			return "";
+
+		string line = "Missing: ";
+		foreach (int i, string n : names)
+		{
+			if (i > 0)
+				line += ", ";
+
+			line += n;
+		}
+
+		return line;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One row of the job card: its state, name, what you need (or have), the button's word, and
+	//! the tag that says what the car has: its words (FITTED, MISSING...) and tone (TONE_*).
+	protected void JobRow(int playerId, RZ_CarProject c, int job, IEntity user, int working, out int state, out string name, out string need, out string button, out string tag, out int tone)
 	{
 		button = "";
 		if (job == JOB_IGNITION)
 		{
 			name = "Ignition";
+			tag = "NO KEYS";
+			tone = TONE_MISSING;
 			if (working == job)
 			{
 				state = STATE_WORKING;
 				need = "Hotwiring";
+				tag = "HOTWIRING";
+				tone = TONE_NOW;
 			}
 			else if (c.m_bHotwired && c.m_bWired)
 			{
 				state = STATE_DONE;
-				need = "Wired";
+				need = "The wires are live";
+				tag = "HOTWIRED";
+				tone = TONE_HAVE;
 			}
 			else if (c.m_bHotwired)
 			{
 				state = STATE_DONE;
-				need = "Key in it";
+				need = "The key is in it";
+				tag = "KEYS";
+				tone = TONE_HAVE;
 			}
 			else if (m_Hub.GetSearch().HasKey(playerId, CarKey(c)))
 			{
 				state = STATE_CAN;
 				need = "Your key fits";
 				button = "Use the key";
+				tag = "KEY ON YOU";
+				tone = TONE_NOW;
+			}
+			else if (m_Settings.m_bWireCutting)
+			{
+				state = STATE_CAN;
+				need = "One wire to cut";
+				button = "Hotwire";
 			}
 			else
 			{
 				state = STATE_CAN;
-				need = string.Format("No keys. About %1 s, loud, can fail", RZ_Util.RoundToInt(HotwireSeconds(playerId)));
+				need = string.Format("About %1 s, loud, can fail", RZ_Util.RoundToInt(HotwireSeconds(playerId)));
 				button = "Hotwire";
 			}
 
@@ -1224,9 +1439,11 @@ class RZ_Cars
 		int bit = PART_SPARK;
 		name = "Spark plugs";
 		string doing = "Fitting";
-		string carried = "In your bag";
+		string carried = "One in your bag";
 		string none = "None on you";
-		string done = "Fitted";
+		string done = "On the car";
+		string have = "FITTED";
+		string lack = "MISSING";
 		button = "Fit";
 		if (job == JOB_BATTERY)
 		{
@@ -1246,14 +1463,20 @@ class RZ_Cars
 			carried = "A full can on you";
 			none = "No full can on you";
 			done = "In the tank";
+			have = "FUELLED";
+			lack = "EMPTY";
 			button = "Pour";
 		}
 
+		tag = lack;
+		tone = TONE_MISSING;
 		if (working == job)
 		{
 			state = STATE_WORKING;
 			need = doing;
 			button = "";
+			tag = "WORKING";
+			tone = TONE_NOW;
 			return;
 		}
 
@@ -1262,6 +1485,8 @@ class RZ_Cars
 			state = STATE_DONE;
 			need = done;
 			button = "";
+			tag = have;
+			tone = TONE_HAVE;
 			return;
 		}
 

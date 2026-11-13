@@ -60,13 +60,13 @@ class RZ_LootSettings
 	[Attribute("6", desc: "Buildings put out per 5 s tick (the nearest to players first)")]
 	int m_iPlacePerTick;
 
-	[Attribute("5", desc: "Items per house: its slots (a locked one: one more)")]
+	[Attribute("6", desc: "Items per house: its slots (a locked one: one more)")]
 	int m_iMaxHouse;
 
-	[Attribute("7", desc: "Items per shop or farm: its slots (a locked one: one more)")]
+	[Attribute("9", desc: "Items per shop or farm: its slots (a locked one: one more)")]
 	int m_iMaxShop;
 
-	[Attribute("8", desc: "Items per pharmacy, police station or garage: its slots (a locked one: one more)")]
+	[Attribute("10", desc: "Items per pharmacy, police station or garage: its slots (a locked one: one more)")]
 	int m_iMaxSpecial;
 
 	[Attribute("0.75", desc: "Slot chance: at full town loot, the chance each slot holds something (x the town's loot level; +0.25 behind a lock)")]

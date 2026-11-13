@@ -1,0 +1,21 @@
+GenericEntity {
+ ID "88A8BC39FF42C8FF"
+ components {
+  RplComponent "{8706DF5E306D3DC9}" {
+  }
+  Hierarchy "{AEA1234F21F3FA2D}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{A9D9DDBB0BE09BD3}Prefabs/Props/Agriculture/Scarecrow_01/Scarecrow_01.et" {
+   ID "3E4CD45EEE67AD76"
+   components {
+    Hierarchy "{31B6D7F0F53CBE3D}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+ }
+}

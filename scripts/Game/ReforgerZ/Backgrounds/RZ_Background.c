@@ -144,7 +144,7 @@ class RZ_Background
 		outList.Insert(b);
 
 		b = Make("mechanic", "Mechanic",
-			"Starts with a wrench and a jerrycan, enough to get a car running. Hotwires a car in a third of the time, and rarely botches it.",
+			"Starts with a wrench and a jerrycan, enough to get a car running. Knows a car's wiring: under the column, one wrong wire is already ruled out.",
 			"Clumsy and loud: draws 25% more zombie attention.");
 		b.m_fNoiseMult = 1.25;
 		outList.Insert(b);

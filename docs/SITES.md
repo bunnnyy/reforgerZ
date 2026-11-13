@@ -23,6 +23,7 @@ Workbench plugins.
 - [From the reference board](#from-the-reference-board)
 - [The site grid](#the-site-grid)
 - [Real footprints](#real-footprints)
+- [The world-building kit](#the-world-building-kit)
 - [The surroundings and the threat](#the-surroundings-and-the-threat)
 - [The rules](#the-rules)
 - [The solver](#the-solver)
@@ -100,6 +101,9 @@ so they cost no download:
 | Bastion | **Razor-wire road blocks** (stronghold) | across the roads that aren't its checkpoints | the road closed the army's way: knife rests of razor wire, a coil behind them |
 | Red Hand | **A truck or a van across the road** (stronghold) | across the roads that aren't its checkpoints | a wall made of what no longer drives |
 | Haven | **A van and crates, a braced panel** (stronghold) | across the roads that aren't its checkpoints | a village closing its lanes with what it has |
+| Red Hand | **Chop shop** (stronghold) | against the building's wall | what the crew does with what it takes: a jeep off Bastion up on a jack, an engine crane, a welder, its scrap in a pile |
+| Halcyon | **Waiting cots** (the lab) | by triage | those who couldn't stand in the queue: two cots, a drip stand, a screen |
+| Haven | **Scarecrow** (stronghold) | by a garden bed | the birds get nothing the village can eat |
 | Red Hand | **Trophy wall** (stronghold) | by the toll, facing out | skulls on boards that look at whoever comes up the road (they once faced the yard: the boards' face is their back) |
 | Bastion, Red Hand | **Fuel point** | by the motor pool or the fuel dump | a pump unit, drums, cans |
 
@@ -179,6 +183,66 @@ concertina coil is 3.45 m long down its own z (so a run turns it 90°), the chai
 and tin sections are 3, 4, 6 and 8 m with their origin at one end. Some of the mods' prefabs carry a
 turn of their own (MoreGMProps' walls a quarter turn): `build.py` writes every prop's turn, a zero
 too, so none shows through (the first walls tried stood side-on, like dominoes).
+
+## The world-building kit
+
+`tools/camp_kit/world_kit.txt` is the list to pick from when a place needs dressing beyond the camps'
+own pieces: a site, a Traces scene, a mission place, or the map itself in Workbench. It has 410
+lines, one prefab each: its ResourceName, its kind, the mod it comes from, where it suits, its size,
+what it is in a few words, and what the dedicated server logged when it spawned it. People read
+it, and a script that dresses places can read the same lines (fields split by ` | `; `#` starts a
+comment). The mods are in [MOD_STACK.md](MOD_STACK.md#scenery-night-sounds-and-small-things).
+
+| Kind | Lines | What it is | How it's used |
+|---|---|---|---|
+| `prop` | 254 | One object: MMHs IVY's 16 ivy pieces and 102 damaged props, four of Overgrown's car wrecks, and 124 base-game props (graves, skeletons, medical and checkpoint furniture, rubbish, wrecks) found behind JTF Bronze Props' Game Master entries | Also in `props.txt` with its class, and measured in `footprints.json`: name it in a piece in `pieces.py` and run `build.py` |
+| `composition` | 132 | A group to place whole: 111 of JTF Bronze Props' scenes, MMHs IVY's 20 wrecks and barricades under ivy, Overgrown's hidden camp | Place it in Workbench, or spawn it from a script with `RZ_Util.SpawnPrefab`. The notes say which have no `RplComponent` of their own: those only reach clients placed in the world or as a child of a piece |
+| `building` | 24 | A building or a big ruin: MMHs IVY's bunkers, houses and ruins under ivy, Overgrown's copies of base-game buildings | Place it by hand in Workbench where the map has room. They don't replace the map's own buildings |
+
+**Where a line suits** is one or more of twelve words, the same for every line:
+
+| Word | Means | Lines |
+|---|---|---|
+| `towns` | abandoned towns and their streets | 220 |
+| `roads` | roads and roadsides | 107 |
+| `checkpoints` | checkpoints and the Perimeter | 102 |
+| `indoors` | inside a building | 99 |
+| `bastion`, `haven`, `redhand` | that faction's places | 88, 75, 73 |
+| `wilds` | woods and open country | 66 |
+| `graves` | graves and the dead | 35 |
+| `halcyon` | Halcyon's lab and its places | 28 |
+| `farms`, `coast` | farms; the shore | 19, 8 |
+
+To find what suits a place: `grep "| graves" tools/camp_kit/world_kit.txt`, or `grep "checkpoints" ... | grep "| composition |"`.
+
+What to know before using a line:
+
+- **The camp kits use a few of its props** ([From the reference board](#from-the-reference-board)):
+  the motor pool's engine crane, jack and toolbox, the aid post's cot, drip stand, screen and bin,
+  triage's screen and drip stand, the mess tables (a long table, two benches, a food carrier), the
+  radio set, the Red Hand's chop shop (a jeep wreck, the crane, a welder, scrap, tyres), the Haven's
+  scarecrow and the lab's waiting cots. No script spawns a composition yet: the rest is what there
+  is to pick from. The kit also lists the camp kits' own mod props (security mesh, riot fencing, a
+  guard tower, a container, a forklift, cases, a fuel pump), which were seen standing in Workbench
+  play; its "Left out" list says what was tried and dropped, and why.
+- **Every line spawned on the dedicated server** (game 1.9, the mods loaded), and every prop has a
+  measured box. Nothing was seen: look at a piece in Workbench before building on it. Lines whose
+  look is a guess say so.
+- **Ivy, graves, fence poles and plants are the base game's old destructible entities** (`Tree`,
+  `SCR_DestructibleEntity`). Spawned at run time each logs an error line (`was spawned at runtime. It
+  won't take damage and wont replicate`) and can't be damaged. The camps' own fences, tin walls and flowerpots
+  are the same kind. Inside a piece they are part of the piece's prefab. Whether one spawned alone at
+  run time shows on a client of a dedicated server hasn't been checked: when in doubt, place it in the
+  world in Workbench.
+- **A line from a mod needs the mod.** A server without it (the Linux tools drop a dependency they
+  can't find) spawns nothing for that line: a script must take "didn't spawn" quietly.
+- **`props.txt` is `build.py`'s file.** It rewrites it, sorted by file name, with no comments: what a
+  prop is and where it's from is in `world_kit.txt`. A file name can be in it once, and a path with a
+  space can't be in it at all.
+- **Adding to the kit:** a prop goes in both files (its class and `hier` as "ReforgerZ: Dump
+  prefabs and classes" shows them), then measure it (`FOOTPRINTS=1 tools/runtime_test/run.sh sites`,
+  or the Workbench plugin above) and run `build.py`. A composition or a building goes in
+  `world_kit.txt` only.
 
 ## The surroundings and the threat
 
@@ -479,7 +543,8 @@ more of what the place would have, each with the reason it is there.
 |  | a crate stack | 1 | supplied | work | more of it while the convoys get through |
 |  | drums | 1 | supplied | yard | water and fuel by the cook pot |
 |  | a lantern post | 1 | always | court | light at the entrance |
-| Red Hand stronghold | the loot container | 1 | always | yard | what the crew took, under lock, someone always sitting on it |
+| Red Hand stronghold | the chop shop | 1 | always | yard | what the crew does with what it takes: a jeep off Bastion stripped for parts |
+|  | the loot container | 1 | always | yard | what the crew took, under lock, someone always sitting on it |
 |  | a pallet stack | 1 | thriving | yard | loot not yet sorted |
 |  | the fuel point | 1 | always | yard | the toll is paid in fuel |
 |  | drums | 2 | supplied | yard | more of the toll |
@@ -503,6 +568,7 @@ more of what the place would have, each with the reason it is there.
 |  | the big tent | 1 | always | sleep | the shared tent |
 |  | bedrolls | 1 | always | sleep | airing by the tents |
 |  | a garden bed | 3 | always | yard | beds dug in rows: the village feeds itself |
+|  | a scarecrow | 1 | always | yard | keeps the birds off the beds |
 |  | a water barrel | 2 | always | kitchen | water where it's used: the kitchen, the garden |
 |  | a washing line | 1 | always | sleep | the wash, on the grass |
 |  | firewood | 1 | always | kitchen | cut for the kitchen |
@@ -526,6 +592,7 @@ more of what the place would have, each with the reason it is there.
 |  | a crate stack | 1 | always | work | the stores against the wall |
 |  | a lantern post | 1 | always | court | a light left on for whoever comes |
 | Halcyon stronghold | riot fencing | 1 | always | gate | the queue for triage |
+|  | the waiting cots | 1 | always | gate | those who couldn't stand in it |
 |  | warning signs | 2 | always | gate | said again at every closed road |
 |  | the supply yard | 1 | always | work | what the lab runs on, against the building's wall |
 |  | a pallet stack | 2 | supplied | yard | deliveries not yet opened |

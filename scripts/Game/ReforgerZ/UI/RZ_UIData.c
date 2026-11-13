@@ -209,6 +209,9 @@ class RZ_UISettings
 	[Attribute("", UIWidgets.ResourceNamePicker, "Power panel: the layout of one breaker (UI/LAYOUTS.md, PowerBreaker). Set, the power station's control has one prompt, Open the panel, and the restore happens in the panel screen (RZ_PowerMenu preset). Empty = the control's old world prompts", "layout")]
 	ResourceName m_sPowerBreakerLayout;
 
+	[Attribute("{D07E5A1C9B3F4E26}UI/layouts/ReforgerZ/RZ_DutyCard.layout", UIWidgets.ResourceNamePicker, "Duty table: the layout of one card (UI/LAYOUTS.md, DutyCard). Set, a duty that sorts things (the dead, the line at the gate, the sample trays) opens the table screen (RZ_DutyMenu preset). Empty = no screen: such a duty is its hold, judged the careful way for half pay", "layout")]
+	ResourceName m_sDutyCardLayout;
+
 	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Standing page layout (UI/LAYOUTS.md). Empty = the tab says Nothing here yet", "layout")]
 	ResourceName m_sStandingPage;
 

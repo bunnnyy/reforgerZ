@@ -17,6 +17,7 @@ class RZ_DTalk
 	RZ_DNode m_Node;
 	string m_sPrev;
 	bool m_bInNode;
+	bool m_bDry;			// this node's job choice has nothing behind it now: no pitch, no locked row
 	ref array<RZ_DConv> m_aTopics = {};
 	int m_iFavorPaid;				// this conversation (10 at most)
 	float m_fNodeAt;
@@ -584,6 +585,10 @@ class RZ_DialogueTrees
 			if (!RZ_DialogueCond.Holds(t.m_Ctx, c.m_If) || !CalloutOpen(t.m_Ctx, c))
 				continue;
 
+			// They said they have nothing: the job's own row isn't shown locked under that
+			if (t.m_bDry && JobSlot(s, c) >= 0)
+				continue;
+
 			RZ_TalkReply r = new RZ_TalkReply();
 			r.m_iId = CHOICE_BASE + i;
 			r.m_sLabel = RZ_DialogueText.Fill(t.m_Ctx, c.m_sLabel);
@@ -642,6 +647,57 @@ class RZ_DialogueTrees
 			r.m_bEnabled = false;
 			r.m_sNeed = why;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The speaker's job slot a choice runs (call:slot:N where the adapter says N starts a job), -1
+	//! if it runs none.
+	protected int JobSlot(RZ_TalkSession s, RZ_DChoice c)
+	{
+		if (!s.m_Adapter)
+			return -1;
+
+		foreach (RZ_DEffect e : c.m_aDo)
+		{
+			if (e.m_sName != "call" || !e.m_sArg.StartsWith("slot:"))
+				continue;
+
+			int n = e.m_sArg.Substring(5, e.m_sArg.Length() - 5).ToInt();
+			if (!s.m_Adapter.SlotJob(m_GM, n).IsEmpty())
+				return n;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A node that pitches work ("There's tasking...", then "Give me the task") while the speaker
+	//! has no job this player can take now: they never say there's work and then refuse it. True
+	//! with what they say instead; false when a job is there (or the node offers none).
+	protected bool DryPitch(RZ_TalkSession s, RZ_DNode node, notnull array<string> lines)
+	{
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(s.m_iPlayer);
+		bool any = false;
+		string why = "";
+		foreach (RZ_DChoice c : node.m_aChoices)
+		{
+			int slot = JobSlot(s, c);
+			if (slot < 0 || !RZ_DialogueCond.Holds(s.m_Tree.m_Ctx, c.m_If))
+				continue;
+
+			string reason = s.m_Adapter.SlotLock(m_GM, s, slot, user);
+			if (reason.IsEmpty())
+				return false;
+
+			any = true;
+			why = reason;
+		}
+
+		if (!any)
+			return false;
+
+		RZ_TalkJobs.NothingSaid(why, lines);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1272,7 +1328,10 @@ class RZ_DialogueTrees
 		effectLines.InsertAll(s.m_aNew);
 		s.m_aNew.Clear();
 		array<string> lines = {};
-		Lines(t, node, lines);
+		t.m_bDry = DryPitch(s, node, lines);
+		if (!t.m_bDry)
+			Lines(t, node, lines);
+
 		if (node.m_bConfirm)
 			ConfirmLines(t, node, lines);
 

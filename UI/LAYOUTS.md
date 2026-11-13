@@ -285,6 +285,7 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_ObjectMenu` | `RZ_ObjectMenu` | `RZ_ObjectMenu.layout` (not in the conf yet: the PC adds it) |
 | `RZ_RadioMenu` | `RZ_RadioMenu` | `RZ_RadioMenu.layout` |
 | `RZ_PowerMenu` | `RZ_PowerMenu` | `RZ_PowerMenu.layout` |
+| `RZ_DutyMenu` | `RZ_DutyMenu` | `RZ_DutyMenu.layout` |
 
 The cooking screen has no preset of its own: it's `RZ_CraftMenu` in its stove mode.
 
@@ -654,7 +655,8 @@ neither wraps: values are cut at 60 characters on the server, about 500 units at
 
 ## Car repair screen: `RZ_CarMenu.layout` and `RZ_CarJob.layout`
 
-The car repair screen (`RZ_CarMenu` preset), from `UI/Mockups/car_repair.html`. Written as text.
+The car repair screen (`RZ_CarMenu` preset), from `UI/Mockups/car_repair.html` and, for the loom,
+`car_hotwire.html`. Written as text.
 Positions inside `CarPanel` are from its top left.
 
 ```
@@ -663,8 +665,9 @@ Frame (root, full screen)
 └─ Frame   CarPanel        1,440 × 820, centred
    ├─ Image  (CarBg)        #0F1113
    ├─ Image  (CarAccent)    full width × 5, top edge, amber
-   ├─ Text   CarTitle       at (48, 34), 900 wide, condensed bold 34, bone ("The blue two-door")
-   ├─ Text   CarDone        right-aligned, ending at (1,320, 44), mono 22, dim ("2 of 5 done")
+   ├─ Text   CarTitle       at (48, 34), 600 wide, condensed bold 34, bone ("The blue two-door")
+   ├─ Text   CarDone        right-aligned, 640 wide, ending at (1,320, 44), mono 22: what the car lacks
+   │                        ("Missing: tyre, fuel", red; "Nothing missing", olive; tinted by the script)
    ├─ Button CloseButton    44 × 44 at (1,348, 30), "X" in amber
    ├─ Image  (HeadRule)     at (48, 92), 1,344 × 2, #2A2E31
    ├─ Frame  (CarView)      at (48, 120), 640 × 250, #0C0E0F with a #2A2E31 border
@@ -676,7 +679,25 @@ Frame (root, full screen)
    │     ├─ Panel  MarkerRingN   the frame's size, border, hidden unless the job is selected (tinted)
    │     ├─ Image  MarkerDotN    32 × 32 at (7, 7), tinted by the job's state
    │     └─ Text   (MarkerNumN)  over the dot, mono bold 20, #15171A, "1" … "5"
-   ├─ Text   CarStatus      at (48, 392), 640 × 300, regular 24, #F4F0E6, wraps: what the last job said (hidden when empty)
+   ├─ Frame  Loom           at (48, 120), 640 × 262, hidden: the loom, shown in CarView's place at a hotwire
+   │  ├─ Image  (LoomBg)      640 × 262, #0C0E0F, and Panel (LoomLine), its #2A2E31 border
+   │  ├─ Image  LoomBar0 … LoomBar47   the wires' bars, 6 thick, #C9C3B3, hidden: the script shows,
+   │  │                      places and sizes three a wire a turn (down, across, down) between y 52
+   │  │                      and y 218, and hides the rest
+   │  ├─ Frame  PlugBox0 … PlugBox3   76 × 36 each at (72 + 140 × N, 22): a plug, over column N
+   │  │  │                      (the columns' middles are x 110, 250, 390, 530)
+   │  │  ├─ Image  PlugBodyN    64 × 24 at (6, 6), tinted: #C9C3B3, amber when picked, #3A3E42 when dead
+   │  │  ├─ Text   PlugDeadN    over the body, mono bold 18, dim, "X": shown on a dead plug
+   │  │  ├─ Panel  PlugFocusN   the box's size, amber border, shown on the picked plug
+   │  │  └─ Button PlugN        the box's size, on top, no children: a click cuts that wire (its tag is N)
+   │  ├─ Image  Socket0 … Socket3   64 × 24 at (78 + 140 × N, 218), tinted: #3A3E42, the lit one amber
+   │  ├─ Text   SocketWord0 … SocketWord3   140 × 18 at (40 + 140 × N, 243), mono bold 15, amber, centred,
+   │  │                      "IGNITION", hidden: only the lit socket's shows
+   │  ├─ Text   (LoomAsk)     at (14, 2), mono bold 18, dim, "WHICH WIRE?"
+   │  └─ Image  LoomPip0 … LoomPip3   14 × 14 at (612 − 20 × N, 6), hidden: one per wrong cut allowed
+   │                         (up to four), #3A3E42, red once used
+   ├─ Text   CarStatus      at (48, 392), 640 × 300, regular 24, #F4F0E6, wraps: what the last job or cut said
+   │                        (hidden when empty)
    ├─ Text   (JobsLabel)    at (730, 120), mono bold 18, dim, "THE JOBS"
    ├─ VerticalLayout Jobs   at (730, 152), 662 wide: the job rows
    ├─ HorizontalLayout Prompts  at (48, 740): the footer prompts the script makes
@@ -700,17 +721,25 @@ Button JobRow (root, 6 below it)
          ├─ SizeLayout (JobNumBox) 40 × 40, 18 before the text
          │  └─ Overlay: Image JobDot (tinted by state) and Text JobNum (mono bold 20, #15171A)
          ├─ VerticalLayout (JobText)  fills the row
-         │  ├─ Text  JobName      condensed bold 28 (bright on the selected row, dim when it needs something)
+         │  ├─ Text  JobName      condensed bold 28, bone (bright on the selected row; never dimmed)
          │  ├─ Text  JobNeed      regular 21, dim: what you need or have, or "Fitting... 6 s"
          │  └─ SizeLayout (JobProgressBox) 360 × 6, 4 below
          │     └─ ProgressBar JobProgress   amber, shown while the job is under way
+         ├─ Overlay JobTagBox     right, 12 before it: what the car has, in words, a colour and a mark
+         │  ├─ Image  JobTagBg        filled, tinted: olive it's there, red it isn't, amber under way
+         │  └─ HorizontalLayout (JobTagLine)  padding 10 and 4
+         │     ├─ Image  JobTagTick     18 × 18, #15171A, the icon `track_done`: shown when it's there
+         │     │                        (and the icon imageset is set)
+         │     ├─ Text   JobTagCross    mono bold 20, #15171A, "X": shown when it isn't
+         │     └─ Text   JobTag         mono bold 20, #15171A ("FITTED", "MISSING", "EMPTY", "NO KEYS")
          └─ Overlay JobButtonBox  right, hidden when the job has no button
             ├─ Panel  (JobButtonLine)  border #6B5222
             └─ Text   JobButton        mono bold 22, amber ("Fit", "Pour", "Hotwire", "Use the key")
 ```
 
 State colours (the script tints them): done olive `#9AA35E`, can do now or under way amber
-`#E3A33B`, needs something first `#6E6A60`. Unlike the mockup, the markers, the ring and the pad
+`#E3A33B`, missing with nothing for it red `#D9574C`. The tag's colours are the same three, by what
+the car has. The loom's wires are all one colour, `#C9C3B3`, on purpose. Unlike the mockup, the markers, the ring and the pad
 keys are square (no circle texture), the row's button shows its word without the pad key (the
 footer prompts show A), and both wheels are drawn on the picture.
 
@@ -864,9 +893,10 @@ Cook row layout** can name `RZ_CraftRow.layout`. The script sets `CraftText` to 
 
 ## Radio screen: `RZ_RadioMenu.layout` and `RZ_RadioChannel.layout`
 
-The radio screen (`RZ_RadioMenu` preset; behaviour in [UI.md](../docs/UI.md#the-radio-screen)), in
-the object menu's style. Written as text (by a small generator from the object menu's widgets); no
-mockup. Positions inside `RadioPanel` are from its top left.
+The radio screen (`RZ_RadioMenu` preset; behaviour in [UI.md](../docs/UI.md#the-radio-screen)):
+every channel a tile, the picked one's lines below, nothing scrolls. Written as text (by a small
+generator); mockup `UI/Mockups/radio_screen.html`. Positions inside `RadioPanel` are from its top
+left.
 
 ```
 Frame (root, full screen)
@@ -878,40 +908,45 @@ Frame (root, full screen)
    ├─ Text   RadioSub       at (48, 74), regular 22, dim: the town, and a house set's weak batteries (hidden when empty)
    ├─ Button CloseButton    44 × 44 at (1,308, 30), "X" in amber
    ├─ Image  (HeadRule)     at (48, 114), 1,304 × 2, amber
-   ├─ Text   (ChannelsLabel) at (48, 130), mono bold 18, dim, "CHANNELS"
-   ├─ Frame  (ChannelList)  at (48, 162), 1,304 × 316, #0C0E0F
-   │  ├─ ScrollLayout ChannelScroll  fills it (the pad's up/down keep the picked row in view)
-   │  │  └─ SizeLayout (ChannelWidth) 1,304 wide
-   │  │     └─ VerticalLayout Channels   the channel rows
-   │  └─ Text  (ChannelsEmpty)  centred, regular 24, dim, hidden (there's always Everything)
-   ├─ Text   LogLabel       at (48, 494), mono bold 18, dim: "THE LOG: " and the picked channel
-   ├─ Frame  (LogList)      at (48, 526), 1,304 × 296, #0C0E0F
-   │  ├─ ScrollLayout LogScroll  fills it (LB/RB and the wheel scroll it)
-   │  │  └─ SizeLayout (LogWidth) 1,304 wide
-   │  │     └─ VerticalLayout Log   the log rows: the notebook's RZ_RadioRow.layout (UI > Radio row layout)
-   │  └─ Text  LogEmpty     centred, regular 24, dim, "Nothing heard on it this life." (hidden when there are rows)
+   ├─ Overlay Cell0-Cell11  317 × 92 each, four to a row from (48, 130), 12 apart across and 10 down
+   │                        (rows at 130, 232 and 334): empty; the script makes one tile in each cell
+   │                        that has a channel (nine at most)
+   ├─ Text   LogLabel       at (48, 442), mono bold 18, dim: the picked channel's name in capitals
+   ├─ Frame  Log0-Log3      1,304 × 84 each, at (48, 474), (48, 562), (48, 650) and (48, 738), hidden
+   │  │                     until the page has a line for it
+   │  ├─ Image  (LogBgN)     fills it, #0C0E0F
+   │  ├─ Image  LogBarN      4 × 84, left edge, the line's channel colour
+   │  ├─ Text   LogTimeN     at (18, 8), mono bold 18, dim ("17:12", "NOW")
+   │  ├─ Image  LogIconN     26 × 26 at (94, 6), the channel's icon in its colour (hidden without the imageset)
+   │  ├─ Text   LogHeadN     at (132, 6), 1,156 wide, mono bold 18, the channel's colour: the channel and who spoke, or "ON THE AIR NOW"
+   │  └─ Text   LogTextN     at (132, 30), 1,156 × 52, regular 22, #F4F0E6, wraps: the line, two rows (cut at 235 characters)
+   ├─ Text   LogEmpty       at (48, 620), 1,304 wide, centred, regular 24, dim, hidden: why the channel has no lines
+   ├─ Button LogNewer       44 × 40 at (1,080, 836), "<" in amber: the newer page (hidden on the first)
+   ├─ Text   LogPage        at (1,128, 844), 176 wide, centred, mono bold 18, dim: "PAGE 1 / 3" (hidden with one page)
+   ├─ Button LogOlder       44 × 40 at (1,308, 836), ">" in amber: the older page (hidden on the last)
    ├─ HorizontalLayout Prompts  at (48, 838): the footer prompts the script makes
    └─ Text   PromptsText    at (48, 844), mono bold 18, dim: the static footer, hidden once prompts are made
 ```
 
-`RZ_RadioChannel.layout` (**UI > Radio channel layout**), one channel, created into `Channels`. The
-root is a `Button` named `ChannelRow` (a click picks it):
+`RZ_RadioChannel.layout` (**UI > Radio channel layout**), one channel's tile, made in its cell. The
+root is a `Button` named `ChannelRow` (a click picks it), in an `OverlayWidgetSlot` that fills the
+cell:
 
 ```
-Button ChannelRow (root, 4 below it)
-└─ SizeLayout (ChannelSize)    1,304 × 72
+Button ChannelRow (root, fills its cell)
+└─ SizeLayout (ChannelSize)    317 × 92
    └─ Overlay (ChannelBox)
-      ├─ Image  ChannelBg        #1B1F22, shown on the picked row
-      ├─ Image  ChannelBar       5 × 72, left edge, the channel's colour, shown on the picked row
-      └─ HorizontalLayout (ChannelRowLine)  padding 22 left and right, centred vertically
-         ├─ Image  ChannelIcon   30 × 30, the channel's icon in its colour (set by code), hidden without the imageset
-         ├─ VerticalLayout (ChannelText)  fills the row
-         │  ├─ Text  ChannelName  regular 24 (bright on the picked row, faint when nothing comes through)
-         │  └─ Text  ChannelLine  regular 20, dim: its latest line, one line (cut at 110 characters)
-         └─ Text   ChannelState  mono bold 20, right, in the channel's colour: ON AIR, QUIET, TOO FAINT, SCRAMBLED, "CRACKED: 14 MIN", "12 HEARD"
+      ├─ Image  ChannelFocus     fills it, amber, shown on the picked tile (the 3 px outline round ChannelBg)
+      ├─ Image  ChannelBg        fills it 3 in from each edge, #1B1F22 (#262B2F picked or under the mouse)
+      ├─ Image  ChannelBar       along the bottom, 4 high, the channel's colour
+      ├─ Image  ChannelIcon      30 × 30, top right, the channel's icon in its colour (set by code), hidden without the imageset
+      ├─ Text   ChannelName      top left, regular 22, wraps to two lines (56 kept clear on the right for the icon); bright on the picked tile
+      ├─ Text   ChannelState     bottom left, mono bold 18, the channel's colour: ON AIR, QUIET, TOO FAINT, SCRAMBLED, "CRACKED: 14 MIN", "12 HEARD"
+      └─ Text   ChannelNote      bottom right, regular 18, dim: "last 17:12", "operator only", "needs power"
 ```
 
-Four channel rows show at once; the rest scroll.
+The script sets a tile's opacity to 45% while nothing comes through on it (scrambled, too faint)
+and it's neither picked nor under the mouse.
 
 ## Object menu: `RZ_ObjectMenu.layout` and `RZ_ObjectRow.layout`
 
@@ -942,15 +977,15 @@ Frame (root, full screen)
    └─ Frame  ObjectBody     at (0, 262), 1,200 × 664; the script moves it to (0, 132) when there's no strip
       ├─ Text   ObjectReadLabel  at (48, 0), mono bold 18, dim: over the read ("LAST HEARD · BASTION"), hidden when empty
       ├─ Text   ObjectText     at (48, 30), 1,104 × 150, regular 24, #D9D2BE, wraps: what you see (hidden when empty)
-      ├─ Text   ObjectWorking  at (48, 186), mono bold 22, amber: "Busy with the boiling... 12 s" (hidden when nothing's under way)
-      ├─ ProgressBar ObjectProgress  at (48, 220), 400 × 6, amber, shown with it
-      ├─ Text   (OptionsLabel) at (48, 232), mono bold 18, dim, "WHAT YOU CAN DO"
-      ├─ Frame  (OptionList)   at (48, 262), 1,104 × 300, #0C0E0F
+      ├─ Text   ObjectStatus   at (48, 96), 1,104 × 130, regular 22, #F4F0E6, wraps: what the last pick said, or a locked row's reason (hidden when empty); the script puts it right under ObjectText's last line, above the options
+      ├─ Text   ObjectWorking  at (48, 236), mono bold 22, amber: "Busy with the boiling... 12 s" (hidden when nothing's under way)
+      ├─ ProgressBar ObjectProgress  at (48, 270), 400 × 6, amber, shown with it
+      ├─ Text   (OptionsLabel) at (48, 282), mono bold 18, dim, "WHAT YOU CAN DO"
+      ├─ Frame  (OptionList)   at (48, 312), 1,104 × 300, #0C0E0F
       │  ├─ ScrollLayout OptionScroll  fills it (the pad's up/down keep the selected row in view)
       │  │  └─ SizeLayout (OptionWidth) 1,104 wide
       │  │     └─ VerticalLayout Options   the option rows
       │  └─ Text  OptionsEmpty  centred, regular 24, dim, "Nothing you can do here right now."
-      ├─ Text   ObjectStatus   at (48, 572), 1,104 wide, regular 22, #F4F0E6, wraps: what the last pick said, or a locked row's reason (hidden when empty)
       ├─ HorizontalLayout Prompts  at (48, 622): the footer prompts the script makes (its first, A, dims on a locked row)
       └─ Text   PromptsText    at (48, 628), mono bold 18, dim: the static footer, hidden once prompts are made
 ```
@@ -976,6 +1011,66 @@ Button OptionRow (root, 4 below it)
 ```
 
 Five options show at once; more scroll (a keypad's twelve keys).
+
+## Duty table: `RZ_DutyMenu.layout` and `RZ_DutyCard.layout`
+
+The duties' sorting table (`RZ_DutyMenu` preset; behaviour in
+[UI.md](../docs/UI.md#the-duty-table)), in the power panel's style. Written as text by a small
+generator, with the mockup (`Mockups/duty_table.html`, preview `Previews/duty_table.png`) drawn to
+the same numbers. Positions inside `DutyPanel` are from its top left.
+
+```
+Frame (root, full screen)
+├─ Image   Dim             full screen, #08090A at 60%
+└─ Frame   DutyPanel       1,400 × 860, centred
+   ├─ Image  (DutyBg)       #0F1113
+   ├─ Image  (DutyAccent)   full width × 5, top edge, amber
+   ├─ Text   DutyTitle      at (48, 30), 1,200 wide, condensed bold 34, bone: the duty ("Laying Out")
+   ├─ Text   DutySub        at (48, 76), regular 22, dim: where ("Levie")
+   ├─ Button CloseButton    44 × 44 at (1,308, 30), "X" in amber
+   ├─ Image  (HeadRule)     at (48, 116), 1,304 × 2, amber
+   ├─ Text   Legend0        at (48, 130), 424 × 32, bold 24, bone: "A BITE: BURN"
+   ├─ Text   Legend1        at (488, 130), the same: "PAPERS DON'T MATCH: HOLD"
+   ├─ Text   Legend2        at (928, 130), the same: "ALL CLEAR: BURY"
+   ├─ Text   LooksText      at (48, 172), bold 24, amber (red at none): "LOOKS LEFT: 6"; hidden once judged
+   ├─ HorizontalLayout Cards  at (48, 214), 1,304 × 500: the cards are created here
+   ├─ Text   DutyStatus     at (48, 728), 940 × 64, condensed 22, wraps: the hint, the last move, the result
+   ├─ Button DoneButton     344 × 60 at (1,008, 730)
+   │  └─ Overlay (DoneButtonBox)
+   │     ├─ Image (DoneBg)   #1B1F22
+   │     ├─ Image DoneLit    #2A2E31, shown when selected
+   │     ├─ Image DoneBar    5 × 60, left edge, amber, shown when selected
+   │     └─ Text  DoneText   bold 24, centred: "Hand it in" (dark until every card has a verdict), then "Close"
+   ├─ HorizontalLayout Prompts  at (48, 808), 900 × 40: the input prompts are created here
+   └─ Text   PromptsText    at (48, 814), bold 18, dim: the static footer, hidden once prompts are made
+```
+
+`RZ_DutyCard.layout` (**UI > Duty card layout**), one subject, created into `Cards`. `N` is 0, 1, 2:
+
+```
+SizeLayout DutyCard (root, 248 × 500, 14 right of it)
+└─ Frame (CardFrame)
+   ├─ Image  (CardBg)       #1B1F22
+   ├─ Image  CardBar        full width × 5, top edge: amber, or the result's colour once judged
+   ├─ Text   CardTitle      at (14, 16), bold 24, bone: "TAG 114"
+   ├─ Text   CardTell       at (14, 50), 220 × 58, condensed 20, dim, wraps: the tell
+   ├─ Button SignN          228 × 54 at (10, 116 + 60 × N): a click turns it over
+   │  └─ Overlay (SignNBox)
+   │     ├─ Image (SignBgN)   #08090A
+   │     ├─ Image SignLitN    #2A2E31, shown when selected
+   │     ├─ Image SignBarN    5 × 54, left edge, amber, shown when selected
+   │     ├─ Text  SignNameN   left, bold 20, dim: "ARMS"
+   │     └─ Text  SignWordN   right, bold 22: "?" dim, then its word in green, amber or red
+   ├─ Image  (CardRule)     at (14, 302), 220 × 2
+   ├─ Button VerdictN       228 × 44 at (10, 314 + 50 × N): a click gives it
+   │  └─ Overlay (VerdictNBox)
+   │     ├─ Image (VerdictBgN)  #08090A
+   │     ├─ Image VerdictLitN   #2A2E31, shown when selected
+   │     ├─ Image VerdictOnN    amber, shown on the verdict given
+   │     ├─ Image VerdictBarN   5 × 44, left edge, bone, shown when selected
+   │     └─ Text  VerdictTextN  bold 22, centred: "BURY" (dark on the amber one)
+   └─ Text   CardResult     at (14, 466), bold 20, centred, shown once judged: "RIGHT", "TOO CAREFUL", "MISSED", "LET THROUGH"
+```
 
 ## Power panel: `RZ_PowerMenu.layout` and `RZ_PowerBreaker.layout`
 

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ReforgerZ radio screen: the tiles</title>
+<link rel="stylesheet" href="common/zone.css">
+<script src="common/zone.js"></script>
+<style>
+  :root { --deep: #0f1113; --spoken: #F4F0E6; --tile: #1b1f22; --lit: #262b2f; --ring: #6b5222; }
+  body { font-family: Inter, 'Segoe UI', sans-serif; }
+  .worlddim { position: absolute; inset: 0; z-index: 1; background: rgba(8,9,10,.6); }
+  .callout { position: absolute; font: 700 14px/1.4 'JetBrains Mono', monospace; letter-spacing: .12em; color: var(--haven); z-index: 3; }
+
+  /* the panel: 1400 x 900, centred (RZ_RadioMenu.layout's RadioPanel) */
+  .p { position: absolute; left: 260px; top: 90px; width: 1400px; height: 900px; background: var(--deep); border-top: 5px solid var(--haven); box-shadow: 0 18px 60px rgba(0,0,0,.6); z-index: 2; }
+  .title { position: absolute; left: 48px; top: 28px; font: 700 34px/1.2 Inter; color: var(--bone); }
+  .sub { position: absolute; left: 48px; top: 74px; font: 400 22px/1.3 Inter; color: var(--dim); }
+  .x { position: absolute; left: 1308px; top: 30px; width: 44px; height: 44px; background: var(--tile); color: var(--haven); display: flex; align-items: center; justify-content: center; font: 700 22px 'JetBrains Mono', monospace; }
+  .rule { position: absolute; left: 48px; top: 114px; width: 1304px; height: 2px; background: var(--haven); }
+
+  /* the tiles: Cell0-Cell11, 317 x 92, four to a row */
+  .t { position: absolute; width: 317px; height: 92px; background: var(--tile); border-bottom: 4px solid var(--acc); box-sizing: border-box; }
+  .t b { position: absolute; left: 16px; top: 9px; width: 245px; font: 400 22px/1.15 Inter; color: var(--bone); }
+  .t i { position: absolute; right: 14px; top: 12px; width: 30px; height: 30px; color: var(--acc); }
+  .t .st { position: absolute; left: 16px; bottom: 8px; font: 700 18px/1 'JetBrains Mono', monospace; letter-spacing: .06em; color: var(--acc); }
+  .t .nt { position: absolute; right: 14px; bottom: 8px; font: 400 18px/1 Inter; color: var(--dim); }
+  .t.on { background: var(--lit); outline: 3px solid var(--haven); outline-offset: -3px; }
+  .t.on b { color: var(--spoken); }
+  .t.off { opacity: .45; }
+
+  /* the log: Log0-Log3, 84 high, a page of four */
+  .lab { position: absolute; left: 48px; top: 442px; font: 700 18px/1.4 'JetBrains Mono', monospace; letter-spacing: .12em; color: var(--dim); }
+  .ln { position: absolute; left: 48px; width: 1304px; height: 84px; background: #0c0e0f; border-left: 4px solid var(--acc); box-sizing: border-box; }
+  .ln .tm { position: absolute; left: 14px; top: 8px; font: 700 18px/1.3 'JetBrains Mono', monospace; color: var(--dim); }
+  .ln i { position: absolute; left: 90px; top: 6px; width: 26px; height: 26px; color: var(--acc); }
+  .ln .hd { position: absolute; left: 128px; top: 6px; font: 700 18px/1.3 'JetBrains Mono', monospace; letter-spacing: .06em; color: var(--acc); }
+  .ln .tx { position: absolute; left: 128px; top: 30px; width: 1156px; font: 400 22px/1.2 Inter; color: var(--spoken); }
+
+  .ft { position: absolute; left: 48px; top: 838px; display: flex; gap: 26px; align-items: center; font: 500 19px 'JetBrains Mono', monospace; color: var(--dim); }
+  .k { display: inline-block; padding: 4px 12px; margin-right: 10px; border: 2px solid var(--ring); border-radius: 18px; color: var(--haven); font: 700 15px 'JetBrains Mono', monospace; }
+  .pg { position: absolute; left: 1128px; top: 844px; width: 176px; text-align: center; font: 700 18px/1.6 'JetBrains Mono', monospace; letter-spacing: .08em; color: var(--dim); }
+  .pb { position: absolute; top: 836px; width: 44px; height: 40px; background: var(--tile); color: var(--haven); display: flex; align-items: center; justify-content: center; font: 700 22px 'JetBrains Mono', monospace; }
+</style>
+</head>
+<body>
+<canvas class="scene" data-scene="dusk"></canvas>
+<div class="worlddim"></div>
+<div class="layer">
+  <div class="callout" style="left:260px;top:54px">RADIO SCREEN · EVERY CHANNEL A TILE, ALL ON SCREEN · THE PICKED ONE'S LINES BELOW, A PAGE AT A TIME</div>
+  <div class="callout" style="left:1690px;top:230px;width:210px">◄ NINE CHANNELS AT MOST: THREE ROWS OF FOUR, NOTHING TO SCROLL</div>
+  <div class="callout" style="left:1690px;top:580px;width:210px">◄ FOUR LINES A PAGE. LB NEWER, RB OLDER</div>
+
+  <div class="p">
+    <div class="title">Radio</div>
+    <div class="sub">Outskirts 75-43. The batteries are weak: with power it would pull in more.</div>
+    <div class="x">X</div>
+    <div class="rule"></div>
+
+    <div class="t" style="left:48px;top:130px;--acc:var(--bone)"><b>Everything on the radio</b><i data-i="marker_radio"></i><span class="st">12 HEARD</span><span class="nt">last 17:12</span></div>
+    <div class="t" style="left:377px;top:130px;--acc:var(--hazard)"><b>Government broadcast</b><i data-i="status_broadcast"></i><span class="st">ON AIR</span><span class="nt">last 17:00</span></div>
+    <div class="t on" style="left:706px;top:130px;--acc:var(--haven)"><b>Open channel: Haven</b><i data-i="faction_haven"></i><span class="st">ON AIR</span><span class="nt">last 17:12</span></div>
+    <div class="t" style="left:1035px;top:130px;--acc:var(--bastion)"><b>Open channel: Bastion</b><i data-i="faction_bastion"></i><span class="st">ON AIR</span><span class="nt">last 17:10</span></div>
+
+    <div class="t" style="left:48px;top:232px;--acc:var(--redhand)"><b>Open channel: Red Hand</b><i data-i="faction_redhand"></i><span class="st">QUIET</span><span class="nt">last 17:02</span></div>
+    <div class="t off" style="left:377px;top:232px;--acc:var(--halcyon)"><b>Open channel: Halcyon</b><i data-i="faction_halcyon"></i><span class="st">TOO FAINT</span><span class="nt">needs power</span></div>
+    <div class="t" style="left:706px;top:232px;--acc:var(--bastion)"><b>Bastion command net</b><i data-i="status_secure_radio"></i><span class="st">CRACKED: 12 MIN</span><span class="nt">last 16:31</span></div>
+    <div class="t off" style="left:1035px;top:232px;--acc:var(--redhand)"><b>The Red Hand boss's channel</b><i data-i="status_door_locked"></i><span class="st">SCRAMBLED</span><span class="nt">operator only</span></div>
+
+    <div class="t off" style="left:48px;top:334px;--acc:var(--halcyon)"><b>Halcyon's lab channel</b><i data-i="status_door_locked"></i><span class="st">SCRAMBLED</span><span class="nt">operator only</span></div>
+
+    <div class="lab">OPEN CHANNEL: HAVEN</div>
+    <div class="ln" style="top:474px;--acc:var(--haven)"><span class="tm">NOW</span><i data-i="faction_haven"></i><span class="hd">ON THE AIR NOW</span><span class="tx">Night watch at Bénac starts at 17:30. Bring a coat, it gets cold on the roof. Doors are open. Bring yourself.</span></div>
+    <div class="ln" style="top:562px;--acc:var(--haven)"><span class="tm">16:40</span><i data-i="faction_haven"></i><span class="hd">OPEN CHANNEL - HAVEN  ·  A tired woman in Morton</span><span class="tx">Whoever took the ladder from the school, bring it back. We know it was you, Tomas.</span></div>
+    <div class="ln" style="top:650px;--acc:var(--haven)"><span class="tm">15:55</span><i data-i="faction_haven"></i><span class="hd">OPEN CHANNEL - HAVEN  ·  Ines Calder, council head in Morton</span><span class="tx">Soup at the church hall till it's gone. Children first, then whoever carried water. If you can hear this and you're on the road, the east gate is the one that opens.</span></div>
+    <div class="ln" style="top:738px;--acc:var(--haven)"><span class="tm">14:20</span><i data-i="faction_haven"></i><span class="hd">OPEN CHANNEL - HAVEN</span><span class="tx">Two came in from the east road. Both clean. One is a nurse, thank God.</span></div>
+
+    <div class="ft"><span><span class="k">D-pad</span>Channel</span><span><span class="k">LB</span>Newer</span><span><span class="k">RB</span>Older</span><span><span class="k">B</span>Close</span></div>
+    <div class="pb" style="left:1080px">&lt;</div>
+    <div class="pg">PAGE 1 / 3</div>
+    <div class="pb" style="left:1308px">&gt;</div>
+  </div>
+</div>
+</body>
+</html>

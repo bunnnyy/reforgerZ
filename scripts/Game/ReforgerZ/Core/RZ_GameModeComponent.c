@@ -63,6 +63,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Radio station: a broadcast point players can take over to send preset messages (console prefab, cooldown; cosmetic only, docs/DESIGN.md, Time and environment)", category: "ReforgerZ|World")]
 	protected ref RZ_RadioStationSettings m_RadioStationSettings;
 
+	[Attribute(desc: "Wildlife: deer herds out in the country near players, from the Workshop mod WildlifeExpansion (doe and buck prefabs, caps, meat; docs/DESIGN.md, Wildlife). Off while the doe prefab is empty", category: "ReforgerZ|World")]
+	protected ref RZ_WildlifeSettings m_WildlifeSettings;
+
+	[Attribute(desc: "Placed things: what players build (a fireplace, a tent a mod brings) is cleared after a few real days unused (prefab keywords, days, radii, cap; docs/DESIGN.md, Things players build)", category: "ReforgerZ|World")]
+	protected ref RZ_PlacedSettings m_PlacedSettings;
+
 	[Attribute(desc: "The Long Table: some seasons, one small family in one farmhouse in an empty part of the map, who are kind to strangers and eat people; its chance, hunger, takings, the host on the road, the guest rule, trade keywords (docs/DESIGN.md, The Long Table)", category: "ReforgerZ|World")]
 	protected ref RZ_LongTableSettings m_LongTableSettings;
 
@@ -460,6 +466,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_TownMemory m_TownMemory;
 	protected ref RZ_Environment m_Environment;
 	protected ref RZ_PowerGrid m_PowerGrid;
+	protected ref RZ_Wildlife m_Wildlife;
+	protected ref RZ_PlacedThings m_PlacedThings;
 	protected ref RZ_RadioStation m_RadioStation;
 	protected ref RZ_StoryArcs m_StoryArcs;
 	protected ref RZ_Questlines m_Questlines;
@@ -569,6 +577,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (m_PowerGrid && m_PowerGrid.GetPanel())
 			m_PowerGrid.GetPanel().Forget(playerId);
 
+		if (m_Wildlife)
+			m_Wildlife.Forget(playerId);
+
 		if (m_Dialogue)
 			m_Dialogue.Forget(playerId);
 
@@ -637,6 +648,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (!m_RadioStationSettings)
 			m_RadioStationSettings = RZ_RadioStationSettings.Cast(RZ_Util.NewWithDefaults("RZ_RadioStationSettings"));
+
+		if (!m_WildlifeSettings)
+			m_WildlifeSettings = RZ_WildlifeSettings.Cast(RZ_Util.NewWithDefaults("RZ_WildlifeSettings"));
+
+		if (!m_PlacedSettings)
+			m_PlacedSettings = RZ_PlacedSettings.Cast(RZ_Util.NewWithDefaults("RZ_PlacedSettings"));
 
 		if (!m_LongTableSettings)
 			m_LongTableSettings = RZ_LongTableSettings.Cast(RZ_Util.NewWithDefaults("RZ_LongTableSettings"));
@@ -765,6 +782,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Environment = new RZ_Environment(this, m_EnvironmentSettings);
 		m_PowerGrid = new RZ_PowerGrid(this, m_PowerSettings);
 		m_RadioStation = new RZ_RadioStation(this, m_RadioStationSettings);
+		m_Wildlife = new RZ_Wildlife(this, m_WildlifeSettings);
+		m_PlacedThings = new RZ_PlacedThings(this, m_PlacedSettings);
 		m_StoryArcs = new RZ_StoryArcs(this, m_StorySettings);
 		m_Questlines = new RZ_Questlines(this, m_QuestlineSettings);
 		// The cure finale's controller, before the cure (its Restore reads whether the stand waits)
@@ -858,6 +877,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Perimeter.Init();
 		m_TownMemory.Setup();
 		m_PowerGrid.Setup();
+		m_Wildlife.Setup();
+		m_PlacedThings.Setup();
 		m_RadioStation.Setup();
 
 		SetupLab();
@@ -949,6 +970,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_TownMemory.Tick(dt);
 		m_Environment.Tick(dt, ids, players);
 		m_PowerGrid.Tick(dt, ids, players);
+		m_Wildlife.Tick(dt, ids, players);
+		m_PlacedThings.Tick(dt, ids, players);
 		m_RadioStation.Tick(dt, ids, players);
 		m_Interactions.Tick(dt, ids, players);
 		m_Missions.Tick(dt, ids, players);
@@ -1032,6 +1055,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_TownMemory GetTownMemory() { return m_TownMemory; }
 	RZ_Environment GetEnvironment() { return m_Environment; }
 	RZ_PowerGrid GetPowerGrid() { return m_PowerGrid; }
+	RZ_Wildlife GetWildlife() { return m_Wildlife; }
+	RZ_PlacedThings GetPlacedThings() { return m_PlacedThings; }
+	//! On every machine: the client's own deer check reads the prefabs from it (null where none is set).
+	RZ_WildlifeSettings GetWildlifeSettings() { return m_WildlifeSettings; }
 	RZ_RadioStation GetRadioStation() { return m_RadioStation; }
 	RZ_StoryArcs GetStoryArcs() { return m_StoryArcs; }
 	RZ_Questlines GetQuestlines() { return m_Questlines; }
@@ -1890,6 +1917,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!suppressed)
 			m_Tribes.OnShot(shooter.GetOrigin());
 		m_ScreenGuard.OnShot(playerID);
+		// A deer this player reports in the next moments is theirs (docs/DESIGN.md, Wildlife)
+		m_Wildlife.OnShot(playerID);
 
 		// House rules and wanderers who were shot at
 		m_Safehouses.OnPlayerShot(playerID, shooter.GetOrigin());
@@ -1937,6 +1966,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// Work sites: who is at which, their props near players
 		if (m_Shared)
 			m_Shared.SecondTick(ids, players);
+
+		// A duty's table opens when its work site has been held
+		if (m_Errands)
+			m_Errands.SecondTick(ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3111,6 +3144,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_LongTable.Restore(data.longTable);
 		m_TownMemory.Restore(data.towns);
 		m_PowerGrid.Restore(data.power);
+		m_PlacedThings.Restore(data.placed);
 		m_RadioStation.Restore(data.radio);
 		m_Facts.Restore(data.facts);
 		m_Shared.Restore(data.shared);
@@ -3199,6 +3233,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_PowerGrid && m_PowerGrid.IsActive())
 			data.power = m_PowerGrid.Save();
+
+		if (m_PlacedThings && m_PlacedThings.IsOn())
+			data.placed = m_PlacedThings.Save();
 
 		if (m_RadioStation && m_RadioStation.IsActive())
 			data.radio = m_RadioStation.Save();

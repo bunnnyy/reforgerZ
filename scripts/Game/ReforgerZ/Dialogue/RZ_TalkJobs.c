@@ -21,6 +21,33 @@ class RZ_TalkJobs
 		return "[" + kind + "]";
 	}
 
+	// Why a giver has no job for you now (the locked row's reason)
+	static const string WHY_NOTHING = "Nothing today. Ask again later";
+	static const string WHY_TAKEN = "You've taken all they have. Check your Quests";
+
+	//------------------------------------------------------------------------------------------------
+	//! What a giver says in place of their pitch when they have no job you can take now (a
+	//! conversation's node whose job choice is locked, RZ_DialogueTrees.DryPitch): the reason as
+	//! their own words, and any other reason after it as a note.
+	static void NothingSaid(string why, notnull array<string> lines)
+	{
+		if (why == WHY_NOTHING)
+		{
+			lines.Insert("Nothing I can give you today. Ask me again later.");
+			return;
+		}
+
+		if (why == WHY_TAKEN)
+		{
+			lines.Insert("You've got everything I had. Finish what you took first.");
+			return;
+		}
+
+		lines.Insert("There's nothing I can hand you right now.");
+		if (!why.IsEmpty())
+			lines.Insert("(" + why + ".)");
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! A job's row: its title, tagged by its kind; locked with what it needs when you can't take it.
 	static RZ_TalkReply Row(int id, string kind, string title, string need)
@@ -90,6 +117,15 @@ class RZ_TalkJobs
 		array<RZ_Mission> openHere = {};
 		array<RZ_Mission> lockedHere = {};
 		missions.JobsAt(playerId, faction, user, openHere, lockedHere);
+		// Ask and you get: nothing they can take, so the giver makes a contract of their own now
+		// (RZ_MissionManager.MakeFor: one they qualify for, at most once per ask gap)
+		if (open.IsEmpty() && openHere.IsEmpty() && missions.MakeFor(playerId, faction))
+		{
+			openHere.Clear();
+			lockedHere.Clear();
+			missions.JobsAt(playerId, faction, user, openHere, lockedHere);
+		}
+
 		open.InsertAll(openHere);
 		locked.InsertAll(lockedHere);
 
@@ -124,10 +160,10 @@ class RZ_TalkJobs
 		foreach (RZ_Mission m : gm.GetMissions().GetActive())
 		{
 			if (m.m_bContract && m.m_eState == RZ_EMissionState.ACTIVE && m.m_Req.m_eGiver == faction && m.IsOfferedTo(gm, playerId))
-				return "You've taken all they have. Check your Quests";
+				return WHY_TAKEN;
 		}
 
-		return "Nothing today. Ask again later";
+		return WHY_NOTHING;
 	}
 
 	//------------------------------------------------------------------------------------------------

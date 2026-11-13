@@ -71,17 +71,53 @@ GenericEntity {
    coords 1.5 0 1.6
    angles 0 0 0
   }
-  GenericEntity {
+  GenericEntity : "{C9CFDED29542A968}Prefabs/Props/Military/Furniture/CotMilitary_US_01.et" {
    ID "A77038E0DC53C60B"
    components {
-    SCR_AISmartActionSentinelComponent "{03115B46CA8FF6FD}" {
+    Hierarchy "{03115B46CA8FF6FD}" {
+    }
+   }
+   coords 2.6 0 -1.9
+   angles 0 4 0
+  }
+  GenericEntity : "{2B6508FE121FCAC9}Prefabs/Props/Medical/InfusionStand_01/InfusionStand_01.et" {
+   ID "8916916C8ACFCBD7"
+   components {
+    Hierarchy "{DC33F4859E6D9BD3}" {
+    }
+   }
+   coords 4.0 0 -1.3
+   angles 0 0 0
+  }
+  GenericEntity : "{F06EAC6F2F97767F}Prefabs/Props/Medical/MedicalScreen_01.et" {
+   ID "03EF9FE97784BA0A"
+   components {
+    Hierarchy "{7D3716038E9D84D4}" {
+    }
+   }
+   coords 2.6 0 -2.9
+   angles 0 2 0
+  }
+  GenericEntity : "{27EA47994266D9DD}Prefabs/Props/Services/Healthcare/BinMedical_01.et" {
+   ID "96F4D4FF650858DF"
+   components {
+    Hierarchy "{8E620C8E5AFE1D14}" {
+    }
+   }
+   coords 3.6 0 0.9
+   angles 0 0 0
+  }
+  GenericEntity {
+   ID "6116B18729784759"
+   components {
+    SCR_AISmartActionSentinelComponent "{8E5223934816CA4A}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition 2.3 1.6 0.7
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{8916916C8ACFCBD7}" {
+    Hierarchy "{25747A168BFC3A37}" {
     }
    }
    coords 1.5 0 0.7

@@ -4799,6 +4799,60 @@
    "notes": ""
   },
   {
+   "id": "WildlifeDoe",
+   "kind": "external",
+   "system": "Power grid and radio station",
+   "path": "",
+   "basePrefab": "{3EE72002BECFD29C}Prefabs/RedStagDoe.et",
+   "baseFind": "",
+   "baseHint": "WildlifeExpansion's doe (Workshop 68B3771125D0A209)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_WildlifeSettings.m_sDoePrefab"],
+   "listSlot": false,
+   "slotLabel": "World > Wildlife > Doe",
+   "required": false,
+   "minimum": false,
+   "use": "the does of a deer herd put out near players in the country (empty = no wildlife at all)",
+   "notes": ""
+  },
+  {
+   "id": "WildlifeBuck",
+   "kind": "external",
+   "system": "Power grid and radio station",
+   "path": "",
+   "basePrefab": "{581B5CBCADF6ECFA}Prefabs/RedStag_v2.et",
+   "baseFind": "",
+   "baseHint": "WildlifeExpansion's buck",
+   "components": [],
+   "actions": [],
+   "slots": ["m_WildlifeSettings.m_sBuckPrefab"],
+   "listSlot": false,
+   "slotLabel": "World > Wildlife > Buck",
+   "required": false,
+   "minimum": false,
+   "use": "the buck that stands off from most herds (empty = does only)",
+   "notes": ""
+  },
+  {
+   "id": "WildlifeMeat",
+   "kind": "external",
+   "system": "Power grid and radio station",
+   "path": "",
+   "basePrefab": "{128A19AA9F731095}Prefabs/Items/Food/MeatLeg_01.et",
+   "baseFind": "",
+   "baseHint": "the base game's raw meat leg (the attribute's default; Metabolism makes it food)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_WildlifeSettings.m_sMeatPrefab"],
+   "listSlot": false,
+   "slotLabel": "World > Wildlife > Meat",
+   "required": false,
+   "minimum": false,
+   "use": "what a shot deer leaves, one or two beside it; the stove's Cook meat takes it (empty = no meat)",
+   "notes": ""
+  },
+  {
    "id": "InteractionSpot",
    "kind": "create",
    "system": "World interactions",
@@ -5496,6 +5550,28 @@
    "notes": ""
   },
   {
+   "id": "LootExtras",
+   "kind": "manual",
+   "system": "Hand-set list entries",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "items of the base game and the Workshop dependencies",
+   "components": [],
+   "actions": [],
+   "slots": [
+    "m_SearchSettings.m_aExtras[].m_aCommon",
+    "m_SearchSettings.m_aExtras[].m_aRare",
+    "m_SearchSettings.m_aExtras[].m_aElectronics"
+   ],
+   "listSlot": true,
+   "slotLabel": "Interactions > Search > Extra finds (each entry's three lists)",
+   "required": false,
+   "minimum": false,
+   "use": "items added to one building type's table on top of the pool and the built-in items (set: 45 items of the base game and the stack's mods; a list set by hand in Loot tables gets none)",
+   "notes": ""
+  },
+  {
    "id": "ExtraRecipes",
    "kind": "manual",
    "system": "Hand-set list entries",
@@ -5965,7 +6041,7 @@
    "slotLabel": "UI > Radio channel layout",
    "required": false,
    "minimum": false,
-   "use": "the radio screen's channel rows (empty = no View radio). Needs the RZ_RadioMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI)",
+   "use": "the radio screen's channel tiles (empty = no View radio). Needs the RZ_RadioMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI)",
    "notes": ""
   },
   {
@@ -6002,6 +6078,24 @@
    "required": false,
    "minimum": false,
    "use": "the power panel's breakers: the power station's control gets one prompt, Open the panel, and the restore happens in the panel screen (empty = the control's old world prompts). Needs the RZ_PowerMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI)",
+   "notes": ""
+  },
+  {
+   "id": "UIDutyCardLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the DutyCard layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sDutyCardLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Duty card layout",
+   "required": false,
+   "minimum": false,
+   "use": "the duty table's cards: a duty that sorts things (the dead, the line at the gate, the sample trays) opens the table screen when its work site is held (empty = no screen: the duty is its hold, judged the careful way for half pay). Set by the attribute's default (RZ_DutyCard.layout). Needs the RZ_DutyMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI)",
    "notes": ""
   },
   {
@@ -6568,6 +6662,18 @@
   },
   {
    "category": "World",
+   "object": "Wildlife",
+   "field": "m_WildlifeSettings",
+   "covers": "**Doe** and **Buck** prefabs (WildlifeExpansion's; no doe = off), **Meat** (the raw meat leg), herds on the server (2), does a herd (up to 3), buck chance (0.7), chance a minute for a player in the country (0.25; ×0.5 at night), minutes before the same player gets another (20), put out 150 to 300 m away and put away past 450 m, margin from towns and faction places (150 m), meat a deer (1 to 2), shot range (260 m), deer a minute that leave meat (4) ([DESIGN.md](DESIGN.md#wildlife))"
+  },
+  {
+   "category": "World",
+   "object": "Placed things",
+   "field": "m_PlacedSettings",
+   "covers": "**Enabled** (on), **Placed prefabs** (keywords in the prefab names of what players build: `fm_campfire`, the fireplace of Make Fire Campfire & Wood; a tent mod's own names go here), **Unused days** (3 real days; fractions work for a test), use radius (15 m), clear distance (never cleared with a player within 100 m), most tracked (40) ([DESIGN.md](DESIGN.md#things-players-build))"
+  },
+  {
+   "category": "World",
    "object": "Long Table",
    "field": "m_LongTableSettings",
    "covers": "**Enabled**, **Chance** a season has one (0.75), hunger per hour (6), take hours (3, ÷ season speed), body radius (300 m), the host on the road (on), the **guest rule** (on), **trade keywords** (ammunition and medicine) ([DESIGN.md](DESIGN.md#the-long-table))"
@@ -6765,19 +6871,19 @@
    "category": "Interactions",
    "object": "Search",
    "field": "m_SearchSettings",
-   "covers": "**Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15)"
+   "covers": "**Loot pool**, loot tables, **Extra finds** (items added to one building type's table), chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15)"
   },
   {
    "category": "Interactions",
    "object": "Loot",
    "field": "m_LootSettings",
-   "covers": "**Loose loot** (on; off = nothing lies in houses), put out within 35 m, put away past 60 m (after a minute), **refill** (60 min ÷ the town's loot level), at most 220 items lying on the server, items at most per building (house 2, shop and farm 3, pharmacy, police and garage 4; locked +1), town loot per item taken (0.015) ([DESIGN.md](DESIGN.md#loot-in-houses))"
+   "covers": "**Loose loot** (on; off = nothing lies in houses), put out within 55 m (6 buildings a tick), put away past 80 m (after a minute), never rolled fresh with a player within 20 m, **refill** (45 min ÷ the town's loot level), at most 500 items lying on the server, slots per building (house 6, shop and farm 9, pharmacy, police and garage 10; locked +1), slot chance 0.75, 2 sure items, town loot per item taken (0.01), kept clear 20 m past a faction's place, the loot log (on) ([DESIGN.md](DESIGN.md#loot-in-houses))"
   },
   {
    "category": "Interactions",
    "object": "Cars",
    "field": "m_CarSettings",
-   "covers": "Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), **Fuel pump station** (empty = the hand pump: its timings, heat and cooldown), pump litres (60, full again after the cooldown), a car's fuel from a vanilla jerrycan (5 litres; the can is kept), **Wreck boot prefab** (empty = wrecks hold nothing), wreck part chance (0.3), wreck return (120 min), Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix), [Fuel](DESIGN.md#fuel), [Car wrecks](DESIGN.md#car-wrecks-one-boot-to-open))"
+   "covers": "Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), **Wire cutting** (on: the repair screen's hotwire is the loom, a wire to follow; Loom turns 3, Loom strikes 2, Wrong cut heat share 0.5), keys (0.2 a car, 0.1 a search), **Fuel pump station** (empty = the hand pump: its timings, heat and cooldown), pump litres (60, full again after the cooldown), a car's fuel from a vanilla jerrycan (5 litres; the can is kept), **Wreck boot prefab** (empty = wrecks hold nothing), wreck part chance (0.3), wreck return (120 min), Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix), [Fuel](DESIGN.md#fuel), [Car wrecks](DESIGN.md#car-wrecks-one-boot-to-open))"
   },
   {
    "category": "Interactions",
@@ -6859,7 +6965,7 @@
    "category": "Shared",
    "object": "Shared",
    "field": "m_SharedSettings",
-   "covers": "**Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine))"
+   "covers": "**Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits), **Work sites** (on, reach 3 m, time scale 1, 40 sites at once; while holding: **Lock movement** on, **Hands animation** on, **Dig with the tool** on) ([DESIGN.md](DESIGN.md#the-shared-engine))"
   },
   {
    "category": "Map",
@@ -6928,6 +7034,43 @@
    "label": "Radio station",
    "cls": "RZ_RadioStationSettings",
    "defaults": {"m_bEnabled": "1", "m_fTakeoverSeconds": "30", "m_fCooldownMinutes": "10"}
+  },
+  {
+   "field": "m_WildlifeSettings",
+   "category": "World",
+   "label": "Wildlife",
+   "cls": "RZ_WildlifeSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_iMaxHerds": "2",
+    "m_iMaxDoes": "3",
+    "m_fBuckChance": "0.7",
+    "m_fChancePerMinute": "0.25",
+    "m_fNightMult": "0.5",
+    "m_fPlayerMinutes": "20",
+    "m_fNearMin": "150",
+    "m_fNearMax": "300",
+    "m_fAwayRadius": "450",
+    "m_fTownMargin": "150",
+    "m_iMeatMin": "1",
+    "m_iMeatMax": "2",
+    "m_fShotRange": "260",
+    "m_iMeatPerMinute": "4"
+   }
+  },
+  {
+   "field": "m_PlacedSettings",
+   "category": "World",
+   "label": "Placed things",
+   "cls": "RZ_PlacedSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_sPrefabWords": "fm_campfire",
+    "m_fUnusedDays": "3",
+    "m_fUseRadius": "15",
+    "m_fClearDistance": "100",
+    "m_iMaxTracked": "40"
+   }
   },
   {
    "field": "m_LongTableSettings",
@@ -7328,6 +7471,8 @@
     "m_iAmendsCap": "8",
     "m_iFavorPerHour": "40",
     "m_fLapseMinutes": "45",
+    "m_bDuties": "1",
+    "m_fDutyGapMinutes": "20",
     "m_fFaultChance": "0.25",
     "m_bCallOut": "1",
     "m_bWandererAsks": "1",
@@ -7663,9 +7808,9 @@
     "m_fRefillMinutes": "45",
     "m_iMaxLying": "500",
     "m_iPlacePerTick": "6",
-    "m_iMaxHouse": "5",
-    "m_iMaxShop": "7",
-    "m_iMaxSpecial": "8",
+    "m_iMaxHouse": "6",
+    "m_iMaxShop": "9",
+    "m_iMaxSpecial": "10",
     "m_fSlotChance": "0.75",
     "m_iSureItems": "2",
     "m_fTownLootPerItem": "0.01",
@@ -7699,6 +7844,10 @@
     "m_fHotwireHeat": "20",
     "m_fHotwireFailChance": "0.35",
     "m_fMechanicHotwireFailChance": "0.1",
+    "m_bWireCutting": "1",
+    "m_iLoomStrikes": "2",
+    "m_fWrongCutHeatShare": "0.5",
+    "m_iLoomTurns": "3",
     "m_fStartHeat": "15",
     "m_fKeysChance": "0.2",
     "m_fKeyFindChance": "0.1",

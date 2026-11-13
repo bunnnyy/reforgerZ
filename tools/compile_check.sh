@@ -54,13 +54,14 @@ fi
 # The test addon: same layout as the repo (the engine wants lowercase 'scripts' on Linux).
 rm -rf "$ADDONS/ReforgerZ" && mkdir -p "$ADDONS/ReforgerZ"
 cp "$ROOT/addon.gproj" "$ADDONS/ReforgerZ/"
-# Special Zombies ships its scripts in "Scripts/" (capital S). On the Linux server, with it loaded, the
-# Game module never finds our lowercase "scripts/" and compiles nothing of ReforgerZ, without an error.
-# The check drops it from the throwaway copy (ReforgerZ never references it by name).
-sed -i 's/ *"69BD721866937F85"//' "$ADDONS/ReforgerZ/addon.gproj"
-# On Linux, any other dependency that isn't in EXTRA_ADDONS_DIR is left out too (with a line for each),
-# so the check still compiles ReforgerZ; Bacon Zombies must be there (tools/strip_missing_deps.sh).
+# Special Zombies and WildlifeExpansion ship their scripts in "Scripts/" (capital S). On the Linux
+# server, with one of them loaded, the Game module never finds our lowercase "scripts/" and compiles
+# nothing of ReforgerZ, without an error. The check drops them from the throwaway copy (ReforgerZ
+# never references them by name); the list is in tools/strip_missing_deps.sh.
 . "$ROOT/tools/strip_missing_deps.sh"
+rz_strip_capital_scripts "$ADDONS/ReforgerZ/addon.gproj"
+# On Linux, any other dependency that isn't in EXTRA_ADDONS_DIR is left out too (with a line for each),
+# so the check still compiles ReforgerZ; Bacon Zombies must be there.
 rz_strip_missing_deps "$ADDONS/ReforgerZ/addon.gproj" "$SERVER" "${EXTRA_ADDONS_DIR:-}" || exit 1
 for d in scripts Configs UI Prefabs Worlds Missions Layouts; do
 	[ -d "$ROOT/$d" ] && cp -r "$ROOT/$d" "$ADDONS/ReforgerZ/"
