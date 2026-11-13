@@ -122,8 +122,9 @@ and one way to end it: **research the cure.**
   the line at the gate and the dead (sorted in person: go to each, look where you choose with fewer
   looks than places, carry it to the pyre, the table or the grave, and a bitten one let through
   costs you), a watch, a patrol with their people, for the Known a hunt with the hunter, the
-  stores and Halcyon's sample bench, and for the Trusted the lock-up, the names of the dead, the
-  trial list and a cull. Each faction has five of its own besides (the Haven's garden and swap
+  stores and Halcyon's sample bench, and for the Trusted the lock-up, the names (of the dead, in the
+  Red Hand's debt book, on Halcyon's week report), the trial list, who gets a dose, a cull and the
+  animal house. Each faction has five of its own besides (the Haven's garden and swap
   table, Bastion's gate duty and kit inspection, the Red Hand's toll and still, Halcyon's decon line
   and observation ward...), most of them worked out from what you find, with the call yours.
   Something happens on the way (a mark on a door, someone

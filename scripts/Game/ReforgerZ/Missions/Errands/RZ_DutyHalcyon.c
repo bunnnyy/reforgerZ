@@ -339,7 +339,7 @@ class RZ_DutyHalcyon
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static string Ord(int i)
+	static string Ord(int i)
 	{
 		array<string> words = {"first", "second", "third"};
 		return words[Math.ClampInt(i, 0, 2)];

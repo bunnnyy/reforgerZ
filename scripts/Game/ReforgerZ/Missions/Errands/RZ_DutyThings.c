@@ -90,7 +90,8 @@ class RZ_DutyThings
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! What dresses a lock-up's door: the pen for the Haven and Bastion, the room for the Red Hand.
+	//! What dresses a lock-up's door: the pen for the Haven and Bastion, the room for the Red Hand,
+	//! nothing for Halcyon's isolation room.
 	static ResourceName LockUp(int faction)
 	{
 		RZ_DutyThingProps p = Props();
@@ -99,6 +100,10 @@ class RZ_DutyThings
 
 		if (faction == RZ_EFaction.BANDITS)
 			return p.m_sLockUpRoom;
+
+		// Halcyon's isolation room is indoors, behind a hatch: nothing stands beside it
+		if (faction == RZ_EFaction.INSTITUTE)
+			return "";
 
 		return p.m_sLockUpPen;
 	}

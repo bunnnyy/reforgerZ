@@ -103,7 +103,9 @@ class RZ_DutyPosts
 		string who = Name(rng);
 		RZ_DutyBeat door = new RZ_DutyBeat("door", "", RZ_DutyBeat.AT_GATE);
 		door.m_bAlone = true;
-		door.m_sThing = RZ_DutyThings.For("lockup:door");
+		if (e.m_iFaction != RZ_EFaction.INSTITUTE)
+			door.m_sThing = RZ_DutyThings.For("lockup:door");
+
 		scene.m_sDress = RZ_DutyThings.LockUp(e.m_iFaction);
 		door.Opt("Take the watch at the door", string.Format("You have the door. %1 is behind it. Nobody else is awake.", who)).Work(RZ_EWork.HANDS, 5);
 		scene.m_aBeats.Insert(door);
@@ -118,6 +120,11 @@ class RZ_DutyPosts
 		{
 			says = string.Format("%1, through the boards. I owe the crew forty tins and I've a girl at the Haven who'll starve paying it. Tell the boss I'll work it off. Or don't tell him anything.", who);
 			freed = "I got to her. We're paying it off, slower than the boss would like. You're the reason there's anyone left to pay.";
+		}
+		else if (e.m_iFaction == RZ_EFaction.INSTITUTE)
+		{
+			says = string.Format("%1, through the hatch. My readings are normal. They were normal yesterday. They'll be normal tomorrow, and I'll still be in here, because the protocol says three days and nobody reads the readings. Read them. They're on the clipboard.", who);
+			freed = "I walked out through the clean room in a borrowed coat. Three days later I was still normal. I'd like the protocol to know.";
 		}
 		else
 		{

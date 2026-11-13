@@ -2871,7 +2871,12 @@ session, tick off:
   lamp (the Red Hand) stand 6 m beside the door with a blindfold at it, and all of it is gone when
   the errand ends. At a house that lost someone: a door for each, then the book. At a Bastion post after the
   Collapse: three bunks, and the return. At the lab with the cure 40% made: three charts and the
-  list. A cull: their people walk out, up to five infected come, and they hold until it's clear.
+  list. A cull: their people walk out, up to five infected come, and they hold until it's clear. The
+  Red Hand's debt book: three doors, then your thumb under the lines. Halcyon's desks: three
+  desks, then the report; its animal house: three cages, a turning one kept raises the town's
+  infection; its isolation room is the lock-up with nothing beside the door. A dose (with one in
+  the lab's stock, or on the Red Hand's black market): three beds, then the card; the stock is one
+  less after, and nothing comes into your pack.
   Ask for any of the Trusted ones again the same season day: it isn't offered.
 - [ ] The Haven's duties ([ERRANDS.md](ERRANDS.md#the-havens-duties)): by day at a safehouse, the
   school room (count, then four places to look 9 m off, each a prompt of its own) and the garden

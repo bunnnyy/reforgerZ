@@ -10,14 +10,6 @@ author asked for that isn't built yet.
 
 ## What waits
 
-### The Trusted rung's other versions
-
-| Duty | Waits for |
-|---|---|
-| The Red Hand's debt book, Halcyon's authors' list (the names) | Written the way the casualty return is: evidence at a place, a word that follows someone |
-| Who gets a dose: the house's one dose, the sergeant's list, who the crew pays for | Doses that exist outside the lab. It must never hand a dose to the player, and what it writes needs the finale's rules read first |
-| Halcyon's isolation (the lock-up), the animal house (a cull) | Their own beats, on the ward's people |
-
 ### By faction
 
 - **The Haven.** The garden's beds seen as beds (today a bed is a spot and its words; the dug,

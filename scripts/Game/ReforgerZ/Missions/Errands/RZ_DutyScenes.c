@@ -951,6 +951,23 @@ class RZ_DutyScenes
 					break;
 				}
 
+				// One dose off a stock that exists, to someone of the place (never the player): the
+				// black market's for the Red Hand, the lab's for the rest
+				case "dose":
+				{
+					RZ_CureResearch cure = m_GM.GetCure();
+					bool given = false;
+					if (cure && s.m_iFaction == RZ_EFaction.BANDITS)
+						given = cure.TakeStolenAntidote();
+					else if (cure)
+						given = cure.TakeLabAntidote();
+
+					if (!given)
+						m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, "The case is empty when it reaches the bed. Somebody got to the stock first.");
+
+					break;
+				}
+
 				case "give":
 				{
 					RZ_ErrandProps props = RZ_ErrandSettings.Get().Props();
