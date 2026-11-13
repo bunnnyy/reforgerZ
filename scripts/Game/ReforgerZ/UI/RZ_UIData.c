@@ -119,7 +119,7 @@ class RZ_UISettings
 	[Attribute("1", desc: "Show the infection timer (golden window, stages)")]
 	bool m_bInfectionTimer;
 
-	[Attribute("1", desc: "Show the noise meter (subtle: how much attention you draw where you stand), and above it how visible you are while Stealth is on")]
+	[Attribute("1", desc: "Show the stealth bar (bottom left: how much the infected notice you now, noise included; only while Stealth is on)")]
 	bool m_bNoiseMeter;
 
 	[Attribute("60", desc: "Seconds between infection timer resyncs (the client counts down between them)")]
