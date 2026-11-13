@@ -194,7 +194,7 @@ and one way to end it: **research the cure.**
 The game scripts, about 246,500 lines of Enforce Script under `scripts/Game/ReforgerZ/`, **compile
 without errors or warnings** against Arma Reforger 1.9 and run with no script exceptions in the
 server's runtime test and in Workbench play on Everon and Arland; every approved design is built
-(the last, the sites design: each site's ground read on a grid with real footprints and its surroundings, the placement rules and the solver, building in layers by each faction's doctrine, the camps' people at their posts and on their rounds, each site's story, and the site audit), simplified as each doc says; one waits in `designs/` (duties: work from the first day and a trust ladder of repeatable duties, built in phases). The repo holds 267 prefabs (many on stand-in bases), the worlds and the
+(the last, the sites design: each site's ground read on a grid with real footprints and its surroundings, the placement rules and the solver, building in layers by each faction's doctrine, the camps' people at their posts and on their rounds, each site's story, and the site audit), simplified as each doc says; one waits in `designs/` (duties: the upper rungs of the trust ladder of repeatable duties, built in phases; work from the first day and the first rung are built). The repo holds 267 prefabs (many on stand-in bases), the worlds and the
 UI; before it can be called working it needs real prefabs in place of the stand-ins, the `VERIFY`
 behaviours checked and a play-test with a game client (on a Linux server, Special Zombies stops the
 mode loading: [MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
@@ -216,7 +216,7 @@ What's built, next and to test first is in [ROADMAP.md](docs/ROADMAP.md); start 
 | [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, the tribes and their life cycle, borders, memory, who they are, how they move and hunt, the crawlers' life, the people's side (words, knowing, skills, your dead run, the moat, the cure, the last week), the great one, signs and sounds, the simulator's numbers |
 | [TRACES.md](docs/TRACES.md) | Traces: door marks written by the people who were there (who wrote what, how to read them by background, where they come from), doors you can see, player traces, the scenes (the first days, the line, vignettes, live traces), sound and light, the handover to the epilogue |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
-| [ERRANDS.md](docs/ERRANDS.md) | The small jobs named people ask in person: givers, the dealer, pay, the faults table, the routines and cards |
+| [ERRANDS.md](docs/ERRANDS.md) | The small jobs named people ask in person: givers, the dealer, pay, the faults table, the routines and cards, and the duties (a place's own work, from the first day, on a trust ladder) |
 | [QUESTLINES.md](docs/QUESTLINES.md) | The four majors (one season-long story per faction) and the long questlines over many sessions, three per faction and two for the Long Table |
 | [FINALE.md](docs/FINALE.md) | The cure's finale: the five routes, the lock, the race, the stand as a fight for the clean room, terms, Fame and fallbacks |
 | [EPILOGUE.md](docs/EPILOGUE.md) | The week after the cure: its phases, beats and carriers, the dose outlets, the queue and the lab gate, the grey choices, the closing work, the hall's freeze, names |
@@ -277,7 +277,7 @@ scripts/Game/ReforgerZ/
                  capture, vehicle zones and convoys, health cost, step chains, work sites); Haven/ Bastion/ RedHand/ Halcyon/
                  Events/ Leaders/ Unarmed/ Perimeter/ Tribes/ (the packs' contracts); the shared checks (Trust, Fear, prices) and
                  ways through a job; Story/ (the story kit, who decides, who benefits, reasons);
-                 Errands/ (the dealer, the routines, Cards/ with the epilogue deck); Questlines/ (the author's base class,
+                 Errands/ (the dealer, the routines, the duties, Cards/ with the epilogue deck); Questlines/ (the author's base class,
                  approach helpers, the majors' scenes, the registry, one folder per faction with
                  its major, one for the Long Table, and Finale/: the cure finale's five routes,
                  desks, tissue hunts, items and route assets)

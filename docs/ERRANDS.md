@@ -1,7 +1,8 @@
 # Errands
 
 The small, personal jobs one named person asks of one player, each true because something in the
-world is true right now, and over the moment it stops being true. Contracts are the factions' work,
+world is true right now, and over the moment it stops being true; and the [duties](#duties), a
+place's own everyday work, there to be asked for from the first day. Contracts are the factions' work,
 offered in person by their leaders ([MISSIONS.md](MISSIONS.md#who-gets-offered-what)); questlines are the long stories
 ([QUESTLINES.md](QUESTLINES.md)); errands are everything in between. Their design is built in full (simplified as the last section
 says). In the epilogue week a few of the epilogue
@@ -9,7 +10,7 @@ deck's asks stand at the week's places instead of on the dealer: *Bring a cup* a
 the names at supper* at a house, taking a name home ([EPILOGUE.md](EPILOGUE.md#places-and-scenes)).
 
 Code: `Missions/Errands/` (`RZ_Errands.c` the dealer and the small-pay ledger, `RZ_Errand.c` the
-parts, `RZ_ErrandRoutines.c`, `RZ_ErrandRoutinesPeople.c` and `RZ_ErrandRoutinesLate.c` the routines, `RZ_ErrandRegistry.c`
+parts, `RZ_ErrandRoutines.c`, `RZ_ErrandRoutinesPeople.c` and `RZ_ErrandRoutinesLate.c` the routines, `RZ_ErrandDuties.c` the duties, `RZ_ErrandRegistry.c`
 the list and the cards' base, `Cards/<Family>/` one class per card, `RZ_Strangers.c` the stranger
 spots and visits, `RZ_StrangerKinds.c` the stranger routines), `World/RZ_NamedPeople.c` (the givers),
 `World/RZ_Locals.c` (the locals), `World/RZ_Faults.c` (the faults table). Settings: **Missions > Errands** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
@@ -27,6 +28,7 @@ Server only, except the journal row.
 - [Pay: nothing for free](#pay-nothing-for-free)
 - [The faults table](#the-faults-table)
 - [The routines](#the-routines)
+- [Duties](#duties)
 - [The wanderers' asks](#the-wanderers-asks)
 - [The cards](#the-cards)
 - [Fallout](#fallout)
@@ -93,8 +95,8 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
   what they have for you, first, tagged: *[Errand] Water for Morton* (yours already: *[Errand] About
   Water for Morton.*, or *[Errand] It's done: ...* to hand it in), looked at without dealing it
   (`RZ_Errands.TalkErrand`, `Deal`'s look-ahead; the one named is the one dealt when you pick it, while
-  it's still true), or shows locked with why (*Nothing today. Ask again tomorrow*, or the refusal
-  below) ([DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies)). A wanderer's is **Need a
+  it's still true), or shows locked with why (the refusal below, or
+  [the reason there's nothing](#when-theres-nothing-the-reason-in-words)) ([DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies)). A wanderer's is **Need a
   hand?**, in their free third slot (not on the Kid, the Mechanic, whose slot is Ask about cars, or
   a bitten wanderer, whose slot is the antidote); with no errand it stays open while Barter Chain
   could start from them. With **Dialogue > Trees** the person's own topic (the cook's supper, a
@@ -148,7 +150,7 @@ open offer, 8 minutes since the last unasked offer, not within 300 m of a runnin
 of the lab during the final stand, or 2 km of the Long Table's farm; and room in the budget. Three
 players at most each 30 s, round-robin.
 
-**Candidates** are the routines and cards anchored to the giver's place (a safehouse, a Bastion
+**Candidates** are the routines, [duties](#duties) and cards anchored to the giver's place (a safehouse, a Bastion
 post, a Red Hand camp, a Halcyon station or the lab, any holding, a wanderer and their role),
 checked cheapest first: the card done this season or two cards today; the routine's cooldowns; a
 running clock for timed ones; for whom (standing, background); **Why** (the live facts, which fill
@@ -172,7 +174,7 @@ faction's next errand for your identity opens with the line, and its givers' err
 real day.
 
 **Chore slots.** A holding or a house has 1 routine live at once, plus 1 per 5 players online (3 at
-most), and one of them per player there; cards don't count.
+most), and one of them per player there; cards don't count, and duties have their own three.
 
 **The suspect variant** (the arsonist rule's other side): The Smoke Was Ours may still be dealt to
 whoever called the shells, scored half, the giver opening with *"Where were you Tuesday? Never mind.
@@ -411,6 +413,83 @@ at the party's spot as a step, not as an item.
 Four missions left the random pool for these and are gone from the code: Fuel for the Lights
 (Lights), Water Purifier (Filter Parts), Water Run (Water for {house}) and Medicine Before Dark
 (Before Dark).
+
+## Duties
+
+A **duty** is a place's own everyday work, taken over for a shift: the kitchen, the wood and the
+water, washing down. It is an errand like any other (the same givers, ways, steps, work sites, pay
+and ledger), with three differences that put work in reach from the first day:
+
+- **It's always there to be asked for.** A routine or a card needs something to be true right now.
+  A duty needs only the place to stand. So a named person asked *Anything need doing?* has work for
+  a newcomer every time, unless one of the stated reasons below applies.
+- **What's true comes first.** With a routine or a card to ask, a giver asks that, and a duty only
+  if it's their own work (the cook's kitchen, the nurse's washing down: the duty's roles). With
+  nothing true, any duty of the place may be asked, the giver's own first (×2 for their role). A
+  duty is never called out, waved over, put on a board or sent as a radio ask: it's asked for.
+- **A short gap, not the routines' cooldowns.** One kind of duty (the kitchen, in whatever faction's
+  words) isn't given to the same player again for **Duty gap** minutes (20) after it's done. No
+  per-place day, no 3 hours anywhere. Three duties may be live at one place at once, one per player
+  there, and they take none of the place's chore slots.
+
+Code: `Missions/Errands/RZ_ErrandDuties.c` (`RZ_Duties` the ladder, `RZ_ErrandDuty` the duties: one
+object per kind and faction). Settings: **Missions > Errands > Duties** (on) and **Duty gap**.
+
+### The trust ladder
+
+Each duty has a rung with the giver's faction (`RZ_Duties.Rung`). Higher rungs are more sensitive
+work, and pay more. Nothing new is counted: the rungs are the tiers that exist, plus one count.
+
+| Rung | Who | The work | Pays |
+|---|---|---|---|
+| 0 | Watched or worse | No duties: the amends work only (Make It Right, The Latrine, Clean Slate) | — |
+| 1 | Anyone else, from the first minute | Chores, watched: the kitchen, wood and water, washing down | 3–4 Favor |
+| 2 | **They know your face**: three errands or duties done for that faction this season (any of them: a routine counts), or Known | The line at the gate, the dead, a patrol leg with their people | 5–6 Favor, 1 Fame |
+| 3 | Known | Armed work with their people: a hunt, the bench | 7–8 Favor, 1–2 Fame |
+| 4 | Trusted | The sensitive ones ([designed, not built](../designs/DUTIES.md)) | — |
+
+The third piece of work for a faction says so (*"That's three pieces of work for the Haven. They
+know your face now..."*). Pay goes through the small-pay ledger above, so a duty can make you Known
+and never Trusted: that takes contracts, which a giver now makes on asking
+([MISSIONS.md](MISSIONS.md#who-gets-offered-what)).
+
+### Each run is drawn from the world
+
+- **The task.** A duty has a few tasks and offers one a run, drawn when it's dealt (the kitchen:
+  peel and chop, mind the pot, or serve the line), plus any way that's always there (put two tins
+  in the pot).
+- **The reason.** The ask says why this one, now, from what's so (`RZ_ErrandDuty.Reason`): the
+  house's last meal ran short, someone died there this week, it's raining, it's dusk or night, the
+  outbreak is past its early stage, the town is sick (it's named), the faction is short of food.
+  With none of those, one of three everyday reasons.
+
+### The duties
+
+✅ built. Every faction has each of them, in its own words; the tasks are the same. Each task is
+work with your hands at a [work site](#work-sites) at the place (or behind it), then back to the
+giver.
+
+| Duty | Rung | Their own work (roles) | Haven | Bastion | Red Hand | Halcyon | Tasks (one a run) and ways | Pay | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| Kitchen | 1 | cook, storekeeper, farmer | Kitchen Duty | Mess Duty | The Pot and the Still | Canteen | Peel and chop (18 s) · Stir the pot (20 s) · Ladle supper out (16 s). Or **put two tins in the pot** | 3 Favor; the tins 4 Favor and +1 food at a house (twice a season day at most) | ✅ |
+| Wood and water | 1 | storekeeper, farmer, mechanic, technician | Wood and Water | Fatigues | Earn Your Keep | The Boiler | Split the wood (18 s) · Fill the water cans (15 s) · Carry and stack the crates (16 s) | 3 Favor | ✅ |
+| Washing down | 1 | nurse, medic, lab assistant, clerk | Washing Down | Hygiene Detail | The Scrub | Decontamination, Minor | Scrub the tables (18 s) · Wash and hang the bedding (16 s) · Sluice the yard (18 s) | 3 Favor | ✅ |
+
+The duties of rungs 2 to 4 wait in [designs/DUTIES.md](../designs/DUTIES.md).
+
+### When there's nothing: the reason, in words
+
+With duties on, *Anything need doing?* is locked only for a stated reason (`RZ_Errands.NothingWhy`,
+and the refusals in [Being asked](#being-asked)):
+
+| Shown | When |
+|---|---|
+| *You've done your shift. Ask again in a while (20 min at most)* | Every duty you could have is on its gap |
+| *You've a job here already. Finish that one* | You hold an errand or a duty at this place |
+| *Every job here is taken. Ask again when one is done* | Three duties are live at the place |
+| *Everyone has work in hand. Ask again shortly* | The server's 12 live errands are all out |
+| *Nothing while you're Watched with Bastion, except to make amends* | Watched, and no amends work is true |
+| *Nothing today. Ask again tomorrow* | A wanderer; or duties are off |
 
 ## The wanderers' asks
 
@@ -771,7 +850,7 @@ after someone who walks.
 
 - **Saved** (state.json, wiped with the season): each identity's ledger (cards done, cooldowns, the
   hour's Favor, cards today, errand Fame today, amends this life, the last three families, errands
-  done, the houses whose errands are half as likely for you, the twist count, the threads), the safehouses' named
+  done, the work done for each faction (the ladder's second rung), the houses whose errands are half as likely for you, the twist count, the threads), the safehouses' named
   people, the locals, each house's count of errands done there and the Haven's reading day of each lot
   (Fresh Chalk). Held errands,
   offers, faults, soft holds, strangers, found hooks and the footfall grid are runtime only: a restart

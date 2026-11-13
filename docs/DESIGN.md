@@ -1698,7 +1698,8 @@ hinted to <faction>`, `Mirror: <title> won by <faction>` (or `by both, half each
 
 ### Errands
 
-The small, personal jobs named people ask, each true right now: [ERRANDS.md](ERRANDS.md).
+The small, personal jobs named people ask, each true right now, and the duties (a place's own
+work, there from the first day, on a trust ladder): [ERRANDS.md](ERRANDS.md).
 
 ## Story arcs and headlines
 

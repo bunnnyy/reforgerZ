@@ -117,6 +117,15 @@ class RZ_TalkJobs
 		array<RZ_Mission> openHere = {};
 		array<RZ_Mission> lockedHere = {};
 		missions.JobsAt(playerId, faction, user, openHere, lockedHere);
+		// Ask and you get: nothing they can take, so the giver makes a contract of their own now
+		// (RZ_MissionManager.MakeFor: one they qualify for, at most once per ask gap)
+		if (open.IsEmpty() && openHere.IsEmpty() && missions.MakeFor(playerId, faction))
+		{
+			openHere.Clear();
+			lockedHere.Clear();
+			missions.JobsAt(playerId, faction, user, openHere, lockedHere);
+		}
+
 		open.InsertAll(openHere);
 		locked.InsertAll(lockedHere);
 

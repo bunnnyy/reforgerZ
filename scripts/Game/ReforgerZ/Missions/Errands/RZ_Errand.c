@@ -25,7 +25,8 @@ enum RZ_EErrandItem
 	FUEL,		// a jerrycan or a fuel can
 	BATTERY,
 	MEDICAL,	// bandages, pills, a medkit
-	ANTIDOTE
+	ANTIDOTE,
+	MEAT		// a raw meat leg (a hunt's, a herd's: World/RZ_Wildlife.c), for a kitchen's pot
 }
 
 //------------------------------------------------------------------------------------------------
@@ -100,6 +101,8 @@ class RZ_ErrandWay
 	string m_sWorkLabel;		// its prompt ("Dig the latrine")
 	float m_fWorkSeconds;		// its hold (0: from m_fSeconds, RZ_WorkSites.HoldFor)
 	string m_sNeed;				// the place need its words make (World/RZ_PlaceNeeds.c; empty: by its place kind, NeedKey)
+	int m_iTable;				// a duty's table (RZ_DutyTable.KIND_*): the work site's hold opens it, and its verdicts are the step
+	bool m_bSquad;				// a duty walked with the place's people (RZ_DutySquads): the step is coming back with them
 
 	// What it pays (docs/ERRANDS.md, "Pay: nothing for free")
 	int m_iFavor;
@@ -243,6 +246,10 @@ class RZ_ErrandDef
 	bool m_bHanded;				// handed straight to a player by another system (an opening's chain, Guidance/RZ_Openings.c):
 								// never dealt, its giver isn't a named person, no cooldowns and no small pay (its owner pays)
 	float m_fLapseMinutes;		// > 0: a held one lapses after this many real minutes instead of Lapse minutes
+	bool m_bDuty;				// a duty (docs/ERRANDS.md, "Duties"): the place's everyday work, always there to be asked for, on the
+								// duty gap instead of the routines' cooldowns, scored under whatever is true right now
+	int m_iRung = 1;			// the trust rung it needs with the giver's faction (RZ_Duties.Rung)
+	string m_sDuty;				// a duty's kind ("kitchen", "line"...): one kind in many voices shares one duty gap
 	ref array<ref RZ_ErrandWay> m_aWays = {};
 	ref array<string> m_aOffer = {};	// the ask, in the giver's voice
 	ref array<string> m_aOver = {};		// the world changed: "Never mind. The truck came in after all."
@@ -298,6 +305,18 @@ class RZ_ErrandDef
 	bool Offers(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w)
 	{
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A way was taken (its step, if it has one, is open): a duty starts what it runs here.
+	void Taken(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errand is over, however it ended ("done", "lapsed", "overtaken"...): let go of what it ran.
+	void Ended(RZ_Errands dealer, RZ_Errand e, string why)
+	{
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -525,6 +544,7 @@ class RZ_ErrandLedger
 	ref array<int> fameToday = {0, 0, 0, 0};
 	int amendsLife = -1;					// the life amendsDone counts in
 	ref array<int> amendsDone = {0, 0, 0, 0};
+	ref array<int> worked = {0, 0, 0, 0};	// errands and duties done this season, per giver faction (the trust ladder's second rung)
 	ref array<string> families = {};		// the last three families dealt
 	int helped;								// errands done this season ("Most people helped")
 	ref array<int> shy = {};				// houses whose fit for you is x0.5 for the season (sold one of theirs)
@@ -563,6 +583,14 @@ class RZ_ErrandLedger
 		while (amendsDone.Count() < 4)
 		{
 			amendsDone.Insert(0);
+		}
+
+		if (!worked)
+			worked = new array<int>();
+
+		while (worked.Count() < 4)
+		{
+			worked.Insert(0);
 		}
 
 		if (!families)

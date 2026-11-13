@@ -7453,6 +7453,8 @@
     "m_iAmendsCap": "8",
     "m_iFavorPerHour": "40",
     "m_fLapseMinutes": "45",
+    "m_bDuties": "1",
+    "m_fDutyGapMinutes": "20",
     "m_fFaultChance": "0.25",
     "m_bCallOut": "1",
     "m_bWandererAsks": "1",

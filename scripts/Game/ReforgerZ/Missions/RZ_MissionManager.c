@@ -30,6 +30,10 @@ class RZ_MissionManager
 	protected static const float CONTRACT_COOLDOWN = 75;
 	protected static const float OFFER_GAP = 60;			// min seconds between two "who to ask" lines to one player
 	protected static const int MAX_CONTRACTS = 10;
+	// Ask and you get (MakeFor): a giver asked for work makes a contract of their own
+	protected static const float ASK_GAP = 90;			// seconds between two tries for one player and giver
+	protected static const int ASK_PER_GIVER = 3;		// that giver's contracts alive at once before asking makes no more
+	protected ref map<string, float> m_mAskAt = new map<string, float>();
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_MissionManager(RZ_GameModeComponent gm)
@@ -604,6 +608,95 @@ class RZ_MissionManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Ask and you get (docs/MISSIONS.md, "Who gets offered what"): a giver asked for work with no
+	//! open contract this player can take makes one of their own now, one the player qualifies for
+	//! and the world can run (the same checks as the random pick, in the same weighted order), so a
+	//! newcomer isn't left to the two contracts the shared pool happens to hold. Tried once per
+	//! ASK_GAP for a player and giver; never past the server's contract cap, nor ASK_PER_GIVER of that
+	//! giver's alive at once. True if one was made.
+	bool MakeFor(int playerId, RZ_EFaction faction)
+	{
+		string askKey = playerId.ToString() + ":" + faction.ToString();
+		float askedAt;
+		if (m_mAskAt.Find(askKey, askedAt) && m_fClock - askedAt < ASK_GAP)
+			return false;
+
+		m_mAskAt.Set(askKey, m_fClock);
+		if (CountActive(true) >= MAX_CONTRACTS)
+			return false;
+
+		int theirs = 0;
+		foreach (RZ_Mission running : m_aActive)
+		{
+			if (running.m_bContract && !running.m_bInPersonOnly && running.m_Req.m_eGiver == faction)
+				theirs++;
+		}
+
+		if (theirs >= ASK_PER_GIVER)
+			return false;
+
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		array<ref RZ_Mission> candidates = {};
+		array<float> weights = {};
+		float total = 0;
+		foreach (typename t : m_aTypes)
+		{
+			if (IsTypeActive(t))
+				continue;
+
+			RZ_Mission m = RZ_Mission.Cast(t.Spawn());
+			if (!m)
+				continue;
+
+			m.Configure(m_GM);
+			if (!m.m_bContract || m.m_bInPersonOnly || m.m_Req.m_eGiver != faction)
+				continue;
+
+			if (!CanRunNow(m, ids.Count(), false) || !m.IsEligible(m_GM, playerId))
+				continue;
+
+			float w = m.GetWeight(m_GM);
+			if (w <= 0)
+				continue;
+
+			w = w * WeightMult(m) * PresenceMult(m);
+			candidates.Insert(m);
+			weights.Insert(w);
+			total += w;
+		}
+
+		while (!candidates.IsEmpty())
+		{
+			float roll = Math.RandomFloat(0, total);
+			int pick = candidates.Count() - 1;
+			for (int i = 0; i < candidates.Count(); i++)
+			{
+				roll -= weights[i];
+				if (roll <= 0)
+				{
+					pick = i;
+					break;
+				}
+			}
+
+			RZ_Mission mission = candidates[pick];
+			if (StartMission(mission))
+			{
+				RZ_Log.Info(string.Format("Mission %1 '%2' made on asking: %3 asked %4.", mission.m_iId, mission.m_sTitle, RZ_Util.PlayerName(playerId), RZ_Factions.GetShortName(faction)));
+				return true;
+			}
+
+			total -= weights[pick];
+			candidates.Remove(pick);
+			weights.Remove(pick);
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A contract `faction` may offer this player here: its own (a leader's personal job only at
 	//! their seat), or a mirror's second side once it has heard.
 	protected bool OffersAt(RZ_Mission c, int playerId, RZ_EFaction faction, IEntity player)
@@ -630,6 +723,16 @@ class RZ_MissionManager
 		{
 			if (OffersAt(c, playerId, faction, player))
 				offers.Insert(c);
+		}
+
+		// Ask and you get: nothing open for them, so the giver makes one now
+		if (offers.IsEmpty() && MakeFor(playerId, faction))
+		{
+			foreach (RZ_Mission made : m_aActive)
+			{
+				if (OffersAt(made, playerId, faction, player))
+					offers.Insert(made);
+			}
 		}
 
 		// This player's order: near, reason-started, a leader they helped first (docs/DESIGN.md)

@@ -8,6 +8,6 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 
 | Order | Design | What it is |
 |---|---|---|
-| 1 | [DUTIES.md](DUTIES.md) | Work from the first day: contracts and errands on asking, and a trust ladder of repeatable duties (the kitchen, the line at the gate, the dead, patrols and hunts with a place's people, the bench). Built in phases; each phase's part moves into the docs |
+| 1 | [DUTIES.md](DUTIES.md) | The duties of the trust ladder's upper rungs (the line at the gate, the dead, patrols and hunts with a place's people, the bench, then the sensitive ones), with one small screen for three of them. Built in phases; each phase's part moves into the docs. Built so far: work from the first day and the first rung ([docs/ERRANDS.md](../docs/ERRANDS.md#duties)) |
 
 A new approved design goes here with its place in the order.

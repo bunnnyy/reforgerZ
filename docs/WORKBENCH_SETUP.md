@@ -2576,7 +2576,8 @@ Report the line. The place audit's own lines (`Places: ...`, `Places fail: ...`,
 are in [PLACES.md](PLACES.md#the-audit).
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 36 routines and 70 cards, N players with a ledger.`; while running, `Errands:
+start, `Errands: on, 36 routines, 12 duties (on) and 70 cards, N players with a ledger.`; a contract
+a giver made because they were asked, `Mission N '<title>' made on asking: <player> asked <faction>.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
 (<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
 <player> overtaken`, `Work sites: errand.N "Dig the latrine" (LATRINE, 15 s) at <grid>` and
@@ -2743,6 +2744,14 @@ session, tick off:
   picking one starts it at once (*Errand started: ...* card). Do the step, come back, and *[Errand]
   It's done: ...* (first on their list) hands it in (*Errand done: ...* with the pay); standing next to
   them doesn't. A giver with nothing shows *Anything need doing?* locked with why.
+- [ ] Work on the first day ([ERRANDS.md](ERRANDS.md#duties), [MISSIONS.md](MISSIONS.md#who-gets-offered-what)):
+  as a fresh Stranger, alone on the server, ask each faction's quartermaster for work: each lists at
+  least one [Job] you can take (the log says `made on asking` when the pool had none). Ask a named
+  person at a safehouse, a post, a camp and a station *Anything need doing?*: each names an errand or
+  a duty (Kitchen Duty, Fatigues, The Scrub, The Boiler...), its ask gives a reason that's true (rain,
+  dusk), its task is a hold at a work site, and it pays 3 Favor. Ask the same person again: *You've
+  done your shift. Ask again in a while*. After the third piece of work for one faction: *"They know
+  your face now"*.
 - [ ] Jobs on the first replies, with Trees on: at a leader the jobs are the first replies, above
   their topics, and never hide while a topic about the work shows; the topic's *I'll do it. Give me the
   task.* is tagged [Job] and leads to the same pitch (or is locked with *Nothing today...*). At The
