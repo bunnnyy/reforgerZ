@@ -483,7 +483,7 @@ class RZ_SiteSolver
 			}
 		}
 
-		m_Wire.Trace(m_Grid, want, 15);
+		m_Wire.Trace(m_Grid, want, 15, m_iYardFace);
 		vector mainAt = RZ_Compass.PointAt(m_vMid, p.m_fApproach, 50);
 		if (p.m_Site && p.m_Site.m_iMain >= 0)
 			mainAt = p.m_Site.m_aEntries[p.m_Site.m_iMain];
@@ -734,6 +734,7 @@ class RZ_SiteSolver
 	//! Runs are tested this far inside their measured box: two runs whose end faces meet don't block
 	//! each other
 	static const float RUN_TOUCH = 0.05;
+	static const float FENCE_OVERHANG = 0.6;	// how far a fence's last section may reach past its gap into what closes it
 	//! A barrier piece shorter than this is a filler (FillSide)
 	static const float FILLER = 1.5;
 
@@ -797,7 +798,7 @@ class RZ_SiteSolver
 	//! close to one straight slope (at most 20 degrees; no point more than 0.25 m off it), so the run
 	//! is tilted to follow it (RZ_SitePlaced.m_fSlope) rather than float or sink. Its height is the
 	//! slope's at its origin. "" if it fits.
-	protected string RunFails(RZ_DressingPiece e, inout vector pos, float yaw, out float slope, bool onRoad = false)
+	protected string RunFails(RZ_DressingPiece e, inout vector pos, float yaw, out float slope, bool onRoad = false, float overhang = 0)
 	{
 		slope = 0;
 		float lo;
@@ -806,7 +807,9 @@ class RZ_SiteSolver
 		if (onRoad)
 			wireMask = wireMask & ~(RZ_SiteGrid.ROAD | RZ_SiteGrid.CLEAR);
 
-		int blocks = m_Grid.FirstBlock(pos, yaw, e.Foot(), wireMask, lo, hi, -RUN_TOUCH);
+		// A fence's last section may reach past its gap into what closes it (a wall, a building), so the
+		// line ends against it with no slit (docs/SITES.md, "Close it off")
+		int blocks = m_Grid.FirstBlock(pos, yaw, e.Foot(), wireMask, lo, hi, -RUN_TOUCH - overhang, e.Rules().m_bFence);
 		if (blocks != 0)
 			return RZ_SiteGrid.FlagName(blocks);
 
@@ -919,8 +922,16 @@ class RZ_SiteSolver
 				foreach (RZ_DressingPiece w : m_aWires)
 				{
 					float len = Length(w);
+					// A fence closes its gap to the end: its last section may overhang into what closes
+					// it at its far end, up to FENCE_OVERHANG
+					float overhang = 0;
 					if (len > run - used + 0.3)
-						continue;
+					{
+						if (!w.Rules().m_bFence || len > run - used + FENCE_OVERHANG)
+							continue;
+
+						overhang = len - (run - used) + 0.05;
+					}
 
 					if (len < FILLER && run - used > shortest + 0.3)
 						continue;
@@ -939,7 +950,7 @@ class RZ_SiteSolver
 						vector at = RZ_Compass.PointAt(mid, yaw, nudge);
 						vector pos = LinePose(w, at, yaw);
 						float slope;
-						if (!RunFails(w, pos, yaw, slope).IsEmpty())
+						if (!RunFails(w, pos, yaw, slope, false, overhang).IsEmpty())
 							continue;
 
 						// Crates, tyres and wrecks sit level or not at all: only wire and fences tilt

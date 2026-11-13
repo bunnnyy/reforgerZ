@@ -113,6 +113,7 @@ class RZ_SiteRules
 	bool m_bBank;				// may stand on a bank or steep ground (a nest)
 	bool m_bSoil;				// soft ground: off the verges and the building's paving, never on a paved surface
 	bool m_bRow;				// set out in a row with the others of its kind, squared to the building
+	bool m_bFence;				// a fence (plank, chain-link, mesh): it runs through anything solid but a building, a wall or a ruin
 	bool m_bLevel;				// a barrier of stacked or standing things (crates, tyres, a wreck): it sits level or isn't put down, never tilted to a slope
 	bool m_bJitter;				// clutter: turned 0-8 degrees and moved 0-0.5 m by the seed
 	bool m_bNoLine;				// two of a kind never in a straight line
@@ -164,6 +165,7 @@ class RZ_SiteRules
 				case "by": rules.Add(R_BY, what, dist); break;
 				case "row": rules.m_bRow = true; break;
 				case "level": rules.m_bLevel = true; break;
+				case "fence": rules.m_bFence = true; break;
 				case "jitter": rules.m_bJitter = true; break;
 				case "noline": rules.m_bNoLine = true; break;
 				case "indoors": rules.m_bIndoors = true; break;

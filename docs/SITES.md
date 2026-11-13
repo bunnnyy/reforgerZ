@@ -50,7 +50,7 @@ Who asks, and when:
 
 | Place | A fresh season | A saved season, once at the start |
 |---|---|---|
-| A stronghold (its quartermaster's spot; Halcyon's is the lab) | Of the first 24 towns that suit the faction (the Haven's safest first; Bastion's and the Red Hand's in a random order), the one whose best building suits it best; the first that is just right (a church; a school or a hall; a garage) is taken. No town has a building: near a town's middle, as before | On an island, or with no building to move into: moved the same way, never into a town that holds a safehouse or an outpost. In a building that suits it 0 of 3 (Bastion in a cottage), or one with no room for its yard (a hall on a cobbled square, a house in a yard of walls): moved only when a town has one that suits it 2 or 3 with room (its own town counts); else it stays, and the log says so. Its leader, its holding and the Haven's first safehouse go with it |
+| A stronghold (its quartermaster's spot; Halcyon's is the lab) | Of the first 24 towns that suit the faction (the Haven's safest first; Bastion's and the Red Hand's in a random order), the one whose best building suits it best; the first that is just right (a church; a school or a hall; a garage) is taken. No town has a building: near a town's middle, as before | On an island, or with no building to move into: moved the same way, never into a town that holds a safehouse or an outpost. In a building that suits it 0 of 3 (Bastion in a cottage), moved only when a town has one that suits it 2 or 3 with room; one with no room for its yard (a hall on a cobbled square, a house in a yard of walls): moved when a town has one that suits it at all with room (room matters more than the kind: Bastion's farm or works yard). Its own town counts; else it stays, and the log says so. Its leader, its holding and the Haven's first safehouse go with it |
 | An outpost | Of five picks, the first town with a building to move into; else the last pick, in the open | On an island: given up, and the faction founds another if it's short. No building where it stands: moved to one in its own town, its leader with it; none in town: it keeps its camp in the open |
 | A Haven safehouse | Villages with a house first, then with any building, then open ground | The one at the quartermaster follows him. No house where it stands: moved to one in its own town. On an island: given up, and another picked |
 
@@ -95,7 +95,8 @@ so they cost no download:
 | Bastion | **Guard tower** (stronghold) | the yard, seeing the gate | the tower over a camp's gate; the sentry stands at its foot |
 | Bastion | **Search table** (stronghold) | by the checkpoint | nobody goes in with a pack unopened |
 | Bastion, Halcyon | **Supply yard** (stronghold) | against the building's wall | a container, pallets in a row, cases, one forklift, the storeman's crate |
-| Halcyon | **Security mesh** (the lab, its barrier) | the wire's gaps | a lab's own fence: four metres, a razor coil along its top |
+| Halcyon, Bastion | **Barbed chain-link** (the lab, the field stations, Bastion's strongholds and outposts) | the wire's gaps | vanilla's chain-link three metres high, barbed wire along its top: the infected can't climb it (the author's pick, 2026-11-13) |
+| Halcyon, Bastion | **Open gate** (strongholds, field stations, outposts) | beside the main gate | a leaf of a chain-link gate swung open along each edge of the way in, so trucks pass |
 | Halcyon | **Riot fencing** (the lab) | by triage | the queue |
 | Red Hand | **Loot container** (stronghold) | the yard | what the crew took, shut in, someone always sitting at its doors |
 | Bastion | **Razor-wire road blocks** (stronghold) | across the roads that aren't its checkpoints | the road closed the army's way: knife rests of razor wire, a coil behind them |
@@ -271,7 +272,7 @@ What to know before using a line:
   and Halcyon's field surgery under canvas (surgical table and lamp, hospital bed, steriliser,
   drum stand, medical litter): 63 of its lines, all placed by their measured faces
   ([Spacing](#spacing)). No script spawns a composition: a composition is a group drawn whole, and
-  sites are laid out by their rules. The rest is what there is to pick from. The kit also lists the camp kits' own mod props (security mesh, riot fencing, a
+  sites are laid out by their rules. The rest is what there is to pick from. The kit also lists the camp kits' own mod props (riot fencing, a
   guard tower, a container, a forklift, cases, a fuel pump), which were seen standing in Workbench
   play; its "Left out" list says what was tried and dropped, and why.
 - **Every line spawned on the dedicated server** (game 1.9, the mods loaded), and every prop has a
@@ -460,13 +461,13 @@ off ground that a wall or a fence already closes:
 
 | Rule | What |
 |---|---|
-| Walled already | a side with less than 60% closed where it stands looks for a wall first nearer the building (down to 4 m from it: the Haven's camp once spilled past its churchyard's wall onto the car park), then up to 40 m further out (a depot's or a factory yard's own wall: the Red Hand's tin ring once stood inside a walled depot): the first distance at which a wall, a fence, a hedge or buildings close 60% of it becomes that side, so the line is the churchyard's wall or the compound's fence, not a second line inside it |
+| Walled already | a side with less than 60% closed where it stands looks for a wall first nearer the building (down to 4 m from it; on the yard's side no nearer than three quarters of the depth the yard needs, so a churchyard too small for the camp is inside the line, not its edge: the Haven's camp once spilled past its churchyard's wall onto the car park), then up to 40 m further out (a depot's or a factory yard's own wall: the Red Hand's tin ring once stood inside a walled depot): the first distance at which a wall, a fence, a hedge or buildings close 60% of it becomes that side, so the line is the churchyard's wall or the compound's fence, not a second line inside it |
 | What stands just outside | a gap with a wall, a fence, a hedge or a building within 6 m outside it, along most of a 3 m stretch, counts as closed already: no sandbags a step inside a garden fence |
 Every 0.5 m along the sides the doctrine closes, a **station** says what closes it:
 
 | Station | What |
 |---|---|
-| **Closed already** | a building, a wall, a fence, a hedge, a tree's trunk, a car, a rock, water (the grid's cells on the line and half a metre either side), or a bank falling 1.5 m within 3 m outside the line |
+| **Closed already** | something solid and tall: a building, a wall, a fence, a hedge or a ruin (by its prefab's name), water (the grid's cells on the line and half a metre either side), or a bank falling 1.5 m within 3 m outside the line. A tree, a rock, a car or a prop closes nothing: the barrier runs past it |
 | **Gate** | a road crossing the line, with a step either side: kept open, with nothing on the road (so supply trucks and players' cars pass); a road running along the line is a gate only for 12 m in its middle. A stronghold keeps only its **checkpoints** open ([below](#checkpoints)) |
 | **Barrier** | the faction's barrier, laid in runs ([below](#each-factions-doctrine)) |
 | **Gap** | nothing: an opening (off the grid or on other scenery, a gap nothing can fill) |
@@ -500,6 +501,14 @@ entrance can walk to. Then, in order:
    point of the ground more than 0.25 m off its line; it doesn't bend). The site's log and audit line
    give the **share closed** and the widest gap.
 
+   **A fence has no gaps** (the author, 2026-11-13: the infected can't climb a fence, so a gap is a
+   breach). A run whose rules say `fence` (plank fences, chain-link, the lab's mesh) runs through
+   anything solid but a building, a wall or a ruin: through trees, bushes, rocks, cars and props (the
+   audit doesn't count those as its overlaps). Its last section closes its gap to the end: it may
+   reach up to 0.6 m past the gap into what closes it (a wall, a building, the next fence), so the
+   line meets something solid and tall with no slit. The only openings are the gates. Other props
+   still keep off trees and rocks; bushes stop nothing.
+
 ### Checkpoints
 
 Setting **Checkpoints** (2; the author's call, 2026-11-13). A site that closes every side (a
@@ -509,7 +518,7 @@ stronghold) is shut all round, with a way through for a truck:
 |---|---|
 | Which roads stay open | its main gate, and of its other road crossings the furthest from it, up to **Checkpoints** in all: a road through the town comes in at one and leaves at the other |
 | Every other road | closed with the faction's road blocks, the longest that fits first, end to end across it (each one's end face against the last one's, measured), squared to the line, the ground read under all of each (no wheel over a kerb); a road running along the line too. A slit under 1.5 m still counts as closed. A closed road is no gate any more |
-| Razor wire, not concrete | Bastion: knife rests of razor wire end to end with a coil behind them (7 m, 3.5 m), a short coil, a hedgehog. The lab: its own security mesh (6 m, 3 m), a coil, a no-entry sign. The Red Hand: a truck on its rims (10 m), a van, a steel block, tyres. The Haven: a van and crates, a braced fence panel, stacked crates |
+| Razor wire, not concrete | Bastion: knife rests of razor wire end to end with a coil behind them (7 m, 3.5 m), a short coil, a hedgehog. The lab: its barbed chain-link (6 m, 3 m), a coil, a no-entry sign. The Red Hand: a truck on its rims (10 m), a van, a steel block, tyres. The Haven: a van and crates, a braced fence panel, stacked crates |
 | Always someone there | each other checkpoint gets a sentry's post just inside it, beside the way in ([Posts](#posts): a gate post, manned in the gate's order), and the kit's lookout piece (the nest, the guard post, the lookout's chair) beside the road facing out along it, before the lookouts toward the threatened sides |
 | Inside the line | nothing stands on a road, as ever: the streets inside stay clear for what drives in |
 
@@ -691,21 +700,21 @@ The piece counts went back down ([Settings](#settings)).
 
 | Kit | Close | Harden | Barrier | Gate, watch, lights |
 |---|---|---|---|---|
-| Bastion stronghold | all round | all | concertina wire (three coils, two, one; a hedgehog in a gap); concrete dragon's teeth (a stride apart: a body walks between them, nothing on wheels does) or knife rests of razor wire across the roads that aren't its checkpoints | the checkpoint (a stop sign, a knife rest pulled aside), the nest, sandbag barricades, a nest as lookout; side doors sandbagged; the stores (the tarp's crates) indoors with the stores board |
-| Bastion outpost | the road's side and the most threatened other | all | sandbags chest high, a coil, a hedgehog | the nest, a sandbag barricade, a nest as lookout; side doors sandbagged |
+| Bastion stronghold | all round | all | barbed chain-link (12, 6, 3 and 1.5 m runs, a pole at each run's end); concrete dragon's teeth (a stride apart: a body walks between them, nothing on wheels does) or knife rests of razor wire across the roads that aren't its checkpoints | the checkpoint (a stop sign, a knife rest pulled aside), the nest, sandbag barricades, a nest as lookout; side doors sandbagged; the stores (the tarp's crates) indoors with the stores board |
+| Bastion outpost | all round | all | barbed chain-link, as the stronghold | the nest, a sandbag barricade, a nest as lookout; side doors sandbagged |
 | Red Hand stronghold | all round | doors | rusted tin sheets, a wreck, a steel road block, tyres, a pallet on its edge in the last gap; a truck, a van or a steel block across the roads that aren't its checkpoints | the toll, the red hand, the trophy wall and the kennel at the gate, the nest, scrap barricades; the shutter down on every other door |
-| Red Hand outpost | the road's side | none | the tin, the wreck, the road block, tyres, the pallet | the toll, the red hand, the nest |
+| Red Hand outpost | all round | none | the tin, the wreck, the road block, tyres, the pallet | the toll, the red hand, the nest |
 | Haven stronghold | all round | threat | plank fences, an old panel, crates; a van and crates, a braced panel or crates across the roads that aren't its checkpoints | the gate swung open, a lookout's chair at the gate, fence barricades; doors shut with pallets |
-| Haven outpost | the road's side | doors | plank fences, an old panel, crates | a lookout's chair, a fence barricade |
-| Haven safehouse | the road's side | all | the same | a lookout's chair |
-| Halcyon's lab (stronghold) | all round | all | security mesh four metres high with a razor coil along its top (12, 6 and 3 m), a coil, a no-entry sign in the last gap; the same mesh across the roads that aren't its checkpoints | the plague board, the guard post, fence barricades, floodlights on the gate and the corners; the tables, the ward tent, the cold store, the sorting table, the notebooks, the radio, the tarp and the chairs indoors with the stores board; outside the decon shower at the entrance, the generators behind sandbags against the wall on the far side from the threat, the antenna on the high ground, a bench by the back door |
-| Halcyon field station | the road's side and the most threatened other | doors | tall chain-link, a coil, a no-entry sign in the last gap | the plague board, the guard post |
+| Haven outpost | all round | doors | plank fences, an old panel, crates | a lookout's chair, a fence barricade |
+| Haven safehouse | all round | all | the same | a lookout's chair |
+| Halcyon's lab (stronghold) | all round | all | barbed chain-link (12, 6, 3 and 1.5 m); the same fence across the roads that aren't its checkpoints | the plague board, the guard post, fence barricades, floodlights on the gate and the corners; the tables, the ward tent, the cold store, the sorting table, the notebooks, the radio, the tarp and the chairs indoors with the stores board; outside the decon shower at the entrance, the generators behind sandbags against the wall on the far side from the threat, the antenna on the high ground, a bench by the back door |
+| Halcyon field station | all round | doors | barbed chain-link, as the lab | the plague board, the guard post |
 
 **The lab, worked through.** The grid reads the lab and its yard; the threat front is the road in
 or the lair. The wire is traced 9 m off the building (deeper on its yard side), each side moved to
 meet the walls, hedges and water already there; the main gate is where the road crosses it, the
 way from the entrance to the gate is kept clear, the plague board and the guard post stand beside
-the gate; its other roads but one are closed with the same mesh. Security mesh fills the gaps. Every outside door but the entrance is shut with pallets,
+the gate; its other roads but one are closed with the same fence. Barbed chain-link fills the gaps. Every outside door but the entrance is shut with pallets,
 every ground-floor window boarded. A floodlight each side of the gate and in each corner; a guard
 post toward the lair if no watch faces it. Then the decon shower at the entrance, the generators
 behind sandbags against the back wall, the antenna on the high ground, the bench by the back door;

@@ -348,9 +348,9 @@ class RZ_FactionPerks
 		else if (camp && !camp.HasRoomAt(f, RZ_ECampPlace.STRONGHOLD, was))
 		{
 			// A building with no ground of its own (a hall on a square, a house in a yard of walls): it
-			// moves only for one that suits it and has room
+			// moves for one that suits it at all and has room (room matters more than the kind)
 			why = "no room for its yard";
-			atLeast = 2;
+			atLeast = 1;
 		}
 
 		if (why.IsEmpty())

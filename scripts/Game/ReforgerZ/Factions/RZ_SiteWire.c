@@ -19,6 +19,7 @@ class RZ_SiteWire
 
 	protected static const float MIN_OFF = 4;	// a side never comes closer to the building than this
 	protected static const float WALLED_SHARE = 0.6;	// a wall, fence or hedge closing this much of a side further out is the line
+	protected static const float YARD_WALL_SHARE = 0.75;	// on the yard's side a wall nearer than this share of the depth it needs isn't the line
 	protected static const int WALLED_REACH = 40;		// ...out to this far: a depot or a yard walled already is the perimeter, not a second ring inside it
 	protected static const float SHADOW = 6;			// a wall, a fence or a hedge this close outside a gap closes it
 	protected static const float BANK_REACH = 3;	// a bank this far out of the line...
@@ -180,14 +181,17 @@ class RZ_SiteWire
 	// ================================================================ Tracing
 	//------------------------------------------------------------------------------------------------
 	//! What closes the ground at a station (its cell and the cells 0.5 m either side of the line): a
-	//! building, something standing, water, or a bank falling 1.5 m away outside it.
+	//! building, a wall, a fence, a hedge or a ruin (solid and tall: a tree, a rock, a car or a prop
+	//! closes nothing, and a fence runs through them), water, or a bank falling 1.5 m away outside it.
 	static int GroundState(RZ_SiteGrid grid, vector at, vector across, out bool hard)
 	{
 		hard = false;
 		int f = 0;
+		bool line = false;
 		for (int k = -1; k <= 1; k++)
 		{
-			int g = grid.FlagsAt(at + across * (k * RZ_SiteGrid.CELL));
+			vector cell = at + across * (k * RZ_SiteGrid.CELL);
+			int g = grid.FlagsAt(cell);
 			if (g == RZ_SiteGrid.OUTSIDE)
 			{
 				hard = true;
@@ -195,9 +199,11 @@ class RZ_SiteWire
 			}
 
 			f = f | g;
+			if ((g & RZ_SiteGrid.SOLID) && (grid.LineAtPos(cell) & RZ_SiteGrid.LINE))
+				line = true;
 		}
 
-		if (f & (RZ_SiteGrid.WATER | RZ_SiteGrid.INSIDE | RZ_SiteGrid.SOLID | RZ_SiteGrid.TAKEN))
+		if (line || (f & (RZ_SiteGrid.WATER | RZ_SiteGrid.INSIDE | RZ_SiteGrid.TAKEN)))
 			return ST_GROUND;
 
 		// A bank falling away outside the line: 1.5 m down within 3 m out
@@ -290,7 +296,9 @@ class RZ_SiteWire
 	//! already or can be; or out at a wall, a fence or a hedge that closes most of the side already,
 	//! so no barrier is laid inside a yard that is walled), then the stations along the sides in
 	//! `closing` (a bit each).
-	void Trace(RZ_SiteGrid grid, array<float> want, int closing)
+	//! `yardFace`: the side the yard is on (-1 none). A wall nearer than the yard needs there isn't the
+	//! line: a churchyard too small for the camp is inside it, not its edge.
+	void Trace(RZ_SiteGrid grid, array<float> want, int closing, int yardFace = -1)
 	{
 		m_iClosing = closing;
 		for (int k = 0; k < 4; k++)
@@ -323,7 +331,11 @@ class RZ_SiteWire
 			if (ClosedShare(grid, f, bestOff) < WALLED_SHARE)
 			{
 				bool walled = false;
-				for (float near = want[f] - 4; near >= 4; near -= 1)
+				float nearest = 4;
+				if (f == yardFace)
+					nearest = Math.Max(4, want[f] * YARD_WALL_SHARE);
+
+				for (float near = want[f] - 4; near >= nearest; near -= 1)
 				{
 					if (ClosedShare(grid, f, near) >= WALLED_SHARE)
 					{
@@ -399,7 +411,7 @@ class RZ_SiteWire
 					if (g == RZ_SiteGrid.OUTSIDE)
 						break;
 
-					if (g & (RZ_SiteGrid.INSIDE | RZ_SiteGrid.SOLID))
+					if ((g & RZ_SiteGrid.INSIDE) || ((g & RZ_SiteGrid.SOLID) && (grid.LineAtPos(at + across * d) & RZ_SiteGrid.LINE)))
 					{
 						hit = true;
 						break;
@@ -547,11 +559,12 @@ class RZ_SiteWire
 		{
 			for (float d = 1; d <= SHADOW; d += RZ_SiteGrid.CELL)
 			{
-				int g = grid.FlagsAt(m_aAt[station] + across * (d * side));
+				vector seen = m_aAt[station] + across * (d * side);
+				int g = grid.FlagsAt(seen);
 				if (g == RZ_SiteGrid.OUTSIDE)
 					break;
 
-				if (g & (RZ_SiteGrid.INSIDE | RZ_SiteGrid.SOLID))
+				if ((g & RZ_SiteGrid.INSIDE) || ((g & RZ_SiteGrid.SOLID) && (grid.LineAtPos(seen) & RZ_SiteGrid.LINE)))
 					return true;
 			}
 		}

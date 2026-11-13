@@ -8,14 +8,23 @@ GenericEntity {
  }
  coords 0 0 0
  {
-  StaticModelEntity : "{EF39F5715EF2323E}Prefabs/Structures/Walls/BarbedWire/BarbedTape_01/BarbedTape_01_Short.et" {
+  SCR_DestructibleEntity : "{74F66E977B10C100}Prefabs/Structures/Walls/BarbedWire/NetFence_USSR_01/NetFence_USSR_01_1m.et" {
    ID "6944DE3EAD48223E"
    components {
     Hierarchy "{7E608623E83342BA}" {
     }
    }
-   coords 0 0 0
-   angles 0 90 0
+   coords -0.866 0 0
+   angles 0 0 0
+  }
+  SCR_DestructibleEntity : "{1EDCD7CE5F02D279}Prefabs/Structures/Walls/BarbedWire/NetFence_USSR_01/NetFence_USSR_01_pole.et" {
+   ID "93D8D2D12EE1B8C6"
+   components {
+    Hierarchy "{B419C3DE89C2BC8D}" {
+    }
+   }
+   coords 0.753 0 0
+   angles 0 0 0
   }
  }
 }

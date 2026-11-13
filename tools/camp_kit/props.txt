@@ -105,6 +105,9 @@ GenericEntity {BC3EEB0F1E36272F}Prefabs/Props/Forest/DeerSkull_01/DeerSkull_01_b
 StaticModelEntity {C1576E5555582214}Prefabs/Structures/Military/Fortifications/DirtCover_01/DirtCover_01_short.et
 StaticModelEntity {DF649B29EC7635F3}Prefabs/Structures/Military/Fortifications/DirtPile_01/DirtPile_01_small.et
 GenericEntity {FEB4961C91993C22}Prefabs/Structures/Civilian/DogHouse_01.et
+GenericEntity {E89D14C904A6F0BB}Prefabs/Structures/BuildingParts/Doors/Door_NetFence_05/DoorFrame_NetFence_05_gate_tall_wide_EXT_B.et
+GenericEntity {8433CB183C75332D}Prefabs/Structures/BuildingParts/Doors/Door_NetFence_05/Door_NetFence_05_gate_tall_wide_LEFT_EXT_ST_B.et
+GenericEntity {AEF102A5730C7B5D}Prefabs/Structures/BuildingParts/Doors/Door_NetFence_05/Door_NetFence_05_gate_tall_wide_RIGHT_EXT_ST_B.et
 StaticModelEntity {DA1B42FB9AEC02BE}Prefabs/Structures/Military/Fortifications/Dragontooth_01/Dragontooth_01_V3.et hier
 GenericEntity {0B8C89775A748CD1}Prefabs/Props/Dst/Drawer_01.et
 GenericEntity {67D8BD97E6B003FF}Prefabs/Props/Dst/Drawer_02.et
@@ -213,6 +216,10 @@ GenericEntity {2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et
 SCR_DestructibleEntity {CE65F7572D53D23B}Prefabs/Structures/Walls/Net/NetFence_05/NetFence_05_tall_3m.et
 SCR_DestructibleEntity {BECA0D0A34726F45}Prefabs/Structures/Walls/Net/NetFence_05/NetFence_05_tall_6m_V1.et
 SCR_DestructibleEntity {A8B28F7E550B0F41}Prefabs/Structures/Walls/Net/NetFence_05/NetFence_05_tall_pole.et
+SCR_DestructibleEntity {74F66E977B10C100}Prefabs/Structures/Walls/BarbedWire/NetFence_USSR_01/NetFence_USSR_01_1m.et
+SCR_DestructibleEntity {9AE2BF8692551FE0}Prefabs/Structures/Walls/BarbedWire/NetFence_USSR_01/NetFence_USSR_01_3m.et
+SCR_DestructibleEntity {40FD7452AC292C40}Prefabs/Structures/Walls/BarbedWire/NetFence_USSR_01/NetFence_USSR_01_6m_V1.et
+SCR_DestructibleEntity {1EDCD7CE5F02D279}Prefabs/Structures/Walls/BarbedWire/NetFence_USSR_01/NetFence_USSR_01_pole.et
 GenericEntity {03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et
 GenericEntity {FB388A4B8389EFB2}Prefabs/Props/PersonalBelongings/Notebooks/Notebook_01_Personal_Civilian.et
 GenericEntity {C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et

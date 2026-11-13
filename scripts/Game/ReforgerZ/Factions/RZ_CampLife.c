@@ -3274,6 +3274,11 @@ class RZ_CampLife
 				if (church)
 					return -1;
 
+				// A farm or a works yard: a compound with ground of its own to fence (the fallback when
+				// the town's hall has no room for a base)
+				if (farm || garage || RZ_LandmarkFinder.Matches("industrial", name))
+					return 1;
+
 				return 0;
 			}
 

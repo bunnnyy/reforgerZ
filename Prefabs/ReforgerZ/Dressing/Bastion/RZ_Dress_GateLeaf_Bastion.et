@@ -1,0 +1,21 @@
+GenericEntity {
+ ID "B59AC4F3E3B77B7E"
+ components {
+  RplComponent "{85CB52E5F7A365BE}" {
+  }
+  Hierarchy "{3472E00C7AD983A5}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{8433CB183C75332D}Prefabs/Structures/BuildingParts/Doors/Door_NetFence_05/Door_NetFence_05_gate_tall_wide_LEFT_EXT_ST_B.et" {
+   ID "117481A3AD302EB9"
+   components {
+    Hierarchy "{232F1CA53D924058}" {
+    }
+   }
+   coords -0.0 0 0.928
+   angles 0 90 0
+  }
+ }
+}

@@ -767,26 +767,36 @@ piece("Fence_Haven_M", "Haven", "None", "Approach", "A section of plank fence.",
 piece("Fence_Haven_S", "Haven", "None", "Approach", "An old fence panel on a post.", [P("WoodenFenceOld_01_4m.et", -2.0, 0, 0)])
 piece("Fence_Haven_XS", "Haven", "None", "Approach", "Crates stacked across a gap, a pallet on top.", [
     P("CrateWooden_02_1x1x1.et", 0, 0, 4), P("Pallet_01.et", 0, 0, 2, 1.0)])
-piece("Fence_Halcyon_L", "Halcyon", "None", "Approach", "Tall chain-link, two sections end to end.", [
-    P("NetFence_05_tall_6m_V1.et", -4.7, 0, 0), P("NetFence_05_tall_3m.et", 1.6, 0, 0), P("NetFence_05_tall_pole.et", 4.75, 0, 0)])
-piece("Fence_Halcyon_M", "Halcyon", "None", "Approach", "A tall chain-link section.", [
-    P("NetFence_05_tall_6m_V1.et", -3.1, 0, 0), P("NetFence_05_tall_pole.et", 3.2, 0, 0)])
-piece("Fence_Halcyon_S", "Halcyon", "None", "Approach", "A short chain-link section.", [
-    P("NetFence_05_tall_3m.et", -1.55, 0, 0), P("NetFence_05_tall_pole.et", 1.6, 0, 0)])
-piece("Fence_Halcyon_XS", "Halcyon", "None", "Approach", "A coil of wire in a gap.", [P("BarbedTape_01_Short.et", 0, 0, 90)])
+# The lab's and the army's line (the author, 2026-11-13: "chainlink fence with barbed wire above ... keeps zombies
+# out, they can't climb"): vanilla's NetFence_USSR_01, measured: each section has its post at its origin and none at
+# its far end (6 m 0 to 6.0, 3 m 0 to 3.0, the "1m" 0 to 1.5), so sections follow each other end to end and a pole
+# closes the run's far end, its face against the last section's end. A run is centred on its own origin.
+def _MESH(sections):
+    total = sum(_BOX[q]["x1"] for q in sections) + _BOX["NetFence_USSR_01_pole.et"]["w"]
+    x = -total / 2
+    parts = []
+    for q in sections:
+        parts.append(P(q, round(x, 3), 0, 0))
+        x += _BOX[q]["x1"]
+    # the pole's left face against the last section's end (measured faces, no overlap)
+    parts.append(P("NetFence_USSR_01_pole.et", round(x - _BOX["NetFence_USSR_01_pole.et"]["x0"], 3), 0, 0))
+    return parts
+
+
+_M6, _M3, _M1 = "NetFence_USSR_01_6m_V1.et", "NetFence_USSR_01_3m.et", "NetFence_USSR_01_1m.et"
+for _fac in ("Halcyon", "Bastion"):
+    piece("Fence_%s_L" % _fac, _fac, "None", "Approach", "Chain-link three metres high, barbed wire along its top: two sections end to end.", _MESH([_M6, _M6]))
+    piece("Fence_%s_M" % _fac, _fac, "None", "Approach", "A six-metre section of barbed chain-link.", _MESH([_M6]))
+    piece("Fence_%s_S" % _fac, _fac, "None", "Approach", "A three-metre section of barbed chain-link.", _MESH([_M3]))
+    piece("Fence_%s_XS" % _fac, _fac, "None", "Approach", "A short section of barbed chain-link closing the last of a gap.", _MESH([_M1]))
 piece("Fence_Halcyon_XXS", "Halcyon", "None", "Approach", "A no-entry sign on its pole in the last gap.", [P("SignIndustrial_USSR_02_warnings_entryforbidden_pole.et", 0, 0, 0)])
-# The lab's own line: security mesh four metres high, a razor coil along its top
-piece("SecFence_Halcyon_L", "Halcyon", "None", "Approach", "Security mesh four metres high with a razor coil along its top, two sections.", [
-    P("SF_SecurityFence_6m.et", -6.0, 0, 0), P("SF_SecurityFence_6m.et", 0, 0, 0)])
-piece("SecFence_Halcyon_M", "Halcyon", "None", "Approach", "A section of security mesh, a razor coil along its top.", [P("SF_SecurityFence_6m.et", -3.0, 0, 0)])
-piece("SecFence_Halcyon_S", "Halcyon", "None", "Approach", "A short section of security mesh.", [P("SF_SecurityFence_3m.et", -1.5, 0, 0)])
 # Road blocks (docs/SITES.md, "One way in"): what a stronghold closes every road with but its one gate. Razor wire, not
 # concrete (the author, 2026-11-13).
 piece("Block_Bastion_L", "Bastion", "None", "Approach", "The road closed with razor wire: two knife rests end to end across it, a coil of concertina behind them.", [
     P("BarbedTape_KnifeRest.et", -1.8, 0, 90), P("BarbedTape_KnifeRest.et", 1.8, 0.05, 88), P("BarbedTape_01_Long.et", 0, -1.3, 90)])
 piece("Block_Bastion_M", "Bastion", "None", "Approach", "A knife rest of razor wire across a lane.", [P("BarbedTape_KnifeRest.et", 0, 0, 90)])
-piece("Block_Halcyon_L", "Halcyon", "None", "Approach", "The road closed with the lab's own fence: a section of security mesh, a razor coil along its top.", [P("SF_SecurityFence_6m.et", -3.0, 0, 0)])
-piece("Block_Halcyon_M", "Halcyon", "None", "Approach", "A short section of security mesh across a lane.", [P("SF_SecurityFence_3m.et", -1.5, 0, 0)])
+piece("Block_Halcyon_L", "Halcyon", "None", "Approach", "The road closed with the lab's own fence: six metres of barbed chain-link.", _MESH([_M6]))
+piece("Block_Halcyon_M", "Halcyon", "None", "Approach", "Three metres of barbed chain-link across a lane.", _MESH([_M3]))
 piece("Block_RedHand_L", "RedHand", "None", "Approach", "A truck on its rims dragged across the road, tyres piled at its nose.", [
     P("Ural4320_wreck_static.et", -0.9, 0, 90), P("TirePile_01_small.et", 4.3, 0.2, 0)])
 piece("Block_RedHand_M", "RedHand", "None", "Approach", "A van turned across the road.", [P("S1203_wreck_static.et", 0, 0, 90)])
@@ -798,6 +808,12 @@ piece("Block_Haven_M", "Haven", "None", "Approach", "A fence panel across the la
 piece("Block_Haven_S", "Haven", "None", "Approach", "Crates stacked in a gap.", [
     P("CrateWooden_02_1x1x1.et", -0.52, 0, 4), P("CrateWooden_02_1x1x1.et", 0.52, 0, -3), P("CrateWooden_02_1x1x1.et", 0, 0, 6, 1.0)])
 # The gates: what stands each side of the opening on the road in
+# A chain-link gate standing open (the author, 2026-11-13: the way in "can use a fence gate"): one leaf of vanilla's
+# tall wide net-fence gate, turned a quarter so it lies along the road's edge (the piece faces out along the road), so
+# the opening stays clear for trucks. Measured: a leaf is 1.86 m from its hinge (x0 0 to x1 1.86).
+for _fac in ("Halcyon", "Bastion"):
+    piece("GateLeaf_%s" % _fac, _fac, "None", "Approach", "One leaf of a chain-link gate, swung open beside the way in.", [
+        P("Door_NetFence_05_gate_tall_wide_LEFT_EXT_ST_B.et", *[round(-v, 3) for v in _rot(90, _BOX["Door_NetFence_05_gate_tall_wide_LEFT_EXT_ST_B.et"]["x1"] / 2, 0)], 90)])
 piece("Gate_Bastion", "Bastion", "None", "Approach", "The checkpoint: a stop sign on its stand, a knife rest pulled aside along the wire, a sandbag end.", [
     P("SignCheckpoint_01_stop.et", -2.2, 0.1, 0), P("BarbedTape_KnifeRest.et", 0.6, 0, 92), P("Sandbag_01_end_burlap.et", -3.1, -0.1, 90)])
 piece("Gate_Haven", "Haven", "None", "Approach", "The gate swung open on its post: a fence panel turned back against a pole, a flowerpot.", [
@@ -808,7 +824,9 @@ piece("Lookout_Haven", "Haven", "Watch", "Approach", "A chair on a pallet where 
     S("RZ_Watch", 0, -0.1, "sit", 0, 10)])
 piece("Floodlight", "Halcyon", "None", "Edge", "A floodlight mast on its trailer, lit, facing out over the fence.", [P("GeneratorFloodlight_US_01.et", 0, 0, 180)])
 # Harden: boards over windows and blocked doors, against the wall, their front out; a window's at its own height
-piece("BoardWindow", "Common", "None", "Approach", "A pallet nailed over a ground-floor window.", [P("Pallet_01.et", 0, 0, 0, -0.6, 90, 0)])
+# Centred on the window's opening: its child's origin is the middle of the opening (seen in the photo tour,
+# 2026-11-13: at -0.6 the pallet hung over the lower half of the window and the wall under it)
+piece("BoardWindow", "Common", "None", "Approach", "A pallet nailed over a ground-floor window.", [P("Pallet_01.et", 0, 0, 0, 0, 90, 0)])
 piece("BoardDoor", "Common", "None", "Approach", "A door shut with pallets stood against it, a third nailed across.", [
     P("Pallet_01.et", -0.42, 0.05, 0, 0, 90, 0), P("Pallet_01.et", 0.42, 0.05, 0, 0, 90, 0), P("Pallet_01.et", 0, 0.12, 4, 0.9, 90, 0)])
 piece("BoardDoor_Bastion", "Bastion", "None", "Approach", "A side door sandbagged shut, waist high.", [
@@ -936,6 +954,7 @@ RULES = {
     "CrateSeats": (3, "yard", "near FirePit 6; flat 6"),
     "DutyBoard": (2, "court", "wall 2; near RosterBoard 5; faces wall"),
     "Gate_Bastion": (1, "gate", "faces road; flat 8"),
+    "GateLeaf_Bastion": (4, "gate", "by gate 4; faces road; flat 10"), "GateLeaf_Halcyon": (4, "gate", "by gate 4; faces road; flat 10"),
     # The Red Hand
     "SentryNest_RedHand": (1, "yard", "covers gate; covers road; faces road; away gate 3; bank"),
     "CardTable": (3, "yard", "by FireBarrel|Sofa 7; flat 6"),
@@ -970,8 +989,9 @@ RULES = {
     "Wire_Bastion_L": (1, "wire", ""), "Wire_Bastion_M": (1, "wire", ""), "Wire_Bastion_S": (1, "wire", ""), "Wire_Bastion_XS": (1, "wire", "level"),
     "Sandbags_Bastion_L": (1, "wire", ""), "Sandbags_Bastion_M": (1, "wire", ""),
     "Scrap_RedHand_L": (1, "wire", ""), "Scrap_RedHand_M": (1, "wire", ""), "Scrap_RedHand_S": (1, "wire", "level"), "Scrap_RedHand_XS": (1, "wire", "level"),
-    "Fence_Haven_L": (1, "wire", ""), "Fence_Haven_M": (1, "wire", ""), "Fence_Haven_S": (1, "wire", ""), "Fence_Haven_XS": (1, "wire", "level"),
-    "Fence_Halcyon_L": (1, "wire", ""), "Fence_Halcyon_M": (1, "wire", ""), "Fence_Halcyon_S": (1, "wire", ""), "Fence_Halcyon_XS": (1, "wire", ""),
+    "Fence_Haven_L": (1, "wire", "fence"), "Fence_Haven_M": (1, "wire", "fence"), "Fence_Haven_S": (1, "wire", "fence"), "Fence_Haven_XS": (1, "wire", "level"),
+    "Fence_Halcyon_L": (1, "wire", "fence"), "Fence_Halcyon_M": (1, "wire", "fence"), "Fence_Halcyon_S": (1, "wire", "fence"), "Fence_Halcyon_XS": (1, "wire", "fence"),
+    "Fence_Bastion_L": (1, "wire", "fence"), "Fence_Bastion_M": (1, "wire", "fence"), "Fence_Bastion_S": (1, "wire", "fence"), "Fence_Bastion_XS": (1, "wire", "fence"),
     "Floodlight": (3, "yard", "faces out"),
     "BoardWindow": (1, "yard", ""), "BoardDoor": (1, "yard", ""), "BoardDoor_Bastion": (1, "yard", ""), "BoardDoor_RedHand": (1, "yard", ""),
     "StoresBoard": (2, "court", "faces out"),
@@ -1014,8 +1034,7 @@ RULES = {
     "SearchTable": (2, "gate", "by Gate_Bastion 12; faces road; flat 6"),
     "FuelPoint": (4, "yard", "by MotorPool|FuelDump 10; away " + FIRES + " 8; flat 6"),
     "RiotLine": (4, "gate", "by Triage 9; faces road; flat 8"),
-    "SecFence_Halcyon_L": (1, "wire", ""), "SecFence_Halcyon_M": (1, "wire", ""), "SecFence_Halcyon_S": (1, "wire", ""),
-    "Block_Bastion_L": (1, "wire", ""), "Block_Bastion_M": (1, "wire", ""), "Block_Halcyon_L": (1, "wire", ""), "Block_Halcyon_M": (1, "wire", ""),
+    "Block_Bastion_L": (1, "wire", ""), "Block_Bastion_M": (1, "wire", ""), "Block_Halcyon_L": (1, "wire", "fence"), "Block_Halcyon_M": (1, "wire", "fence"),
     "Block_RedHand_L": (1, "wire", "level"), "Block_RedHand_M": (1, "wire", "level"), "Block_RedHand_S": (1, "wire", "level"),
     "Block_Haven_L": (1, "wire", "level"), "Block_Haven_M": (1, "wire", "level"), "Block_Haven_S": (1, "wire", "level"),
     # Counters (laid by the quartermaster, not by the solver)
@@ -1037,29 +1056,30 @@ KIT_TIER = {("SURVIVORS", "Table"): 2}
 WIRE_BASTION = ["Wire_Bastion_L", "Wire_Bastion_M", "Wire_Bastion_S", "Wire_Bastion_XS"]
 WIRE_REDHAND = ["Scrap_RedHand_L", "Scrap_RedHand_M", "Scrap_RedHand_Wreck", "Scrap_RedHand_S", "Scrap_RedHand_XS", "Scrap_RedHand_XXS"]
 WIRE_HAVEN = ["Fence_Haven_L", "Fence_Haven_M", "Fence_Haven_S", "Fence_Haven_XS"]
-WIRE_HALCYON = ["Fence_Halcyon_L", "Fence_Halcyon_M", "Fence_Halcyon_S", "Fence_Halcyon_XS", "Fence_Halcyon_XXS"]
+WIRE_HALCYON = ["Fence_Halcyon_L", "Fence_Halcyon_M", "Fence_Halcyon_S", "Fence_Halcyon_XS"]
 # The lab's own line, and each stronghold's road blocks (docs/SITES.md, "One way in")
-WALL_HALCYON = ["SecFence_Halcyon_L", "SecFence_Halcyon_M", "SecFence_Halcyon_S", "Fence_Halcyon_XS", "Fence_Halcyon_XXS"]
+WALL_HALCYON = WIRE_HALCYON
+FENCE_BASTION = ["Fence_Bastion_L", "Fence_Bastion_M", "Fence_Bastion_S", "Fence_Bastion_XS"]
 BLOCK_BASTION = ["Block_Bastion_Teeth", "Block_Bastion_L", "Block_Bastion_M", "Wire_Bastion_S", "Wire_Bastion_XS"]
-BLOCK_HALCYON = ["Block_Halcyon_L", "Block_Halcyon_M", "Fence_Halcyon_XS", "Fence_Halcyon_XXS"]
+BLOCK_HALCYON = ["Block_Halcyon_L", "Block_Halcyon_M", "Fence_Halcyon_XS"]
 BLOCK_REDHAND = ["Block_RedHand_L", "Block_RedHand_M", "Block_RedHand_S", "Scrap_RedHand_XS"]
 BLOCK_HAVEN = ["Block_Haven_L", "Block_Haven_M", "Block_Haven_S"]
 DOCTRINE = {
-    ("MILITARY", "STRONGHOLD"): dict(close="all", harden="all", ring=8, yard=14, wire=WIRE_BASTION, block=BLOCK_BASTION, window="BoardWindow", door="BoardDoor_Bastion",
+    ("MILITARY", "STRONGHOLD"): dict(close="all", harden="all", ring=8, yard=14, wire=FENCE_BASTION, block=BLOCK_BASTION, window="BoardWindow", door="BoardDoor_Bastion",
                                      lookout=["SentryNest_Bastion"], light="Floodlight_Bastion", stores="StoresBoard", indoors=["Tarp"]),
-    ("MILITARY", "OUTPOST"): dict(close="two", harden="all", ring=7, yard=12, wire=["Sandbags_Bastion_L", "Sandbags_Bastion_M", "Wire_Bastion_S", "Wire_Bastion_XS"],
+    ("MILITARY", "OUTPOST"): dict(close="all", harden="all", ring=7, yard=12, wire=FENCE_BASTION,
                                   window="BoardWindow", door="BoardDoor_Bastion", lookout=["SentryNest_Bastion"]),
     ("MILITARY", "ROAD_POST"): dict(close="none", harden="none"),
     ("BANDITS", "STRONGHOLD"): dict(close="all", harden="doors", ring=8, yard=14, wire=WIRE_REDHAND, block=BLOCK_REDHAND, door="BoardDoor_RedHand", lookout=["SentryNest_RedHand"]),
-    ("BANDITS", "OUTPOST"): dict(close="road", harden="none", ring=7, yard=12, wire=WIRE_REDHAND, lookout=["SentryNest_RedHand"]),
+    ("BANDITS", "OUTPOST"): dict(close="all", harden="none", ring=7, yard=12, wire=WIRE_REDHAND, lookout=["SentryNest_RedHand"]),
     ("BANDITS", "ROAD_POST"): dict(close="none", harden="none"),
     ("SURVIVORS", "STRONGHOLD"): dict(close="all", harden="threat", ring=8, yard=14, wire=WIRE_HAVEN, block=BLOCK_HAVEN, window="BoardWindow", door="BoardDoor", lookout=["Lookout_Haven"]),
-    ("SURVIVORS", "OUTPOST"): dict(close="road", harden="doors", ring=7, yard=12, wire=WIRE_HAVEN, door="BoardDoor", lookout=["Lookout_Haven"]),
-    ("SURVIVORS", "SAFEHOUSE"): dict(close="road", harden="all", ring=6, yard=10, wire=WIRE_HAVEN, window="BoardWindow", door="BoardDoor", lookout=["Lookout_Haven"]),
+    ("SURVIVORS", "OUTPOST"): dict(close="all", harden="doors", ring=7, yard=12, wire=WIRE_HAVEN, door="BoardDoor", lookout=["Lookout_Haven"]),
+    ("SURVIVORS", "SAFEHOUSE"): dict(close="all", harden="all", ring=6, yard=10, wire=WIRE_HAVEN, window="BoardWindow", door="BoardDoor", lookout=["Lookout_Haven"]),
     ("INSTITUTE", "STRONGHOLD"): dict(close="all", harden="all", ring=9, yard=12, wire=WALL_HALCYON, block=BLOCK_HALCYON, window="BoardWindow", door="BoardDoor",
                                       lookout=["GuardPost_Halcyon"], light="Floodlight", stores="StoresBoard",
                                       indoors=["FieldTable", "Tent_Halcyon", "ColdBox", "SampleTable", "NotebookBench", "RadioTable", "Tarp", "CrateChairs"]),
-    ("INSTITUTE", "OUTPOST"): dict(close="two", harden="doors", ring=7, yard=12, wire=WIRE_HALCYON, door="BoardDoor", lookout=["GuardPost_Halcyon"]),
+    ("INSTITUTE", "OUTPOST"): dict(close="all", harden="doors", ring=7, yard=12, wire=WIRE_HALCYON, door="BoardDoor", lookout=["GuardPost_Halcyon"]),
 }
 
 # Where a piece stands when its place has moved into a building (docs/DESIGN.md, "Camp life":
@@ -1082,7 +1102,7 @@ AT.update({name: "counter" for name in C if name.startswith("Counter_")})
 # solver"). DENSE adds the extras with their reasons and the state they follow.
 KITS = [
     ("MILITARY", "STRONGHOLD", "Military order gone a little ragged: tents in a loose row behind a sandbag line with a gap for the road, the board and the flag at the heart, the stores' window to one side.", [
-        "Counter_Bastion", "Bunker_Bastion", "Gate_Bastion", "RosterBoard", "FlagPole", "FirePit",
+        "Counter_Bastion", "Bunker_Bastion", "Gate_Bastion", "GateLeaf_Bastion", "GateLeaf_Bastion", "RosterBoard", "FlagPole", "FirePit",
         "Barricade_Sandbag", "Barricade_Sandbag", "Table", "MotorPool", "AidPost",
         "Tent_Small_Bastion", "Tent_Small_Bastion",
         "Tent_Large_Bastion", "FieldKitchen", "Firewood", "ShavingStand", "CrateSeats",
@@ -1119,13 +1139,13 @@ KITS = [
         "Counter_Haven", "BearDoor", "Table", "CookPot", "WaterBarrel", "LanternPost",
         "WashingLine", "Garden", "Firewood"]),
     ("INSTITUTE", "STRONGHOLD", "The lab grounds: a clean room in a dirty world. The work goes on indoors; outside only the decon shower at the one door, the generators behind sandbags, the antenna, the guards at the gate, a bench for the night shift (in a building, the tables, the tents and the cold store are indoors, as data).", [
-        "Counter_Halcyon", "GuardPost_Halcyon", "Gate_Halcyon", "PlagueBoard", "Triage", "WarningSigns",
+        "Counter_Halcyon", "GuardPost_Halcyon", "Gate_Halcyon", "GateLeaf_Halcyon", "GateLeaf_Halcyon", "PlagueBoard", "Triage", "WarningSigns",
         "FieldTable", "Tent_Halcyon", "FieldTable", "Loudspeaker_Halcyon",
         "DeconShower", "Generator", "ColdBox", "SampleTable", "Antenna",
         "Barricade_Fence", "Barricade_Fence", "NotebookBench", "RadioTable", "Tarp",
         "Latrine", "CrateChairs", "SmokingBench", "Generator"]),
     ("INSTITUTE", "OUTPOST", "A field station at a house: a table for the notes, the ward tent and the decon shower in the yard, the cold store on the generator, the antenna, the plague board at the gate.", [
-        "Counter_Halcyon", "GuardPost_Halcyon", "PlagueBoard", "Gate_Halcyon", "WarningSigns",
+        "Counter_Halcyon", "GuardPost_Halcyon", "PlagueBoard", "Gate_Halcyon", "GateLeaf_Halcyon", "GateLeaf_Halcyon", "WarningSigns",
         "FieldTable", "Tent_Halcyon", "Generator",
         "Antenna", "DeconShower", "ColdBox", "NotebookBench"]),
 ]

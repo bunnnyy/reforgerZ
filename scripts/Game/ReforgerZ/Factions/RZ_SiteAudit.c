@@ -119,7 +119,7 @@ class RZ_SiteAudit
 				}
 			}
 
-			if (!seat[k] && grid && SolidArea(grid, rect) > OVERLAP_AREA)
+			if (!seat[k] && grid && SolidArea(grid, rect, entry.Rules().m_bFence) > OVERLAP_AREA)
 				AddOverlap(overlaps, overlapAt, PieceName(entry) + " and something standing there", Middle(rect));
 		}
 
@@ -784,15 +784,18 @@ class RZ_SiteAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Square metres of solid cells (walls, trees, rocks, cars) whose middle lies in the quad.
-	protected static float SolidArea(RZ_SiteGrid grid, array<vector> quad)
+	//! Square metres of solid cells (walls, trees, rocks, cars) whose middle lies in the quad; for a
+	//! fence only walls and ruins (it runs through the rest: docs/SITES.md, "Close it off").
+	protected static float SolidArea(RZ_SiteGrid grid, array<vector> quad, bool fence = false)
 	{
 		int n = 0;
 		array<int> cells = {};
 		CellsIn(grid, quad, cells);
 		foreach (int c : cells)
 		{
-			if (grid.Flags(c % grid.m_iN, c / grid.m_iN) & RZ_SiteGrid.SOLID)
+			int cx = c % grid.m_iN;
+			int cz = c / grid.m_iN;
+			if ((grid.Flags(cx, cz) & RZ_SiteGrid.SOLID) && (!fence || (grid.LineAt(cx, cz) & RZ_SiteGrid.HARD)))
 				n++;
 		}
 
