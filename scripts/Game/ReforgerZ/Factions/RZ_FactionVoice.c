@@ -86,10 +86,36 @@ class RZ_FactionVoice
 			case RZ_EFaction.SURVIVORS: roles.Insert("cook"); roles.Insert("lookout"); roles.Insert("farmer"); roles.Insert("nurse"); break;
 			case RZ_EFaction.MILITARY: roles.Insert("sentry"); roles.Insert("radio operator"); roles.Insert("mechanic"); roles.Insert("medic"); break;
 			case RZ_EFaction.BANDITS: roles.Insert("lookout"); roles.Insert("toll man"); roles.Insert("mechanic"); roles.Insert("cook"); break;
-			case RZ_EFaction.INSTITUTE: roles.Insert("lab assistant"); roles.Insert("guard"); roles.Insert("technician"); break;
+			case RZ_EFaction.INSTITUTE: roles.Insert("lab assistant"); roles.Insert("guard"); roles.Insert("technician"); roles.Insert("doctor"); break;
 		}
 
 		return rng.Pick(roles);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A holding's named person's name that fits their role: only Halcyon's doctor is "Dr" (a guard
+	//! called Dr reads wrong on the nametag), and nobody else at the station is.
+	static string PersonNameFor(RZ_Rng rng, RZ_EFaction f, string role)
+	{
+		if (f != RZ_EFaction.INSTITUTE)
+			return PersonName(rng, f);
+
+		string first = RZ_NoteText.FirstName(rng);
+		string last = RZ_NoteText.Surname(rng);
+		if (role == "doctor")
+			return "Dr " + first + " " + last;
+
+		return first + " " + last;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The role a saved person keeps: a Halcyon "Dr" saved under another role is the doctor.
+	static string FitRole(RZ_EFaction f, string name, string role)
+	{
+		if (f == RZ_EFaction.INSTITUTE && name.StartsWith("Dr "))
+			return "doctor";
+
+		return role;
 	}
 
 	//------------------------------------------------------------------------------------------------
