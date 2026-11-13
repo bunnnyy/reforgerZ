@@ -942,15 +942,15 @@ Frame (root, full screen)
    └─ Frame  ObjectBody     at (0, 262), 1,200 × 664; the script moves it to (0, 132) when there's no strip
       ├─ Text   ObjectReadLabel  at (48, 0), mono bold 18, dim: over the read ("LAST HEARD · BASTION"), hidden when empty
       ├─ Text   ObjectText     at (48, 30), 1,104 × 150, regular 24, #D9D2BE, wraps: what you see (hidden when empty)
-      ├─ Text   ObjectWorking  at (48, 186), mono bold 22, amber: "Busy with the boiling... 12 s" (hidden when nothing's under way)
-      ├─ ProgressBar ObjectProgress  at (48, 220), 400 × 6, amber, shown with it
-      ├─ Text   (OptionsLabel) at (48, 232), mono bold 18, dim, "WHAT YOU CAN DO"
-      ├─ Frame  (OptionList)   at (48, 262), 1,104 × 300, #0C0E0F
+      ├─ Text   ObjectStatus   at (48, 96), 1,104 × 130, regular 22, #F4F0E6, wraps: what the last pick said, or a locked row's reason (hidden when empty); the script puts it right under ObjectText's last line, above the options
+      ├─ Text   ObjectWorking  at (48, 236), mono bold 22, amber: "Busy with the boiling... 12 s" (hidden when nothing's under way)
+      ├─ ProgressBar ObjectProgress  at (48, 270), 400 × 6, amber, shown with it
+      ├─ Text   (OptionsLabel) at (48, 282), mono bold 18, dim, "WHAT YOU CAN DO"
+      ├─ Frame  (OptionList)   at (48, 312), 1,104 × 300, #0C0E0F
       │  ├─ ScrollLayout OptionScroll  fills it (the pad's up/down keep the selected row in view)
       │  │  └─ SizeLayout (OptionWidth) 1,104 wide
       │  │     └─ VerticalLayout Options   the option rows
       │  └─ Text  OptionsEmpty  centred, regular 24, dim, "Nothing you can do here right now."
-      ├─ Text   ObjectStatus   at (48, 572), 1,104 wide, regular 22, #F4F0E6, wraps: what the last pick said, or a locked row's reason (hidden when empty)
       ├─ HorizontalLayout Prompts  at (48, 622): the footer prompts the script makes (its first, A, dims on a locked row)
       └─ Text   PromptsText    at (48, 628), mono bold 18, dim: the static footer, hidden once prompts are made
 ```

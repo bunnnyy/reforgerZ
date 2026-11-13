@@ -1006,7 +1006,8 @@ light...", or for a house radio the line it caught, under "LAST HEARD · BASTION
 CAN DO the options, one row each. An option you can't do now is **locked**: dim, a lock before it
 and a short tag on the right saying why (NEEDS POWER, OPERATOR ONLY). While work you started is
 under way (boiling water, cracking a channel), "Busy with the boiling... 12 s" over a thin amber
-bar. Under the list, what the last pick said.
+bar. What the last pick said (the channels a house radio tuned in, a locked row's reason) shows
+right under what you see, above the options, never down by the footer prompts.
 
 | | Keyboard and mouse | Gamepad |
 |---|---|---|

@@ -2177,7 +2177,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_DeathBrief.c:174` | a server tick after a death, the dead character's damage manager still gives the instigator of the last blow: an AI's or an infected's entity (`GetInstigatorEntity`), a player's id, nothing for a fall | The brief says "Nobody saw how" (or "The infected" with one standing over the body) where it could have named a faction; nothing else depends on it |
 | `UI/RZ_MapIcons.c:642` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
 | `UI/RZ_UIData.c:1223` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
-| `UI/RZ_ObjectMenu.c:275` | `FrameSlot.SetSize` on the object menu's centred panel (anchor and alignment 0.5) keeps it centred as it grows for [the status strip](UI.md#the-status-strip-and-locked-rows) (940 tall) and shrinks without one (810) | The panel jumps off-centre or keeps one height: set its slot to 1,200 × 940 in `RZ_ObjectMenu.layout` and remove the `SetSize` line; things without a strip then have a gap above their text |
+| `UI/RZ_ObjectMenu.c:328` | `FrameSlot.SetSize` on the object menu's centred panel (anchor and alignment 0.5) keeps it centred as it grows for [the status strip](UI.md#the-status-strip-and-locked-rows) (940 tall) and shrinks without one (810) | The panel jumps off-centre or keeps one height: set its slot to 1,200 × 940 in `RZ_ObjectMenu.layout` and remove the `SetSize` line; things without a strip then have a gap above their text |
 | `UI/RZ_CraftMenu.c:384` | the same on the crafting screen's panel: 960 tall at a stove (the strip), 858 at a workbench | As above, with `RZ_CraftMenu.layout` at 1,600 × 960 |
 
 ## 7. Log lines to check
@@ -2775,7 +2775,7 @@ session, tick off:
   happening. Start a generator within 40 m and open the radio again: POWER ON, TRANSMIT YES and the
   call row unlocked. At the generator: ENGINE, FUEL (~N MIN or EMPTY) and YOUR CAN; with no fuel on
   you Refuel says NEEDS FUEL. A thing with no tiles (a puzzle object, the quartermaster's asks) has
-  no strip and the panel is shorter, still centred (VERIFY `UI/RZ_ObjectMenu.c:275`). From the sofa:
+  no strip and the panel is shorter, still centred (VERIFY `UI/RZ_ObjectMenu.c:328`). From the sofa:
   the tiles' labels and values read, the chip's words read, nothing sits outside the panel.
 - [ ] A house radio, with a pad (vanilla's small radio on a dresser or table in a house; the repo's
   copy of `Prefabs/Props/Civilian/RadioSmall_01_Base.et`, VERIFY `Interactions/RZ_Interactions.c:1468`).
