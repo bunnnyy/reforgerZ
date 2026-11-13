@@ -6947,7 +6947,7 @@
    "category": "Shared",
    "object": "Shared",
    "field": "m_SharedSettings",
-   "covers": "**Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine))"
+   "covers": "**Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits), **Work sites** (on, reach 3 m, time scale 1, 40 sites at once; while holding: **Lock movement** on, **Hands animation** on, **Dig with the tool** on) ([DESIGN.md](DESIGN.md#the-shared-engine))"
   },
   {
    "category": "Map",

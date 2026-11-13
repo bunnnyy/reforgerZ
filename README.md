@@ -287,7 +287,7 @@ scripts/Game/ReforgerZ/
   Guidance/      experience levels, tips, openings, open radio channels
   Interactions/  loose loot, wrecks' boots, door locks, doorway blockers and keys, building queries (mission
                  spots kept out of locked buildings), cars (a car's room to stand, the hotwire's
-                 loom), petrol pumps as vanilla fuel, crafting and
+                 loom), a work site's hold (its animation and movement lock), petrol pumps as vanilla fuel, crafting and
                  the stove (and their screen's server side), the object menu's server side and grouped
                  actions, its status strip and locked rows, water, traps, generators, fire, secure radio and the radio screen's server
                  side (View radio), a medic slowing a bite

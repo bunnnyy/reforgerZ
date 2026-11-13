@@ -1410,6 +1410,22 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
 - **The hold.** Hold the prompt (vanilla's hold-progress bar, [UI.md](UI.md#the-hold-prompt)) for the
   work's time, 5 to 20 s (a step that used to take 2 minutes or more there: 20 s; a background's way
   that was quicker stays quicker). Move more than 1.5 m or get hurt and the bar starts again.
+- **Working, and standing still.** While the bar runs you work at the thing and can't walk, as
+  with vanilla's building (`Interactions/RZ_WorkHold.c`, on the holder's own machine, with the
+  calls vanilla's own hold actions make):
+  - **The lock** (**Lock movement**, on): the legs are off for the hold only. You can still look
+    about.
+  - **Digging** (**Dig with the tool**, on): at a latrine, a grave or a dig, a carried
+    entrenching tool is taken in hand and vanilla's building animation plays with it. The tool is
+    never needed: the work takes the same time and is done the same without one.
+  - **Any other work, or digging with no tool** (**Hands animation**, on): the animation
+    vanilla plays at a mine being disarmed, kneeling at the thing with empty hands. If the engine
+    won't play it at a work site, nothing plays and the lock still holds.
+  - **Let go, always.** The hold's end, letting go, the site going, death, unconsciousness or
+    another body release both at once. A hit frees the hands and legs for a second and a half
+    (time to turn and run) before the bar starts again. As a net, the HUD's tick releases a hold
+    with no bar for three quarters of a second, or one that outlives its own time by 3 s.
+  - The server isn't asked and decides nothing here: it counts the work as before.
 - **Server-checked.** The server keeps, once a second, who has been within **Reach** (3 m) of each
   spawned site, unhurt (and hidden, for unseen work), since when. The hold's end counts only when
   that player has been at it for its time, less a second and a half; otherwise *"Not finished"*. Only
@@ -1429,6 +1445,12 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
   sensor: handed over after the hold, at the place). Nothing is given for the work itself.
 - **Off.** With **Work sites** off or no **Site prefab**, every such step is done as before: by
   staying at its place for its time.
+
+*Simplified:* there's one animation for all work that isn't digging (boarding up, painting and
+searching look the same), a tool put away takes a moment to reach the hand before the digging
+starts, and whether other players see the animation rests on the engine replicating an item use,
+as it does for vanilla's building: not seen in play yet. The hands animation is vanilla's at an
+item on the ground; at our invisible box it's a guess (the VERIFY list says what to turn off).
 
 | Kind | Before | After |
 |---|---|---|
