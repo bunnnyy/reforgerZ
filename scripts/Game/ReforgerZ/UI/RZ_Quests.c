@@ -395,6 +395,29 @@ class RZ_QuestTracker
 
 	// ================================================================ Jobs
 	//------------------------------------------------------------------------------------------------
+	//! A questline's stage job while the questline has its own row for this player (a major once
+	//! they took part, any other questline they can see): the questline's row says where its work is
+	//! now, so the stage job beside it would be the same job listed twice.
+	static bool IsStageOfListedRun(RZ_GameModeComponent gm, RZ_Mission m, int playerId)
+	{
+		if (!gm || !m || m.m_iQuestRun < 0)
+			return false;
+
+		RZ_Questlines q = gm.GetQuestlines();
+		if (!q || !q.IsEnabled())
+			return false;
+
+		RZ_QuestRun run = q.FindRun(m.m_iQuestRun);
+		if (!run || !q.IsVisibleTo(run, playerId))
+			return false;
+
+		if (!run.m_Line.IsMajor())
+			return true;
+
+		return run.PlayerTookPart(gm, playerId) || m.m_aParticipants.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Every job this player has: missions and contracts they see, the questlines they're part of
 	//! (a major only once they took part), the errands they hold.
 	void Jobs(int playerId, IEntity ent, notnull array<ref RZ_QuestJob> result)
@@ -410,6 +433,10 @@ class RZ_QuestTracker
 			mm.ListFor(playerId, list);
 			foreach (RZ_Mission m : list)
 			{
+				// A stage job of a questline listed below is that questline's row, not one of its own
+				if (IsStageOfListedRun(m_GM, m, playerId))
+					continue;
+
 				RZ_QuestJob j = new RZ_QuestJob();
 				j.m_iId = m.m_iId;
 				j.m_iKind = RZ_UIFeed.MissionKind(m);
@@ -710,6 +737,14 @@ class RZ_QuestTracker
 		}
 
 		// A saved choice from an earlier session: the same job by its title
+		// Tracking a questline's stage job is tracking the questline (its one row)
+		if (p.m_iTrackedId > 0 && m_GM.GetMissions())
+		{
+			RZ_Mission stage = m_GM.GetMissions().FindById(p.m_iTrackedId);
+			if (stage && IsStageOfListedRun(m_GM, stage, playerId))
+				p.m_iTrackedId = -stage.m_iQuestRun;
+		}
+
 		RZ_QuestJob tracked = FindJob(jobs, p.m_iTrackedId);
 		if (!tracked && p.m_iTrackedId != 0 && !p.m_sTrackedTitle.IsEmpty())
 		{

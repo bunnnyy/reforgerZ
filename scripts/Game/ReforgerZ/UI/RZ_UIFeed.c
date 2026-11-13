@@ -751,6 +751,10 @@ class RZ_UIFeed
 		array<int> shown = {};
 		foreach (RZ_Mission m : list)
 		{
+			// A questline's stage job is the questline's own row (BuildQuestlines), never a second one
+			if (RZ_QuestTracker.IsStageOfListedRun(m_GM, m, playerId))
+				continue;
+
 			int giver = -1;
 			if (m.m_bHasGiver)
 				giver = m.m_Req.m_eGiver;
@@ -1140,8 +1144,13 @@ class RZ_UIFeed
 			if (nowAt && !nowAt.IsRough())
 				where = nowAt.Words(m_GM);
 
+			// Taking part in the stage's job is taking part in the questline (as the tracker counts it)
 			string part = "0";
-			if (run.PlayerTookPart(m_GM, playerId))
+			RZ_Mission stageJob = null;
+			if (m_GM.GetMissions())
+				stageJob = m_GM.GetMissions().FindById(run.m_iMissionId);
+
+			if (run.PlayerTookPart(m_GM, playerId) || (stageJob && stageJob.m_aParticipants.Contains(playerId)))
 				part = "1";
 
 			RZ_UILine lnQ = new RZ_UILine("M");

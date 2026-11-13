@@ -370,6 +370,12 @@ radio. The radio only says who's asking."*
 | QUESTLINES AND JOBS | Questlines you're part of, missions, contracts, events, leaders' jobs |
 | ERRANDS | The errands you hold ([ERRANDS.md](ERRANDS.md)) |
 
+**One row per questline.** A questline's row says where its work is now, so the job of its current
+stage never gets a row of its own beside it: a major you took part in is one row under THE SEASON'S
+STORY and nothing under QUESTLINES AND JOBS; any other questline you can see is one row there. A
+major you haven't taken part in isn't your job yet: only its stage's job shows, as an offer.
+Tracking a stage's job tracks its questline.
+
 In each group the ones you've taken come first, then the ones offered. Each row: the type icon, the
 name, the rough area of its current objective under it (a major's act first: "Act II · Brod, a few km east"), TRACKED on the
 tracked one, and the time left or *Offered* under that. The D-pad (or a click) chooses a job; its

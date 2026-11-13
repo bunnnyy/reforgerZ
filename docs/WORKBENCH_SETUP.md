@@ -3285,6 +3285,10 @@ when it happens)
   OBJECTIVES (a done one faint with a tick and struck through, the current one bright after a
   yellow diamond, the next dim after an open one, "(Optional) ..."); REWARD, AS FAR AS YOU KNOW;
   REQUIREMENTS only on an offered job. Every text 18 px or more.
+- [ ] **One row per questline**: take part in a major (Halcyon's *Proof*): it's one row under THE
+  SEASON'S STORY, and its act's job (*Day One*) is no longer a second row under QUESTLINES AND
+  JOBS; the header counts it once. An ordinary questline is one row too. Track the major, finish
+  the act: the next act is still that one row, still tracked.
 - [ ] **Track on the Quests tab**: with a pad, **A** on a row tracks it and the HUD follows within
   2 s; A on the tracked row stops tracking (the button says UNTRACK) and the tracker goes and stays
   gone until you take a new job. Y, T, Space, Enter, the TRACK button and a double click on the row do the
