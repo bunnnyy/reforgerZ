@@ -97,6 +97,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | Tone's rest outside missions: the epilogue week's jokes (four or five a faction for each ending, the Red Hand's last with no cure), grief for a holding's named people (a newcomer takes the role under a new name), a short house's soup jokes, and the look lines outside a conversation (a noticing line only while a guard is turned to you, VERIFY; straight to the guns at a post that would shoot you anyway) | [WRITING.md](WRITING.md#the-voice-bank), [REPUTATION.md](REPUTATION.md#borrowed-kit) |
 | Tone's grey choices in missions: the outcome's reaction beat from the voice bank, nobody chose, someone else made the call, the clever way closing the honest one on four jobs, twelve givers who lie (a version a season, the truth at the scene or by background, the outcome naming it, taken public through talk at a capped morale and loyalty price), callback deeds (twelve weighted slots a life, brought up by leaders), and boards of record (the council's notes, Bastion's roster, the toll tally, the lab's sheet) | [DESIGN.md](DESIGN.md#story-blocks), [MISSIONS.md](MISSIONS.md#givers-who-lie), [WRITING.md](WRITING.md#grey-choices) |
 | Text tools: `tools/strings_inventory.py` lists every line of player text in the scripts (channel, faction, a register guess, repeats), and one text lint, `tools/voice_lint.py`, checks it against the writing rules, with a baseline of today's findings so only new or changed text fails | [WRITING.md](WRITING.md#checking-text), [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint) |
+| Wildlife: deer herds from WildlifeExpansion put out as data near players in the country (two herds at most, 150 to 300 m off and out of sight where it can be, never by a town, a faction's place, the line or on an island, put away past 450 m; not AI agents), and one or two raw meat legs from a shot deer, on the shooter's client report checked by the server | [Wildlife](DESIGN.md#wildlife) |
 | Setup tooling: the prefab manifest (every prefab, slot, settings object, faction and loadout, with a vanilla or Workshop prefab for 152 of its entries and the 13 loadouts), the Workbench plugin **ReforgerZ: Create prefabs** (run for real; a second run changes nothing) with a dry run and a checklist fallback, `tools/icon_atlas.py` for the icon atlas and imageset, and a checker that keeps the manifest and the setup doc in step with the scripts | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#1-create-the-prefabs) |
 | The first Workbench build: the prefabs (from the manifest, most made by the plugin, many of them on stand-in bases, among them the epilogue's board, candle and table, the season mark, the tribes' tag, call box and ID card, and the quartermasters' and the notebook's actions; camp life's 83 compositions, its eleven kits' plans and its smart-action waypoint, built as text; the player controller with the HUD and the faction and loadout managers), the Everon world (the main one) and the Arland test world with the game mode, the four factions and their hidden variants and the 13 background loadouts, their scenarios, the map config with the icon layer, the car picture, the 12 UI layouts, the icon atlas and imageset, and the screens and their keys in the menu and input configs. It starts in Workbench play with no script exceptions | [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), [UI.md](UI.md) |
 
@@ -207,9 +208,14 @@ waits in [designs/](../designs/README.md). What waits is play, engine checks and
   so nothing players leave behind stays in the world for good.
 - **Fire and the rest of the mod** (not built): a lit campfire makes no heat for the infected, and
   boiling water or cooking at one isn't wired to it ([MOD_STACK.md](MOD_STACK.md#fire-and-weather)).
-- **More for the loot** (candidates, none added): deer to hunt (WildlifeExpansion, 10 MB), a farm
-  rifle (MM Vz. 52, 18 MB) and a baseball bat (ASAPsMeleeWeapons, 4 MB). No crowbar exists on the
-  Workshop: forcing a lock still needs one of our own.
+- **More for the loot** (candidates, none added): a farm rifle (MM Vz. 52, 18 MB) and a baseball
+  bat (ASAPsMeleeWeapons, 4 MB). No crowbar exists on the Workshop: forcing a lock still needs one
+  of our own.
+- **Deer in multiplayer** (built, not seen in play): WildlifeExpansion works a deer's moves and
+  death out on each machine by itself, so players may not see the same herd in the same place or a
+  shot deer fall ([DESIGN.md](DESIGN.md#wildlife)). Test with two clients before relying on it; if
+  it reads badly, the way out is our own small deer script on the mod's models, moved and killed
+  on the server.
 - **Loot's known oddities:** the keyword "can" puts jerrycans and canteens in houses and shops;
   torches are the commonest find everywhere (they're both everyday and all of electronics); and
   piers, bunkers and retaining walls are rolled as houses (most find no spot and stay empty).

@@ -172,6 +172,8 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		RZ_TraceLightsClient.Tick(timeSlice);
 		// The map's own lamps: dark but where there's power (docs/DESIGN.md, The power grid)
 		RZ_PowerLampsClient.Tick(timeSlice);
+		// A deer this player shot is told to the server, for its meat (docs/DESIGN.md, Wildlife)
+		RZ_WildlifeClient.Tick();
 		// Tags over the people near you to talk to (docs/UI.md, Nametags): who, four times a second; where, every frame
 		RZ_NametagClient.Tick(timeSlice, m_wRoot);
 		// The arrow to whoever is speaking turns with you, every frame (one rotation, the text on change)

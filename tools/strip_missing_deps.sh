@@ -1,4 +1,5 @@
 # Sourced by tools/compile_check.sh, tools/runtime_test/run.sh and tools/zombie_lab/run.sh (not run).
+# Two functions: rz_strip_capital_scripts (further down), and
 #
 #   rz_strip_missing_deps <throwaway addon.gproj> <server folder> <EXTRA_ADDONS_DIR>
 #
@@ -10,6 +11,21 @@
 # behaviour layer) must be there, or this returns 1. Sets RZ_STRIP_NOTE to "" or to a note for the
 # result line ("; without 2 dependencies: ...").
 RZ_REQUIRED_DEPS="622120A5448725E3"	# Bacon Zombies (docs/MOD_STACK.md)
+
+#   rz_strip_capital_scripts <throwaway addon.gproj>
+#
+# Drops the dependencies that keep their scripts in "Scripts/" (capital S). On the Linux server, with
+# one of them loaded, the Game module never finds our lowercase "scripts/" and compiles nothing of
+# ReforgerZ, without an error (docs/MOD_STACK.md). No ReforgerZ script names anything of theirs, so
+# the checks run without them: Special Zombies and WildlifeExpansion.
+RZ_CAPITAL_SCRIPTS_DEPS="69BD721866937F85 68B3771125D0A209"
+
+rz_strip_capital_scripts() {
+	local gproj="$1" g
+	for g in $RZ_CAPITAL_SCRIPTS_DEPS; do
+		sed -i "s/ *\"$g\"//" "$gproj"
+	done
+}
 
 rz_strip_missing_deps() {
 	local gproj="$1" server="$2" extra="$3"

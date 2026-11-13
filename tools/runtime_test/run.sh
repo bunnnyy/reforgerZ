@@ -89,8 +89,9 @@ fi
 [ "$MODE" = tasks ] && ADDON="$WORK/tasks_addons/ReforgerZ"
 rm -rf "$ADDON" "$PROFILE/profile/ReforgerZ" && mkdir -p "$ADDON"
 cp "$ROOT/addon.gproj" "$ADDON/"
-sed -i 's/ *"69BD721866937F85"//' "$ADDON/addon.gproj"	# Special Zombies' "Scripts/" hides ours on Linux (see compile_check.sh)
-. "$ROOT/tools/strip_missing_deps.sh"	# on Linux, other dependencies missing from EXTRA_ADDONS_DIR too
+. "$ROOT/tools/strip_missing_deps.sh"
+rz_strip_capital_scripts "$ADDON/addon.gproj"	# Special Zombies' and WildlifeExpansion's "Scripts/" hide ours on Linux (see compile_check.sh)
+# on Linux, other dependencies missing from EXTRA_ADDONS_DIR too
 rz_strip_missing_deps "$ADDON/addon.gproj" "$SERVER" "${EXTRA_ADDONS_DIR:-}" || exit 2
 cp -r "$ROOT/scripts" "$ROOT/Configs" "$ADDON/"
 if [ "$MODE" = tasks ]; then
