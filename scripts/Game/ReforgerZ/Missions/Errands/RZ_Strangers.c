@@ -316,6 +316,24 @@ class RZ_Strangers
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A found hook put down by another system (a patrol marks a house where someone hides): the
+	//! same hook a finished job leaves, for 2 hours.
+	void PlantHook(string kind, vector at)
+	{
+		RZ_FoundHook h = new RZ_FoundHook();
+		h.kind = kind;
+		h.at = at;
+		h.until = m_fClock + HOOK_LIFE;
+		m_aHooks.Insert(h);
+		while (m_aHooks.Count() > 12)
+		{
+			m_aHooks.RemoveOrdered(0);
+		}
+
+		RZ_Log.Info(string.Format("Errands: found hook %1 at %2 from a duty", kind, RZ_SettlementScanner.GridReference(at)));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A found hook of `kind` within `radius` of pos, still fresh; null if none.
 	RZ_FoundHook HookNear(string kind, vector pos, float radius)
 	{

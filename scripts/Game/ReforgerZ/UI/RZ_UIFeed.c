@@ -94,7 +94,6 @@ class RZ_UIFeed
 	static const int PAYLOAD_RADIO = 16;	// the radio screen: V and C records; F falls back; X|reason closes (Interactions/RZ_RadioScreen.c)
 	static const int PAYLOAD_NAMETAGS = 20;	// the people near you to talk to: N records; "" none (Dialogue/RZ_Nametags.c, UI/RZ_NametagClient.c)
 	static const int PAYLOAD_POWER = 21;	// the power panel: P, B, C, A records; F busy; X|reason closes (World/RZ_PowerPanel.c)
-	static const int PAYLOAD_DUTY = 23;		// a duty's table: T, L, V, S records; X|reason closes (Missions/Errands/RZ_DutyTable.c)
 	static const int PAYLOAD_HISTORY = 22;	// the Journal's past jobs, asked when it opens (Missions/RZ_JobHistory.c)
 	static const int DETAIL_MAX = 1500;
 	static const int ERRAND_ID_BASE = 100000;	// errand rows' ids: -(base + errand id)

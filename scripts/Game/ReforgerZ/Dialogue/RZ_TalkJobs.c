@@ -15,7 +15,7 @@ class RZ_TalkJobs
 	static const int LEAVE = 7;		// "Not today.": left with them
 
 	//------------------------------------------------------------------------------------------------
-	//! "[Job]", "[Quest]", "[Errand]": the tag in front of a reply that starts a job, or opens its pitch.
+	//! "[Job]", "[Quest]", "[Errand]", "[Duty]": the tag in front of a reply that starts a job, or opens its pitch.
 	static string Tag(string kind)
 	{
 		return "[" + kind + "]";

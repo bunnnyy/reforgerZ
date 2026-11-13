@@ -41,6 +41,18 @@ class RZ_ErrandProps
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Watch (optional): The Last Tin's watch, a real wristwatch traded for two tins. Empty = a common find", "et")]
 	ResourceName m_sWatch;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty body (optional): one of the dead laid out for the duty that sorts them, a body under a sheet or a body bag on a board, as a composition of props with nothing to use. Empty = Effects", "et")]
+	ResourceName m_sDutyBody;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty person (optional): someone waiting in the line at the gate, a standing civilian with no weapon and no AI, or a prop figure. Empty = Puzzles > Civilian", "et")]
+	ResourceName m_sDutyPerson;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty tray (optional): a sample tray on Halcyon's bench, a small rack or case of vials. Empty = Crate", "et")]
+	ResourceName m_sDutyTray;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty vodka (optional): the bottle the Red Hand's still gives whoever ran the batch (BanditGear's vodka bottle). Empty = no bottle, only the pay", "et")]
+	ResourceName m_sDutyVodka;
+
 	//------------------------------------------------------------------------------------------------
 	ResourceName For(RZ_EErrandProp kind)
 	{
@@ -296,6 +308,9 @@ class RZ_Errands
 	protected ref map<string, float> m_mLastUnasked = new map<string, float>();	// ident -> clock
 	protected ref map<int, string> m_mLastWhy = new map<int, string>();			// playerId -> the last deal and why the rest weren't
 	protected ref map<int, string> m_mPrefer = new map<int, string>();			// playerId -> the errand the talk screen named (Peek), dealt first when asked
+	protected ref map<int, string> m_mPreferDuty = new map<int, string>();		// the same for the duty named beside it
+	static const int DEAL_ANY = 0;		// the pressing one, else a duty
+	static const int DEAL_DUTY = 1;		// a duty only (the one offered beside the pressing errand)
 	protected ref map<string, ref RZ_ErrandStats> m_mStats = new map<string, ref RZ_ErrandStats>();
 	protected ref map<string, int> m_mCounters = new map<string, int>();		// "house.<idx>": turns done there this season
 	protected ref map<int, int> m_mHousePop = new map<int, int>();			// safehouse -> people last seen
@@ -327,14 +342,16 @@ class RZ_Errands
 		m_Locals = new RZ_Locals(gm);
 		m_PayKinds = new RZ_ErrandsPay(this);
 		m_More = new RZ_ErrandsDealer(this);
-		m_Tables = new RZ_DutyTables(gm, this);
+		m_Games = new RZ_DutyGames(gm, this);
 		m_Squads = new RZ_DutySquads(gm, this);
+		m_Scenes = new RZ_DutyScenes(gm, this);
 	}
 
 	protected ref RZ_ErrandsPay m_PayKinds;
 	protected ref RZ_ErrandsDealer m_More;
-	protected ref RZ_DutyTables m_Tables;		// the duties' sorting tables (RZ_DutyTable.c)
+	protected ref RZ_DutyGames m_Games;			// the sorting duties, played at their place (RZ_DutyGame.c)
 	protected ref RZ_DutySquads m_Squads;		// the people who go out with a player on a duty (RZ_DutySquads.c)
+	protected ref RZ_DutyScenes m_Scenes;		// what a duty has you see, find and decide (RZ_DutyScenes.c)
 
 	//------------------------------------------------------------------------------------------------
 	RZ_ErrandsDealer Dealer() { return m_More; }
@@ -409,7 +426,6 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
-	RZ_Strangers GetStrangers() { return m_Strangers; }
 	RZ_Locals GetLocals() { return m_Locals; }
 
 	// ================================================================ Hand to Hand, for the finale
@@ -483,8 +499,10 @@ class RZ_Errands
 	RZ_NamedPeople GetPeople() { return m_People; }
 	RZ_Faults GetFaults() { return m_Faults; }
 	RZ_GameModeComponent GetGM() { return m_GM; }
-	RZ_DutyTables GetTables() { return m_Tables; }
+	RZ_DutyGames GetGames() { return m_Games; }
 	RZ_DutySquads GetSquads() { return m_Squads; }
+	RZ_DutyScenes GetScenes() { return m_Scenes; }
+	RZ_Strangers GetStrangers() { return m_Strangers; }
 	float GetClock() { return m_fClock; }
 
 	//------------------------------------------------------------------------------------------------
@@ -661,7 +679,6 @@ class RZ_Errands
 	//! A player left: a held errand waits 20 minutes for them.
 	void OnDisconnect(int playerId)
 	{
-		m_Tables.Forget(playerId);
 		foreach (RZ_Errand e : m_aErrands)
 		{
 			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.HELD)
@@ -1065,30 +1082,14 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Once a second (the game mode's second tick): a duty's table opens when its work site is held.
+	//! Once a second (the game mode's second tick): the sorting duties read what the player's hands did.
 	void SecondTick(array<int> ids, array<IEntity> players)
 	{
-		if (IsOn())
-			m_Tables.SecondTick(ids, players);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The errand's work site again, where it was, to hold a second time (a duty's table was left
-	//! before it was handed in).
-	void ReopenWork(RZ_Errand e)
-	{
-		RZ_ErrandWay w = e.GetWay();
-		RZ_WorkSites sites = RZ_WorkSites.Get();
-		if (!w || !sites || !w.IsWork() || e.m_eState != RZ_EErrandState.HELD)
+		if (!IsOn())
 			return;
 
-		string key = WorkKey(e);
-		float hold = w.m_fWorkSeconds;
-		if (hold <= 0)
-			hold = RZ_WorkSites.HoldFor(w.m_fSeconds);
-
-		sites.Close(key);
-		sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, e.m_vPlace, e.m_iAsker);
+		m_Games.SecondTick(ids, players);
+		m_Scenes.SecondTick(ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1183,8 +1184,9 @@ class RZ_Errands
 		if (e.m_Def)
 			e.m_Def.Ended(this, e, why);
 
-		m_Tables.Drop(e.m_iId);
+		m_Games.Drop(e.m_iId);
 		m_Squads.Drop(e.m_iId);
+		m_Scenes.Drop(e.m_iId);
 
 		RemoveProp(e);
 		RZ_WorkSites sites = RZ_WorkSites.Get();
@@ -1622,6 +1624,62 @@ class RZ_Errands
 		m_mPrefer.Set(playerId, next.m_Def.m_sKey);
 		title = next.Fill(next.m_Def.m_sTitle);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The duty a giver offers beside their pressing errand (docs/ERRANDS.md, "Duties"): true with
+	//! its `title` when they have something pressing for this player and a duty as well. False when
+	//! the errand reply is already their duty (nothing pressing), when the player holds something of
+	//! theirs, or when there's no duty to give now. Deals nothing.
+	bool TalkDuty(int playerId, string giverKey, IEntity user, out string title)
+	{
+		title = "";
+		RZ_NamedPerson p = m_People.Get(giverKey);
+		if (!IsOn() || !m_Settings.m_bDuties || !p || !user || p.m_eKind == RZ_ENamedPlace.WANDERER)
+			return false;
+
+		if (FindFor(playerId, giverKey) || !Refusal(playerId, p, user).IsEmpty())
+			return false;
+
+		string why;
+		RZ_Errand pressing = Deal(playerId, p, user.GetOrigin(), false, why, true);
+		if (!pressing || pressing.m_Def.m_bDuty)
+			return false;
+
+		RZ_Errand duty = Deal(playerId, p, user.GetOrigin(), false, why, true, DEAL_DUTY);
+		if (!duty)
+			return false;
+
+		m_mPreferDuty.Set(playerId, duty.m_Def.m_sKey);
+		title = duty.Fill(duty.m_Def.m_sTitle);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The duty beside the pressing errand, asked for (the talk screen's [Duty] reply).
+	void AskDuty(int playerId, string giverKey, IEntity owner, IEntity user)
+	{
+		RZ_NamedPerson p = m_People.Get(giverKey);
+		if (!IsOn() || !p || !user || FindFor(playerId, giverKey))
+			return;
+
+		string refusal = Refusal(playerId, p, user);
+		if (!refusal.IsEmpty())
+		{
+			m_GM.Say(playerId, p.m_sTitle, p.m_iFaction, refusal);
+			return;
+		}
+
+		string why;
+		RZ_Errand duty = Deal(playerId, p, user.GetOrigin(), false, why, false, DEAL_DUTY);
+		m_mLastWhy.Set(playerId, why);
+		if (!duty)
+		{
+			m_GM.Say(playerId, p.m_sTitle, p.m_iFaction, string.Format("%1.", NothingWhy(why, playerId, p)));
+			return;
+		}
+
+		ShowOffer(duty, owner);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2171,7 +2229,7 @@ class RZ_Errands
 	//! Deal this giver's best true errand to this player: routines and cards anchored to the giver's
 	//! place, checked cheapest first (on, cooldowns, why, for whom, still, holds), scored, and picked
 	//! weighted among the top three. `why` says what was dealt and why the rest weren't (/errands).
-	RZ_Errand Deal(int playerId, RZ_NamedPerson p, vector from, bool unasked, out string why, bool peek = false)
+	RZ_Errand Deal(int playerId, RZ_NamedPerson p, vector from, bool unasked, out string why, bool peek = false, int mode = 0)
 	{
 		why = "";
 		if (m_aErrands.Count() >= MAX_LIVE)
@@ -2206,6 +2264,9 @@ class RZ_Errands
 
 			// A duty is asked for, never called out or waved over
 			if (d.m_bDuty && (!m_Settings.m_bDuties || unasked))
+				continue;
+
+			if (mode == DEAL_DUTY && !d.m_bDuty)
 				continue;
 
 			string no = "";
@@ -2283,8 +2344,8 @@ class RZ_Errands
 				why += string.Format("%1: %2. ", d.m_sKey, no);
 		}
 
-		// What's true right now comes first: with a routine or a card to ask, a duty is asked only by
-		// the one whose own work it is (the cook's kitchen, the medic's line)
+		// The pressing one overrides: with a routine or a card to ask, this deal is that, and the
+		// giver's duty is offered beside it (TalkDuty, AskDuty); with nothing pressing, it's a duty
 		bool anyTrue;
 		foreach (RZ_Errand mt : made)
 		{
@@ -2294,8 +2355,7 @@ class RZ_Errands
 
 		for (int md = made.Count() - 1; md >= 0 && anyTrue; md--)
 		{
-			RZ_ErrandDef dd = made[md].m_Def;
-			if (!dd.m_bDuty || (!dd.m_sRoles.IsEmpty() && dd.m_sRoles.Contains(p.m_sRole)))
+			if (!made[md].m_Def.m_bDuty)
 				continue;
 
 			made.Remove(md);
@@ -2350,7 +2410,16 @@ class RZ_Errands
 			return made[order[0]];
 
 		string prefer;
-		if (m_mPrefer.Find(playerId, prefer))
+		if (mode == DEAL_DUTY && m_mPreferDuty.Find(playerId, prefer))
+		{
+			m_mPreferDuty.Remove(playerId);
+			foreach (int di, RZ_Errand dutyCand : made)
+			{
+				if (dutyCand.m_Def.m_sKey == prefer)
+					pick = di;
+			}
+		}
+		else if (mode != DEAL_DUTY && m_mPrefer.Find(playerId, prefer))
 		{
 			m_mPrefer.Remove(playerId);
 			foreach (int pi, RZ_Errand cand : made)
@@ -3169,7 +3238,7 @@ class RZ_Errands
 		}
 
 		// An amends way pays the amends instead of its Favor (the Latrine: Watched, amends; a Stranger, Favor)
-		float favor = w.m_iFavor * m_Settings.m_fPayScale;
+		float favor = Math.Max(0, w.m_iFavor + Math.Min(e.m_iBonus, 3)) * m_Settings.m_fPayScale;
 		if (w.m_bAmends && infamy >= AMENDS_FLOOR)
 			favor = 0;
 
