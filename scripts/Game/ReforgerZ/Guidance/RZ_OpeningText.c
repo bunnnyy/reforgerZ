@@ -369,6 +369,52 @@ class RZ_OpeningText
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The hand-over reply's label (RZ_TalkOpening; tagged [Errand]).
+	static string HandOver(int task)
+	{
+		switch (task)
+		{
+			case RZ_EOpeningTask.CUT: return "Hold still. Let me dress that hand.";
+			case RZ_EOpeningTask.FEVER: return "Show me the boy. I've got something.";
+			case RZ_EOpeningTask.CLOCK: return "Here's the antidote. Roll his sleeve up.";
+			case RZ_EOpeningTask.CLOCK_MED: return "Let me clean it and bind it. That buys time.";
+		}
+
+		return "Here it is.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why the hand-over is locked: what you don't carry.
+	static string HandOverNeed(int task)
+	{
+		if (task == RZ_EOpeningTask.CLOCK)
+			return "Needs the antidote";
+
+		return "Needs a dressing, or anything medical";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string HandOverMissing()
+	{
+		return "You haven't got it on you. I'll wait.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What they say as you hand it over.
+	static string HandedOver(int task)
+	{
+		switch (task)
+		{
+			case RZ_EOpeningTask.CUT: return "Mind the edge. There. You always did hold on harder than you needed to.";
+			case RZ_EOpeningTask.FEVER: return "He's through there, on the kitchen floor. You knelt down like it was a waiting room and not my kitchen. I'll hold his hand.";
+			case RZ_EOpeningTask.CLOCK: return "He didn't even flinch. Just closed his eyes. Is that good?";
+			case RZ_EOpeningTask.CLOCK_MED: return "Tight as that? All right. All right. I'll watch him.";
+		}
+
+		return "Thank you.";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The Drifter's next ask, said as it starts (asks 2 and 3).
 	static string NextAsk(int asksDone)
 	{

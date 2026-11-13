@@ -3458,6 +3458,13 @@ when it happens)
   one-line read, no clue, and someone outside only one time in three (without: the read's own line
   hands you *Where the Work Is*). Turn **Puzzles > Civilian** and **Contact** empty: nobody outside,
   the read hands you the work, and a brand-new player's wanderer comes looking.
+- [ ] **Hand-overs are a reply you pick**, with a pad. As a Nurse on *The Fever*, walk up to the
+  contact with a field dressing and open the talk: nothing is taken and the step isn't done; the
+  first reply is *[Errand] Show me the boy. I've got something.* Drop the dressing and open it again:
+  the reply is dim, "Needs a dressing, or anything medical". Pick it with the dressing on you: her line,
+  and a few seconds on the step completes and the dressing is gone. The same for a Doctor's antidote
+  (*[Errand] Here's the antidote. ...*, "Needs the antidote"). An errand done elsewhere is handed in
+  only with *[Errand] It's done: ...*, never by opening the talk.
 - [ ] **Task places** ([PLACES.md](PLACES.md)). Over the openings above, every place is what its
   words say: *Across the Road* sends you to a real house (or the chemist's, the garage...) 50–250 m
   off, never into woods; a Lab Technician's *A Sample* lies by a road's verge (or in a yard) and you

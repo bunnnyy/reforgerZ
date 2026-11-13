@@ -80,6 +80,7 @@ class RZ_Opening
 	int m_iTargetId = -1;		// the task's wanderer (SWAP) or road post (TOLL)
 	float m_fPulseAt;			// GATE: the step's progress at its next noise
 	bool m_bTold;				// the task said once what's missing
+	bool m_bTended;				// CUT, FEVER, CLOCK, CLOCK_MED: the hand-over reply was picked
 	int m_iErrand = -1;			// the current step's errand id
 	bool m_bResolved;			// the current step is done
 	bool m_bSpoke;				// they've called you over (the chain has begun)
@@ -1621,6 +1622,49 @@ class RZ_Openings
 		}
 
 		lines.Insert(Remind(o, o.m_iStep));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The hand-over reply on their talk screen (RZ_TalkOpening) while a hand-over step runs: its
+	//! label, and `need` when you don't carry the thing (locked with it). False: no such reply now.
+	bool HandOverReply(int playerId, int id, IEntity user, out string label, out string need)
+	{
+		label = "";
+		need = "";
+		RZ_Opening o = ById(id);
+		if (!o || o.m_iPlayer != playerId || o.m_bEnded || o.m_bWaitTalk || o.m_bResolved || o.m_bTended)
+			return false;
+
+		if (Stage(o) != RZ_EOpeningStage.TASK || !RZ_OpeningTasks.HandsOver(o.m_iTask))
+			return false;
+
+		label = RZ_OpeningText.HandOver(o.m_iTask);
+		if (!user || RZ_Errands.CountItems(user, RZ_OpeningTasks.HandItem(o.m_iTask)) <= 0)
+			need = RZ_OpeningText.HandOverNeed(o.m_iTask);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The hand-over reply picked: you see to them, and the step is done (the errand takes the thing
+	//! as it completes, a few seconds on). Opening the talk never does this by itself.
+	void HandOver(int playerId, int id, IEntity user, notnull array<string> said)
+	{
+		string label;
+		string need;
+		if (!HandOverReply(playerId, id, user, label, need))
+			return;
+
+		if (!need.IsEmpty())
+		{
+			said.Insert(RZ_OpeningText.HandOverMissing());
+			return;
+		}
+
+		RZ_Opening o = ById(id);
+		o.m_bTended = true;
+		said.Insert(RZ_OpeningText.HandedOver(o.m_iTask));
+		RZ_Log.Info(string.Format("Openings: %1 handed over to %2 (step 2, task %3)", RZ_Util.PlayerName(playerId), o.m_sName, o.m_iTask));
 	}
 
 	//------------------------------------------------------------------------------------------------

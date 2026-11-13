@@ -870,22 +870,22 @@ opening.settle/@enough
 opening.settle/@good
 opening.settle/@later
 opening.settle/@split
-opening.tend_clock
-opening.tend_clock/@give
-opening.tend_clock/@later
-opening.tend_clock/@wait
-opening.tend_clock_med
-opening.tend_clock_med/@bind
-opening.tend_clock_med/@later
-opening.tend_clock_med/@ok
-opening.tend_cut
-opening.tend_cut/@later
-opening.tend_cut/@look
-opening.tend_cut/@ok
-opening.tend_fever
-opening.tend_fever/@later
-opening.tend_fever/@on
-opening.tend_fever/@treat
+retired opening.tend_clock
+retired opening.tend_clock/@give
+retired opening.tend_clock/@later
+retired opening.tend_clock/@wait
+retired opening.tend_clock_med
+retired opening.tend_clock_med/@bind
+retired opening.tend_clock_med/@later
+retired opening.tend_clock_med/@ok
+retired opening.tend_cut
+retired opening.tend_cut/@later
+retired opening.tend_cut/@look
+retired opening.tend_cut/@ok
+retired opening.tend_fever
+retired opening.tend_fever/@later
+retired opening.tend_fever/@on
+retired opening.tend_fever/@treat
 opening.where_now
 opening.where_now/@back1
 opening.where_now/@come

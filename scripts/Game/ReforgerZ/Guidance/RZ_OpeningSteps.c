@@ -34,7 +34,6 @@ class RZ_OpeningTasks
 {
 	static const string FLAG_SETTLED = "opening.settled";	// SETTLE: 1 settled, 2 half settled (the conversation's check)
 	static const string FLAG_ANSWERED = "opening.answered";	// CHANNEL: 1 answered on the open channel
-	static const string FLAG_TENDED = "opening.tended";		// CUT, FEVER, CLOCK, CLOCK_MED: 1 once you chose to see to them on the talk screen
 
 	protected static const float NEAR = 1500;			// a pump, a toll or a wanderer this close to the contact
 	protected static const float PUMP_NEAR = 800;
@@ -557,6 +556,7 @@ class RZ_OpeningTasks
 	void Start(RZ_Opening o, IEntity me, RZ_Errand e)
 	{
 		o.m_bTold = false;
+		o.m_bTended = false;
 		o.m_fPulseAt = 0;
 		switch (o.m_iTask)
 		{
@@ -594,10 +594,6 @@ class RZ_OpeningTasks
 
 			case RZ_EOpeningTask.SETTLE: SetFlag(o, FLAG_SETTLED, 0); break;
 			case RZ_EOpeningTask.CHANNEL: SetFlag(o, FLAG_ANSWERED, 0); break;
-			case RZ_EOpeningTask.CUT: SetFlag(o, FLAG_TENDED, 0); break;
-			case RZ_EOpeningTask.FEVER: SetFlag(o, FLAG_TENDED, 0); break;
-			case RZ_EOpeningTask.CLOCK: SetFlag(o, FLAG_TENDED, 0); break;
-			case RZ_EOpeningTask.CLOCK_MED: SetFlag(o, FLAG_TENDED, 0); break;
 		}
 	}
 
@@ -695,7 +691,7 @@ class RZ_OpeningTasks
 					return true;
 
 				if (there)
-					Tell(o, e, e.Fill("Talk to {giver} and see to it yourself."));
+					Tell(o, e, e.Fill("Talk to {giver} and hand it over yourself."));
 
 				return false;
 			}
@@ -766,11 +762,24 @@ class RZ_OpeningTasks
 	//! way: being there with the item is enough.
 	protected static bool Tended(RZ_Opening o)
 	{
-		RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
-		if (!trees || !trees.IsOn() || !trees.GetMemory())
-			return true;
+		return o.m_bTended;
+	}
 
-		return Flag(o, FLAG_TENDED) > 0;
+	//------------------------------------------------------------------------------------------------
+	//! A step done by handing something over to the giver in person (a reply on the talk screen).
+	static bool HandsOver(int task)
+	{
+		return task == RZ_EOpeningTask.CUT || task == RZ_EOpeningTask.FEVER || task == RZ_EOpeningTask.CLOCK || task == RZ_EOpeningTask.CLOCK_MED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a hand-over step takes.
+	static RZ_EErrandItem HandItem(int task)
+	{
+		if (task == RZ_EOpeningTask.CLOCK)
+			return RZ_EErrandItem.ANTIDOTE;
+
+		return RZ_EErrandItem.MEDICAL;
 	}
 
 	//------------------------------------------------------------------------------------------------
