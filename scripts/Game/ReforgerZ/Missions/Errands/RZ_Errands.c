@@ -289,6 +289,7 @@ class RZ_Fallout
 class RZ_Errands
 {
 	protected static const float SLOW_TICK = 30;
+	protected static const float INSIDE_RADIUS = 60;	// an indoor work site: the nearest fitting building this far from the place
 	protected static const float TALK_SECONDS = 90;
 	protected static const float TALK_RANGE = 20;
 	protected static const float OFFER_MINUTES = 10;
@@ -1134,6 +1135,23 @@ class RZ_Errands
 		else if (w.m_eWork == RZ_EWork.FILL)
 			at = RZ_WorkSites.Spot(e.m_vPlace, 1.5, 3);
 
+		// Work the words put indoors (a sick man, a bench, a search of a shop): on a ground floor near
+		// the place, else beside it in the open as before
+		bool inside;
+		if (!w.m_sInside.IsEmpty())
+		{
+			string kind = w.m_sInside;
+			if (kind == "any")
+				kind = "";
+
+			vector room;
+			if (RZ_WorkSites.Indoors(e.m_vPlace, INSIDE_RADIUS, kind, room))
+			{
+				at = room;
+				inside = true;
+			}
+		}
+
 		ResourceName before;
 		if (w.m_eProp != RZ_EErrandProp.NONE)
 			before = m_Settings.Props().For(w.m_eProp);
@@ -1143,14 +1161,32 @@ class RZ_Errands
 		if (hold <= 0)
 			hold = RZ_WorkSites.HoldFor(w.m_fSeconds);
 
-		if (sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, at, e.m_iAsker, before) < 0)
+		if (sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, at, e.m_iAsker, before, "", -1, inside) < 0)
 			return false;
+
+		if (w.m_bPerson)
+			sites.SetPerson(key, PersonPrefab());
 
 		if (w.m_bUnseen)
 			sites.SetUnseen(key);
 
 		e.m_vPlace = at;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who stands at a work site the words put someone at: Props > Duty person, else Puzzles > Civilian.
+	protected ResourceName PersonPrefab()
+	{
+		ResourceName prefab = m_Settings.Props().m_sDutyPerson;
+		if (!prefab.IsEmpty())
+			return prefab;
+
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!gm)
+			return "";
+
+		return gm.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
 	}
 
 	//------------------------------------------------------------------------------------------------

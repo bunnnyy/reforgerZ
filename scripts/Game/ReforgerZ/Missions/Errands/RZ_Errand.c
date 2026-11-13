@@ -99,6 +99,8 @@ class RZ_ErrandWay
 	bool m_bEndsThere;			// done at the place: no going back to the giver (an opening's last step, Guidance/RZ_Openings.c)
 	RZ_EWork m_eWork = RZ_EWork.NONE;	// done with your hands: a work site at the place, held, not stood at (Work())
 	string m_sWorkLabel;		// its prompt ("Dig the latrine")
+	string m_sInside;			// its work site is inside a building of this kind ("any", "house", "shop", "police", "school", "public", "clinic"), on the ground floor; empty: in the open
+	bool m_bPerson;				// someone the work is for stands at its work site (the newcomer, the bitten man): Props > Duty person
 	float m_fWorkSeconds;		// its hold (0: from m_fSeconds, RZ_WorkSites.HoldFor)
 	string m_sNeed;				// the place need its words make (World/RZ_PlaceNeeds.c; empty: by its place kind, NeedKey)
 	int m_iGame;				// a sorting duty (RZ_DutyGame.KIND_*): its row is laid out at the place, and its verdicts are the step

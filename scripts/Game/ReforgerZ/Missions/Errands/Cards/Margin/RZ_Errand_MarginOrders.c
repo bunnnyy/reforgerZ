@@ -99,6 +99,7 @@ class RZ_Errand_CleanRifles : RZ_ErrandCard
 		w.m_fRadius = 80;
 		w.m_sStep = "Search the police station in {place} for cleaning kits (20 s there), then bring them to {giver}.";
 		w.Work(RZ_EWork.SEARCH, "Search for cleaning kits");
+		w.m_sInside = "police";
 		w.m_eProp = RZ_EErrandProp.CRATE;
 		w.m_iFavor = 4;
 		w.Done("Oil, rods, patches. Like Christmas, if Christmas was regulation.",
@@ -112,6 +113,7 @@ class RZ_Errand_CleanRifles : RZ_ErrandCard
 		w.m_fRadius = 15;
 		w.m_sStep = "Strip and clean a rifle in front of the new lads at {here} (a minute), slowly enough for the lads to follow.";
 		w.Work(RZ_EWork.BENCH, "Strip and clean the rifle", 15);
+		w.m_sInside = "any";
 		w.m_iFavor = 3;
 		w.m_iFame = 1;
 		w.Done("They've got it. Mostly. One of them even put the spring back the right way on his own.");

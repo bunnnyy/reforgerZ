@@ -25,6 +25,7 @@ class RZ_Errand_Civvies : RZ_ErrandCard
 		w.m_fRadius = 60;
 		w.m_sStep = "Search the houses in {place} for plain clothes that aren't anybody's colours (20 s there), then bring them to {giver}.";
 		w.Work(RZ_EWork.SEARCH, "Search for plain clothes");
+		w.m_sInside = "house";
 		w.m_iFame = 2;
 		w.Done("Look at that. Just a person, in a jumper two sizes too big. The green's folded under the stove, where nobody looks.");
 

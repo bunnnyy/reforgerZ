@@ -1438,6 +1438,24 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
 - **Where.** At the step's own place, picked through its place need; a spot beside it (at the
   giver's place, at water, by an engine, a well, a gate or a door) goes through the need `work.site`
   (dry, not steep, not behind a lock), and every site is checked live ([PLACES.md](PLACES.md#the-needs)).
+  Work its words put indoors (a bench, a sick man, a search of a house or a shop) is on the ground
+  floor of the nearest building of that kind near the place, at the loose loot's anchors on its
+  lowest floor (`RZ_WorkSites.Indoors`), kept at the floor's height; with no such building, or no
+  room in it, it stays in the open beside the place.
+- **It fits, or it's left out.** Before a look is put out, its real box (measured on the server the
+  first time: spawned out of sight at heading 0, its parts' boxes joined, deleted; logged as
+  `Work sites: measured <look>: W x D m`) must fit where it goes, by the same checks a camp's pieces get
+  (`RZ_CampLife.BoxFits`, [SITES.md](SITES.md)): outdoors nothing in it at knee or chest height,
+  nothing overhead and its corners within 0.4 m of level, on the ground; indoors a floor under every
+  corner and nothing in the way. Its own spot and heading first, then the other three headings, then
+  spots around it (1 and 2 m off outdoors, 0.75 m indoors), and the prompt moves with it. Nowhere:
+  the look is left out and only the prompt stands there (drop, don't squeeze). The after look gets
+  the same check where the work was. Anything in a look a player could use is stripped, as camp
+  dressing is.
+- **Someone it's for.** Where the words name a person (the newcomer, the bitten man), that person
+  stands by the site facing it while a player is near (Props > Duty person, else Puzzles >
+  Civilian; a body in the errands' budget), wherever a person's 0.6 m box fits on one of its four
+  sides; none fits, or no room in the budget: nobody, and the work is done the same.
 - **Near players only.** Its props spawn within the marks' spawn radius (150 m) and go past the
   despawn radius, like marks; **Sites at once** (40) drops the oldest whose step is over first,
   never one under way. The hold's time × **Time scale**.

@@ -22,6 +22,7 @@ class RZ_Errand_PackForTheQueue : RZ_EpiCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Search the family's old house in {place} for both things (30 s there), then bring them to {giver}.";
 		w.Work(RZ_EWork.SEARCH, "Search the house");
+		w.m_sInside = "house";
 		w.m_eProp = RZ_EErrandProp.CRATE;
 		w.m_iFavor = 4;
 		w.m_iFame = 1;

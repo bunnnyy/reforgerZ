@@ -238,7 +238,11 @@ A way whose step is work with your hands is a [work site](DESIGN.md#work-site) a
 thing to work at stands there (its before look, or the way's own prop), with one prompt in the step's
 words. Hold it for its time (vanilla's bar); the step is done, and the result stands there until the
 errand is over and nobody is near. Only the asker can do it (the prompt doesn't show for anyone
-else); at the giver's place or its gate it stands 3–6 m off, at water 1.5–3 m off. An item the step
+else); at the giver's place or its gate it stands 3–6 m off, at water 1.5–3 m off. Work the words
+put indoors (a bench, a sick man, a search of a house, a shop, the police station, the school or the
+hall) is on the ground floor of the nearest such building within 60 m of the place, else in the open
+as before; where the words name someone (the newcomer, the bitten man, the survivor before dark) that
+person stands at it while you work (Props > Duty person). The table says which. An item the step
 needs at its place (a battery) is handed over after the hold, there. The step's line drops its time
 there. With work sites off, these steps are done by staying there as before (the times in the
 tables below).
@@ -251,54 +255,54 @@ tables below).
 | Filter Parts | **Take the part off** | 6 s | a toolbox and parts → nothing (fitted, packed away) |
 | The Burying | **Dig the grave** | 15 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
 | The Round | **See to the sick** | 20 s | a mattress, a blanket, a bucket → the same (it stays) |
-| The Newcomer | **Search the shops for a coat** | 8 s | a crate of odds and ends → rummaged clutter |
-| The Newcomer | **Check the newcomer over** | 9 s | a mattress, a blanket, a bucket → the same (it stays) |
+| The Newcomer | **Search the shops for a coat** | 8 s | a crate of odds and ends → rummaged clutter (in a shop) |
+| The Newcomer | **Check the newcomer over** | 9 s | a mattress, a blanket, a bucket → the same (it stays) (indoors, with him) |
 | Make It Right | **Fill the water cans** | 7 s | empty cans and buckets → nothing (carried off) |
-| The Count | **Count the stores** | 9 s | a table with a lamp → the same (it stays) |
+| The Count | **Count the stores** | 9 s | a table with a lamp → the same (it stays) (indoors) |
 | The Latrine | **Dig the latrine** | 15 s | a marked pit (stakes, planks, a sack of lime) → the latrine screen |
-| The Pit Count | **Count the bets into the book** | 20 s | a table with a lamp → the same (it stays) |
+| The Pit Count | **Count the bets into the book** | 20 s | a table with a lamp → the same (it stays) (indoors) |
 | Night Readings | **Fit the battery** | 6 s | a toolbox and parts → nothing (fitted, packed away) |
 | Night Readings | **Reset the sensor** | 7 s | a toolbox and parts → nothing (fitted, packed away) |
-| Labels | **Relabel the sample trays** | 20 s | a table with a lamp → the same (it stays) |
-| Labels | **Relabel the sample trays** | 12 s | a table with a lamp → the same (it stays) |
-| Before Dark | **Clean and dress the bite** | 11 s | a mattress, a blanket, a bucket → the same (it stays) |
+| Labels | **Relabel the sample trays** | 20 s | a table with a lamp → the same (it stays) (indoors) |
+| Labels | **Relabel the sample trays** | 12 s | a table with a lamp → the same (it stays) (indoors) |
+| Before Dark | **Clean and dress the bite** | 11 s | a mattress, a blanket, a bucket → the same (it stays) (in a house, with the survivor) |
 | The Market | **Search the grass** | 8 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The Receiver | **Fit the battery** | 6 s | a toolbox and parts → nothing (fitted, packed away) |
 | The Receiver | **Re-seat the cable** | 7 s | a toolbox and parts → nothing (fitted, packed away) |
-| Sit With Him | **Dress the bite** | 12 s | a mattress, a blanket, a bucket → the same (it stays) |
+| Sit With Him | **Dress the bite** | 12 s | a mattress, a blanket, a bucket → the same (it stays) (indoors, with him) |
 | Sandbags | **Fill and stack the sandbags** | 18 s | a pile of empty sacks → a sandbag barricade |
 | The New Number | **Paint the new number** | 10 s | a bare board on a post, a paint tin → the stencilled board |
-| Behind the Red Door | **Search what's left** | 7 s | a crate of odds and ends → rummaged clutter |
-| Behind the Red Door | **Search the boy's room** | 8 s | a crate of odds and ends → rummaged clutter |
-| Clean Rifles | **Search for cleaning kits** | 8 s | a crate of odds and ends → rummaged clutter |
-| Clean Rifles | **Strip and clean the rifle** | 15 s | a table with a lamp → the same (it stays) |
-| Clean Paper | **Search for clean paper** | 8 s | a crate of odds and ends → rummaged clutter |
-| Clean Paper | **Rule the margins** | 9 s | a table with a lamp → the same (it stays) |
-| Chairs for the Reading | **Stack the chairs** | 9 s | a table with a lamp → the same (it stays) |
+| Behind the Red Door | **Search what's left** | 7 s | a crate of odds and ends → rummaged clutter (in a house) |
+| Behind the Red Door | **Search the boy's room** | 8 s | a crate of odds and ends → rummaged clutter (in a house) |
+| Clean Rifles | **Search for cleaning kits** | 8 s | a crate of odds and ends → rummaged clutter (in the police station) |
+| Clean Rifles | **Strip and clean the rifle** | 15 s | a table with a lamp → the same (it stays) (indoors) |
+| Clean Paper | **Search for clean paper** | 8 s | a crate of odds and ends → rummaged clutter (in the school) |
+| Clean Paper | **Rule the margins** | 9 s | a table with a lamp → the same (it stays) (indoors) |
+| Chairs for the Reading | **Stack the chairs** | 9 s | a table with a lamp → the same (it stays) (in the hall) |
 | What the Cure Costs Here | **Put the name on the roster** | 8 s | a board on a post → the notice wall |
 | Into the Record | **Take the notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Take a Name to the Board | **Write the name up** | 8 s | a board on a post → the notice wall |
-| Pack for the Queue | **Search the house** | 9 s | a crate of odds and ends → rummaged clutter |
+| Pack for the Queue | **Search the house** | 9 s | a crate of odds and ends → rummaged clutter (in a house) |
 | The Tags | **Take the tags** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The Tags | **Take the photo frame** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The Wreck's Name | **Search the cab for papers** | 8 s | a crate of odds and ends → rummaged clutter |
 | The Wreck's Name | **Search the cab** | 8 s | a crate of odds and ends → rummaged clutter |
-| Clean Glasses | **Search for whole glasses** | 9 s | a crate of odds and ends → rummaged clutter |
+| Clean Glasses | **Search for whole glasses** | 9 s | a crate of odds and ends → rummaged clutter (in a house) |
 | Name Day | **Take the clock down** | 8 s | a toolbox and parts → nothing (fitted, packed away) |
 | The Truck Didn't Come | **Search the truck** | 9 s | a crate of odds and ends → rummaged clutter |
 | Clean Slate | **Dig at the burial pit** | 15 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
-| Civvies | **Search for plain clothes** | 8 s | a crate of odds and ends → rummaged clutter |
+| Civvies | **Search for plain clothes** | 8 s | a crate of odds and ends → rummaged clutter (in a house) |
 | The Name on the Tape | **Take the tag and jacket** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The Name on the Tape | **Take the jacket** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Notebook 31 | **Take the coat and notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Notebook 31 | **Take the notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Notebook 31 | **Pocket the notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Paint | **Paint the hand** | 12 s | a bare board on a post, a paint tin → the stencilled board |
-| Dress Uniform | **Fold the uniform** | 12 s | a table with a lamp → the same (it stays) |
+| Dress Uniform | **Fold the uniform** | 12 s | a table with a lamp → the same (it stays) (indoors) |
 | Names on the Call | **Pin the list up** | 5 s | a board on a post → the notice wall |
 | The Last Apples | **Pick what's left** | 9 s | a crate of odds and ends → rummaged clutter |
-| You're the One | **Write the name in the book** | 6 s | a table with a lamp → the same (it stays) |
-| The Visitors' Log | **Sign the log** | 5 s | a table with a lamp → the same (it stays) |
+| You're the One | **Write the name in the book** | 6 s | a table with a lamp → the same (it stays) (indoors) |
+| The Visitors' Log | **Sign the log** | 5 s | a table with a lamp → the same (it stays) (indoors) |
 | Not Past the Chapel | **Board up the doors** | 15 s | planks and a bucket of nails → the boarded doorway |
 | His Effects | **Gather their things** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | His Effects | **Take their things** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |

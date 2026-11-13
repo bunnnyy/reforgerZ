@@ -1243,6 +1243,10 @@ class RZ_PlaceNeeds
 		n.InTown(300);
 		n.Building("public", 30);
 
+		n = Add("errand.shop", "the shops in {place}");
+		n.InTown(300);
+		n.Building("shop", 30);
+
 		// A way's prop (Missions > Errands > Props): the thing its words name at the place
 		n = Add("errand.prop.effects", "a dead man's things at the place");
 		n.Thing(RZ_EThingKind.PROP, "the effects", "prop.effects", 6, "words only");

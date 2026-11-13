@@ -2086,7 +2086,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **177** lines with the tag, all but one in the game scripts (one is the comment in
+There are **178** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, two the hold prompt's and four its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2678,7 +2678,9 @@ dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by
 (<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
 <player> overtaken`, `Work sites: errand.N "Dig the latrine" (LATRINE, 15 s) at <grid>` and
 `Work sites: <key> "<label>" done by <player>` (a mission's are `mission.<id>.point.N`, `.truck`,
-`.tissue`, `.well`, `.sample`, `.chain`, `.charge.N`; the Red Hand van's `cargovan.N`; a stranger's `stranger.N`), `Work sites: the Site prefab has no
+`.tissue`, `.well`, `.sample`, `.chain`, `.charge.N`; the Red Hand van's `cargovan.N`; a stranger's `stranger.N`), `Work sites: measured <look>: W x D m`
+once per look, `Work sites: <key> look <look> fits at <grid> (N m off, heading N)` or `... doesn't fit at <grid>, left out`,
+`Work sites: <key> after look <look> doesn't fit ...`, `Work sites: <key> has no room for its person at <grid>, left out`, `Work sites: the Site prefab has no
 RZ_WorkSiteComponent, so it shows no prompt` once if the prefab is wrong, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
 <place> fixed`, every 30 minutes `Errands | live N | asked N, called out N | <family>: dealt N,
 declined N, lapsed N, overtaken N, done N, Favor N, Fame N (amends N), ways ...`, and `Errands admin
@@ -4565,6 +4567,15 @@ on the talk screen says why something wasn't dealt)
   the hold), The New Number (the stencilled board), The Pot (a crate, then clutter), His Effects (the
   effects, then nothing), Labels (a table that stays), Reset the sensor unseen (seen: *"They'd see
   you like that"*, start again hidden).
+- [ ] Indoors and with someone (the audit of errands' places): The Newcomer's **Check the newcomer
+  over** (as a Nurse) stands inside a building near the house, on its ground floor, not in the
+  street, with the newcomer standing by it facing you; Sit With Him the same with the bitten man;
+  The Count's and Labels' tables stand inside, on the floor, not floating, not in a wall or a
+  cupboard; Clean Rifles' search is in the police station, Clean Paper's in the school, Civvies' in
+  a house. The log's `Work sites: ... look ... fits at` line for each, and the measured size of the
+  table and the crate looks matches what you see (VERIFY `Missions/Blocks/RZ_WorkSites.c`'s
+  `JoinBounds`). Put a look's spot against a wall or a car on purpose: it moves up to 2 m or turns,
+  or is left out with its prompt alone.
 - [ ] Missions: Burn the Bodies (five piles, **Burn the pile**, ash after; a Nurse holds faster),
   Install Sensors (a set on a crate after; a Radio Op or Lab Tech in half the time), Convoy Escort's
   breakdown (**Fix the engine** by the bonnet; a Mechanic in a third), Specimen from the Nest
