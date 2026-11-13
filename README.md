@@ -338,7 +338,8 @@ tools/camp_kit/  pieces.py: the camp-life pieces, their kits' plans and the Trac
                  writes their prefabs and the game mode's slots, with each piece's real footprint from
                  footprints.json (the props' measured boxes); render.py draws them and the faction
                  bases' plans (bases.py) into tools/camp_kit/camp_plans.html, and with --placed the
-                 sites a site audit laid out into sites_placed.html
+                 sites a site audit laid out into sites_placed.html; world_kit.txt: the world-building
+                 kit, every prop, group and building to dress places with and where each suits
 tools/people_looks.py
                  writes the faction people's look prefabs (Prefabs/ReforgerZ/People/) and checks their GUIDs
 UI/              icon sources and PNGs (Icons/), HTML mockups (Mockups/), previews (Previews/),

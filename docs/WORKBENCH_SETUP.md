@@ -796,7 +796,7 @@ and the UI files) need none, and eight have no base:
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | (existing prefab) | items from the loot pool | — | Interactions > Search > Loot tables (each table's three lists) | optional | exact loot per building type (optional; empty tables are filled from the pool by keywords) |
-| (existing prefab) | items of the base game and the Workshop dependencies | — | Interactions > Search > Extra finds (each entry's three lists) | optional | items added to one building type's table on top of the pool and the built-in items (set: 41 items of the base game and the stack's mods; a list set by hand in Loot tables gets none) |
+| (existing prefab) | items of the base game and the Workshop dependencies | — | Interactions > Search > Extra finds (each entry's three lists) | optional | items added to one building type's table on top of the pool and the built-in items (set: 45 items of the base game and the stack's mods; a list set by hand in Loot tables gets none) |
 | (existing prefab) | any item | — | Interactions > Crafting > Extra recipes (each output) | optional | extra workbench recipes (optional) |
 | (existing prefab) | a cooked food item (e.g. Metabolism's cooked meat) | — | Interactions > Crafting > Stove recipes (each output) | optional | cookables at a stove (optional; none by default) |
 | (existing prefab) | vanilla items or crates (never a vehicle or a car part: refused) | — | Each shop action's Item prefab | optional | quartermaster stock beyond what the plugin adds (see the suggested stock) |
@@ -1091,9 +1091,9 @@ keywords (the lists are in `RZ_Search.TypeWords`), plus the built-in vanilla ite
 (`RZ_LootDefaults`, [DESIGN.md](DESIGN.md#loot-in-houses)), so loot works with the pool empty too.
 **Extra finds** (Search > Extra finds) add items to one building type's table on top of that: one
 entry per type, with the same three lists. Use it for an item whose name no keyword catches, or one
-that belongs in one kind of place only. The game mode comes with 41 set (base-game items and items
-of the dress mods, [MOD_STACK.md](MOD_STACK.md#what-the-stack-gives-the-loot)); the start log says
-`Search: 56 extra finds added to the tables` (an item in three types counts three times). A longer
+that belongs in one kind of place only. The game mode comes with 45 set (base-game items and items
+of mods in the stack, [MOD_STACK.md](MOD_STACK.md#what-the-stack-gives-the-loot)); the start log says
+`Search: 61 extra finds added to the tables` (an item in three types counts three times). A longer
 list means less of each item, so raise **Loot >** the slots when you add many.
 To control a type exactly, add a **Loot table** for it: a list set by hand gets no extra finds and
 is only topped up with the built-in items while it's thin (fewer than 8 everyday finds or 3 rare
@@ -1156,6 +1156,8 @@ A new prop needs its ResourceName: pass `--index` with the resource index the Wo
 whether its prefab already has a `Hierarchy` component (**ReforgerZ: Dump prefabs and classes**) and
 correct the line (`Class {GUID}path`, plus ` hier` if it has one: a child can't take a second
 `Hierarchy`, and Workbench logs "component Hierarchy cannot be combined" when it does).
+Props to pick from that are in `props.txt` already, with their class and a measured box, and groups
+to place whole: the world-building kit ([SITES.md](SITES.md#the-world-building-kit)).
 
 **What a piece is.** An empty root entity with an `RplComponent` (so clients see it when it spawns
 at run time) and a `Hierarchy`, the props as children, and a **seat** for each person who can use it:
@@ -2361,8 +2363,8 @@ roads all branch off roads that go on, so it has no road checkpoints):
 [ReforgerZ] Perimeter: 0 road checkpoints (from roads).
 [ReforgerZ] Perimeter: no road checkpoints on this map (the lines above say why). Place RZ_CheckpointMarkerEntity entities on roads to add them.
 [ReforgerZ] Supply trucks: Haven, Bastion, Red Hand, Halcyon.
-[ReforgerZ] Search: 30 items in the loot pool, 0 tables set by hand. Tables (common/rare/electronics): house 34/7/2, shop 21/4/2, farm 21/6/2, pharmacy 12/5/2, garage 10/6/2, police 16/9/2, body 17/5/2.
-[ReforgerZ] Search: 56 extra finds added to the tables (Search > Extra finds).
+[ReforgerZ] Search: 30 items in the loot pool, 0 tables set by hand. Tables (common/rare/electronics): house 34/8/2, shop 21/5/2, farm 21/6/2, pharmacy 12/5/2, garage 10/6/2, police 16/11/2, body 17/6/2.
+[ReforgerZ] Search: 61 extra finds added to the tables (Search > Extra finds).
 [ReforgerZ] Locks: on the outside doors; keys are key items.
 [ReforgerZ] World interactions: on. 5 fixable cars on the map.
 [ReforgerZ] Hostility: bitmask mode, all 15 variant factions found.
@@ -4261,6 +4263,19 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   the herd and the carcass are gone. With a second client: does the other player see the same
   deer in the same place, and see it fall? Report what each saw. With a pad: the shot still gives
   meat. No herd in or by a town, a faction's place or the line, and none on an island.
+- [ ] The scenery mods ([MOD_STACK.md](MOD_STACK.md#scenery-night-sounds-and-small-things)), none
+  of them seen in play yet. **Sound** (Dark Echoes): stand in the woods at night for a few minutes:
+  an owl, coyotes, an elk or a loon now and then; then run, drop off a wall and get knocked down:
+  footsteps, landings and falls still sound. **Loot** (Suspicious Item Props): search shops, houses,
+  a police station and bodies until a stack of cash, a gold bar, a pearl necklace or a stack of
+  credit cards turns up; each shows a picture in the inventory, and the Red Hand's fence takes the
+  necklace and the gold bar. In Workbench, drop a passport and a military ID into a pack and look
+  at their inventory picture: the mod names an icon it doesn't ship. **Scenery** (the world-building
+  kit, [SITES.md](SITES.md#the-world-building-kit)): in the World Editor put down an ivy piece
+  against a wall, one of MMHs IVY's wrecks, JTF's `FieldGraves`, `Checkpoint_US` and `RefugeeCamp`,
+  and one of Overgrown's buildings; each stands on the ground and looks whole. **Nothing else
+  changed:** a farmhouse, a church and a garage of the map, and an M16A2 in the hand, look as they
+  did (two of the mods ship copies of them under other IDs).
 - [ ] Where fixable cars stand: visit each one (the season's five or six). None in a building,
   through a wall or fence, under a porch or half up a step, and you can walk round each. A
   `Cars: ... had no room at <grid> (a wall, a roof or a step); moved N m.` line names one that was

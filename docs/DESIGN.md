@@ -2649,7 +2649,7 @@ building is a shop).
   `Interactions/RZ_Search.c`), so a type's table is wide and no type is bare when the pool is
   short or empty. **Extra finds** (Search) then add items to one type's table on top: items no
   keyword reaches, and items that belong in one kind of place only (a fire axe in garages and
-  farms). The game mode sets 41 of them, from the base game and from mods already in the stack
+  farms). The game mode sets 45 of them, from the base game and from mods already in the stack
   ([MOD_STACK.md](MOD_STACK.md#what-the-stack-gives-the-loot)). A list set by hand is kept as it
   is: no extra finds, and topped up with the built-in items only while it's thin (fewer than 8
   everyday finds, or 3 rare ones). Every item in a list is equally likely, so a longer list means
