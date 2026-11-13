@@ -103,6 +103,9 @@ class RZ_GuidanceSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Openings: the contact's body, someone from before (a person with the puzzle components). Empty: Puzzles > Civilian", "et")]
 	ResourceName m_sContactPrefab;
 
+	[Attribute("{9C3E5A71D2B84F06}Prefabs/ReforgerZ/Guidance/RZ_OpeningCompanion.et", UIWidgets.ResourcePickerThumbnail, "Openings: the contact who walks with you (Mechanic, Hunter, Lab Technician, Unemployed, Raider, Ex-Con, Radio Operator): a one-man AI group of a person with the puzzle components. Empty: they hand you on to the next person instead", "et")]
+	ResourceName m_sCompanionPrefab;
+
 	[Attribute("10", UIWidgets.Slider, "Openings: Fame with the faction the chain ends with, at the end of its walk (small pay: never season Fame)", "0 20 1")]
 	int m_iOpeningFame;
 

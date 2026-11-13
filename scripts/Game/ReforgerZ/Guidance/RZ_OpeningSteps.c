@@ -52,7 +52,7 @@ class RZ_OpeningTasks
 	protected static const float SAMPLE_MIN = 80;		// A Sample's remains: this far from the contact...
 	protected static const float SAMPLE_MAX = 250;		// ...and no further
 	protected static const string SAMPLE_ROAD = "what's left of a big one by the road";
-	protected static const string SAMPLE_YARD = "what's left of a big one in a yard over the way";
+	protected static const string SAMPLE_YARD = "what's left of a big one in a yard down the road";
 
 	protected RZ_GameModeComponent m_GM;
 
@@ -763,6 +763,14 @@ class RZ_OpeningTasks
 	protected static bool Tended(RZ_Opening o)
 	{
 		return o.m_bTended;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The escort pattern: backgrounds whose steps are out and about (a pump, a pack's ground, the
+	//! remains, the road, a door that owes, a toll, the channel); the rest are handed on.
+	static bool Walks(string bg)
+	{
+		return bg == "mechanic" || bg == "hunter" || bg == "labtech" || bg == "unemployed" || bg == "raider" || bg == "excon" || bg == "radioham";
 	}
 
 	//------------------------------------------------------------------------------------------------

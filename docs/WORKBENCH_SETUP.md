@@ -759,6 +759,7 @@ and the UI files) need none, and eight have no base:
 | `RZ_DeadSoldier.et` | a Bastion soldier body prop | the clue set | Guidance > Soldier body prefab | optional | an opening's clue when the fever broke: the dead soldier |
 | `RZ_Barricade.et` | sandbags and a car on its side | — | Guidance > Barricade prefab | optional | barricade scenery |
 | (existing prefab) | the RZ_Opening_* compositions in Prefabs/ReforgerZ/Guidance/Openings/, built by tools/camp_kit/build.py from pieces.py's OPENINGS, which also fills the slots | — | Guidance > Opening scenes (each key's prefab) | optional | the openings' props by the door you come out of: three scenes per reason and each background's own things (docs/DESIGN.md, Openings); a key with none = nothing there |
+| `RZ_OpeningCompanion.et` | shipped as text: a one-man AI group on SURV whose one slot is `RZ_Civilian.et` (based on the FIA medical section, as `RZ_EscortScientist.et`) | — | Guidance > Companion (its default) | optional | the opening's contact who walks with you (Mechanic, Hunter, Lab Technician, Unemployed, Raider, Ex-Con, Radio Operator); empty = they send you on to the next person instead |
 | (existing prefab) | a person with the puzzle components, as Puzzles > Civilian is (a plainer civilian for variety) | — | Guidance > Contact | optional | whoever's outside an opening's door (someone from before, a stranger, an earlier life's wanderer); empty = Puzzles > Civilian (no body at all: nobody outside, and the scene's read points at the nearest work) |
 
 #### Power grid and radio station
@@ -1584,7 +1585,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Territory | Supply | `m_SupplySettings` | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
 | Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
 | Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (200, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)), **Site grid** (on), **Site read ms** (2), **Pre-read** (on), **Audit threshold** (70), **Solver** (on), **Candidates a piece** (24), **Layers** (on), **Board windows** (on), **Layer pieces** (60) ([SITES.md](SITES.md#settings)) |
-| Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), clue minutes (20), flyers, shout minutes (30), wanderer finds, the clue prefabs (car wreck, door, flyer, table radio, the two bodies, barricade); **Openings** (on), **Group gone weight** (18) and **Fever weight** (12), **Opening scenes** (the reasons' scenes and each background's props, filled by `tools/camp_kit/build.py`; a key with none: nothing there), **Contact** (empty: Puzzles > Civilian), **Opening Fame** (10) |
+| Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), clue minutes (20), flyers, shout minutes (30), wanderer finds, the clue prefabs (car wreck, door, flyer, table radio, the two bodies, barricade); **Openings** (on), **Group gone weight** (18) and **Fever weight** (12), **Opening scenes** (the reasons' scenes and each background's props, filled by `tools/camp_kit/build.py`; a key with none: nothing there), **Contact** (empty: Puzzles > Civilian), **Companion** (`RZ_OpeningCompanion.et`; empty: no contact walks with you), **Opening Fame** (10) |
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, **door spot prefab** (on the door leaf), scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
 | Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, **Extra finds** (items added to one building type's table), **Food weight** (2), **Not buildings** (name keywords of things with no loot: piers, bollards, rubble), chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
 | Interactions | Loot | `m_LootSettings` | **Loose loot** (on; off = nothing lies in houses), put out within 55 m (6 buildings a tick), put away past 80 m (after a minute), never rolled fresh with a player within 20 m, **refill** (45 min ÷ the town's loot level), at most 500 items lying on the server, slots per building (house 6, shop and farm 9, pharmacy, police and garage 10; locked +1), slot chance 0.75, 2 sure items, town loot per item taken (0.01), kept clear 20 m past a faction's place, the loot log (on) ([DESIGN.md](DESIGN.md#loot-in-houses)) |
@@ -2086,7 +2087,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **177** lines with the tag, all but one in the game scripts (one is the comment in
+There are **178** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, two the hold prompt's and four its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2204,6 +2205,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
 | `Guidance/RZ_OpeningSteps.c:516` | A Sample's remains: a special spawned and killed at once on the server (`RZ_Util.KillCharacter`) falls and lies where it was spawned, for every client | The body stands, or isn't seen: the place check still passes (it's dead there). Spawn it a frame later, or use a body prop |
+| `Guidance/RZ_Openings.c:1099` | an opening's contact who walks with you: a one-man civilian AI group (**Guidance > Companion**, `RZ_OpeningCompanion.et`) follows the player on `RZ_Escort`'s move orders, and its leader (the `RZ_Civilian` body) carries the talk tags | They stand still where they were swapped in, or "Talk to" is missing on them: the log's `Openings: <name> walks with <player>` is there. The steps still start on their cards after a minute; report it, and set **Companion** empty (they hand you on instead) |
 | `Guidance/RZ_OpeningSteps.c:532` | the remains withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stay until the opening ends, then go with the engine's cleanup once inserted again (as the vigil's body) | The body goes with the engine's usual cleanup during the step; the sample still lies there |
 | `Guidance/RZ_Guidance.c:480` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
@@ -2647,14 +2649,14 @@ Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one life each:
 for <player>: <background>, <kind> in <town> (<grid>), level N, <hiding|group|fever>, <before|stranger|earlier|nobody>:
 <who>, chain <search, task, walk> to <place>` (levels 2-3: `chain task, lead` or `chain lead`), `Openings: <name> called <player> over before step N`, `Openings: <name> talked to by <player> before
 step N`, `Openings: <name> went on talking with <player> into step N`,
-`Errands: opening.<step> handed to <player> (<name>)`, `Openings: <name> step N (<key>) for <player>,
+`Errands: opening.<step> handed to <player> (<name>)`, the pattern at the end of `started` (`, they walk with you` or `, handed on`), `Openings: <name> walks with <player>` (or `can't walk with <player> (no escort room), the steps start where you are`), `Openings: <first> sent <player> on to <next> at <place>, <direction>` (or `Openings: no house for the next person for <player> at <grid>, back to <name> instead`), `Openings: <player> handed over to <name> (step 2, task N)`, `Openings: <name> step N (<key>) for <player>,
 <direction>`, `Openings: <name> step N done by <player> in N s`, `Openings: <name> died (step N for
 <player>)`, `Openings: <name>'s bitten friend was lost (the clock ran out for <player>)` and `Openings: ended
 for <player>: <why> (step N, N min)`; the fallbacks' `Openings: no step 2 can run for <player> here
 (<background>)`, `Openings: no
 <background> place fits for <player>, a house instead`, `Openings: no place for <player> (<background>),
-the spawn point instead: <why doors were refused, e.g. a pack's lair x22>`, `Openings: no house over
-the way for <player> at <grid>, step 1 skipped` and `Openings: no contact could stand for <player> at <grid>, the scene's
+the spawn point instead: <why doors were refused, e.g. a pack's lair x22>`, `Openings: no house down
+the road for <player> at <grid>, step 1 skipped` and `Openings: no contact could stand for <player> at <grid>, the scene's
 read instead`; a lead's end is `Openings: ended for <player>: found work at <place> (step 3, N min)`.
 
 Task places ([PLACES.md](PLACES.md#the-live-check)): nothing while every place is true to its words;
@@ -3428,15 +3430,32 @@ when it happens)
   *Outside the Door*, "Talk to *her name*.", and the map's diamond is on her. Wait two minutes
   nearby without talking: she calls once more. Talk to her: the talk screen opens with "Look at you.
   Alive." (with **Dialogue > Trees** on, the greeting about your stitches), the day and the roads,
-  then the ask; the tracker now shows *Across the Road*, and the Quests tab has it under ERRANDS,
-  tracked. Search the house for 20 s and come back: she calls you over again (*Back to her name*
-  tracked) and nothing opens until you talk to her; then the broadcast, nobody coming, and *The
-  Fever* (her own step 2); then the same for *To Halcyon* with the Perimeter and the cure, the tracker
-  pointing at Halcyon's nearest holding or the lab. With the talk screen off (**UI > Talk reply
+  then the ask, and *"When you're done there, don't come back for me. Go on to Ruth, the mother
+  with the sick boy, at Ruth's house in Morton."*; the tracker now shows *Down the Road*, 150–450 m
+  off, and the Quests tab has it under ERRANDS, tracked. Ask "What was it you needed?": the step word
+  for word, then "Then on to Ruth, at Ruth's house in Morton." Search the house for 20 s: it's done
+  there, nobody calls you back, and *Find Ruth* is tracked at a house 200–600 m further on (its
+  diamond on her). Within 25 m she calls (*"You're the one Vera sent? Over here."*); talk to her: the
+  broadcast, nobody coming, and *The Fever*, hers (the hand-over reply, below). Then *To Halcyon*
+  starts where you stand, with the Perimeter and the cure, the tracker pointing at Halcyon's nearest
+  holding or the lab; ask Ruth again and she says that step word for word. Go back to Vera on the
+  way: *"Go on. Ruth's waiting for you, not me."*; leave her 150 m behind and she's gone. As a
+  **Mechanic** (they walk with you): after the first ask, close the talk screen and the regular from
+  the garage comes with you (*"I'm coming with you. ... You lead."*), 4 m behind; search the garage
+  down the road with them beside you, and *The Pump* starts there, said by them (no Back to); walk
+  off fast and the next step waits up to a minute for them to catch up. Fill a can at the pump: *To
+  the Haven* starts there, and they walk you to the safehouse (*"This is it. I'll find a corner."*).
+  Let infected near them: they stop and can be killed (the walk then goes to the nearest safehouse).
+  With **Contracts > Max escorts** full or **Companion** empty, they stay and each next step starts
+  where you are, on its card. Do the same pass once each for a Hunter, Lab Technician, Unemployed,
+  Raider, Ex-Con and Radio Operator (they walk with you) and a Doctor, Elder, Soldier, Police Officer
+  and Drifter (sent on: the man whose friend was bitten, the woman between two families, the one
+  keeping the gate, the shopkeeper who kept your station's keys, someone who heard you help); every
+  step is a new place, none sends you back. With the talk screen off (**UI > Talk reply
   layout** empty), **Talk to** says the same lines as subtitles, in order. Arrive: one line there and
   +10 Halcyon Fame. Time the whole chain (about 15 minutes) and note the log's minutes. Respawn: the
-  next start is a different town (2 km from the last two). Try a Soldier (ends at Bastion) and a
-  Mechanic (the Haven). Shoot the contact during step 1: a line from "Someone in a doorway" and the
+  next start is a different town (2 km from the last two). A Soldier ends at Bastion, a
+  Mechanic at the Haven. Shoot the contact during step 1: a line from "Someone in a doorway" and the
   walk to the nearest safehouse. Nobody waves you over for an errand while it runs. By the open door:
   your background's own things (the nurse's blanket and drum, the soldier's sandbags and lantern).
   Step 2 is your background's own: the Nurse treats the boy with something from her bag (*The
@@ -3466,7 +3485,7 @@ when it happens)
   (*[Errand] Here's the antidote. ...*, "Needs the antidote"). An errand done elsewhere is handed in
   only with *[Errand] It's done: ...*, never by opening the talk.
 - [ ] **Task places** ([PLACES.md](PLACES.md)). Over the openings above, every place is what its
-  words say: *Across the Road* sends you to a real house (or the chemist's, the garage...) 50–250 m
+  words say: *Down the Road* sends you to a real house (or the chemist's, the garage...) 150–450 m
   off, never into woods; a Lab Technician's *A Sample* lies by a road's verge (or in a yard) and you
   find a dead infected there with the sample beside it; *Downwind*'s tree line has trees; the well
   has a well. On Everon and Arland take a few errands that name a place (*Water for* a house: the

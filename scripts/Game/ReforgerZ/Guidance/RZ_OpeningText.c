@@ -318,9 +318,9 @@ class RZ_OpeningText
 		if (step == 1)
 		{
 			if (search.IsEmpty())
-				search = "the house over the way";
+				search = "the house down the road";
 
-			return string.Format("%1. Look, and come back. Walk, don't run.", Capital(search));
+			return string.Format("%1. Look in, quietly. Walk, don't run.", Capital(search));
 		}
 
 		if (step == 2)
@@ -334,7 +334,7 @@ class RZ_OpeningText
 				case RZ_EOpeningTask.PUMP: return "A can of fuel from the pump. Just the one.";
 				case RZ_EOpeningTask.DOWNWIND: return "Watch where they go about. Don't let them see you.";
 				case RZ_EOpeningTask.KEYS: return "The locked door. You've got the key now.";
-				case RZ_EOpeningTask.TOLL: return "The toll. Talk, look, come back. No shooting.";
+				case RZ_EOpeningTask.TOLL: return "The toll. Talk, look, walk away. No shooting.";
 				case RZ_EOpeningTask.SAMPLE: return "The sample. By the remains, down the road.";
 				case RZ_EOpeningTask.CHANNEL: return "Call on the open channel. Somebody's asking.";
 				case RZ_EOpeningTask.SWAP: return "Catch the one on the road. See what they'll swap.";
@@ -353,7 +353,7 @@ class RZ_OpeningText
 	//! "What was it you needed?" while a step runs: the live step first, in their words (`step`:
 	//! the tracker's text, filled), then a short word of their own (AskAgain's), so a missed line
 	//! is never lost.
-	static string Remind(string step, int stepNo, int task, string search)
+	static string Remind(string step, int stepNo, int task, string search, bool withYou = false)
 	{
 		if (step.IsEmpty())
 			return AskAgain(stepNo, task, search);
@@ -365,8 +365,78 @@ class RZ_OpeningText
 		if (stepNo == 2)
 			return line + " " + AskAgain(stepNo, task, search);
 
+		if (withYou)
+			return line + " I'm right behind you.";
+
 		return line + " Don't wait for me. I'm slower than I look.";
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Step 1's giver, handing you on: who's next and where (said with step 1's ask).
+	static string SendOn(string next, string who, string place)
+	{
+		return string.Format("When you're done there, don't come back for me. Go on to %1, %2, at %3. They need someone more than I do.", next, who, place);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The same, short, after the step said again.
+	static string ThenOn(string next, string place)
+	{
+		return string.Format("Then on to %1, at %2.", next, place);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The next person, as you come up.
+	static string NextCallOver(string sentBy)
+	{
+		if (sentBy.IsEmpty())
+			return "\"You're the one they sent? Over here.\"";
+
+		return string.Format("\"You're the one %1 sent? Over here.\"", sentBy);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who the next person is, by your background (they give step 2).
+	static string NextWho(string bg)
+	{
+		switch (bg)
+		{
+			case "nurse": return "the mother with the sick boy";
+			case "doctor": return "the man whose friend was bitten";
+			case "elder": return "the woman between two families";
+			case "soldier": return "the one keeping the gate";
+			case "police": return "the shopkeeper who kept your station's keys";
+		}
+
+		return "someone who heard you help";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first giver, once they've sent you on.
+	static string GoOn(string next)
+	{
+		return string.Format("Go on. %1's waiting for you, not me. I'll be all right here.", next);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The contact who walks with you, as the first step starts.
+	static string ComingWith()
+	{
+		return "I'm coming with you. I'm not sitting here on my own another day. You lead.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The contact who walked with you, there.
+	static string WalkedYouIn(int faction)
+	{
+		if (faction == RZ_EFaction.BANDITS)
+			return "This is as far as I go. They don't know my face, and I'd like to keep it that way.";
+
+		return "This is it. I'll find a corner. Go on, they'll want to see you, not me.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Drifter's next ask
 
 	//------------------------------------------------------------------------------------------------
 	//! The hand-over reply's label (RZ_TalkOpening; tagged [Errand]).

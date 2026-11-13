@@ -15,10 +15,10 @@ and one way to end it: **research the cure.**
 - **Openings:** every life starts somewhere random that suits who you were, coming out of a door
   for a reason (the last bottle empty, your group gone three days, the fever broken), and whoever's
   outside calls you over: someone who knew you before, a stranger, or a wanderer who met an earlier
-  life of yours. Your first objective is to talk to them (nobody opens the talk screen on you). Their small asks (the second your background's own: a fever to treat, a pump, a
+  life of yours. Your first objective is to talk to them (nobody opens the talk screen on you). Their small asks move you from place to place, never back: they walk with you, or send you on to the next person (the second ask your background's own: a fever to treat, a pump, a
   gate to hold, a locked door) teach the Zone, tell its story and walk you to the Haven or the
   faction your background belongs with; experienced players get less of it. Every place a task
-  sends you is true to its words (a house over the way, the remains by the road, the well in the
+  sends you is true to its words (a house down the road, the remains by the road, the well in the
   town it names), never on an island, checked live and by a place audit on the map.
 - **The Director** moves the server through four outbreak stages over a season of about 45
   real days, spreads infection from town to town and sends hordes toward noise. The infected adapt

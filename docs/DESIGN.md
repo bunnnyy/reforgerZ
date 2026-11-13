@@ -3188,7 +3188,7 @@ it's handed over, and the world streams in there.
   pack's lair, outside the errands' quiet places, and 2 km from this player's last two starts.
 - **Near where it ends:** towns within 3 km of where the chain will end are tried first, so the walk
   stays short; up to 12 towns are tried.
-- **Houses over the way:** a building with another house 50–250 m from it comes first, so step 1
+- **Houses down the road:** a building with another house 50–250 m from it comes first, so step 1
   has somewhere to send you; a lone one only when no town tried has better
   ([PLACES.md](PLACES.md#how-a-picker-uses-a-need)).
 - **Fallback:** no fitting building, any house in one of those towns (the scene still comes);
@@ -3264,11 +3264,18 @@ with their name (*"Hey. Over here. It's me."*), and your first objective is trac
 to Vera Holm.* (their name; the errand *Outside the Door*, on the HUD tracker and as the map's diamond on
 them). The talk screen never opens by itself ([DIALOGUE.md](DIALOGUE.md#who-opens-a-conversation)):
 it opens when you talk to them, and then the first step starts in that conversation: their greeting,
-that step's piece of the story, then the step's ask, and the step is yours and tracked. Each later
-step waits for you the same way: once a step is done (you're back by them), *Back to Vera Holm*
-is tracked, they call you over (*"Come here a minute. There's something else."*), and talking to
-them gives the next piece of the story and the ask. Already talking to them when it's due, it comes
-into the same screen. Without the talk screen, **Talk to** says the same lines as subtitles. Their one
+that step's piece of the story, then the step's ask, and the step is yours and tracked. **The chain
+never sends you back:** every step is done where it's done (`m_bEndsThere`), and the next one
+starts from there, at a new place, in one of two ways by your background:
+
+| Pattern | Backgrounds | How you move on |
+|---|---|---|
+| **They walk with you** (escort) | Mechanic, Hunter, Lab Technician, Unemployed, Raider, Ex-Con, Radio Operator: steps out and about (a pump, a pack's ground, the remains, the road, a door that owes, a toll, the channel) | Once the first ask is out and the talk screen is shut, the contact comes with you (*"I'm coming with you. ... You lead."*): their body becomes an escort ([building blocks](#mission-building-blocks), `RZ_Escort`) of **Guidance > Companion** (`RZ_OpeningCompanion.et`, a one-man civilian group) that follows 4 m behind you, stops while infected are within 25 m of them or nobody's within 150 m, and can be killed. Each next step starts as soon as they're within 30 m of you, said by them as subtitles; not caught up within a minute, it starts anyway, on its card. They walk you to the end and say one line there (*"This is it. I'll find a corner."*). No escort room (**Contracts > Max escorts**) or no prefab: they stay where they stood, and each next step starts where you are, on its card |
+| **They send you on** (hand-off) | Nurse, Doctor, Elder, Soldier, Police Officer, Drifter (a plan with steps 1 and 2) | When step 1 starts, its giver picks the next person: a house 200–600 m on from step 1's place (the one nearest where the chain ends first), 150 m or more from them, not locked, the spot outside its side facing step 1's place meeting `opening.search`; named, and who they are by your background (*the mother with the sick boy*, *the man whose friend was bitten*, *the woman between two families*, *the one keeping the gate*, *the shopkeeper who kept your station's keys*, else *someone who heard you help*). With the ask they say *"When you're done there, don't come back for me. Go on to Ruth, the mother with the sick boy, at Ruth's house in Morton."* Step 1 done, Ruth stands there (a body tagged as the first was) and *Find Ruth* is tracked ("Find Ruth at Ruth's house in Morton. Talk to them."); within 25 m she calls you over (*"You're the one Vera sent? Over here."*), and talking to her gives step 2. Step 2 done, the walk starts where you are. The first giver stays behind (talked to, *"Go on. Ruth's waiting for you, not me."*) and goes once nobody's within 150 m. No house fits: step 2 is theirs, *Back to Vera Holm*, the only way back left |
+
+With neither (levels 2–3, one step and the lead, or the Drifter's second and third asks), each next
+step starts where you are, said by them when they're within 30 m, else only its card. Already talking
+to them when it's due, it comes into the same screen. Without the talk screen, **Talk to** says the same lines as subtitles. Their one
 built reply is "What was it you needed?": the live step said again in their words, word for word from the tracker ("Like I said. Go to Halcyon's field station at ..."), then a short line of their own, so a missed ask is never lost (`RZ_Openings.Remind`). Talking to them while a step runs says the same. Two minutes into a wait without
 talking to them, while you're within 30 m, they call once more; leave a step 1 alone for two minutes
 by them and they say it once more (a subtitle). Nobody comes to talk within 45 minutes: the opening
@@ -3279,7 +3286,7 @@ are the **only job in the game handed to you rather than asked for**; its errand
 **The chain** is steps on the errand engine, handed straight to you
 ([ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain)), so the tracker follows each one as it
 starts (the HUD and the Quests tab), with the giver's lines on the talk screen; with someone outside,
-a talk objective comes before each step (above). By experience
+a talk objective comes before the first step, and before a next person's step (above). By experience
 ([levels](#experience-levels)):
 
 | Level | The chain |
@@ -3295,8 +3302,8 @@ there, one line on arrival ("Someone with a list looks up."), and no Fame. All t
 
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
-| 1. Across the Road | Search a building 50–250 m from them: a work site's **Search it, quietly** (8 s; 6 s for a learning player, level 1; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot outside its side facing them, and come back. One of your background's kinds when one is there (below), else a house; no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
-| 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold, and back), else The Cut (dress their hand with anything medical you carry, once you've chosen **Look at the hand.** on the talk screen) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
+| 1. Down the Road | Search a building 150–450 m from them: a work site's **Search it, quietly** (8 s; 6 s for a learning player, level 1; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot outside its side facing them; done there. One of your background's kinds when one is there (below), else a house; no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
+| 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold), else The Cut (dress their hand with anything medical you carry: the hand-over reply on their talk screen) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
 | 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
 No step 2 (yours can't run here, no well near and nothing medical on you): straight to the walk.
@@ -3308,24 +3315,26 @@ today opens the first step, when you first talk to them.
 **Step 2 by background** (`RZ_OpeningSteps.c`). Each runs on the
 errand engine like the other steps; while it runs, `RZ_ErrandDef.StepCounts` lets the background's
 own system say whether its clock runs. The first that can run here is yours; else water, else The
-Cut. Step 1's building is of your background's kind when one is 50–250 m off. Each step's place
+Cut. Step 1's building is of your background's kind when one is 150–450 m off. Step 2's place is
+measured from whoever gives it: the next person (handed on) or where the contact walking with you
+stands, so it's a new place, never back where you began. Each step's place
 meets its need ([PLACES.md](PLACES.md#the-needs)) or the step can't run here.
 
 | Background | Step 1's building | Step 2 | What it needs to run | Done when |
 |---|---|---|---|---|
 | Nurse | the chemist's (clinic) | **The Fever**: treat their boy | something medical on you | you pick the hand-over reply on their talk screen (*[Errand] Show me the boy. I've got something.*, first in the list, locked "Needs a dressing, or anything medical" without it); one medical item is taken then, never just for opening the talk |
-| | | else **Water for the Fever** | a well within 400 m | **Fill what you can carry** at the well (8 s), and back (it'll be boiled) |
+| | | else **Water for the Fever** | a well within 400 m | **Fill what you can carry** at the well (8 s) (it'll be boiled) |
 | Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, 10 minutes before it lapses | an antidote on you | the hand-over reply (*[Errand] Here's the antidote. Roll his sleeve up.*, locked "Needs the antidote"); the antidote is taken then |
 | | | else **The Clock** with a dressing | something medical | the hand-over reply (*[Errand] Let me clean it and bind it. That buys time.*); one medical item is taken then |
-| Mechanic | a garage or petrol station | **The Pump**: fuel from the nearest petrol station within 800 m | a petrol station near | 5 s at the pump with 5 litres in a can, and back |
+| Mechanic | a garage or petrol station | **The Pump**: fuel from the nearest petrol station within 800 m | a petrol station near | 5 s at the pump with 5 litres in a can |
 | Hunter | a farm | **Downwind**: watch a pack's ground, unseen | 150 m short of the nearest pack's lair within 1.6 km, else a tree line 150–250 m out (four trees within 40 m) | 30 s within 25 m, hidden (built stealth), quiet; back |
-| Police Officer | a police post or hall | **The Station Keys**: the contact gives you the key to a locked building 40–300 m off | locks and the key prefab, a real lock near | inside that building, and back |
-| Ex-Con | — | **The Toll**: walk up to a Red Hand toll and away again, no fight | a Red Hand roadblock or camp gate within 1.5 km; not while the Red Hand hunts you | 10 s within 30 m with no shot within 80 m in the last minute, and back |
-| Lab Technician | a school or clinic | **A Sample**: from what's left of a big one 80–250 m out, on a road's verge, else in a yard by a house: a special that doesn't burst (**Zombies > Special prefabs**) is made and killed there when the step starts, the sample (**Cure > Sample prefab**) beside it; the body is kept from the corpse cleanup until the opening ends | the sample prefab and such a special; not after the cure | at the remains with a sample in your pack, and back |
-| Radio Operator | the hut under a mast | **Open Channel**: answer someone calling on the open channel (**Call on the open channel**, `opening.channel`) | Dialogue > Trees and Radio calls on, a radio on you | answered, and back |
-| Unemployed | a shop | **A Fair Swap**: catch the nearest wanderer on the road within 1.5 km | a wanderer near | 5 s with them (the place follows them), and back: a tin you carry is swapped for 3 Haven Favor (small pay) |
-| Soldier | an old barracks or hall | **Hold the Gate** 15–25 m out for a minute: the gate's noise (heat 12, again every 20 s) draws the infected | ground there that isn't steep | 60 s within 15 m, and back |
-| Raider | — | **The Debt**: collect at a house 60–250 m off (the errands' crate prop at its door) | a house that far off | 10 s at the door, and back: +1 Infamy with the Haven (the word getting round, small) |
+| Police Officer | a police post or hall | **The Station Keys**: the contact gives you the key to a locked building 40–300 m off | locks and the key prefab, a real lock near | inside that building |
+| Ex-Con | — | **The Toll**: walk up to a Red Hand toll and away again, no fight | a Red Hand roadblock or camp gate within 1.5 km; not while the Red Hand hunts you | 10 s within 30 m with no shot within 80 m in the last minute |
+| Lab Technician | a school or clinic | **A Sample**: from what's left of a big one 80–250 m out, on a road's verge, else in a yard by a house: a special that doesn't burst (**Zombies > Special prefabs**) is made and killed there when the step starts, the sample (**Cure > Sample prefab**) beside it; the body is kept from the corpse cleanup until the opening ends | the sample prefab and such a special; not after the cure | at the remains with a sample in your pack |
+| Radio Operator | the hut under a mast | **Open Channel**: answer someone calling on the open channel (**Call on the open channel**, `opening.channel`) | Dialogue > Trees and Radio calls on, a radio on you | answered |
+| Unemployed | a shop | **A Fair Swap**: catch the nearest wanderer on the road within 1.5 km | a wanderer near | 5 s with them (the place follows them): a tin you carry is swapped for 3 Haven Favor (small pay) |
+| Soldier | an old barracks or hall | **Hold the Gate** 15–25 m out for a minute: the gate's noise (heat 12, again every 20 s) draws the infected | ground there that isn't steep | 60 s within 15 m |
+| Raider | — | **The Debt**: collect at a house 60–250 m off (the errands' crate prop at its door) | a house that far off | 10 s at the door: +1 Infamy with the Haven (the word getting round, small) |
 | Elder | — | **Two Families**: hear them out with the contact, persuade 1 (factionless, [Elder] +1: `opening.settle`) | Dialogue > Trees on | the talk settled it (a Short settles it by half, said) |
 | Drifter | — | **Three asks**: up to three in a row of the gate, downwind, the swap, the debt, the two families, water and the cut, shuffled, each that can run here | — | each as above; the second and third come "from" the street's other people |
 

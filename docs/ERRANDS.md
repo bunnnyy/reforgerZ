@@ -306,7 +306,7 @@ tables below).
 | The Name on the Tag | **Raise the cairn** | 12 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
 | The Name on the Tag | **Take the ID** | 6 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The openings: Water, Water for the Fever | **Fill what you can carry** | 8 s | empty cans and buckets → nothing |
-| The openings: Across the Road | **Search it, quietly** | 6–8 s | a crate of odds and ends → rummaged clutter |
+| The openings: Down the Road | **Search it, quietly** | 6–8 s | a crate of odds and ends → rummaged clutter |
 | Strangers: The Funeral for the Car, Two in the Back (push-start) | **Push the car** | 10 s | the car itself |
 | Strangers: Two in the Back ([Mechanic]) | **Fix the car** | 15 s | a toolbox and parts → nothing |
 | Strangers: The Digger | **Dig the grave** | 15 s | a marked plot → a grave |
@@ -1022,21 +1022,24 @@ system hands a player, already taken (`RZ_Errands.Hand`, code in `Guidance/RZ_Op
 `RZ_OpeningSteps.c`). They
 are the **only errands, and the only jobs, handed to the player rather than asked for**:
 `RZ_ErrandDef.IsOpening()` and `RZ_Errand.IsOpening()` are true for them and for nothing else. With
-someone outside, each step is handed in a conversation the player opens: before it, a **talk
+someone outside, the first step is handed in a conversation the player opens: before it, a **talk
 objective** is handed and tracked, and talking to the contact ends it and hands the step there
-(nobody outside, or the contact dead: the step is handed at once).
+(nobody outside, or the contact dead: the step is handed at once). Every step is done where it's
+done (`m_bEndsThere`): none sends you back. The next starts there, said by the contact walking with
+you, or given by the next person you're sent on to (*Find <name>*, a talk objective at their place);
+the patterns are in [DESIGN.md](DESIGN.md#openings-how-every-life-starts).
 
 | Step | Key | Way | The step |
 |---|---|---|---|
-| ✅ Outside the Door, Back to *the contact* (the talk objectives) | `opening.talk`, `opening.talk.next` | talk | "Talk to *the contact*.": never done by being there (`StepCounts` false), only by opening talk with them, when it ends quietly (no past job); 45 minutes before it lapses, which ends the opening |
-| ✅ Across the Road | `opening.search`, `opening.search.short` | sneak | a building 50–250 m from the contact (quiet): hold **Search it, quietly** at the crate there (8 s; 6 s), then back to them (off: 20 s, 10 s there) |
-| ✅ Water | `opening.water` | do | the nearest well or water tower: hold **Fill what you can carry** at the cans by it (8 s; off: 15 s there), then back |
-| ✅ The Cut | `opening.hand` | give | one medical item handed over at the contact, once you've chosen to on the talk screen (`opening.tend_cut`) |
-| ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | give, do | a medical item at the contact once you've chosen to on the talk screen (`opening.tend_fever`); **Fill what you can carry** at the well (8 s) |
-| ✅ The Clock | `opening.clock`, `opening.clock_med` | give | an antidote (or a medical item) at the contact once you've chosen to on the talk screen (`opening.tend_clock`, `opening.tend_clock_med`); 10 minutes before it lapses |
+| ✅ Outside the Door, Find *the next person*, Back to *the contact* (the talk objectives) | `opening.talk`, `opening.talk.find`, `opening.talk.next` | talk | "Talk to *the contact*." (Find: "Find *Ruth* at *Ruth's house in Morton*. Talk to them."; Back to only when no next person could stand): never done by being there (`StepCounts` false), only by opening talk with them, when it ends quietly (no past job); 45 minutes before it lapses, which ends the opening |
+| ✅ Down the Road | `opening.search`, `opening.search.short` | sneak | a building 150–450 m from the contact (quiet): hold **Search it, quietly** at the crate there (8 s; 6 s), done there (off: 20 s, 10 s there) |
+| ✅ Water | `opening.water` | do | the nearest well or water tower: hold **Fill what you can carry** at the cans by it (8 s; off: 15 s there), done there |
+| ✅ The Cut | `opening.hand` | give | one medical item handed over at the giver, when you pick the hand-over reply (*[Errand] Hold still. Let me dress that hand.*) |
+| ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | give, do | a medical item at the giver when you pick the hand-over reply; **Fill what you can carry** at the well (8 s) |
+| ✅ The Clock | `opening.clock`, `opening.clock_med` | give | an antidote (or a medical item) at the giver when you pick the hand-over reply; 10 minutes before it lapses |
 | ✅ The Pump | `opening.pump` | do | 5 s at a petrol station's pump with fuel in a can |
 | ✅ Downwind | `opening.downwind` | sneak | 30 s within 25 m, only while hidden (`m_bUnseen`), quiet |
-| ✅ The Station Keys | `opening.keys` | do | inside the locked building whose key the contact gave you |
+| ✅ The Station Keys | `opening.keys` | do | inside the locked building whose key the giver gave you |
 | ✅ The Toll | `opening.toll` | talk | 10 s within 30 m of a Red Hand toll with no shot near it |
 | ✅ A Sample | `opening.sample` | do | at the remains with a sample in your pack (the crate or effects prop: none) |
 | ✅ Open Channel | `opening.channel` | do | anywhere, once you've answered on the open channel |

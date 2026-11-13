@@ -1,0 +1,8 @@
+SCR_AIGroup : "{581106FA58919E89}Prefabs/Groups/INDFOR/Group_FIA_MedicalSection.et" {
+ ID "0000000000000001"
+ coords 0 0 0
+ m_faction "SURV"
+ m_aUnitPrefabSlots {
+  "{D5006C19E40CE491}Prefabs/ReforgerZ/Puzzles/RZ_Civilian.et"
+ }
+}

@@ -37,8 +37,14 @@ class RZ_TalkOpening : RZ_TalkGeneric
 		s.m_iFaction = -1;
 		if (!o)
 		{
-			s.m_sHeader = "Someone";
-			s.m_sName = "Someone";
+			// The first giver, after sending you on (a negated id), or nobody we know
+			string title = "Someone";
+			RZ_Openings openings = RZ_Openings.Get();
+			if (openings && !openings.SpeakerFor(m_iOpening).IsEmpty())
+				title = openings.SpeakerFor(m_iOpening);
+
+			s.m_sHeader = title;
+			s.m_sName = title;
 			return;
 		}
 
