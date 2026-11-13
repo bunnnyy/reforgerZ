@@ -194,6 +194,24 @@ class RZ_Escort
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The person you'd talk to: the body, or a group's leader once it exists; null without a body.
+	IEntity GetPerson()
+	{
+		if (!HasBody())
+			return null;
+
+		SCR_AIGroup group = SCR_AIGroup.Cast(m_Body);
+		if (!group)
+			return m_Body;
+
+		AIAgent leader = group.GetLeaderAgent();
+		if (!leader)
+			return null;
+
+		return leader.GetControlledEntity();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool IsNear(vector p, float radius)
 	{
 		return RZ_Util.DistXZ(m_vPos, p) <= radius;
@@ -554,7 +572,8 @@ class RZ_Escort
 	//! The talk actions go on the body, or on a group's leader once the members exist.
 	protected void TryTag()
 	{
-		if (m_iTagMission < 0 || !m_Body)
+		// -1: no talk tags (an opening's contact tags with its own negative id, RZ_Openings.TAG)
+		if (m_iTagMission == -1 || !m_Body)
 		{
 			m_bTagged = true;
 			return;

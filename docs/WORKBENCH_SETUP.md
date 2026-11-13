@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **363 prefab fields**: 46 on `RZ_GameModeComponent`, 300 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **341 entries**: 201 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 103 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **364 prefab fields**: 46 on `RZ_GameModeComponent`, 301 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **342 entries**: 202 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 103 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -753,6 +753,7 @@ and the UI files) need none, and eight have no base:
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | `RZ_WindupRadio.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction`, `RZ_RadioCallAction`, `RZ_ViewRadioAction`; `RZ_ViewRadioAction` (In hand on) | Guidance > Radio prefab | optional | given to every new life. The two View radio actions: one in the "default" context, one in "knob_toggle" with In hand on (beside vanilla's Turn on/off) |
+| `RZ_OpeningCompanion.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction`, `RZ_RadioCallAction`, `RZ_ViewRadioAction`; `RZ_ViewRadioAction` (In hand on) | Guidance > Companion | optional | the opening's contact who walks with you (a one-man civilian AI group with the puzzle components; written as text: open it once in Workbench). Empty: they hand you on to the next person instead |
 | `RZ_CarWreck.et` | a wrecked car prop | — | Guidance > Car wreck prefab | optional | an opening's clue when your group is gone: their car in the ditch |
 | `RZ_ScratchedDoor.et` | a door or wall panel prop | the clue set | Guidance > Door prefab | optional | an opening's clue in the hiding place: the scratched door |
 | `RZ_Flyer.et` | a poster prop | the clue set | Guidance > Flyer prefab | optional | an opening's clue when your group is gone (the flyer they went after), safehouse flyers |
@@ -2088,7 +2089,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **181** lines with the tag, all but one in the game scripts (one is the comment in
+There are **182** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, two the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2210,6 +2211,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
 | `Guidance/RZ_OpeningSteps.c:516` | A Sample's remains: a special spawned and killed at once on the server (`RZ_Util.KillCharacter`) falls and lies where it was spawned, for every client | The body stands, or isn't seen: the place check still passes (it's dead there). Spawn it a frame later, or use a body prop |
+| `Guidance/RZ_Openings.c:1099` | an opening's contact who walks with you: a one-man civilian AI group (**Guidance > Companion**, `RZ_OpeningCompanion.et`) follows the player on `RZ_Escort`'s move orders, and its leader (the `RZ_Civilian` body) carries the talk tags | They stand still where they were swapped in, or "Talk to" is missing on them: the log's `Openings: <name> walks with <player>` is there. The steps still start on their cards after a minute; report it, and set **Companion** empty (they hand you on instead) |
 | `Guidance/RZ_OpeningSteps.c:532` | the remains withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stay until the opening ends, then go with the engine's cleanup once inserted again (as the vigil's body) | The body goes with the engine's usual cleanup during the step; the sample still lies there |
 | `Guidance/RZ_Guidance.c:480` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
@@ -2653,14 +2655,14 @@ Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one life each:
 for <player>: <background>, <kind> in <town> (<grid>), level N, <hiding|group|fever>, <before|stranger|earlier|nobody>:
 <who>, chain <search, task, walk> to <place>` (levels 2-3: `chain task, lead` or `chain lead`), `Openings: <name> called <player> over before step N`, `Openings: <name> talked to by <player> before
 step N`, `Openings: <name> went on talking with <player> into step N`,
-`Errands: opening.<step> handed to <player> (<name>)`, `Openings: <name> step N (<key>) for <player>,
+`Errands: opening.<step> handed to <player> (<name>)`, the pattern at the end of `started` (`, they walk with you` or `, handed on`), `Openings: <name> walks with <player>` (or `can't walk with <player> (no escort room), the steps start where you are`), `Openings: <first> sent <player> on to <next> at <place>, <direction>` (or `Openings: no house for the next person for <player> at <grid>, back to <name> instead`), `Openings: <player> handed over to <name> (step 2, task N)`, `Openings: <name> step N (<key>) for <player>,
 <direction>`, `Openings: <name> step N done by <player> in N s`, `Openings: <name> died (step N for
 <player>)`, `Openings: <name>'s bitten friend was lost (the clock ran out for <player>)` and `Openings: ended
 for <player>: <why> (step N, N min)`; the fallbacks' `Openings: no step 2 can run for <player> here
 (<background>)`, `Openings: no
 <background> place fits for <player>, a house instead`, `Openings: no place for <player> (<background>),
-the spawn point instead: <why doors were refused, e.g. a pack's lair x22>`, `Openings: no house over
-the way for <player> at <grid>, step 1 skipped` and `Openings: no contact could stand for <player> at <grid>, the scene's
+the spawn point instead: <why doors were refused, e.g. a pack's lair x22>`, `Openings: no house down
+the road for <player> at <grid>, step 1 skipped` and `Openings: no contact could stand for <player> at <grid>, the scene's
 read instead`; a lead's end is `Openings: ended for <player>: found work at <place> (step 3, N min)`.
 
 Task places ([PLACES.md](PLACES.md#the-live-check)): nothing while every place is true to its words;
@@ -3445,15 +3447,32 @@ when it happens)
   *Outside the Door*, "Talk to *her name*.", and the map's diamond is on her. Wait two minutes
   nearby without talking: she calls once more. Talk to her: the talk screen opens with "Look at you.
   Alive." (with **Dialogue > Trees** on, the greeting about your stitches), the day and the roads,
-  then the ask; the tracker now shows *Across the Road*, and the Quests tab has it under ERRANDS,
-  tracked. Search the house for 20 s and come back: she calls you over again (*Back to her name*
-  tracked) and nothing opens until you talk to her; then the broadcast, nobody coming, and *The
-  Fever* (her own step 2); then the same for *To Halcyon* with the Perimeter and the cure, the tracker
-  pointing at Halcyon's nearest holding or the lab. With the talk screen off (**UI > Talk reply
+  then the ask, and *"When you're done there, don't come back for me. Go on to Ruth, the mother
+  with the sick boy, at Ruth's house in Morton."*; the tracker now shows *Down the Road*, 150–450 m
+  off, and the Quests tab has it under ERRANDS, tracked. Ask "What was it you needed?": the step word
+  for word, then "Then on to Ruth, at Ruth's house in Morton." Search the house for 20 s: it's done
+  there, nobody calls you back, and *Find Ruth* is tracked at a house 200–600 m further on (its
+  diamond on her). Within 25 m she calls (*"You're the one Vera sent? Over here."*); talk to her: the
+  broadcast, nobody coming, and *The Fever*, hers (the hand-over reply, below). Then *To Halcyon*
+  starts where you stand, with the Perimeter and the cure, the tracker pointing at Halcyon's nearest
+  holding or the lab; ask Ruth again and she says that step word for word. Go back to Vera on the
+  way: *"Go on. Ruth's waiting for you, not me."*; leave her 150 m behind and she's gone. As a
+  **Mechanic** (they walk with you): after the first ask, close the talk screen and the regular from
+  the garage comes with you (*"I'm coming with you. ... You lead."*), 4 m behind; search the garage
+  down the road with them beside you, and *The Pump* starts there, said by them (no Back to); walk
+  off fast and the next step waits up to a minute for them to catch up. Fill a can at the pump: *To
+  the Haven* starts there, and they walk you to the safehouse (*"This is it. I'll find a corner."*).
+  Let infected near them: they stop and can be killed (the walk then goes to the nearest safehouse).
+  With **Contracts > Max escorts** full or **Companion** empty, they stay and each next step starts
+  where you are, on its card. Do the same pass once each for a Hunter, Lab Technician, Unemployed,
+  Raider, Ex-Con and Radio Operator (they walk with you) and a Doctor, Elder, Soldier, Police Officer
+  and Drifter (sent on: the man whose friend was bitten, the woman between two families, the one
+  keeping the gate, the shopkeeper who kept your station's keys, someone who heard you help); every
+  step is a new place, none sends you back. With the talk screen off (**UI > Talk reply
   layout** empty), **Talk to** says the same lines as subtitles, in order. Arrive: one line there and
   +10 Halcyon Fame. Time the whole chain (about 15 minutes) and note the log's minutes. Respawn: the
-  next start is a different town (2 km from the last two). Try a Soldier (ends at Bastion) and a
-  Mechanic (the Haven). Shoot the contact during step 1: a line from "Someone in a doorway" and the
+  next start is a different town (2 km from the last two). A Soldier ends at Bastion, a
+  Mechanic at the Haven. Shoot the contact during step 1: a line from "Someone in a doorway" and the
   walk to the nearest safehouse. Nobody waves you over for an errand while it runs. By the open door:
   your background's own things (the nurse's blanket and drum, the soldier's sandbags and lantern).
   Step 2 is your background's own: the Nurse treats the boy with something from her bag (*The
@@ -3475,8 +3494,15 @@ when it happens)
   one-line read, no clue, and someone outside only one time in three (without: the read's own line
   hands you *Where the Work Is*). Turn **Puzzles > Civilian** and **Contact** empty: nobody outside,
   the read hands you the work, and a brand-new player's wanderer comes looking.
+- [ ] **Hand-overs are a reply you pick**, with a pad. As a Nurse on *The Fever*, walk up to the
+  contact with a field dressing and open the talk: nothing is taken and the step isn't done; the
+  first reply is *[Errand] Show me the boy. I've got something.* Drop the dressing and open it again:
+  the reply is dim, "Needs a dressing, or anything medical". Pick it with the dressing on you: her line,
+  and a few seconds on the step completes and the dressing is gone. The same for a Doctor's antidote
+  (*[Errand] Here's the antidote. ...*, "Needs the antidote"). An errand done elsewhere is handed in
+  only with *[Errand] It's done: ...*, never by opening the talk.
 - [ ] **Task places** ([PLACES.md](PLACES.md)). Over the openings above, every place is what its
-  words say: *Across the Road* sends you to a real house (or the chemist's, the garage...) 50–250 m
+  words say: *Down the Road* sends you to a real house (or the chemist's, the garage...) 150–450 m
   off, never into woods; a Lab Technician's *A Sample* lies by a road's verge (or in a yard) and you
   find a dead infected there with the sample beside it; *Downwind*'s tree line has trees; the well
   has a well. On Everon and Arland take a few errands that name a place (*Water for* a house: the

@@ -599,7 +599,7 @@ so it never leans on the brief.
 | Not | But |
 |---|---|
 | Find out his number. | Find Emil Novak's trial number at the lab in Morton. |
-| Go back to her. | Go back to Jana Novak at the safehouse in Outskirts 59-95. |
+| Search the houses over the way. | Search the chemist's down the road, quietly. Then go on to Ruth, at Ruth's house in Morton. |
 | Search the houses over the way. | Search the houses across the road from Lucie Brandt's, quietly. |
 | Secure it and hold the area for a minute. | Hold the cellar cache in Levie for a minute. |
 | Find him. | Find the downed pilot outside Morton and walk the pilot to Levie. |

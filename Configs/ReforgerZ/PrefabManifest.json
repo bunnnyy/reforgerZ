@@ -4545,6 +4545,29 @@
    "notes": "The two View radio actions: one in the \"default\" context, one in \"knob_toggle\" with In hand on (beside vanilla's Turn on/off)."
   },
   {
+   "id": "OpeningCompanion",
+   "kind": "create",
+   "system": "New-player guidance",
+   "path": "Prefabs/ReforgerZ/Guidance/RZ_OpeningCompanion.et",
+   "basePrefab": "{73950FBA2D7DB5C5}Prefabs/Items/Equipment/Radios/Radio_ANPRC68.et",
+   "baseFind": "",
+   "baseHint": "a small radio item; keep \"radio\" in its name",
+   "components": [],
+   "actions": [
+    {"cls": "RZ_TuneRadioAction", "values": [], "name": "Tune"},
+    {"cls": "RZ_RadioCallAction", "values": [], "name": "Call"},
+    {"cls": "RZ_ViewRadioAction", "values": [], "name": "View radio"},
+    {"cls": "RZ_ViewRadioAction", "values": ["m_bInHand=1"], "name": "View radio"}
+   ],
+   "slots": ["m_GuidanceSettings.m_sCompanionPrefab"],
+   "listSlot": false,
+   "slotLabel": "Guidance > Companion",
+   "required": false,
+   "minimum": false,
+   "use": "the opening's contact who walks with you (a one-man civilian AI group with the puzzle components; written as text: open it once in Workbench). Empty: they hand you on to the next person instead",
+   "notes": ""
+  },
+  {
    "id": "CarWreck",
    "kind": "create",
    "system": "New-player guidance",

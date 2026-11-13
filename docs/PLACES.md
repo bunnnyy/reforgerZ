@@ -3,8 +3,8 @@
 Code: `World/RZ_PlaceNeeds.c` (the needs, the checks, the finder), `World/RZ_PlaceAudit.c` (the
 audit), and the pickers that use them (below). Server only.
 
-A task's words must be true where it puts you. "Search the house over the way" needs a house over
-the way; "what's left of a big one by the road" needs a road, and the remains lying by it; "the well
+A task's words must be true where it puts you. "Search the house down the road" needs a house down
+the road; "what's left of a big one by the road" needs a road, and the remains lying by it; "the well
 in Tisy" needs a well, in Tisy. Every kind of task that names its place or a thing at it has a
 **need**: place flags with their ranges, and the things its words name. Its picker tries candidates
 against the need and takes the first that fits, or offers nothing; it never puts a task where its
@@ -131,15 +131,15 @@ or way isn't offered here.
 
 | Need | The words | Flags | Things | Picked by |
 |---|---|---|---|---|
-| `opening.start` | outside the door you came out of, someone waiting | BUILDING(any/12) NOT_STEEP(30) (houses over the way are the roll's ranking, not its words) | NPC the contact within 15 m (empty: nobody stands there, the scene's note points at the nearest work) | the openings' place roll |
-| `opening.search` | the house (the chemist's, the garage...) over the way | BUILDING(house or the background's kind/15) NOT_STEEP(30) | | Across the Road (step 1) |
+| `opening.start` | outside the door you came out of, someone waiting | BUILDING(any/12) NOT_STEEP(30) (houses down the road are the roll's ranking, not its words) | NPC the contact within 15 m (empty: nobody stands there, the scene's note points at the nearest work) | the openings' place roll |
+| `opening.search` | the house (the chemist's, the garage...) down the road; the next person's house | BUILDING(house or the background's kind/15) NOT_STEEP(30) | | Down the Road (step 1), the next person (Find *name*) |
 | `opening.water` | the well | WATER_SOURCE(8) | | Water, Water for the Fever |
 | `opening.pump` | the petrol station | BUILDING(fuel/20) | | The Pump |
 | `opening.downwind` | the pack's ground | NOT_STEEP(35) | | Downwind, by a lair |
 | `opening.treeline` | the tree line where they cross | TREES(4/40) NOT_STEEP(35) | | Downwind, with no pack near |
-| `opening.keys` | the locked house over the way, and its key | BUILDING(any/6) | SLOT the key (not offered) | The Station Keys |
+| `opening.keys` | the locked building near the giver, and its key | BUILDING(any/6) | SLOT the key (not offered) | The Station Keys |
 | `opening.sample` | what's left of a big one by the road, and the sample by it | ROAD(12) NOT_STEEP(25) NOT_LOCKED | REMAINS within 4 m, ITEM the sample within 4 m (either slot empty: not offered) | A Sample |
-| `opening.sample.yard` | what's left of a big one in a yard over the way, and the sample by it | HOUSES(1/20) NOT_STEEP(25) NOT_LOCKED | the same | A Sample, with no road near |
+| `opening.sample.yard` | what's left of a big one in a yard down the road, and the sample by it | HOUSES(1/20) NOT_STEEP(25) NOT_LOCKED | the same | A Sample, with no road near |
 | `opening.gate` | the gate | NOT_STEEP(30) | | Hold the Gate |
 | `opening.debt` | the house with the owing in it | HOUSES(1/15) | | The Debt |
 | `opening.toll` | the Red Hand's toll or gate | NEAR_FACTION(Red Hand/120) | | The Toll |
@@ -185,11 +185,15 @@ and returns the first that passes the checks; zero when none does:
 giver's places each time a talk menu is built). The pickers:
 
 - **The openings' roll** (`RZ_OpeningPlaces.c`): each candidate building ranked (a fitting building
-  with houses 50–250 m off, a house with them, a lone fitting one, a lone house), the best kept;
+  with houses 150–450 m off, a house with them, a lone fitting one, a lone house), the best kept;
   12 towns; a second pass at half the clear distances (without the last starts) before the spawn
   point. Why doors were refused is counted (`WhyText`) and logged with a spawn-point fallback.
-- **Step 1** (`RZ_Openings.PickSearch`): a house 50–250 m from the contact, the background's kind
+- **Step 1** (`RZ_Openings.PickSearch`): a house 150–450 m from the contact, the background's kind
   first, the spot outside its side facing the contact; none, and the chain skips step 1.
+- **The next person** (handed on, `RZ_Openings.FindNext`): a house 200–600 m on from step 1's place,
+  150 m or more from the first giver, the one nearest where the chain ends first, not locked; the
+  spot outside its side facing step 1's place meets `opening.search`; none, and step 2 is the first
+  giver's (back to them).
 - **Step 2** (`RZ_OpeningSteps.c`): the well and the pump at a dry spot by them; the tree line, the
   gate and the debt through `Near`; A Sample by a road's verge, else in a yard.
 - **Errand ways** (`RZ_Errands.PlaceFor`): out from the giver through `Near`; a town by name: the

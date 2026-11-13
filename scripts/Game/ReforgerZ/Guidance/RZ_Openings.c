@@ -57,7 +57,21 @@ class RZ_Opening
 	int m_iScene;				// the reason's composition (1-3)
 	int m_iWho;					// who's outside (RZ_EOpeningWho)
 	int m_iWanderer = -1;		// EARLIER: the wanderer they are, held while they stand here
-	IEntity m_Contact;			// weak: whoever's outside
+	IEntity m_Contact;			// weak: whoever's outside (walking with you: the escort's person; handed on: the next person)
+	ref RZ_Escort m_Escort;		// they walk with you (the escort pattern), null otherwise
+	bool m_bWalks;				// the escort pattern: they come with you, step to step
+	bool m_bHandOff;			// the hand-off pattern: step 1's giver sends you on to the next person
+	IEntity m_Left;				// weak: the giver you were sent on from, gone once nobody's near
+	int m_iLeftWanderer = -1;	// an earlier life's wanderer the first giver was, back on the road with them
+	vector m_vNext;				// the next person's spot (hand-off), zero once they stand there
+	string m_sNextName;
+	string m_sNextShort;
+	string m_sNextWho;
+	string m_sNextPlace;		// "Ruth's house in Morton"
+	string m_sLeftShort;		// the first giver's short name, once you're sent on
+	string m_sLeftSpeaker;		// and their title
+	bool m_bNextCalled;			// the next person called you over as you came up
+	float m_fWaitNear;			// walking with you: the next step waits since then for them to catch up
 	bool m_bHadContact;
 	bool m_bContactDead;
 	string m_sName;				// "Vera Holm"
@@ -71,7 +85,7 @@ class RZ_Opening
 	int m_iStage = -1;			// the plan's stage under way (-1 before they call you over)
 	int m_iStep;				// 0 before the first step, 1-3 the step under way (the conversations' opening.step)
 	bool m_bNext;				// the next stage starts at m_fNextAt
-	string m_sSearch;			// step 1's place: "the chemist's over the way"
+	string m_sSearch;			// step 1's place: "the chemist's down the road"
 	int m_iTask;				// step 2's task (RZ_EOpeningTask)
 	ref array<int> m_aTasks = {};	// step 2's tasks still to try (the background's, or the Drifter's asks)
 	int m_iAsks;				// the Drifter's asks done
@@ -80,6 +94,7 @@ class RZ_Opening
 	int m_iTargetId = -1;		// the task's wanderer (SWAP) or road post (TOLL)
 	float m_fPulseAt;			// GATE: the step's progress at its next noise
 	bool m_bTold;				// the task said once what's missing
+	bool m_bTended;				// CUT, FEVER, CLOCK, CLOCK_MED: the hand-over reply was picked
 	int m_iErrand = -1;			// the current step's errand id
 	bool m_bResolved;			// the current step is done
 	bool m_bSpoke;				// they've called you over (the chain has begun)
@@ -113,8 +128,13 @@ class RZ_Openings
 	protected static const float ASK_AGAIN = 120;		// called again once, this long into a wait or into step 1
 	protected static const float CONTACT_GONE = 150;	// the contact goes once nobody is this close (the walk, or over)
 	protected static const float CONTACT_MAX = 2700;	// and once the opening is 45 minutes old, with nobody within 50 m
-	protected static const float SEARCH_MIN = 50;		// step 1's house: this far from the contact...
-	protected static const float SEARCH_MAX = 250;		// ...and no further
+	protected static const float SEARCH_MIN = 150;		// step 1's house: this far from the contact...
+	protected static const float SEARCH_MAX = 450;		// ...and no further
+	protected static const float NEXT_MIN = 200;		// the next person (hand-off): this far on from step 1's place...
+	protected static const float NEXT_MAX = 600;		// ...and no further
+	protected static const float NEXT_FROM_FIRST = 150;	// and at least this far from the first giver
+	protected static const float CATCH_UP = 60;		// walking with you: the next step waits this long for them to catch up
+	protected static const float NEXT_CALL = 25;		// the next person calls you over this close
 	protected static const int SEARCH_TRIES = 6;		// buildings tried before giving up on a kind
 	protected static const float SEARCH_OUT = 3;		// the spot: this far out of the building's side facing the contact
 	protected static const float STRANGER_CHANCE = 0.25;	// a stranger instead of someone from before
@@ -198,6 +218,28 @@ class RZ_Openings
 		}
 
 		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	//! The title a tagged body speaks under: the opening's contact, or (a negated id) the first
+	//! giver who sent you on; "" if neither.
+	string SpeakerFor(int id)
+	{
+		if (id < 0)
+		{
+			RZ_Opening left = ById(-id);
+			if (left)
+				return left.m_sLeftSpeaker;
+
+			return "";
+		}
+
+		RZ_Opening o = ById(id);
+		if (o)
+			return o.m_sSpeaker;
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -307,7 +349,10 @@ class RZ_Openings
 		}
 
 		if (o.m_bHadContact && o.m_Contact)
+		{
 			RZ_PlaceNeeds.VerifyThings("opening.start", place.m_vPos, o.m_sName);
+			Pattern(o);
+		}
 
 		if (!o.m_bHadContact)
 		{
@@ -349,6 +394,11 @@ class RZ_Openings
 		string chain = PlanText(o);
 		if (o.m_bFull)
 			chain += " to " + o.m_sEndPlace;
+
+		if (o.m_bWalks)
+			chain += ", they walk with you";
+		else if (o.m_bHandOff)
+			chain += ", handed on";
 
 		RZ_Log.Info(string.Format("Openings: started for %1: %2, %3 in %4 (%5), level %6, %7, %8, chain %9",
 			RZ_Util.PlayerName(playerId), bg.m_sId, kind, o.m_sTown, RZ_SettlementScanner.GridReference(ent.GetOrigin()), o.m_iLevel, RZ_OpeningScenes.ReasonKey(o.m_iReason), who, chain));
@@ -409,6 +459,18 @@ class RZ_Openings
 			RZ_OpeningTasks.DrifterPool(rng, o.m_aTasks);
 		else
 			RZ_OpeningTasks.Preferred(o.m_sBackground, o.m_aTasks);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How the chain moves you on (docs/DESIGN.md, "Openings"): the contact walks with you, step to
+	//! step (the escort pattern: a background whose steps are out and about, with Guidance >
+	//! Companion and room for an escort); or step 1's giver sends you on to the next person, at the
+	//! next place, who gives step 2 (the hand-off: a plan with both steps). Else (levels 2-3) each
+	//! step starts by itself where the last one ended.
+	protected void Pattern(RZ_Opening o)
+	{
+		o.m_bWalks = RZ_OpeningTasks.Walks(o.m_sBackground) && o.m_aPlan.Count() > 1 && !m_Settings.m_sCompanionPrefab.IsEmpty() && RZ_Escort.HasRoom(m_GM);
+		o.m_bHandOff = !o.m_bWalks && o.m_aPlan.Contains(RZ_EOpeningStage.SEARCH) && o.m_aPlan.Contains(RZ_EOpeningStage.TASK);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -731,6 +793,13 @@ class RZ_Openings
 		for (int i = m_aOpenings.Count() - 1; i >= 0; i--)
 		{
 			RZ_Opening o = m_aOpenings[i];
+			LeftGone(o);
+			if (o.m_Escort && !o.m_bEnded)
+			{
+				o.m_Escort.Update(m_GM, POLL, m_aIds, m_aPlayers);
+				o.m_Contact = o.m_Escort.GetPerson();
+			}
+
 			if (o.m_bEnded)
 			{
 				if (ContactGone(o, true))
@@ -755,10 +824,27 @@ class RZ_Openings
 		}
 
 		IEntity me = m_aPlayers[idx];
-		if (o.m_bHadContact && !o.m_bContactDead && o.m_iStep <= 2 && (!o.m_Contact || !RZ_Util.IsCharacterAlive(o.m_Contact)))
+		bool dead;
+		if (o.m_Escort)
+			dead = o.m_Escort.IsDead();
+		else
+			dead = !o.m_Contact || !RZ_Util.IsCharacterAlive(o.m_Contact);
+
+		if (o.m_bHadContact && !o.m_bContactDead && o.m_iStep <= 2 && dead)
 		{
 			ContactDied(o);
 			return;
+		}
+
+		// They come with you once the first ask is out and the talk is over
+		if (o.m_bWalks && !o.m_Escort && o.m_iStep >= 1 && !o.m_bContactDead)
+			StartWalking(o);
+
+		// The next person calls you over as you come up
+		if (o.m_bWaitTalk && !o.m_bNextCalled && o.m_Left && HasContact(o) && RZ_Util.DistXZ(o.m_Contact.GetOrigin(), me.GetOrigin()) <= NEXT_CALL)
+		{
+			o.m_bNextCalled = true;
+			m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningText.NextCallOver(LeftShort(o)), o.m_Contact);
 		}
 
 		if (!o.m_bSpoke)
@@ -781,7 +867,8 @@ class RZ_Openings
 		}
 
 		// On the walk (not while it waits for you to talk to them): they leave once nobody's near
-		if (Stage(o) == RZ_EOpeningStage.WALK && !o.m_bWaitTalk)
+		// (walking with you, they don't)
+		if (Stage(o) == RZ_EOpeningStage.WALK && !o.m_bWaitTalk && !o.m_Escort)
 			ContactGone(o, false);
 
 		if (o.m_bResolved || o.m_iErrand < 0)
@@ -867,7 +954,7 @@ class RZ_Openings
 	//! that conversation. With nobody outside, it starts at once.
 	protected void Ready(RZ_Opening o, IEntity me)
 	{
-		if (!HasContact(o))
+		if (!HasContact(o) && !o.m_Escort)
 		{
 			StartStage(o, me, false, null, false);
 			return;
@@ -879,11 +966,21 @@ class RZ_Openings
 		if (dialogue)
 			session = dialogue.GetSession(o.m_iPlayer);
 
-		if (session && session.m_Speaker == o.m_Contact)
+		if (session && o.m_Contact && session.m_Speaker == o.m_Contact)
 		{
 			array<string> beat = {};
 			RZ_Log.Info(string.Format("Openings: %1 went on talking with %2 into step %3", o.m_sName, RZ_Util.PlayerName(o.m_iPlayer), o.m_iStep + 1));
 			StartStage(o, me, session.m_Tree != null, beat, true);
+			return;
+		}
+
+		// Later steps never send you back: the next one starts where you are
+		if (o.m_iStep >= 1 && MoveOn(o, me))
+			return;
+
+		if (!HasContact(o))
+		{
+			StartStage(o, me, false, null, false);
 			return;
 		}
 
@@ -894,6 +991,7 @@ class RZ_Openings
 			return;
 		}
 
+		// Only before the first step, or when no next person could stand (Back to them, the old way)
 		RZ_OpeningTalkDef d = m_Chain.m_TalkNext;
 		if (o.m_iStep <= 0)
 			d = m_Chain.m_TalkFirst;
@@ -917,6 +1015,239 @@ class RZ_Openings
 
 		m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningText.CallOver(o.m_iStep, o.m_iWho, o.m_iAsks), o.m_Contact);
 		RZ_Log.Info(string.Format("Openings: %1 called %2 over before step %3", o.m_sName, RZ_Util.PlayerName(o.m_iPlayer), o.m_iStep + 1));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The next step, after the first (true: handled here; false: the old way, back to them). Walking
+	//! with you: it starts as soon as they're beside you (they say it), or after a minute anyway.
+	//! Handed on: after step 1 the next person stands at their place, tracked ("Find <name>"), and
+	//! gives step 2 when you talk to them. Otherwise it starts where you are, said by them if they're
+	//! near, else on its card.
+	protected bool MoveOn(RZ_Opening o, IEntity me)
+	{
+		if (o.m_Escort && !o.m_bContactDead)
+		{
+			bool beside = o.m_Contact && RZ_Util.DistXZ(o.m_Contact.GetOrigin(), me.GetOrigin()) <= SPEAK_RANGE;
+			if (o.m_fWaitNear <= 0)
+				o.m_fWaitNear = m_fClock;
+
+			if (!beside && m_fClock - o.m_fWaitNear < CATCH_UP)
+			{
+				o.m_bNext = true;
+				return true;
+			}
+
+			o.m_fWaitNear = 0;
+			StartOn(o, me, beside);
+			return true;
+		}
+
+		if (o.m_bHandOff && Stage(o) == RZ_EOpeningStage.TASK && o.m_vNext != vector.Zero)
+		{
+			if (HandOn(o, me))
+				return true;
+		}
+
+		// No next person could stand: back to them, the old way (only while one's there to go back to)
+		if (o.m_bHandOff && Stage(o) == RZ_EOpeningStage.TASK && o.m_iAsks == 0 && !o.m_Left && HasContact(o))
+			return false;
+
+		bool near = HasContact(o) && RZ_Util.DistXZ(o.m_Contact.GetOrigin(), me.GetOrigin()) <= SPEAK_RANGE;
+		StartOn(o, me, near);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The next stage starts where you are: its lines said by them (`said`, they're beside you), or
+	//! only its card.
+	protected void StartOn(RZ_Opening o, IEntity me, bool said)
+	{
+		if (!said)
+		{
+			StartStage(o, me, false, null, false);
+			return;
+		}
+
+		array<string> beat = {};
+		StartStage(o, me, false, beat, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! They come with you (the escort pattern): the body outside becomes an escort that follows you
+	//! (Guidance > Companion), tagged as they were. No room or no prefab: they stay, and the next
+	//! steps start where you are.
+	protected void StartWalking(RZ_Opening o)
+	{
+		RZ_Dialogue dialogue = m_GM.GetDialogue();
+		if (dialogue && dialogue.GetSession(o.m_iPlayer))
+			return;
+
+		if (!HasContact(o))
+			return;
+
+		RZ_Escort escort = new RZ_Escort();
+		escort.m_sPrefab = m_Settings.m_sCompanionPrefab;
+		escort.m_sName = o.m_sShort;
+		escort.m_fFollowGap = 4;
+		if (escort.m_sPrefab.IsEmpty() || !escort.Begin(m_GM, o.m_Contact.GetOrigin()))
+		{
+			o.m_bWalks = false;
+			RZ_Log.Info(string.Format("Openings: %1 can't walk with %2 (no escort room), the steps start where you are", o.m_sName, RZ_Util.PlayerName(o.m_iPlayer)));
+			return;
+		}
+
+		// VERIFY: a one-man civilian group (Guidance > Companion) walks behind the player on RZ_Escort's move orders, and its leader carries the talk tags
+		escort.SetTalk(TAG, o.m_iId, "What was it you needed?", o.m_iId, "Talk to " + o.m_sShort);
+		escort.Follow(o.m_iPlayer);
+		escort.Go();
+		RZ_Util.DeleteUnit(o.m_Contact);
+		o.m_Contact = null;
+		o.m_Escort = escort;
+		RZ_Log.Info(string.Format("Openings: %1 walks with %2", o.m_sName, RZ_Util.PlayerName(o.m_iPlayer)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Handed on: the next person stands at their place (a body, tagged as the first was) and is
+	//! tracked, "Find <name>", until you talk to them; the first giver stays behind and goes once
+	//! nobody's near. False: no body could stand there.
+	protected bool HandOn(RZ_Opening o, IEntity me)
+	{
+		RZ_Errands errands = m_GM.GetErrands();
+		ResourceName prefab = m_Settings.m_sContactPrefab;
+		if (prefab.IsEmpty())
+			prefab = m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
+
+		RZ_Shared shared = m_GM.GetShared();
+		if (!errands || !errands.IsOn() || prefab.IsEmpty() || !shared || !shared.CanSpawnBody(RZ_BodyBudget.STORY, o.m_vNext))
+			return false;
+
+		IEntity body = RZ_Util.SpawnPrefab(prefab, o.m_vNext, RZ_Compass.Bearing(o.m_vNext, me.GetOrigin()));
+		if (!body)
+			return false;
+
+		shared.AddBody(RZ_BodyBudget.STORY, body);
+		string firstShort = o.m_sShort;
+		o.m_sLeftShort = firstShort;
+		o.m_sLeftSpeaker = o.m_sSpeaker;
+		// The first giver now only sends you on (their tags carry the opening's id negated)
+		RZ_PuzzleObjectComponent.Tag(o.m_Contact, TAG, -o.m_iId, "", "What was it you needed?");
+		RZ_ClueComponent.Tag(o.m_Contact, TAG, -o.m_iId, "Talk to " + firstShort);
+		o.m_Left = o.m_Contact;
+		o.m_iLeftWanderer = o.m_iWanderer;
+		o.m_iWanderer = -1;
+		o.m_Contact = body;
+		o.m_sName = o.m_sNextName;
+		o.m_sShort = o.m_sNextShort;
+		o.m_sWho = o.m_sNextWho;
+		o.m_sSpeaker = o.m_sName + ", " + o.m_sWho;
+		o.m_vNext = vector.Zero;
+		o.m_bNextCalled = false;
+		RZ_PuzzleObjectComponent.Tag(body, TAG, o.m_iId, "", "What was it you needed?");
+		RZ_ClueComponent.Tag(body, TAG, o.m_iId, "Talk to " + o.m_sShort);
+
+		RZ_OpeningTalkDef d = m_Chain.m_TalkFind;
+		vector at = body.GetOrigin();
+		RZ_Errand e = errands.Hand(d, o.m_iPlayer, "opening:" + o.m_iId.ToString(), o.m_sName, o.m_sSpeaker, RZ_EFaction.SURVIVORS, at, at, o.m_sNextPlace, me);
+		if (!e)
+		{
+			Finish(o, "the next person couldn't be handed");
+			return true;
+		}
+
+		o.m_bWaitTalk = true;
+		o.m_fWaitAt = m_fClock;
+		o.m_bCalledAgain = false;
+		o.m_bResolved = false;
+		o.m_iErrand = e.m_iId;
+		RZ_UIFeed feed = m_GM.GetUIFeed();
+		if (feed && feed.GetTracker())
+			feed.GetTracker().Follow(o.m_iPlayer, -(RZ_UIFeed.ERRAND_ID_BASE + e.m_iId), e.Fill(d.m_sTitle));
+
+		RZ_Log.Info(string.Format("Openings: %1 sent %2 on to %3 at %4, %5", firstShort, RZ_Util.PlayerName(o.m_iPlayer), o.m_sName, o.m_sNextPlace, RZ_Util.DirectionText(me.GetOrigin(), at)));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The giver you were sent on from: their short name, for the next person's words.
+	protected static string LeftShort(RZ_Opening o)
+	{
+		return o.m_sLeftShort;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first giver goes once nobody's within 150 m (an earlier life's wanderer back on the road).
+	protected void LeftGone(RZ_Opening o)
+	{
+		if (!o.m_Left)
+			return;
+
+		if (RZ_Util.NearestDistance(o.m_Left.GetOrigin(), m_aPlayers) <= CONTACT_GONE)
+			return;
+
+		RZ_Wanderers wanderers = m_GM.GetWanderers();
+		if (o.m_iLeftWanderer >= 0 && wanderers)
+			wanderers.Release(o.m_iLeftWanderer, o.m_Left.GetOrigin());
+
+		o.m_iLeftWanderer = -1;
+		RZ_Util.DeleteUnit(o.m_Left);
+		o.m_Left = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Handed on: the next person's place, 200-600 m on from step 1's (toward where the chain ends,
+	//! when it knows), at least 150 m from the first giver: a house, not locked, the spot just outside
+	//! its side facing step 1's place, checked against opening.search. False when there's none.
+	protected bool FindNext(RZ_Opening o, vector from, vector first)
+	{
+		array<IEntity> buildings = {};
+		RZ_BuildingQuery.FindBuildings(from, NEXT_MAX, buildings, 400);
+		array<IEntity> houses = {};
+		foreach (IEntity b : buildings)
+		{
+			if (!b)
+				continue;
+
+			float d = RZ_Util.DistXZ(from, b.GetOrigin());
+			if (d < NEXT_MIN || d > NEXT_MAX || RZ_Util.DistXZ(first, b.GetOrigin()) < NEXT_FROM_FIRST)
+				continue;
+
+			if (RZ_LockedSpots.IsLockedBuilding(b) || !RZ_PlaceCheck.IsHouse(b))
+				continue;
+
+			houses.Insert(b);
+		}
+
+		RZ_PlaceNeed need = RZ_PlaceNeeds.Get("opening.search");
+		for (int i = 0; i < SEARCH_TRIES && !houses.IsEmpty(); i++)
+		{
+			// The one nearest where the chain ends first (on the way), else any
+			int pick = Math.RandomInt(0, houses.Count());
+			if (o.m_vEnd != vector.Zero)
+			{
+				float best = float.MAX;
+				foreach (int k, IEntity h : houses)
+				{
+					float toEnd = RZ_Util.DistXZ(h.GetOrigin(), o.m_vEnd);
+					if (toEnd < best)
+					{
+						best = toEnd;
+						pick = k;
+					}
+				}
+			}
+
+			IEntity house = houses[pick];
+			houses.Remove(pick);
+			vector at = RZ_Util.GroundPos(RZ_DoorGeometry.SidePoint(house, from, SEARCH_OUT));
+			string why;
+			if (!RZ_PlaceCheck.Check(at, need, -1, "house", why))
+				continue;
+
+			o.m_vNext = at;
+			return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -988,7 +1319,32 @@ class RZ_Openings
 			return;
 
 		o.m_bAskedAgain = true;
-		m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(o.m_iStep, o.m_iTask, o.m_sSearch), o.m_Contact);
+		m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, Remind(o, o.m_iStep), o.m_Contact);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "What was it you needed?" while a step runs: the live step (the tracker's own text) said
+	//! again in their words, then their short line. No live step: the short line alone.
+	protected string Remind(RZ_Opening o, int stepNo)
+	{
+		string step;
+		RZ_Errands errands = m_GM.GetErrands();
+		RZ_Errand e;
+		if (errands && o.m_iErrand >= 0 && !o.m_bResolved)
+			e = errands.FindById(o.m_iErrand);
+
+		if (e && e.m_eState != RZ_EErrandState.DONE && !RZ_OpeningTalkDef.Cast(e.m_Def))
+		{
+			RZ_ErrandWay way = e.GetWay();
+			if (way)
+				step = e.Fill(way.StepText());
+		}
+
+		string line = RZ_OpeningText.Remind(step, stepNo, o.m_iTask, o.m_sSearch, o.m_Escort != null);
+		if (Stage(o) == RZ_EOpeningStage.SEARCH && o.m_vNext != vector.Zero)
+			line += " " + RZ_OpeningText.ThenOn(o.m_sNextShort, o.m_sNextPlace);
+
+		return line;
 	}
 
 	// ================================================================ The steps
@@ -1042,6 +1398,8 @@ class RZ_Openings
 		vector giverAt = o.m_Place.m_vPos;
 		if (o.m_Contact)
 			giverAt = o.m_Contact.GetOrigin();
+		else if (o.m_Escort)
+			giverAt = o.m_Escort.m_vPos;
 
 		RZ_OpeningStepDef d;
 		vector place;
@@ -1056,14 +1414,16 @@ class RZ_Openings
 
 			if (!SearchPlace(o, giverAt, place, placeText))
 			{
-				// Nothing over the way that the words would be true of: no step 1 here
-				RZ_Log.Info(string.Format("Openings: no house over the way for %1 at %2, step 1 skipped", RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(giverAt)));
+				// Nothing down the road that the words would be true of: no step 1 here
+				RZ_Log.Info(string.Format("Openings: no house down the road for %1 at %2, step 1 skipped", RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(giverAt)));
 				o.m_iStage++;
 				StartStage(o, me, tree, beat, sayNow);
 				return;
 			}
 
 			o.m_sSearch = placeText;
+			if (o.m_bHandOff)
+				NextPerson(o, place, giverAt);
 		}
 		else if (stage == RZ_EOpeningStage.TASK)
 		{
@@ -1126,6 +1486,12 @@ class RZ_Openings
 		if (beat)
 		{
 			StepLines(o, tree, beat);
+			if (stage == RZ_EOpeningStage.SEARCH && o.m_vNext != vector.Zero)
+				beat.Insert(RZ_OpeningText.SendOn(o.m_sNextShort, o.m_sNextWho, o.m_sNextPlace));
+
+			if (o.m_bWalks && o.m_iStage == 0)
+				beat.Insert(RZ_OpeningText.ComingWith());
+
 			if (sayNow)
 			{
 				foreach (string line : beat)
@@ -1164,6 +1530,39 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Handed on: who step 1's giver sends you to after it, and where (FindNext); none: the old way
+	//! (back to them for step 2).
+	protected void NextPerson(RZ_Opening o, vector searchAt, vector first)
+	{
+		o.m_vNext = vector.Zero;
+		if (!FindNext(o, searchAt, first))
+		{
+			RZ_Log.Info(string.Format("Openings: no house for the next person for %1 at %2, back to %3 instead", RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(searchAt), o.m_sName));
+			return;
+		}
+
+		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
+		o.m_sNextName = RZ_OpeningText.Name(rng);
+		while (o.m_sNextName == o.m_sName)
+		{
+			o.m_sNextName = RZ_OpeningText.Name(rng);
+		}
+
+		o.m_sNextShort = o.m_sNextName;
+		int space = o.m_sNextName.IndexOf(" ");
+		if (space > 0)
+			o.m_sNextShort = o.m_sNextName.Substring(0, space);
+
+		o.m_sNextWho = RZ_OpeningText.NextWho(o.m_sBackground);
+		string town = o.m_sTown;
+		RZ_Settlement s = m_GM.GetSettlement(m_GM.FindNearestSettlement(o.m_vNext));
+		if (s)
+			town = s.m_sName;
+
+		o.m_sNextPlace = o.m_sNextShort + "'s house in " + town;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Step 1's place for this opening (false: none), and a Doctor's antidote by its door (Cure >
 	//! Antidote prefab), for step 2's clock.
 	protected bool SearchPlace(RZ_Opening o, vector from, out vector place, out string text)
@@ -1192,7 +1591,7 @@ class RZ_Openings
 	//! Step 1's building (docs/PLACES.md, opening.search): a house 50-250 m from the contact, not
 	//! locked, one of your background's kinds when one is there (the chemist's for a Nurse, a garage for
 	//! a Mechanic), else a house; the spot just outside its side facing the contact, checked against
-	//! the need. False when there's none: the words "over the way" would be false, so no step 1.
+	//! the need. False when there's none: the words "down the road" would be false, so no step 1.
 	//! `kind`: the building's kind ("" for a house). Spawns nothing (the place audit asks it too).
 	bool PickSearch(string background, vector from, out vector place, out string text, out string kind)
 	{
@@ -1359,6 +1758,13 @@ class RZ_Openings
 	//! small pay: never season Fame).
 	protected void Arrive(RZ_Opening o)
 	{
+		if (o.m_Escort)
+		{
+			o.m_Escort.Arrive();
+			if (o.m_Contact)
+				m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningText.WalkedYouIn(o.m_iEnd), o.m_Contact);
+		}
+
 		string text = RZ_OpeningText.Arrived(o.m_iEnd);
 		int fame = m_Settings.m_iOpeningFame;
 		RZ_EFaction endFaction = o.m_iEnd;
@@ -1429,6 +1835,13 @@ class RZ_Openings
 	{
 		o.m_bContactDead = true;
 		o.m_bWaitTalk = false;
+		// Walking with you: the escort goes and its slot is free again
+		if (o.m_Escort)
+		{
+			o.m_Escort.Cleanup();
+			o.m_Escort = null;
+		}
+
 		SetFlag(o, FLAG_FIRST, 0);
 		DropStep(o, "the contact died");
 		RZ_Wanderers wanderers = m_GM.GetWanderers();
@@ -1519,8 +1932,24 @@ class RZ_Openings
 	//! minutes on with nobody within 50 m. True when they're gone.
 	protected bool ContactGone(RZ_Opening o, bool over)
 	{
+		if (o.m_Escort)
+		{
+			bool stale = m_fClock - o.m_fBorn > CONTACT_MAX;
+			if (!o.m_Escort.IsDead() && RZ_Util.NearestDistance(o.m_Escort.m_vPos, m_aPlayers) <= CONTACT_GONE && !stale)
+				return false;
+
+			ReleaseWanderer(o, o.m_Escort.m_vPos);
+			o.m_Escort.Cleanup();
+			o.m_Escort = null;
+			o.m_Contact = null;
+			return o.m_Left == null;
+		}
+
 		if (!o.m_Contact)
-			return true;
+		{
+			LeftGone(o);
+			return o.m_Left == null;
+		}
 
 		float nearest = RZ_Util.NearestDistance(o.m_Contact.GetOrigin(), m_aPlayers);
 		bool old = m_fClock - o.m_fBorn > CONTACT_MAX && nearest > 50;
@@ -1530,7 +1959,7 @@ class RZ_Openings
 		ReleaseWanderer(o, o.m_Contact.GetOrigin());
 		RZ_Util.DeleteUnit(o.m_Contact);
 		o.m_Contact = null;
-		return true;
+		return o.m_Left == null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1562,6 +1991,18 @@ class RZ_Openings
 	//! `sayNow`: no talk screen, the step's lines are said as subtitles, in order.
 	void TalkLines(int playerId, int id, bool tree, notnull array<string> lines, IEntity user, bool sayNow = false)
 	{
+		// The first giver, after sending you on: on you go
+		if (id < 0)
+		{
+			RZ_Opening sent = ById(-id);
+			if (sent && sent.m_iPlayer == playerId && !sent.m_bEnded)
+				lines.Insert(RZ_OpeningText.GoOn(sent.m_sShort));
+			else
+				lines.Insert(RZ_OpeningText.NotYou());
+
+			return;
+		}
+
 		RZ_Opening o = ById(id);
 		if (!o || o.m_iPlayer != playerId)
 		{
@@ -1599,7 +2040,50 @@ class RZ_Openings
 			return;
 		}
 
-		lines.Insert(RZ_OpeningText.AskAgain(o.m_iStep, o.m_iTask, o.m_sSearch));
+		lines.Insert(Remind(o, o.m_iStep));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The hand-over reply on their talk screen (RZ_TalkOpening) while a hand-over step runs: its
+	//! label, and `need` when you don't carry the thing (locked with it). False: no such reply now.
+	bool HandOverReply(int playerId, int id, IEntity user, out string label, out string need)
+	{
+		label = "";
+		need = "";
+		RZ_Opening o = ById(id);
+		if (!o || o.m_iPlayer != playerId || o.m_bEnded || o.m_bWaitTalk || o.m_bResolved || o.m_bTended)
+			return false;
+
+		if (Stage(o) != RZ_EOpeningStage.TASK || !RZ_OpeningTasks.HandsOver(o.m_iTask))
+			return false;
+
+		label = RZ_OpeningText.HandOver(o.m_iTask);
+		if (!user || RZ_Errands.CountItems(user, RZ_OpeningTasks.HandItem(o.m_iTask)) <= 0)
+			need = RZ_OpeningText.HandOverNeed(o.m_iTask);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The hand-over reply picked: you see to them, and the step is done (the errand takes the thing
+	//! as it completes, a few seconds on). Opening the talk never does this by itself.
+	void HandOver(int playerId, int id, IEntity user, notnull array<string> said)
+	{
+		string label;
+		string need;
+		if (!HandOverReply(playerId, id, user, label, need))
+			return;
+
+		if (!need.IsEmpty())
+		{
+			said.Insert(RZ_OpeningText.HandOverMissing());
+			return;
+		}
+
+		RZ_Opening o = ById(id);
+		o.m_bTended = true;
+		said.Insert(RZ_OpeningText.HandedOver(o.m_iTask));
+		RZ_Log.Info(string.Format("Openings: %1 handed over to %2 (step 2, task %3)", RZ_Util.PlayerName(playerId), o.m_sName, o.m_iTask));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1610,10 +2094,9 @@ class RZ_Openings
 		array<string> lines = {};
 		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		TalkLines(playerId, id, false, lines, user, true);
-		string title = "Someone";
-		RZ_Opening o = ById(id);
-		if (o)
-			title = o.m_sSpeaker;
+		string title = SpeakerFor(id);
+		if (title.IsEmpty())
+			title = "Someone";
 
 		foreach (string line : lines)
 		{
@@ -1627,7 +2110,7 @@ class RZ_Openings
 	void HandleChoice(int playerId, int id, int option, IEntity owner)
 	{
 		RZ_Opening o = ById(id);
-		if (!o || o.m_iPlayer != playerId || (o.m_bWaitTalk && !o.m_bEnded))
+		if (id < 0 || !o || o.m_iPlayer != playerId || (o.m_bWaitTalk && !o.m_bEnded))
 		{
 			HandleTalk(playerId, id, owner);
 			return;
@@ -1637,6 +2120,12 @@ class RZ_Openings
 		if (o.m_bEnded)
 			step = 3;
 
-		m_GM.Say(playerId, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(step, o.m_iTask, o.m_sSearch), owner);
+		if (o.m_bEnded)
+		{
+			m_GM.Say(playerId, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(step, o.m_iTask, o.m_sSearch), owner);
+			return;
+		}
+
+		m_GM.Say(playerId, o.m_sSpeaker, -1, Remind(o, step), owner);
 	}
 }

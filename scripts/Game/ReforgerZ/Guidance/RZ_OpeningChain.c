@@ -4,7 +4,7 @@
 //! starts with a talk objective (RZ_OpeningTalkDef: "Talk to {giver}.", done only by talking to
 //! them), and the step itself is handed in that conversation:
 //! 1. close by, quietly: search a building near the contact (one of your background's kinds when
-//!    one is near) and come back;
+//!    one is near), done there;
 //! 2. your background's own system (RZ_OpeningSteps.c), else water from the nearest well, or
 //!    something medical for the contact's hand;
 //! 3. walk to where your background belongs (it ends there; nobody to go back to).
@@ -102,7 +102,8 @@ class RZ_OpeningChain
 	static const string KEY_TALK = "opening.talk";
 
 	ref RZ_OpeningTalkDef m_TalkFirst;			// before the first step: whoever's outside
-	ref RZ_OpeningTalkDef m_TalkNext;			// before each later step: back to them
+	ref RZ_OpeningTalkDef m_TalkNext;			// back to them: only when no next person could stand (hand-off)
+	ref RZ_OpeningTalkDef m_TalkFind;			// handed on: the next person, at their place
 
 	ref RZ_OpeningStepDef m_Search;
 	ref RZ_OpeningStepDef m_SearchShort;		// a learning player's step 1 (level 1)
@@ -116,6 +117,8 @@ class RZ_OpeningChain
 	{
 		m_TalkFirst = new RZ_OpeningTalkDef(KEY_TALK, "Outside the Door", 0);
 		m_TalkNext = new RZ_OpeningTalkDef(KEY_TALK + ".next", "Back to {giver}", 0);
+		m_TalkFind = new RZ_OpeningTalkDef(KEY_TALK + ".find", "Find {giver}", 0);
+		m_TalkFind.m_aWays[0].m_sStep = "Find {giver} at {place}. Talk to them.";
 		m_Search = Search(KEY_SEARCH, 20);
 		m_SearchShort = Search(KEY_SEARCH + ".short", 10);
 
@@ -152,14 +155,14 @@ class RZ_OpeningChain
 			"Enough for the night. One night at a time.");
 
 		w = Task(RZ_EOpeningTask.PUMP, "opening.pump", "The Pump", "do", RZ_EErrandPlace.SUBJECT, 5, 15,
-			"Fill a can at the pump at {place} and bring it back.");
-		w.Take("The van's dry and so's every tank on this street. There's still a pump at {place}, if nobody's had it. Bring me a can.",
+			"Fill a can at the pump at {place}.");
+		w.Take("The van's dry and so's every tank on this street. There's still a pump at {place}, if nobody's had it. Fill a can there.",
 			"Fuel. That's all I need, then I can stop walking everywhere. {place} had a pump, last I looked.");
 		w.Done("Smell that. Proper fuel. I could cry, and I'm not going to.",
 			"That'll turn her over, if anything will. You always said the old ones start for spite.");
 
 		w = Task(RZ_EOpeningTask.DOWNWIND, "opening.downwind", "Downwind", "sneak", RZ_EErrandPlace.SUBJECT, 30, 25,
-			"Watch {place} for half a minute without being seen, then come back.");
+			"Watch {place} for half a minute without being seen.");
 		w.m_bUnseen = true;
 		w.m_bQuiet = true;
 		w.Take("Something's been moving round {place} at dusk. Several of them, together. Go and see how many. Stay low, stay downwind.",
@@ -168,7 +171,7 @@ class RZ_OpeningChain
 			"You weren't seen. Good. Then we know where not to be tonight.");
 
 		w = Task(RZ_EOpeningTask.KEYS, "opening.keys", "The Station Keys", "do", RZ_EErrandPlace.SUBJECT, 3, 25,
-			"Let yourself into {place} across the road from {giver}'s with the key.");
+			"Let yourself into {place} with the key.");
 		w.Take("Your lot left the station keys with me when they went. Here. There's {place}, locked tight. Nobody's been in.",
 			"You'll know what these open. I never did. Try {place}: it's been locked since the second day.");
 		w.Done("So that's what was in there. All this time, and the key on my nail.",
@@ -177,8 +180,8 @@ class RZ_OpeningChain
 		w = Task(RZ_EOpeningTask.TOLL, "opening.toll", "The Toll", "talk", RZ_EErrandPlace.SUBJECT, 10, 30,
 			"Walk up to {place}, say your piece, and walk away again. No shooting.");
 		w.Take("The red-hand lot have a toll up at {place}. Go and look at it for me. Talk, don't fight. You know how.",
-			"I need to know what they're charging at {place}, and whether they shoot first. Walk up slow. Walk back slower.");
-		w.Done("You came back with both hands. That's how you know it went well.",
+			"I need to know what they're charging at {place}, and whether they shoot first. Walk up slow. Walk away slower.");
+		w.Done("Both hands, and walking. That's how you know it went well.",
 			"Good. Now I know what it costs to get anywhere. Everything, mostly.");
 
 		w = Task(RZ_EOpeningTask.SAMPLE, "opening.sample", "A Sample", "do", RZ_EErrandPlace.SUBJECT, 2, 8,
@@ -269,18 +272,19 @@ class RZ_OpeningChain
 	//------------------------------------------------------------------------------------------------
 	protected RZ_OpeningStepDef Search(string key, float seconds)
 	{
-		RZ_OpeningStepDef d = new RZ_OpeningStepDef(key, "Across the Road", 1);
+		RZ_OpeningStepDef d = new RZ_OpeningStepDef(key, "Down the Road", 1);
 		RZ_ErrandWay w = d.Way("sneak");
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = seconds;
 		w.m_fRadius = 10;
 		w.m_bQuiet = true;
-		w.m_sStep = "Search {place} across the road from {giver}'s, quietly.";
+		w.m_bEndsThere = true;
+		w.m_sStep = "Search {place} down the road, quietly.";
 		w.Work(RZ_EWork.SEARCH, "Search it, quietly");
 		w.Take("I haven't dared go into {place}. Go and look. Walk, don't run: they hear running.",
-			"I need eyes on {place}. Two days I've watched it. Nothing moves. That's what worries me.");
-		w.Done("You came back. Most don't, from that side of the road.",
-			"Anything? It doesn't matter. You went, and you came back. That's more than most manage.");
+			"I need eyes on {place}. Two days I've watched it from here. Nothing moves. That's what worries me.");
+		w.Done("You went in and came out again. Most don't, from that end of the road.",
+			"Anything? It doesn't matter. You went in. That's more than most manage.");
 		return d;
 	}
 
@@ -312,6 +316,8 @@ class RZ_OpeningChain
 		w.m_fSeconds = seconds;
 		w.m_fRadius = radius;
 		w.m_sStep = step;
+		// Done where it's done: nobody to go back to (the next step starts there)
+		w.m_bEndsThere = true;
 		return w;
 	}
 

@@ -203,10 +203,10 @@ adapters in `Dialogue/RZ_TalkSpeakers.c` and `RZ_TalkStaff.c`, `RZ_Mission.LockR
   | A faction's quartermaster | The same list (the seat leader's own job while they're in the chair); the safehouse radio only names the Haven's, with "ask the quartermaster here" |
   | A safehouse's or a holding's named person, a wanderer | The errand they have for you, named (looked at without dealing it: the one named is the one dealt when you pick it, while it's true); yours already: *[Errand] About Water for Morton.* or, its step done, *[Errand] It's done: Water for Morton.* |
   | A mission's or a stage's person | Their choices move the job you're on (first in the list), each locked with what it needs (`ChoiceLock`: *Ask for Jonas Weber's number (Needs Known with Halcyon)*, a scene's rank, items and Favor, "Done already"); a hand-over is tagged by the job's kind (*[Quest] Hand over Bastion's rations*) and locked without the thing on you ("Needs the page on you") |
-  | A stranger, an opening's contact | Their ask's ways and their step, as built (both are errands handed in person) |
+  | A stranger, an opening's contact | Their ask's ways and their step, as built (both are errands handed in person); an opening's hand-over step (the cut, the fever, the clock) is a reply of its own, first in the list: *[Errand] Hold still. Let me dress that hand.*, locked "Needs a dressing, or anything medical" without it, and only picking it hands the thing over (`RZ_TalkOpening`, `RZ_Openings.HandOver`) |
 
-- **Handing things in is talk.** With the talk screen on, a done errand is handed in with the giver's
-  *[Errand] It's done: ...* reply, not by walking up to them; something carried back must be on you
+- **Handing things in is a reply you pick, never the talk opening.** With the talk screen on, a done errand is handed in with the giver's
+  *[Errand] It's done: ...* reply, not by walking up to them or opening the talk; something carried back must be on you
   or a helper beside you, and is taken off them. A questline's hand-over (the page, the crates, the
   sack, the black box, the fuel) is a reply on the person who takes it, which takes that very item
   from your inventory. The ways that pay in items (*[Errand] I'll hand over two tins. [2 food]*) take
@@ -408,7 +408,7 @@ behind it.
 | Strangers ([below](#strangers)) | `stranger:<routine>` (`stranger:tin`, `stranger:digger`...), `stranger` | `stranger:<visit>` | their ask's ways, as built ([ERRANDS.md](ERRANDS.md#strangers)) |
 | The open channel ([below](#the-radio)) | `radio:open`, `radio` | `radio:open` | none |
 | A cracked secure net ([below](#the-radio)) | `radio:bastion`, `radio:redhand`, `radio:halcyon`, `radio:secure` | `radio:open` | none |
-| An opening's contact: someone from before, a stranger, or a wanderer from an earlier life ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) | `opening` (they talk only to the player they waited for) | `opening:<id>` | What was it you needed? (their step again). They call you over and "Talk to *their name*" is tracked; when you talk to them, the step that waited for you starts: its piece of the story and its ask are the built greeting |
+| An opening's contact: someone from before, a stranger, or a wanderer from an earlier life ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) | `opening` (they talk only to the player they waited for) | `opening:<id>` | What was it you needed? (the live step again, word for word, then their own short line). They call you over and "Talk to *their name*" is tracked; when you talk to them, the step that waited for you starts: its piece of the story and its ask are the built greeting |
 
 | A duty's person (below): a trader at the Haven's swap table, a passer-by at the Red Hand's toll, an arrival at Bastion's gate, one of The Round's sick | `duty:<duty>:<key>` (`duty:swap:ring`, `duty:toll:courier`, `duty:gate:nurse`, `duty:round:fever`), `duty:<duty>`, `duty` | `duty:<errand>:<duty>:<key>` | none: a conversation's `call:slot:N` is the beat's option N |
 | A contract's or questline stage's people | `quest:<questline>` (`quest:every_name`), `quest`; `mission` for a contract's | `mission:<id>:<index>` | their built choices, as built: a conversation picks one with `call:slot:N`, so the stage resolves (and starts anything physical) as built |
