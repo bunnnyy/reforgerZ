@@ -841,6 +841,11 @@ watch by its doctrine, and lays its camp out inside by each piece's rules
 ([SITES.md](SITES.md#building-in-layers)); with no building that fits, it lays it out on open
 ground facing the road.
 
+**Hand-built sites.** A site the author built by hand in Game Master and saved with the site builder
+is laid out from that save instead (its objects only near players, as pieces; its people keep their
+posts and jobs); a site without a save in use keeps the automated layout. How it's built, saved,
+switched and shipped: [SITES.md](SITES.md#hand-built-sites).
+
 **What stands there.** Each faction has a **kit** for each kind of place: a **plan**, the camp
 drawn whole, of compositions built from vanilla outdoor props
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits); the plans are drawn in

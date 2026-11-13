@@ -6,7 +6,7 @@ layers by its faction's doctrine, where its people stand and walk, what story it
 site is measured. Built: the site grid, real
 footprints, the surroundings and the threat sectors, the rules and the solver, building in layers
 (the wire and its gates, the boards, the watch, valuables indoors), the people at their posts and on
-their rounds, each site's story, and the audit with its drawing.
+their rounds, each site's story, the audit with its drawing, and sites built by hand in Game Master.
 
 Code: `Factions/RZ_SiteGrid.c` (the grid and footprints), `Factions/RZ_SiteSurroundings.c`,
 `Factions/RZ_SiteRules.c` (zones, rules, layers, doctrine), `Factions/RZ_SiteSolver.c`,
@@ -23,6 +23,7 @@ Workbench plugins.
 - [The site grid](#the-site-grid)
 - [Real footprints](#real-footprints)
 - [The world-building kit](#the-world-building-kit)
+- [Hand-built sites](#hand-built-sites)
 - [The surroundings and the threat](#the-surroundings-and-the-threat)
 - [The rules](#the-rules)
 - [The solver](#the-solver)
@@ -185,6 +186,122 @@ What to know before using a line:
   prefabs and classes" shows them), then measure it (`FOOTPRINTS=1 tools/runtime_test/run.sh sites`,
   or the Workbench plugin above) and run `build.py`. A composition or a building goes in
   `world_kit.txt` only.
+
+## Hand-built sites
+
+A site can be **built by hand in Game Master** and saved in world coordinates. A site with a
+hand-built save **in use** is laid out from it; a site without one (or with one switched off) keeps
+its automated layout. Code: `World/HandBuilt/` (`RZ_HandBuilt.c` the saves, `RZ_SiteBuilder.c` the
+menu, `RZ_SiteBuilderEditor.c` Game Master's row and camera, `RZ_HandBuiltPack.c` the shipped saves,
+generated). Tool: `tools/hand_built.py`.
+
+### The site builder
+
+A menu for a server admin or a game master with the full editor. It opens three ways, all with a pad:
+Game Master's context menu on empty ground (**ReforgerZ: Site builder**), the talk screen's
+**[Admin] Site builder** (any person), or `/sites` in chat. It is the object menu fed as rows
+([UI.md](UI.md#the-object-menu)) and opens on your character, so you need one in the world.
+
+**The list** shows every site camp life lays out on this map (the holdings, the Haven safehouses, the
+road posts standing now), ten a page, each with its state in capitals:
+
+| State | Means |
+|---|---|
+| **AUTOMATED** | nothing built: camp life lays it out |
+| **HAND-BUILT, IN USE** | your build is used |
+| **HAND-BUILT, NOT IN USE** | your build is kept, but the automated layout is used |
+
+Its first rows: **Show** (all sites, automated only, hand-built only: each press the next),
+**Order** (by faction, or nearest first), **Next site not built yet** (the nearest automated one),
+and **Back to the site you're building** while you build one. The site you build reads
+**BUILDING NOW**.
+
+**A site's rows**, in order:
+
+| Row | Does |
+|---|---|
+| Go there | your character to the site's edge, Game Master's camera above it looking in. Its people and its automated pieces come out as for any player near |
+| Build here: start empty | camp life's pieces there go; you build on bare ground |
+| Build here: start from the automated layout | camp life's pieces there stay as yours to keep (locked until they're out: go there first). They are camp life's own prefabs, which Game Master can't select: to change one of them start empty instead |
+| Build here: edit the saved site (N objects) | the save is put out as Game Master objects to move, delete and add to |
+| Save this site | saves what stands there (below). Replacing a save asks for a second press, naming the save it replaces |
+| Stop building | everything put out or placed there goes, and the site is laid out again from what's in use |
+| In use: HAND-BUILT / AUTOMATED. Switch to ... | which one the game uses; the save stays either way, and the site is laid out again at once |
+| Restore the last save (N kept) | a second press brings back the save before this one (three are kept) |
+| Back to the list | |
+| Delete the hand-built | last, a second press: the save and its backups go, and the site is automated again |
+
+While you build, the description counts the objects that would be saved, says **UNSAVED CHANGES**
+once anything there was placed, moved or deleted since the last save or load, and how many stand
+outside the site (not saved). Going to another site or stopping with unsaved changes asks first:
+**Save, then go on**, **Discard the changes, then go on** (the site goes back to its last save) or
+**Stay and keep building**. Closing the menu can't be stopped, so it only says the site has unsaved
+changes; they stay standing for you to come back to. One admin builds a site at a time (the rows say
+who has it).
+
+**What a save holds:** every object standing within the site's radius of its centre (72 m for a
+stronghold, 56 m for an outpost or a field station, 40 m for a safehouse, 22 m for a road post) that
+a game master placed this session, plus what the builder put out there (the loaded save, or the
+automated pieces you started from) still standing. Only Game Master's plain objects and compositions
+(its "generic" kind): never a character, a group, a vehicle, an item, a waypoint, camp life's own
+pieces, loot or people. A composition is saved whole by its own prefab. Each object keeps the prefab
+Game Master placed (its editable copy, so it can be edited again), its place, its yaw, pitch and roll,
+and its scale.
+
+### Where saves are, and shipping them
+
+| Where | What |
+|---|---|
+| `$profile:ReforgerZ/hand_built/<world>/<site id>.txt` | the save on the machine the builder ran on, with `<site id>.bak1.txt` to `.bak3.txt` (newest first). A save here wins over a shipped one with the same id |
+| `scripts/Game/ReforgerZ/World/HandBuilt/RZ_HandBuiltPack.c` | the shipped saves, compiled into the mod (generated, never edited by hand) |
+
+`py tools/hand_built.py` reads the saves (Workbench's profile, then the game's: `--from <folder>` for
+another), checks them (each line, every prefab with its GUID, every object inside its site) and writes
+the pack: sites already in it stay unless a save replaces them or marks them deleted. `--check` checks
+without writing. Commit the pack. A world is named by its world file (`RZ_Everon`), so a save is used
+only on its own map; every other map is automated as before.
+
+A save is text, one line each, by its first word: `site <id>`, `title`, `kind` (`hold`, `out`,
+`safe`, `post`), `centre x y z`, `radius`, `use 1|0`, `saved`, `deleted 1` (on this machine: hides a
+shipped save, and the tool drops it), and `obj <prefab> x y z yaw pitch roll scale`. Any other first
+word is skipped by the game and the tool, so later kinds of line can be added. A site's **id** is its
+kind and its place rounded to the metre (`out_4810_6620`): the same every session. A place matches its
+own id, else the nearest save of its kind within 25 m.
+
+**A save belongs to a place, not to a faction's holding.** Holdings are rolled for each season (and on
+a fresh save), so a holding can stand somewhere else next season: its save is kept and used again
+whenever a site of its kind stands there (the list says how many saves have no site this season, and
+the site audit logs `Hand-built: <site> (<id>) has no save; the nearest of its kind is <id>, N m off.`).
+The Haven safehouses and the road posts move the same way. To build a holding that stays, fix it first:
+an outpost marker placed in the world never moves ([Where a place stands](#where-a-place-stands)).
+
+**Why saved as data and spawned near players, not a world layer:** a site then follows the same rule
+as every camp piece (only near players, gone when they leave), its state is per site and switchable
+without opening Workbench, it ships in the mod's scripts with no world file to register, and a map
+without saves runs exactly as before.
+
+### In play
+
+When a place comes out near a player and has a save in use, camp life queues its objects (a few a tick,
+as pieces) and lays no automated piece: no plan, no layers, no wire, no counters and no story elements.
+Each object is stripped by the dressing guard like every piece (nothing usable left in it). What stays
+from camp life: its people and their posts and jobs; with no pieces their jobs fall back as at a bare
+place (they stand, stroll and patrol, but no one sits, cooks or works at a piece), and the
+quartermasters turn to serve. Hand-placed spots for those jobs are planned
+([ROADMAP.md](ROADMAP.md#next)).
+
+The site audit (`run.sh sites`) doesn't lay out or score a hand-built site in use; it lists each
+(`Sites audit: <site> at <grid>: hand-built (N objects, saved ...), not scored.`) and counts them in
+the summary. The log lines are in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check).
+
+### Simplified
+
+- Nothing marks the site's boundary or the spots the site needs (the gate, the quartermaster's place,
+  the people's seats) while you build, and saving doesn't warn when one is built over: planned.
+- A save only counts what this session's game master placed: an object placed in an earlier session
+  and never saved is not in it (Game Master's own save of a session isn't read).
+- **Start from the automated layout** keeps camp life's pieces as they are; Game Master can't move or
+  delete them, only build round them.
 
 ## The surroundings and the threat
 

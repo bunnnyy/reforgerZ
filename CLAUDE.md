@@ -72,7 +72,7 @@ The Doc map covers `docs/` only. Approved but unbuilt designs are in `designs/` 
 | `docs/INFECTED.md` | The infected: the spawner, the towns' crawlers, loose ones, heat hordes, infection adapts, the land grid, bodies and the agent budget, the tribes (phases 1–5 built), the behaviour layer |
 | `docs/TRACES.md` | Traces, the world's environmental storytelling: door marks (the grammar, the symbols, reading by level, where marks come from, ageing, doors on the map), doors you can see (decals, boards), player traces, the scenes (the first days and the line, vignettes, live traces), sound and light, the cure and the epilogue, errands' old mark, the Long Table's absence, caps, its decisions |
 | `docs/PLACES.md` | Task places and things: the mainland (no island gets anything), a place is what its words say (the name rule and the words by what's there), the needs (place flags, the things a task's words name and their slots), the needs table, how pickers use them (`RZ_PlaceFind`), the live check and its log line, the place audit (`run.sh tasks`, its log lines and drawing), results, what isn't covered |
-| `docs/SITES.md` | Camp sites: the site grid, real footprints (`footprints.json`, the measuring plugin), drop don't squeeze, the surroundings and the threat sectors, the site audit (its checks, score and log lines, `run.sh sites`), `render.py --placed` and the fly-to plugin, the world-building kit (`world_kit.txt`) |
+| `docs/SITES.md` | Camp sites: the site grid, real footprints (`footprints.json`, the measuring plugin), drop don't squeeze, the surroundings and the threat sectors, the site audit (its checks, score and log lines, `run.sh sites`), `render.py --placed` and the fly-to plugin, the world-building kit (`world_kit.txt`), hand-built sites (the site builder, the saves, `tools/hand_built.py`) |
 | `docs/ROADMAP.md` | Built, next, play-test priorities, and the Dropped list |
 | `docs/REPUTATION.md` | Factions, Fame/Infamy/Favor, tiers, shops, perks, leaders, AI hostility, morale/needs/truces |
 | `docs/MISSIONS.md` | Every contract, world event, puzzle, leader and arc mission, with requirements and ✅ status |
@@ -106,6 +106,9 @@ Write conservatively:
 - Mark any engine API you aren't sure of with `// VERIFY: ...` and keep engine calls in small helpers.
 - Server-authoritative. Poll on the existing tick, not per frame. Spawn AI and props only near players.
 - Works on any map: place things relative to settlements and landmarks, never fixed coordinates.
+  The one exception: hand-built sites, which the author builds in Game Master and saves in a map's
+  own coordinates (`World/HandBuilt/`, docs/SITES.md). Code never depends on them: a site without
+  one, and every map without saves, is laid out as before.
 - Optional prefabs are attributes on `RZ_GameModeComponent`; features that need one turn themselves off when it's empty.
 - Run `tools/compile_check.sh` before committing script changes: it compiles everything on the
   dedicated server (Linux in the cloud; on the author's PC in Git Bash, see `docs/PC_SETUP.md`) and

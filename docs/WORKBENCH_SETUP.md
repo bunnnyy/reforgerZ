@@ -2093,7 +2093,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **184** lines with the tag, all but one in the game scripts (one is the comment in
+There are **191** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2116,7 +2116,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (83)
+### Medium risk: big features, with a fallback (89)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2207,11 +2207,18 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_WorkHold.c:326` | `SetStanceChange(STANCECHANGE_TOCROUCH)` on the holder's own machine crouches them for work at a thing under 0.9 m (as the crouch key does, others see it, and the movement lock set after it doesn't stop it); `STANCECHANGE_TOERECTED` at the end stands them up if still crouched | They stand to work (no harm), or stay crouched after it (press the stance key) |
 | `Interactions/RZ_WorkHold.c:350` | vanilla's pick-up gesture (`TryPlayItemGesture(EItemGesturePickUp)`, no item named, as when taking something off the ground into the pack), played on the holder's own machine and again every 1.6 s while a work site's bar runs, shows them reaching down and taking hold, with empty hands or a weapon slung, others nearby see it, and the movement lock doesn't stop it | It returns false: the mine's item use (`:371`) is tried instead. It plays for the holder only: the item gestures' own replication; tell us |
 | `Interactions/RZ_WorkHold.c:371` | the item use vanilla makes at a mine being disarmed (`CMD_Item_Action`, argument 0, on the thing itself, nothing in the hands) plays its kneel-and-work loop when the thing is our work site's invisible box, which is no item. Now only tried when the pick-up gesture (`:350`) won't play | Nothing plays (most likely: the engine refuses an entity with no item component, which is why the first build showed nothing with no tool; the lock still holds, and the work is done), or the character's hand is pulled to the box, or the box ends up in the hand: turn **Hands animation** off |
+| `World/HandBuilt/RZ_SiteBuilderEditor.c:71` | the site builder's row, added in code at the end of every context-action list's sorted actions (no vanilla config overridden), shows in Game Master's context menu on empty ground (and in its action menu with a pad), and its index is the same on the server | No **ReforgerZ: Site builder** row: open the builder from the talk screen's **[Admin] Site builder** or `/sites`. Tell us; the row then goes into an override of the editor mode's action list config |
+| `World/HandBuilt/RZ_SiteBuilder.c:120` | a game master's editor manager isn't `IsLimited()` and a player's (photo mode only) is, so only a game master or a server admin may build | A game master who isn't a server admin is told "Only a server admin or a game master can build sites": make them a server admin (or tell us) |
+| `World/HandBuilt/RZ_SiteBuilder.c:337` | `GetAllEntities(.., onlyDirect true)` gives Game Master's top-level entities, so a composition is saved once by its root, not part by part | A composition's parts are saved too (each twice in play: once in the root, once alone): place single props, or tell us |
+| `World/HandBuilt/RZ_SiteBuilder.c:806` | `SCR_Global.TeleportPlayer` on the server moves a player's own character (what vanilla's Game Master teleport does), so **Go there** brings the site's people and pieces out round you | You stay where you are: fly the camera there and walk or drive your character within 300 m |
+| `World/HandBuilt/RZ_SiteBuilder.c:964` | `SCR_EditableEntityComponent.Delete()` on the server takes a Game Master object out of the world and every game master's view (Stop building, Discard) | The objects stay after **Stop building**: delete them in Game Master yourself before switching the site |
+| `World/HandBuilt/RZ_HandBuilt.c:562` | an object spawned with the yaw, pitch and roll `Math3D.MatrixToAngles` read from it and its scale stands exactly as it did in Game Master | Tilted or turned objects come back turned another way: build them level (yaw only) and tell us which |
 
-### Low risk: contained or cosmetic (45)
+### Low risk: contained or cosmetic (46)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `World/HandBuilt/RZ_SiteBuilderEditor.c:121` | setting the manual camera's world transform moves Game Master's camera to look at the site (**Go there**) | The camera stays: fly it to your character |
 | `Interactions/RZ_Interactions.c:187` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
@@ -2502,6 +2509,14 @@ Warnings worth acting on:
 | `Camp life: <Faction> <KIND> at <grid>: <n> of <m> planned pieces fit, laid out <where>; <c> counter(s), <s> left out facing water or a drop.` | The first time a run dresses a place, once its ground is read: how much of its plan fit and where. Few fitting everywhere: the footprint traces may be catching grass or bushes (the VERIFY); the `Sites:` line says why each was dropped |
 | `Camp life: <Faction> <KIND> at <grid>: solved, <n> pieces and <l> of its layers (the wire <p>% closed), <i> indoors, <d> dropped, laid out <where>; <c> counter(s).` | With **Solver** on, the first time a run dresses a place, once its ground is read and solved ([SITES.md](SITES.md#the-solver)); the `<n> of <m> planned pieces fit` line is the same with Solver off |
 | `Camp life: <Faction> <KIND> at <grid>: laid out again as before (<n> pieces and <l> of its layers, <where>), <c> counter(s).` | Each later visit in the run: the kept layout, no reading |
+| `Hand-built: <world> has <n> sites (<s> shipped, <h> saved on this machine), <u> in use, <o> objects.` | Once at start ([SITES.md](SITES.md#hand-built-sites)): the hand-built saves for this map. 0 sites on a map nobody built on |
+| `Camp life: <title> at <grid>: hand-built (<n> objects, saved <date>), automated layout off.` / `... being built by hand, automated layout off.` | A place with a hand-built save in use comes out near a player (its objects, no automated piece), or one the site builder is building |
+| `Site builder: <player> went to <site> (<id>).` / `... builds <site> (<id>), empty / from the automated layout (<n> pieces) / from its save (<n> objects).` / `... stopped building <site> (<id>); <n> objects cleared, the site is <STATE>.` | The site builder's **Go there**, **Build here** and **Stop building** |
+| `Hand-built: saved <site> (<id>): <n> objects to $profile:ReforgerZ/hand_built/<world>/<id>.txt; <k> outside its radius not saved.` | **Save this site**. Then `py tools/hand_built.py` ships it |
+| `Hand-built: <site> (<id>) is <STATE> now.` / `... restored to its save before.` / `... deleted; it's automated again.` / `Hand-built: couldn't write <path>` | The use switch, **Restore the last save**, **Delete the hand-built**; a save that couldn't be written (the profile folder read-only) |
+| `Hand-built: no such prefab <prefab>` | A saved object whose prefab isn't loaded (a mod missing): that object is skipped |
+| `Hand-built: <site> (<id>) has no save; the nearest of its kind is <id>, <n> m off.` | The site audit, for a site with no save while the map has saves of its kind: a save left behind when the season put the site elsewhere |
+| `Sites audit: <title> at <grid>: hand-built (<n> objects, saved <date>), not scored.` and `Sites audit: <n> hand-built sites, not scored.` | The site audit leaves a hand-built site in use out of its scores |
 | `Sites: <faction> <kind> at <grid>: score <s>; <n> of <m> pieces; perimeter <p>% (gap <w> m at <bearing>), <g> gates; <i> indoors, <d> doors blocked, <b> windows boarded[, <o> outside the wire (...)]; front <side> (<why>), water <sides>; dropped: <piece> (<why>), ...; <k> overlaps (...); <f> floating or buried; posts: ...; paths: ...; routes <a> of <b> points walkable (<route> <n> points, <m> m, ...); read <ms> ms in <steps> steps (most <ms> ms, the longest part <ms> ms), laid out in <ms> ms in <steps> steps (most <ms> ms, the longest part <ms> ms).` | Once per site a run, when it's laid out (in play and in the site audit): its audit ([SITES.md](SITES.md#the-audit)). Any overlap is a bug: report the line. "Most" over **Site read ms** by a lot means one part of the reading holds the server (the longest part); "laid out in" is the solver's time in all, spread over seconds (its first step, the wire's trace, runs in one go) |
 | `Sites audit: <n> sites, mean <m>, worst <w> (<site>), <k> overlaps; <h> with a hard failure; <u> under <threshold>: ...` | The runtime test's summary, once every site is audited |
 | `Sites audit perimeters: <stronghold> <p>%, ...; <t> tier 1 pieces dropped, <o> pieces outside the wire.` | With the summary: each stronghold's wire closed, and what mustn't be dropped or stand outside |
@@ -4261,6 +4276,27 @@ editor's time of day)
   moved with his clothes); a Haven guard in overalls and a Halcyon guard in hazmat still have theirs.
 - [ ] A road post's crew, a supply truck's crew and a hunter squad show mixed looks; a safehouse's
   occupants and guard differ from the next safehouse's.
+
+**Hand-built sites** ([SITES.md](SITES.md#hand-built-sites); Everon, as a server admin, with a pad
+too)
+- [ ] **ReforgerZ: Site builder** shows in Game Master's context menu on empty ground (and its action
+  menu with a pad), the talk screen's **[Admin] Site builder** and `/sites` open the same menu; the
+  list shows every holding, safehouse and road post with AUTOMATED, readable on a TV.
+- [ ] **Go there** puts your character at the site's edge and Game Master's camera above it; its
+  people and pieces come out.
+- [ ] **Build here: start empty** clears the pieces; place a few props and a composition in Game
+  Master; the description counts them and says UNSAVED CHANGES; **Save this site** writes
+  `$profile:ReforgerZ/hand_built/RZ_Everon/<id>.txt` and the row goes HAND-BUILT, IN USE.
+- [ ] Leave Game Master, walk away 400 m and back: the site comes out as you built it (tilted and
+  scaled objects too), its people at their posts, the log's `hand-built (N objects ...)` line.
+- [ ] **Build here: edit the saved site**, move one object, try **Go there** at another site: it asks
+  Save / Discard / Stay; Discard puts the save back. Save twice: the second asks to replace; **Restore
+  the last save** brings the first back.
+- [ ] **In use: ... Switch to automated** lays the automated layout at once; switch back. **Delete
+  the hand-built** (second press) makes it AUTOMATED again.
+- [ ] **Build here: start from the automated layout** keeps the pieces; save; the save lists them.
+- [ ] `py tools/hand_built.py` writes `RZ_HandBuiltPack.c` with the site; with the profile's save
+  moved away, the site still comes out hand-built from the pack.
 
 **Faction bases on Everon** ([DESIGN.md](DESIGN.md#camp-life); after `build.py` has rewritten the kits)
 - [ ] Walk up to each faction's stronghold and one outpost: the log's `Camp life: ... moves into ...`
