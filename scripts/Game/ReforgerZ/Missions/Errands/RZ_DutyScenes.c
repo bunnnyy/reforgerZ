@@ -360,6 +360,7 @@ class RZ_DutyScenes
 				return;
 
 			OpenBeat(s, b);
+			PointTo(s, b, me);
 			return;
 		}
 
@@ -487,6 +488,21 @@ class RZ_DutyScenes
 			sites.Open(key, o.m_eWork, o.m_sLabel, o.m_fHold, at, s.m_iPlayer, prop, "", yaw);
 			s.m_aKeys.Insert(key);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the beat is, for the player: the errand's place moves to it (so the journal and the
+	//! tracker point there, and the step ends where the last beat was), and a beat more than 15 m off
+	//! is said with its direction. A patrol's finds leave the errand's place alone: its step ends at
+	//! the gate.
+	protected void PointTo(RZ_DutyScene s, RZ_DutyBeat b, IEntity me)
+	{
+		RZ_Errand e = m_Dealer.FindById(s.m_iErrand);
+		if (e && !s.m_bLoose)
+			e.m_vPlace = b.m_vAt;
+
+		if (RZ_Util.DistXZ(me.GetOrigin(), b.m_vAt) > 15)
+			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, string.Format("%1.", RZ_Util.Capitalize(RZ_Util.DirectionText(me.GetOrigin(), b.m_vAt))));
 	}
 
 	//------------------------------------------------------------------------------------------------
