@@ -229,9 +229,6 @@ else waits is play, engine checks and the author's calls.
   shot deer fall ([DESIGN.md](DESIGN.md#wildlife)). Test with two clients before relying on it; if
   it reads badly, the way out is our own small deer script on the mod's models, moved and killed
   on the server.
-- **Loot's known oddities:** the keyword "can" puts jerrycans and canteens in houses and shops;
-  torches are the commonest find everywhere (they're both everyday and all of electronics); and
-  piers, bunkers and retaining walls are rolled as houses (most find no spot and stay empty).
 
 ### Engine checks and switches
 - **The VERIFY spikes**, one Workbench evening each, riskiest first

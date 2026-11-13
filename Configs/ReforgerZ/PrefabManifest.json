@@ -6925,7 +6925,7 @@
    "category": "Interactions",
    "object": "Search",
    "field": "m_SearchSettings",
-   "covers": "**Loot pool**, loot tables, **Extra finds** (items added to one building type's table), chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15)"
+   "covers": "**Loot pool**, loot tables, **Extra finds** (items added to one building type's table), **Food weight** (2), **Not buildings** (name keywords of things with no loot: piers, bollards, rubble), chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15)"
   },
   {
    "category": "Interactions",
@@ -7826,6 +7826,8 @@
     "m_fFindChance": "0.6",
     "m_fBootChance": "0.8",
     "m_fBootTwoChance": "0.4",
+    "m_iFoodWeight": "2",
+    "m_sNotBuildingWords": "pier,bollard,retainingwall,brickpile,woodpile,houseruin,well_",
     "m_fRareChance": "0.1",
     "m_fElectronicsChance": "0.1",
     "m_bLocks": "1",

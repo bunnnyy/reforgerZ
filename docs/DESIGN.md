@@ -2637,8 +2637,8 @@ picked-over one is thin.
 | Garage (garage, workshop, repair, fire station) | Jerrycans, the wrench kit, torches, work gloves, a hard hat, a fireman's helmet, overalls, a spade, maps; rare: a fire axe, a gas mask, an oxygen tank, a backpack | 10 |
 | Farm (farm, barn, stable, shed, vet clinic) | Food, raw meat, water, canteens, wood, wool gloves and hats, overalls, raincoats, a spade, jerrycans; rare: a fire axe, a machete, a knife, binoculars, a compass, a backpack | 9 |
 | Police (police, gendarmerie) | Pistol and rifle magazines, torches, dressings, tourniquets, caps, gloves, a holster, police trousers, a prisoner's uniform; rare: a pistol (PM or M9), a Vz. 58 rifle, smoke grenades, a vest, a helmet, a radio | 10 |
-| Shop (shop, store, market, kiosk, petrol station, pub) | Food, water, canteens, vodka, cigarettes, torches, watches, maps, gloves, hats and caps, a waist pack; rare: binoculars, a compass, a hiking backpack | 9 |
-| House (anything else) | Food, water, dressings, aspirin, a torch, a watch, a map, wood, clothes, someone's belongings; rare: a knife, binoculars, a compass, a backpack | 6 |
+| Shop (shop, store, market, kiosk, petrol station, pub) | Food, water, canteens, vodka, cigarettes, watches, maps, gloves, hats and caps, a waist pack; rare: binoculars, a compass, a hiking backpack | 9 |
+| House (anything else) | Food, water, dressings, aspirin, a watch, a map, wood, clothes, someone's belongings; rare: a knife, binoculars, a compass, a backpack | 6 |
 
 Every destructible building has loot, whatever else its name makes it (a petrol station's
 building is a shop).
@@ -2656,11 +2656,19 @@ building is a shop).
   less of each: the slots per building were raised with the extra finds to keep food and medicine
   as common as before. The log's `Search:` lines give each table's size and how many extra finds
   were added.
-- **Food counts twice with Metabolism loaded** (an accident, kept for now): the mod brings its own
-  copies of the MRE, the crackers and the dried meat, spelled `prefabs/...`, so the pool's entries
-  and the built-in `Prefabs/...` ones don't match and both go into the table. Each of the three is
-  twice as likely as any other everyday find (the house table is 34 long, not 31). Matching them
-  by GUID would halve food in houses, shops and farms.
+- **One entry a prefab, by its GUID.** Two spellings of one prefab (Metabolism's copies of the
+  MRE, the crackers and the dried meat are `prefabs/...`, the base game's `Prefabs/...`) are one
+  entry. **Food weighs double:** each food item (a prefab under `/food/`) is in the everyday list
+  twice (**Search > Food weight** 2), so a house holds about 0.8 food items, a shop 2.2 and a farm
+  2.4 (before the GUID match, by accident, 0.75, 1.9 and 2.1).
+- **Keywords mean what they say.** "can" isn't a keyword (it caught jerrycans and canteens): jerrycans
+  are a garage's, a farm's and a wreck's, canteens where the built-in lists put them. Torches are
+  electronics (10% of finds, 15% where the power's on) and a garage's, a police station's and a
+  wreck's everyday find, no longer every house's and shop's: about 0.5 a house and 0.7 a shop,
+  from 0.7 and 1.0.
+- **Not every "building" is a room.** The map counts piers, bollards, retaining walls, ruins'
+  rubble and wells as destructible buildings; they get no loot (**Search > Not buildings**, name
+  keywords).
 - **Rolled once, then data.** The first time a player comes near, each of the building's slots
   holds something **75%** of the time (**Loot > Slot chance**) × the town's loot level, half that
   in a faction's town (a holding within 150 m). The first two slots (**Sure items**) always do
