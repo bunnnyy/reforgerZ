@@ -108,7 +108,7 @@ so they cost no download:
 | Bastion, Red Hand | **Fuel point** | by the motor pool or the fuel dump | a pump unit, drums, cans |
 
 A place has more pieces than before: up to 60 at a stronghold, 36 at an outpost, 18 at a safehouse,
-24 at a field station ([Settings](#settings) on the game mode change them): its plan's own and its
+24 at a field station ([Settings](#settings) on the game mode change them): its kit's own and its
 kit's extras ([Dense sites](#dense-sites)). A piece too big for a cramped yard is dropped, as ever. Not used: vanilla's sandbag bunker and anything else that brings a
 camouflage net. A net isn't removed with its piece when the place is cleared, so the Tarp's net is
 the one net there is, and it has the same fault (on the handoff board).
@@ -126,7 +126,7 @@ people wait for a player near. Nothing is saved.
 | What | Reach |
 |---|---|
 | A place that moved into a building | round the building: its half-diagonal plus its road-entry ring (50 m at a stronghold, 40 m at an outpost, 28 m at a safehouse) plus 6 m, at least 56 m and at most 72 m each way (a stronghold about 240 × 240 cells) |
-| A camp on open ground | 56 m each way (its plan, the shifts tried and the wire round it) |
+| A camp on open ground | 56 m each way (its square, the spots tried and the wire round it) |
 | A road post | 16 m each way (both verges) |
 
 | Read | How | Cell flag |
@@ -178,7 +178,7 @@ props, so they're measured too. `render.py` draws every prop at its measured siz
 
 The first measurement showed why pieces clipped: a `WoodLog_01_A` is a 6 m trunk (drawn as 2 m), the
 small camo net 13.6 m across (4 m), a long sandbag 3.5 m (2 m), the big US tent 6.3 × 9.9 m (5 × 7),
-`TinWall_01_3m`'s origin at one end. The kits' plans were re-spaced (17 pieces moved 0.5 to 2 m)
+`TinWall_01_3m`'s origin at one end. The kits (then drawn plans) were re-spaced (17 pieces moved 0.5 to 2 m)
 so `build.py`'s overlap check passes with the real sizes. The firewood piece's split logs are
 `WoodKindling_01` (0.46 × 0.66 m), not the trunk. The layers' props (the wire, the fences,
 the scrap, the sandbags, the floodlight, the checkpoint's sign) were measured the same way: a
@@ -313,9 +313,11 @@ side is the **front** (the main road's side on a tie).
 ## The rules
 
 Every camp-kit piece in `tools/camp_kit/pieces.py` has a **tier**, a **zone** and its **rules**
-(`pieces.RULES`), written onto each kit entry by `build.py` (**Tier**, **Zone**, **Rules**). The
-plan's spot stays as a **preference**: the solver lays the plan where the ground allows and bends it
-where it doesn't.
+(`pieces.RULES`), written onto each kit entry by `build.py` (**Tier**, **Zone**, **Rules**). **No
+site is drawn in advance**: a kit (`pieces.KITS`) says only what a faction brings to a kind of place,
+most important first, and every piece finds its spot from its zone and rules on the ground where the
+site is, tier by tier ([The solver](#the-solver)). What a piece is made of (a table and its chairs, a
+fire and its seats) is a unit, its props spaced by measurement ([Spacing](#spacing)).
 
 ### Zones
 
@@ -325,16 +327,16 @@ wire (a road post, or **Layers** off) has no zones: every piece may stand anywhe
 | Zone | Where | Holds |
 |---|---|---|
 | **Yard** | anywhere inside the wire, 1.5 m in from it (the default) | most pieces |
-| **Wire** | on the line, within 1.5 m of it | the plan's barricades |
+| **Wire** | on the line, within 1.5 m of it | the kit's barricades |
 | **Gate** | within 16 m of the main gate, inside the line or on it | the gate's sign and barrier, the toll, the red hand, the plague board, the kennel, the trophy wall, the motor pool, the search table |
 | **Kill zone** | outside the wire on the threat sides | nothing ever stands there |
 | **Court** | inside the wire within 18 m of the one entrance | the roster and duty boards, the flag, the memorial, the bear, the decon shower, the stall, the stores board |
 | **Stores** | inside the wire within 4 m of the building | the cold store |
 | **Work** | inside the wire within 15 m of the building | the tables, the radio table, the tarp, the supply yard, the crate stacks, the radio mast |
 | **Kitchen** | inside the wire within 14 m of the kitchen's door: the building's outside door furthest from the entrance, else the middle of its yard side; by the entrance when no way leads round to it | the cook pot, the woodpile, the water, the wash and shaving stands, the mess tables |
-| **Sleep** | inside the wire, 12 m or more from the gate (spots tried first in the two corners furthest from it) | tents (the plan's own on open ground only: in a building they sleep indoors; a kit's extra tents are the overflow and stand on grass by a building too, [Dense sites](#dense-sites)), the washing and drying lines, the children's corner |
+| **Sleep** | inside the wire, 12 m or more from the gate (spots tried first in the two corners furthest from it) | tents (the kit's own on open ground only: in a building they sleep indoors; a kit's extra tents are the overflow and stand on grass by a building too, [Dense sites](#dense-sites)), the washing and drying lines, the children's corner |
 | **Sick** | inside the wire, 8 m or more from the gate (the far corners first) | the ward tent |
-| **Dump**, **Dead** | outside the wire within 20 m of it, on a side that isn't threatened | no plan piece: the story's ash (the dump), graves and candle jars (the dead) ([The elements](#the-elements)) |
+| **Dump**, **Dead** | outside the wire within 20 m of it, on a side that isn't threatened | no kit piece: the story's ash (the dump), graves and candle jars (the dead) ([The elements](#the-elements)) |
 
 ### Rule types
 
@@ -360,7 +362,8 @@ Each piece's rules are a line of text, `;` between them (`m_sRules`):
 | **Varied** | `jitter` (turned 0–8° and moved 0–0.5 m by the seed), `noline` (two of a kind not in one line) | soft | clutter jittered; the tables and the Haven's tents never in a row |
 | **Row** | `row` | its turn, and soft (+14) | set out beside another of its kind, 1.2 m apart and turned the same; the first of a row squared to the building (to the road in on open ground): Bastion's tent line and mess tables, Halcyon's ward tents, the Haven's garden beds |
 
-A spot's score is −0.6 a metre from the plan's spot (where the plan has one), then each soft rule:
+A spot's score is −0.6 a metre from a door or front-wall piece's own spot (beside the door, along
+the front wall: where that rule puts it), then each soft rule:
 Near, By a building part and By a building kind give their worth (10, 8 or 6) within reach and two
 less a metre past it; Covers +15 or −15; Behind +6 or −3; Guarded up to +5 for distance from the
 wire, −0.3 a metre from the entrance, +3 against the building; High +2 a metre above the middle
@@ -377,12 +380,12 @@ row +14.
 | 4. Character | the flag, the trophy wall, the red hand, the kennel, the children's corner, the garden, the stall, the bear, the plague board, the lines, the antenna, the duckboards, the mess tables, the radio mast, the fuel point, the lantern posts | |
 | 5. Clutter | bags and bottles, the smoking bench, the stacks (crates, pallets, drums, tyres, spare sandbags), bedrolls, the stop sign | |
 
-The pieces are placed tier by tier, in plan order within a tier, so the most important take their
-spots first. A kit can give a piece its own tier (`pieces.KIT_TIER`: the Haven's table is tier 2).
+The pieces are placed tier by tier, in the kit's order within a tier, so the most important take
+their spots first. A kit can give a piece its own tier (`pieces.KIT_TIER`: the Haven's table is tier 2).
 
 ## The solver
 
-`Factions/RZ_SiteSolver.c`, setting **Solver** (on). Once a site's grid is read, it's laid out from
+`Factions/RZ_SiteSolver.c`. Once a site's grid is read, it's laid out from
 its kit's rules, a little each second (**Site read ms**, the same budget as the reading), one site
 at a time, once a run; the result is kept as the layout is (positions and turns as data,
 `RZ_SiteLayout`), so every later visit lays the same site again with no solving. Every random
@@ -390,19 +393,27 @@ choice comes from the place's seed (`Seed`), so a site is laid the same way afte
 differs from its neighbour.
 
 1. **The counters** first, in front of each quartermaster, as before ([DESIGN.md](DESIGN.md#camp-life)).
-2. **The plan's frame**: by a building its yard side, on open ground its place facing the road, at a
-   road post along the road (`ChooseYard`, `ChooseOpen`: where most of the plan fits). Each piece's
-   spot in it is its **preference**.
+2. **Room for the yard**: the area its pieces need, each yard piece's measured footprint with its
+   half-metre gap all round, at least 12 m² a piece (the spacing rule's share), pieces by the door,
+   along the front wall, at the gate or indoors not counted. By a building each side is read for
+   free ground over a strip as long as the side and a **Ring** either end, as deep as that area
+   needs (at least **Yard**, at most 32 m); the faction's own side (behind the building; the Red
+   Hand's in front) scores a little extra and is kept unless another has clearly more room
+   (`ChooseRoom`). On open ground the camp's middle is the place on dry land, its front to the road;
+   at a road post the road's line.
 3. **The layers** in order ([Building in layers](#building-in-layers)): the wire line and its gates,
    the way from the entrance to the gate kept clear, the gate's pieces, the barricades and the
    barrier, the boards, the watch, then work and life by tier.
 4. **Each piece**: up to **Candidates a piece** (24; twice that for tiers 1 and 2) spots are scored:
-   its plan spot first (an extra has none), then for a row the spots beside each of its kind, then
+   a door or front-wall piece's own spot first (no other piece has one), then for a row the spots
+   beside each of its kind, then
    the spots its zone and rules point to (the gate's sides, round the
    entrance, round the kitchen's door, the far corners, along the building's walls, round the piece
    it should be near or stands by, the high ground; an extra that wants a wall is tried along every
-   side of the building), then rings round its plan spot (or, when that isn't in its
-   zone, round the zone's middle) out to 13 m, then spots spread over the yard by the seed. A spot
+   side of the building), then rings round its zone's middle (the yard's middle for the yard)
+   out to 13 m, then spots spread over the yard by the seed. A road post's pieces are tried on both
+   verges along the road (3 to 7 m off its line, 12 m either way), squared to it, and must stand
+   beside the road (within 2 m of it). A spot
    whose middle is out of its zone or blocked is passed over cheaply and not counted. Each counted
    spot must meet every hard rule and the ground (every cell under its whole real footprint free:
    [The site grid](#the-site-grid); flat enough; off the line; clear of the spots kept free); the
@@ -415,14 +426,11 @@ differs from its neighbour.
    reason the most spots failed on: a rule (*"Away from: Latrine 15 m"*), the ground (water, a
    building, the road, a bank, steep ground, something standing there, other scenery, another piece,
    a path kept clear, outside the ground read, not flat), the line, a spot kept clear, its zone, or
-   something in the way (the traces). The plan's order and the tiers decide what's dropped first: the
+   something in the way (the traces). The tiers and the kit's order decide what's dropped first: the
    most important pieces come first and take their spots.
 6. **Valuables indoors.** At a site with a building, a kit entry marked **Indoors** (`pieces.DOCTRINE`)
    isn't laid out: it's kept as data (the building is where the stores are) and the stores board
    stands by the entrance instead.
-
-With **Solver** off (or **Site grid** off) the plan is laid down whole as before: each piece where
-the plan puts it or dropped ([DESIGN.md](DESIGN.md#camp-life)).
 
 ## Building in layers
 
@@ -430,14 +438,14 @@ Setting **Layers** (on). Every site is built in the order real people would buil
 a set of pieces placed by the rules above, and a later layer never takes a cell a former one holds.
 Each kit's **doctrine** (`pieces.DOCTRINE`, written onto the kit by `build.py`: **Close**,
 **Harden**, **Ring**, **Yard** and its **Layers** list of pieces) says how much of each layer a kind
-of site gets. Road posts have none: their plan (the barrier, a nest, sandbags or scrap on both
-verges) is their doctrine.
+of site gets. Road posts have none: their kit (a nest, sandbags or scrap, a fire barrel, a net, on
+both verges) is their doctrine.
 
 ### Close it off
 
 `Factions/RZ_SiteWire.c`. The **wire line** is a ring round the building (or, on open ground, round
-the plan), **Ring** metres out on each side (7–9) and on the yard's side as deep as the yard's part
-of the plan needs (at least **Yard**, 10–14, at most 32). Each side is then moved 3 m in to 6 m out
+a square as big as the pieces need, 8 to 40 m a side), **Ring** metres out on each side (7–9) and on
+the yard's side as deep as its room needs (at least **Yard**, 10–14, at most 32). Each side is then moved 3 m in to 6 m out
 (never nearer the building than 4 m) to where more of it is closed already or can take a barrier,
 so the line follows the real perimeter, meeting a neighbour's wall, a fence, a hedge or the water.
 
@@ -477,7 +485,8 @@ entrance can walk to. Then, in order:
 5. **The barrier**: each side's gaps filled with the faction's runs **end to end**: from the gap's
    first edge, each run starts where the last one's measured end face is, the longest that fits
    first (about 10, 6, 3 and 2 m, then a filler about a metre long: a basket of earth, a pallet stood
-   on its edge, a crate, a no-entry sign); where none fits, half a metre on. Each is nudged half a
+   on its edge, a crate, a no-entry sign: only for a last gap shorter than the shortest real run,
+   never a row of them where the runs didn't fit); where none fits, half a metre on. Each is nudged half a
    metre in or out where the line itself is blocked. A run takes its measured box on the grid and no
    more, and is tested 5 cm inside it, so two runs' faces meet (pieces keep their half-metre gap). A
    run may stand on steep ground and banks but not on water, a building, something standing, a road,
@@ -520,7 +529,7 @@ building).
 
 ### Watch
 
-1. **The nest over the gate**: the plan's watch pieces (Bastion's and the Red Hand's nests, the
+1. **The nest over the gate**: the kit's watch pieces (Bastion's and the Red Hand's nests, the
    Haven's lookout, Halcyon's guard post) by their rules: inside the wire, beside the gate, seeing it
    and the road out (Covers), facing out along the road, on a bank if need be.
 2. **A lookout toward each threatened side** that no watch faces yet (threat 3 or more, or the
@@ -546,16 +555,16 @@ data, not laid out, and the **stores board** stands by the entrance once anythin
 
 ### Dense sites
 
-A kit can list **extras** after its plan's own pieces (`pieces.DENSE`; **Extra** on the kit entry):
+A kit can list **extras** after its own pieces (`pieces.DENSE`; **Extra** on the kit entry):
 more of what the place would have, each with the reason it is there.
 
 | Rule | How |
 |---|---|
-| No spot in the plan | an extra goes where its zone and rules say (what it stands by, its ground, its row), after the plan's own pieces of its tier, or it's left out. The plan's frame and the yard's depth are the plan's own: extras never stretch them |
+| Placed like the rest | an extra goes where its zone and rules say (what it stands by, its ground, its row), after the kit's own pieces of its tier, or it's left out. Its footprint counts toward the yard's room ([The solver](#the-solver)) |
 | Everything serves something | every extra has a zone, and the small ones a **Stands by**: no supply yard, no pallets; no motor pool, no fuel point; nothing sat on, no bottles |
 | One of each | one supply yard (one forklift), one guard tower, one search table a site |
 | Its ground | tents, bedrolls, lines, duckboards and garden beds on soil only; nothing on a road, as ever |
-| Tents by a building | the plan's own tents are left out by a building as ever (they sleep indoors); extra tents are the overflow (*the sections the building has no room for*), on grass, Bastion's and Halcyon's in a row |
+| Tents by a building | the kit's own tents are left out by a building as ever (they sleep indoors); extra tents are the overflow (*the sections the building has no room for*), on grass, Bastion's and Halcyon's in a row |
 | People | an extra with seats is used like any piece (the storeman at the supply yard's crate, the searcher at the table, the sentry at the tower's foot, the mess tables at the meal); nobody climbs the tower ([Simplified](#simplified)) |
 | The audit | leaving an extra out costs nothing; one that stands is checked like any piece |
 | One layout a spot | two places within 60 m share one layout, the greater place's (a stronghold's before an outpost's before any other's): the Haven's safehouse at its quartermaster gives its ground to the stronghold (before, the stronghold stood as the safehouse's 13 pieces) |
@@ -705,7 +714,7 @@ A post is a spot and a facing a watch uses.
 | Post | From | Who |
 |---|---|---|
 | **Gate** | the watch layer's **gate post**: just inside the main gate, 3–7 m in and 2.5–6 m to the side of the way in, on ground a body can stand on (off the road and the way kept clear if it can), with a clear line to the gate; else any square a body can stand on within 8 m of the gate that sees it (inside the wire first); else the gate itself. Every site with a gate has one, so every gate is watched | guards |
-| **Nest** | the plan's watch piece nearest the gate (Bastion's and the Red Hand's nests, the Haven's lookout's chair, Halcyon's guard post): its own watch point | guards |
+| **Nest** | the kit's watch piece nearest the gate (Bastion's and the Red Hand's nests, the Haven's lookout's chair, Halcyon's guard post): its own watch point | guards |
 | **Lookout** | each lookout piece toward a threatened side, any other watch piece, the lookouts' posts toward the sides nothing else faces, and the building's lookouts ([Watch](#watch)); each with the threat of the side it faces and whether that side is covered | guards |
 | **Door** | the entrance's step, facing out (a site with a building) | guards |
 
@@ -915,12 +924,12 @@ site on the map this way with nothing spawned (`RZ_CampLife.AuditAll`).
 | Floating or buried | the ground under each prop varying over 0.3 m (not a board on the wall) | |
 | Posts | the watch pieces (nests, lookouts, guard posts), the building's lookouts, the gate's post and the lookouts' posts: does one see the gate (a 2 m line on the grid, no solid or building) within 80 m; each side with threat 3 or more (and the front) watched by a post facing within 67.5° (a lookout placed toward a side isn't asked to see the gate) | a stronghold with no gate watch |
 | Paths | a walkable way (1 m wide, round water, buildings, solid, bushes, scenery and pieces) from the entrance (the solver's step; from the nearest square a body can stand on within 2 m) to the gate (the wire's main gate) and to the spot in front of the cook pot | |
-| Dropped | each dropped piece of the plan by its tier ([Importance tiers](#importance-tiers)); an extra left out costs nothing ([Dense sites](#dense-sites)) | a tier 1 piece dropped |
+| Dropped | each dropped piece of the kit by its tier ([Importance tiers](#importance-tiers)); an extra left out costs nothing ([Dense sites](#dense-sites)) | a tier 1 piece dropped |
 | Routes | every point of its people's routes ([Patrols](#patrols)): dry, no 4 m drop within 6 m, and on the grid not in water, a building or something standing (laid out without the solver: the old loop's four points) | |
 | People | its posts and routes, and a dry run of the routine for the people it has in play (its **In play**, two of them named at a stronghold, one elsewhere): the posts manned and the routes walked by day, at night, wary, under attack and recently hit (`Sites people: ...`) | |
 | Story | its state, the story it picks, which of its elements have their spot and a prefab, and the same for each of the faction's four (`Sites story: ...`) | |
 | Perimeter | the share of the wire line closed (the ground, the barrier, the gates) and its widest gap by bearing and width | under 80% at a stronghold, 60% at an outpost, a field station or a safehouse |
-| Outside the wire | a plan piece of tier 2–4 (not the gate's or the wire's own, not a dump's or the dead's) standing outside the line | any |
+| Outside the wire | a kit piece of tier 2–4 (not the gate's or the wire's own, not a dump's or the dead's) standing outside the line | any |
 | Over water | the building the place moved into (its middle), the yard where the people come out, or any piece (its spot) over the sea, a river or a pond | any |
 
 The **score** (0–100) starts at 100: −15 an overlap (at most −45), −2 a floating prop (−20),
@@ -1001,11 +1010,9 @@ On **Territory > Camp life** (`RZ_CampLifeSettings`):
 
 | Setting | Default | What |
 |---|---|---|
-| **Site grid** | on | read each site's ground on the grid, its surroundings and its audit; off = the older point checks, nothing read, solved or audited |
 | **Site read ms** | 4 | milliseconds of server time a second for reading a site's grid and then solving it (one site at a time); its pieces spawn once it's laid out |
 | **Pre-read** | on | read and lay out every site in the background from the start, strongholds first; off = a site is read the first time a player comes near |
 | **Audit threshold** | 70 | the audit's pass mark |
-| **Solver** | on | lay sites out by their pieces' rules ([The solver](#the-solver)); off = the plans laid down whole |
 | **Candidates a piece** | 24 | spots scored before a piece is dropped (twice that for tiers 1 and 2) |
 | **Layers** | on | build in layers by each faction's doctrine (the wire and its gates, the boards, the lookouts, the lights); off = work and life only, no wire |
 | **Board windows** | on | harden: board ground-floor windows (the doctrine says which); off = only side doors are blocked |
@@ -1024,7 +1031,7 @@ with them. The cell (0.5 m) is fixed: the grid's bands and checks are measured i
 | Cost | Measured (dedicated server, 2026-11-12) |
 |---|---|
 | Reading a site's grid | 15–160 ms in all (a stronghold's 50–160 ms), read in small parts (a row of heights, a 24 m square's entity query, 16 entities, a building, a row of water or shore), the longest part 1–17 ms; at **Site read ms** 2 a stronghold's first pieces spawn about a minute after a player comes within 300 m (in the full runtime test a field station took 15 steps, 19 s) |
-| Solving it | 40–300 ms in all (a stronghold's 140–300 ms), in parts: the start (the counters, the plan's frame, tracing the wire, where the entrance can walk), each piece, each side of the wire; the longest part 14–110 ms (the lab's start, or a tier 1 piece's three passes), the rest a few ms. At **Site read ms** 2 a site is read and solved in about 1–4 minutes of the background, once a run (pre-read: all of Everon's 16 in about half an hour after the land grid) |
+| Solving it | 40–300 ms in all (a stronghold's 140–300 ms), in parts: the start (the counters, the room for the yard, tracing the wire, where the entrance can walk), each piece, each side of the wire; the longest part 14–110 ms (the lab's start, or a tier 1 piece's three passes), the rest a few ms. At **Site read ms** 2 a site is read and solved in about 1–4 minutes of the background, once a run (pre-read: all of Everon's 16 in about half an hour after the land grid) |
 | Memory | a 72 m grid is 288 × 288 cells, two to an int (about 170 KB), with its heights and water marks every metre (about 170 KB), freed once laid out; the kept layout a few hundred bytes a piece (a stronghold with its layers about 60 pieces) |
 | Spawning | 4 pieces a tick for all places together, as before; a stronghold's 40 to 55 pieces and its layers' 30 to 60 are up in about two minutes |
 | People | unchanged in number: Live places (3), extras (6, the road post run counting as one); posts and routes worked out once with the layout (the routes' walkable squares a few ms, the grid's BFS only for the nearest square within 2 m), a few KB kept; the alert a heat lookup and a few comparisons every 10 s at a live place |
@@ -1032,7 +1039,7 @@ with them. The cell (0.5 m) is fixed: the grid's bands and checks are measured i
 
 ## Simplified
 
-- The wire is a rectangle round the building (or the plan), each side moved in or out to meet what
+- The wire is a rectangle round the building (or the camp's square), each side moved in or out to meet what
   closes already; it doesn't bend round a yard's corner or follow a curving road, and a road running
   along it stays open (but for 12 m in its middle, a gate).
 - A barrier run doesn't bend: it's tilted to follow a slope along it (up to 20°, the ground within
@@ -1061,7 +1068,7 @@ with them. The cell (0.5 m) is fixed: the grid's bands and checks are measured i
 - The building's lookouts stand on the ground 2–4 m out from its sides, not on its roof or in a bell
   tower; a lookout piece and the lights stand just inside the wire.
 - A part of a site's solving runs in one go, before the budget is checked: the start (the counters,
-  the plan's frame, tracing the wire, choosing its gates where the entrance can walk) or one piece
+  the room for the yard, tracing the wire, choosing its gates where the entrance can walk) or one piece
   (a tier 1 piece's three passes), up to about 110 ms once per site a run, in the background.
 - A prop's footprint is its box seen from above, its pitch and roll ignored (a pallet stood on edge
   claims its flat size).

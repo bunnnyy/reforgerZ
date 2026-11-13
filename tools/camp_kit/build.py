@@ -385,21 +385,14 @@ def check_fit():
 
 
 def check_plans():
-    """Every kit's plan: known pieces, and no two footprints closer than PLAN_GAP."""
+    """Every kit names known pieces (a kit is a list: no spots, docs/SITES.md, "The solver")."""
     bad = []
     for fac, place, _, plan in KITS:
-        quads = []
-        for name, x, z, yaw in plan:
+        for name in plan:
             if name not in C:
                 bad.append("%s %s: no piece named %s" % (fac, place, name))
-                continue
-            q = plan_quad(name, x, z, yaw, PLAN_GAP / 2)
-            for label, oq in quads:
-                if not separated(q, oq) and not separated(oq, q):
-                    bad.append("%s %s: %s at (%s, %s) overlaps %s" % (fac, place, name, num(x), num(z), label))
-            quads.append(("%s at (%s, %s)" % (name, num(x), num(z)), q))
     if bad:
-        sys.exit("Plans refused:" + LF + LF.join(bad))
+        sys.exit("Kits refused:" + LF + LF.join(bad))
 
 
 def remove_stale():
@@ -422,8 +415,8 @@ def write_gm(s):
     open(GM, "w", encoding="utf-8", newline="").write(s)
 
 
-def piece_lines(name, fac, place, rel, layer=None, x=0.0, z=0.0, yaw=0.0, indoors=False, plan=True, extra=False, when=""):
-    """One kit entry: the piece, its ring, use, seats, where it stands by a building, its plan spot,
+def piece_lines(name, fac, place, rel, layer=None, indoors=False, plan=True, extra=False, when=""):
+    """One kit entry: the piece, its ring, use, seats, where it stands by a building,
     footprint, tier, zone, rules, layer and whether it goes indoors."""
     folder, use, role, intent, parts = C[name]
     seats = max(1, sum(1 for p in parts if p[0] == "s"))
@@ -438,10 +431,6 @@ def piece_lines(name, fac, place, rel, layer=None, x=0.0, z=0.0, yaw=0.0, indoor
         L.append("        m_bExtra 1")
         if when:
             L.append("        m_eWhen %s" % WHEN[when])
-    elif plan:
-        L.append("        m_vPlan %s 0 %s" % (num(x), num(z)))
-        if yaw:
-            L.append("        m_fPlanYaw %s" % num(yaw))
     L += ["        m_vFootMin %s 0 %s" % (num(x0), num(z0)), "        m_vFootMax %s 0 %s" % (num(x1), num(z1)),
           '        m_sFoot "%s"' % footprints.foot_text(parts, FP), "        m_iTier %d" % tier]
     if zone != "yard":
@@ -465,8 +454,8 @@ def write_kits():
         d = DOCTRINE.get((fac, place), {})
         indoors = set(d.get("indoors", []))
         L += ['     RZ_DressingKit "{%s}" {' % gid(), "      m_eFaction %s" % fac, "      m_ePlace %s" % place, "      m_aPieces {"]
-        for name, x, z, yaw in plan:
-            L += piece_lines(name, fac, place, rel, None, x, z, yaw, name in indoors)
+        for name in plan:
+            L += piece_lines(name, fac, place, rel, None, indoors=name in indoors)
         # A dense kit's extras: after the plan's own pieces, with no spot in the plan
         for entry in DENSE.get((fac, place), []):
             name, count, when = entry[0], entry[1], (entry[3] if len(entry) > 3 else "")

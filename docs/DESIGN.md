@@ -825,10 +825,11 @@ watch by its doctrine, and lays its camp out inside by each piece's rules
 ([SITES.md](SITES.md#building-in-layers)); with no building that fits, it lays it out on open
 ground facing the road.
 
-**What stands there.** Each faction has a **kit** for each kind of place: a **plan**, the camp
-drawn whole, of compositions built from vanilla outdoor props
-([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits); the plans are drawn in
-`tools/camp_kit/camp_plans.html`):
+**What stands there.** Each faction has a **kit** for each kind of place: a list of the pieces it
+brings there, most important first, each piece a composition of outdoor props
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits); the pieces are drawn in
+`tools/camp_kit/camp_plans.html`). Nothing is drawn as a whole camp: every site is laid out from its
+pieces' rules on the ground where it stands ([SITES.md](SITES.md#the-solver)):
 
 | Place | Built up with |
 |---|---|
@@ -891,62 +892,50 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   building, its entry ring and the pieces standing), not from the town's middle; a camp whose
   building isn't read yet counts 120 m round its middle (60 m for a safehouse). Road posts count
   as lived in while they stand.
-- **The plan, a preference.** A kit is drawn as one camp (`tools/camp_kit/pieces.py`): each
-  piece's spot and turn, metres from the camp's middle, its front toward the road in, so the camp
-  keeps its shape: the working area at the heart, the sleeping area at the back, the cooking to one
-  side, the perimeter at the front. Left for right by the seed, so neighbouring camps differ. With
-  **Solver** on (the default) each piece's spot is its preference: the site is built in layers by
-  its faction's doctrine and each piece goes where its rules allow, its plan spot first, bending the
-  plan where the ground doesn't allow it ([SITES.md](SITES.md#the-solver)); valuables go indoors at
-  a building, as data. With it off the plan is laid down whole as drawn, in plan order (the most
-  important first), until the place's piece count.
-- **By a building.** Tents aren't put up (they sleep indoors). The plan's spots go by each kit
-  entry's **At** (written by `tools/camp_kit/build.py` from `pieces.py`), or Auto:
+- **Laid out by its rules.** A kit says only what the faction brings
+  (`tools/camp_kit/pieces.py`); the site is built in layers by its faction's doctrine, and each
+  piece goes where its zone and rules put it on the real ground, tier by tier: the gate first, the
+  watch, then work and life (the working area by the building, the sleeping area furthest from the
+  gate, the cooking by the kitchen door, the latrine away from the water and the tables). The yard
+  goes on the side of the building with room for what the kit needs ([SITES.md](SITES.md#the-solver));
+  valuables go indoors at a building, as data.
+- **By a building.** Tents aren't put up (they sleep indoors). A kit entry's **At** (written by
+  `tools/camp_kit/build.py` from `pieces.py`), or Auto, says which part of the site it belongs to:
 
   | At | Where | Auto for | Set for |
   |---|---|---|---|
-  | **Yard** | the plan's yard part as drawn, its front against the building's back wall (the Red Hand's back against its front: the forecourt), 2.5 m off it | everything but the approach pieces | |
+  | **Yard** | the yard, where its zone and rules put it | everything but the approach pieces | |
   | **Front** | along the front wall, 2.5 m out, its back to the wall and facing out, one each side of the middle | | the Red Hand's trophy wall, the Haven's vegetable stall |
   | **Door** | beside the front door, 1.2 m out, facing out: right, left, then further along | | the bear board, the memorial, the decon shower |
   | **Gate** | on the verge at the gate, its near edge 4.5 m off the road's line, facing out along the road; the next on the other verge | watch and lean pieces on the approach: the nest, the toll barrier | the red hand sheet, the plague board |
   | **Closed** | on the verge at the other entries, one entry after another | the other approach pieces: the barricades | |
   | **Counter** | in front of the place's quartermaster (below) | | the counters |
 
-  The yard is tried as drawn and shifted out (2.5 and 5 m) and sideways (4 m); the way most of it
-  fits wins, its first pieces counting most. If under 60% fits behind the building, its sides
-  (then its front) are tried too. With no road entries, the gate and closed pieces stand 9 m out
-  in front. With the wire up, the gate's and the closed entries' pieces stand at the wire's gates
-  instead ([SITES.md](SITES.md#close-it-off)).
+  With no road entries, the gate and closed pieces stand 9 m out in front. With the wire up, the
+  gate's and the closed entries' pieces stand at the wire's gates instead
+  ([SITES.md](SITES.md#close-it-off)).
 - **The front faces land.** The camp's front (its approach) is the way to the nearest road, else
   the next town, but never toward water or a drop: if sea level or ground 8 m lower lies within
   80 m that way (or 25° either side), the front turns to the nearest way that has neither (a coast
   road can run between the camp and the sea). A nest, a barrier, a barricade or a sign is left out
   if it would look at water or a drop within 50 m, wherever it stands; with no road entries by a
   building they stand off its first side that faces land.
-- **On open ground** (no building near, or buildings are off): the plan's middle at the place, its
-  front landward, then pulled back 4 or 8 m, pushed on 4 or 8 m, shifted 4 m sideways or turned
-  12°, whichever fits most. **At a road post** the plan's front runs along the road and
-  its pieces stand on the verges either side of the barrier (shifted 3 m along it if that fits better).
+- **On open ground** (no building near, or buildings are off): the camp's middle at the place on dry
+  land, its front landward, the wire round a square as big as its pieces need. **At a road post** the
+  pieces stand on the verges either side of the road, squared to it, within 12 m of the post.
 - **Every piece fits, its whole footprint, or it's left out.** Each kit entry carries its piece's
   real footprint (its props' measured boxes and a person round each seat: `m_sFoot`, from
-  `pieces.py` and `footprints.json`). With **Site grid** on (the default) the place's ground is
-  first read on a 0.5 m grid and every cell under every part of the footprint must be free: dry, not
-  steep or a bank, no building, nothing standing (a wall, a fence, a tree's trunk, a rock, a car), off
-  the road, no other scenery, no other piece; the ground across it rises at most about 12°; it's
-  away from the line, 2 m from a quartermaster, the medic or the barrier, 3.5 m from a leader's seat
-  and 1.5 m from the front door's step; last, flat traces across each of its props' boxes at knee
-  and chest height must meet nothing. How the grid is read, and the site's surroundings read with it,
-  are in [SITES.md](SITES.md). With **Solver** on, a piece that doesn't fit where the plan puts it
-  is tried at other spots its zone and rules allow, and **dropped** if none fits, never squeezed;
-  the log says how much stands and how much of the wire is closed (`Camp life: ... solved, ...`).
-  With it off, a piece that doesn't fit right where the plan puts it is dropped, never nudged (the
-  plan as a whole is still shifted and turned to where most of it fits), and the log says how much
-  of each plan fit, where, and how many were left out facing water (`Camp life: ... of ... planned
-  pieces fit, laid out ...`). The site's audit line says what was dropped and why (`Sites: ...`).
-  With **Site grid** off the older point checks apply (the
-  ground under its corners, edges and middle, every point 4 m from a road's centre line, 0.8 m out of
-  every building's box and from the other pieces, 1 m from other scenery, flat traces along its
-  sides and diagonals). A place within 60 m of one already dressed (the Haven's safehouse at its own
+  `pieces.py` and `footprints.json`). The place's ground is first read on a 0.5 m grid and every
+  cell under every part of the footprint must be free: dry, not steep or a bank, no building,
+  nothing standing (a wall, a fence, a tree's trunk, a rock, a car), off the road, no other scenery,
+  no other piece; the ground across it rises at most about 12°; it's away from the line, 2 m from a
+  quartermaster, the medic or the barrier, 3.5 m from a leader's seat and 1.5 m from the front
+  door's step; last, flat traces across each of its props' boxes at knee and chest height must meet
+  nothing. How the grid is read, and the site's surroundings read with it, are in
+  [SITES.md](SITES.md). A piece is tried at the spots its zone and rules allow and **dropped** if
+  none fits, never squeezed; the log says how much stands and how much of the wire is closed
+  (`Camp life: ... solved, ...`), and the site's audit line what was dropped and why
+  (`Sites: ...`). A place within 60 m of one already dressed (the Haven's safehouse at its own
   stronghold) isn't dressed twice.
 - **The quartermaster's counter.** Every quartermaster at the place (an outpost's or a safehouse's,
   and the faction's own when its stronghold is here) turns to serve: of sixteen ways, the most open

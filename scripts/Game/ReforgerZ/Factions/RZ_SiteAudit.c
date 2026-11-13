@@ -741,13 +741,19 @@ class RZ_SiteAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Measured from its first corner: world coordinates of thousands of metres, multiplied in single
+	//! precision, made a 2 cm touch between two fence runs read as an overlap of square metres.
 	protected static float SignedArea(array<vector> poly)
 	{
 		float sum = 0;
+		if (poly.IsEmpty())
+			return 0;
+
+		vector o = poly[0];
 		for (int i = 0; i < poly.Count(); i++)
 		{
-			vector u = poly[i];
-			vector v = poly[(i + 1) % poly.Count()];
+			vector u = poly[i] - o;
+			vector v = poly[(i + 1) % poly.Count()] - o;
 			sum += u[0] * v[2] - v[0] * u[2];
 		}
 

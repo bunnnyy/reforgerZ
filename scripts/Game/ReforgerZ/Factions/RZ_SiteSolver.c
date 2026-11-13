@@ -80,6 +80,9 @@ class RZ_SiteSolver
 	protected bool m_bGate;
 	protected float m_fFront;			// the threat front's bearing
 	protected int m_iYardFace = -1;		// the wire side the yard is on
+	protected float m_fNeed;			// the yard's area its pieces need, m2 (docs/SITES.md, "Room for the yard")
+	protected float m_fYardDepth;		// how far out from the building the yard reaches
+	protected bool m_bVerge;			// a road post's piece: beside the road or not at all
 	protected vector m_vKitchen;		// the kitchen's door
 	protected ref array<RZ_DressingPiece> m_aWires = {};	// the faction's barrier runs, longest first
 	protected ref array<RZ_DressingPiece> m_aBlocks = {};	// its road blocks, longest first
@@ -212,16 +215,15 @@ class RZ_SiteSolver
 			plan.Insert(e);
 		}
 
-		// A dense kit's extras have no spot in the plan: the frame and the yard are the plan's own
-		array<RZ_DressingPiece> drawn = {};
-		foreach (RZ_DressingPiece own : plan)
-		{
-			if (!own.m_bExtra)
-				drawn.Insert(own);
-		}
-
+		// No plan: a kit says what the faction brings; each piece finds its spot by its zone and rules.
+		// The yard is sized by what its pieces need (their measured footprints, at least 12 m2 each)
+		m_fNeed = NeedOf(plan);
 		m_Lay = new RZ_CampLayout();
-		m_Camp.ChooseFrame(p, m_Ground, m_Fit, drawn, m_iCap, m_Lay);
+		array<RZ_DressingPiece> noPlan = {};
+		m_Camp.ChooseFrame(p, m_Ground, m_Fit, noPlan, m_iCap, m_Lay);
+		if (p.m_Site)
+			ChooseRoom();
+
 		m_Result.m_sWhere = m_Lay.m_sWhere;
 
 		m_iClose = m_Kit.m_eClose;
@@ -252,7 +254,7 @@ class RZ_SiteSolver
 		m_vGate = RZ_SiteAudit.GatePoint(p);
 		m_fGateOut = RZ_Compass.Bearing(m_vMid, m_vGate);
 		if (m_iClose != RZ_ESiteClose.NONE)
-			TraceWire(drawn);
+			TraceWire(plan);
 
 		if (m_Wire)
 		{
@@ -350,42 +352,131 @@ class RZ_SiteSolver
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The yard's area a kit's pieces need: each yard piece's measured footprint with its half-metre
+	//! gap all round, at least the 12 m2 the spacing rule gives a piece (docs/SITES.md, "Room for the
+	//! yard"). Pieces by the door, the front wall, the gate or indoors don't count.
+	protected float NeedOf(array<RZ_DressingPiece> plan)
+	{
+		float need = 0;
+		foreach (RZ_DressingPiece e : plan)
+		{
+			if (e.m_bIndoors || e.m_eZone == RZ_ESiteZone.GATE || e.m_eZone == RZ_ESiteZone.WIRE)
+				continue;
+
+			RZ_EDressAt at = RZ_CampLife.AtOfPiece(e);
+			if (m_Place.m_Site && at != RZ_EDressAt.YARD)
+				continue;
+
+			vector size = e.m_vFootMax - e.m_vFootMin;
+			need += Math.Max((size[0] + 2 * RZ_SiteGrid.CELL) * (size[2] + 2 * RZ_SiteGrid.CELL), 12);
+		}
+
+		return need;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! By a building: the side of it the yard goes on. Each side is read for free ground (the grid:
+	//! nothing a piece may not stand on) over as deep a strip as the pieces need along its length and
+	//! a ring either end; the faction's own side (behind the building; the Red Hand's in front)
+	//! scores a little extra, so it's kept unless another side has clearly more room.
+	protected void ChooseRoom()
+	{
+		RZ_CampSite site = m_Place.m_Site;
+		array<int> faces = {site.m_iYardFace};
+		array<int> others = {RZ_CampLife.FACE_BACK, RZ_CampLife.FACE_LEFT, RZ_CampLife.FACE_RIGHT, RZ_CampLife.FACE_FRONT};
+		foreach (int o : others)
+		{
+			if (!faces.Contains(o))
+				faces.Insert(o);
+		}
+
+		float best = -1;
+		foreach (int face : faces)
+		{
+			vector wall = m_Camp.FacePointOf(site, face, 0, 0);
+			float outB = RZ_Compass.Bearing(wall, m_Camp.FacePointOf(site, face, 0, 10));
+			float length = RZ_Util.DistXZ(m_Camp.FacePointOf(site, face, -1, 0), m_Camp.FacePointOf(site, face, 1, 0)) + 2 * m_Kit.m_fRing;
+			float depth = Math.Clamp(m_fNeed / Math.Max(length, 8) + 2.5, m_Kit.m_fYard, 32);
+			float free = 0;
+			float read = 0;
+			for (float z = 2.5; z <= depth; z += 2)
+			{
+				for (float x = -length * 0.5; x <= length * 0.5; x += 2)
+				{
+					vector spot = RZ_Compass.PointAt(RZ_Compass.PointAt(wall, outB, z), outB + 90, x);
+					read++;
+					if ((m_Grid.FlagsAt(spot) & (RZ_SiteGrid.BLOCKS_LIFE | RZ_SiteGrid.OUTSIDE)) == 0)
+						free++;
+				}
+			}
+
+			float score = 0;
+			if (read > 0)
+				score = free / read;
+
+			if (face == site.m_iYardFace)
+				score += 0.1;
+
+			if (score > best)
+			{
+				best = score;
+				m_fYardDepth = depth;
+				m_Lay.m_iFace = face;
+				m_Lay.m_vOrigin = RZ_Util.GroundPos(RZ_Compass.PointAt(wall, outB, depth * 0.5));
+				m_Lay.m_fBearing = RZ_Compass.Normalize(outB + 180);
+				m_Lay.m_sWhere = RZ_CampLife.YardWhere(face, face == RZ_CampLife.FACE_FRONT && site.m_iYardFace == RZ_CampLife.FACE_FRONT, site);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a yard piece's search starts: the middle of the yard, halfway between the building's yard
+	//! side and the wire's line on that side (with no wire, the side's room as read; on open ground
+	//! the camp's middle).
+	protected vector YardMiddle()
+	{
+		if (!m_Wire || m_iYardFace < 0)
+			return m_Lay.m_vOrigin;
+
+		float x = (m_Wire.m_fX0 + m_Wire.m_fX1) * 0.5;
+		float z = (m_Wire.m_fZ0 + m_Wire.m_fZ1) * 0.5;
+		if (m_Place.m_Site)
+		{
+			switch (m_iYardFace)
+			{
+				case 0: z = (m_Wire.m_vInMin[2] + m_Wire.m_fZ0) * 0.5; break;
+				case 1: x = (m_Wire.m_vInMax[0] + m_Wire.m_fX1) * 0.5; break;
+				case 2: z = (m_Wire.m_vInMax[2] + m_Wire.m_fZ1) * 0.5; break;
+				case 3: x = (m_Wire.m_vInMin[0] + m_Wire.m_fX0) * 0.5; break;
+			}
+		}
+
+		return m_Wire.Point(x, z);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The ring round the building (or the plan on open ground), its sides set to meet what closes
 	//! already, the gates on the roads in, and the sides the doctrine closes.
 	protected void TraceWire(array<RZ_DressingPiece> plan)
 	{
 		RZ_CampPlace p = m_Place;
 		array<float> want = {m_Kit.m_fRing, m_Kit.m_fRing, m_Kit.m_fRing, m_Kit.m_fRing};
-		float zlo;
-		float zhi;
-		RZ_CampLife.PlanReach(plan, m_Lay.m_bMirror, zlo, zhi);
 		if (p.m_Site)
 		{
-			array<RZ_DressingPiece> yard = {};
-			foreach (RZ_DressingPiece e : plan)
-			{
-				if (RZ_CampLife.AtOfPiece(e) == RZ_EDressAt.YARD && !e.m_bIndoors)
-					yard.Insert(e);
-			}
-
-			RZ_CampLife.PlanReach(yard, m_Lay.m_bMirror, zlo, zhi);
 			RZ_CampSite site = p.m_Site;
 			m_Wire = new RZ_SiteWire(RZ_Util.GroundPos(site.m_vOrigin), site.m_vRight, site.m_vFwd, site.m_vMins, site.m_vMaxs);
 			m_iYardFace = WireFace(site, m_Lay.m_iFace);
-			// The yard's side holds the yard's part of the plan
-			float depth = Math.Clamp(zhi - zlo + 5, m_Kit.m_fYard, 32);
+			// The yard's side is as deep as its pieces need (ChooseRoom)
 			if (m_iYardFace >= 0)
-				want[m_iYardFace] = depth;
+				want[m_iYardFace] = Math.Clamp(m_fYardDepth, m_Kit.m_fYard, 32);
 		}
 		else
 		{
-			// Open ground: the plan's own extent is the "building", a few metres round it
+			// Open ground: a square as big as the pieces need is the "building", a few metres round it
 			vector bearing = RZ_Compass.PointAt(vector.Zero, m_Lay.m_fBearing, 1);
 			vector right = Vector(bearing[2], 0, -bearing[0]);
-			float xlo;
-			float xhi;
-			RZ_CampLife.PlanWidth(plan, m_Lay.m_bMirror, xlo, xhi);
-			m_Wire = new RZ_SiteWire(m_Lay.m_vOrigin, right, bearing, Vector(xlo, 0, zlo), Vector(xhi, 0, zhi));
+			float half = Math.Clamp(Math.Sqrt(m_fNeed), 8, 40) * 0.5;
+			m_Wire = new RZ_SiteWire(m_Lay.m_vOrigin, right, bearing, Vector(-half, 0, -half), Vector(half, 0, half));
 			for (int k = 0; k < 4; k++)
 			{
 				want[k] = 4;
@@ -643,6 +734,8 @@ class RZ_SiteSolver
 	//! Runs are tested this far inside their measured box: two runs whose end faces meet don't block
 	//! each other
 	static const float RUN_TOUCH = 0.05;
+	//! A barrier piece shorter than this is a filler (FillSide)
+	static const float FILLER = 1.5;
 
 	//------------------------------------------------------------------------------------------------
 	//! A point along a run of stations, `dist` metres from the run's first edge (half a station before
@@ -779,6 +872,15 @@ class RZ_SiteSolver
 		if (m_aWires.IsEmpty())
 			return;
 
+		// A filler (under 1.5 m: a basket of earth, a crate, a sign) closes only a last gap shorter than
+		// the shortest real run: never a row of signs where the runs didn't fit
+		float shortest = 1000;
+		foreach (RZ_DressingPiece r : m_aWires)
+		{
+			if (Length(r) >= FILLER)
+				shortest = Math.Min(shortest, Length(r));
+		}
+
 		int n = m_Wire.m_aAt.Count();
 		int i = 0;
 		while (i < n)
@@ -818,6 +920,9 @@ class RZ_SiteSolver
 				{
 					float len = Length(w);
 					if (len > run - used + 0.3)
+						continue;
+
+					if (len < FILLER && run - used > shortest + 0.3)
 						continue;
 
 					vector dir;
@@ -1592,21 +1697,18 @@ class RZ_SiteSolver
 
 		// The plan's spot: a yard piece's in the frame; a door or front piece's by the building; with
 		// no wire, the gate and the closed entries as the plan has them
-		vector planPos;
-		float planYaw;
-		m_Camp.PlanSpot(m_Place, m_Lay, e, planPos, planYaw);
+		// No piece has a spot drawn for it: one by the front door or along the front wall stands where
+		// that rule puts it (CampLife.Slot: beside the door, its back to the wall), as does one at the
+		// road entries with no wire; every other piece's zone and rules point to its spots, the search
+		// starting from the yard's middle (docs/SITES.md, "The solver")
+		vector planPos = YardMiddle();
+		float planYaw = -1;
 		RZ_EDressAt at = RZ_CampLife.AtOfPiece(e);
-		bool hasPlan = !m_Place.m_Site || at == RZ_EDressAt.YARD || at == RZ_EDressAt.DOOR || at == RZ_EDressAt.FRONT || !m_Wire;
-		// An extra has no spot of its own: its rules and its zone point to its spots, else anywhere
-		// in the yard (the seed says where the search starts)
-		if (e.m_bExtra)
+		bool hasPlan = false;
+		if (m_Place.m_Site && (at == RZ_EDressAt.DOOR || at == RZ_EDressAt.FRONT || (!m_Wire && (at == RZ_EDressAt.GATE || at == RZ_EDressAt.CLOSED))))
 		{
-			hasPlan = false;
-			planPos = RZ_Util.GroundPos(RZ_Compass.PointAt(m_vDoor, m_Rng.Range(0, 360), m_Rng.Range(4, 14)));
-			if (m_Wire)
-				planPos = m_Wire.Point(m_Rng.Range(m_Wire.m_fX0 + WIRE_IN, m_Wire.m_fX1 - WIRE_IN), m_Rng.Range(m_Wire.m_fZ0 + WIRE_IN, m_Wire.m_fZ1 - WIRE_IN));
-
-			planYaw = -1;
+			m_Camp.PlanSpot(m_Place, m_Lay, e, planPos, planYaw);
+			hasPlan = true;
 		}
 
 		array<vector> spots = {};
@@ -1616,6 +1718,10 @@ class RZ_SiteSolver
 			spots.Insert(planPos);
 			yaws.Insert(planYaw);
 		}
+
+		// A road post: on the verges either side of the road, squared to it
+		if (m_Place.m_eKind == RZ_ECampPlace.ROAD_POST)
+			Verges(spots, yaws);
 
 		Anchors(e, rules, spots, yaws);
 		// The rings round the plan's spot if it's in its zone, else round the zone's own middle
@@ -1643,7 +1749,13 @@ class RZ_SiteSolver
 		// Security goes up even on rough ground: a tier 1 piece that fits nowhere is tried again with
 		// the ground's flatness eased (up to 20 degrees, a prop's ground up to 0.6 m)
 		bool notSecurity = RZ_SiteAudit.TierOf(e, m_Place.m_eFaction) > 1;
-		if (PlaceBest(e, rules, spots, yaws, hasPlan, planPos, mask, RZ_ESiteLayer.PLAN, -1, notSecurity) || notSecurity)
+		m_bVerge = m_Place.m_eKind == RZ_ECampPlace.ROAD_POST;
+		if (m_bVerge)
+			mask = mask & ~RZ_SiteGrid.VERGE;
+
+		bool done = PlaceBest(e, rules, spots, yaws, hasPlan, planPos, mask, RZ_ESiteLayer.PLAN, -1, notSecurity);
+		m_bVerge = false;
+		if (done || notSecurity)
 			return;
 
 		m_bRough = true;
@@ -1651,6 +1763,32 @@ class RZ_SiteSolver
 		m_bRough = false;
 		if (!placed && m_Wire)
 			Anywhere(e, rules, mask);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A road post's spots: along the road both ways from the post, on each verge, 3 to 7 m off the
+	//! road's line, squared to the road (facing along it, each verge's piece the other way).
+	protected void Verges(notnull array<vector> spots, notnull array<float> yaws)
+	{
+		float axis = m_Lay.m_fBearing;
+		array<float> along = {0, 3, -3, 6, -6, 9, -9, 12, -12};
+		array<float> off = {4, 5.5, 3, 7};
+		foreach (float a : along)
+		{
+			foreach (float o : off)
+			{
+				for (int side = -1; side <= 1; side += 2)
+				{
+					vector spot = RZ_Compass.PointAt(RZ_Compass.PointAt(m_Lay.m_vOrigin, axis, a), axis + 90, side * o);
+					spots.Insert(RZ_Util.GroundPos(spot));
+					float yaw = axis;
+					if (side < 0)
+						yaw = axis + 180;
+
+					yaws.Insert(RZ_Compass.Normalize(yaw));
+				}
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1921,6 +2059,7 @@ class RZ_SiteSolver
 		switch (zone)
 		{
 			case RZ_ESiteZone.GATE: at = RZ_Compass.PointAt(m_vGate, m_fGateOut + 180, 4); return true;
+			case RZ_ESiteZone.YARD: at = YardMiddle(); return true;
 			case RZ_ESiteZone.COURT: at = m_vDoor; return true;
 			case RZ_ESiteZone.KITCHEN: at = m_vKitchen; return true;
 			case RZ_ESiteZone.STORES:
@@ -2119,6 +2258,10 @@ class RZ_SiteSolver
 	{
 		if (!InZone(e.m_eZone, pos, margin))
 			return "outside its zone (" + typename.EnumToString(RZ_ESiteZone, e.m_eZone) + ")";
+
+		// A road post's pieces stand beside the road (within 2 m of it), not out in the field
+		if (m_bVerge && (m_Grid.FlagsAt(pos) & RZ_SiteGrid.VERGE) == 0)
+			return "not beside the road";
 
 		foreach (RZ_SiteRule rule : rules.m_aRules)
 		{
