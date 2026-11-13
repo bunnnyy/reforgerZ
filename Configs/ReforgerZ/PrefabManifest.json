@@ -6081,6 +6081,24 @@
    "notes": ""
   },
   {
+   "id": "UIDutyCardLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the DutyCard layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sDutyCardLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Duty card layout",
+   "required": false,
+   "minimum": false,
+   "use": "the duty table's cards: a duty that sorts things (the dead, the line at the gate, the sample trays) opens the table screen when its work site is held (empty = no screen: the duty is its hold, judged the careful way for half pay). Set by the attribute's default (RZ_DutyCard.layout). Needs the RZ_DutyMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI)",
+   "notes": ""
+  },
+  {
    "id": "ErrandPropEffects",
    "kind": "manual",
    "system": "Missions",

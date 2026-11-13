@@ -7,9 +7,10 @@ and more sensitive the more you're trusted.
 
 What's built is in the docs and not repeated here: work from the first day (a giver makes a
 contract on asking, [docs/MISSIONS.md](../docs/MISSIONS.md#who-gets-offered-what)), the duty
-rules, the trust ladder and the first rung's duties
-([docs/ERRANDS.md](../docs/ERRANDS.md#duties)). This file holds the duties that wait. Each phase
-moves what it builds into those docs and is cut from here.
+rules, the trust ladder, the duties of rungs 1 to 3, the duty table and the duties' people
+([docs/ERRANDS.md](../docs/ERRANDS.md#duties), [docs/UI.md](../docs/UI.md#the-duty-table)). This
+file holds the duties that wait. Each phase moves what it builds into those docs and is cut from
+here.
 
 ## The duties that wait
 
@@ -17,11 +18,6 @@ The rungs are the built ladder's: 2 they know your face, 3 Known, 4 Trusted.
 
 | Duty | Rung | The Haven (a house) | Bastion (a post) | The Red Hand (a camp) | Halcyon (a station, the lab) |
 |---|---|---|---|---|---|
-| **The line** | 2 | The Line at the Door | The Wash-Down | The Look-Over | Intake |
-| **The dead** | 2 | Laying Out | Burial Detail | The Pit's Leavings | The Cold Room |
-| **A patrol** | 2 (a leg), 3 (armed, further) | The Walk Round | Patrol Leg | The Round | The Sample Walk |
-| **A hunt** | 3 | For the Pot | — | The Meat Run | — |
-| **The bench** | 3 | — | — | — | Bench Work |
 | A watch | 2 | the roof at dusk | the wire, a night hour | the toll, a quiet hour | the gate log |
 | Stock-taking | 3 | the larder against the book | the armoury count | the cut, counted twice | the cold store |
 | The names | 4 | The Book of Names: who is told, and how | The casualty return | The debt book | The authors' list |
@@ -29,59 +25,36 @@ The rungs are the built ladder's: 2 they know your face, 3 Known, 4 Trusted.
 | The lock-up | 4 | the one at the gate overnight | The Stockade Watch | the debtor in the shed | isolation |
 | A cull | 4 | the old man's dogs | a pack's strays at the wire | — | the animal house |
 
-The kitchen also takes **raw meat** (a hunt's, a herd's) as a way of its own: it counts double.
+### How each would play
 
-### How each plays
+- **A watch.** A post held for a stretch of the place's night or dusk: stay at it, and report
+  what passes (a light, a walker, one of the infected at the wire). Something from the world comes
+  by, or nothing does, and the report is the work. Never a timer you only wait on: two or three
+  things to mark, each a choice of what it was.
+- **Stock-taking.** The duty table's screen with a fourth skin: lines of a ledger against what's
+  on the shelf. **Tally**, **query** or **write off**. A shortage written off is someone's theft
+  covered; a query is someone accused.
+- **The names** (rung 4). The list of the place's dead this week, and who is told. Each name is a
+  choice with a cost: tell the family, tell the leader, hold it back a day. It writes the
+  world's memory, so it needs its own look at what it may record.
+- **Who gets a dose** (rung 4). Only once doses exist. A list of three, one dose. It must never
+  hand a dose to the player, and what it writes about the cure's count needs the finale's rules
+  read first.
+- **The lock-up** (rung 4). A night's watch on someone held: they talk. Let them out, keep them
+  in, or pass on what they said.
+- **A cull** (rung 4). Out with the place's people to put down what's at the wire: a real fight,
+  near players only, with the squad the patrols use.
 
-- **The line** (the table, below). Arrivals wait at the gate: a family from an infested town, a
-  crew lad with a wrapped hand, a courier. Look them over, a few looks for the whole queue, and
-  send each **in**, to **wash** (a fever, a liar with nothing worse), or to **hold** for the medic.
-  Let a bite in and the place has a bad night. Hold a clean one and they remember you.
-- **The dead** (the table). Bodies on the slab from where the dead came today. Check the arms,
-  the neck, the papers against the tag. **Bury** the clean and named, **burn** the bitten,
-  **hold** the one whose name doesn't match: someone must be told. Bury a bitten one and it gets
-  up at night.
-- **A patrol.** Walk a real leg with two or three of their people: out from the gate, round
-  three points, back. What's found on the way comes from the world: a pack's marks, a wreck, a
-  door forced since yesterday, a body, smoke. You're paid for coming back with them. A leg at
-  rung 2 stays within 300 m; an armed patrol at rung 3 goes further and later.
-- **A hunt.** Out with the place's hunter to ground where there's meat: deer where wildlife is on
-  (shoot one, carry the legs back), snares and a field's edge where it isn't (work with your
-  hands). The meat goes to the kitchen.
-- **The bench** (the table). Halcyon's sample trays: the label against the log, the seal, the
-  colour. **File**, **re-run** or **destroy**. A turned sample filed is a number wrong in the
-  cure's count for a day.
+### What could still vary
 
-### The table
-
-One small screen for the line, the dead and the bench, in the house style (the car screen's loom,
-the power panel): pad first, judged on the server, almost nothing to read.
-
-- Three to five **subjects** in a row. Each has three **signs**, face down, and one **tell**
-  that's free (where they came from, what was found with them).
-- A few **looks** for the whole table, fewer than there are signs. A look turns one sign over.
-- Give each subject one of three **verdicts**. A legend of three lines says which sign means
-  which verdict. The cautious verdict is always allowed and pays half.
-- The server holds the truth. How many are bad follows the world: the infection of the town they
-  came from, the outbreak's stage, a pack near, a bite declared today.
-- **Done badly:** the dangerous miss (a bite buried or let in, a turned sample filed) costs the
-  place something small and real, and you 2 Infamy when it comes out. **Done well:** full pay, a
-  point of Fame, the names in the book, and the giver remembers.
-
-### What varies
-
-Past the task and the reason every duty already draws from the world: how many subjects and how
-many are bad, which town the arrivals or the dead come from, the patrol's points and what stands
-at them. Complications are one line and one change: it's raining and the queue is short-tempered
-(fewer looks), a pack was heard last night (the leg goes the other way round), the cure is close
-(Halcyon's trays matter more, and pay a little more).
+Complications that are one line and one change, on the duties already built: a pack was heard
+last night (the patrol's round goes the other way), the cure is close (Halcyon's trays pay a
+little more), a truck is due (the kitchen wants it done before).
 
 ## Order of work
 
-1. **The first upper-rung duties**: the table and its three skins (the line, the dead, the bench),
-   the patrol and the hunt with a real squad, meat for the kitchen.
-2. **The rest of rungs 2 and 3**: a watch, then stock-taking.
-3. **Rung 4**, each with its record and its consequence: the names, who gets a dose, the lock-up,
+1. **A watch**, then **stock-taking** (the table's fourth skin).
+2. **Rung 4**, each with its record and its consequence: the names, who gets a dose, the lock-up,
    a cull. These touch the houses' people and the cure's doses, so each needs its own look at
    what it may write.
 

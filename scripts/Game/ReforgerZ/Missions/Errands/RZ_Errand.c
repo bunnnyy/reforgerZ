@@ -395,6 +395,7 @@ class RZ_Errand
 	bool m_bTwist;				// its twist is true this time (the same replies show either way)
 	bool m_bSuspect;			// the arsonist rule's suspect variant: the asker's own act made the fact
 	int m_iCap = -1;			// Favor cap, -1 none
+	int m_iFameCap = -1;		// Fame cap, -1 none (a judged duty that wasn't done perfectly)
 	float m_fOfferedAt;			// the dealer's clock
 	float m_fTakenAt;
 	float m_fOfflineSince = -1;

@@ -327,10 +327,14 @@ class RZ_Errands
 		m_Locals = new RZ_Locals(gm);
 		m_PayKinds = new RZ_ErrandsPay(this);
 		m_More = new RZ_ErrandsDealer(this);
+		m_Tables = new RZ_DutyTables(gm, this);
+		m_Squads = new RZ_DutySquads(gm, this);
 	}
 
 	protected ref RZ_ErrandsPay m_PayKinds;
 	protected ref RZ_ErrandsDealer m_More;
+	protected ref RZ_DutyTables m_Tables;		// the duties' sorting tables (RZ_DutyTable.c)
+	protected ref RZ_DutySquads m_Squads;		// the people who go out with a player on a duty (RZ_DutySquads.c)
 
 	//------------------------------------------------------------------------------------------------
 	RZ_ErrandsDealer Dealer() { return m_More; }
@@ -479,6 +483,8 @@ class RZ_Errands
 	RZ_NamedPeople GetPeople() { return m_People; }
 	RZ_Faults GetFaults() { return m_Faults; }
 	RZ_GameModeComponent GetGM() { return m_GM; }
+	RZ_DutyTables GetTables() { return m_Tables; }
+	RZ_DutySquads GetSquads() { return m_Squads; }
 	float GetClock() { return m_fClock; }
 
 	//------------------------------------------------------------------------------------------------
@@ -655,6 +661,7 @@ class RZ_Errands
 	//! A player left: a held errand waits 20 minutes for them.
 	void OnDisconnect(int playerId)
 	{
+		m_Tables.Forget(playerId);
 		foreach (RZ_Errand e : m_aErrands)
 		{
 			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.HELD)
@@ -690,6 +697,7 @@ class RZ_Errands
 		if (!IsOn())
 			return;
 
+		m_Squads.Tick(dt, ids, players);
 		TickSteps(dt, ids, players);
 		m_Strangers.TickSteps(dt, ids, players);
 		m_More.Tick(dt, ids, players);
@@ -1057,6 +1065,33 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Once a second (the game mode's second tick): a duty's table opens when its work site is held.
+	void SecondTick(array<int> ids, array<IEntity> players)
+	{
+		if (IsOn())
+			m_Tables.SecondTick(ids, players);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errand's work site again, where it was, to hold a second time (a duty's table was left
+	//! before it was handed in).
+	void ReopenWork(RZ_Errand e)
+	{
+		RZ_ErrandWay w = e.GetWay();
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (!w || !sites || !w.IsWork() || e.m_eState != RZ_EErrandState.HELD)
+			return;
+
+		string key = WorkKey(e);
+		float hold = w.m_fWorkSeconds;
+		if (hold <= 0)
+			hold = RZ_WorkSites.HoldFor(w.m_fSeconds);
+
+		sites.Close(key);
+		sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, e.m_vPlace, e.m_iAsker);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The errand's work site key (one step at a time).
 	static string WorkKey(RZ_Errand e)
 	{
@@ -1147,6 +1182,9 @@ class RZ_Errands
 		e.m_eState = RZ_EErrandState.DONE;
 		if (e.m_Def)
 			e.m_Def.Ended(this, e, why);
+
+		m_Tables.Drop(e.m_iId);
+		m_Squads.Drop(e.m_iId);
 
 		RemoveProp(e);
 		RZ_WorkSites sites = RZ_WorkSites.Get();
@@ -1972,6 +2010,7 @@ class RZ_Errands
 			case RZ_EErrandItem.BATTERY: return string.Format("%1 battery", count);
 			case RZ_EErrandItem.MEDICAL: return string.Format("%1 medical", count);
 			case RZ_EErrandItem.ANTIDOTE: return string.Format("%1 antidote", count);
+			case RZ_EErrandItem.MEAT: return string.Format("%1 raw meat", count);
 		}
 
 		return "";
@@ -3194,6 +3233,9 @@ class RZ_Errands
 		if (helper)
 			fame = Math.Min(1, fame);
 
+		if (e.m_iFameCap >= 0)
+			fame = Math.Min(fame, e.m_iFameCap);
+
 		if (fame > 0 && !amends)
 		{
 			int day = RZ_SeasonClock.Day();
@@ -3579,6 +3621,7 @@ class RZ_Errands
 
 			case RZ_EErrandItem.FUEL: result.Insert("jerrycan"); result.Insert("canister"); result.Insert("fuelcan"); break;
 			case RZ_EErrandItem.BATTERY: result.Insert("battery"); break;
+			case RZ_EErrandItem.MEAT: result.Insert("meatleg"); break;
 			case RZ_EErrandItem.MEDICAL: result.Insert("bandage"); result.Insert("medkit"); result.Insert("morphine"); result.Insert("tourniquet"); result.Insert("salin"); result.Insert("pill"); result.Insert("antibiotic"); break;
 			case RZ_EErrandItem.ANTIDOTE:
 			{
