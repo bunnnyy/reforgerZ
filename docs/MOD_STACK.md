@@ -113,8 +113,8 @@ Dependencies in `addon.gproj` since 2026-11-13. Both load with ReforgerZ on the 
 | [Atmospheric Weather Mod](https://reforger.armaplatform.com/workshop/64ED6553B8AF6B62) | `64ED6553B8AF6B62` | 10.5 MB | APL-ND | New clouds, fogs, a heavy thunderstorm, strong winds, a faster weather cycle | Config only, no scripts: it replaces vanilla's weather states. ReforgerZ only reads rain, fog and wind ([DESIGN.md](DESIGN.md#weather)), so its fog and storms count as ours do: fog and rain news, storms that ground the helicopter |
 
 A built fireplace nobody has stood by for three real days is cleared
-([DESIGN.md](DESIGN.md#things-players-build)); one in use stays. Not built: a fire that draws the
-infected (heat), and boiling water or cooking at a campfire.
+([DESIGN.md](DESIGN.md#things-players-build)); one in use stays. A lit one is a stove (boil water,
+brew, cook: [DESIGN.md](DESIGN.md#fireplaces-and-campfires)) and draws the infected with its heat.
 
 ## Wildlife
 

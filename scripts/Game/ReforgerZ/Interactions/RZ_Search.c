@@ -69,6 +69,12 @@ class RZ_SearchSettings
 	[Attribute("0.4", desc: "At full town loot: the chance a wreck's boot that holds anything holds a second thing")]
 	float m_fBootTwoChance;
 
+	[Attribute("2", desc: "Food weight: each food item (a prefab under /food/) is in a building's everyday list this many times, so food stays common in houses, shops and farms. 1 = no extra weight")]
+	int m_iFoodWeight;
+
+	[Attribute("pier,bollard,retainingwall,brickpile,woodpile,houseruin,well_", desc: "Not buildings: keywords in the names of things the map counts as destructible buildings that aren't rooms to loot (piers, bollards, retaining walls, ruins' rubble, wells). They get no loose loot")]
+	string m_sNotBuildingWords;
+
 	[Attribute("0.1", desc: "Chance a find is rare (doubled behind a lock)")]
 	float m_fRareChance;
 
@@ -191,6 +197,7 @@ class RZ_Search
 	protected ref array<ref RZ_Stash> m_aStashes = {};
 	protected ref array<string> m_aElectronicsWords = {};
 	protected ref array<string> m_aStackWords;
+	protected ref array<string> m_aNotBuildingWords = {};
 	protected int m_iNextNote = 1;
 	protected bool m_bKeyPrefabWarned;
 	protected float m_fBodyMinuteAt = -100;
@@ -253,6 +260,7 @@ class RZ_Search
 	void Setup()
 	{
 		RZ_ItemHelper.Words("radio,battery,batteries,flashlight,torch,electronic,gps,walkie,lamp_portable", m_aElectronicsWords);
+		RZ_ItemHelper.Words(m_Settings.m_sNotBuildingWords, m_aNotBuildingWords);
 
 		array<string> types = {"pharmacy", "garage", "farm", "police", "shop", "house", "body", "car"};
 		foreach (string type : types)
@@ -373,7 +381,70 @@ class RZ_Search
 			}
 		}
 
+		// Food weighs more: each food item is in the everyday list Food weight times
+		AddFoodWeight(t.m_aCommon);
 		m_mTables.Set(type, t);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Each food item (a prefab under /food/) in `list` is there Food weight times in all.
+	protected void AddFoodWeight(notnull array<ResourceName> list)
+	{
+		int extra = Math.Max(1, m_Settings.m_iFoodWeight) - 1;
+		if (extra <= 0)
+			return;
+
+		array<ResourceName> food = {};
+		foreach (ResourceName r : list)
+		{
+			string lower = r;
+			lower.ToLower();
+			if (lower.Contains("/food/"))
+				food.Insert(r);
+		}
+
+		for (int n = 0; n < extra; n++)
+		{
+			foreach (ResourceName f : food)
+			{
+				list.Insert(f);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A resource's GUID ("{EB21D26B8D5A3232}"), or the whole name without one. Two spellings of
+	//! one prefab (a mod's copy is "prefabs/...", the base game's "Prefabs/...") share it.
+	static string GuidOf(ResourceName r)
+	{
+		string s = r;
+		int close = s.IndexOf("}");
+		if (s.StartsWith("{") && close > 0)
+			return s.Substring(0, close + 1);
+
+		s.ToLower();
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `into` already holds this prefab, by its GUID.
+	protected static bool HasSame(notnull array<ResourceName> into, ResourceName r)
+	{
+		string g = GuidOf(r);
+		foreach (ResourceName have : into)
+		{
+			if (GuidOf(have) == g)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The map counts it as a building but it's no room to loot (a pier, a bollard, rubble).
+	bool IsNotBuilding(string lowerName)
+	{
+		return RZ_ItemHelper.NameHas(lowerName, m_aNotBuildingWords);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -399,7 +470,7 @@ class RZ_Search
 		int added = 0;
 		foreach (ResourceName r : from)
 		{
-			if (!r.IsEmpty() && into.Find(r) < 0)
+			if (!r.IsEmpty() && !HasSame(into, r))
 			{
 				into.Insert(r);
 				added++;
@@ -450,7 +521,7 @@ class RZ_Search
 		{
 			string name = r;
 			name.ToLower();
-			if (RZ_ItemHelper.NameHas(name, words))
+			if (RZ_ItemHelper.NameHas(name, words) && !HasSame(into, r))
 				into.Insert(r);
 		}
 	}
@@ -459,7 +530,9 @@ class RZ_Search
 	//! Keyword fallbacks per building type: what's usually there, and what's rare.
 	protected void TypeWords(string type, notnull array<string> common, notnull array<string> rare)
 	{
-		string c = "food,can,tin,bottle,water,bandage,cloth,rag,knife,flashlight,battery,pill,shirt,jacket,matches,lighter";
+		// Torches are electronics (and a garage's, a police station's and a car's built-ins), not
+		// every house's everyday find; "can" isn't a word here: it caught jerrycans and canteens
+		string c = "food,tin,bottle,water,bandage,cloth,rag,knife,battery,pill,shirt,jacket,matches,lighter";
 		string r = "pistol,medkit,radio,binocular,map";
 		switch (type)
 		{
@@ -477,19 +550,19 @@ class RZ_Search
 			}
 			case "farm":
 			{
-				c = "food,can,tin,bread,water,bottle,axe,hatchet,knife,rope,cloth,plank,nail,wire,jerrycan,matches";
+				c = "food,tin,bread,water,bottle,axe,hatchet,knife,rope,cloth,plank,nail,wire,jerrycan,matches";
 				r = "shotgun,hunting,rifle,binocular";
 				break;
 			}
 			case "police":
 			{
-				c = "ammo,magazine,mag_,baton,handcuff,flashlight,radio,bandage,tourniquet,vest";
+				c = "ammo,magazine,mag_,baton,handcuff,radio,bandage,tourniquet,vest";
 				r = "pistol,shotgun,vest,helmet,radio";
 				break;
 			}
 			case "shop":
 			{
-				c = "food,can,tin,bottle,water,battery,flashlight,cloth,matches,lighter,bleach,rope";
+				c = "food,tin,bottle,water,battery,cloth,matches,lighter,bleach,rope";
 				r = "radio,binocular,medkit";
 				break;
 			}
@@ -1532,7 +1605,7 @@ class RZ_LootDefaults
 			}
 			case "shop":
 			{
-				array<string> common9 = {MRE, CRACKERS, MEAT, CANTEEN_US, CANTEEN_SU, TORCH_SU, WATCH, MAP, GLOVES_WOOL, HAT_KNIT};
+				array<string> common9 = {MRE, CRACKERS, MEAT, CANTEEN_US, CANTEEN_SU, WATCH, MAP, GLOVES_WOOL, HAT_KNIT};
 				Add(common, common9);
 				array<string> rare10 = {BINOCULARS, WATCH_2, COMPASS};
 				Add(rare, rare10);
@@ -1557,7 +1630,7 @@ class RZ_LootDefaults
 		}
 
 		// A house: a bit of everything a family would leave
-		array<string> common15 = {MRE, CRACKERS, MEAT, CANTEEN_SU, DRESSING_SU, GAUZE_1, ASPIRIN, TORCH_SU, WATCH_2, MAP, HAT_KNIT, HAT_FLAT, GLOVES_WOOL, SWEATSHIRT, JEANS, SHIRT, SNEAKERS};
+		array<string> common15 = {MRE, CRACKERS, MEAT, CANTEEN_SU, DRESSING_SU, GAUZE_1, ASPIRIN, WATCH_2, MAP, HAT_KNIT, HAT_FLAT, GLOVES_WOOL, SWEATSHIRT, JEANS, SHIRT, SNEAKERS};
 		Add(common, common15);
 		array<string> rare16 = {BINOCULARS, COMPASS, MAG_PM, BAG};
 		Add(rare, rare16);

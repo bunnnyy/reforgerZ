@@ -215,8 +215,6 @@ else waits is play, engine checks and the author's calls.
   pad not yet. Deploy with a pad, a locked background, the respawn timer, and the
   map key's Y; and textures for the icons the scripts never swap ([UI.md](UI.md)).
 
-- **Fire and the rest of the mod** (not built): a lit campfire makes no heat for the infected, and
-  boiling water or cooking at one isn't wired to it ([MOD_STACK.md](MOD_STACK.md#fire-and-weather)).
 - **More for the loot** (a candidate, not added): a farm rifle (MM Vz. 52, 18 MB). The only
   crowbar on the Workshop is in Melee Combat Extended Lite, which can't be used
   ([MOD_STACK.md](MOD_STACK.md#not-used)): forcing a lock still needs a crowbar of our own. Nothing
@@ -231,9 +229,6 @@ else waits is play, engine checks and the author's calls.
   shot deer fall ([DESIGN.md](DESIGN.md#wildlife)). Test with two clients before relying on it; if
   it reads badly, the way out is our own small deer script on the mod's models, moved and killed
   on the server.
-- **Loot's known oddities:** the keyword "can" puts jerrycans and canteens in houses and shops;
-  torches are the commonest find everywhere (they're both everyday and all of electronics); and
-  piers, bunkers and retaining walls are rolled as houses (most find no spot and stay empty).
 
 ### Engine checks and switches
 - **The VERIFY spikes**, one Workbench evening each, riskiest first

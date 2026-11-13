@@ -761,6 +761,10 @@ class RZ_Loot
 			lowerName = RZ_ItemHelper.LowerName(building);
 		}
 
+		// A pier, a bollard, a ruin's rubble: the map counts it a building, but it's no room
+		if (m_Hub.GetSearch().IsNotBuilding(lowerName))
+			return;
+
 		bool plain = !SCR_DestructibleBuildingEntity.Cast(building);
 		vector pos = building.GetOrigin();
 		string key = RZ_Interactions.PosKey(pos, 4);
