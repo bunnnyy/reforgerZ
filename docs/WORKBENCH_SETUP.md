@@ -1552,7 +1552,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, **door spot prefab** (on the door leaf), scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
 | Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, **Extra finds** (items added to one building type's table), chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
 | Interactions | Loot | `m_LootSettings` | **Loose loot** (on; off = nothing lies in houses), put out within 55 m (6 buildings a tick), put away past 80 m (after a minute), never rolled fresh with a player within 20 m, **refill** (45 min ÷ the town's loot level), at most 500 items lying on the server, slots per building (house 6, shop and farm 9, pharmacy, police and garage 10; locked +1), slot chance 0.75, 2 sure items, town loot per item taken (0.01), kept clear 20 m past a faction's place, the loot log (on) ([DESIGN.md](DESIGN.md#loot-in-houses)) |
-| Interactions | Cars | `m_CarSettings` | Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), **Wire cutting** (on: the repair screen's hotwire is the loom; Loom strikes 2, Wrong cut heat share 0.5), keys (0.2 a car, 0.1 a search), **Fuel pump station** (empty = the hand pump: its timings, heat and cooldown), pump litres (60, full again after the cooldown), a car's fuel from a vanilla jerrycan (5 litres; the can is kept), **Wreck boot prefab** (empty = wrecks hold nothing), wreck part chance (0.3), wreck return (120 min), Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix), [Fuel](DESIGN.md#fuel), [Car wrecks](DESIGN.md#car-wrecks-one-boot-to-open)) |
+| Interactions | Cars | `m_CarSettings` | Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), **Wire cutting** (on: the repair screen's hotwire is the loom, a wire to follow; Loom turns 3, Loom strikes 2, Wrong cut heat share 0.5), keys (0.2 a car, 0.1 a search), **Fuel pump station** (empty = the hand pump: its timings, heat and cooldown), pump litres (60, full again after the cooldown), a car's fuel from a vanilla jerrycan (5 litres; the can is kept), **Wreck boot prefab** (empty = wrecks hold nothing), wreck part chance (0.3), wreck return (120 min), Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix), [Fuel](DESIGN.md#fuel), [Car wrecks](DESIGN.md#car-wrecks-one-boot-to-open)) |
 | Interactions | Crafting | `m_CraftSettings` | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
 | Interactions | Traps | `m_TrapSettings` | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs, **Fuel in your hands** (on; off = a full can anywhere on you), seconds to set it going (5) ([DESIGN.md](DESIGN.md#fire)) |
 | Interactions | Secure radio | `m_RadioCrackSettings` | Crack seconds (60), listen minutes (20), line minutes (4), range (3 km), interrupts, house radio keywords |
@@ -1995,8 +1995,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **164** lines with the tag, all but one in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
+There are **163** lines with the tag, all but one in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 40 are in `UI/`: [the UI's](#the-ui-37), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's and two the hold prompt's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
@@ -2006,7 +2006,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-38)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-37)
 come last.
 
 ### High risk: the core loop (2)
@@ -2141,7 +2141,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PowerLooks.c:102` | the power station's generator: `RZ_PowerGeneratorSound.et` (no mesh, vanilla's diesel generator sounds on a `StaticSoundComponent`), spawned by the server, plays on every client that streams it in and stops when the server deletes it, as vanilla's placed generators do | No sound at a running station: empty **World > Power grid > Generator sound prefab**; the panel and the notices still say it runs |
 | `UI/RZ_PowerLampsClient.c:185` | street lamps: `StreetLampComponent.SetBroken(true)` on a client puts that lamp out there (its light and its glow), and `SetBroken(false)` lets it light itself at night again | Lamps stay lit in dark towns, or stay out after the main switch: turn **World > Power grid > Street lamps** off, and every lamp is left as the map has it |
 
-### The UI (38)
+### The UI (37)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -2187,8 +2187,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_UIData.c:1223` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
 | `UI/RZ_ObjectMenu.c:328` | `FrameSlot.SetSize` on the object menu's centred panel (anchor and alignment 0.5) keeps it centred as it grows for [the status strip](UI.md#the-status-strip-and-locked-rows) (940 tall) and shrinks without one (810) | The panel jumps off-centre or keeps one height: set its slot to 1,200 × 940 in `RZ_ObjectMenu.layout` and remove the `SetSize` line; things without a strip then have a gap above their text |
 | `UI/RZ_CraftMenu.c:384` | the same on the crafting screen's panel: 960 tall at a stove (the strip), 858 at a workbench | As above, with `RZ_CraftMenu.layout` at 1,600 × 960 |
-| `UI/RZ_CarMenu.c:599` | `FrameSlot.SetPos` moves the car repair screen's `CarStatus` text (a frame slot, anchored top left) from under the picture (48, 392) to under the loom's sticker (48, 636) and back | What a cut said prints over the sticker's lines: make `Loom` shorter in `RZ_CarMenu.layout`, or give the loom its own status text and hide `CarStatus` while it's up |
-| `UI/RZ_CarMenu.c:701` | `FrameSlot.SetPos` and `SetSize` on an image in a frame place and size it as the layout's position and size would: the loom's wires (`WireTopN`, `WireMidN`, `WireBotN`, 30 wide for the thick feed) and their cut ends | Every wire is 14 wide where the layout put it and the feed looks like the rest (it still says "thick" and FEED): add a second, 30-wide set of bars to `RZ_CarMenu.layout` and show those for the feed |
+| `UI/RZ_CarMenu.c:712` | `FrameSlot.SetPos` and `SetSize` on an image in a frame place and size it as the layout's position and size would: the bars of the loom's wires (`LoomBar0` … `LoomBar47`, three a wire a turn) | The loom shows its plugs and sockets with no wires between them, or every bar as a 6 × 6 dot at the top of the band: draw the tangle another way (a fixed tangle laid out in `RZ_CarMenu.layout`, its sockets lit by the script), and say so on the board |
 
 ## 7. Log lines to check
 
@@ -4174,23 +4173,23 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   B closes it; walk 6 m off with a job under way: it stops ("You moved away"). Let an infected close
   in: the screen closes and the job goes on if you stay.
 - [ ] **The hotwire's loom** (**Interactions > Cars > Wire cutting** on, the default), with a pad:
-  on a car with no keys pick Ignition, **Hotwire**. The loom takes the picture's place: five wires,
-  each with its colour in words and "thick", "striped" or "plain" under it, the thick one labelled
-  FEED, the goal over the wires ("CUT TWO WIRES: THE IGNITION AND THE STARTER", then what to
-  leave), three lines on the sticker (the feed's, and two that settle it) and "RIGHT 0 OF 2 · WRONG
-  0 OF 2", neither line clipped or over the wires;
-  what the last cut said sits under the sticker, not over it (VERIFY `UI/RZ_CarMenu.c:599`), and the
-  feed is drawn thicker than the rest (VERIFY `UI/RZ_CarMenu.c:701`). The footer reads A **Cut**, B
-  **Back to the jobs**. Left and right move the amber outline; A on the feed only says it's the
-  feed. Work the two lines out and cut the two: the first shows copper ends and its name, the second
-  hotwires the car ("A spark, a cough from the starter. The wires are live."), the loom goes and the
-  Ignition row reads HOTWIRED. On another car cut wrong on purpose: the lamps' wire sparks, the horn
-  is louder (infected turn up sooner), and the second wrong cut shorts the loom ("The wires
-  spit..."); Hotwire again gives a new loom. B at the loom goes back to the jobs, and Hotwire again
-  shows the same loom with its cuts. Do it with the mouse too (pointing at a wire picks it, a click
-  cuts it) and with the arrow keys and Enter. As a Mechanic the horn wire is labelled and a fourth
-  line names it. Read the sticker from the sofa on a TV: say if 22 is too small. With **Wire
-  cutting** off, Hotwire on the screen is the timed job ("About 45 s, loud, can fail").
+  on a car with no keys pick Ignition, **Hotwire**. The loom takes the picture's place and there's
+  almost nothing to read: "WHICH WIRE?", four plugs along the top, four sockets along the bottom
+  with one lit amber and IGNITION under it, and four wires of one colour between them, drawn as
+  upright and level bars (VERIFY `UI/RZ_CarMenu.c:712`: if the wires are missing or are dots, say
+  so). From the sofa on a TV, follow each wire from its plug to its socket: report any place where
+  two wires touch along a line, a wire stops short of its plug or socket, or you can't tell a
+  crossing from a turn. The footer reads A **Cut**, B **Back to the jobs**. Left and right move the
+  amber plug; only the plug is lit, never its wire. Cut the wire that ends in the lit socket: the
+  car is hotwired ("A spark, a cough from the starter. The wires are live."), the loom goes and the
+  Ignition row reads HOTWIRED. On another car cut wrong on purpose: "A spark. Wrong wire.", that
+  plug goes dark with an X and can't be picked again (A is dimmed on it), the first square top
+  right turns red, and the second wrong cut shorts the loom ("The wires spit..."); Hotwire again
+  gives a new tangle. B at the loom goes back to the jobs, and Hotwire again shows the same loom
+  with its dead plug. Do it with the mouse too (pointing at a plug picks it, a click cuts) and
+  with the arrow keys and Enter. As a Mechanic one wrong plug is dead from the start. Set **Loom
+  turns** to 1 and to 4 and say which reads best on a TV (3 is the default). With **Wire cutting**
+  off, Hotwire on the screen is the timed job ("About 45 s, loud, can fail").
 - [ ] A locked place's outside door says "Locked" from outside and opens from inside (which
   unlocks it); its interior doors and shutting any door always work.
 - [ ] At the door: Unlock with the right key (the wrong one says which tag you need), Lock it

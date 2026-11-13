@@ -168,7 +168,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Nametags | — | A small tag over each person within 8 m you can talk to and can see: name, role, who they're with in their colour; three at most ([below](#nametags)) | `RZ_NametagClient` | `NametagPanel` built as text in the HUD layout, compiles, not checked in play |
 | Subtitles | `hud.png` (the old one-line name) | What people say outside the talk screen, at the bottom centre: how it reaches you (an icon), the name in their faction colour and their role, for someone in person an arrow to them and how far; the line in bright bone. Radio channels' voices in their own box at the top centre, clear of the quest tracker ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` and `RadioLinePanel` built as text in the HUD layout, not checked in play |
 | The reader | `reader.png` | A note, letter, order or flyer on a sheet of paper in the middle of the screen, a page at a time ([below](#subtitles-and-the-reader)) | `RZ_ReaderMenu` | Layout built as text, not checked in play |
-| Car repair | `car_repair.png`, `car_hotwire.png` (the loom) | A fixable car's job card (each job, what the car has and lacks, what you need, the button that does it) beside a side view of the car with each job lit where it is, and Start the engine; Hotwire puts the loom in the picture's place, five wires to cut the right two of ([below](#the-car-repair-screen)) | `RZ_CarMenu` | Layouts built as text, not checked in play |
+| Car repair | `car_repair.png`, `car_hotwire.png` (the loom) | A fixable car's job card (each job, what the car has and lacks, what you need, the button that does it) beside a side view of the car with each job lit where it is, and Start the engine; Hotwire puts the loom in the picture's place, a wire to follow from its plug to the lit socket ([below](#the-car-repair-screen)) | `RZ_CarMenu` | Layouts built as text, not checked in play |
 | Shop | `shop.png` | A quartermaster's stock in tabs, each item with its Favor price and the standing it needs, a picture of the selected item and a details panel with Buy ([below](#the-shop-screen)) | `RZ_ShopMenu` | Layouts built as text, not checked in play |
 | Crafting | `crafting.png` | A workbench's recipes as a list, and for the picked one a picture of what it makes with its description, each input against what you carry (have or missing), how long and how loud, and Craft ([below](#the-crafting-screen)) | `RZ_CraftMenu` | Layouts built as text, preset and **UI > Craft row layout** set; seen in the layout preview, not checked in play |
 | Cooking | — (the crafting screen's) | A stove's list (boiled water, the home remedy, the stove recipes), in the crafting screen with the stove's words and a button named for what it does: Boil, Brew, Cook ([below](#the-cooking-screen)) | `RZ_CraftMenu` | Built as text (the crafting screen's layouts); **UI > Cook row layout** not set yet, not checked in play |
@@ -769,7 +769,7 @@ white line drawing, tinted) with five numbered markers where the jobs are: 1 spa
 front of the bonnet, 2 the battery by the windscreen, 3 the tyre on the front wheel, 4 fuel above
 the rear wheel, 5 the ignition behind the windscreen. Under it, what the last job said. On the
 right the job card, one row per job with the same number and colour: its name, what you need or
-have ("One in your bag", "None on you", "Needs a wrench or a toolkit", "Two wires to cut"), a tag
+have ("One in your bag", "None on you", "Needs a wrench or a toolkit", "One wire to cut"), a tag
 that says what the car has, and the button that does it (Fit, Pour, Hotwire, Use the key). A job
 under way shows "Fitting... 6 s" and a thin bar.
 
@@ -788,15 +788,15 @@ The selected row is lighter with an amber bar, and its marker on the car gets a 
 engine** sits bottom right, dim with what it still needs until it can go.
 
 **The loom** (`car_hotwire.html`). **Hotwire** on a car with no keys puts the loom under the
-steering column in the picture's place ([DESIGN.md](DESIGN.md#hotwiring-the-loom)): five wires side
-by side, each drawn in its colour with the colour's name under it and "thick", "striped" or "plain"
-under that, so no two are told apart by colour alone. Over the wires, the goal in plain words:
-**CUT TWO WIRES: THE IGNITION AND THE STARTER**, and under it "Leave the feed, the horn and the
-lamps." The thick one is labelled FEED. Under the wires, the sticker's lines and the count
-"RIGHT 0 OF 2 · WRONG 0 OF 2"; under those, what the last cut said. A cut wire
-shows its gap with bright copper ends (one of the two) or sooty ones (a wrong one) and is labelled
-with what it was. The picked wire has an amber outline. The jobs stay on the right, none lit. Back
-returns to the jobs and leaves the loom as it is.
+steering column in the picture's place ([DESIGN.md](DESIGN.md#hotwiring-the-loom)), and it's
+almost wordless: "WHICH WIRE?" in its corner, four plugs along the top, four sockets along the
+bottom with the one to reach lit amber and the single word IGNITION under it, and between them
+four wires of one colour, drawn only with upright and level bars, so every crossing is a plain
+cross and no two wires share a line. Only the picked plug is lit (amber, with an outline), never
+its wire: the wire is for the eye to follow. A plug cut wrong goes dark with an X and can't be
+picked again. Top right, a small square per wrong cut allowed turns red as each is used. What the
+last cut said is the one status line under the panel, a few words ("A spark. Wrong wire."). The
+jobs stay on the right, none lit. Back returns to the jobs and leaves the loom as it is.
 
 | | Keyboard and mouse | Gamepad |
 |---|---|---|
@@ -804,8 +804,8 @@ returns to the jobs and leaves the loom as it is.
 | Do it | Enter, or click the row | A |
 | Start the engine | **T** (`RZ_CarStart`), or click the button | Y |
 | Close | Esc, or the close button | B |
-| At the loom: pick a wire | left/right, or point at it | D-pad or left stick |
-| At the loom: cut it | Enter, or click the wire | A |
+| At the loom: pick a plug | left/right, or point at it | D-pad or left stick |
+| At the loom: cut its wire | Enter, or click the plug | A |
 | At the loom: back to the jobs | Esc (the close button closes the screen) | B |
 
 The footer's prompts change with it: A is **Do it** or **Cut**, B is **Close** or **Back to the
@@ -821,9 +821,10 @@ pick ([How the scripts fit](#how-the-scripts-fit)).
 and sends `PAYLOAD_CAR` to that player: `C|serial|car|done|5|status|can start|what start needs|what's missing|1 if anything is`,
 `I|what a look says` (the old notice, for the fallback), `W|job|seconds left|seconds` while a job
 is under way, and `J|job|state|name|need|button|tag|tone` per job; `X|reason` closes it. While the
-car's panel is off the loom follows: `L|wrong cuts|allowed|right cuts`, `K|place|colour|thick|striped|cut|label`
-per wire and `Q|line` per sticker line (`RZ_CarLoom.Records`: only what can be seen). A pick goes
-back as `RpcAsk_CarJob(serial, job)`, at most two a second; a cut is job 10 plus the wire's place.
+car's panel is off the loom follows: `L|wrong cuts|allowed|lit socket|turns`, `P|dead flag` for the
+four plugs, and per turn of the tangle `T|turn|the column each wire leaves by|the height each crosses at`
+(`RZ_CarLoom.Records`; the client draws the wires from them, `RZ_CarMenu.DrawTangle`). A pick goes
+back as `RpcAsk_CarJob(serial, job)`, at most two a second; a cut is job 10 plus the plug.
 The server checks the screen is open on that serial, the car is still there and you're within range
 and not busy, then runs the car's own code (`Fit` for one part, `Ignition` for the key or the loom,
 `CutWire`, `TryStart`); what it would have said as a notice is caught (`RZ_ScreenCapture`) and
@@ -1466,7 +1467,7 @@ the same thing:
 
 | What's under the cursor | What it does | Screens |
 |---|---|---|
-| A row a click acts on | Becomes the selected row, drawn in place, so A or Enter then does what a click would | The talk screen's replies, the Standing page's rows, the object menu's options, the car repair screen's jobs (and the ring on the car) and its loom's wires, the power panel's breakers and its two buttons |
+| A row a click acts on | Becomes the selected row, drawn in place, so A or Enter then does what a click would | The talk screen's replies, the Standing page's rows, the object menu's options, the car repair screen's jobs (and the ring on the car) and its loom's plugs, the power panel's breakers and its two buttons |
 | A row a click only picks | Lit like the selected row while the cursor is on it; the selection, its detail and what A does stay as they were, so passing over rows on the way to BUY, CRAFT or DEPLOY changes nothing | The shop's items, the crafting and cooking screens' recipes, the spawn screen's backgrounds, the radio screen's channels, the notebook's Quests and Journal rows |
 | Any other button | A lighter fill and an amber bar on its left edge, made in the button's Overlay the first time (`RZ_UIW.HoverMark`), off when the cursor leaves | The notebook's and the shop's tabs, every close button, CRAFT, BUY, DEPLOY, START THE ENGINE, TRACK, the radio filter chip, PIN IT UP, the reader's arrows, the death brief's CONTINUE |
 

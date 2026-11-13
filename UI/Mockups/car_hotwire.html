@@ -60,28 +60,18 @@
   .start { position: absolute; right: 48px; top: 730px; width: 340px; height: 56px; background: var(--row); display: flex; align-items: center; justify-content: center; gap: 12px; font: 700 24px/1 Inter, 'Segoe UI', sans-serif; letter-spacing: .06em; color: var(--need); }
   .start .pk { opacity: .5; }
 
-  /* the loom, in the picture's place */
-  .goal { position: absolute; left: 48px; top: 120px; width: 640px; font: 700 22px/1.2 'JetBrains Mono', monospace; color: #E3A33B; letter-spacing: .04em; }
-  .goalsub { position: absolute; left: 48px; top: 150px; width: 640px; font: 400 20px/1.2 Inter, 'Segoe UI', sans-serif; color: #D9D2BE; }
-  .loom { position: absolute; left: 48px; top: 182px; width: 640px; height: 256px; background: #0c0e0f; border: 1px solid #22262a; }
-  .w { position: absolute; top: 8px; width: 120px; height: 240px; }
-  .w:nth-child(1) { left: 10px; } .w:nth-child(2) { left: 134px; } .w:nth-child(3) { left: 258px; } .w:nth-child(4) { left: 382px; } .w:nth-child(5) { left: 506px; }
-  .w.on { background: var(--row); outline: 2px solid var(--acc); }
-  .lab { position: absolute; left: 0; right: 0; top: 4px; text-align: center; font: 700 16px/1.4 'JetBrains Mono', monospace; color: var(--dim); }
-  .lab.known { color: var(--done); }
-  .core { position: absolute; left: 53px; top: 34px; width: 14px; height: 160px; }
-  .w.thick .core { left: 45px; width: 30px; }
-  .core i { position: absolute; left: 0; right: 0; background: var(--c); }
-  .core .a { top: 0; height: 70px; } .core .m { top: 70px; height: 20px; } .core .b { top: 90px; height: 70px; }
-  .w.striped .core .a, .w.striped .core .b { background: repeating-linear-gradient(var(--c) 0 14px, #15171a 14px 22px, var(--c) 22px 28px); }
-  .w.cut .core .m { background: none; }
-  .w.cut .core .a::after, .w.cut .core .b::before { content: ''; position: absolute; left: -3px; right: -3px; height: 8px; background: #D69454; }
-  .w.cut .core .a::after { bottom: -2px; } .w.cut .core .b::before { top: -2px; }
-  .nm { position: absolute; left: 0; right: 0; top: 198px; text-align: center; font: 700 18px/1.3 'JetBrains Mono', monospace; color: var(--bone); }
-  .kd { position: absolute; left: 0; right: 0; top: 220px; text-align: center; font: 400 16px/1.2 Inter, sans-serif; color: var(--dim); }
-  .loomlabel { position: absolute; left: 48px; top: 450px; width: 640px; display: flex; justify-content: space-between; font: 700 18px/1 'JetBrains Mono', monospace; color: var(--dim); letter-spacing: .12em; }
-  .clues { position: absolute; left: 48px; top: 480px; width: 640px; font: 400 22px/1.4 Inter, 'Segoe UI', sans-serif; color: var(--spoken); }
-  .loomstatus { top: 636px; }
+  /* the loom, in the picture's place: four plugs, a tangle, four sockets, one lit */
+  .loom { position: absolute; left: 48px; top: 120px; width: 640px; height: 262px; background: #0c0e0f; border: 1px solid #22262a; box-sizing: border-box; }
+  .ask { position: absolute; left: 14px; top: 4px; font: 700 18px/1 'JetBrains Mono', monospace; color: var(--dim); letter-spacing: .08em; }
+  .pip { position: absolute; top: 6px; right: 14px; width: 14px; height: 14px; background: #3a3e42; }
+  .pip.used { right: 34px; background: var(--miss); }
+  .bar { position: absolute; background: #C9C3B3; }
+  .plug { position: absolute; top: 28px; width: 64px; height: 24px; background: #C9C3B3; text-align: center; font: 700 18px/24px 'JetBrains Mono', monospace; color: var(--dim); }
+  .plug.on { background: var(--acc); outline: 2px solid var(--acc); outline-offset: 4px; }
+  .plug.dead { background: #3a3e42; }
+  .socket { position: absolute; top: 218px; width: 64px; height: 24px; background: #3a3e42; }
+  .socket.lit { background: var(--acc); }
+  .word { position: absolute; top: 243px; width: 140px; text-align: center; font: 700 15px/18px 'JetBrains Mono', monospace; color: var(--acc); letter-spacing: .06em; }
 
   .callout { position: absolute; font: 600 14px/1.3 'JetBrains Mono', Consolas, monospace; color: rgba(242,194,48,.85); letter-spacing: .1em; }
 </style>
@@ -90,24 +80,61 @@
 <canvas class="scene" data-scene="dusk"></canvas>
 <div class="worlddim"></div>
 <div class="layer">
-  <div class="callout" style="left:240px;top:92px">CAR REPAIR · HOTWIRE ▼ THE LOOM TAKES THE PICTURE'S PLACE: CUT THE RIGHT TWO OF FIVE</div>
+  <div class="callout" style="left:240px;top:92px">CAR REPAIR · HOTWIRE ▼ THE LOOM TAKES THE PICTURE'S PLACE: FOLLOW THE WIRE TO THE LIT SOCKET, CUT IT AT ITS PLUG</div>
 
   <div class="car">
     <div class="head"><b>The blue two-door</b><span>Missing: tyre, keys</span></div>
     <div class="close">X</div>
 
-    <div class="goal">CUT TWO WIRES: THE IGNITION AND THE STARTER</div>
-    <div class="goalsub">Leave the feed, the horn and the lamps.</div>
     <div class="loom">
-      <div class="w striped" style="--c:#F2C230"><span class="lab "></span><span class="core"><i class="a"></i><i class="m"></i><i class="b"></i></span><span class="nm">YELLOW</span><span class="kd">striped</span></div>
-      <div class="w thick" style="--c:#E8E2D0"><span class="lab ">FEED</span><span class="core"><i class="a"></i><i class="m"></i><i class="b"></i></span><span class="nm">WHITE</span><span class="kd">thick</span></div>
-      <div class="w cut good" style="--c:#4F8CC8"><span class="lab known good">IGNITION</span><span class="core"><i class="a"></i><i class="m"></i><i class="b"></i></span><span class="nm">BLUE</span><span class="kd">plain</span></div>
-      <div class="w striped on" style="--c:#C8352B"><span class="lab "></span><span class="core"><i class="a"></i><i class="m"></i><i class="b"></i></span><span class="nm">RED</span><span class="kd">striped</span></div>
-      <div class="w " style="--c:#5E9E5C"><span class="lab "></span><span class="core"><i class="a"></i><i class="m"></i><i class="b"></i></span><span class="nm">GREEN</span><span class="kd">plain</span></div>
+      <span class="ask">WHICH WIRE?</span><span class="pip used"></span><span class="pip"></span>
+      <i class="bar" style="left:97.0px;top:52.0px;width:6.0px;height:23.7px"></i>
+      <i class="bar" style="left:97.0px;top:69.7px;width:306.0px;height:6.0px"></i>
+      <i class="bar" style="left:397.0px;top:69.7px;width:6.0px;height:37.7px"></i>
+      <i class="bar" style="left:397.0px;top:107.3px;width:6.0px;height:37.7px"></i>
+      <i class="bar" style="left:237.0px;top:139.0px;width:166.0px;height:6.0px"></i>
+      <i class="bar" style="left:237.0px;top:139.0px;width:6.0px;height:23.7px"></i>
+      <i class="bar" style="left:237.0px;top:162.7px;width:6.0px;height:9.7px"></i>
+      <i class="bar" style="left:237.0px;top:166.3px;width:166.0px;height:6.0px"></i>
+      <i class="bar" style="left:397.0px;top:166.3px;width:6.0px;height:51.7px"></i>
+      <i class="bar" style="left:237.0px;top:52.0px;width:6.0px;height:37.7px"></i>
+      <i class="bar" style="left:237.0px;top:83.7px;width:306.0px;height:6.0px"></i>
+      <i class="bar" style="left:537.0px;top:83.7px;width:6.0px;height:23.7px"></i>
+      <i class="bar" style="left:537.0px;top:107.3px;width:6.0px;height:51.7px"></i>
+      <i class="bar" style="left:377.0px;top:153.0px;width:166.0px;height:6.0px"></i>
+      <i class="bar" style="left:377.0px;top:153.0px;width:6.0px;height:9.7px"></i>
+      <i class="bar" style="left:377.0px;top:162.7px;width:6.0px;height:23.7px"></i>
+      <i class="bar" style="left:117.0px;top:180.3px;width:266.0px;height:6.0px"></i>
+      <i class="bar" style="left:117.0px;top:180.3px;width:6.0px;height:37.7px"></i>
+      <i class="bar" style="left:377.0px;top:52.0px;width:6.0px;height:51.7px"></i>
+      <i class="bar" style="left:257.0px;top:97.7px;width:126.0px;height:6.0px"></i>
+      <i class="bar" style="left:257.0px;top:97.7px;width:6.0px;height:9.7px"></i>
+      <i class="bar" style="left:257.0px;top:107.3px;width:6.0px;height:9.7px"></i>
+      <i class="bar" style="left:97.0px;top:111.0px;width:166.0px;height:6.0px"></i>
+      <i class="bar" style="left:97.0px;top:111.0px;width:6.0px;height:51.7px"></i>
+      <i class="bar" style="left:97.0px;top:162.7px;width:6.0px;height:37.7px"></i>
+      <i class="bar" style="left:97.0px;top:194.3px;width:446.0px;height:6.0px"></i>
+      <i class="bar" style="left:537.0px;top:194.3px;width:6.0px;height:23.7px"></i>
+      <i class="bar" style="left:517.0px;top:52.0px;width:6.0px;height:9.7px"></i>
+      <i class="bar" style="left:117.0px;top:55.7px;width:406.0px;height:6.0px"></i>
+      <i class="bar" style="left:117.0px;top:55.7px;width:6.0px;height:51.7px"></i>
+      <i class="bar" style="left:117.0px;top:107.3px;width:6.0px;height:23.7px"></i>
+      <i class="bar" style="left:117.0px;top:125.0px;width:406.0px;height:6.0px"></i>
+      <i class="bar" style="left:517.0px;top:125.0px;width:6.0px;height:37.7px"></i>
+      <i class="bar" style="left:517.0px;top:162.7px;width:6.0px;height:51.7px"></i>
+      <i class="bar" style="left:257.0px;top:208.3px;width:266.0px;height:6.0px"></i>
+      <i class="bar" style="left:257.0px;top:208.3px;width:6.0px;height:9.7px"></i>
+      <span class="plug" style="left:78px"></span>
+      <span class="socket" style="left:78px"></span>
+      <span class="plug dead" style="left:218px">X</span>
+      <span class="socket" style="left:218px"></span>
+      <span class="plug on" style="left:358px"></span>
+      <span class="socket lit" style="left:358px"></span>
+      <span class="plug" style="left:498px"></span>
+      <span class="socket" style="left:498px"></span>
+      <span class="word" style="left:320px">IGNITION</span>
     </div>
-    <div class="loomlabel"><span>THE STICKER</span><span>RIGHT 1 OF 2 · WRONG 0 OF 2</span></div>
-    <div class="clues">The thick one is the battery feed. Never cut it.<br>The starter wire never sits next to the feed.<br>The two you want sit side by side.</div>
-    <div class="status loomstatus">Stripped back to bright copper. That's one of the two.</div>
+    <div class="status">A spark. Wrong wire.</div>
 
     <div class="jobs-label">THE JOBS</div>
     <div class="jobs">
@@ -127,7 +154,7 @@
     <div class="start"><span class="pk">Y</span>START THE ENGINE</div>
   </div>
 
-  <div class="callout" style="left:1700px;top:300px;width:200px">◀ EACH WIRE SAYS ITS COLOUR IN WORDS, AND THICK, STRIPED OR PLAIN. A CUT WIRE SHOWS WHAT IT WAS</div>
+  <div class="callout" style="left:1700px;top:300px;width:200px">◀ NOTHING TO READ. ONLY THE PICKED PLUG IS LIT, NEVER ITS WIRE. A WRONG CUT KILLS ITS PLUG (X) AND TURNS A PIP RED</div>
   <div class="callout" style="left:1700px;top:860px;width:200px">◀ START STAYS DIM, WITH WHAT IT NEEDS, UNTIL IT CAN GO</div>
 </div>
 </body>

@@ -618,7 +618,7 @@ Starting standing is Fame (+) or Infamy (−) ([REPUTATION.md](REPUTATION.md)).
 | Background | Perk | Flaw | Starting standing |
 |---|---|---|---|
 | Nurse | Medical supplies. Treats other players in 8 s, even with a bandage. Infection takes 50% longer | Unarmed | Haven +10 |
-| Mechanic | Wrench and jerrycan. Knows the horn wire at a car's [loom](#hotwiring-the-loom) (the timed hotwire: 15 s, rarely fails) | 25% louder | — |
+| Mechanic | Wrench and jerrycan. One wrong wire is ruled out for them at a car's [loom](#hotwiring-the-loom) (the timed hotwire: 15 s, rarely fails) | 25% louder | — |
 | Hunter | Hunting rifle, 25% quieter | Little ammo | Bastion −10 |
 | Police Officer | Sidearm | — | Bastion +20 (Known), Red Hand −25 (Watched) |
 | Ex-Con | Knife | Infection kills 20% faster | Red Hand +25 (Known), Bastion −25 (Watched), Haven −10 |
@@ -2837,7 +2837,7 @@ While no free spot is found it stays put away and is asked again.
 | **Look over the car** | Says what's missing: two or three of fuel, a battery, a tyre, spark plugs, all different (on the repair screen, below, where it's used) | **Min parts** 2, **Max parts** 3 |
 | **Fit parts** | Battery, tyre and spark plugs (carryable items) lie in garages, are sometimes in a wreck's boot (30%) and come from the Mechanic wanderer. Fitting one needs a tool in your pack (a wrench, spanner, toolkit or toolbox), which isn't used up. Without one, the look and Fit parts say so | **Tool keywords** (empty = no tool needed); 8 s |
 | **Fuel it** | Fuel from a can: a vanilla jerrycan gives 5 litres and is kept (filled at a petrol pump, [Fuel](#fuel)); an old-style full can found as loot is used up. Wrecks have no fuel in them. No tool needed | **Car fuel litres** 5 |
-| **Hotwire** | On the repair screen: pull the panel under the column and cut the right two of five wires ([the loom](#hotwiring-the-loom)). At the car's own prompt, where the screen isn't used, it's the timed job: 45 s, half its heat when you start and all of it at the end; it fails about one time in three (the starter grinds, the heat is made all the same, and you try again), and a Mechanic does it in 15 s and fails one time in ten | **Wire cutting** on, **Loom strikes** 2, **Wrong cut heat share** 0.5; timed: 45 s, Mechanic 15 s, 20 heat, fail 0.35, Mechanic 0.1 |
+| **Hotwire** | On the repair screen: pull the panel under the column, follow the wire that runs to the ignition and cut it ([the loom](#hotwiring-the-loom)). At the car's own prompt, where the screen isn't used, it's the timed job: 45 s, half its heat when you start and all of it at the end; it fails about one time in three (the starter grinds, the heat is made all the same, and you try again), and a Mechanic does it in 15 s and fails one time in ten | **Wire cutting** on, **Loom turns** 3, **Loom strikes** 2, **Wrong cut heat share** 0.5; timed: 45 s, Mechanic 15 s, 20 heat, fail 0.35, Mechanic 0.1 |
 | **Or its keys** | Only a fifth of cars have keys in a house in their town: each building rolled there holds them one time in ten, lying with its loot (picking them up is finding them). A Mechanic wanderer who likes you may hand them over | keys 0.2, find 0.1 |
 | **Start the engine** | 15 heat. The parked copy becomes the drivable car with a quarter tank, and from then on it's vanilla | |
 
@@ -2858,29 +2858,29 @@ where the screen can't open, the actions work as before.
 #### Hotwiring: the loom
 
 On the repair screen, **Hotwire** on a car with no keys opens the loom under the steering column
-(`Interactions/RZ_CarLoom.c`): five wires in a row, each its own colour. One is thick: the battery
-feed. Two of the other four carry a stripe. Two wires start the car, the ignition wire and the
-starter wire; one is the horn and one the dash lamps. A sticker under the column carries two lines
-("The starter wire never sits next to the feed.", "The two you want sit side by side."). The loom
-is rolled until two true lines together leave only one pair of wires, neither line enough alone,
-so it's worked out, never guessed and never rushed: there's no timer. The screen says the goal
-over the wires (cut two, the ignition and the starter; leave the feed, the horn and the lamps) and
-counts the right and the wrong cuts.
+(`Interactions/RZ_CarLoom.c`). It's a wire to follow, with nothing to read: four plugs along the
+top, four sockets along the bottom, and four wires running from the plugs down to the sockets
+through a tangle. One socket is lit: the ignition. You trace by eye which plug's wire ends there
+and cut that wire at its plug. There's no timer.
 
 | You cut | What happens |
 |---|---|
-| One of the two | It's stripped back to copper, and the loom shows what it was |
-| The other of the two | The car is hotwired: all of **Hotwire heat** (20), as a hotwiring that worked always made |
-| The dash lamps' wire | A spark: **Wrong cut heat share** (0.5) of Hotwire heat, and a strike |
-| The horn's wire | The horn sounds: all of Hotwire heat, and a strike |
-| A wrong wire at **Loom strikes** (2) | The loom shorts: all of Hotwire heat and the failed hotwiring's line. The next try starts on a fresh loom |
-| The feed | Nothing: the screen says it's the feed and leaves it. (Asked anyway, the server shorts the loom at once) |
+| The wire that ends in the lit socket | The car is hotwired: all of **Hotwire heat** (20), as a hotwiring that worked always made |
+| Any other | A spark: **Wrong cut heat share** (0.5) of Hotwire heat, a strike, and that plug is dead (it can't be cut again) |
+| A wrong one at **Loom strikes** (2) | The loom shorts: all of Hotwire heat and the failed hotwiring's line. The next try starts on a fresh tangle |
 
-- **A Mechanic's edge.** The horn wire is labelled for them, and a third line names its colour.
-- **The loom is the car's.** Whoever pulls the panel finds it as it was left, cut wires and strikes
-  included, until the car is hotwired or the loom shorts. Backing out to the jobs keeps it.
-- **Decided on the server.** The screen is sent only what can be seen (colour, thick, stripe, what
-  a cut wire turned out to be); every cut is checked there, at most two a second.
+- **It can always be followed.** The four wires are one colour, so they're traced, never matched.
+  The tangle is **Loom turns** (3; 1 to 4) turns, each a shuffle of the four columns that moves at
+  least three wires and never just undoes the turn above. In a turn every wire drops, crosses at
+  its own height to the column it leaves by, and drops again; it comes into a turn a little left
+  of its column's middle and leaves a little right of it. So wires only cross at right angles and
+  no two ever run along the same line. The right wire never runs straight down: its plug isn't
+  over the lit socket.
+- **A Mechanic's edge.** One of the wrong plugs is dead from the start.
+- **The loom is the car's.** Whoever pulls the panel finds it as it was left, dead plugs and
+  strikes included, until the car is hotwired or the loom shorts. Backing out to the jobs keeps it.
+- **Decided on the server.** It rolls the tangle, sends it (the wires are what you see; only which
+  plug is right is worked out on the screen) and checks every cut, at most two a second.
 - **Not saved.** After a restart a car has a fresh loom.
 - With **Wire cutting** off the screen's Hotwire is the timed job too.
 
