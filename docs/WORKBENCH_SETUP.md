@@ -2041,6 +2041,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_Disguise.c:1074`, `Factions/RZ_DisguiseMarks.c:779`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
 | `Factions/RZ_DisguiseWatch.c:193` | a character's world transform's forward axis (`mat[2]`) is where its body faces | If it's another axis, guards count as turned to you at the wrong angle: again looks and their noticing line come too often or never. Check by standing behind a Bastion sentry in their kit after a passed look |
 | `Factions/RZ_DisguiseWatch.c:206` | a sight trace (`TraceMove`, world and entities) from one of their people's eyes to a player's chest stops on walls and vehicles, and reports the player when it reaches them (again looks within 15 m, seen putting kit on within 30 m, a Red Hand crew seeing Bastion colours in a feud within 150 m) | If it never reaches the player, again looks are only owed and never come (the gate pass, roll call and leaders still limit a stay); if it always does, walls don't hide you. Check with `again look at` in the log |
+| `Interactions/RZ_CarRoom.c:111` | a flat trace (entities only) that starts inside a building's wall or under its floor reports a hit, so a car's box inside a house is refused; a trace straight up from 1.8 m stops on a roof, a porch and a bridge deck | A fixable car still stands in a wall or indoors (report where), or no car ever shows and the log repeats `Cars: no room for ... yet` in open ground |
 | `Factions/RZ_DisguiseMarks.c:440`, `:489` | a dead character's worn clothing stays in its loadout slots long enough to be read when retaliation sees one of their people die, and when the spawner counts an infected's kill | No piece is ever marked a dead man's or off the turned (the log's `marked` lines never appear): killed men's and the turned's kit passes as clean. Turn **Hostility > Kit marks** off to make that explicit, and keep faction keywords rare in loot |
 | `Factions/RZ_Disguise.c:812` | the server knows a player's sprint (`IsSprinting`) and raised weapon (`IsWeaponRaised`) | The look's "[Running -1]" and "[A gun in your hands -1]" never show (or always do): check the tags in the look's log line |
 | `Factions/RZ_DisguiseMarks.c:643` | a worn ribbon's parent is the character, and a packed one's is the pack | Someone else's ribbon in a pack closes Haven doors, or a worn one doesn't: wear and pack one in turn |
@@ -4150,6 +4151,11 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   says what was fitted); try a part you don't carry (the row says "None on you" and A does
   nothing); hotwire ("No keys. About 45 s, loud, can fail") and watch it fail or work; then Y
   starts the engine, the screen closes and the line is a card. Do the same with the mouse and with
+- [ ] Where fixable cars stand: visit each one (the season's five or six). None in a building,
+  through a wall or fence, under a porch or half up a step, and you can walk round each. A
+  `Cars: ... had no room at <grid> (a wall, a roof or a step); moved N m.` line names one that was
+  moved; `Cars: no room for ... yet; it stays put away.` repeating for one car in open ground is
+  wrong: report the grid.
   Enter and T. B closes it; walk 6 m off with a job under way: it stops ("You moved away"). Let an
   infected close in: the screen closes and the job goes on if you stay.
 - [ ] A locked place's outside door says "Locked" from outside and opens from inside (which

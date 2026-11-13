@@ -2819,6 +2819,14 @@ and locked so nobody can get in, with its prompts in front of its grille.
 | **Or its keys** | Only a fifth of cars have keys in a house in their town: each building rolled there holds them one time in ten, lying with its loot (picking them up is finding them). A Mechanic wanderer who likes you may hand them over | keys 0.2, find 0.1 |
 | **Start the engine** | 15 heat. The parked copy becomes the drivable car with a quarter tank, and from then on it's vanilla | |
 
+**It always has room to stand.** A car's box (a little wider and longer than the car, with the
+spot at its grille) must be on dry, near-level ground with nothing across it at bumper and window
+height and nothing overhead: no wall, fence, tree, step, roof or porch (`Interactions/RZ_CarRoom.c`).
+It's asked when the spot is picked and again the first time the car is put out near a player, when
+everything around it is there. A car with no room is moved to the nearest free spot within 40 m,
+at a heading that fits, and the log says so; a saved car standing in a wall is moved the same way.
+While no free spot is found it stays put away and is asked again.
+
 A new project turns up elsewhere six hours after one is started. Projects in a save keep the parts
 they were missing.
 

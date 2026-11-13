@@ -187,6 +187,8 @@ class RZ_CarProject
 	vector m_vKeyHouse;		// its keys are in the house here (mission cars)
 	bool m_bWired;			// started by hotwiring, not with its keys
 	int m_iCar = -1;		// index into Car prefabs (and Parked prefabs)
+	bool m_bRoom;			// its spot was checked for room where it's put out (RZ_CarRoom), this session
+	bool m_bNoRoomSaid;		// the log has said it found no room
 
 	IEntity m_Body;			// the interaction spot
 	IEntity m_Car;			// the parked, locked car (none if Parked prefabs has no entry for it)
@@ -204,6 +206,8 @@ class RZ_Cars
 	static const int PARTS_NOT_FUEL = 14;	// battery, tyre and spark plugs
 
 	protected static const float SHOW_RADIUS = 150;
+	protected static const float ROOM_REACH = 40;	// a car with no room is moved at most this far (m)
+	protected static const int ROOM_TRIES = 12;
 	protected static const float HIDE_RADIUS = 200;
 
 	//! The read label on a car project's spot. The client hides the car's action slots behind it
@@ -376,7 +380,17 @@ class RZ_Cars
 			if (RZ_Util.IsWater(pos) || RZ_Perimeter.IsNearLineAt(pos))
 				continue;
 
-			m_aCars.Insert(Generate(idx, pos));
+			// With room to stand (RZ_CarRoom); asked again where it's first put out
+			RZ_CarProject made = Generate(idx, pos);
+			vector roomPos = made.m_vPos;
+			float roomYaw = made.m_fYaw;
+			if (RZ_CarRoom.Find(pos, ROOM_REACH, ROOM_TRIES, true, roomPos, roomYaw))
+			{
+				made.m_vPos = roomPos;
+				made.m_fYaw = roomYaw;
+			}
+
+			m_aCars.Insert(made);
 		}
 	}
 
@@ -547,6 +561,9 @@ class RZ_Cars
 	//! carries its actions just in front of its grille. Without a parked prefab, only the spot, on the ground.
 	protected void Show(RZ_CarProject c)
 	{
+		if (!MakeRoom(c))
+			return;
+
 		EnsureCar(c); // before the spot takes its name
 		c.m_iSpot = m_Hub.AddSpot(RZ_Interactions.KIND_CAR, c.m_vPos, "car", c.m_sNoun, c.m_iId, -1);
 		if (c.m_iSpot < 0)
@@ -570,6 +587,37 @@ class RZ_Cars
 		}
 
 		m_Hub.AttachLabels(s, c.m_Body);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first time a car is put out (a player is near, so what stands around it is there): it
+	//! has room where it is, or it's moved to the nearest spot that has (a saved car in a wall too).
+	//! False while no spot was found: it stays data and is asked again on the next tick.
+	protected bool MakeRoom(RZ_CarProject c)
+	{
+		if (c.m_bRoom)
+			return true;
+
+		vector was = c.m_vPos;
+		vector roomPos = c.m_vPos;
+		float roomYaw = c.m_fYaw;
+		if (!RZ_CarRoom.Find(was, ROOM_REACH, ROOM_TRIES, true, roomPos, roomYaw))
+		{
+			if (!c.m_bNoRoomSaid)
+				RZ_Log.Info(string.Format("Cars: no room for %1 at %2 yet; it stays put away.", c.m_sNoun, RZ_SettlementScanner.GridReference(was)));
+
+			c.m_bNoRoomSaid = true;
+			return false;
+		}
+
+		c.m_bRoom = true;
+		c.m_vPos = roomPos;
+		c.m_fYaw = roomYaw;
+		float moved = vector.DistanceXZ(was, c.m_vPos);
+		if (moved > 1)
+			RZ_Log.Info(string.Format("Cars: %1 had no room at %2 (a wall, a roof or a step); moved %3 m.", c.m_sNoun, RZ_SettlementScanner.GridReference(was), RZ_Util.RoundToInt(moved)));
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
