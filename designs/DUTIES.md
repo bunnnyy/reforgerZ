@@ -7,8 +7,8 @@ and more sensitive the more you're trusted.
 
 What's built is in the docs and not repeated here: work from the first day (a giver makes a
 contract on asking, [docs/MISSIONS.md](../docs/MISSIONS.md#who-gets-offered-what)), the duty
-rules, the trust ladder, the duties of rungs 1 to 3, the duty table and the duties' people
-([docs/ERRANDS.md](../docs/ERRANDS.md#duties), [docs/UI.md](../docs/UI.md#the-duty-table)). This
+rules, the trust ladder, the duties of rungs 1 to 3, the sorting duties played at their place and
+the duties' people ([docs/ERRANDS.md](../docs/ERRANDS.md#duties)). This
 file holds the duties that wait. Each phase moves what it builds into those docs and is cut from
 here.
 
@@ -31,8 +31,8 @@ The rungs are the built ladder's: 2 they know your face, 3 Known, 4 Trusted.
   what passes (a light, a walker, one of the infected at the wire). Something from the world comes
   by, or nothing does, and the report is the work. Never a timer you only wait on: two or three
   things to mark, each a choice of what it was.
-- **Stock-taking.** The duty table's screen with a fourth skin: lines of a ledger against what's
-  on the shelf. **Tally**, **query** or **write off**. A shortage written off is someone's theft
+- **Stock-taking.** The sorting duties' game with a fourth skin: crates on the shelf against the
+  book. **Tally**, **query** or **write off**. A shortage written off is someone's theft
   covered; a query is someone accused.
 - **The names** (rung 4). The list of the place's dead this week, and who is told. Each name is a
   choice with a cost: tell the family, tell the leader, hold it back a day. It writes the

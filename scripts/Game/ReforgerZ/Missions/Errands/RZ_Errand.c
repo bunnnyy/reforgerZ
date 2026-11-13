@@ -101,7 +101,7 @@ class RZ_ErrandWay
 	string m_sWorkLabel;		// its prompt ("Dig the latrine")
 	float m_fWorkSeconds;		// its hold (0: from m_fSeconds, RZ_WorkSites.HoldFor)
 	string m_sNeed;				// the place need its words make (World/RZ_PlaceNeeds.c; empty: by its place kind, NeedKey)
-	int m_iTable;				// a duty's table (RZ_DutyTable.KIND_*): the work site's hold opens it, and its verdicts are the step
+	int m_iGame;				// a sorting duty (RZ_DutyGame.KIND_*): its row is laid out at the place, and its verdicts are the step
 	bool m_bSquad;				// a duty walked with the place's people (RZ_DutySquads): the step is coming back with them
 
 	// What it pays (docs/ERRANDS.md, "Pay: nothing for free")

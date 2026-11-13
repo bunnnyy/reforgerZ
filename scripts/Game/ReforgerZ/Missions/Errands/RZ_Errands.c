@@ -41,6 +41,15 @@ class RZ_ErrandProps
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Watch (optional): The Last Tin's watch, a real wristwatch traded for two tins. Empty = a common find", "et")]
 	ResourceName m_sWatch;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty body (optional): one of the dead laid out for the duty that sorts them, a body under a sheet or a body bag on a board, as a composition of props with nothing to use. Empty = Effects", "et")]
+	ResourceName m_sDutyBody;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty person (optional): someone waiting in the line at the gate, a standing civilian with no weapon and no AI, or a prop figure. Empty = Puzzles > Civilian", "et")]
+	ResourceName m_sDutyPerson;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty tray (optional): a sample tray on Halcyon's bench, a small rack or case of vials. Empty = Crate", "et")]
+	ResourceName m_sDutyTray;
+
 	//------------------------------------------------------------------------------------------------
 	ResourceName For(RZ_EErrandProp kind)
 	{
@@ -327,13 +336,13 @@ class RZ_Errands
 		m_Locals = new RZ_Locals(gm);
 		m_PayKinds = new RZ_ErrandsPay(this);
 		m_More = new RZ_ErrandsDealer(this);
-		m_Tables = new RZ_DutyTables(gm, this);
+		m_Games = new RZ_DutyGames(gm, this);
 		m_Squads = new RZ_DutySquads(gm, this);
 	}
 
 	protected ref RZ_ErrandsPay m_PayKinds;
 	protected ref RZ_ErrandsDealer m_More;
-	protected ref RZ_DutyTables m_Tables;		// the duties' sorting tables (RZ_DutyTable.c)
+	protected ref RZ_DutyGames m_Games;			// the sorting duties, played at their place (RZ_DutyGame.c)
 	protected ref RZ_DutySquads m_Squads;		// the people who go out with a player on a duty (RZ_DutySquads.c)
 
 	//------------------------------------------------------------------------------------------------
@@ -483,7 +492,7 @@ class RZ_Errands
 	RZ_NamedPeople GetPeople() { return m_People; }
 	RZ_Faults GetFaults() { return m_Faults; }
 	RZ_GameModeComponent GetGM() { return m_GM; }
-	RZ_DutyTables GetTables() { return m_Tables; }
+	RZ_DutyGames GetGames() { return m_Games; }
 	RZ_DutySquads GetSquads() { return m_Squads; }
 	float GetClock() { return m_fClock; }
 
@@ -661,7 +670,6 @@ class RZ_Errands
 	//! A player left: a held errand waits 20 minutes for them.
 	void OnDisconnect(int playerId)
 	{
-		m_Tables.Forget(playerId);
 		foreach (RZ_Errand e : m_aErrands)
 		{
 			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.HELD)
@@ -1065,30 +1073,11 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Once a second (the game mode's second tick): a duty's table opens when its work site is held.
+	//! Once a second (the game mode's second tick): the sorting duties read what the player's hands did.
 	void SecondTick(array<int> ids, array<IEntity> players)
 	{
 		if (IsOn())
-			m_Tables.SecondTick(ids, players);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The errand's work site again, where it was, to hold a second time (a duty's table was left
-	//! before it was handed in).
-	void ReopenWork(RZ_Errand e)
-	{
-		RZ_ErrandWay w = e.GetWay();
-		RZ_WorkSites sites = RZ_WorkSites.Get();
-		if (!w || !sites || !w.IsWork() || e.m_eState != RZ_EErrandState.HELD)
-			return;
-
-		string key = WorkKey(e);
-		float hold = w.m_fWorkSeconds;
-		if (hold <= 0)
-			hold = RZ_WorkSites.HoldFor(w.m_fSeconds);
-
-		sites.Close(key);
-		sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, e.m_vPlace, e.m_iAsker);
+			m_Games.SecondTick(ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1183,7 +1172,7 @@ class RZ_Errands
 		if (e.m_Def)
 			e.m_Def.Ended(this, e, why);
 
-		m_Tables.Drop(e.m_iId);
+		m_Games.Drop(e.m_iId);
 		m_Squads.Drop(e.m_iId);
 
 		RemoveProp(e);

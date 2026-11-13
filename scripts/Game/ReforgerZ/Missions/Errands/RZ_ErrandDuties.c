@@ -320,8 +320,9 @@ class RZ_ErrandDuty : RZ_ErrandDef
 
 	// ================================================================ Rung 2: they know your face
 	//------------------------------------------------------------------------------------------------
-	//! A table way: a short hold at the place opens the table (RZ_DutyTable); its verdicts are the step.
-	protected RZ_ErrandWay TableWay(int kind, bool gate, RZ_EWork work, string label, string prompt, string step, int favor, int fame)
+	//! A sorting way: its row is laid out at the place (RZ_DutyGame) and worked by hand; the last
+	//! subject put down is the step done.
+	protected RZ_ErrandWay TableWay(int kind, bool gate, string label, string step, int favor, int fame)
 	{
 		RZ_ErrandWay w = Way("table");
 		w.m_sLabel = label;
@@ -329,11 +330,10 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		if (gate)
 			w.m_ePlace = RZ_EErrandPlace.GATE;
 
-		w.m_fSeconds = 5;
+		w.m_fSeconds = 0;
 		w.m_fRadius = 30;
 		w.m_sStep = step;
-		w.Work(work, prompt, 4);
-		w.m_iTable = kind;
+		w.m_iGame = kind;
 		w.m_iFavor = favor;
 		w.m_iFame = fame;
 		return w;
@@ -345,8 +345,8 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		m_iRung = RZ_Duties.RUNG_FACE;
 		m_sRoles = "nurse,medic,lookout,sentry,guard,toll man";
 		m_sThread = "stood the line at the gate";
-		TableWay(RZ_DutyTable.KIND_LINE, true, RZ_EWork.HANDS, "Look the line over", "Look the line over",
-			"Look over the people waiting at the gate of {here}: hold a bite or clouded eyes, send a fever to wash, let the rest in. Then tell {giver}.", 6, 1);
+		TableWay(RZ_DutyGame.KIND_LINE, true, "Look the line over",
+			"Go to each of the people waiting at the gate of {here}, look them over, and take each by the arm to the gate, the wash or the holding room. Then tell {giver}.", 6, 1);
 		switch (m_iFaction)
 		{
 			case RZ_EFaction.SURVIVORS:
@@ -397,8 +397,8 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		m_iRung = RZ_Duties.RUNG_FACE;
 		m_sRoles = "nurse,medic,clerk,cook,lab assistant";
 		m_sThread = "saw to the dead";
-		TableWay(RZ_DutyTable.KIND_DEAD, false, RZ_EWork.CARE, "See to the dead", "See to the dead",
-			"Sort the dead laid out at {here}: burn the bitten, hold any whose papers don't match the tag, bury the rest. Then tell {giver}.", 6, 1);
+		TableWay(RZ_DutyGame.KIND_DEAD, false, "See to the dead",
+			"Go to each of the dead laid out at {here}, look them over, and carry each to the pyre, the holding table or the grave. Then tell {giver}.", 6, 1);
 		switch (m_iFaction)
 		{
 			case RZ_EFaction.SURVIVORS:
@@ -568,8 +568,8 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		m_iRung = RZ_Duties.RUNG_ARMED;
 		m_sRoles = "lab assistant,technician";
 		m_sThread = "worked the sample bench";
-		TableWay(RZ_DutyTable.KIND_BENCH, false, RZ_EWork.BENCH, "Work the sample bench", "Work the bench",
-			"Sort the sample trays on the bench at {here}: destroy a broken seal or a turned sample, send a mismatched label to be run again, file the rest. Then tell {giver}.", 8, 1);
+		TableWay(RZ_DutyGame.KIND_BENCH, false, "Work the sample bench",
+			"Go to each sample tray set out at {here}, check the tray, and carry each to the rack, the bath or the bin. Then tell {giver}.", 8, 1);
 		m_sTitle = "Bench Work";
 		Offer("I can put you on the bench, now that we know you. {why} Each tray is checked three ways: the seal, the colour, the label against the log. A turned sample that gets filed is a wrong number in the count.",
 			"We don't let many people near the trays. You're one of them now. {why} File what's sound, re-run what's mislabelled, destroy what's turned. If you can't tell, destroy it. We can draw another.");
@@ -620,7 +620,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	//! One task a run: the one drawn for it. Every other way shows.
 	override bool Offers(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w)
 	{
-		if (w.m_iTable <= 0 && w.m_sWay.StartsWith("t"))
+		if (w.m_iGame <= 0 && w.m_sWay.StartsWith("t"))
 			return w.m_sWay == "t" + e.m_iValue.ToString();
 
 		// Going out with their people needs room for one more escort on the server
@@ -855,7 +855,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	//------------------------------------------------------------------------------------------------
 	override void Resolve(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w, int playerId, notnull array<string> said)
 	{
-		if (w.m_iTable > 0)
+		if (w.m_iGame > 0)
 			ResolveTable(dealer, e, w, playerId, said);
 
 		if (w.m_bSquad && ResolveLost(dealer, e, said))
@@ -914,12 +914,12 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A way was taken: a table way's table is dealt from the world, a squad way's people set off.
+	//! A way was taken: a sorting way's row is dealt from the world, a squad way's people set off.
 	override void Taken(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w)
 	{
 		RZ_GameModeComponent gm = dealer.GetGM();
 		RZ_WorldFacts facts = gm.GetFacts();
-		if (w.m_iTable > 0)
+		if (w.m_iGame > 0)
 		{
 			RZ_Settlement town = SickTown(gm, e.m_vGiver);
 			string from = "";
@@ -935,7 +935,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				stage = facts.Stage();
 
 			bool rain = gm.GetEnvironment() && gm.GetEnvironment().IsRaining();
-			dealer.GetTables().Deal(e, w.m_iTable, e.Fill(m_sTitle), e.GetText("here"), from, infection, stage, rain);
+			dealer.GetGames().Deal(e, w.m_iGame, e.Fill(m_sTitle), e.GetText("here"), from, infection, stage, rain);
 			return;
 		}
 
@@ -957,7 +957,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A table way's step is its verdicts; a round's is its people home with you beside them; a
+	//! A sorting way's step is its verdicts; a round's is its people home with you beside them; a
 	//! follower's is the work done with them at your side. People lost: back to say so.
 	override bool StepCounts(RZ_Errands dealer, RZ_Errand e, IEntity me)
 	{
@@ -965,8 +965,8 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		if (!w)
 			return true;
 
-		if (w.m_iTable > 0)
-			return !dealer.GetTables().Find(e.m_iId) || dealer.GetTables().IsJudged(e.m_iId);
+		if (w.m_iGame > 0)
+			return !dealer.GetGames().Find(e.m_iId) || dealer.GetGames().IsJudged(e.m_iId);
 
 		if (!w.m_bSquad)
 			return true;
@@ -985,7 +985,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	//! A dangerous miss at a table comes out whether or not it's reported.
 	override void Ended(RZ_Errands dealer, RZ_Errand e, string why)
 	{
-		RZ_DutyTable t = dealer.GetTables().Find(e.m_iId);
+		RZ_DutyGame t = dealer.GetGames().Find(e.m_iId);
 		if (t && t.m_bJudged && t.m_bDanger && !t.m_bPaidFor)
 			Danger(dealer, e, t, e.m_iAsker);
 	}
@@ -993,7 +993,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	//------------------------------------------------------------------------------------------------
 	//! The dangerous miss: 2 Infamy with the giver's faction, and something small and real for the
 	//! place (the dead and the line: the town 2 more infected; the bench: its faction's morale down 1).
-	protected void Danger(RZ_Errands dealer, RZ_Errand e, RZ_DutyTable t, int playerId)
+	protected void Danger(RZ_Errands dealer, RZ_Errand e, RZ_DutyGame t, int playerId)
 	{
 		RZ_GameModeComponent gm = dealer.GetGM();
 		t.m_bPaidFor = true;
@@ -1001,7 +1001,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		if (RZ_Factions.IsValid(e.m_iFaction) && gm.FindProfile(playerId))
 			gm.AddInfamy(playerId, e.m_iFaction, 2, "a duty done carelessly: " + e.Fill(m_sTitle));
 
-		if (t.m_iKind == RZ_DutyTable.KIND_BENCH)
+		if (t.m_iKind == RZ_DutyGame.KIND_BENCH)
 		{
 			dealer.Morale(e.m_iFaction, -1, m_sKey);
 			return;
@@ -1017,7 +1017,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	//! after a dangerous miss. Lines for the giver go into `said`.
 	protected void ResolveTable(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w, int playerId, notnull array<string> said)
 	{
-		RZ_DutyTable t = dealer.GetTables().Find(e.m_iId);
+		RZ_DutyGame t = dealer.GetGames().Find(e.m_iId);
 		if (!t || !t.m_bJudged)
 			return;
 

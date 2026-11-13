@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **341 prefab fields**: 46 on `RZ_GameModeComponent`, 278 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **313 entries**: 183 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 93 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **343 prefab fields**: 46 on `RZ_GameModeComponent`, 280 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **315 entries**: 183 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 95 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -551,6 +551,9 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | a vanilla rifle magazine item (an existing prefab) | — | Missions > Errands > Props > Pay magazine | optional | a Red Hand camp's pay in kind, the same way; empty = Favor only. Tagged as the camp's goods, as the ration |
 | `RZ_ErrandCarried.et` | a small item with an InventoryItemComponent that can't be equipped (a bundle, a satchel, a small box; the mission item prefab will do), plus RZ_MissionItemComponent | `RZ_MissionItemComponent` | Missions > Errands > Props > Carried | optional | a carried way's item: His Effects' effects, The Name on the Tag's ID; only the asker or a helper hands it in; empty = the mission item. Tagged with a negative mission id (no mission's drop takes it) and as the giver's goods |
 | (existing prefab) | a vanilla wristwatch item (an existing prefab) | — | Missions > Errands > Props > Watch | optional | The Last Tin's watch, traded for two tins; empty = a common find. Put in the player's pack |
+| (existing prefab) | a body under a sheet or a body bag on a board or a stretcher: a composition of vanilla props with nothing to use (`RZ_DutyBody.et`) | — | Missions > Errands > Props > Duty body | optional | the dead laid out for Laying Out, Burial Detail, The Pit's Leavings and The Cold Room: what lies there until it's lifted; empty = Props > Effects (a dead man's things). A work site's look: shown only while a player is near, gone when it's taken up |
+| (existing prefab) | a standing civilian with no weapon and no AI, or a prop figure (`RZ_DutyPerson.et`) | — | Missions > Errands > Props > Duty person | optional | someone waiting in the line at the gate (The Line at the Door, The Wash-Down, The Look-Over, Intake): stands there until taken by the arm; empty = Puzzles > Civilian. A work site's look: shown only while a player is near, gone when it's taken up |
+| (existing prefab) | a small rack or case of vials (`RZ_DutyTray.et`; a vanilla medical case will do) | — | Missions > Errands > Props > Duty tray | optional | a sample tray set out for Bench Work; empty = Props > Crate. A work site's look: shown only while a player is near, gone when it's taken up |
 
 #### Contracts
 
@@ -827,7 +830,6 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | the RadioChannel layout (UI/LAYOUTS.md) | — | UI > Radio channel layout | optional | the radio screen's channel tiles (empty = no View radio). Needs the RZ_RadioMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the ObjectRow layout (UI/LAYOUTS.md) | — | UI > Object row layout | optional | the object menu's option rows: stoves, generators, house radios, wells, puzzle objects, safehouse services, a quartermaster's asks, the lab, the notebook item's name and season, a radio item (empty = no object menu: their world prompts). Needs the RZ_ObjectMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the PowerBreaker layout (UI/LAYOUTS.md) | — | UI > Power breaker layout | optional | the power panel's breakers: the power station's control gets one prompt, Open the panel, and the restore happens in the panel screen (empty = the control's old world prompts). Needs the RZ_PowerMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
-| (existing prefab) | the DutyCard layout (UI/LAYOUTS.md) | — | UI > Duty card layout | optional | the duty table's cards: a duty that sorts things (the dead, the line at the gate, the sample trays) opens the table screen when its work site is held (empty = no screen: the duty is its hold, judged the careful way for half pay). Set by the attribute's default (RZ_DutyCard.layout). Needs the RZ_DutyMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 
 #### Questlines
 
@@ -1455,14 +1457,6 @@ in `UI/layouts/ReforgerZ/`.
       the first **Open the panel** says what you see as a card and the old prompts come back for
       everyone. `RZ_PowerControl.et` now carries only the read and two choices (no use actions,
       which would show as **Use**).
-   10. **The duty table** (preset added, not checked in play). The `RZ_DutyMenu` preset is in
-      `Configs/System/chimeraMenus.conf` (layout `RZ_DutyMenu.layout`, class `RZ_DutyMenu`), and
-      **UI > Duty card layout** has `RZ_DutyCard.layout` as its default, so nothing needs slotting.
-      Both layouts are written as text: open `RZ_DutyMenu.layout` and `RZ_DutyCard.layout` in the
-      layout editor once, so Workbench registers them, and check five cards fit in `Cards` side by
-      side. If the game mode's **UI > Duty card layout** shows empty, pick `RZ_DutyCard.layout`
-      there (VERIFY `UI/RZ_DutyMenu.c:61`). Empty it on purpose and the three sorting duties have
-      no screen: each is its hold, judged the careful way for half pay.
    10. **The car picture** (done). `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on
       transparent, 1,440 × 480) is imported with the vanilla **TextureUIAtlas** preset as
       `RZ_CarSide.edds`, and **UI > Car picture** is set. Without it the repair screen's markers sit
@@ -2013,8 +2007,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **175** lines with the tag, all but one in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
+There are **174** lines with the tag, all but one in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, two the hold prompt's and four its animation and lock's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
@@ -2024,7 +2018,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-39)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-38)
 come last.
 
 ### High risk: the core loop (2)
@@ -2169,7 +2163,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PowerLooks.c:102` | the power station's generator: `RZ_PowerGeneratorSound.et` (no mesh, vanilla's diesel generator sounds on a `StaticSoundComponent`), spawned by the server, plays on every client that streams it in and stops when the server deletes it, as vanilla's placed generators do | No sound at a running station: empty **World > Power grid > Generator sound prefab**; the panel and the notices still say it runs |
 | `UI/RZ_PowerLampsClient.c:185` | street lamps: `StreetLampComponent.SetBroken(true)` on a client puts that lamp out there (its light and its glow), and `SetBroken(false)` lets it light itself at night again | Lamps stay lit in dark towns, or stay out after the main switch: turn **World > Power grid > Street lamps** off, and every lamp is left as the map has it |
 
-### The UI (39)
+### The UI (38)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -2208,7 +2202,6 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_LoadoutLock.c:16` | with the spawn screen off (**UI > Spawn row layout** empty), what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | Only the fallback's look: the server still refuses to spawn a locked pick |
 | `UI/RZ_SpawnMenu.c:21` | the spawn screen's hook: 1.9's `DeployMenuSystem` calls `SCR_PlayerDeployMenuHandlerComponent.Update` every frame on the local player's handler while it's ready, and `CanOpenMenu` is true exactly when vanilla would show its deploy menu (at the first spawn after the welcome screen, and after each death) | The screen doesn't open, or opens late: empty **UI > Spawn row layout** and vanilla's deploy menu comes back while it's fixed |
 | `UI/RZ_RadioMenu.c:395` | a layout made under an `OverlayWidget` cell (`Cell0`-`Cell11`), its root in an `OverlayWidgetSlot` with both aligns Stretch, fills the cell | The radio screen's tiles sit small in a corner of their cells, or overlap: in `RZ_RadioChannel.layout` keep `ChannelSize` at 317 × 92, or make the cells `SizeLayout` widgets |
-| `UI/RZ_DutyMenu.c:61` | a `ResourceNamePicker` attribute's default string that names a layout written as text (its GUID from the `.meta`) resolves on a client, so **UI > Duty card layout** needs no slotting in `RZ_GameMode.et` (the meat prefab's default in **Wildlife** works the same way, on a vanilla prefab) | The duty table never opens and the sorting duties judge themselves for half pay: pick `RZ_DutyCard.layout` in **UI > Duty card layout** on the game mode |
 | `Interactions/RZ_RadioScreen.c:37` | a radio item carried by a player (in hand, on a vest or in a pack) has a parent entity, and one lying on the ground has none, so **View radio** shows on the ground from the default context and in hand from the knob context | View radio shows in the wrong place or not at all: the house radio's View radio still opens the screen, and the log is on the notebook's Radio tab. Check the parent in play and change the test in `RZ_ViewRadioAction.CanBeShownScript` |
 | `Interactions/RZ_RadioScreen.c:54` | the server runs `PerformAction` for an action on a carried radio in vanilla's inspection context (`knob_toggle`, beside Turn on/off), as for vanilla's own | View radio in hand does nothing: use it with the radio on the ground or at a house radio; or make the action local and ask the server through `RZ_PlayerUIComponent` |
 | `UI/RZ_DeathBrief.c:425` | the death brief, opened with `OpenMenu` while the spawn screen (or vanilla's deploy menu) is open, goes on top and takes the input: the screen under it ignores A and B until the brief closes, and the press that closes it (A's release, or Space, a click or B with the 0.4 s wait) doesn't deploy or open the pause menu under it | A press that closes the brief also deploys or opens the pause menu: lengthen `LEAVE_DELAY` in `RZ_DeathBriefMenu`, or turn **UI > Death brief** off |
@@ -2590,11 +2583,10 @@ Report the line. The place audit's own lines (`Places: ...`, `Places fail: ...`,
 are in [PLACES.md](PLACES.md#the-audit).
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 36 routines, 27 duties (on) and 70 cards, N players with a ledger.`; a duty's
-table, `Duty table: the dead for <player>, N subjects, N looks (errand N).`, `Duty table: errand N
-judged for <player>: N of N right, score S, danger 0|1.`, `Duty table: errand N judged itself (no
-screen), score S.` and the warning `Duty table: a client couldn't open it ...` (no `RZ_DutyMenu`
-preset or layout on that client: tables judge themselves from then on); a duty's people, `Duty
+start, `Errands: on, 36 routines, 27 duties (on) and 70 cards, N players with a ledger.`; a sorting
+duty, `Duty sorting: the dead for <player>, N subjects, N looks (errand N).`, `Duty sorting: errand N
+judged for <player>: N of N right, score S, danger 0|1.` and `Duty sorting: errand N judged itself
+(no work sites), score S.`, with each of its prompts a `Work sites: errand.N.s0.take ...` line; a duty's people, `Duty
 squad: the patrol out with <player> from <grid>, N points (errand N).`; a contract
 a giver made because they were asked, `Mission N '<title>' made on asking: <player> asked <faction>.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
@@ -2771,14 +2763,17 @@ session, tick off:
   dusk), its task is a hold at a work site, and it pays 3 Favor. Ask the same person again: *You've
   done your shift. Ask again in a while*. After the third piece of work for one faction: *"They know
   your face now"*.
-- [ ] The duty table ([ERRANDS.md](ERRANDS.md#the-table), [UI.md](UI.md#the-duty-table)): after
-  that third piece of work, ask a nurse, a medic or a lookout until they give The Line at the Door
-  or Laying Out (the Halcyon lab's Bench Work needs Known). Hold the work site (4 s): the table
-  opens, with a pad too. The three goal lines read at a glance; a look turns a sign and takes one
-  off LOOKS LEFT; a verdict fills amber; **Hand it in** is dark until every card has one. Close it
-  half done, hold the site again: the same table, the same signs turned. Hand in a perfect one: full
-  Favor and 1 Fame, and the giver says so. Pass a bitten one on purpose: no pay, +2 Infamy. Empty
-  **UI > Duty card layout**: the hold alone finishes it, for half.
+- [ ] The sorting duties ([ERRANDS.md](ERRANDS.md#the-sorting-duties)): after that third piece of
+  work, ask a nurse, a medic or a lookout until they give The Line at the Door or Laying Out (the
+  Halcyon lab's Bench Work needs Known). At the place three things wait in a row (bodies, people,
+  trays: the Duty props, or their stand-ins). Walking up to one says its tell; beside it three
+  prompts sit side by side, each a 2 s hold with the hands animation, and a look is said as a line
+  with the looks left. *Lift onto the stretcher* takes it (the prop goes) and three spots show
+  6 to 10 m off; putting it down there leaves the look (a grave dug with the spade's animation, a
+  pile, a bed). *Read the clipboard* opens the sheet. After the last one a line says how it went.
+  All with a pad. Report a perfect one: full Favor and 1 Fame. Put a bitten one in a grave on
+  purpose: no pay, +2 Infamy. Check the three prompts along one body can each be aimed at
+  (0.7 m apart); if they can't, say so.
 - [ ] With their people ([ERRANDS.md](ERRANDS.md#with-their-people)): take a patrol's short leg
   from a lookout or a sentry. Their people stand at the gate, walk three points and come home, and
   stop when you fall more than 150 m behind; each point gives one line about what's there; back at

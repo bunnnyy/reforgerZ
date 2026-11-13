@@ -76,7 +76,7 @@ The Doc map covers `docs/` only. Approved but unbuilt designs are in `designs/` 
 | `docs/ROADMAP.md` | Built, next, play-test priorities, and the Dropped list |
 | `docs/REPUTATION.md` | Factions, Fame/Infamy/Favor, tiers, shops, perks, leaders, AI hostility, morale/needs/truces |
 | `docs/MISSIONS.md` | Every contract, world event, puzzle, leader and arc mission, with requirements and ✅ status |
-| `docs/ERRANDS.md` | Errands: the givers (named people, the wanderers' asks), the dealer, keeping them true, ways and steps, pay, the faults table, every routine and card with ✅, the duties (always there to be asked for), the trust ladder, the duty table and the duties' people, telemetry |
+| `docs/ERRANDS.md` | Errands: the givers (named people, the wanderers' asks), the dealer, keeping them true, ways and steps, pay, the faults table, every routine and card with ✅, the duties (always there to be asked for), the trust ladder, the sorting duties played at their place and the duties' people, telemetry |
 | `docs/QUESTLINES.md` | The four majors (acts, defaults, endings) and the long questlines (three per faction, two for the Long Table): stages, approaches, endings, crossings |
 | `docs/FINALE.md` | The cure's finale: the gate, the lock and price doors, the five routes, live tissue, pacts and kills between routes, the finish, the batch and the seal, the stand as a fight for the clean room, Take the Lab and the Coat Run, terms, the route Fame, fallbacks, items and people |
 | `docs/EPILOGUE.md` | The epilogue week after the cure: its phases, the record and the hall's freeze, beats and carriers, the dose outlets, places and scenes, the grey choices, the closing work (the closure set), names, edge cases, admin tools |
@@ -131,6 +131,10 @@ Write conservatively:
   looting, healing, doors, fuel, vehicles, radios), and menus as much as possible, even ones we have to
   make; a single world prompt only for what's done quickly in a rush. The rule and the audit: `docs/UI.md`,
   "Default first, then menus".
+- **Games are played in the world:** anything that is a game (sorting the dead, a patrol's find, a
+  watch) is done in person, with your hands on things that stand at the place, never as a menu. A
+  menu may be one prop of the game when it's itself something to handle (a clipboard, a ledger), never
+  the whole game. The rule: `docs/UI.md`, "Default first, then menus".
 - **Console and controller, for the whole mod:** everything works on console (Xbox, PlayStation)
   and with a gamepad, not only with keyboard and mouse. Every input action has a gamepad binding;
   every screen opens, moves and closes without a mouse; nothing needs hover, typing or a chat

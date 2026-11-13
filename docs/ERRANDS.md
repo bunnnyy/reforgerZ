@@ -434,9 +434,9 @@ and ledger), with three differences that put work in reach from the first day:
   there, and they take none of the place's chore slots.
 
 Code: `Missions/Errands/RZ_ErrandDuties.c` (`RZ_Duties` the ladder, `RZ_ErrandDuty` the duties: one
-object per kind and faction), `RZ_DutyTable.c` ([the table](#the-table)), `RZ_DutySquads.c`
+object per kind and faction), `RZ_DutyGame.c` ([the sorting duties](#the-sorting-duties)), `RZ_DutySquads.c`
 ([their people](#with-their-people)). Settings: **Missions > Errands > Duties** (on) and **Duty
-gap**; **UI > Duty card layout** (the table's screen).
+gap**; the sorting duties' three optional props under **Missions > Errands > Props**.
 
 ### The trust ladder
 
@@ -465,7 +465,7 @@ and never Trusted: that takes contracts, which a giver now makes on asking
   house's last meal ran short, someone died there this week, it's raining, it's dusk or night, the
   outbreak is past its early stage, the town is sick (it's named), the faction is short of food,
   the cure is past halfway (the bench). With none of those, one of two or three everyday reasons.
-- **What's on the table, and what's out there.** A table's subjects and how many are bad, and
+- **What's laid out, and what's out there.** A sorting duty's subjects and how many are bad, and
   what a patrol finds at each point, come from the world too (below).
 
 ### The duties
@@ -478,38 +478,46 @@ hands at a [work site](#work-sites) at the place (or behind it), then back to th
 | Kitchen | 1 | cook, storekeeper, farmer | Kitchen Duty | Mess Duty | The Pot and the Still | Canteen | Peel and chop (18 s) · Stir the pot (20 s) · Ladle supper out (16 s). Or **put two tins in the pot**, or **a leg of raw meat** (a deer's, [DESIGN.md](DESIGN.md#wildlife)) | 3 Favor; the tins 4 Favor and +1 food at a house, the meat 4 Favor and +2 (a house is fed by duties twice a season day at most) | ✅ |
 | Wood and water | 1 | storekeeper, farmer, mechanic, technician | Wood and Water | Fatigues | Earn Your Keep | The Boiler | Split the wood (18 s) · Fill the water cans (15 s) · Carry and stack the crates (16 s) | 3 Favor | ✅ |
 | Washing down | 1 | nurse, medic, lab assistant, clerk | Washing Down | Hygiene Detail | The Scrub | Decontamination, Minor | Scrub the tables (18 s) · Wash and hang the bedding (16 s) · Sluice the yard (18 s) | 3 Favor | ✅ |
-| The line | 2 | nurse, medic, lookout, sentry, guard, toll man | The Line at the Door | The Wash-Down | The Look-Over | Intake | A 4 s hold at the gate opens [the table](#the-table): the people waiting. **Hold** a bite or clouded eyes, **wash** a fever, **let in** the rest | Up to 6 Favor by how many you got right; 1 Fame if every one | ✅ |
-| The dead | 2 | nurse, medic, clerk, cook, lab assistant | Laying Out | Burial Detail | The Pit's Leavings | The Cold Room | A 4 s hold at the place opens the table: the dead laid out. **Burn** the bitten, **hold** any whose papers don't match the tag, **bury** the rest | Up to 6 Favor; 1 Fame if every one | ✅ |
+| The line | 2 | nurse, medic, lookout, sentry, guard, toll man | The Line at the Door | The Wash-Down | The Look-Over | Intake | [A sorting duty](#the-sorting-duties): the people waiting at the gate. Take each by the arm to **the holding room** (a bite, clouded eyes), **the wash** (a fever) or **through the gate** | Up to 6 Favor by how many you got right; 1 Fame if every one | ✅ |
+| The dead | 2 | nurse, medic, clerk, cook, lab assistant | Laying Out | Burial Detail | The Pit's Leavings | The Cold Room | A sorting duty: the dead laid out. Carry each to **the pyre** (bitten), **the holding table** (papers that don't match the tag) or **a grave you dig** | Up to 6 Favor; 1 Fame if every one | ✅ |
 | A patrol | 2; the long round 3 (*Needs Known with ...* on its reply) | lookout, sentry, guard, toll man | The Walk Round | Patrol Leg | The Round | The Sample Walk | **The short leg**: three points 70–140 m out and back, [with their people](#with-their-people). **The long round, armed**: four points 180–300 m out | 5 Favor, 1 Fame; the long round 8 Favor, 1 Fame | ✅ |
 | A hunt | 3 | farmer, cook, lookout, toll man | For the Pot | — | The Meat Run | — | **Walk the snare line with the hunter**: 200–400 m out, the hunter following you, *Check the snares* (15 s) with them beside you. Or **hand over a leg of raw meat** | 7 Favor, 1 Fame, +1 food at a house; the meat 8 Favor, 1 Fame, +2 food | ✅ |
-| The bench | 3 | lab assistant, technician | — | — | — | Bench Work | A 4 s hold at the bench opens the table: the sample trays. **Destroy** a broken seal or a turned sample, **re-run** a label that doesn't match, **file** the rest | Up to 8 Favor; 1 Fame if every one | ✅ |
+| The bench | 3 | lab assistant, technician | — | — | — | Bench Work | A sorting duty: the sample trays set out. Carry each to **the bin** (a broken seal, a turned colour), **the bath** (a label that doesn't match) or **the rack** | Up to 8 Favor; 1 Fame if every one | ✅ |
 
 The duties that wait (a watch, stock-taking, and rung 4's) are in
 [designs/DUTIES.md](../designs/DUTIES.md).
 
-### The table
+### The sorting duties
 
-One small sorting game for the line, the dead and the bench (`RZ_DutyTables`, `RZ_DutyTable`; its
-screen is [UI.md](UI.md#the-duty-table)). The server holds the truth and judges; the client only
-draws what it's sent.
+The line, the dead and the bench are one game in three skins, **played at the place with your
+hands**, never on a screen (`RZ_DutyGames`, `RZ_DutyGame`; the rule is
+[UI.md](UI.md#default-first-then-menus), "Games are played in the world"). Every prompt in it is a
+[work site](#work-sites): held, animated, your feet locked while it runs, and the world showing
+the result. The server holds the truth and judges.
 
-**The rules, in three lines.** Each subject has three signs face down and one free tell; you have
-fewer looks than there are signs (subjects + 2), so the tells say where to spend them. Give every
-subject one of three verdicts, by the legend on the screen (*A BITE: BURN · PAPERS DON'T MATCH:
-HOLD · ALL CLEAR: BURY*). Right pays in full, too careful pays half, too careless pays nothing, and
-a bad one let through is the dangerous miss.
+**How it plays, in three lines.** Three or four subjects wait in a row at the place (bodies, people,
+trays); walking up to one tells you its tell, and beside it are three places to look, a 2 s hold
+each (*Look at the arms*, *Look at the neck*, *Check the papers against the tag*), but you have
+fewer looks than there are places (subjects + 2), so the tells say where to spend them. Then you
+take it up (*Lift onto the stretcher*, 3 s) and three spots appear a few metres off: where you put
+it down is the verdict (*Put on the pyre*, *Lay on the holding table*, *Dig the grave and lower them
+in*, 8 s with the spade if you carry one). Right pays in full, too careful pays half, too careless
+pays nothing, and a bad one let through is the dangerous miss.
 
 | | |
 |---|---|
-| Subjects | 3 or 4, one more from the Collapse stage on (5 at most). Each is **clean**, **odd** (the third sign: papers that don't match, a fever, a label that doesn't match) or **bad** (one of the first two signs: a bite; the line's clouded eyes; the bench's broken seal or turned colour) |
-| How many are bad | Each is bad at 15% + the infection of the sickest town within 2.5 km ÷ 300 + 4% a stage (50% at most), odd at 22%. Never a table with nothing to find |
-| The tell | One short line that's free: calm (*Died in bed, family there*), odd (*The tag is written twice*) or risky (*Found in the street at Morton*: the sick town, by name). It points the right way three times in four |
-| Looks | Subjects + 2. A look turns one sign over, for good. At the line in the rain: one fewer (the screen says so) |
-| Verdicts | In order of care: pass (bury, let in, file), check (hold, wash, re-run), stop (burn, hold, destroy). The verdict that matches is **right**; a more careful one is **too careful**; a less careful one **missed**, or **let through** if the subject was bad |
-| The score | Right 1, too careful ½, the others 0, over the number of subjects. Favor is the way's × the score (1 at least); Fame only for a perfect table, which is also a record in the world's memory (`duty.<kind>`, the giver's name) and the giver says so |
+| Subjects | 3, or 4 from the Collapse stage on. Each is **clean**, **odd** (the third place: papers that don't match, a fever, a label that doesn't match) or **bad** (one of the first two places: a bite; the line's clouded eyes; the bench's broken seal or turned colour) |
+| How many are bad | Each is bad at 15% + the infection of the sickest town within 2.5 km ÷ 300 + 4% a stage (50% at most), odd at 22%. Never a row with nothing to find |
+| The tell | One short line, said as you come within 4 m: calm (*Died in bed, family there*), odd (*The tag is written twice*) or risky (*Found in the street at Morton*: the sick town, by name). It points the right way three times in four |
+| Looking | A subject's three places open while you stand within 5 m of it, side by side along it, and close when you walk off. A look is said as a line (*A bite on the arm, wrapped in cloth. 3 looks left.*) and is gone for good. At the line in the rain: one look fewer. With none left the places close |
+| Taking and putting down | One at a time. The three spots are 6 to 10 m from the row and only there while you carry something; each one put down stays where it was put (the next grave is beside the last), by the work sites' own looks: a grave is the Grave look, the pyre the Burn look, the holding table the Care look, the rack the Bench look |
+| The clipboard | *Read the clipboard*, by the row: the goal in three lines, the looks left, and each subject with its tell, what you've seen and where you put it, on a sheet in [the reader](UI.md#subtitles-and-the-reader). The one paper in the game, and you never need it |
+| The verdicts | In order of care: pass (the grave, the gate, the rack), check (the holding table, the wash, the bath), stop (the pyre, the holding room, the bin). The one that matches is **right**; a more careful one is **too careful**; a less careful one **missed**, or **let through** if the subject was bad |
+| The score | Judged when the last one is put down. Right 1, too careful ½, the others 0, over the number of subjects. Favor is the way's × the score (1 at least); Fame only for a perfect row, which is also a record in the world's memory (`duty.<kind>`, the giver's name) and the giver says so |
 | The dangerous miss | No pay. 2 Infamy with the giver's faction, and the place pays a little: the town is 2 more infected (the dead, the line), or the faction's morale is 1 down (the bench). It comes out when you report, or when the errand ends any other way |
-| Leaving it | Close the screen, or have danger close it, and the table keeps what you turned over and chose: the work site is put back, and holding it again opens the same table |
-| No screen | With **UI > Duty card layout** empty, or a client that can't open the screen, the table judges itself with the careful verdict for every subject: half pay, nothing dangerous, and the duty is just its hold |
+| Leaving it | Nothing is lost: what you looked at and put down stays until the errand lapses. Walk back and go on |
+| What stands there | **Props > Duty body**, **Duty person** and **Duty tray** (optional): what waits in the row. Empty: Props > Effects, Puzzles > Civilian and Props > Crate. Each is a work site's look, up only while a player is near |
+| No work sites | With **Shared > Work sites** off there is nothing to handle: standing at the place sorts every one the careful way, for half pay and nothing dangerous |
 
 ### With their people
 

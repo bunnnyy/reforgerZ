@@ -25,8 +25,7 @@ modded enum ChimeraMenuPreset // each entry needs a matching chimeraMenus.conf e
 	RZ_CraftMenu,
 	RZ_ObjectMenu,
 	RZ_RadioMenu,
-	RZ_PowerMenu,
-	RZ_DutyMenu
+	RZ_PowerMenu
 }
 
 //------------------------------------------------------------------------------------------------
