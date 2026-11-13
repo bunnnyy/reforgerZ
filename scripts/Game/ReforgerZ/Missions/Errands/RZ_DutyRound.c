@@ -367,7 +367,7 @@ class RZ_DutyRound
 
 	//------------------------------------------------------------------------------------------------
 	//! A box's corners are within `rise` m of each other on the ground.
-	protected static bool Level(notnull array<vector> quad, float rise)
+	static bool Level(notnull array<vector> quad, float rise)
 	{
 		float lo = 99999;
 		float hi = -99999;
@@ -400,7 +400,7 @@ class RZ_DutyRound
 
 	//------------------------------------------------------------------------------------------------
 	//! A box at pos comes within a person's width of a box already taken (four corners each in `taken`).
-	protected static bool Overlaps(vector pos, float yaw, vector fmin, vector fmax, notnull array<vector> taken)
+	static bool Overlaps(vector pos, float yaw, vector fmin, vector fmax, notnull array<vector> taken)
 	{
 		array<vector> quad = {};
 		RZ_CampLife.Quad(pos, yaw, fmin, fmax, 0.3, quad);
@@ -423,7 +423,7 @@ class RZ_DutyRound
 
 	//------------------------------------------------------------------------------------------------
 	//! Degrees clockwise from north, from a toward b.
-	protected static float Bearing(vector a, vector b)
+	static float Bearing(vector a, vector b)
 	{
 		return Math.Atan2(b[0] - a[0], b[2] - a[2]) * Math.RAD2DEG;
 	}

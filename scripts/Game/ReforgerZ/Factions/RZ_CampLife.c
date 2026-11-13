@@ -1924,6 +1924,31 @@ class RZ_CampLife
 	RZ_SiteAudit GetAudit() { return m_Audit; }
 	RZ_CampLifeSettings GetSettings() { return m_Settings; }
 
+	//------------------------------------------------------------------------------------------------
+	//! The gate of the faction place nearest `at` within `range` (RZ_SiteAudit.GatePoint: its road
+	//! entry, else out toward its approach), and where its people gather inside. False: none near.
+	bool GateNear(vector at, float range, out vector gate, out vector inside)
+	{
+		RZ_CampPlace best;
+		float bestDist = range;
+		foreach (RZ_CampPlace p : m_aPlaces)
+		{
+			float d = Math.Min(RZ_Util.DistXZ(at, p.m_vPos), RZ_Util.DistXZ(at, p.m_vHome));
+			if (d <= bestDist)
+			{
+				bestDist = d;
+				best = p;
+			}
+		}
+
+		if (!best)
+			return false;
+
+		gate = RZ_SiteAudit.GatePoint(best);
+		inside = best.m_vHome;
+		return true;
+	}
+
 	// ================================================================ For the solver (RZ_SiteSolver)
 	//------------------------------------------------------------------------------------------------
 	RZ_CampFit ReadFitFor(RZ_CampPlace p, RZ_CampGround ground) { return ReadFit(p, ground); }

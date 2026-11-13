@@ -1,11 +1,14 @@
 //! The sorting duties, played in the world (docs/ERRANDS.md, "The sorting duties"): the dead laid
 //! out, the people waiting at the gate, the sample trays on the bench, the crates in the store.
-//! Each subject is a thing standing or lying at the place. You go to it and use your hands: three
-//! places on it to look (a hold each, and fewer looks than there are places, so you choose), a tell
-//! that's free when you walk up, then you take it up and carry it to one of three spots (the pyre,
-//! the grave, the holding table), which is the verdict. Every prompt is a work site
-//! (Missions/Blocks/RZ_WorkSites.c): held, animated, the world showing what you did. The one paper
-//! in it is the clipboard at the place, read in the reader: what you've seen so far.
+//! Each subject is a thing standing or lying at the place, each person in their own clothes. You go
+//! to it and use your hands: its one prompt (its name, RZ_WorkSites.Gather) lists three places on it
+//! to look (a hold each, and fewer looks than there are places, so you choose) and taking it up, under
+//! the rules, the looks left and what you've seen of it; a tell is free when you walk up. Then you
+//! carry it to one of three named places close by (the gate, the wash, the holding room), each a
+//! thing that reads as what it is, and leave it there: that's the verdict. The line at a gate stands
+//! at the place's real way in. Every prompt is a work site (Missions/Blocks/RZ_WorkSites.c): held,
+//! animated, the world showing what you did. The tracker says where the three places are while
+//! you're leading one; the clipboard at the place is there to read but never needed.
 //! The server holds the truth and judges: right is full, too careful is half, too careless is
 //! nothing, and a bad one let through is the dangerous miss. How many are bad follows the world
 //! (the sickest town near, the outbreak's stage). Owned by the errand dealer. Server only.
@@ -25,6 +28,7 @@ class RZ_DutySubject
 	bool m_bTold;					// its tell has been said
 	bool m_bSigns;					// its looking places are open (the player is beside it)
 	bool m_bTaken;					// in the player's hands, or carried off already
+	ResourceName m_sProp;			// what stands for it: a person in their own clothes
 }
 
 //------------------------------------------------------------------------------------------------
@@ -79,6 +83,122 @@ class RZ_DutyGame
 	ref array<int> m_aDestUsed = {0, 0, 0};
 	ref array<string> m_aKeys = {};	// every work site it has opened
 	ref array<ref RZ_DutySubject> m_aSubjects = {};
+	bool m_bAtGate;					// the line stands at the place's way in (m_vGate, m_vInside)
+	vector m_vGate;
+	vector m_vInside;
+	ref array<IEntity> m_aMarks = {};	// the three places' things (a barrier, a shower, a tent), while it's laid out
+	string m_sNow;					// the tracker's line under the step: where to take them, or the rules
+
+	//------------------------------------------------------------------------------------------------
+	//! The three places' names: PASS, CHECK, STOP.
+	static string DestName(int kind, int verdict)
+	{
+		array<string> names = {"The place", "The place", "The place"};
+		switch (kind)
+		{
+			case KIND_DEAD: names = {"The graves", "The holding table", "The pyre"}; break;
+			case KIND_LINE: names = {"The gate", "The wash", "The holding room"}; break;
+			case KIND_BENCH: names = {"The rack", "The bath", "The bin"}; break;
+			case KIND_STOCK: names = {"The counted stack", "The write-off pile", "The query table"}; break;
+		}
+
+		return names[verdict];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A place's name inside a sentence ("the wash").
+	static string DestLower(int kind, int verdict)
+	{
+		string name = DestName(kind, verdict);
+		return "t" + name.Substring(1, name.Length() - 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What stands at a place so it reads as what it is (vanilla props, each measured in
+	//! tools/camp_kit/footprints.json and known to MarkBox): PASS, CHECK, STOP.
+	static ResourceName DestMark(int kind, int verdict)
+	{
+		array<ResourceName> marks = {"", "", ""};
+		switch (kind)
+		{
+			case KIND_DEAD: marks = {"{EAD2277399B3C658}Prefabs/Props/Military/Graves/Grave_USSR_02.et", "{7E4A4D680FAD3461}Prefabs/Props/Medical/TableMedical_01/TableMedical_01.et", "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et"}; break;
+			case KIND_LINE: marks = {"{64C9C1D1C2C1B38D}Prefabs/Props/Infrastructure/Roadblocks/RoadBlock_01.et", "{DC6B28A772BCC731}Prefabs/Structures/Recreation/Beach/ShowerBeach_01.et", "{908E3B090C2438E9}Prefabs/Props/Recreation/Camp/TentSmall_03/TentSmall_03_white.et"}; break;
+			case KIND_BENCH: marks = {"{0089B23327C9B8CA}Prefabs/Props/Furniture/TableLong_01/TableLong_01.et", "{6FD13E995D293853}Prefabs/Props/Furniture/SinkOld_01.et", "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et"}; break;
+			case KIND_STOCK: marks = {"{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et", "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et", "{0089B23327C9B8CA}Prefabs/Props/Furniture/TableLong_01/TableLong_01.et"}; break;
+		}
+
+		return marks[verdict];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A place's thing's measured box in its own space (tools/camp_kit/footprints.json: w, d, h, ox, oz).
+	//! False for one never measured: it isn't stood.
+	static bool MarkBox(ResourceName prefab, out vector fmin, out vector fmax)
+	{
+		array<float> m = {};
+		if (prefab.Contains("Grave_USSR_02.et"))
+			m = {1.046, 2.367, 1.227, 0, 0};
+		else if (prefab.Contains("TableMedical_01.et"))
+			m = {1.139, 0.577, 1.249, 0.024, 0.042};
+		else if (prefab.Contains("WoodPile_01_A.et"))
+			m = {1.92, 6.6, 1.61, -0.008, -0.011};
+		else if (prefab.Contains("RoadBlock_01.et"))
+			m = {2.214, 0.522, 1.169, 0, 0};
+		else if (prefab.Contains("ShowerBeach_01.et"))
+			m = {2.201, 2.199, 3.102, 0, 0};
+		else if (prefab.Contains("TentSmall_03_white.et"))
+			m = {3.367, 6.217, 1.913, -0.03, 0};
+		else if (prefab.Contains("TableLong_01.et"))
+			m = {2.406, 1.002, 0.903, 0, 0};
+		else if (prefab.Contains("SinkOld_01.et"))
+			m = {0.845, 1.452, 1.004, 0, 0};
+		else if (prefab.Contains("BarrelMetal_01_rust.et"))
+			m = {0.759, 0.762, 1.1, 0, 0};
+		else if (prefab.Contains("Pallet_01_Pile.et"))
+			m = {0.994, 1.447, 0.979, 0.007, -0.009};
+		else if (prefab.Contains("CrateWooden_01_plain.et"))
+			m = {0.879, 1.455, 0.834, 0, 0};
+		else
+			return false;
+
+		fmin = Vector(m[3] - m[0] * 0.5, 0, m[4] - m[1] * 0.5);
+		fmax = Vector(m[3] + m[0] * 0.5, m[2], m[4] + m[1] * 0.5);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rules, in one paragraph: which sign means which place.
+	static string Rules(int kind)
+	{
+		array<string> lines = {};
+		Legend(kind, lines);
+		string text = "";
+		foreach (string line : lines)
+		{
+			if (!text.IsEmpty())
+				text += " ";
+
+			text += line;
+		}
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A subject's menu: its tell, what you've seen of it, the looks left, and the rules.
+	string SubjectText(RZ_DutySubject s)
+	{
+		string text = s.m_sTell + ".";
+		for (int sign = 0; sign < 3; sign++)
+		{
+			int look = SignLook(s, sign);
+			if (look != SIGN_HIDDEN)
+				text += " " + SignSeen(m_iKind, sign, look) + ".";
+		}
+
+		text += string.Format("\n\n%1 looks left.\n\n%2", m_iLooks, Rules(m_iKind));
+		return text;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The three places to look, as prompts.
@@ -242,58 +362,20 @@ class RZ_DutyGame
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Where a verdict is given, as a prompt: PASS, CHECK, STOP.
+	//! Where a verdict is given, as a prompt, with the place's name: "Leave them here: the wash".
 	static string DestPrompt(int kind, int verdict)
 	{
-		switch (kind)
-		{
-			case KIND_DEAD:
-			{
-				if (verdict == PASS)
-					return "Dig the grave and lower them in";
+		string verb = "Leave them here";
+		if (kind == KIND_DEAD && verdict == PASS)
+			verb = "Bury them here";
+		else if (kind == KIND_DEAD)
+			verb = "Lay them here";
+		else if (kind == KIND_BENCH || kind == KIND_STOCK)
+			verb = "Set it down here";
 
-				if (verdict == CHECK)
-					return "Lay on the holding table";
-
-				return "Put on the pyre";
-			}
-
-			case KIND_LINE:
-			{
-				if (verdict == PASS)
-					return "Wave them through";
-
-				if (verdict == CHECK)
-					return "Send them to the wash";
-
-				return "Put them in the holding room";
-			}
-
-			case KIND_BENCH:
-			{
-				if (verdict == PASS)
-					return "File on the rack";
-
-				if (verdict == CHECK)
-					return "Set in the bath to run again";
-
-				return "Burn in the bin";
-			}
-
-			case KIND_STOCK:
-			{
-				if (verdict == PASS)
-					return "Stack with the counted";
-
-				if (verdict == CHECK)
-					return "Set aside, written off";
-
-				return "Put on the query table";
-			}
-		}
-
-		return "Put down";
+		return verb + ": " + DestLower(kind, verdict);
 	}
+
 
 	//------------------------------------------------------------------------------------------------
 	//! Where a verdict put it, for the line that says so and the clipboard.
@@ -638,9 +720,34 @@ class RZ_DutyGames
 			{
 				sites.Close(key);
 			}
+
+			foreach (int i, RZ_DutySubject s : g.m_aSubjects)
+			{
+				sites.Scatter(ChoiceKey(g, i));
+			}
 		}
 
 		g.m_aKeys.Clear();
+		foreach (IEntity mark : g.m_aMarks)
+		{
+			if (mark)
+				RZ_Util.DeleteUnit(mark);
+		}
+
+		g.m_aMarks.Clear();
+		g.m_sNow = "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tracker's line under the step (RZ_Errands.JournalText): where to take the one you're
+	//! leading, else the rules and the looks left. "" when there's no sorting for it.
+	string NowLine(int errandId)
+	{
+		RZ_DutyGame g = Find(errandId);
+		if (!g || g.m_bJudged)
+			return "";
+
+		return g.m_sNow;
 	}
 
 	// ================================================================ Dealing
@@ -698,6 +805,7 @@ class RZ_DutyGames
 		{
 			made.m_iBadSign = Math.RandomInt(0, 2);
 			made.m_sTitle = SubjectTitle(kind, idx, used);
+			made.m_sProp = SubjectProp(kind, RZ_Looks.SeedOf(e.m_iId, idx));
 			// The tell points the right way three times in four
 			int points = made.m_iTruth;
 			if (Math.RandomFloat01() > TELL_TRUE)
@@ -717,6 +825,25 @@ class RZ_DutyGames
 			g.m_sNote = string.Format("%1 is sick. Expect more of them bad.", fromTown);
 		}
 
+		// The line at a gate stands at the place's real way in, and the step points there
+		if (kind == RZ_DutyGame.KIND_LINE)
+		{
+			vector gate;
+			vector inside;
+			string how = RZ_DutyScenes.Entrance(e.m_vPlace, gate, inside);
+			if (RZ_Util.DistXZ(gate, inside) > 1)
+			{
+				g.m_bAtGate = true;
+				g.m_vGate = gate;
+				g.m_vInside = inside;
+				g.m_vPlace = gate;
+				e.m_vPlace = gate;
+			}
+
+			RZ_Log.Info(string.Format("Duty sorting: the line for errand %1 stands at %2 (%3).", e.m_iId, how, RZ_SettlementScanner.GridReference(g.m_vPlace)));
+		}
+
+		g.m_sNow = string.Format("%1 %2 looks.", RZ_DutyGame.Rules(kind), g.m_iLooks);
 		m_aGames.Insert(g);
 		RZ_Log.Info(string.Format("Duty sorting: %1 for %2, %3 subjects, %4 looks (errand %5).", KindName(kind), RZ_Util.PlayerName(e.m_iAsker), count, g.m_iLooks, e.m_iId));
 		return g;
@@ -885,7 +1012,9 @@ class RZ_DutyGames
 	// ================================================================ In the world
 	//------------------------------------------------------------------------------------------------
 	//! What stands for a subject while it waits (Missions > Errands > Props; empty: the next best).
-	protected ResourceName SubjectProp(int kind)
+	//! People in the line each wear their own clothes, picked by `seed` from Duty person looks, else
+	//! from vanilla's civilians and the Duty person (so no two side by side are the same).
+	protected ResourceName SubjectProp(int kind, int seed)
 	{
 		RZ_ErrandProps props = RZ_ErrandSettings.Get().Props();
 		switch (kind)
@@ -900,10 +1029,24 @@ class RZ_DutyGames
 
 			case RZ_DutyGame.KIND_LINE:
 			{
-				if (!props.m_sDutyPerson.IsEmpty())
-					return props.m_sDutyPerson;
+				ResourceName person = props.m_sDutyPerson;
+				if (person.IsEmpty())
+					person = m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
 
-				return m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
+				array<ResourceName> looks = {};
+				if (props.m_aDutyPersonLooks)
+					looks.Copy(props.m_aDutyPersonLooks);
+
+				if (looks.IsEmpty())
+				{
+					looks.Insert("{8C7093AF368F496A}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_1.et");
+					looks.Insert("{1FFE2B88BEF51840}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_Turtleneck_2.et");
+					looks.Insert("{408B8BD5E3F09FF3}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_3.et");
+					if (!person.IsEmpty())
+						looks.Insert(person);
+				}
+
+				return RZ_Looks.PickFrom(person, looks, seed);
 			}
 
 			case RZ_DutyGame.KIND_BENCH:
@@ -925,6 +1068,13 @@ class RZ_DutyGames
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A subject's one prompt (its looks and taking it up).
+	protected static string ChoiceKey(RZ_DutyGame g, int subject)
+	{
+		return Key(g, string.Format("s%1.who", subject));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void Open(RZ_DutyGame g, string part, RZ_EWork work, string label, float hold, vector pos, ResourceName before = "", float yaw = -1)
 	{
 		string key = Key(g, part);
@@ -934,8 +1084,9 @@ class RZ_DutyGames
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The row laid out at the place: each subject where it waits (its prop, and the prompt to take
-	//! it up), where the three verdicts' spots will be, and the clipboard.
+	//! The row laid out at the place: each subject where it waits (its prop, and its one prompt),
+	//! the three places to take them, each with its thing standing (LayDests), and the clipboard.
+	//! At a gate the line queues on the road outside, facing in.
 	protected void LayOut(RZ_DutyGame g)
 	{
 		g.m_bLaid = true;
@@ -943,38 +1094,126 @@ class RZ_DutyGames
 		float rad = yaw * Math.DEG2RAD;
 		g.m_vAxis = Vector(Math.Cos(rad), 0, -Math.Sin(rad));
 		int count = g.m_aSubjects.Count();
-		ResourceName prop = SubjectProp(g.m_iKind);
+		if (g.m_bAtGate)
+		{
+			vector outward = RZ_DutyScenes.Toward(g.m_vInside, g.m_vGate, 1) - g.m_vInside;
+			outward[1] = 0;
+			if (outward.Length() > 0.1)
+				g.m_vAxis = outward.Normalized();
+
+			yaw = RZ_DutyRound.Bearing(g.m_vGate, g.m_vInside);
+		}
+
 		foreach (int i, RZ_DutySubject s : g.m_aSubjects)
 		{
-			float along = (i - (count - 1) * 0.5) * SPACING;
-			s.m_vPos = g.m_vPlace + g.m_vAxis * along;
+			if (g.m_bAtGate)
+				s.m_vPos = RZ_Util.GroundPos(g.m_vGate + g.m_vAxis * (3 + i * SPACING));
+			else
+				s.m_vPos = g.m_vPlace + g.m_vAxis * ((i - (count - 1) * 0.5) * SPACING);
+
 			s.m_fYaw = yaw;
-			Open(g, string.Format("s%1.take", i), RZ_EWork.TAKE, RZ_DutyGame.TakePrompt(g.m_iKind), 3, s.m_vPos, prop, yaw);
+			Open(g, string.Format("s%1.take", i), RZ_EWork.TAKE, RZ_DutyGame.TakePrompt(g.m_iKind), 3, s.m_vPos, s.m_sProp, yaw);
 		}
 
-		// The verdicts' spots: apart from the row and from each other
-		for (int d = 0; d < 3; d++)
-		{
-			vector at = RZ_WorkSites.Spot(g.m_vPlace, 6, 10);
-			for (int tries = 0; tries < 6; tries++)
-			{
-				bool close = false;
-				foreach (vector have : g.m_aDest)
-				{
-					if (RZ_Util.DistXZ(have, at) < 4)
-						close = true;
-				}
+		LayDests(g);
+		Open(g, "clip", RZ_EWork.WRITE, "Read the clipboard", 1, RZ_WorkSites.Spot(g.m_vPlace, 2, 4));
+	}
 
-				if (!close)
+	//------------------------------------------------------------------------------------------------
+	//! The three places, within 10 m of the line, each with its thing standing (DestMark) where its
+	//! measured box is clear, level and apart from the others; one that won't fit is dropped, never
+	//! squeezed, and its place is still there to leave them at. At a gate: the barrier beside the
+	//! road at the gate, the wash and the holding room just inside, either side.
+	protected void LayDests(RZ_DutyGame g)
+	{
+		array<vector> taken = {};
+		vector side = Vector(-g.m_vAxis[2], 0, g.m_vAxis[0]);
+		for (int v = 0; v < 3; v++)
+		{
+			ResourceName mark = RZ_DutyGame.DestMark(g.m_iKind, v);
+			vector fmin;
+			vector fmax;
+			bool measured = !mark.IsEmpty() && RZ_DutyGame.MarkBox(mark, fmin, fmax);
+			vector spot = vector.Zero;
+			float facing = 0;
+			bool fits = false;
+			for (int tries = 0; tries < 10 && !fits; tries++)
+			{
+				vector at;
+				int round = tries / 3;
+				float back = tries - round * 3;
+				float across = 1;
+				if (v == RZ_DutyGame.STOP)
+					across = -1;
+
+				if (g.m_bAtGate && v == RZ_DutyGame.PASS)
+					at = g.m_vGate + side * (3.5 + tries * 0.8);
+				else if (g.m_bAtGate)
+					at = g.m_vInside + side * ((5 + tries * 0.8) * across) - g.m_vAxis * back;
+				else
+					at = RZ_WorkSites.Spot(g.m_vPlace, 5, 9);
+
+				at = RZ_Util.GroundPos(at);
+				if (FarFromOthers(g, at, taken) == false)
+					continue;
+
+				spot = at;
+				facing = RZ_DutyRound.Bearing(at, g.m_vPlace);
+				if (!measured)
 					break;
 
-				at = RZ_WorkSites.Spot(g.m_vPlace, 6, 12);
+				array<vector> quad = {};
+				RZ_CampLife.Quad(at, facing, fmin, fmax, 0, quad);
+				if (RZ_CampLife.Blocked(quad) || !RZ_DutyRound.Level(quad, 0.5) || RZ_DutyRound.Overlaps(at, facing, fmin, fmax, taken))
+					continue;
+
+				fits = true;
+				RZ_CampLife.Quad(at, facing, fmin, fmax, 0, taken);
 			}
 
-			g.m_aDest.Insert(at);
+			if (spot == vector.Zero)
+				spot = RZ_WorkSites.Spot(g.m_vPlace, 5, 9);
+
+			// The place to leave them: in front of its thing, toward the line
+			vector leave = spot;
+			if (fits)
+			{
+				IEntity e = RZ_Util.SpawnPrefab(mark, spot, facing);
+				if (e)
+				{
+					RZ_DressingGuard.Strip(e, mark);
+					g.m_aMarks.Insert(e);
+				}
+
+				leave = RZ_DutyScenes.Toward(spot, g.m_vPlace, fmax[2] + 1.2);
+				RZ_Log.Info(string.Format("Duty sorting: %1 for errand %2 stands at %3.", RZ_DutyGame.DestName(g.m_iKind, v), g.m_iErrand, RZ_SettlementScanner.GridReference(spot)));
+			}
+			else if (measured)
+			{
+				RZ_Log.Info(string.Format("Duty sorting: %1's thing for errand %2 dropped: no clear, level spot in 10 tries.", RZ_DutyGame.DestName(g.m_iKind, v), g.m_iErrand));
+			}
+
+			g.m_aDest.Insert(leave);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! At least 4 m from the places already set, and 2.5 m from every subject.
+	protected bool FarFromOthers(RZ_DutyGame g, vector at, array<vector> taken)
+	{
+		foreach (vector have : g.m_aDest)
+		{
+			if (RZ_Util.DistXZ(have, at) < 4)
+				return false;
 		}
 
-		Open(g, "clip", RZ_EWork.WRITE, "Read the clipboard", 1, RZ_WorkSites.Spot(g.m_vPlace, 2, 4));
+		foreach (RZ_DutySubject s : g.m_aSubjects)
+		{
+			if (RZ_Util.DistXZ(s.m_vPos, at) < 2.5)
+				return false;
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -999,12 +1238,15 @@ class RZ_DutyGames
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A subject's three places to look, side by side along it, while the player stands beside it.
+	//! A subject's three places to look: in its one prompt's list with taking it up (with the object
+	//! menu), else side by side along it while the player stands beside it.
 	protected void OpenSigns(RZ_DutyGame g, int i, bool open)
 	{
-		RZ_DutySubject s = g.m_aSubjects[i];
 		RZ_WorkSites sites = RZ_WorkSites.Get();
+		RZ_DutySubject s = g.m_aSubjects[i];
+		bool menu = RZ_ObjectScreen.Available();
 		s.m_bSigns = open;
+		array<string> keys = {};
 		vector side = Vector(-g.m_vAxis[2], 0, g.m_vAxis[0]);
 		for (int sign = 0; sign < 3; sign++)
 		{
@@ -1016,8 +1258,19 @@ class RZ_DutyGames
 			}
 
 			vector at = s.m_vPos + side * 0.9 + g.m_vAxis * ((sign - 1) * SIGN_STEP);
+			if (menu)
+				at = s.m_vPos;
+
 			Open(g, part, RZ_EWork.HANDS, RZ_DutyGame.SignPrompt(g.m_iKind, sign), 2, at);
+			keys.Insert(Key(g, part));
 		}
+
+		// Its one prompt: its name, listing what's left to look at, then taking it up
+		if (s.m_bTaken)
+			return;
+
+		keys.Insert(Key(g, string.Format("s%1.take", i)));
+		sites.Gather(ChoiceKey(g, i), s.m_sTitle, keys, s.m_vPos, g.SubjectText(s), s.m_fYaw);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1083,10 +1336,14 @@ class RZ_DutyGames
 				m_GM.NotifyPlayer(g.m_iPlayer, s.m_sTitle, s.m_sTell + ".");
 			}
 
-			if (d <= NEAR && !s.m_bSigns && g.m_iLooks > 0)
+			// With the object menu its looks are always in its list; else they stand while you're beside it
+			bool menu = RZ_ObjectScreen.Available();
+			if ((d <= NEAR || menu) && !s.m_bSigns && g.m_iLooks > 0)
 				OpenSigns(g, i, true);
-			else if (d > FAR && s.m_bSigns)
+			else if (d > FAR && s.m_bSigns && !menu)
 				OpenSigns(g, i, false);
+
+			sites.SetChoiceText(ChoiceKey(g, i), g.SubjectText(s));
 
 			// A look: the place is turned over for good, and it's one look gone
 			for (int sign = 0; sign < 3 && s.m_bSigns; sign++)
@@ -1113,21 +1370,24 @@ class RZ_DutyGames
 			{
 				m_GM.NotifyPlayer(g.m_iPlayer, g.m_sTitle, "Your hands are full. Put down the one you have first.");
 				sites.Close(takeKey);
-				Open(g, string.Format("s%1.take", i), RZ_EWork.TAKE, RZ_DutyGame.TakePrompt(g.m_iKind), 3, s.m_vPos, SubjectProp(g.m_iKind), s.m_fYaw);
+				Open(g, string.Format("s%1.take", i), RZ_EWork.TAKE, RZ_DutyGame.TakePrompt(g.m_iKind), 3, s.m_vPos, s.m_sProp, s.m_fYaw);
 				continue;
 			}
 
 			sites.Close(takeKey);
-			OpenSigns(g, i, false);
 			s.m_bTaken = true;
+			OpenSigns(g, i, false);
+			sites.Scatter(ChoiceKey(g, i));
 			g.m_iCarried = i;
 			for (int spot = 0; spot < 3; spot++)
 			{
 				OpenDest(g, spot);
 			}
 
-			m_GM.NotifyPlayer(g.m_iPlayer, s.m_sTitle, string.Format("You have them. %1, %2 or %3.", RZ_DutyGame.DestPrompt(g.m_iKind, 0), RZ_DutyGame.DestPrompt(g.m_iKind, 1), RZ_DutyGame.DestPrompt(g.m_iKind, 2)));
+			m_GM.NotifyPlayer(g.m_iPlayer, s.m_sTitle, string.Format("You have them. Take them to %1, %2 or %3. %4", RZ_DutyGame.DestLower(g.m_iKind, 0), RZ_DutyGame.DestLower(g.m_iKind, 1), RZ_DutyGame.DestLower(g.m_iKind, 2), RZ_DutyGame.Rules(g.m_iKind)));
 		}
+
+		Point(g, me);
 
 		// Put down: the spot is the verdict
 		for (int v = 0; v < 3 && g.m_iCarried >= 0; v++)
@@ -1165,7 +1425,49 @@ class RZ_DutyGames
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The tracker: while you lead one, the step points between the three places and the line under
+	//! it names each, with its way and distance; else it points at the line, under the rules.
+	protected void Point(RZ_DutyGame g, vector me)
+	{
+		RZ_Errand e = m_Dealer.FindById(g.m_iErrand);
+		if (g.m_iCarried < 0 || g.m_aDest.Count() < 3)
+		{
+			g.m_sNow = string.Format("%1 %2 looks left.", RZ_DutyGame.Rules(g.m_iKind), g.m_iLooks);
+			if (e)
+				e.m_vPlace = g.m_vPlace;
+
+			return;
+		}
+
+		string line = string.Format("Leading %1.", g.m_aSubjects[g.m_iCarried].m_sTitle);
+		vector middle = vector.Zero;
+		for (int v = 0; v < 3; v++)
+		{
+			vector at = g.m_aDest[v];
+			middle = middle + at * (1.0 / 3.0);
+			line += string.Format(" %1: %2 m %3.", RZ_DutyGame.DestName(g.m_iKind, v), RZ_Util.RoundToInt(RZ_Util.DistXZ(me, at)), Compass(me, at));
+		}
+
+		g.m_sNow = line + " " + RZ_DutyGame.Rules(g.m_iKind);
+		if (e)
+			e.m_vPlace = middle;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "N", "NE", ... from `from` to `to`.
+	protected static string Compass(vector from, vector to)
+	{
+		float deg = Math.Atan2(to[0] - from[0], to[2] - from[2]) * Math.RAD2DEG;
+		if (deg < 0)
+			deg += 360;
+
+		array<string> names = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"};
+		return names[RZ_Util.RoundToInt(deg / 45) % 8];
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void OutOfLooks(RZ_DutyGame g)
+
 	{
 		foreach (int i, RZ_DutySubject s : g.m_aSubjects)
 		{

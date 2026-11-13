@@ -552,7 +552,7 @@ and the UI files) need none, and eight have no base:
 | `RZ_ErrandCarried.et` | a small item with an InventoryItemComponent that can't be equipped (a bundle, a satchel, a small box; the mission item prefab will do), plus RZ_MissionItemComponent | `RZ_MissionItemComponent` | Missions > Errands > Props > Carried | optional | a carried way's item: His Effects' effects, The Name on the Tag's ID; only the asker or a helper hands it in; empty = the mission item. Tagged with a negative mission id (no mission's drop takes it) and as the giver's goods |
 | (existing prefab) | a vanilla wristwatch item (an existing prefab) | — | Missions > Errands > Props > Watch | optional | The Last Tin's watch, traded for two tins; empty = a common find. Put in the player's pack |
 | (existing prefab) | a body under a sheet or a body bag on a board or a stretcher: a composition of vanilla props with nothing to use (`RZ_DutyBody.et`) | — | Missions > Errands > Props > Duty body | optional | the dead laid out for Laying Out, Burial Detail, The Pit's Leavings and The Cold Room: what lies there until it's lifted; empty = Props > Effects (a dead man's things). A work site's look: shown only while a player is near, gone when it's taken up |
-| (existing prefab) | a standing civilian with no weapon and no AI, or a prop figure (`RZ_DutyPerson.et`) | — | Missions > Errands > Props > Duty person | optional | someone waiting in the line at the gate (The Line at the Door, The Wash-Down, The Look-Over, Intake): stands there until taken by the arm; empty = Puzzles > Civilian. A work site's look: shown only while a player is near, gone when it's taken up |
+| (existing prefab) | a standing civilian with no weapon and no AI, or a prop figure (`RZ_DutyPerson.et`) | — | Missions > Errands > Props > Duty person | optional | someone waiting in the line at the gate (The Line at the Door, The Wash-Down, The Look-Over, Intake): stands there until taken by the arm; empty = Puzzles > Civilian. **Duty person looks** (optional, a list of people in other clothes) beside it: each in the line picks one, so no two side by side are the same; empty = three vanilla civilians (CottonShirt_1, Turtleneck_2, CottonShirt_3) and the Duty person. A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | a small rack or case of vials (`RZ_DutyTray.et`; a vanilla medical case will do) | — | Missions > Errands > Props > Duty tray | optional | a sample tray set out for Bench Work; empty = Props > Crate. A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | BanditGear's vodka bottle (an existing prefab from the stack) | — | Missions > Errands > Props > Duty vodka | optional | the bottle The Still gives whoever ran the batch; empty = no bottle, only the pay. Put in the player's pack |
 | (existing prefab) | the base game's US army cot (set by default); only a prop measured in tools/camp_kit/footprints.json and known to RZ_DutyRound.Box is used | — | Missions > Errands > Props > Round bed | optional | the cot each of The Round's sick lies on, indoors, under the tent or in the yard; empty = no cots: they lie on the ground in the tent or yard, and never indoors. Placed by its measured box: dropped, never squeezed, where it doesn't fit. Gone when the errand ends |
@@ -2088,10 +2088,10 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **181** lines with the tag, all but one in the game scripts (one is the comment in
+There are **182** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
-`Dialogue/`, two are the radio screen's, two the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
+`Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
 ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
@@ -2194,7 +2194,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 | `Guidance/RZ_OpeningPlaces.c:447` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point, as before) and move the character after the hand-over instead |
 | `Guidance/RZ_OpeningPlaces.c:487` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
-| `Interactions/RZ_WorkSiteAction.c:186`, `:142` | the hold prompt at a work site: the prefab's `Duration 10` makes **RZ_WorkSiteAction** a timed hold with vanilla's progress ring; its progress comes from `GetActionProgressScript` on the holder's machine (the bar runs at 10 ÷ the site's seconds), `GetActionDuration` returns the 10, and `OnActionStart` runs there when the ring appears. Hold **Dig the latrine** (15 s) with a stopwatch; get hit by an infected half-way and watch the ring drop back | Without a Duration the prompt is instant: the server still counts the time at the site (*"Not finished"* until it's served), so the step is done by pressing it after standing there long enough. A wrong rate: set the action's Duration to the commonest hold (10) and live with the difference |
+| `Interactions/RZ_WorkSiteAction.c:203` | a spot with several things to do (`RZ_WorkSites.Gather`): its prompt in list form returns its progress at the full Duration, so the press finishes at once and the server opens the object menu. Walk up to a duty beat with three choices (the cold chain's far door): one prompt, **The far door**; press it once | The press still needs the 10 s hold: set the box's action Duration to 0.1 on a second prefab only for choices, or accept a short hold before the list |
+| `Interactions/RZ_WorkSiteAction.c:193`, `:149` | the hold prompt at a work site: the prefab's `Duration 10` makes **RZ_WorkSiteAction** a timed hold with vanilla's progress ring; its progress comes from `GetActionProgressScript` on the holder's machine (the bar runs at 10 ÷ the site's seconds), `GetActionDuration` returns the 10, and `OnActionStart` runs there when the ring appears. Hold **Dig the latrine** (15 s) with a stopwatch; get hit by an infected half-way and watch the ring drop back | Without a Duration the prompt is instant: the server still counts the time at the site (*"Not finished"* until it's served), so the step is done by pressing it after standing there long enough. A wrong rate: set the action's Duration to the commonest hold (10) and live with the difference |
 | `Interactions/RZ_WorkHold.c:269` | `CharacterControllerComponent.SetDisableMovementControls(true)` on the player's own machine stops walking for a work site's hold while the hold key stays down and the camera still looks about (vanilla sets it for item placement); `false` gives the legs back | You can still walk off mid-hold (the bar then starts again past 1.5 m), or the look locks too, or the hold key stops counting: turn **Shared > Work sites > Lock movement** off and report which |
 | `Interactions/RZ_WorkHold.c:297` | `SCR_GadgetManagerComponent.SetGadgetMode(tool, IN_HAND)` draws a carried entrenching tool (vanilla's building-tool gadget) from the pack or a slot while the hold runs, within a couple of seconds | The tool stays put away: after 2.5 s the digging uses the hands animation instead. Take the tool in hand before you hold and it should dig |
 | `Interactions/RZ_WorkHold.c:316` | the item use vanilla's building makes (`TryUseItemOverrideParams` with `CMD_Item_Action`, argument 1, the held tool, no movement) loops the digging at a work site as at a vanilla build site, other players see it, and `FinishItemUse(true)` ends it | The tool is held still, or the digging never stops: turn **Dig with the tool** off (the hands animation is used) |
@@ -2676,7 +2677,13 @@ duty, `Duty sorting: the dead for <player>, N subjects, N looks (errand N).`, `D
 judged for <player>: N of N right, score S, danger 0|1.` and `Duty sorting: errand N judged itself
 (no work sites), score S.`, with each of its prompts a `Work sites: errand.N.s0.take ...` line; a duty's
 scene, `Duty scene: errand N, <player> at <beat>: <what they chose> (seen false|true).`, its prompts
-`Work sites: errand.N.b0.0 ...`, and a house marked by a patrol, `Errands: found hook hiding at <grid>
+`Work sites: errand.N.b0.0 ...`, a spot's several prompts gathered as one, `Work sites: errand.N.b0.spot
+gathered as "The far door" (3 things to do) at <grid>` (or `... split into its prompts (no object
+menu on the client).`) with `Object menu: The far door for player N (a choice).` when it's pressed, a beat
+at a gate `Duty scene: errand N, <beat> at the way in: the place's gate|the road into the town|no gate
+or road in near: the giver's own door (<grid>).`, a sorting's places `Duty sorting: The wash for errand
+N stands at <grid>.` (or `... thing for errand N dropped: no clear, level spot in 10 tries.`) and the
+line at a gate `Duty sorting: the line for errand N stands at <how> (<grid>).`, and a house marked by a patrol, `Errands: found hook hiding at <grid>
 from a duty`; a cull, `Duty squad: cull at <grid>, N strays (errand N).`; a duty's people, `Duty
 squad: the patrol out with <player> from <grid>, N points (errand N).`; a contract
 a giver made because they were asked, `Mission N '<title>' made on asking: <player> asked <faction>.`; while running, `Errands:
@@ -2861,24 +2868,31 @@ session, tick off:
 - [ ] The sorting duties ([ERRANDS.md](ERRANDS.md#the-sorting-duties)): after that third piece of
   work, ask a nurse, a medic or a lookout until they give The Line at the Door or Laying Out (the
   Halcyon lab's Bench Work needs Known). At the place three things wait in a row (bodies, people,
-  trays: the Duty props, or their stand-ins). Walking up to one says its tell; beside it three
-  prompts sit side by side, each a 2 s hold with the hands animation, and a look is said as a line
-  with the looks left. *Lift onto the stretcher* takes it (the prop goes) and three spots show
-  6 to 10 m off; putting it down there leaves the look (a grave dug with the spade's animation, a
-  pile, a bed). *Read the clipboard* opens the sheet. After the last one a line says how it went.
-  All with a pad. Report a perfect one: full Favor and 1 Fame. Put a bitten one in a grave on
-  purpose: no pay, +2 Infamy. Check the three prompts along one body can each be aimed at
-  (0.7 m apart); if they can't, say so.
+  trays: the Duty props, or their stand-ins; people in different clothes, no two alike side by
+  side). Each has **one prompt, its name**: press it and the object menu lists its looks and taking
+  it up, with its tell, what you've seen, the looks left and the rules. Pick a look: the prompt is
+  that look's 2 s hold, with the hands animation, and the look is said as a line. Three named things
+  stand within 10 m (the line: a road barrier, a shower stand, a white tent): check none is in a
+  wall, floating or on the road, and the log's `Duty sorting: ... stands at` lines. Take one up
+  (the prop goes): the tracker's line under the step names the three places with distance and way,
+  its map point sits between them, and each place's prompt reads *Leave them here: the wash* (or
+  *Bury them here: the graves*, 8 s with the spade). *Read the clipboard* still opens the sheet.
+  After the last one a line says how it went. All with a pad. Report a perfect one: full Favor and
+  1 Fame. Put a bitten one in a grave on purpose: no pay, +2 Infamy. Intake: the line stands at the
+  place's real way in, queued along the road outside facing in, the barrier at the gate and the wash
+  and holding room just inside; the log says where (`Duty sorting: the line for errand N stands at
+  ...`). Without UI > Object row layout: the old prompts side by side come back.
 - [ ] Things that happen ([ERRANDS.md](ERRANDS.md#things-that-happen)): on a patrol's short leg, at
   least one point stops the patrol with *"something off the path"*. Go to it: its line is said, and
-  two or three prompts sit side by side; holding one says what follows and the patrol moves on.
+  one prompt stands there, the spot's name; press it and pick from two or three rows, then hold
+  the prompt; what follows is said and the patrol moves on. Walk off three steps: the list again.
   Take the shady one (the watch, the truck's share) within 20 m of them: *"You were seen, and it was
   undone"*, Infamy, and the giver says so. Take it further off: nothing is said. Report a find: the
   hand-in pays 1 more Favor. After a chore, sometimes one more prompt pair comes up where you
   worked (the pot a ladle short); the step is done only when you've chosen.
 - [ ] A watch and the Trusted rung ([ERRANDS.md](ERRANDS.md#the-trusted-rung)): at dusk, ask a lookout
   or a sentry until they give the watch. Take the post: three lines come 25 to 45 s apart, each with
-  three prompts side by side; the giver says how you called them. As Trusted, at night: the
+  one prompt that lists three; the giver says how you called them. As Trusted, at night: the
   lock-up's prisoner speaks after half a minute, and opening the door costs 3 Infamy and makes a
   local; with Things > Lock-up pen and room slotted, the pen (the Haven, Bastion) or the table and
   lamp (the Red Hand) stand 6 m beside the door with a blindfold at it, and all of it is gone when
@@ -2902,7 +2916,7 @@ session, tick off:
   school room (count, then four places to look 9 m off, each a prompt of its own) and the garden
   (dig a bed; ask again after the gap: the same bed now wants planting, then water, and two season
   days later lifting, across a restart too). At dusk, the door round: four doors 18 m off, a line at
-  each, then four chalk prompts side by side. The roll call: five places, and after the third look
+  each, then one prompt with four chalk rows. The roll call: five places, and after the third look
   the other two prompts go; write the right name out and not back and *Go with them* leads out
   along the wood road to what's there. Known: the swap table, four people in turn, two looks each and then
   three calls. Talk to the trader with a pad (Duty person, else a civilian): a question uses a look,
@@ -2930,8 +2944,9 @@ session, tick off:
   quiet hour gives three sounds, not sights.
 - [ ] Halcyon's duties ([ERRANDS.md](ERRANDS.md#halcyons-duties)): the sample round (four swabs 14 m
   out, then four marks). The decon line: five arrivals in turn, each with three checks and four
-  calls, **seven prompts side by side**: say whether they can each be aimed at, and whether it reads
-  as a line of stations or as a muddle. Run two arrivals through again: the tank's empty after
+  calls, all in one prompt's list (the decon line stands at the place's way in): say whether it
+  reads as a line of stations or as a muddle. Run two arrivals through again: the tank's empty after
+
   the next one, and the water prompt waits there. The incinerator: four bags, then the porter.
   Known: the ward (three beds 12 to 30 m apart, six signs and four looks at each, then two calls of
   three; a turning written as a fever sits up at once; every call right and the charts true: the

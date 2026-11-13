@@ -43,6 +43,18 @@ whole game. This comes before rule 2 for anything that is a game: several option
 things to walk to, not a list. The first case is the sorting duties
 ([ERRANDS.md](ERRANDS.md#the-sorting-duties)).
 
+**One spot, one prompt** (the author's report, 2026-11-13: *"there's 3 different options here,
+they should all be in one interact function, like leave on door, wait, etc."*). Several things to
+do at **one spot** are one prompt and a list, never a row of prompts side by side: the prompt is
+the spot's name (*The far door*, *A courier*, a patient's name) and a press opens
+[the object menu](#the-object-menu) with each as a row. The row picked is then that prompt's own
+hold, done with your hands in the world, so a game stays a game: what you walk between (the people
+in a line, the three places to take them) is still separate things in the world, and what you do
+at one of them is one prompt. Built for work sites (`RZ_WorkSites.Gather`): every duty beat with
+more than one thing to do at its spot (about 110 across the duties, the toll, gate duty, the decon
+line, the ward, the Round's beds, kit inspection, the lock-up, a patrol's finds, the swap table,
+the watch), and each subject of a sorting duty. One thing to do at a spot stays a plain hold.
+
 ### Every interaction, by kind
 
 The audit of 2026-11-12: 9 vanilla, 20 menu, 12 quick.
@@ -61,7 +73,8 @@ The audit of 2026-11-12: 9 vanilla, 20 menu, 12 quick.
 | A workbench | Menu | [The crafting screen](#the-crafting-screen) |
 | A fixable car: look, parts, fuel, hotwire, start | Menu | [The car repair screen](#the-car-repair-screen) |
 | The power station: the door, the breakers, the generator, the main switch, its upkeep | Menu | [The power panel](#the-power-panel), one prompt (**Open the panel**) |
-| A duty that sorts things: the dead, the line at the gate, the sample trays | In the world | Work sites at the place: three places to look on each, lift it, carry it to one of three spots; its clipboard in the reader ([ERRANDS.md](ERRANDS.md#the-sorting-duties)) |
+| A duty that sorts things: the dead, the line at the gate, the sample trays | In the world | Work sites at the place: one prompt on each subject (its looks and taking it up, in the object menu, with the rules), carry it to one of three named places close by and leave it; its clipboard in the reader if you want it ([ERRANDS.md](ERRANDS.md#the-sorting-duties)) |
+| A duty beat: several things to do at one spot | Menu, then in the world | One prompt, the spot's name, opening the object menu; the row picked is the prompt's hold ([One spot, one prompt](#default-first-then-menus)) |
 | A stove: boil water, brew a remedy, cook | Menu | [The cooking screen](#the-cooking-screen); without its layout, [the object menu](#the-object-menu) |
 | A generator found in town: start, stop, refuel | Menu | The object menu |
 | A house radio: listen, tune, crack a channel, call, view | Menu | The object menu, from **Listen to the radio** on vanilla's radio itself, beside its **Turn on/off** (the call opens the talk screen, **View radio** [the radio screen](#the-radio-screen)) |
@@ -1071,7 +1084,10 @@ notebook still keeps, so a channel heard long ago can show none.
 One small generic screen in the crafting screen's style, for props and places with several
 options or something to read ([Default first, then menus](#default-first-then-menus)): a stove
 (without [the cooking screen](#the-cooking-screen)), a generator, a house radio, a well, a puzzle object or keypad, the safehouse services, a
-quartermaster's asks, the lab, the notebook item's name and season. The author's pick of the mockups
+quartermaster's asks, the lab, the notebook item's name and season, and a work site's spot with
+several things to do there (a duty beat, a sorting duty's subject: its rows are the spot's work
+sites, given as data, `RZ_ObjectRows`; a row picked closes the menu and becomes the spot's hold,
+and one needing something you haven't got is locked with why). The author's pick of the mockups
 ("B with A's tag and the lock"). A panel 1,200 × 940 in the middle of the screen (810 for a thing
 without a status strip), the world dimmed: the name ("Radio", "Ask the quartermaster") and the
 town; under them the thing's [status strip](#the-status-strip-and-locked-rows) (a house radio's POWER
@@ -1219,6 +1235,10 @@ and it's done there and then.
 - **Done**: the thing you worked at changes in front of you (the pit becomes the latrine, the planks
   the boarded door), and the job's own line follows on its next tick (*"That's done. Go back to …"*).
 - **Pad**: nothing new to bind; it's vanilla's interact on whatever the device uses.
+- **Several at one spot** ([One spot, one prompt](#default-first-then-menus)): the prompt is the
+  spot's name and a press (no hold) opens the object menu; the row picked becomes the prompt, held
+  as above. Walk a few steps off, or leave it a minute, and it's the list again.
+
 
 ### The power panel
 

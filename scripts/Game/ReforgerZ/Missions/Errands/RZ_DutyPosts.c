@@ -61,7 +61,7 @@ class RZ_DutyPosts
 	//! or nothing, and the line says enough to tell, if you think about it.
 	static void Watch(RZ_GameModeComponent gm, RZ_Errand e, RZ_DutyScene scene)
 	{
-		RZ_DutyBeat post = new RZ_DutyBeat("post", "", RZ_DutyBeat.AT_GATE);
+		RZ_DutyBeat post = new RZ_DutyBeat("post", "", RZ_DutyBeat.AT_ENTRY);
 		post.m_bAlone = true;
 		post.Opt("Take the post", "You have the post. Three things will come by before you're relieved. Each is a threat, or someone, or nothing: stand the gate to, send someone out, or let it pass.").Work(RZ_EWork.HANDS, 5);
 		scene.m_aBeats.Insert(post);

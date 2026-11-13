@@ -1,7 +1,8 @@
 //! Duty scenes (docs/ERRANDS.md, "Things that happen"): what a duty has you see, find and decide,
 //! in person. A scene is a run of beats. A beat is a moment at a spot: one line said as you reach
-//! it, and one to three things you can do about it, each its own work site side by side (a hold, the
-//! hands, the world showing it). What you choose is applied at once and remembered: the giver's
+//! it, and one to three things you can do about it, each a work site (a hold, the hands, the world
+//! showing it); several at the one spot stand as one prompt, the spot's name, whose press lists them
+//! (RZ_WorkSites.Gather), and a place of its own to go and look at keeps its own prompt. What you choose is applied at once and remembered: the giver's
 //! regard, a local made, a line someone says to you later, a record in the world's memory, the
 //! place's food or morale, a town's infection, your Favor for the job, small Fame or Infamy.
 //! A shady choice costs only if it's seen: their people within 20 m, or the place itself within
@@ -122,9 +123,12 @@ class RZ_DutyBeat
 	static const int AT_FAR = 4;		// 180-350 m
 	static const int AT_SAME = 5;		// where the last beat was
 	static const int AT_NEAR = 6;		// 12-30 m from where the last beat was (off the path)
+	static const int AT_ENTRY = 7;		// the way in: the place's gate, else a road where it comes in (RZ_DutyScenes.Entrance)
 
 	string m_sKey;
 	string m_sLine;				// said as the player reaches it
+	string m_sName;				// its spot's name, the one prompt when its options are together ("The bed"); "" from the line (RZ_DutyScenes.SpotName)
+
 	int m_iWhere = AT_SAME;
 	vector m_vAt;
 	ResourceName m_sProp;		// what stands there (the first option's before look)
@@ -239,6 +243,7 @@ class RZ_DutyScenes
 	protected static const float SAY_RANGE = 9;			// a beat's line is said this close
 	protected static const float SEEN_SQUAD = 20;		// their people see what your hands do within this
 	protected static const float SEEN_HOME = 25;		// and so does the place
+	protected static const float SAME_SPOT = 3;			// an option set out no further than this is still at the beat's spot (round a bed)
 	protected static const float OPTION_STEP = 0.9;		// between a beat's options, side by side
 	static const float FACE_ARC = 140;					// degrees an open side's options spread over
 	static const int TAG_PERSON = -18;					// RZ_PuzzleObjectComponent mission id: a duty's person to talk to (object index: the errand)
@@ -342,6 +347,7 @@ class RZ_DutyScenes
 		RZ_WorkSites sites = RZ_WorkSites.Get();
 		if (sites)
 		{
+			sites.Scatter(SpotKey(s));
 			foreach (string key : s.m_aKeys)
 			{
 				sites.Close(key);
@@ -621,6 +627,7 @@ class RZ_DutyScenes
 				vector spot = sites.PosOf(key);
 				sites.Close(key);
 				sites.Open(key, o.m_eWork, o.m_sLabel, o.m_fHold, spot, s.m_iPlayer);
+				sites.SetNeeds(key, o.m_eItem, o.m_iItems);
 				continue;
 			}
 
@@ -658,7 +665,142 @@ class RZ_DutyScenes
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The key of the beat's spot when its options stand as one prompt (RZ_WorkSites.Gather).
+	protected static string SpotKey(RZ_DutyScene s)
+	{
+		return string.Format("errand.%1.b%2.spot", s.m_iErrand, s.m_iBeat);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The name of a beat's spot, for its one prompt: its own name, else who stands there to talk to,
+	//! else what the line names first when that's a thing ("The far door. No lamp over it." gives
+	//! "The far door"), else the duty's title.
+	static string SpotName(RZ_DutyScene s, RZ_DutyBeat b)
+	{
+		if (!b.m_sName.IsEmpty())
+			return b.m_sName;
+
+		if (!b.m_sTalkName.IsEmpty())
+			return b.m_sTalkName;
+
+		string named = NameIn(b.m_sLine);
+		if (!named.IsEmpty())
+			return named;
+
+		return s.m_sTitle;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The thing a line names first: its words up to the first stop or comma, when they're a short
+	//! naming ("The far door", "The book", "The list", "A hollow under a fallen beech") and not a
+	//! sentence ("The bridge is out"). "" when they aren't.
+	static string NameIn(string line)
+	{
+		int cut = line.Length();
+		array<string> stops = {".", ",", ":", "?", "!"};
+		foreach (string stop : stops)
+		{
+			int at = line.IndexOf(stop);
+			if (at >= 0 && at < cut)
+				cut = at;
+		}
+
+		string head = line.Substring(0, cut).Trim();
+		if (!head.StartsWith("The ") && !head.StartsWith("A ") && !head.StartsWith("An "))
+			return "";
+
+		array<string> words = {};
+		head.Split(" ", words, true);
+		if (words.Count() < 2 || words.Count() > 6)
+			return "";
+
+		array<string> verbs = {"is", "are", "has", "have", "was", "were", "turns", "puts", "says", "comes", "stops", "steps", "rings", "drops", "looks", "holds"};
+		foreach (string w : words)
+		{
+			if (verbs.Contains(w) || w.Contains("'s"))
+				return "";
+		}
+
+		return head;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A beat at the way in (AT_ENTRY): by the gate or the road in, logged.
+	protected vector EntrySpot(RZ_DutyScene s, RZ_DutyBeat b)
+	{
+		vector gate;
+		vector inside;
+		string how = Entrance(s.m_vHome, gate, inside);
+		RZ_Log.Info(string.Format("Duty scene: errand %1, %2 at the way in: %3 (%4).", s.m_iErrand, b.m_sKey, how, RZ_SettlementScanner.GridReference(gate)));
+		return RZ_WorkSites.Spot(gate, 1, 4);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The way into the place at `home`, for what's said at a gate (a line, a barrier, a toll): the
+	//! faction place's own gate within 120 m (its road entry, RZ_CampLife.GateNear); else the road
+	//! where it comes into the town, the road point 25-120 m from `home` farthest from the town's
+	//! middle; else `home` itself (the giver's own door). `inside` is a few steps in from it. Says
+	//! which, for the log.
+	static string Entrance(vector home, out vector gate, out vector inside)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm && gm.GetCampLife() && gm.GetCampLife().GateNear(home, 120, gate, inside))
+		{
+			inside = Toward(gate, inside, 6);
+			return "the place's gate";
+		}
+
+		vector middle = home;
+		if (gm)
+		{
+			RZ_Settlement town = gm.GetSettlement(gm.FindNearestSettlement(home));
+			if (town)
+				middle = town.m_vCenter;
+		}
+
+		array<vector> points = {};
+		RZ_Perimeter.RoadPointsNear(home, 120, points);
+		float best = -1;
+		foreach (vector p : points)
+		{
+			float d = RZ_Util.DistXZ(p, home);
+			if (d < 25 || RZ_Util.IsWater(p))
+				continue;
+
+			float outward = RZ_Util.DistXZ(p, middle);
+			if (outward > best)
+			{
+				best = outward;
+				gate = RZ_Util.GroundPos(p);
+			}
+		}
+
+		if (best >= 0)
+		{
+			inside = Toward(gate, home, 6);
+			return "the road into the town";
+		}
+
+		gate = home;
+		inside = home;
+		return "no gate or road in near: the giver's own door";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `dist` m from `from` toward `to` (on the ground), or `from` when they're the same spot.
+	static vector Toward(vector from, vector to, float dist)
+	{
+		vector flat = Vector(to[0] - from[0], 0, to[2] - from[2]);
+		float len = flat.Length();
+		if (len < 0.1)
+			return from;
+
+		return RZ_Util.GroundPos(from + flat * (Math.Min(dist, len) / len));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Where a beat is, from the scene's home or the last beat.
+
 	protected vector Place(RZ_DutyScene s, RZ_DutyBeat b)
 	{
 		RZ_PlaceNeed need = RZ_PlaceNeeds.Get("errand.out");
@@ -668,6 +810,7 @@ class RZ_DutyScenes
 			case RZ_DutyBeat.AT_SET: return b.m_vAt;
 			case RZ_DutyBeat.AT_HERE: return RZ_WorkSites.Spot(s.m_vHome, 3, 8);
 			case RZ_DutyBeat.AT_GATE: return RZ_WorkSites.Spot(s.m_vHome, 12, 25);
+			case RZ_DutyBeat.AT_ENTRY: return EntrySpot(s, b);
 			case RZ_DutyBeat.AT_OUT: at = RZ_PlaceFind.Near(s.m_vHome, 60, 140, need); break;
 			case RZ_DutyBeat.AT_FAR: at = RZ_PlaceFind.Near(s.m_vHome, 180, 350, need); break;
 			case RZ_DutyBeat.AT_NEAR: return RZ_WorkSites.Spot(s.m_vLast, 12, 30);
@@ -696,6 +839,8 @@ class RZ_DutyScenes
 		float rad = yaw * Math.DEG2RAD;
 		vector axis = Vector(Math.Cos(rad), 0, -Math.Sin(rad));
 		int count = b.m_aOptions.Count();
+		array<string> together = {};		// the options at the one spot: one prompt and a list
+		vector middle = vector.Zero;
 		foreach (int i, RZ_DutyOption o : b.m_aOptions)
 		{
 			vector at = b.m_vAt + axis * ((i - (count - 1) * 0.5) * OPTION_STEP);
@@ -722,8 +867,19 @@ class RZ_DutyScenes
 				prop = b.m_sProp;
 
 			sites.Open(key, o.m_eWork, o.m_sLabel, o.m_fHold, at, s.m_iPlayer, prop, "", yaw);
+			sites.SetNeeds(key, o.m_eItem, o.m_iItems);
 			s.m_aKeys.Insert(key);
+			if (o.m_fOut <= SAME_SPOT)
+			{
+				together.Insert(key);
+				middle = middle + at;
+			}
 		}
+
+		// Several things to do at the one spot (side by side, or round a bed): one prompt where they
+		// stood, its name, and the list. A place of its own to go and look at keeps its own prompt.
+		if (together.Count() > 1)
+			sites.Gather(SpotKey(s), SpotName(s, b), together, middle * (1.0 / together.Count()), b.m_sLine, yaw);
 
 		// Someone to talk to a step behind the options; what's on show a step in front
 		vector back = Vector(Math.Sin(rad), 0, Math.Cos(rad));

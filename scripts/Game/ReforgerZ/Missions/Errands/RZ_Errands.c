@@ -53,6 +53,9 @@ class RZ_ErrandProps
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty person (optional): someone waiting in the line at the gate, a standing civilian with no weapon and no AI, or a prop figure. Empty = Puzzles > Civilian", "et")]
 	ResourceName m_sDutyPerson;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty person looks (optional): people in their own clothes for the line at the gate, so no two waiting side by side are the same; each picks one by the errand and its place in the line. Empty = three vanilla civilians and the Duty person", "et")]
+	ref array<ResourceName> m_aDutyPersonLooks;
+
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty tray (optional): a sample tray on Halcyon's bench, a small rack or case of vials. Empty = Crate", "et")]
 	ResourceName m_sDutyTray;
 
@@ -3933,6 +3936,11 @@ class RZ_Errands
 
 		if (e.m_bStepDone && !w.m_bEndsThere)
 			return e.Fill("Done. Go back to {giver} at {here}.");
+
+		// A sorting under way: where to take the one you're leading, or the rules (RZ_DutyGames.NowLine)
+		string now = m_Games.NowLine(e.m_iId);
+		if (!now.IsEmpty())
+			return e.Fill(w.StepText()) + "\n" + now;
 
 		return e.Fill(w.StepText());
 	}

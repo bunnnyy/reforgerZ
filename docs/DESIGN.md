@@ -1423,6 +1423,13 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
 - **The thing.** At the step's place stands its **before** look (a marked pit, a pile of planks, a
   crate, a toolbox), with one world prompt on an invisible box: the step's own words (*Dig the
   latrine*, *Board up the doors*, *Fill and stack the sandbags*).
+- **Several at one spot.** An owner with several things to do at one spot gathers their sites
+  (`Gather`): one box stands for them, the spot's name its prompt (*The far door*); a press opens
+  the object menu with each as a row ([UI.md](UI.md#default-first-then-menus), "One spot, one
+  prompt"), and the row picked is the box's hold from then, for whoever picked it, counted as that
+  site's work. Walk off past reach + 1 m, or leave it 60 s, and it's the list again; with one site
+  left, its plain hold. Without the object menu, or for a client that failed one, each stands as
+  its own prompt. Used by every duty beat and each sorting subject ([ERRANDS.md](ERRANDS.md#things-that-happen)).
 - **The hold.** Hold the prompt (vanilla's hold-progress bar, [UI.md](UI.md#the-hold-prompt)) for the
   work's time, 5 to 20 s (a step that used to take 2 minutes or more there: 20 s; a background's way
   that was quicker stays quicker). Move more than 1.5 m or get hurt and the bar starts again.
