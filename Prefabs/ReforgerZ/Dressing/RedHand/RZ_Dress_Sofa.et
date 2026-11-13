@@ -22,69 +22,74 @@ GenericEntity {
    coords 0.0 1.1 0.0
    angles 0 0 0
   }
-  GenericEntity : "{BD74E024F375A541}Prefabs/Props/Furniture/Sofa_02/Sofa_02_green.et" {
+  GenericEntity : "{79C6D8C31947742A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_01_vodka_V1.et" {
    ID "F073FF34D80D63D7"
+   coords 0.15 1.1 -0.15
+   angles 0 0 0
+  }
+  GenericEntity : "{BD74E024F375A541}Prefabs/Props/Furniture/Sofa_02/Sofa_02_green.et" {
+   ID "05D17EFC49129A4C"
    components {
-    Hierarchy "{05D17EFC49129A4C}" {
+    Hierarchy "{7F5D4FD7C5E3A122}" {
     }
    }
    coords -0.104 0 -1.185
    angles 0 5.0 0
   }
   GenericEntity : "{CFB893B8084ECD2B}Prefabs/Props/Furniture/Armchair_01.et" {
-   ID "7F5D4FD7C5E3A122"
+   ID "7ED8102F831C180A"
    components {
-    Hierarchy "{7ED8102F831C180A}" {
+    Hierarchy "{FBF04DA59D206DC7}" {
     }
    }
    coords 1.125 0 -0.099
    angles 0 -85.0 0
   }
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "FBF04DA59D206DC7"
+   ID "BC071FB058C72578"
    coords -1.4 0 -0.5
    angles 0 0 0
   }
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "BC071FB058C72578"
+   ID "D8E3BEFE92846F83"
    coords 0.6 0 -0.8
    angles 0 0 0
   }
   GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
-   ID "D8E3BEFE92846F83"
+   ID "83A5D5715AFD5ECA"
    components {
-    Hierarchy "{83A5D5715AFD5ECA}" {
+    Hierarchy "{280FAD2E19BC8677}" {
     }
    }
    coords -2.0 0.42 0.2
    angles 90 0 0
   }
   GenericEntity {
-   ID "280FAD2E19BC8677"
+   ID "4BBA03B1D715BF50"
    components {
-    SCR_AISmartActionSentinelComponent "{4BBA03B1D715BF50}" {
+    SCR_AISmartActionSentinelComponent "{5643AB2DBD0E32D2}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition 0.1 1.6 1.19
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{5643AB2DBD0E32D2}" {
+    Hierarchy "{09CDC5EF5E0EBC3A}" {
     }
    }
    coords -0.104 0 -1.185
   }
   GenericEntity {
-   ID "09CDC5EF5E0EBC3A"
+   ID "F51A6E4488F0C316"
    components {
-    SCR_AISmartActionSentinelComponent "{F51A6E4488F0C316}" {
+    SCR_AISmartActionSentinelComponent "{AB1D680ACC0F10AD}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition -1.12 1.6 0.1
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{AB1D680ACC0F10AD}" {
+    Hierarchy "{5A614BDF1662FA21}" {
     }
    }
    coords 1.125 0 -0.099

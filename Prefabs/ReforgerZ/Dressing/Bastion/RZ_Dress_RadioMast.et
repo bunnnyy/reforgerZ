@@ -8,7 +8,7 @@ GenericEntity {
  }
  coords 0 0 0
  {
-  GenericEntity : "{5B8922E61D8DF345}Prefabs/Props/Military/Antennas/Antenna_R161_01.et" {
+  GenericEntity : "{A1697FD5012C105D}Prefabs/Props/Military/Antennas/Antenna_US_02/Antenna_US_02.et" {
    ID "B435666EE8BB20A0"
    components {
     Hierarchy "{E3EEB066345AC506}" {

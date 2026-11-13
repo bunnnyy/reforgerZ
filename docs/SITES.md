@@ -264,8 +264,14 @@ What to know before using a line:
   the motor pool's engine crane, jack and toolbox, the aid post's cot, drip stand, screen and bin,
   triage's screen and drip stand, the mess tables (a long table, two benches, a food carrier), the
   radio set, the Red Hand's chop shop (a jeep wreck, the crane, a welder, scrap, tyres), the Haven's
-  scarecrow and the lab's waiting cots. No script spawns a composition yet: the rest is what there
-  is to pick from. The kit also lists the camp kits' own mod props (security mesh, riot fencing, a
+  scarecrow and the lab's waiting cots; and since 2026-11-13 Bastion's earth bank, dragon's teeth,
+  duckboards, Humvee wreck and US field antenna, the canteen stove (big pot, gas bottle), the
+  workshop bench (vice, table saw, compressor), the Red Hand's scrap heap (junk, car scrap, tyres),
+  drum store and radio set, the Haven's hay bale and barrow, wood box and sawmill cart, blue tent,
+  and Halcyon's field surgery under canvas (surgical table and lamp, hospital bed, steriliser,
+  drum stand, medical litter): 63 of its lines, all placed by their measured faces
+  ([Spacing](#spacing)). No script spawns a composition: a composition is a group drawn whole, and
+  sites are laid out by their rules. The rest is what there is to pick from. The kit also lists the camp kits' own mod props (security mesh, riot fencing, a
   guard tower, a container, a forklift, cases, a fuel pump), which were seen standing in Workbench
   play; its "Left out" list says what was tried and dropped, and why.
 - **Every line spawned on the dedicated server** (game 1.9, the mods loaded), and every prop has a
@@ -590,15 +596,21 @@ more of what the place would have, each with the reason it is there.
 |  | a generator | 1 | always | yard | power for the set and the lights, away from the tents |
 |  | a lantern post | 2 | always | court | light at the entrance |
 |  | a sandbag wall | 1 | hit | court | a fallback between the gate and the door, thrown up after a bad night |
+|  | an earth bank | 1 | hit | yard | an earth bank in front of the nest after the night it came close |
+|  | the canteen stove | 1 | always | kitchen | the canteen's stove dragged out to the kitchen door |
 |  | spare sandbags | 2 | hit | yard | spare bags where the line is being built up |
 |  | bags and bottles | 2 | always | yard | what's left where people sit |
 | Bastion outpost | a small tent | 2 | always | sleep | the section's tents, in a line on the grass |
 |  | spare sandbags | 2 | hit | yard | spare bags by the nest |
+|  | an earth bank | 1 | hit | yard | an earth bank in front of the nest |
 |  | a crate stack | 1 | always | work | the section's stores against the wall |
 |  | a crate stack | 1 | supplied | work | more of it while the convoys get through |
 |  | drums | 1 | supplied | yard | water and fuel by the cook pot |
 |  | a lantern post | 1 | always | court | light at the entrance |
 | Red Hand stronghold | the chop shop | 1 | always | yard | what the crew does with what it takes: a jeep off Bastion stripped for parts |
+|  | a workshop bench | 1 | always | work | where what they take is made to work again |
+|  | a scrap heap | 1 | always | yard | what's no use after the stripping, thrown on a heap at the back |
+|  | a drum store | 1 | supplied | yard | the toll, paid in drums |
 |  | the loot container | 1 | always | yard | what the crew took, under lock, someone always sitting on it |
 |  | a pallet stack | 1 | thriving | yard | loot not yet sorted |
 |  | the fuel point | 1 | always | yard | the toll is paid in fuel |
@@ -624,6 +636,11 @@ more of what the place would have, each with the reason it is there.
 |  | bedrolls | 1 | always | sleep | airing by the tents |
 |  | a garden bed | 3 | always | yard | beds dug in rows: the village feeds itself |
 |  | a scarecrow | 1 | always | yard | keeps the birds off the beds |
+|  | a hay bale and barrow | 1 | always | yard | hay for the animals the farms still keep |
+|  | a workshop bench | 1 | always | work | mending what can't be replaced |
+|  | the canteen stove | 1 | supplied | kitchen | the school's canteen stove, carried out to cook for everyone |
+|  | a box of split wood | 1 | supplied | kitchen | split wood stacked for the winter |
+|  | a blue tent | 1 | always | sleep | a family's own tent, brought from home |
 |  | a water barrel | 2 | always | kitchen | water where it's used: the kitchen, the garden |
 |  | a washing line | 1 | always | sleep | the wash, on the grass |
 |  | firewood | 1 | always | kitchen | cut for the kitchen |
@@ -654,6 +671,7 @@ more of what the place would have, each with the reason it is there.
 |  | a crate stack | 1 | always | work | the stores against the wall |
 |  | a crate stack | 2 | supplied | work | more while the courier still comes |
 |  | a ward tent | 2 | always | sick | the ward that overflowed, in a line on the grass |
+|  | the field surgery | 1 | always | work | what can't be made clean is treated outside the clean room |
 |  | drums | 1 | supplied | yard | the generators' fuel |
 |  | a loudspeaker | 1 | always | yard | the order heard at every corner |
 |  | bags and bottles | 1 | always | yard | the smokers' corner |
@@ -673,7 +691,7 @@ The piece counts went back down ([Settings](#settings)).
 
 | Kit | Close | Harden | Barrier | Gate, watch, lights |
 |---|---|---|---|---|
-| Bastion stronghold | all round | all | concertina wire (three coils, two, one; a hedgehog in a gap); knife rests of razor wire across the roads that aren't its checkpoints | the checkpoint (a stop sign, a knife rest pulled aside), the nest, sandbag barricades, a nest as lookout; side doors sandbagged; the stores (the tarp's crates) indoors with the stores board |
+| Bastion stronghold | all round | all | concertina wire (three coils, two, one; a hedgehog in a gap); concrete dragon's teeth (a stride apart: a body walks between them, nothing on wheels does) or knife rests of razor wire across the roads that aren't its checkpoints | the checkpoint (a stop sign, a knife rest pulled aside), the nest, sandbag barricades, a nest as lookout; side doors sandbagged; the stores (the tarp's crates) indoors with the stores board |
 | Bastion outpost | the road's side and the most threatened other | all | sandbags chest high, a coil, a hedgehog | the nest, a sandbag barricade, a nest as lookout; side doors sandbagged |
 | Red Hand stronghold | all round | doors | rusted tin sheets, a wreck, a steel road block, tyres, a pallet on its edge in the last gap; a truck, a van or a steel block across the roads that aren't its checkpoints | the toll, the red hand, the trophy wall and the kennel at the gate, the nest, scrap barricades; the shutter down on every other door |
 | Red Hand outpost | the road's side | none | the tin, the wreck, the road block, tyres, the pallet | the toll, the red hand, the nest |

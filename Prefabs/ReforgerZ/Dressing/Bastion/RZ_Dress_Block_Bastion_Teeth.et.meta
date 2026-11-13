@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{507B06BACA1342F3}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Block_Bastion_Teeth.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

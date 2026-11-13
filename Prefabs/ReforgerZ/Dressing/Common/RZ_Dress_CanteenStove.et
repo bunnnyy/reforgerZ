@@ -1,0 +1,54 @@
+GenericEntity {
+ ID "F3A2D7039AAD4F35"
+ components {
+  RplComponent "{8B73A619767AC48D}" {
+  }
+  Hierarchy "{968790CF84BF4779}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{1D8BBCA16BD4FAEC}Prefabs/Props/Industrial/StoveIndustrial_01/StoveIndustrial_01.et" {
+   ID "E22272958F5D256C"
+   components {
+    Hierarchy "{36D35A93537DB08C}" {
+    }
+   }
+   coords 0.571 0 -0.406
+   angles 0 0 0
+  }
+  GenericEntity : "{54E3E07AF8CE4DB2}Prefabs/Props/Industrial/PotIndustrialSet_01/PotIndustrialSet_01_Big.et" {
+   ID "BE0180993E97F2DD"
+   components {
+    Hierarchy "{EA6E297A79F5DDC3}" {
+    }
+   }
+   coords 0.2 1.0 0.0
+   angles 0 0 0
+  }
+  GenericEntity : "{5CB9E09A941CE81B}Prefabs/Props/Dst/Propane.et" {
+   ID "2E2AC7F705F3D6C9"
+   components {
+    Hierarchy "{194861DEBE995FC9}" {
+    }
+   }
+   coords 0.735 0 0.0
+   angles 0 0 0
+  }
+  GenericEntity {
+   ID "4FB6F21B5B059CBE"
+   components {
+    SCR_AISmartActionSentinelComponent "{A9D480DAC218FABB}" {
+     Tags {
+      "RZ_Cook"
+     }
+     m_vLookPosition 0 1.6 -1.01
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{8366DD8978BA9B75}" {
+    }
+   }
+   coords 0 0 1.01
+  }
+ }
+}

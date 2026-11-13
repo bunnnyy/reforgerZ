@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{32A159C4836CE8DF}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_ScrapHeap.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

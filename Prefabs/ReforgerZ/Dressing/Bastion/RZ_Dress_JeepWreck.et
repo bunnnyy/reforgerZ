@@ -8,7 +8,7 @@ GenericEntity {
  }
  coords 0 0 0
  {
-  GenericEntity : "{44277710A8E45F97}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_rusty_static.et" {
+  GenericEntity : "{F9B96527E16549AB}Prefabs/Props/Wrecks/M998_wreck/M998_wreck_static.et" {
    ID "EB58A2CC707A1AB2"
    components {
     Hierarchy "{22D870DC49BF9019}" {
@@ -23,8 +23,8 @@ GenericEntity {
     Hierarchy "{315104A092F0F621}" {
     }
    }
-   coords 2.033 0 0.619
-   angles 0 20 0
+   coords 1.948 0 0.102
+   angles 0 -8 0
   }
   GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
    ID "06141E503BDE5772"
@@ -32,8 +32,8 @@ GenericEntity {
     Hierarchy "{4920371DFE5EE62C}" {
     }
    }
-   coords -1.7 0 1.2
-   angles 0 0 0
+   coords -1.945 0 -0.444
+   angles 0 -8 0
   }
   GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
    ID "5989E00D2094DF11"
@@ -41,8 +41,8 @@ GenericEntity {
     Hierarchy "{830BB37D48B40C98}" {
     }
    }
-   coords 1.784 0 -0.545
-   angles 0 15 0
+   coords 1.8 0 -1.43
+   angles 0 -8 0
   }
  }
 }

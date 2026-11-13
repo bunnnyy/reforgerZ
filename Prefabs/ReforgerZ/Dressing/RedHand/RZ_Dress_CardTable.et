@@ -58,56 +58,61 @@ GenericEntity {
    coords -0.35 0.9 -0.1
    angles 0 0 0
   }
-  GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
+  GenericEntity : "{C678D2AD851E74E1}Prefabs/Props/Military/Radios/KS_RadioStation.et" {
    ID "6797EBC936328357"
+   coords 0.45 0.9 -0.2
+   angles 0 190 0
+  }
+  GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
+   ID "E8C73720C5A30BA6"
    components {
-    Hierarchy "{E8C73720C5A30BA6}" {
+    Hierarchy "{37ABB4631288C1EE}" {
     }
    }
    coords -1.8 0 1.5
    angles 0 0 0
   }
   GenericEntity {
-   ID "37ABB4631288C1EE"
+   ID "EFD758113FC4E1C7"
    components {
-    SCR_AISmartActionSentinelComponent "{EFD758113FC4E1C7}" {
+    SCR_AISmartActionSentinelComponent "{C61A8627CE890E37}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition 0.01 1.6 0.0
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{C61A8627CE890E37}" {
+    Hierarchy "{CB77E9CD7A0150E4}" {
     }
    }
    coords 1.168 0 -0.245
   }
   GenericEntity {
-   ID "CB77E9CD7A0150E4"
+   ID "12587F96B4B0FF88"
    components {
-    SCR_AISmartActionSentinelComponent "{12587F96B4B0FF88}" {
+    SCR_AISmartActionSentinelComponent "{C44B71C4CEE7FDD6}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition 0 1.6 -1.0
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{C44B71C4CEE7FDD6}" {
+    Hierarchy "{3D1DED590BF86CAB}" {
     }
    }
    coords 0.1 0 1.0
   }
   GenericEntity {
-   ID "3D1DED590BF86CAB"
+   ID "ACA16A4CEF3AFEC0"
    components {
-    SCR_AISmartActionSentinelComponent "{ACA16A4CEF3AFEC0}" {
+    SCR_AISmartActionSentinelComponent "{95BF0225DF2C7626}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition 1.1 1.6 0.4
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{95BF0225DF2C7626}" {
+    Hierarchy "{301F88052F70784C}" {
     }
    }
    coords -1.456 0 -0.266

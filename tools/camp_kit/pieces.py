@@ -461,8 +461,8 @@ piece("DryingLine", "Common", "Work", "Edge", "A clothesline frame with its line
     P("ClotheslineFrame_01.et", 0, 0, 4), P("BasketLaundry_01.et", -0.4, 0.8, 18), P("Stool_01.et", 0.7, 0.9),
     S("RZ_Work", 0.2, 1.0, "loiter", 0, -1.0)])
 
-piece("Duckboards", "Common", "None", "Inner", "Pallets laid flat end to end: a dry walk from the tents to the fire, the ground under it trodden bare.", [
-    P("Pallet_01.et", 0, -1.3, 90), P("Pallet_01.et", 0.05, 0, 92), P("Pallet_01.et", -0.05, 1.3, 88)])
+piece("Duckboards", "Common", "None", "Inner", "Duckboards laid end to end: a dry walk from the tents to the fire, the ground under it trodden bare.", [
+    P("Duckboard_01.et", 0, 0, 0), P("Duckboard_01.et", 0, round(_BOX["Duckboard_01.et"]["z1"] - _BOX["Duckboard_01.et"]["z0"], 3), 0)])
 piece("CrateChairs", "Common", "Sit", "Centre", "Mismatched chairs pulled up to a crate for a table, a lantern on it, two more lanterns on poles.", [
     P("CrateWooden_01_plain.et", 0, 0, 14), *SEAT("ChairOld_01.et", "CrateWooden_01_plain.et", 0, 0, 14, "right"),
     *SEAT("ChairOld_02.et", "CrateWooden_01_plain.et", 0, 0, 14, "front", along=0.1), *SEAT("Stool_01.et", "CrateWooden_01_plain.et", 0, 0, 14, "left", along=-0.2),
@@ -533,7 +533,7 @@ piece("SentryNest_RedHand", "RedHand", "Watch", "Approach", "A lookout behind a 
 piece("CardTable", "RedHand", "Sit", "Centre", "A kitchen table, crates pulled up as benches and a chair round it, bottles and a lamp; a barrel as a bin.", [
     P("TableOld_01.et", 0, 0, 12), BESIDE("CrateWooden_01_plain.et", "TableOld_01.et", 0, 0, 12, "front", gap=SEAT_GAP, yaw=102),
     *SEAT("ChairOld_02.et", "TableOld_01.et", 0, 0, 12, "right"), BESIDE("CrateWooden_01_plain.et", "TableOld_01.et", 0, 0, 12, "left", gap=SEAT_GAP),
-    P("BeerBottle_01_group.et", 0.25, 0.1, 0, 0.78), P("LampKerosene_01_green.et", -0.35, -0.1, 0, 0.78), P("BarrelMetal_01_rust.et", -1.8, 1.5),
+    P("BeerBottle_01_group.et", 0.25, 0.1, 0, 0.78), P("LampKerosene_01_green.et", -0.35, -0.1, 0, 0.78), P("KS_RadioStation.et", 0.45, -0.2, 190, 0.9), P("BarrelMetal_01_rust.et", -1.8, 1.5),
     S("RZ_Sit", 0.1, 1.0, "sit", 0, -1.0), S("RZ_Sit", -1.3, -0.3, "sit", 1.1, 0.4)])
 piece("TollBarrier", "RedHand", "Lean", "Approach", "Logs dragged across the road on tyres, a chair by a barrel fire for whoever takes the toll.", [
     P("WoodLog_01_A.et", 0, 1.5, 92), P("WoodLog_01_A.et", 0.2, 1.5, 86, 0.35), P("Tire_UAZ469.et", -1.6, 1.5, 0, 0, 90), P("Tire_UAZ469.et", 1.7, 1.4, 0, 0, 90),
@@ -547,7 +547,7 @@ piece("TrophyWall", "RedHand", "None", "Approach", "A long tin wall by the way i
     P("TinWall_01_6m_A.et", 0, 0, 4), P("DeerSkull_01_board.et", -1.6, 0.32, 184, 1.6), P("DeerSkull_01_board.et", 0.3, 0.34, 184, 1.8), P("DeerSkull_01_board.et", 1.9, 0.36, 184, 1.5),
     P("Tire_UAZ469.et", -2.6, 0.5, 0, 0.3, 75), P("Junk_01_pile_small.et", 2.6, 2.4, 20)])
 piece("Sofa", "RedHand", "Sit", "Centre", "A sofa and an armchair turned to a barrel side table, each an arm's reach off it, bottles everywhere.", [
-    P("BarrelMetal_01_rust.et", 0, 0), P("BeerBottle_01_group.et", 0, 0, 0, 0.9), *RING("Sofa_02_green.et", "BarrelMetal_01_rust.et", 0, 0, 185, gap=0.35),
+    P("BarrelMetal_01_rust.et", 0, 0), P("BeerBottle_01_group.et", 0, 0, 0, 0.9), P("LitterInterior_01_vodka_V1.et", 0.15, -0.15, 0, 1.1), *RING("Sofa_02_green.et", "BarrelMetal_01_rust.et", 0, 0, 185, gap=0.35),
     *RING("Armchair_01.et", "BarrelMetal_01_rust.et", 0, 0, 95, gap=0.35),
     P("BeerBottle_01_empty_brown.et", -1.4, -0.5), P("BeerBottle_01_empty_brown.et", 0.6, -0.8), P("Tire_UAZ469.et", -2.0, 0.2, 0, 0, 90)])
 
@@ -700,13 +700,14 @@ piece("MessTable", "Bastion", "Sit", "Centre", "A mess table: a long table with 
     P("LitterInterior_USSR_01_tincan_V1.et", 0.6, 0.15, 0, 0.9), P("LanternMilitary_US_01.et", 0, 0.05, 0, 0.9), P("CarrierFood_01.et", -0.9, -0.15, 0, 0.9)])
 piece("CheckpointSign", "Bastion", "None", "Approach", "A stop sign on its stand, a cone either side, a lamp at its foot.", [
     P("SignCheckpoint_01_stop.et", 0, 0, 0), P("ConeTraffic_01_red.et", -0.9, 0.2), P("ConeTraffic_01_red.et", 0.9, 0.3), P("LanternMilitary_US_01.et", 0.4, -0.3)])
-piece("JeepWreck", "Bastion", "None", "Edge", "A jeep that will never run again, kept for its parts: a wheel off, a crate of tools, a jerrycan.", [
-    P("UAZ469_wreck_rusty_static.et", 0, 0, -8), P("CrateWooden_01_plain.et", 1.9, 0.6, 20), P("Tire_UAZ469.et", -1.7, 1.2), P("Jerrycan_01.et", 1.8, -0.5, 15)])
+piece("JeepWreck", "Bastion", "None", "Edge", "A Humvee that will never run again, kept for its parts: a wheel off beside it, a crate of tools against its side, a jerrycan.", [
+    P("M998_wreck_static.et", 0, 0, -8), BESIDE("CrateWooden_01_plain.et", "M998_wreck_static.et", 0, 0, -8, "right", gap=0.3),
+    BESIDE("Tire_UAZ469.et", "M998_wreck_static.et", 0, 0, -8, "left", gap=0.4), BESIDE("Jerrycan_01.et", "M998_wreck_static.et", 0, 0, -8, "right", along=-1.5, gap=0.3)])
 piece("GeneratorPost", "Bastion", "Work", "Edge", "A generator behind a sandbag end, its fuel beside it, a crate of cable.", [
     P("GeneratorPortable_US_01_Off.et", 0, 0, 0), P("Sandbag_01_end_burlap.et", 0, 1.35, 0), P("Jerrycan_01.et", 0.8, 0.2, 30), P("CrateWooden_01_plain.et", -1.3, -0.3, 10),
     S("RZ_Work", 0, -0.9, "loiter", 0, 0)])
 piece("RadioMast", "Bastion", "Work", "Inner", "The radio: a mast, a table with the set and a lamp, a stool pulled up to it.", [
-    P("Antenna_R161_01.et", 0, 0), P("TableMilitary_US_01.et", 1.6, 0, 90), P("RadioStation_ANPRC77_01.et", 1.6, 0.2, 0, 0.9),
+    P("Antenna_US_02.et", 0, 0), P("TableMilitary_US_01.et", 1.6, 0, 90), P("RadioStation_ANPRC77_01.et", 1.6, 0.2, 0, 0.9),
     *SEAT("Stool_01.et", "TableMilitary_US_01.et", 1.6, 0, 90, "front", slot="RZ_Work"), P("LanternMilitary_US_01.et", 1.6, -0.5, 0, 0.78)])
 
 # ------------------------------------------------------------------- From the mods the project loads already (docs/MOD_STACK.md, "The camps' look")
@@ -844,9 +845,67 @@ piece("Counter_Halcyon", "Halcyon", "None", "Centre", "The issue table: a field 
 # <front|road|threat|out|in|gate|door|wall|piece>, guarded, high, bank, soil, jitter, noline, flat <deg>.
 # The plan's spot is a preference: the solver lays the plan where the ground allows and bends it where
 # it doesn't. A kit can give a piece another tier (KIT_TIER) and send its valuables indoors (DOCTRINE).
+# ------------------------------------------------------------------- From the world-building kit (tools/camp_kit/world_kit.txt)
+# Every size below is measured (footprints.json); each prop is placed by its faces.
+_BANK = _BOX["DirtCover_01_short.et"]
+piece("DugIn_Bastion", "Bastion", "None", "Approach", "An earth bank thrown up in front of a firing position after a bad night, the spent cases and ration wrappers still lying behind it.", [
+    P("DirtCover_01_short.et", 0, 0, 0),
+    P("GarbageAmmunition_US_01.et", -0.6, round(_BANK["z0"] - 0.6, 2), 15), P("GarbageFoodMilitaryUS_01.et", 0.9, round(_BANK["z0"] - 0.9, 2), 40)])
+_STOVE = _BOX["StoveIndustrial_01.et"]
+_STOVE_X = round(-(_STOVE["x0"] + _STOVE["x1"]) / 2, 3)
+_STOVE_Z = round(-(_STOVE["z0"] + _STOVE["z1"]) / 2, 3)
+piece("CanteenStove", "Common", "Cook", "Inner", "The canteen's gas stove dragged out to the kitchen door, the big pot on it, its gas bottle against its side.", [
+    P("StoveIndustrial_01.et", _STOVE_X, _STOVE_Z, 0), P("PotIndustrialSet_01_Big.et", 0.2, 0, 0, 1.0),
+    P("Propane.et", round(_STOVE["w"] / 2 + 0.2, 3), 0, 0),
+    S("RZ_Cook", 0, round(_STOVE["d"] / 2 + 0.6, 2), "loiter", 0, 0)])
+_BENCH = BESIDE("SawTable.et", "Workbench_02.et", 0, 0, 0, "right", gap=0.6)
+piece("Workshop", "Common", "Work", "Inner", "A workbench carried out of a garage with a vice on it and a toolbox, the table saw a step off its end, the compressor at the other end: where what can't be replaced is mended.", [
+    P("Workbench_02.et", 0, 0, 0), P("Workbench_Vice_01.et", -0.8, 0.25, 0, 1.0), P("ToolBox_01_red.et", 0.5, 0.3, 10, 1.0), _BENCH,
+    BESIDE("AirCompressor_01.et", "Workbench_02.et", 0, 0, 0, "left", gap=0.3),
+    S("RZ_Work", 0, round(_BOX["Workbench_02.et"]["z1"] + 0.6, 2), "loiter", 0, 0)])
+_JUNK = _BOX["Junk_01_pile_medium.et"]
+piece("ScrapHeap", "RedHand", "None", "Edge", "What was no use, thrown on a heap at the back: junk, the scrap off the cars, a pile of tyres beside it.", [
+    P("Junk_01_pile_medium.et", 0, 0, 0), BESIDE("VehicleGarbage_01_pile_medium.et", "Junk_01_pile_medium.et", 0, 0, 0, "right", gap=0.0),
+    BESIDE("TirePile_01_medium.et", "Junk_01_pile_medium.et", 0, 0, 0, "back", gap=0.4)])
+piece("DrumStore", "RedHand", "None", "Edge", "The toll, paid in drums: closed fuel drums stood together against the wall, dented ones beside them.", [
+    P("BarrelFuel_01_closed_old.et", 0, 0, 0), BESIDE("Barrel_01.et", "BarrelFuel_01_closed_old.et", 0, 0, 0, "right"),
+    BESIDE("Barrel_02.et", "BarrelFuel_01_closed_old.et", 0, 0, 0, "left"), BESIDE("BarrelFuel_01_closed_old.et", "BarrelFuel_01_closed_old.et", 0, 0, 0, "back")])
+_HAY = BESIDE("WheelBarrow_01.et", "HayBale_01_square_big_bottom.et", 0, 0, 0, "right", gap=0.4)
+piece("HayStore", "Haven", "Work", "Edge", "Hay for the animals the farms still keep: a big bale on the grass, the barrow it came on beside it.", [
+    P("HayBale_01_square_big_bottom.et", 0, 0, 0), _HAY])
+piece("WoodBox", "Haven", "Work", "Edge", "Firewood split and stacked in a pallet box, the sawmill's hand cart beside it.", [
+    P("PileOfWood_01.et", 0, 0, 0), BESIDE("CartSawmill_01_transport.et", "PileOfWood_01.et", 0, 0, 0, "right", gap=0.3)])
+piece("Tent_Blue", "Haven", "Sleep", "Inner", "A small blue tent someone brought from home, a blanket airing on the grass at its door.", [
+    P("TentSmall_02_blue.et", 0, 0, 0), P("BlanketBeach_01_green.et", 0, round(_BOX["TentSmall_02_blue.et"]["z1"] + 0.3 - _BOX["BlanketBeach_01_green.et"]["z0"], 2), 6)])
+_COVER = _BOX["CanvasCover_Medium_US.et"]
+_SURG = _BOX["TableSurgical_01.et"]
+_BED = _BOX["BedMedical_01.et"]
+_SURG_X = round(-0.4 - _SURG["x1"], 3)
+_BED_X = round(0.4 - _BED["x0"], 3)
+piece("FieldSurgery", "Halcyon", "Work", "Inner", "Surgery under canvas: what can't be made clean is treated outside the clean room. The surgical table under the lamp, a bed beside it, the steriliser and the drum on their stands, the litter of it on the ground.", [
+    P("CanvasCover_Medium_US.et", 0, 0, 0), P("TableSurgical_01.et", _SURG_X, 0, 0), P("BedMedical_01.et", _BED_X, 0, 0),
+    BESIDE("LampSurgical_01_on.et", "TableSurgical_01.et", _SURG_X, 0, 0, "left", gap=0.3),
+    BESIDE("TableMedical_01_small.et", "TableSurgical_01.et", _SURG_X, 0, 0, "front", gap=0.3),
+    BESIDE("ToolsSurgical_01_autoclavedrum_stand_V1.et", "BedMedical_01.et", _BED_X, 0, 0, "front", gap=0.3),
+    P("GarbageMedicalUS_01.et", 0, -1.4, 30),
+    S("RZ_Work", round(_SURG_X, 2), round(_SURG["z0"] - 0.6, 2), "loiter", round(_SURG_X, 2), 0)])
+_TOOTH = _BOX["Dragontooth_01_V3.et"]
+piece("Block_Bastion_Teeth", "Bastion", "None", "Approach", "Concrete dragon's teeth across a road, a stride apart: a body walks between them, nothing on wheels does.", [
+    *ROW("Dragontooth_01_V3.et", round(-(_TOOTH["w"] + 0.6), 3), 0, 0, 3, gap=0.6)])
+
 FIRES = "FirePit|FireBarrel|CookPot"
 SEATS = "Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable"
 RULES = {
+    "DugIn_Bastion": (4, "yard", "by SentryNest_Bastion|Bunker_Bastion|Watchtower_Bastion 10; faces threat; flat 6"),
+    "CanteenStove": (3, "kitchen", "by CookPot 6; wall 3; flat 6"),
+    "Workshop": (4, "work", "wall 4; away use:Sleep 8; away gate 6; flat 6"),
+    "ScrapHeap": (5, "yard", "by ChopShop|FuelDump|TyreStack|JeepWreck 10; away Sofa|CardTable|FireBarrel 10; away gate 8"),
+    "DrumStore": (4, "yard", "by FuelDump|FuelPoint 6; wall 8; away " + "FirePit|FireBarrel|CookPot" + " 8; flat 6"),
+    "HayStore": (4, "yard", "by Garden 10; away CookPot|FirePit 10; soil"),
+    "WoodBox": (4, "kitchen", "by CookPot|FirePit 8; flat 6"),
+    "Tent_Blue": (3, "sleep", "away FirePit|FireBarrel|CookPot 6; flat 5; soil; noline"),
+    "FieldSurgery": (3, "work", "wall 4; away gate 10; away CookPot 8; flat 6"),
+    "Block_Bastion_Teeth": (1, "wire", ""),
     # Common
     "FirePit": (3, "yard", "near " + SEATS + " 8; away use:Sleep 6; away CookPot 4; flat 6; soil"),
     "Table": (3, "yard", "near CookPot|FirePit 8; flat 5; noline"),
@@ -981,7 +1040,7 @@ WIRE_HAVEN = ["Fence_Haven_L", "Fence_Haven_M", "Fence_Haven_S", "Fence_Haven_XS
 WIRE_HALCYON = ["Fence_Halcyon_L", "Fence_Halcyon_M", "Fence_Halcyon_S", "Fence_Halcyon_XS", "Fence_Halcyon_XXS"]
 # The lab's own line, and each stronghold's road blocks (docs/SITES.md, "One way in")
 WALL_HALCYON = ["SecFence_Halcyon_L", "SecFence_Halcyon_M", "SecFence_Halcyon_S", "Fence_Halcyon_XS", "Fence_Halcyon_XXS"]
-BLOCK_BASTION = ["Block_Bastion_L", "Block_Bastion_M", "Wire_Bastion_S", "Wire_Bastion_XS"]
+BLOCK_BASTION = ["Block_Bastion_Teeth", "Block_Bastion_L", "Block_Bastion_M", "Wire_Bastion_S", "Wire_Bastion_XS"]
 BLOCK_HALCYON = ["Block_Halcyon_L", "Block_Halcyon_M", "Fence_Halcyon_XS", "Fence_Halcyon_XXS"]
 BLOCK_REDHAND = ["Block_RedHand_L", "Block_RedHand_M", "Block_RedHand_S", "Scrap_RedHand_XS"]
 BLOCK_HAVEN = ["Block_Haven_L", "Block_Haven_M", "Block_Haven_S"]
@@ -1096,17 +1155,23 @@ DENSE = {
         ("GeneratorPost", 1, "power for the set and the lights, away from the tents"),
         ("LanternPost", 2, "light at the entrance"),
         ("SandbagWall", 1, "a fallback between the gate and the door, thrown up after a bad night", "hit"),
+        ("DugIn_Bastion", 1, "an earth bank in front of the nest after the night it came close", "hit"),
+        ("CanteenStove", 1, "the canteen's stove dragged out to the kitchen door"),
         ("SandbagPile", 2, "spare bags where the line is being built up", "hit"),
         ("Clutter", 2, "what's left where people sit")],
     ("MILITARY", "OUTPOST"): [
         ("Tent_Small_Bastion", 2, "the section's tents, in a line on the grass"),
         ("SandbagPile", 2, "spare bags by the nest", "hit"),
+        ("DugIn_Bastion", 1, "an earth bank in front of the nest", "hit"),
         ("CrateStack", 1, "the section's stores against the wall"),
         ("CrateStack", 1, "more of it while the convoys get through", "supplied"),
         ("BarrelGroup", 1, "water and fuel by the cook pot", "supplied"),
         ("LanternPost", 1, "light at the entrance")],
     ("BANDITS", "STRONGHOLD"): [
         ("ChopShop", 1, "what the crew does with what it takes: a jeep off Bastion stripped for parts"),
+        ("Workshop", 1, "where what they take is made to work again"),
+        ("ScrapHeap", 1, "what's no use after the stripping, thrown on a heap at the back"),
+        ("DrumStore", 1, "the toll, paid in drums", "supplied"),
         ("LootContainer", 1, "what the crew took, under lock, someone always sitting on it"),
         ("PalletStack", 1, "loot not yet sorted", "thriving"),
         ("FuelPoint", 1, "the toll is paid in fuel"),
@@ -1134,6 +1199,11 @@ DENSE = {
         ("Bedrolls", 1, "airing by the tents"),
         ("Garden", 3, "beds dug in rows: the village feeds itself"),
         ("Scarecrow", 1, "keeps the birds off the beds"),
+        ("HayStore", 1, "hay for the animals the farms still keep"),
+        ("Workshop", 1, "mending what can't be replaced"),
+        ("CanteenStove", 1, "the school's canteen stove, carried out to cook for everyone", "supplied"),
+        ("WoodBox", 1, "split wood stacked for the winter", "supplied"),
+        ("Tent_Blue", 1, "a family's own tent, brought from home"),
         ("WaterBarrel", 2, "water where it's used: the kitchen, the garden"),
         ("WashingLine", 1, "the wash, on the grass"),
         ("Firewood", 1, "cut for the kitchen"),
@@ -1167,6 +1237,7 @@ DENSE = {
         ("CrateStack", 1, "the stores against the wall"),
         ("CrateStack", 2, "more while the courier still comes", "supplied"),
         ("Tent_Halcyon", 2, "the ward that overflowed, in a line on the grass"),
+        ("FieldSurgery", 1, "what can't be made clean is treated outside the clean room"),
         ("BarrelGroup", 1, "the generators' fuel", "supplied"),
         ("Loudspeaker_Halcyon", 1, "the order heard at every corner"),
         ("Clutter", 1, "the smokers' corner")],
