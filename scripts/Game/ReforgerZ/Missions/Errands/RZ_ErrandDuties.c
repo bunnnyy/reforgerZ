@@ -2161,7 +2161,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				case "wreck": RZ_DutyRedHand.Wreck(e, played); break;
 				case "still": RZ_DutyRedHand.Still(e, played); break;
 				case "count": RZ_DutyRedHand.Count(e, played); break;
-				case "toll": RZ_DutyRedHand.Toll(gm, e, played); break;
+				case "toll": RZ_DutyRedHand.Toll(dealer, gm, e, played); break;
 				case "spotter": RZ_DutyRedHand.Spotter(dealer, e, played); break;
 				case "tape": RZ_DutyBastion.Tape(e, played); break;
 				case "gate": RZ_DutyBastion.Gate(e, played); break;

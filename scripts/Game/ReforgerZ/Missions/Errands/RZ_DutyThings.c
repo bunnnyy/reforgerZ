@@ -38,6 +38,15 @@ class RZ_DutyThingProps
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Blindfold (optional): on the ground at the lock-up's door (RZ_Show_Blindfold.et)", "et")]
 	ResourceName m_sBlindfold;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bed, dug (optional): a garden bed turned over and raked, bare soil (the garden's seed beat). Empty = words only", "et")]
+	ResourceName m_sBedDug;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bed, planted (optional): a garden bed with a row of young plants (the garden's watering beat). Empty = words only", "et")]
+	ResourceName m_sBedPlanted;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bed, ripe (optional): a garden bed with a crop standing tall (the garden's lifting beat). Empty = words only", "et")]
+	ResourceName m_sBedRipe;
+
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Lock-up pen (optional): what stands beside a Haven or Bastion lock-up's door, a holding pen with chairs and a table (JTF Bronze Props' JTF_Detainee_US_01.et). Empty = the door only", "et")]
 	ResourceName m_sLockUpPen;
 

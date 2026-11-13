@@ -242,9 +242,21 @@ class RZ_DutyRedHand
 	//! A shift on the bar: five come up the road, drawn from fifty by what's so (the stage, the
 	//! hour, the weather, how sick the town is). Then the boss comes to count the take. How many
 	//! were in the pool today.
-	static int Toll(RZ_GameModeComponent gm, RZ_Errand e, RZ_DutyScene scene)
+	static int Toll(RZ_Errands dealer, RZ_GameModeComponent gm, RZ_Errand e, RZ_DutyScene scene)
 	{
 		RZ_WorldFacts facts = gm.GetFacts();
+		// Who comes up the road follows who's at odds and who holds it: a feud keeps a faction's
+		// people off it, a truce or a Bastion post near brings Bastion's up it
+		RZ_FactionLife life = gm.GetFactionLife();
+		bool feudBastion = life && life.HasFeud(RZ_EFaction.BANDITS, RZ_EFaction.MILITARY);
+		bool truceBastion = life && life.HasTruce(RZ_EFaction.BANDITS, RZ_EFaction.MILITARY);
+		bool feudHaven = life && life.HasFeud(RZ_EFaction.BANDITS, RZ_EFaction.SURVIVORS);
+		bool feudHalcyon = life && life.HasFeud(RZ_EFaction.BANDITS, RZ_EFaction.INSTITUTE);
+		array<RZ_RoadPost> posts = {};
+		if (gm.GetCheckpoints())
+			gm.GetCheckpoints().PostsNear(RZ_EFaction.MILITARY, e.m_vGiver, 1500, posts);
+
+		bool bastionRoad = !posts.IsEmpty();
 		RZ_Settlement town = gm.GetSettlement(e.m_iSettlement);
 		bool late = facts && facts.Stage() >= RZ_EOutbreakStage.COLLAPSE;
 		bool early = !late;
@@ -255,22 +267,22 @@ class RZ_DutyRedHand
 		array<ref RZ_DutyBeat> picked = {};
 		RZ_DutyScript.Pool();
 		Pass("handcart", true, "A family with a handcart, two children asleep on the bedding.", "Bedding, a clock, a birdcage with no bird. A sack of flour under it all.", "The father's hands are a clerk's. The boots are split.", "Anywhere that has a roof, he says.", 1, "A scoop of their flour into the box. The mother watches it go.", "Through, flour and all. They don't believe it until they're past the bend.", "Back the way they came. There's nothing the way they came.");
-		Pass("courier", true, "A woman on a bicycle with a satchel, in a hurry, with the Haven's ribbon on the bars.", "Dressings and sulfa, wrapped against the wet.", "Ink on her fingers, mud to the knee.", "A house with a fever in it, three miles on.", 1, "A third of the dressings into the box. That's a third of someone's chance.", "Through. She's gone before the bar's fully up.", "Turned. She says the name of the house, twice, and then goes.");
+		Pass("courier", !feudHaven, "A woman on a bicycle with a satchel, in a hurry, with the Haven's ribbon on the bars.", "Dressings and sulfa, wrapped against the wet.", "Ink on her fingers, mud to the knee.", "A house with a fever in it, three miles on.", 1, "A third of the dressings into the box. That's a third of someone's chance.", "Through. She's gone before the bar's fully up.", "Turned. She says the name of the house, twice, and then goes.");
 		Pass("deserter", true, "A man alone, in a Bastion greatcoat with the badges cut off.", "A rifle with no bolt, wrapped in sacking. Nothing to eat.", "The boots are army, and good. He hasn't slept.", "Away, he says. Just away.", 0, "The coat for his passage. He gives it up like a skin.", "Through, coat and all. A Bastion patrol will ask who passed him.", "Back toward the post he ran from. He stands in the road a long time.");
-		Pass("tech", true, "A man in a white coat under a mac, with a sealed steel case chained to his wrist.", "Cold, through the steel. A seal with a number.", "Soft hands, good shoes ruined.", "The lab. He's late. Please.", 1, "You take his watch, since the case won't open. He hardly notices.", "Through. Whatever's in the case gets where it's going, cold.", "Turned. The case warms in the road while he argues.");
+		Pass("tech", !feudHalcyon, "A man in a white coat under a mac, with a sealed steel case chained to his wrist.", "Cold, through the steel. A seal with a number.", "Soft hands, good shoes ruined.", "The lab. He's late. Please.", 1, "You take his watch, since the case won't open. He hardly notices.", "Through. Whatever's in the case gets where it's going, cold.", "Turned. The case warms in the road while he argues.");
 		Pass("child", true, "A child of about nine, alone, walking on the crown of the road as if it were hers.", "A doll, a crust, a kitchen knife.", "No shoes. Feet like leather.", "To her auntie's. She can't say where that is.", 1, "You take the knife. A child shouldn't. She looks at you as if you'd taken her arm.", "Through. She doesn't look back. She hasn't looked back at anything in a while.", "You send a child back down an empty road.");
 		Pass("oldman", true, "An old man with a stick and nothing else, and a great deal to say.", "Nothing. Not a crumb. He turns his pockets out to show you.", "Clean hands. He's been fed somewhere this morning.", "The next toll, and the one after. He walks the road and carries the news.", 0, "He pays in news: the bridge is down, and Bastion's truck is three days late. That's worth more than tins.", "Through, with his news untold.", "Turned. He tells the news to the hedge, loudly, as he goes.");
 		Pass("bitten", sick, "A man with his hand in his coat, sweating, with a full pack.", "Food for a week, and a child's drawing.", "He won't take the hand out. There's a smell, sweet.", "Home, he says. He's nearly home.", 2, "You take half the pack. He's past caring. He's inside the camp's ground now.", "Through. He's on our road, among our people, with that hand.", "Turned, at a pole's length. He nods. He knew.");
 		Pass("runner", true, "A lad at a trot, with a blue rag round his arm. Not our colour.", "A folded note, sealed with candle wax. Nothing else at all.", "Light shoes. He's run this before.", "He won't say. He's breathing through his nose and watching your hands.", 2, "You take the note. He lets you. It's blank. He was sent to see what we'd do.", "Through. Another crew's message crosses our ground free.", "Turned, with a word for whoever sent him. He grins. That was the message.");
 		Pass("armed", true, "A big man with a shotgun over his arm, broken open, and a look.", "Cartridges. A brace of rabbits.", "A keeper's hands. A keeper's patience.", "Through. He's said it once.", 1, "You name a price. He closes the gun. You un-name it.", "Through, with a nod between men who've each decided something.", "You tell him no. He considers you. It is a long consideration.");
 		Pass("deadcart", sick, "A flat cart, a tarpaulin, and a man leading the horse with a rag over his face.", "Six, under the tarp. Wrapped. One of the wrappings moves with the cart, only with the cart.", "Lime to the elbows.", "The pit, beyond the camp. There's nowhere else.", 1, "You take the horse's nosebag of oats. He lets you. He's past caring about oats.", "Through, quickly. Everybody steps back.", "Turned. He'll tip them in the ditch, a hundred yards down. Upwind.");
-		Pass("forged", late, "A man in a suit with Bastion papers he presents before he's asked.", "A change of collar. A second set of papers, different name.", "A gentleman's hands. A burglar's eyes.", "On Command's business. He says Command a great deal.", 0, "Both sets of papers into the box. The boss will know what they're worth. He walks on, lighter.", "Through, on forged papers. He'll use them at Bastion's gate and say he came through us.", "Turned. He'll find a toll with a duller man on it.");
+		Pass("forged", late || bastionRoad, "A man in a suit with Bastion papers he presents before he's asked.", "A change of collar. A second set of papers, different name.", "A gentleman's hands. A burglar's eyes.", "On Command's business. He says Command a great deal.", 0, "Both sets of papers into the box. The boss will know what they're worth. He walks on, lighter.", "Through, on forged papers. He'll use them at Bastion's gate and say he came through us.", "Turned. He'll find a toll with a duller man on it.");
 		Pass("workoff", true, "A young man with nothing, and he says so before you ask.", "A spare shirt. That is the whole of it.", "Hands like a navvy's.", "Wherever there's work. He'll do an hour's for his passage, now.", 0, "An hour on the woodpile for the camp, and he's through, with soup in him.", "Through for nothing. He looks at you as if you'd made a mistake.", "Turned. There was an hour of work in him, and you've sent it down the road.");
 		Pass("protected", true, "A woman with a red thread round her wrist, who says the boss knows her.", "Tobacco, a great deal of it.", "Rings on every finger. None of them wedding.", "The camp. Where else.", 1, "You take a twist of tobacco. She smiles, and says she'll mention you.", "Through. She says she'll mention you. This time it's a promise.", "Turned. She laughs, out loud, and sits down on the verge to wait for the boss.");
 		Pass("priest", true, "A priest with a bicycle and a tin box of the Host.", "Wafers. Wine in a medicine bottle. A book.", "Chilblains. A patched cassock.", "A dying man, the far side. He's been sent for.", 1, "You take the wine. He blesses you anyway, which is worse.", "Through. He rings the bell on his bicycle as he goes under.", "Turned. A man dies without him, the far side.");
 		Pass("pedlar", true, "A pedlar with a tray of needles, thread, combs and one mirror.", "Exactly that. And a bottle in the lining.", "Quick fingers. He's noticed where your box is.", "Every camp and every house. He's welcome in all of them.", 0, "A paper of needles for the box. The cook will kiss you.", "Through, with his tray. He'd have paid.", "Turned. The camp goes without needles till he comes round again.");
 		Pass("doctor", sick, "A tired woman with a black bag, walking, because the car ran dry.", "Instruments, boiled and wrapped. Very little else left.", "Scrubbed raw to the wrist.", "Whoever needs her. Today that's the far side.", 1, "You take the bag's last morphine. She gives you a look that will stay.", "Through. She's back before dark, and stops to look at the cook's hand, for nothing.", "Turned. Somewhere the far side, someone waits for a knock.");
-		Pass("soldiers", late, "Two Bastion soldiers, rifles slung, walking the wrong way.", "Rations for three days. A map with a cross on it.", "They keep their hands away from the slings, with care.", "They were told to walk till they found someone. They've found you.", 2, "You take the rations. They let you. They've decided you're what they were sent to find.", "Through. Two of Bastion's walk into our ground and write down what they see.", "Turned, politely. They go, and they count the men on the bar as they leave.");
+		Pass("soldiers", (late || bastionRoad || truceBastion) && !feudBastion, "Two Bastion soldiers, rifles slung, walking the wrong way.", "Rations for three days. A map with a cross on it.", "They keep their hands away from the slings, with care.", "They were told to walk till they found someone. They've found you.", 2, "You take the rations. They let you. They've decided you're what they were sent to find.", "Through. Two of Bastion's walk into our ground and write down what they see.", "Turned, politely. They go, and they count the men on the bar as they leave.");
 		Pass("mother", true, "A woman carrying a boy of five who is too big to be carried.", "A feeding bottle, a blanket, a tin of condensed milk.", "She's swaying. The boy is very hot.", "The Haven's nurse. Two miles.", 1, "You take the milk. It's all she had for him.", "Through. One of the lads walks her the first half mile, and doesn't say why.", "Turned. She sits down in the road with him. She isn't going anywhere else.");
 		Pass("twins", true, "Two brothers who answer together, with one pack between them.", "Tools, all good, and all with different initials.", "Four hands that have been in other people's sheds.", "Trading. They say it at the same moment.", 0, "A brace and bit for the box. They part with it without grief. It wasn't theirs for long.", "Through, with a shed's worth of other people's tools.", "Turned. They go round by the field. You'd have had a brace and bit.");
 		Pass("singer", day, "A girl with a guitar on her back and no pack.", "Strings, a tuning fork, an apple.", "A player's nails. Nothing else to her name.", "Wherever they'll feed her for a song.", 0, "A song for the bar. The lads go quiet. One of them goes round the back of the hut.", "Through. You never heard her play.", "Turned, with her guitar. The camp stays as it was.");
@@ -301,7 +313,7 @@ class RZ_DutyRedHand
 		Pass("spy", late, "A woman selling eggs, who knows the name of every man on the bar.", "Eggs. Under the eggs, straw. Under the straw, a pencil stub.", "A countrywoman's hands, and a town haircut.", "The camp, to sell eggs. She was here last week. And the week before.", 2, "You take a dozen eggs. She counts the men again while you count the eggs.", "Through, as every week. She's very good with names.", "Turned. She's surprised, and for half a second it shows.");
 		Pass("grave", true, "A man with a spade over his shoulder and clay to the knee.", "A spade. A bottle. A list of names, most crossed through.", "Blistered, and they've burst.", "The next one on the list. He digs them for whoever asks.", 1, "You take the bottle. He needed that more than anyone on this road.", "Through. He nods at the pit behind the camp as he passes, a tradesman's nod.", "Turned. The next one on the list stays above ground.");
 		Pass("poacher", true, "A wiry man with a bulge under his coat that kicks.", "A hare, alive, and two that aren't.", "A snare wire round his wrist like a bracelet.", "He doesn't say. He's been taking them off our own ground.", 0, "Both dead hares for the bar, and he keeps the live one, and his fingers.", "Through, with our hares.", "Turned. He'll be back in the wood by dark, on our ground, with his wires.");
-		Pass("crier", true, "A man with a handbell and a paper, reading it aloud as he walks.", "The paper. It's a notice, printed, with Bastion's crest.", "A big voice. Sore feet.", "Every crossroads. He reads it at each one.", 2, "You take the paper. It says the road is Bastion's. He's been reading that at every crossroads to here.", "Through. He reads it at our bar, loudly, on his way under.", "Turned, with his paper. Our road hears no more of it.");
+		Pass("crier", bastionRoad || truceBastion, "A man with a handbell and a paper, reading it aloud as he walks.", "The paper. It's a notice, printed, with Bastion's crest.", "A big voice. Sore feet.", "Every crossroads. He reads it at each one.", 2, "You take the paper. It says the road is Bastion's. He's been reading that at every crossroads to here.", "Through. He reads it at our bar, loudly, on his way under.", "Turned, with his paper. Our road hears no more of it.");
 		Pass("orphans", late, "Eleven children in a line, holding a rope, with one grown woman at the front.", "A handcart of blankets. No food at all.", "The woman is asleep on her feet.", "Anywhere with a door that shuts.", 1, "There's nothing to take but blankets. You don't.", "Through. The cook comes out with the big pot before anyone tells her to.", "Turned. Twelve people turn round on a rope.");
 		Pass("gravedigger", sick, "A cart with a coffin on it, new wood, and nobody walking behind.", "A coffin. Nailed down. Heavy for its size.", "The carter won't meet your eye.", "The churchyard, he says. Quickly.", 2, "You have it opened. It's tins. A coffin of tins, going out of the valley.", "Through, with respect. A hundredweight of food leaves the valley in a box.", "Turned. He turns the cart so fast the coffin slides.");
 		Pass("returner", true, "One of ours, back, a month late, with a different coat and a story.", "Another crew's tobacco. Another crew's knife.", "Our rag, tied on fresh this morning.", "Home, he says. He got lost. For a month.", 2, "You take the knife and send him to the boss. He goes like a man walking to a dentist.", "Through, as if he'd never been away. He goes straight to the cookhouse and listens.", "You don't lift the bar for him. He stands outside it, one of ours, where everyone can see.");
@@ -311,8 +323,13 @@ class RZ_DutyRedHand
 			scene.m_aBeats.Insert(b);
 		}
 
-		Extension(scene);
+		int force = -1;
+		if (feudBastion)
+			force = 3;
+
+		Extension(scene, force);
 		RZ_DutyScript.Into(scene.m_aBeats);
+		Marked(dealer, e);
 		RZ_DutyScript.T("boss", "The boss, come down to count the take. He looks in the box, and then at you.", RZ_DutyBeat.AT_GATE);
 		RZ_DutyScript.O("Hand him the box", "He counts it with one finger. He grunts. From him, that's a speech.", "regard+");
 		RZ_DutyScript.O("Hand it over, one thing short", "One thing stays in your coat. He counts with one finger, and stops, and starts again.", "shady2 give");
@@ -321,17 +338,47 @@ class RZ_DutyRedHand
 
 	//------------------------------------------------------------------------------------------------
 	//! One chance to do more than stand at the bar, for more pay: from four.
-	protected static void Extension(RZ_DutyScene scene)
+	//------------------------------------------------------------------------------------------------
+	//! The spotter's slate read: a mark from the hill in the last two season days, and the crew went
+	//! out on it. The boss says what came of it before he counts the box, and the mark is used up.
+	protected static void Marked(RZ_Errands dealer, RZ_Errand e)
+	{
+		int today = RZ_SeasonClock.Day();
+		array<string> came = {
+			"The crew took the three carts after the crossroads, on the slate's mark. Nobody hurt, and the camp eats tonight.",
+			"The crew walked a cart past Bastion's barrier at the bell, on the slate's mark, and nobody stopped it.",
+			"The crew stopped the Haven's truck on the slow climb past the ford, on the slate's mark. They took a third and let it go.",
+			"The crew had the handcart off Halcyon's people at the well, on the slate's mark. Sealed bottles. The boss is pleased and doesn't know why.",
+			"The crew went for the hut with the lamp at dusk, on the slate's mark. The other crew are a hut short, and asking who drew the map."};
+		for (int t = 0; t < 5; t++)
+		{
+			string key = string.Format("spotter.%1.%2", e.m_iHolding, t);
+			int day = dealer.Counter(key);
+			if (day <= 0 || today - day > 2)
+				continue;
+
+			RZ_DutyScript.T("marked", came[t], RZ_DutyBeat.AT_GATE);
+			RZ_DutyScript.O("Hear him out", "He tells it twice, the second time with more in it.", string.Format("morale+ rumour set:%1=0", key), "", came[t]);
+			return;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `force` >= 0: that one (a feud with Bastion brings its patrol up the road).
+	protected static void Extension(RZ_DutyScene scene, int force)
 	{
 		int which = Math.RandomInt(0, 4);
+		if (force >= 0)
+			which = force;
+
 		RZ_DutyScript.Into(scene.m_aBeats);
 		if (which == 0)
 		{
 			RZ_DutyScript.T("escort", "A merchant with a mule and a strongbox. He'll pay double for a man to walk him through to the far marker.", RZ_DutyBeat.AT_GATE);
-			RZ_DutyScript.O("Walk him through yourself", "You'll walk him. The lads keep the bar.", "flag:walk");
+			RZ_DutyScript.O("Walk him through yourself", "You'll walk him. The lads keep the bar. He falls in beside you with the mule.", "flag:walk walker");
 			RZ_DutyScript.O("He pays the toll like anyone", "The toll, and no more. He goes on alone, looking at the hedges.");
 			RZ_DutyScript.T("marker", "", RZ_DutyBeat.AT_FAR, "walk");
-			RZ_DutyScript.O("See him past the far marker", "Past the marker, and nobody stepped out of a hedge. He pays double, and says so at every inn after.", "hold:4 +2 fame1");
+			RZ_DutyScript.O("See him past the far marker", "Past the marker, and nobody stepped out of a hedge. He pays double, and says so at every inn after.", "hold:4 +2 fame1 walker_end");
 		}
 		else if (which == 1)
 		{

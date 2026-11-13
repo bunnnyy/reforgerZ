@@ -195,6 +195,13 @@ class RZ_DutyScene
 	IEntity m_Person;				// the open beat's person to talk to (m_sTalk), only while it's open
 	IEntity m_Thing;				// the open beat's thing on show (m_sThing), only while it's open
 	ResourceName m_sDress;			// what stands beside the scene's first beat until it's over (the lock-up's pen)
+	ref map<string, int> m_mStock = new map<string, int>();	// a line's stocks by count (fill:water=4, use:water)
+	int m_iCarry;					// carrying something by its rules (1 time, 2 no running or drops): the cold chain
+	float m_fCarryFrom;
+	float m_fJoltAt;
+	vector m_vCarryLast;
+	int m_iJolts;
+	bool m_bLate;
 	IEntity m_Dress;
 
 	//------------------------------------------------------------------------------------------------
@@ -231,7 +238,10 @@ class RZ_DutyScenes
 	protected static const float OPTION_STEP = 0.9;		// between a beat's options, side by side
 	static const int TAG_PERSON = -18;					// RZ_PuzzleObjectComponent mission id: a duty's person to talk to (object index: the errand)
 	protected static const float PERSON_OFF = 1.8;
-	protected static const float DRESS_OFF = 6;			// the lock-up's pen stands this far to the side		// a beat's person stands this far behind its options
+	protected static const float DRESS_OFF = 6;
+	protected static const float CARRY_RUN = 5.2;		// m in a second: a sprint, or a ride
+	protected static const float CARRY_DROP = 1.6;		// m up or down in a second: a jump, a fall, a scramble
+	protected static const float CARRY_TIME = 360;		// s on the road before what can't wait warms			// the lock-up's pen stands this far to the side		// a beat's person stands this far behind its options
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Errands m_Dealer;
@@ -482,6 +492,44 @@ class RZ_DutyScenes
 				continue;
 
 			Step(s, players[idx]);
+			Carry(s, players[idx]);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Carrying something with rules you feel (the cold chain): sprinting, a drop or a climb of more
+	//! than a man's height in a second jolts it, and too long on the road warms it. Each counts as a
+	//! wrong call, two at most, and is said once.
+	protected void Carry(RZ_DutyScene s, IEntity me)
+	{
+		if (s.m_iCarry <= 0 || !me)
+			return;
+
+		vector at = me.GetOrigin();
+		if (s.m_vCarryLast != vector.Zero && s.m_fClock - s.m_fJoltAt > 6 && (s.m_iCarry & 2) != 0)
+		{
+			float moved = RZ_Util.DistXZ(at, s.m_vCarryLast);
+			float drop = Math.AbsFloat(at[1] - s.m_vCarryLast[1]);
+			if (moved > CARRY_RUN || drop > CARRY_DROP)
+			{
+				s.m_fJoltAt = s.m_fClock;
+				s.m_iJolts++;
+				if (s.m_iJolts <= 2)
+				{
+					s.m_iScored++;
+					s.m_iWrong++;
+					m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, "Everything in the box rings at once. That was too hard for it.");
+				}
+			}
+		}
+
+		s.m_vCarryLast = at;
+		if (!s.m_bLate && (s.m_iCarry & 1) != 0 && s.m_fClock - s.m_fCarryFrom > CARRY_TIME)
+		{
+			s.m_bLate = true;
+			s.m_iScored++;
+			s.m_iWrong++;
+			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, "The box is warm through the canvas now. It's been on the road too long.");
 		}
 	}
 
@@ -832,6 +880,41 @@ class RZ_DutyScenes
 		array<int> who = {s.m_iPlayer};
 		foreach (string f : fx)
 		{
+			// fill:<stock>=N: a stock of the scene's own, full (the decon line's tank); use:<stock>: one
+			// used, and at none left the flag <stock>out is set for a beat that waits on it
+			if (f.StartsWith("fill:"))
+			{
+				int at = f.IndexOf("=");
+				if (at > 5)
+				{
+					string stock = f.Substring(5, at - 5);
+					s.m_mStock.Set(stock, f.Substring(at + 1, f.Length() - at - 1).ToInt());
+					s.m_aFlags.RemoveItem(stock + "out");
+				}
+
+				continue;
+			}
+
+			if (f.StartsWith("use:"))
+			{
+				string used = f.Substring(4, f.Length() - 4);
+				int left = s.m_mStock.Get(used) - 1;
+				s.m_mStock.Set(used, left);
+				if (left <= 0 && !s.Has(used + "out"))
+					s.m_aFlags.Insert(used + "out");
+
+				continue;
+			}
+
+			// carry:<rules> starts carrying by them (1 time, 2 no jolts); carry:0 stops
+			if (f.StartsWith("carry:"))
+			{
+				s.m_iCarry = f.Substring(6, f.Length() - 6).ToInt();
+				s.m_fCarryFrom = s.m_fClock;
+				s.m_vCarryLast = vector.Zero;
+				continue;
+			}
+
 			// set:<counter>=<value>: one of the errands' saved counters (a garden bed's state)
 			if (f.StartsWith("set:"))
 			{
@@ -950,6 +1033,31 @@ class RZ_DutyScenes
 
 					break;
 				}
+
+				// The ward's charts all true: a little research, once a place a season day
+				case "research":
+				{
+					string key = string.Format("ward.research.%1", s.m_iHouse);
+					int today = RZ_SeasonClock.Day();
+					if (s.m_iWrong > 0 || !m_GM.GetCure() || m_Dealer.Counter(key) == today)
+						break;
+
+					m_Dealer.SetCounter(key, today);
+					m_GM.GetCure().AddResearch(1, "The observation ward's charts came in true today, every bed. The lab counted them.");
+					break;
+				}
+
+				// Someone to walk beside you (the toll's merchant): one body that follows, while it can
+				case "walker":
+				{
+					RZ_Errand walked = m_Dealer.FindById(s.m_iErrand);
+					if (walked && me)
+						m_Dealer.GetSquads().Start(walked, s.m_sTitle, "the merchant", me.GetOrigin(), null, m_GM.GetSurvivorGroupPrefab());
+
+					break;
+				}
+
+				case "walker_end": m_Dealer.GetSquads().Drop(s.m_iErrand); break;
 
 				// One dose off a stock that exists, to someone of the place (never the player): the
 				// black market's for the Red Hand, the lab's for the rest

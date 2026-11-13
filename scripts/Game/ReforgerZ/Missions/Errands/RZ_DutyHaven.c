@@ -105,7 +105,8 @@ class RZ_DutyHaven
 		RZ_DutyScript.Into(scene.m_aBeats);
 		if (best == 5)
 		{
-			RZ_DutyScript.T("lift", string.Format("The %1 in %2 are ready. You can tell by the tops.", Crop(grown), name), RZ_DutyBeat.AT_GATE);
+			RZ_DutyBeat ripe = RZ_DutyScript.T("lift", string.Format("The %1 in %2 are ready. You can tell by the tops.", Crop(grown), name), RZ_DutyBeat.AT_GATE);
+			ripe.m_sThing = RZ_DutyThings.Props().m_sBedRipe;
 			RZ_DutyScript.O("Lift what's ripe", "Up they come, with the soil still on. A sack, and a bit over.", "dig hold:8 set:" + stageKey + "=0");
 			RZ_DutyScript.T("carry", "", RZ_DutyBeat.AT_HERE);
 			if (grown == 1)
@@ -119,12 +120,14 @@ class RZ_DutyHaven
 		{
 			RZ_DutyScript.T("well", string.Format("The %1 in %2 are dry to the knuckle.", Crop(grown), name), RZ_DutyBeat.AT_GATE);
 			RZ_DutyScript.O("Fill the can at the well", "Full to the brim, and heavy.", "fill hold:5");
-			RZ_DutyScript.T("water", "", RZ_DutyBeat.AT_NEAR);
+			RZ_DutyBeat dry = RZ_DutyScript.T("water", "", RZ_DutyBeat.AT_NEAR);
+			dry.m_sThing = RZ_DutyThings.Props().m_sBedPlanted;
 			RZ_DutyScript.O("Water the row", "Slowly, at the roots. The soil goes dark and stays dark.", "hold:5 set:" + stageKey + "=3");
 		}
 		else if (best == 3)
 		{
-			RZ_DutyScript.T("seed", string.Format("The seed tin, for %1. Three packets, and enough of each for one bed.", name), RZ_DutyBeat.AT_GATE);
+			RZ_DutyBeat dug = RZ_DutyScript.T("seed", string.Format("The seed tin, for %1. Three packets, and enough of each for one bed.", name), RZ_DutyBeat.AT_GATE);
+			dug.m_sThing = RZ_DutyThings.Props().m_sBedDug;
 			string planted = string.Format(" set:%1=2 set:%2=%3 set:", stageKey, dayKey, today) + cropKey + "=";
 			RZ_DutyScript.O("Plant potatoes", "Potatoes. Two days in the ground, and they fill a house.", "hold:6" + planted + "1");
 			RZ_DutyScript.O("Plant beans", "Beans. Up by tomorrow, and gone by the day after.", "hold:6" + planted + "2");
@@ -305,6 +308,29 @@ class RZ_DutyHaven
 		RZ_DutyScript.O("Out, and not back", "Written. Two will go and look along the wood road before dark.", code[0] + " write flag:out", "", "", "");
 		RZ_DutyScript.O("Dead in the night, not written", "Written. Somebody goes to the room, and somebody else for the clerk.", code[1] + " write flag:dead");
 		RZ_DutyScript.O("Gone, with their things", "Written. The name is struck from the kitchen's count, and the store is checked.", code[2] + " write flag:gone");
+		// Out and not back, written: two go to look along the wood road, and you can go with them
+		array<string> found = {
+			"In the ditch past the second gate: %1, a turned ankle and a day's fright, too ashamed to shout.",
+			"In the loft of the old barn: %1, who hid from something on the road at dusk and hasn't dared come down.",
+			"At the wood's edge: %1, cold, and bitten, and quite still. The wood they went for is stacked beside them."};
+		int fate = Math.RandomInt(0, 3);
+		RZ_DutyScript.T("after", string.Format("Two are going out along the wood road to look for %1, before the light goes.", who), RZ_DutyBeat.AT_GATE, "out");
+		RZ_DutyScript.O("Go with them", "The three of you, along the wood road, calling the name.", "flag:look");
+		RZ_DutyScript.O("Let them go", "They go. You hear what they found at supper.", "later", "", string.Format("They found %1 on the wood road. Somebody should have gone with them.", who));
+		string what = string.Format(found[fate], who);
+		if (truth != 0)
+			what = string.Format("Nothing on the wood road, all the way to the trees. Wherever %1 is, it isn't out here.", who);
+
+		RZ_DutyScript.T("found", "", RZ_DutyBeat.AT_OUT, "look");
+		if (truth == 0 && fate == 0)
+			RZ_DutyScript.O("Look along the ditches", what, "search hold:6 +2 morale+ local", "who was found in the ditch on the wood road", "You were one of the three who came for me. I'd have lain there all night out of shame. I owe you a supper, at least.");
+		else if (truth == 0 && fate == 1)
+			RZ_DutyScript.O("Look in the barns", what, "search hold:6 +2 regard+ local", "who was talked down out of a barn loft", "You talked me down off that loft. I'd heard it on the road, and I couldn't move. I still hear it.");
+		else if (truth == 0)
+			RZ_DutyScript.O("Look along the wood's edge", what, "search hold:6 morale- record", "", "", "We buried them by the wood they went for. It was good of you to go and look.");
+		else
+			RZ_DutyScript.O("Look all the way to the trees", what, "search hold:6 wrong", "", "", "You had them written out and not back. They weren't. Think on that, next time you read a house.");
+
 		if (truth == 1)
 		{
 			RZ_DutyBeat card = RZ_DutyScript.T("card", string.Format("On the blanket, an identity card. %1, and a face twenty years younger. It would pass for nearly anyone, now.", who), RZ_DutyBeat.AT_NEAR, "dead");
