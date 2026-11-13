@@ -654,7 +654,8 @@ neither wraps: values are cut at 60 characters on the server, about 500 units at
 
 ## Car repair screen: `RZ_CarMenu.layout` and `RZ_CarJob.layout`
 
-The car repair screen (`RZ_CarMenu` preset), from `UI/Mockups/car_repair.html`. Written as text.
+The car repair screen (`RZ_CarMenu` preset), from `UI/Mockups/car_repair.html` and, for the loom,
+`car_hotwire.html`. Written as text.
 Positions inside `CarPanel` are from its top left.
 
 ```
@@ -663,8 +664,9 @@ Frame (root, full screen)
 └─ Frame   CarPanel        1,440 × 820, centred
    ├─ Image  (CarBg)        #0F1113
    ├─ Image  (CarAccent)    full width × 5, top edge, amber
-   ├─ Text   CarTitle       at (48, 34), 900 wide, condensed bold 34, bone ("The blue two-door")
-   ├─ Text   CarDone        right-aligned, ending at (1,320, 44), mono 22, dim ("2 of 5 done")
+   ├─ Text   CarTitle       at (48, 34), 600 wide, condensed bold 34, bone ("The blue two-door")
+   ├─ Text   CarDone        right-aligned, 640 wide, ending at (1,320, 44), mono 22: what the car lacks
+   │                        ("Missing: tyre, fuel", red; "Nothing missing", olive; tinted by the script)
    ├─ Button CloseButton    44 × 44 at (1,348, 30), "X" in amber
    ├─ Image  (HeadRule)     at (48, 92), 1,344 × 2, #2A2E31
    ├─ Frame  (CarView)      at (48, 120), 640 × 250, #0C0E0F with a #2A2E31 border
@@ -676,7 +678,27 @@ Frame (root, full screen)
    │     ├─ Panel  MarkerRingN   the frame's size, border, hidden unless the job is selected (tinted)
    │     ├─ Image  MarkerDotN    32 × 32 at (7, 7), tinted by the job's state
    │     └─ Text   (MarkerNumN)  over the dot, mono bold 20, #15171A, "1" … "5"
-   ├─ Text   CarStatus      at (48, 392), 640 × 300, regular 24, #F4F0E6, wraps: what the last job said (hidden when empty)
+   ├─ Frame  Loom           at (48, 120), 640 × 450, hidden: the loom, shown in CarView's place at a hotwire
+   │  ├─ Image  (LoomBg)      640 × 256, #0C0E0F, and Panel (LoomLine), its #2A2E31 border
+   │  ├─ Frame  WireBox0 … WireBox4   120 × 240 each at (10 + 124 × N, 8): one wire
+   │  │  ├─ Image  WireBgN      the box's size, #1B1F22, shown on the picked wire
+   │  │  ├─ Text   WireLabelN   at (0, 4), mono bold 16, centred: what it's known to be ("FEED", and
+   │  │  │                      once cut "IGNITION", "STARTER", "HORN", "LAMPS"; tinted)
+   │  │  ├─ Image  WireTopN, WireMidN, WireBotN   the wire, top to bottom: 14 wide at x 53, from y 34
+   │  │  │                      (70, 20 and 70 tall). The script places, sizes (30 wide when thick)
+   │  │  │                      and tints them; WireMidN is hidden once the wire is cut
+   │  │  ├─ Frame  WireStripesN hidden unless striped: four dark bands 14 × 8 over the wire
+   │  │  │                      (WireStripeAN … WireStripeDN at y 48, 76, 136, 164)
+   │  │  ├─ Image  WireEndAN, WireEndBN   the cut ends, hidden until cut: copper, or soot for a wrong cut
+   │  │  ├─ Text   WireNameN    at (0, 198), mono bold 18, centred, bone: the colour in words ("RED")
+   │  │  ├─ Text   WireKindN    at (0, 220), regular 16, centred, dim: "thick", "striped" or "plain"
+   │  │  ├─ Panel  WireFocusN   the box's size, amber border, shown on the picked wire
+   │  │  └─ Button WireN        the box's size, on top, no children: a click cuts the wire (its tag is N)
+   │  ├─ Text   (LoomLabel)   at (0, 268), mono bold 18, dim, "THE STICKER UNDER THE COLUMN"
+   │  ├─ Text   LoomStrikes   right-aligned, ending at (640, 268), mono bold 18 ("WRONG CUTS 0 OF 2", red once above 0)
+   │  └─ Text   LoomClues     at (0, 298), 640 × 150, condensed 22, #F4F0E6, wraps: the sticker's lines
+   ├─ Text   CarStatus      at (48, 392), 640 × 300, regular 24, #F4F0E6, wraps: what the last job said (hidden when
+   │                        empty). The script moves it to (48, 574) while the loom is up
    ├─ Text   (JobsLabel)    at (730, 120), mono bold 18, dim, "THE JOBS"
    ├─ VerticalLayout Jobs   at (730, 152), 662 wide: the job rows
    ├─ HorizontalLayout Prompts  at (48, 740): the footer prompts the script makes
@@ -700,17 +722,26 @@ Button JobRow (root, 6 below it)
          ├─ SizeLayout (JobNumBox) 40 × 40, 18 before the text
          │  └─ Overlay: Image JobDot (tinted by state) and Text JobNum (mono bold 20, #15171A)
          ├─ VerticalLayout (JobText)  fills the row
-         │  ├─ Text  JobName      condensed bold 28 (bright on the selected row, dim when it needs something)
+         │  ├─ Text  JobName      condensed bold 28, bone (bright on the selected row; never dimmed)
          │  ├─ Text  JobNeed      regular 21, dim: what you need or have, or "Fitting... 6 s"
          │  └─ SizeLayout (JobProgressBox) 360 × 6, 4 below
          │     └─ ProgressBar JobProgress   amber, shown while the job is under way
+         ├─ Overlay JobTagBox     right, 12 before it: what the car has, in words, a colour and a mark
+         │  ├─ Image  JobTagBg        filled, tinted: olive it's there, red it isn't, amber under way
+         │  └─ HorizontalLayout (JobTagLine)  padding 10 and 4
+         │     ├─ Image  JobTagTick     18 × 18, #15171A, the icon `track_done`: shown when it's there
+         │     │                        (and the icon imageset is set)
+         │     ├─ Text   JobTagCross    mono bold 20, #15171A, "X": shown when it isn't
+         │     └─ Text   JobTag         mono bold 20, #15171A ("FITTED", "MISSING", "EMPTY", "NO KEYS")
          └─ Overlay JobButtonBox  right, hidden when the job has no button
             ├─ Panel  (JobButtonLine)  border #6B5222
             └─ Text   JobButton        mono bold 22, amber ("Fit", "Pour", "Hotwire", "Use the key")
 ```
 
 State colours (the script tints them): done olive `#9AA35E`, can do now or under way amber
-`#E3A33B`, needs something first `#6E6A60`. Unlike the mockup, the markers, the ring and the pad
+`#E3A33B`, missing with nothing for it red `#D9574C`. The tag's colours are the same three, by what
+the car has. Wire colours: red `#C8352B`, yellow `#F2C230`, green `#5E9E5C`, blue `#4F8CC8`, white
+`#E8E2D0`; cut ends copper `#D69454` or soot `#46403A`. Unlike the mockup, the markers, the ring and the pad
 keys are square (no circle texture), the row's button shows its word without the pad key (the
 footer prompts show A), and both wheels are drawn on the picture.
 
