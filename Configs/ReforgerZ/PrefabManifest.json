@@ -6650,6 +6650,12 @@
   },
   {
    "category": "World",
+   "object": "Placed things",
+   "field": "m_PlacedSettings",
+   "covers": "**Enabled** (on), **Placed prefabs** (keywords in the prefab names of what players build: `fm_campfire`, the fireplace of Make Fire Campfire & Wood; a tent mod's own names go here), **Unused days** (3 real days; fractions work for a test), use radius (15 m), clear distance (never cleared with a player within 100 m), most tracked (40) ([DESIGN.md](DESIGN.md#things-players-build))"
+  },
+  {
+   "category": "World",
    "object": "Long Table",
    "field": "m_LongTableSettings",
    "covers": "**Enabled**, **Chance** a season has one (0.75), hunger per hour (6), take hours (3, ÷ season speed), body radius (300 m), the host on the road (on), the **guest rule** (on), **trade keywords** (ammunition and medicine) ([DESIGN.md](DESIGN.md#the-long-table))"
@@ -7032,6 +7038,20 @@
     "m_iMeatMax": "2",
     "m_fShotRange": "260",
     "m_iMeatPerMinute": "4"
+   }
+  },
+  {
+   "field": "m_PlacedSettings",
+   "category": "World",
+   "label": "Placed things",
+   "cls": "RZ_PlacedSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_sPrefabWords": "fm_campfire",
+    "m_fUnusedDays": "3",
+    "m_fUseRadius": "15",
+    "m_fClearDistance": "100",
+    "m_iMaxTracked": "40"
    }
   },
   {

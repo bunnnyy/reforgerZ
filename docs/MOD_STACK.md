@@ -112,9 +112,9 @@ Dependencies in `addon.gproj` since 2026-11-13. Both load with ReforgerZ on the 
 | [Make Fire Campfire & Wood](https://reforger.armaplatform.com/workshop/6983372A33E4D432) | `6983372A33E4D432` | 18 KB | APL-SA | A wood item, a fireplace you dig and light, and a fire you feed (about a minute per piece of wood, at most six) | Its scripts are in lowercase `scripts/`, so it doesn't break the Linux server, and it overrides no vanilla prefab. **Wood:** the mod gives it only at its own bush prefab, which no map has, so wood is a find in farms and houses (an extra find). **Building:** drop one wood, take an entrenching tool in hand (farms, garages and wrecks' boots have them), look at the wood and hold **Build fireplace** (13 s, two more wood from your pack); then light it. The fire burns people who stand in it |
 | [Atmospheric Weather Mod](https://reforger.armaplatform.com/workshop/64ED6553B8AF6B62) | `64ED6553B8AF6B62` | 10.5 MB | APL-ND | New clouds, fogs, a heavy thunderstorm, strong winds, a faster weather cycle | Config only, no scripts: it replaces vanilla's weather states. ReforgerZ only reads rain, fog and wind ([DESIGN.md](DESIGN.md#weather)), so its fog and storms count as ours do: fog and rain news, storms that ground the helicopter |
 
-Not built: a fire that draws the infected (heat), boiling water or cooking at a campfire, and
-clearing away a fire nobody uses. A built fireplace stays until someone dismantles it or the server
-restarts.
+A built fireplace nobody has stood by for three real days is cleared
+([DESIGN.md](DESIGN.md#things-players-build)); one in use stays. Not built: a fire that draws the
+infected (heat), and boiling water or cooking at a campfire.
 
 ## Wildlife
 

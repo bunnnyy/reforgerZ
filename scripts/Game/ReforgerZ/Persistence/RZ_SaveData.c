@@ -139,6 +139,9 @@ class RZ_SaveData
 	// the bounty board, who killed whom last, the Requisition cooldown, the fence's hour. Older saves
 	// have none: they start empty
 	ref RZ_PerksSave perks;
+	// Things players built (World/RZ_PlacedThings.c): where, which prefab, when first seen and last
+	// used, in real time. Older saves have none
+	ref RZ_PlacedSave placed;
 	bool hasTimeOfDay;
 	float timeOfDay;
 

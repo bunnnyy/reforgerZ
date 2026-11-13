@@ -234,7 +234,8 @@ scripts/Game/ReforgerZ/
                  orders (one held waypoint each); the shared engine: the clocks, deeds, the
                  callback queue, names in public text; the photo tour (Workbench play only)
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
-                 deer herds in the country and their meat,
+                 deer herds in the country and their meat, the things players build cleared
+                 when unused (fireplaces, tents),
                  town memory, the power grid (where its station is, the control at it, its
                  dressing and generator sound, the power panel's server side and its breakers), the radio station, the world facts (what content
                  reads: season flags, canon, claims and soft holds, text tokens) and its world
