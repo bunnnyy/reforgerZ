@@ -73,6 +73,11 @@ from Early Outbreak to Aftermath, and the only way to win is together: research 
   Zombies (`tools/zombie_lab/`): a finished waypoint drops off the group's list but stays in the
   world, and moving one that's still on the list does nothing until it's added again. So before
   this, every order left a waypoint behind. The status line counts the waypoints in the world.
+- **Nobody disappears in sight.** A person a job, a scene, an opening or a story no longer needs
+  (a duty officer after the hand-in, a contact after the chain) walks off, away from the nearest
+  player, and is put away once nobody is within 120 m (after five minutes, once nobody is within
+  40 m). With nobody that near, or a body that's dead, it goes at once; props are removed as
+  before. Code: `Core/RZ_Leaving.c`.
 - **Nothing for free.** No free loot, no free Fame. No sleep and no time skip.
 
 ## Settlements, spawn points and the map
@@ -855,7 +860,7 @@ distance, then roads. Road posts don't (they stand beside their barrier).
 
 | Faction | Stronghold | Outpost |
 |---|---|---|
-| Bastion | the school, town hall, police station or barracks (another public building will do; never the church), the largest, on a road | a farm or a petrol station, else a house, on a road |
+| Bastion | the school, town hall, police station or barracks (another public building will do; else a farm or a works yard, a compound with ground of its own to fence; never the church), the largest, on a road | a farm or a petrol station, else a house, on a road |
 | Red Hand | a garage or petrol station (a farm or a factory will do; never the church or a clinic), where roads meet | the same, or a shop or café by the road |
 | Haven | the church (a school, a farmhouse or a barn will do, not a farm's metal shed; then a house) | the same; a safehouse is its own house, the nearest one |
 | Halcyon | the lab or a clinic (another public building will do), on a road | a house: the field station |

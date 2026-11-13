@@ -544,7 +544,7 @@ class RZ_PuzzleMission : RZ_Mission
 	{
 		foreach (IEntity e : m_aProps)
 		{
-			RZ_Util.DeleteUnit(e);
+			RZ_Leaving.Remove(e);
 		}
 
 		m_aProps.Clear();

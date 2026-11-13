@@ -75,7 +75,7 @@ class RZ_DoorCallers
 		if (!GoneUnseen(s_Caller, s_fSince, STAY_SECONDS))
 			return;
 
-		RZ_Util.DeleteUnit(s_Caller);
+		RZ_Leaving.Remove(s_Caller);
 		s_Caller = null;
 	}
 

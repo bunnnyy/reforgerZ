@@ -1528,7 +1528,7 @@ class RZ_Openings
 			return false;
 
 		ReleaseWanderer(o, o.m_Contact.GetOrigin());
-		RZ_Util.DeleteUnit(o.m_Contact);
+		RZ_Leaving.Remove(o.m_Contact);
 		o.m_Contact = null;
 		return true;
 	}

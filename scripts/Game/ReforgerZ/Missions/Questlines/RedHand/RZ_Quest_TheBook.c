@@ -1822,7 +1822,7 @@ class RZ_QM_BookThief : RZ_QuestMission
 			m_iPath = PATH_RING;
 			m_iSecond = playerId;
 			Remember(gm, playerId, RZ_EQuestApproach.FORCE, "took his place in the pit");
-			RZ_Util.DeleteUnit(m_Thief);
+			RZ_Leaving.Remove(m_Thief);
 			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You climb into the ring yourself. The crowd loves it. {boss} shrugs: a show is a show. Stay standing for four rounds and {thief_short} walks."));
 			return;
 		}
@@ -1850,7 +1850,7 @@ class RZ_QM_BookThief : RZ_QuestMission
 		m_iPath = PATH_OUT;
 		m_iSecond = playerId;
 		Remember(gm, playerId, RZ_EQuestApproach.SNEAK, "walked him out of the pit");
-		RZ_Util.DeleteUnit(m_Thief);
+		RZ_Leaving.Remove(m_Thief);
 		m_Escort.Follow(playerId);
 		m_Escort.Go();
 		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You take {thief_short} by the arm and walk him out like you've every right to. Don't run. Take him to {refuge}."));

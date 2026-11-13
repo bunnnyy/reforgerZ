@@ -624,7 +624,7 @@ class RZ_TalkScene
 	//------------------------------------------------------------------------------------------------
 	void Cleanup()
 	{
-		RZ_Util.DeleteUnit(m_Person);
+		RZ_Leaving.Remove(m_Person);
 		m_Person = null;
 	}
 }
