@@ -3269,7 +3269,7 @@ step waits for you the same way: once a step is done (you're back by them), *Bac
 is tracked, they call you over (*"Come here a minute. There's something else."*), and talking to
 them gives the next piece of the story and the ask. Already talking to them when it's due, it comes
 into the same screen. Without the talk screen, **Talk to** says the same lines as subtitles. Their one
-built reply is "What was it you needed?" (the step again, short). Two minutes into a wait without
+built reply is "What was it you needed?": the live step said again in their words, word for word from the tracker ("Like I said. Go to Halcyon's field station at ..."), then a short line of their own, so a missed ask is never lost (`RZ_Openings.Remind`). Talking to them while a step runs says the same. Two minutes into a wait without
 talking to them, while you're within 30 m, they call once more; leave a step 1 alone for two minutes
 by them and they say it once more (a subtitle). Nobody comes to talk within 45 minutes: the opening
 ends. With nobody outside, or once they're dead, a step starts by itself, tracked: the chain's steps

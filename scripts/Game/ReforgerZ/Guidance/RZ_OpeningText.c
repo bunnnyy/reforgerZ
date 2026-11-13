@@ -350,6 +350,25 @@ class RZ_OpeningText
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! "What was it you needed?" while a step runs: the live step first, in their words (`step`:
+	//! the tracker's text, filled), then a short word of their own (AskAgain's), so a missed line
+	//! is never lost.
+	static string Remind(string step, int stepNo, int task, string search)
+	{
+		if (step.IsEmpty())
+			return AskAgain(stepNo, task, search);
+
+		string line = "Like I said. " + Capital(step);
+		if (stepNo == 1)
+			return line + " Walk, don't run.";
+
+		if (stepNo == 2)
+			return line + " " + AskAgain(stepNo, task, search);
+
+		return line + " Don't wait for me. I'm slower than I look.";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The Drifter's next ask, said as it starts (asks 2 and 3).
 	static string NextAsk(int asksDone)
 	{

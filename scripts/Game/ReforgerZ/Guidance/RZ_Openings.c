@@ -988,7 +988,28 @@ class RZ_Openings
 			return;
 
 		o.m_bAskedAgain = true;
-		m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(o.m_iStep, o.m_iTask, o.m_sSearch), o.m_Contact);
+		m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, Remind(o, o.m_iStep), o.m_Contact);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "What was it you needed?" while a step runs: the live step (the tracker's own text) said
+	//! again in their words, then their short line. No live step: the short line alone.
+	protected string Remind(RZ_Opening o, int stepNo)
+	{
+		string step;
+		RZ_Errands errands = m_GM.GetErrands();
+		RZ_Errand e;
+		if (errands && o.m_iErrand >= 0 && !o.m_bResolved)
+			e = errands.FindById(o.m_iErrand);
+
+		if (e && e.m_eState != RZ_EErrandState.DONE && !RZ_OpeningTalkDef.Cast(e.m_Def))
+		{
+			RZ_ErrandWay way = e.GetWay();
+			if (way)
+				step = e.Fill(way.StepText());
+		}
+
+		return RZ_OpeningText.Remind(step, stepNo, o.m_iTask, o.m_sSearch);
 	}
 
 	// ================================================================ The steps
@@ -1599,7 +1620,7 @@ class RZ_Openings
 			return;
 		}
 
-		lines.Insert(RZ_OpeningText.AskAgain(o.m_iStep, o.m_iTask, o.m_sSearch));
+		lines.Insert(Remind(o, o.m_iStep));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1637,6 +1658,12 @@ class RZ_Openings
 		if (o.m_bEnded)
 			step = 3;
 
-		m_GM.Say(playerId, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(step, o.m_iTask, o.m_sSearch), owner);
+		if (o.m_bEnded)
+		{
+			m_GM.Say(playerId, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(step, o.m_iTask, o.m_sSearch), owner);
+			return;
+		}
+
+		m_GM.Say(playerId, o.m_sSpeaker, -1, Remind(o, step), owner);
 	}
 }
