@@ -1,5 +1,5 @@
 //! The ReforgerZ HUD (docs/UI.md, "HUD"): the infection timer with its stages and the golden
-//! window, the secure-radio indicator, a subtle noise meter with how visible you are above it
+//! window, the secure-radio indicator, the stealth bar (how much the infected notice you)
 //! (Stealth on), the quest tracker top left (the tracked job and the others you've taken), the
 //! styled notice cards, and the nametags over people near you to talk to (UI/RZ_NametagClient.c).
 //!
@@ -228,7 +228,6 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			RZ_UIW.Show(m_wRoot, "InfectionPanel", false);
 			RZ_UIW.Show(m_wRoot, "RadioPanel", false);
 			RZ_UIW.Show(m_wRoot, "NoisePanel", false);
-			RZ_UIW.Show(m_wRoot, "SeenPanel", false);
 		}
 
 		DrawNotices(settings);
@@ -322,37 +321,54 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The one bar (Stealth, docs/DESIGN.md): how much the infected notice you right now, in stealth's
+	//! own bands (RZ_Stealth.HudLevel), six segments and a word. The speaker shows only while noise is
+	//! part of it. Not shown with Stealth off (the server never sends it) or UI > Noise meter off.
 	protected void DrawNoise(RZ_PlayerUIComponent ui, RZ_UISettings settings)
 	{
-		RZ_UIW.Show(m_wRoot, "NoisePanel", settings.m_bNoiseMeter);
-		if (!settings.m_bNoiseMeter)
-		{
-			RZ_UIW.Show(m_wRoot, "SeenPanel", false);
+		int level = ui.GetSeen();
+		bool shown = settings.m_bNoiseMeter && level >= 0;
+		RZ_UIW.Show(m_wRoot, "NoisePanel", shown);
+		if (!shown)
 			return;
-		}
 
-		int level = ui.GetNoise();
+		bool hidden = ui.IsSeenHidden();
 		for (int i = 1; i <= 6; i++)
 		{
-			Color c = RZ_UIColor.Bone();
-			if (i > level)
-				c = RZ_UIW.Rgb(70, 68, 62);
-			else if (i >= 5)
+			Color c = RZ_UIW.Rgb(70, 68, 62);
+			if (hidden && i == 1)
+				c = RZ_UIColor.Good();
+			else if (i <= level && level >= 4)
 				c = RZ_UIColor.Stage(RZ_EInfectionUI.WEAKNESS);
+			else if (i <= level)
+				c = RZ_UIColor.Bone();
 
 			RZ_UIW.Tint(m_wRoot, "Noise" + i.ToString(), c);
 		}
 
-		string word = "QUIET";
-		if (level >= 5)
-			word = "VERY LOUD";
-		else if (level >= 4)
-			word = "LOUD";
-		else if (level >= 2)
-			word = "HEARD";
+		RZ_UIW.Show(m_wRoot, "NoiseIcon", ui.IsSeenNoisy());
+		RZ_UIW.SetText(m_wRoot, "NoiseText", BarWord(level, hidden));
+	}
 
-		RZ_UIW.SetText(m_wRoot, "NoiseText", word);
-		DrawSeen(ui);
+	//------------------------------------------------------------------------------------------------
+	protected static string BarWord(int level, bool hidden)
+	{
+		if (level >= 6)
+			return "LOUD";
+
+		if (hidden || level <= 0)
+			return "HIDDEN";
+
+		if (level == 1)
+			return "LOW";
+
+		if (level == 2)
+			return "NOTICEABLE";
+
+		if (level == 3)
+			return "SEEN";
+
+		return "IN PLAIN SIGHT";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -529,41 +545,6 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			m_sTrackLine = line;
 			RZ_UIW.SetText(m_wRoot, "TrackerArea", line);
 		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! How visible you are (Stealth, docs/DESIGN.md), above the noise meter: five segments and a
-	//! word. Not shown with Stealth off (the server never sends it).
-	protected void DrawSeen(RZ_PlayerUIComponent ui)
-	{
-		int seen = ui.GetSeen();
-		RZ_UIW.Show(m_wRoot, "SeenPanel", seen >= 0);
-		if (seen < 0)
-			return;
-
-		bool hidden = ui.IsSeenHidden();
-		for (int s = 1; s <= 5; s++)
-		{
-			Color lit = RZ_UIColor.Bone();
-			if (s > seen)
-				lit = RZ_UIW.Rgb(70, 68, 62);
-			else if (hidden)
-				lit = RZ_UIColor.Good();
-			else if (s >= 5)
-				lit = RZ_UIColor.Stage(RZ_EInfectionUI.WEAKNESS);
-
-			RZ_UIW.Tint(m_wRoot, "Seen" + s.ToString(), lit);
-		}
-
-		string state = "SEEN";
-		if (hidden)
-			state = "HIDDEN";
-		else if (seen >= 5)
-			state = "IN PLAIN SIGHT";
-		else if (seen <= 2)
-			state = "LOW";
-
-		RZ_UIW.SetText(m_wRoot, "SeenText", state);
 	}
 
 	// ================================================================ Notice cards

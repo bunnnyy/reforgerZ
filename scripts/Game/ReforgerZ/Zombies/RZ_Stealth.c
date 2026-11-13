@@ -355,7 +355,9 @@ class RZ_Stealth
 	protected static const float AREA_NOISE_RADIUS = 15;	// a loud noise this close counts as the player's own
 	protected static const float AREA_NOISE_LEVEL = 0.7;
 	protected static const float NORMAL_VIS = 0.6;		// at this visibility and above, missions and the infected see a player as before
-	protected static const float PLAIN_SIGHT_VIS = 0.9;	// above this (the HUD's IN PLAIN SIGHT) the infected see a player better than before
+	protected static const float PLAIN_SIGHT_VIS = 0.9;
+	protected static const float SEEN_VIS = 0.75;		// the HUD's NOTICEABLE below this, SEEN above (both normal sight)
+	protected static const float LOUD_NOISE = 0.5;		// noise left at or over this: the HUD reads LOUD	// above this (the HUD's IN PLAIN SIGHT) the infected see a player better than before
 	protected static const float REAPPLY_SECONDS = 10;	// the factor is set again this often (new members, an AI that wasn't ready)
 	protected static const float FACTOR_STEP = 0.02;
 	protected static const int MAX_TRIES = 5;			// updates a unit's perception may refuse the factor before it counts as having none
@@ -595,8 +597,36 @@ class RZ_Stealth
 
 			st.m_fVis = Math.Clamp(st.m_fBase + m_Settings.m_fNoiseWeight * st.m_fNoise, 0, 1);
 			if (feed)
-				feed.PushVisibility(playerId, st.m_fVis, st.m_fVis < m_Settings.m_fHiddenBelow);
+				feed.PushVisibility(playerId, HudLevel(st.m_fVis, st.m_fNoise), st.m_fVis < m_Settings.m_fHiddenBelow, st.m_fNoise > 0);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The HUD's one bar (docs/DESIGN.md, Stealth), 0 to 6, in the bands this code acts on: 0 hidden
+	//! (under Hidden below: they can lose you), 1 low (under normal visibility: they see you worse than
+	//! before), 2 noticeable and 3 seen (normal: as before), 4 in plain sight and 5 fully so (they see you
+	//! better), 6 loud (a fresh shot or a loud noise where you stand: they can't lose you).
+	protected int HudLevel(float vis, float noise)
+	{
+		if (noise >= LOUD_NOISE)
+			return 6;
+
+		if (vis < m_Settings.m_fHiddenBelow)
+			return 0;
+
+		if (vis < NORMAL_VIS)
+			return 1;
+
+		if (vis < SEEN_VIS)
+			return 2;
+
+		if (vis <= PLAIN_SIGHT_VIS)
+			return 3;
+
+		if (vis < 1)
+			return 4;
+
+		return 5;
 	}
 
 	//------------------------------------------------------------------------------------------------

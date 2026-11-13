@@ -1517,7 +1517,7 @@ Also to do: default images for the icons the scripts never swap (the legend icon
 Set each such `Image` from the imageset in the layout editor.
 
 Each step works without the later ones: with steps 1–3 the HUD works (Workbench Play showed the
-styled notice cards, the stealth visibility bars and the noise meter). Step 6 stands alone (after
+styled notice cards and the stealth bar). Step 6 stands alone (after
 step 1).
 
 ### Marker entities (no prefab needed)
@@ -3090,11 +3090,15 @@ session, tick off:
   **Season speed** at 4, a stage change, a territory tick and a truck come four times as often.
 
 **Stealth** ([DESIGN.md](DESIGN.md#stealth); a group of infected in a quiet town, a friend helps)
-- [ ] Stand, crouch and go prone at 30, 60 and 100 m from them, by day and at night: the HUD's
-  visibility drops as you go lower (prone and still in the dark: HIDDEN), and they notice you
-  later the lower you are. Walking upright at night in a storm never shows HIDDEN. An
-  unsuppressed shot shows SEEN or more at once; a few suppressed ones do too. The log says once
-  whether the infected take a perception factor.
+- [ ] The HUD has one stealth bar now, bottom left (`RZ_Hud.layout`: `SeenPanel` is gone; open
+  the layout once and fix what it reports). Stand, crouch and go prone at 30, 60 and 100 m from
+  them, by day and at night: the bar drops as you go lower (prone and still in shade or the dark:
+  one green segment, HIDDEN; prone and still in full daylight: one segment, LOW, by stealth's own
+  numbers), and they notice you later the lower you are. Walking upright at night in a storm never
+  shows HIDDEN. An unsuppressed shot shows LOUD with the speaker at once, fading back over about
+  10 s; a few suppressed ones add up to it; a loud noise within 15 m (a door forced, a generator
+  starting) shows the speaker too. Running and sprinting raise it; in a vehicle it's IN PLAIN
+  SIGHT. The log says once whether the infected take a perception factor.
 - [ ] Get chased, break line of sight (a wall, a hedge), go prone and keep still: after about 8 s
   they walk to where they last saw you and look about for 45 s, a new spot every 10–15 s, then go
   back. Stand up in front of one while they search: they come for you. Keep lying there after

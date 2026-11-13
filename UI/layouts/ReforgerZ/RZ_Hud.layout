@@ -860,7 +860,7 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
       VerticalAlign 1
      }
      Color 0.639 0.62 0.565 1
-     Text "QUIET"
+     Text "HIDDEN"
      "Font Size" 18
      "Min Font Size" 18
      FontProperties FontProperties "{277A434B3AC1EF5F}" {
@@ -944,100 +944,6 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
      "Font Size" 20
      "Min Font Size" 18
      FontProperties FontProperties "{D274A1018395B6C7}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-     }
-    }
-   }
-  }
-  HorizontalLayoutWidgetClass "{F547112ADB565B88}" {
-   Name "SeenPanel"
-   Slot FrameWidgetSlot "{320B349B6E109F7D}" {
-    Anchor 0 1 0 1
-    PositionX 588
-    OffsetLeft 588
-    PositionY -90
-    OffsetTop -90
-    SizeX 300
-    OffsetRight -888
-    SizeY 16
-    OffsetBottom 74
-    Alignment 0 1
-    SizeToContent 1
-   }
-   "Is Visible" 0
-   Opacity 0.85
-   {
-    HorizontalLayoutWidgetClass "{F306FAA78E991B1A}" {
-     Name "SeenBars"
-     Slot LayoutSlot "{A75BEA90D832E0CC}" {
-      HorizontalAlign 0
-      VerticalAlign 1
-      Padding 0 0 10 0
-     }
-     {
-      ImageWidgetClass "{B915E492FBBF5006}" {
-       Name "Seen1"
-       Slot LayoutSlot "{FF38FCB7ED27F6E7}" {
-        HorizontalAlign 0
-        VerticalAlign 1
-        Padding 0 0 3 0
-       }
-       Color 0.275 0.267 0.243 1
-       Size 14 8
-      }
-      ImageWidgetClass "{256F6683A2121A22}" {
-       Name "Seen2"
-       Slot LayoutSlot "{CA5615881982CB69}" {
-        HorizontalAlign 0
-        VerticalAlign 1
-        Padding 0 0 3 0
-       }
-       Color 0.275 0.267 0.243 1
-       Size 14 8
-      }
-      ImageWidgetClass "{E2A491C4D7F04A14}" {
-       Name "Seen3"
-       Slot LayoutSlot "{4EDDE533A82291A0}" {
-        HorizontalAlign 0
-        VerticalAlign 1
-        Padding 0 0 3 0
-       }
-       Color 0.275 0.267 0.243 1
-       Size 14 8
-      }
-      ImageWidgetClass "{B22C4668C4FCF03A}" {
-       Name "Seen4"
-       Slot LayoutSlot "{C1ED2CC0B4218A01}" {
-        HorizontalAlign 0
-        VerticalAlign 1
-        Padding 0 0 3 0
-       }
-       Color 0.275 0.267 0.243 1
-       Size 14 8
-      }
-      ImageWidgetClass "{D690F714345EFE82}" {
-       Name "Seen5"
-       Slot LayoutSlot "{93691AFE3671067A}" {
-        HorizontalAlign 0
-        VerticalAlign 1
-        Padding 0 0 0 0
-       }
-       Color 0.275 0.267 0.243 1
-       Size 14 8
-      }
-     }
-    }
-    TextWidgetClass "{4863D02A2646CB9A}" {
-     Name "SeenText"
-     Slot LayoutSlot "{9AE6D688BB5AECD8}" {
-      HorizontalAlign 0
-      VerticalAlign 1
-     }
-     Color 0.639 0.62 0.565 1
-     Text "SEEN"
-     "Font Size" 18
-     "Min Font Size" 18
-     FontProperties FontProperties "{93EEF49BC6720E6A}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
     }

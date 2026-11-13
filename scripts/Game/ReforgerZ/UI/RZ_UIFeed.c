@@ -23,9 +23,9 @@ class RZ_UIFeedState
 	float m_fLeftSent;		// what the client was last told (it counts down from these)
 	float m_fPauseSent;
 	int m_iListen = -2;
-	int m_iNoise = -1;
 	int m_iSeen = -1;		// visibility level last sent (-1: none yet, the client hides it)
 	bool m_bSeenHidden;
+	bool m_bSeenNoisy;
 	string m_sLook;			// the look-coming line last sent ("" hidden)
 }
 
@@ -241,7 +241,6 @@ class RZ_UIFeed
 			st.m_fSinceSync += dt;
 			PushInfection(ui, playerId, st, settings);
 			PushListening(ui, playerId, st);
-			PushNoise(ui, ent, st);
 		}
 
 		// The quest tracker, owner-only, sent when it changes (UI/RZ_Quests.c)
@@ -398,48 +397,23 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! 0 quiet .. 6 very loud, from the heat where the player stands (the "loud" tip is at 45).
-	protected void PushNoise(RZ_PlayerUIComponent ui, IEntity ent, RZ_UIFeedState st)
-	{
-		float heat = m_GM.GetHeat().GetHeat(ent.GetOrigin());
-		int level = 0;
-		if (heat >= 90)
-			level = 6;
-		else if (heat >= 70)
-			level = 5;
-		else if (heat >= 45)
-			level = 4;
-		else if (heat >= 30)
-			level = 3;
-		else if (heat >= 18)
-			level = 2;
-		else if (heat >= 8)
-			level = 1;
-
-		if (level == st.m_iNoise)
-			return;
-
-		st.m_iNoise = level;
-		ui.SendNoise(level);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! From RZ_Stealth's update: how visible this player is (0..1) and whether that counts as
-	//! hidden. Sent as a level 0 (hidden) to 5 (in plain sight), only when it changes.
-	void PushVisibility(int playerId, float vis, bool hidden)
+	//! From RZ_Stealth's update: the HUD's one bar, a level 0 (hidden) to 6 (loud) in stealth's own
+	//! bands (RZ_Stealth.HudLevel), whether that counts as hidden, and whether any noise is part of it.
+	//! Sent only when it changes.
+	void PushVisibility(int playerId, int level, bool hidden, bool noisy)
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
 		if (!ui)
 			return;
 
-		int level = Math.ClampInt(RZ_Util.RoundToInt(vis * 5), 0, 5);
 		RZ_UIFeedState st = State(playerId);
-		if (level == st.m_iSeen && hidden == st.m_bSeenHidden)
+		if (level == st.m_iSeen && hidden == st.m_bSeenHidden && noisy == st.m_bSeenNoisy)
 			return;
 
 		st.m_iSeen = level;
 		st.m_bSeenHidden = hidden;
-		ui.SendVisibility(level, hidden);
+		st.m_bSeenNoisy = noisy;
+		ui.SendVisibility(level, hidden, noisy);
 	}
 
 	//------------------------------------------------------------------------------------------------

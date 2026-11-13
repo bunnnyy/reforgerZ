@@ -282,9 +282,25 @@ Shots nearby still spoil a sneak. In a questline stage, a person who sees anyone
 
 ### The HUD
 
-Above the noise meter, five segments and a word: **HIDDEN** (under 0.35: the infected can lose
-you), **LOW**, **SEEN**, **IN PLAIN SIGHT** (0.9 and up: the infected see you better than before).
-It's sent only when it changes, and not shown with Stealth off ([UI.md](UI.md#screens)). There's no
+One bar, bottom left: how much the infected notice you right now, six segments and a word, in the
+bands this code acts on (`RZ_Stealth.HudLevel`). Visibility already holds your noise (a shot adds 1
+and fades over 10 s; a loud noise within 15 m counts as 0.7), so the bar is the number stealth uses:
+
+| Bar | Word | Visibility | What it means |
+|---|---|---|---|
+| One green segment | **HIDDEN** | under 0.35 (**Hidden below**) | They can lose you |
+| 1 | **LOW** | 0.35 to 0.6 | They see you less well than before |
+| 2 | **NOTICEABLE** | 0.6 to 0.75 | As before |
+| 3 | **SEEN** | 0.75 to 0.9 | As before |
+| 4 (red) | **IN PLAIN SIGHT** | over 0.9 | They see you better than before |
+| 5 (red) | **IN PLAIN SIGHT** | 1 (in a vehicle, sprinting in daylight) | |
+| 6 (red) | **LOUD** | noise left at 0.5 or more | A fresh shot or a loud noise where you stand: they can't lose you |
+
+The speaker icon shows while any noise is part of it. It's sent only when it changes, and not
+shown with Stealth off or **UI > Noise meter** off ([UI.md](UI.md#screens)). *Tuning to know:*
+lying prone and keeping still in daylight is 0.5 × 0.7 = 0.35, exactly the hidden line, so it
+reads LOW (one segment), not HIDDEN; with the engine's light below full (shade, dusk) it drops under.
+Stealth has no cover input, so tall grass doesn't count. There's no
 cue when a group loses you or gives up: you see them go.
 
 *Simplified:* speed is how far you moved between updates, so a sprint that stops just before an
