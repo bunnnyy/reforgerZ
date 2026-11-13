@@ -1835,6 +1835,13 @@ class RZ_Openings
 	{
 		o.m_bContactDead = true;
 		o.m_bWaitTalk = false;
+		// Walking with you: the escort goes and its slot is free again
+		if (o.m_Escort)
+		{
+			o.m_Escort.Cleanup();
+			o.m_Escort = null;
+		}
+
 		SetFlag(o, FLAG_FIRST, 0);
 		DropStep(o, "the contact died");
 		RZ_Wanderers wanderers = m_GM.GetWanderers();
