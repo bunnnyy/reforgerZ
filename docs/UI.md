@@ -1178,8 +1178,11 @@ and it's done there and then.
   interact button) and vanilla's progress ring around the prompt. One prefab action (`Duration 10`)
   serves every time from 5 to 20 s: the bar runs at its Duration over the site's own time
   (`RZ_WorkSiteAction.GetActionProgressScript`).
-- **Interrupted**: let go, look away or walk off and it stops (vanilla); hurt, or more than 1.5 m from
-  where you started, and the bar drops back to empty while you hold. The server checks the time
+- **Working**: while it's held you work at the thing and can't walk, as with vanilla's building:
+  digging with a carried entrenching tool where the work is digging, else with your hands
+  ([DESIGN.md](DESIGN.md#work-site)). The same hold on a pad; nothing new to press.
+- **Interrupted**: let go or look away and it stops (vanilla); hurt and the bar drops back to empty,
+  your legs free for a moment; pushed more than 1.5 m from where you started and it drops back too. The server checks the time
   itself: a hold it doesn't count says *"Not finished. It takes about 15 s at it without stopping,
   and a knock starts it again."*; unseen work seen, *"They'd see you like that."*
 - **Done**: the thing you worked at changes in front of you (the pit becomes the latrine, the planks

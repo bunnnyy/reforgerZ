@@ -174,6 +174,8 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		RZ_PowerLampsClient.Tick(timeSlice);
 		// A deer this player shot is told to the server, for its meat (docs/DESIGN.md, Wildlife)
 		RZ_WildlifeClient.Tick();
+		// A work site's hold never outlives its bar: the lock and the animation let go (Interactions/RZ_WorkHold.c)
+		RZ_WorkHold.Watch();
 		// Tags over the people near you to talk to (docs/UI.md, Nametags): who, four times a second; where, every frame
 		RZ_NametagClient.Tick(timeSlice, m_wRoot);
 		// The arrow to whoever is speaking turns with you, every frame (one rotation, the text on change)

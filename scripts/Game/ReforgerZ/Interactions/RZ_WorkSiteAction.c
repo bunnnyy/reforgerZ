@@ -5,6 +5,10 @@
 //! prefab serves every hold from 5 to 20 s. Hurt, or moved more than 1.5 m, and the bar starts again
 //! (on your machine; the server keeps its own count, RZ_WorkSites.WatchWorkers). When the bar is full
 //! the server checks the count and the work is done.
+//!
+//! While the bar runs the holder works with their hands and can't walk (RZ_WorkHold.c: vanilla's
+//! building animation with an entrenching tool where the site digs, else the hands; the lock and
+//! the animation end with the hold, and a hit frees them for a moment).
 
 //------------------------------------------------------------------------------------------------
 [ComponentEditorProps(category: "ReforgerZ", description: "A work site's box (docs/DESIGN.md, Work site): what its hold prompt is (label, time, who may do it). Put it with RZ_WorkSiteAction (Duration 10) and an RplComponent on an invisible interaction box.")]
@@ -33,10 +37,14 @@ class RZ_WorkSiteComponent : ScriptComponent
 	[RplProp()]
 	protected int m_iOnly;			// only this player (0 anyone)
 
+	[RplProp()]
+	protected int m_iLook;			// RZ_WorkHold.LOOK_* bits: the lock, the hands, digging with the tool
+
 	//------------------------------------------------------------------------------------------------
 	//! Server only.
-	void Set(int site, string label, float seconds, float fastSeconds, string fast, int only)
+	void Set(int site, string label, float seconds, float fastSeconds, string fast, int only, int look)
 	{
+		m_iLook = look;
 		m_iSite = site;
 		m_sLabel = label;
 		m_fSeconds = seconds;
@@ -47,6 +55,7 @@ class RZ_WorkSiteComponent : ScriptComponent
 	}
 
 	int GetSite() { return m_iSite; }
+	int GetLook() { return m_iLook; }
 	string GetLabel() { return m_sLabel; }
 
 	//------------------------------------------------------------------------------------------------
@@ -135,6 +144,32 @@ class RZ_WorkSiteAction : ScriptedUserAction
 	override void OnActionStart(IEntity pUserEntity)
 	{
 		Anchor(pUserEntity);
+		Hold(pUserEntity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The holder starts working and stands still (RZ_WorkHold), on their own machine only.
+	protected void Hold(IEntity user)
+	{
+		RZ_WorkSiteComponent c = Comp();
+		if (!c || !user || RZ_WorkHold.Paused())
+			return;
+
+		RZ_WorkHold.Begin(this, user, GetOwner(), c.SecondsFor(SCR_PlayerController.GetLocalPlayerId()), c.GetLook());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The site went (its work was done by someone else, or nobody is near): no hold outlives it.
+	void ~RZ_WorkSiteAction()
+	{
+		RZ_WorkHold.EndFor(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The bar filled, on the holder's machine.
+	override void OnConfirmed(IEntity pUserEntity)
+	{
+		RZ_WorkHold.EndFor(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -161,12 +196,33 @@ class RZ_WorkSiteAction : ScriptedUserAction
 		if (fProgress <= 0 && m_fStartHealth < 0)
 			Anchor(me);
 
+		// Hurt: the hands and the legs are free at once, and the bar waits a moment before it starts again
 		float health = RZ_Util.GetCharacterHealth(me);
-		if ((m_fStartHealth >= 0 && health >= 0 && health < m_fStartHealth - 0.01) || RZ_Util.DistXZ(me.GetOrigin(), m_vStart) > DRIFT)
+		if (m_fStartHealth >= 0 && health >= 0 && health < m_fStartHealth - 0.01)
+		{
+			RZ_WorkHold.Hit(this);
+			Anchor(me);
+			return 0;
+		}
+
+		if (RZ_WorkHold.Paused())
 		{
 			Anchor(me);
 			return 0;
 		}
+
+		// Pushed off the spot (the legs are locked, so nobody walks off): the bar starts again
+		if (RZ_Util.DistXZ(me.GetOrigin(), m_vStart) > DRIFT)
+		{
+			Anchor(me);
+			return 0;
+		}
+
+		// Working: the look and the lock go on with the bar (and start here if the start was missed)
+		if (!RZ_WorkHold.IsOn())
+			Hold(me);
+
+		RZ_WorkHold.Seen(this);
 
 		float duration = GetActionDuration();
 		float want = c.SecondsFor(SCR_PlayerController.GetLocalPlayerId());
@@ -181,12 +237,14 @@ class RZ_WorkSiteAction : ScriptedUserAction
 	override void OnActionCanceled(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		m_fStartHealth = -1;
+		RZ_WorkHold.EndFor(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		m_fStartHealth = -1;
+		RZ_WorkHold.EndFor(this);
 		if (!Replication.IsServer())
 			return;
 
