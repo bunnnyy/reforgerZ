@@ -1,0 +1,28 @@
+GenericEntity {
+ ID "3E81B357480E6836"
+ components {
+  RplComponent "{6E40C17F01AD0023}" {
+  }
+  Hierarchy "{B82C97D52D5036B4}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
+   ID "A825322E9BEF3159"
+   components {
+    Hierarchy "{CBA303095D4AAE1A}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+   ID "FA30E7DD3F5067ED"
+   components {
+    Hierarchy "{991874BEDC1307CA}" {
+    }
+   }
+   coords 0 1.6 0
+  }
+ }
+}

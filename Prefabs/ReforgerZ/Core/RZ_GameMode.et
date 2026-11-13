@@ -285,14 +285,14 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone COURT
        }
        RZ_DressingPiece "{2AC35BB33FFB69BE}" {
-        m_sPrefab "{16982E65ED413FF5}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_SentryNest_Bastion.et"
+        m_sPrefab "{FDCCD61B7EF06394}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Bunker_Bastion.et"
         m_eRole APPROACH
         m_eUse WATCH
         m_iSeats 1
         m_vPlan 0 0 26
-        m_vFootMin -3.02 0 -1.34
-        m_vFootMax 2.98 0 2.47
-        m_sFoot "-0.04 1.31 3.45 1.22 0; -1.42 0.78 3.45 1.22 48; 1.37 0.73 3.45 1.22 -48; -1.99 -0.22 2.04 1.33 80; 2 -0.18 2.04 1.33 -80; 0.7 -0.5 0.88 1.46 10; s 0 0.2"
+        m_vFootMin -2.7 0 -2.64
+        m_vFootMax 2.72 0 2.42
+        m_sFoot "0.02 1.81 3.43 1.22 0; -2.09 0.18 3.43 1.22 90; 2.11 0.18 3.43 1.22 90; -0.01 -0.59 0.82 1.23 6; 0.8 -0.5 0.88 1.46 10; -1.29 -1.52 2.04 1.33 80; s -0.2 0.5"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
        }
@@ -347,14 +347,14 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 4.68 0 2.27
         m_sFoot "1.75 0.35 0.34 6.01 74; -1.51 -0.63 0.34 6.01 18; 0.4 -1.8 0.88 1.46 8; -0.58 1.78 0.79 0.54 140; 2.65 -1.32 0.46 0.66 102; 0.9 0.9 0.43 0.42 0; 1.2 -1.1 0.1 0.1 0; -0.18 0.08 1.94 1.41 0; s 1.7 0.4; s -1.5 -0.6; s 0.4 -1.8; s -0.6 1.7"
         m_iTier 3
-        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot 4; flat 6"
+        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot|FieldKitchen 4; flat 6"
        }
        RZ_DressingPiece "{1D335671031240D5}" {
         m_sPrefab "{5C121A788CD4C5B4}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Barricade_Sandbag.et"
         m_eRole APPROACH
         m_eUse NONE
         m_iSeats 1
-        m_vPlan -7 0 24.5
+        m_vPlan -10.5 0 24.5
         m_fPlanYaw 4
         m_vFootMin -3.29 0 -1.26
         m_vFootMax 3.43 0 1.45
@@ -368,7 +368,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eRole APPROACH
         m_eUse NONE
         m_iSeats 1
-        m_vPlan 7 0 24.5
+        m_vPlan 10.5 0 24.5
         m_fPlanYaw -6
         m_vFootMin -3.29 0 -1.26
         m_vFootMax 3.43 0 1.45
@@ -388,9 +388,36 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 2.36 0 1.31
         m_sFoot "0 0.01 1.99 2.38 7; 1.6 0.2 0.88 1.46 95; -1.5 -1.1 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
         m_iTier 3
-        m_sRules "near CookPot|FirePit 8; flat 5; noline"
+        m_sRules "near CookPot|FieldKitchen|FirePit 8; flat 5; noline"
        }
        RZ_DressingPiece "{7F03D5EB5D020694}" {
+        m_sPrefab "{6591643513CE41B1}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_MotorPool.et"
+        m_eRole EDGE
+        m_eUse WORK
+        m_iSeats 1
+        m_vPlan 10 0 33
+        m_vFootMin -3.73 0 -3.84
+        m_vFootMax 3.58 0 4.07
+        m_sFoot "-0.21 0.12 3.16 7.62 6; 2.5 2.2 0.76 0.76 0; 3.2 2 0.76 0.76 0; 2.6 1.3 0.16 0.38 30; 3 1.2 0.16 0.38 -10; -2.73 -2.41 2.02 2.27 0; 2.6 -0.6 0.88 1.46 15; s 2 0.4"
+        m_iTier 4
+        m_eZone GATE
+        m_sRules "faces road; away gate 4; flat 6"
+       }
+       RZ_DressingPiece "{A9EF4C6E1C2A865D}" {
+        m_sPrefab "{7049B7173C94AE49}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_AidPost.et"
+        m_eRole INNER
+        m_eUse WORK
+        m_iSeats 1
+        m_vPlan 22 0 10
+        m_fPlanYaw -10
+        m_vFootMin -2.18 0 -2.25
+        m_vFootMax 2.75 0 2.25
+        m_sFoot "0.01 0 2.15 4.5 0; 2.3 0.6 1.31 0.79 85; -1.6 1.2 0.88 1.46 12; -1.5 0.3 0.43 0.42 0; 1.5 1.6 0.41 0.41 0; s 1.5 0.7"
+        m_iTier 3
+        m_eZone SICK
+        m_sRules "away CookPot|FieldKitchen 8; flat 5"
+       }
+       RZ_DressingPiece "{78CBC393B3E11737}" {
         m_sPrefab "{DE3CABBDBDA5DEB2}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Tent_Small_Bastion.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -402,9 +429,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|CookPot 6; flat 5"
+        m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5"
        }
-       RZ_DressingPiece "{A9EF4C6E1C2A865D}" {
+       RZ_DressingPiece "{6E933CBFA8FC76F4}" {
         m_sPrefab "{DE3CABBDBDA5DEB2}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Tent_Small_Bastion.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -416,9 +443,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|CookPot 6; flat 5"
+        m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5"
        }
-       RZ_DressingPiece "{78CBC393B3E11737}" {
+       RZ_DressingPiece "{A4AF4D636F874E01}" {
         m_sPrefab "{5387FF36B081A0AE}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Tent_Large_Bastion.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -430,37 +457,37 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 1.2 6.35 9.94 0; -0.01 3.91 0.82 1.23 0; -0.01 4.71 0.82 1.23 0; 3 1.5 1.01 1.01 0; 3 0.4 1.01 1.01 0; -3 2.6 0.76 0.76 0"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|CookPot 6; flat 5"
+        m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5"
        }
-       RZ_DressingPiece "{6E933CBFA8FC76F4}" {
-        m_sPrefab "{2CA928D7FADD1FBA}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CookPot.et"
+       RZ_DressingPiece "{74BBCC86EE8A2E34}" {
+        m_sPrefab "{A127CC2358352739}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_FieldKitchen.et"
         m_eRole INNER
         m_eUse COOK
         m_iSeats 1
-        m_vPlan 15 0 -3
+        m_vPlan 17 0 -1
         m_fPlanYaw 30
-        m_vFootMin -2.46 0 -1.84
-        m_vFootMax 2.1 0 1.75
-        m_sFoot "0.06 0.08 1.47 1.41 0; 0.49 0.01 0.14 0.13 0; -0.26 0.44 0.14 0.13 0; -0.26 -0.42 0.14 0.13 0; 1.4 0.6 1.36 0.41 28; -1.6 0.4 0.88 1.46 82; -1.7 -0.6 0.88 1.46 95; 1.12 -1.37 0.79 0.54 40; s 0.1 1.3"
+        m_vFootMin -2.28 0 -2.08
+        m_vFootMax 3.1 0 2.01
+        m_sFoot "0 -0.04 2.25 4.08 0; 2.7 0.2 1.31 0.79 90; -1.9 0.9 0.76 0.76 0; -1.76 -0.97 0.46 0.66 40; s 1.4 0.2"
         m_iTier 3
         m_eZone KITCHEN
         m_sRules "door side 4; away Latrine 15; away use:Sleep 6; flat 6"
        }
-       RZ_DressingPiece "{A4AF4D636F874E01}" {
+       RZ_DressingPiece "{CF3BA9094280EE35}" {
         m_sPrefab "{0AA08FC6D5A6FF79}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Firewood.et"
         m_eRole INNER
         m_eUse CHOP
         m_iSeats 1
-        m_vPlan 18.5 0 -10.5
+        m_vPlan 17.5 0 -11.5
         m_fPlanYaw 60
         m_vFootMin -4.97 0 -1.6
         m_vFootMax 2 0 3
         m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot 4; flat 6"
+        m_sRules "near CookPot|FieldKitchen 7; flat 6"
        }
-       RZ_DressingPiece "{74BBCC86EE8A2E34}" {
+       RZ_DressingPiece "{D1ABA5796EAB77FF}" {
         m_sPrefab "{3C94F02F30F3573A}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_ShavingStand.et"
         m_eRole INNER
         m_eUse WASH
@@ -472,9 +499,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-0.01 0.01 0.14 0.13 0; 0.1 0.5 0.41 0.41 0; 1 0.2 1.01 1.01 -8; -0.4 0.4 0.1 0.1 0; s 0.05 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near WaterBarrel|CookPot 5; flat 6"
+        m_sRules "near WaterBarrel|CookPot|FieldKitchen 5; flat 6"
        }
-       RZ_DressingPiece "{CF3BA9094280EE35}" {
+       RZ_DressingPiece "{F89D19C21B38F440}" {
         m_sPrefab "{DCA85672D7E3F419}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_CrateSeats.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -487,7 +514,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 3
         m_sRules "near FirePit 6; flat 6"
        }
-       RZ_DressingPiece "{D1ABA5796EAB77FF}" {
+       RZ_DressingPiece "{520B519D52D7F6FF}" {
         m_sPrefab "{FD1D23B5A51FC099}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_DutyBoard.et"
         m_eRole CENTRE
         m_eUse GATHER
@@ -501,7 +528,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone COURT
         m_sRules "wall 2; near RosterBoard 5; faces wall"
        }
-       RZ_DressingPiece "{F89D19C21B38F440}" {
+       RZ_DressingPiece "{6F9693C912C4CA1C}" {
         m_sPrefab "{6AD9BBD18E454D48}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tarp.et"
         m_eRole INNER
         m_eUse WORK
@@ -516,7 +543,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sRules "wall 3; faces wall"
         m_bIndoors 1
        }
-       RZ_DressingPiece "{520B519D52D7F6FF}" {
+       RZ_DressingPiece "{3FF711650CD6A6A1}" {
         m_sPrefab "{DE3CABBDBDA5DEB2}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Tent_Small_Bastion.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -528,9 +555,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|CookPot 6; flat 5"
+        m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5"
        }
-       RZ_DressingPiece "{6F9693C912C4CA1C}" {
+       RZ_DressingPiece "{4C3184E7A307F843}" {
         m_sPrefab "{136E35552D91BCE4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_DryingLine.et"
         m_eRole EDGE
         m_eUse WORK
@@ -544,7 +571,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone SLEEP
         m_sRules "flat 5"
        }
-       RZ_DressingPiece "{3FF711650CD6A6A1}" {
+       RZ_DressingPiece "{8934F80DD4F166E5}" {
         m_sPrefab "{5A04E1440160CFEE}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Latrine.et"
         m_eRole EDGE
         m_eUse NONE
@@ -555,9 +582,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 3.06 0 1.64
         m_sFoot "1.53 1.46 3.06 0.21 3; -1.41 -1.53 3.06 0.21 88; -0.6 0.8 0.43 0.42 0; 0.63 0.92 0.79 0.54 70"
         m_iTier 3
-        m_sRules "away CookPot|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"
+        m_sRules "away CookPot|FieldKitchen|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"
        }
-       RZ_DressingPiece "{4C3184E7A307F843}" {
+       RZ_DressingPiece "{5BBDEECFAC218ED5}" {
         m_sPrefab "{EEE7FFC0C4EE18ED}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Duckboards.et"
         m_eRole INNER
         m_eUse NONE
@@ -575,7 +602,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
       m_fRing 8
       m_fYard 14
       m_aLayers {
-       RZ_DressingPiece "{8934F80DD4F166E5}" {
+       RZ_DressingPiece "{523FC71AFFBFE64A}" {
         m_sPrefab "{DF0967B04B5D3DAE}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Wire_Bastion_L.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -587,7 +614,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{5BBDEECFAC218ED5}" {
+       RZ_DressingPiece "{209170D52D297840}" {
         m_sPrefab "{5ACE8662A198CDF8}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Wire_Bastion_M.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -599,7 +626,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{523FC71AFFBFE64A}" {
+       RZ_DressingPiece "{ED4070D94C5B2DB6}" {
         m_sPrefab "{C83A76F796F759E6}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Wire_Bastion_S.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -611,7 +638,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{209170D52D297840}" {
+       RZ_DressingPiece "{C0DAF535407F11DE}" {
         m_sPrefab "{618F255AD35C55B0}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Wire_Bastion_XS.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -623,7 +650,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{ED4070D94C5B2DB6}" {
+       RZ_DressingPiece "{4D3774A3F8DEC584}" {
         m_sPrefab "{3031E52CC8F3EDF8}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_BoardWindow.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -634,7 +661,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eLayer WINDOW
        }
-       RZ_DressingPiece "{C0DAF535407F11DE}" {
+       RZ_DressingPiece "{7F5AD2136D08ED37}" {
         m_sPrefab "{21DC8D867FBE75E4}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_BoardDoor_Bastion.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -645,7 +672,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eLayer DOOR
        }
-       RZ_DressingPiece "{4D3774A3F8DEC584}" {
+       RZ_DressingPiece "{D1B3E61D8545D2BF}" {
         m_sPrefab "{16982E65ED413FF5}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_SentryNest_Bastion.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -657,7 +684,19 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
         m_eLayer LOOKOUT
        }
-       RZ_DressingPiece "{7F5AD2136D08ED37}" {
+       RZ_DressingPiece "{8E597E24A5FFB5B1}" {
+        m_sPrefab "{EB5E570BF2037B8B}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Floodlight_Bastion.et"
+        m_eRole EDGE
+        m_eUse NONE
+        m_iSeats 1
+        m_vFootMin -1.55 0 -0.83
+        m_vFootMax 1.5 0 0.84
+        m_sFoot "-0.03 0 3.05 1.68 180"
+        m_iTier 3
+        m_sRules "faces out"
+        m_eLayer LIGHT
+       }
+       RZ_DressingPiece "{E3D8724AF80E719B}" {
         m_sPrefab "{EE0EB7D8CF961F6F}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_StoresBoard.et"
         m_eRole CENTRE
         m_eUse NONE
@@ -672,11 +711,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
        }
       }
      }
-     RZ_DressingKit "{D1B3E61D8545D2BF}" {
+     RZ_DressingKit "{E212EE752BD5D75E}" {
       m_eFaction MILITARY
       m_ePlace OUTPOST
       m_aPieces {
-       RZ_DressingPiece "{8E597E24A5FFB5B1}" {
+       RZ_DressingPiece "{48AD013581E584B3}" {
         m_sPrefab "{647886115C8666DC}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Counter_Bastion.et"
         m_eRole CENTRE
         m_eUse NONE
@@ -689,7 +728,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eZone COURT
        }
-       RZ_DressingPiece "{E3D8724AF80E719B}" {
+       RZ_DressingPiece "{754CCDF33D0395AD}" {
         m_sPrefab "{16982E65ED413FF5}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_SentryNest_Bastion.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -701,7 +740,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
        }
-       RZ_DressingPiece "{E212EE752BD5D75E}" {
+       RZ_DressingPiece "{E65B2FF8768C38AE}" {
         m_sPrefab "{22B8DA94254353A4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FirePit.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -711,9 +750,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 4.68 0 2.27
         m_sFoot "1.75 0.35 0.34 6.01 74; -1.51 -0.63 0.34 6.01 18; 0.4 -1.8 0.88 1.46 8; -0.58 1.78 0.79 0.54 140; 2.65 -1.32 0.46 0.66 102; 0.9 0.9 0.43 0.42 0; 1.2 -1.1 0.1 0.1 0; -0.18 0.08 1.94 1.41 0; s 1.7 0.4; s -1.5 -0.6; s 0.4 -1.8; s -0.6 1.7"
         m_iTier 3
-        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot 4; flat 6"
+        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot|FieldKitchen 4; flat 6"
        }
-       RZ_DressingPiece "{48AD013581E584B3}" {
+       RZ_DressingPiece "{46BB4D82119FC2A1}" {
         m_sPrefab "{5C121A788CD4C5B4}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Barricade_Sandbag.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -727,7 +766,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_sRules "faces out"
        }
-       RZ_DressingPiece "{754CCDF33D0395AD}" {
+       RZ_DressingPiece "{BCAC30AAF5320B39}" {
         m_sPrefab "{DE3CABBDBDA5DEB2}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Tent_Small_Bastion.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -739,9 +778,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|CookPot 6; flat 5"
+        m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5"
        }
-       RZ_DressingPiece "{E65B2FF8768C38AE}" {
+       RZ_DressingPiece "{AC854142E651DE95}" {
         m_sPrefab "{DE3CABBDBDA5DEB2}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Tent_Small_Bastion.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -753,9 +792,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0.01 0 2.15 4.5 0; 1.4 0.9 1.01 1.01 0; -1.12 -1.31 0.83 0.44 90"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|CookPot 6; flat 5"
+        m_sRules "away FirePit|CookPot|FieldKitchen 6; flat 5"
        }
-       RZ_DressingPiece "{46BB4D82119FC2A1}" {
+       RZ_DressingPiece "{73347A534E35484B}" {
         m_sPrefab "{094833442B93FB33}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_RosterBoard.et"
         m_eRole CENTRE
         m_eUse GATHER
@@ -769,7 +808,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone COURT
         m_sRules "wall 2; door front 6; faces wall"
        }
-       RZ_DressingPiece "{BCAC30AAF5320B39}" {
+       RZ_DressingPiece "{DDEF11971D7207F8}" {
         m_sPrefab "{D205C96A784B806B}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Table.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -780,9 +819,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 2.36 0 1.31
         m_sFoot "0 0.01 1.99 2.38 7; 1.6 0.2 0.88 1.46 95; -1.5 -1.1 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
         m_iTier 3
-        m_sRules "near CookPot|FirePit 8; flat 5; noline"
+        m_sRules "near CookPot|FieldKitchen|FirePit 8; flat 5; noline"
        }
-       RZ_DressingPiece "{AC854142E651DE95}" {
+       RZ_DressingPiece "{428F1FB41C0D03B1}" {
         m_sPrefab "{2CA928D7FADD1FBA}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CookPot.et"
         m_eRole INNER
         m_eUse COOK
@@ -796,7 +835,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone KITCHEN
         m_sRules "door side 4; away Latrine 15; away use:Sleep 6; flat 6"
        }
-       RZ_DressingPiece "{73347A534E35484B}" {
+       RZ_DressingPiece "{996FD63874C0A84D}" {
         m_sPrefab "{0AA08FC6D5A6FF79}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Firewood.et"
         m_eRole INNER
         m_eUse CHOP
@@ -808,9 +847,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot 4; flat 6"
+        m_sRules "near CookPot|FieldKitchen 7; flat 6"
        }
-       RZ_DressingPiece "{DDEF11971D7207F8}" {
+       RZ_DressingPiece "{AE163664BAF2769D}" {
         m_sPrefab "{3C94F02F30F3573A}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_ShavingStand.et"
         m_eRole INNER
         m_eUse WASH
@@ -822,9 +861,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-0.01 0.01 0.14 0.13 0; 0.1 0.5 0.41 0.41 0; 1 0.2 1.01 1.01 -8; -0.4 0.4 0.1 0.1 0; s 0.05 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near WaterBarrel|CookPot 5; flat 6"
+        m_sRules "near WaterBarrel|CookPot|FieldKitchen 5; flat 6"
        }
-       RZ_DressingPiece "{428F1FB41C0D03B1}" {
+       RZ_DressingPiece "{E8DEE023A4D652D8}" {
         m_sPrefab "{97CE8AAB5062C46B}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_FlagPole.et"
         m_eRole CENTRE
         m_eUse NONE
@@ -837,7 +876,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone COURT
         m_sRules "near RosterBoard 5"
        }
-       RZ_DressingPiece "{996FD63874C0A84D}" {
+       RZ_DressingPiece "{307B8B530CEC0E2A}" {
         m_sPrefab "{5C121A788CD4C5B4}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Barricade_Sandbag.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -851,7 +890,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_sRules "faces out"
        }
-       RZ_DressingPiece "{AE163664BAF2769D}" {
+       RZ_DressingPiece "{F3D0AAB8E41E762C}" {
         m_sPrefab "{EEE7FFC0C4EE18ED}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Duckboards.et"
         m_eRole INNER
         m_eUse NONE
@@ -869,7 +908,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
       m_fRing 7
       m_fYard 12
       m_aLayers {
-       RZ_DressingPiece "{E8DEE023A4D652D8}" {
+       RZ_DressingPiece "{26071576FBFBDFA1}" {
         m_sPrefab "{74E1915EB17BFC9E}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Sandbags_Bastion_L.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -881,7 +920,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{307B8B530CEC0E2A}" {
+       RZ_DressingPiece "{B4A9FB3C1320FB97}" {
         m_sPrefab "{AB20C4470C1CBFA2}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Sandbags_Bastion_M.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -893,7 +932,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{F3D0AAB8E41E762C}" {
+       RZ_DressingPiece "{28FD27DB2337037B}" {
         m_sPrefab "{C83A76F796F759E6}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Wire_Bastion_S.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -905,7 +944,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{26071576FBFBDFA1}" {
+       RZ_DressingPiece "{174BBE251BAB9883}" {
         m_sPrefab "{618F255AD35C55B0}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Wire_Bastion_XS.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -917,7 +956,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{B4A9FB3C1320FB97}" {
+       RZ_DressingPiece "{412B58312176DD37}" {
         m_sPrefab "{3031E52CC8F3EDF8}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_BoardWindow.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -928,7 +967,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eLayer WINDOW
        }
-       RZ_DressingPiece "{28FD27DB2337037B}" {
+       RZ_DressingPiece "{DAEC2980FF500F49}" {
         m_sPrefab "{21DC8D867FBE75E4}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_BoardDoor_Bastion.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -939,7 +978,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eLayer DOOR
        }
-       RZ_DressingPiece "{174BBE251BAB9883}" {
+       RZ_DressingPiece "{DC80CCC752472E0E}" {
         m_sPrefab "{16982E65ED413FF5}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_SentryNest_Bastion.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -953,11 +992,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
        }
       }
      }
-     RZ_DressingKit "{412B58312176DD37}" {
+     RZ_DressingKit "{68B65F43E901D7B9}" {
       m_eFaction MILITARY
       m_ePlace ROAD_POST
       m_aPieces {
-       RZ_DressingPiece "{DAEC2980FF500F49}" {
+       RZ_DressingPiece "{C26A9706D28AC07E}" {
         m_sPrefab "{16982E65ED413FF5}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_SentryNest_Bastion.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -969,7 +1008,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
        }
-       RZ_DressingPiece "{DC80CCC752472E0E}" {
+       RZ_DressingPiece "{9ED677363567EF23}" {
         m_sPrefab "{5C121A788CD4C5B4}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Barricade_Sandbag.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -982,7 +1021,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_sRules "faces out"
        }
-       RZ_DressingPiece "{68B65F43E901D7B9}" {
+       RZ_DressingPiece "{7F5C7D49D67CD667}" {
         m_sPrefab "{751938FE13238EF9}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FireBarrel.et"
         m_eRole CENTRE
         m_eUse LEAN
@@ -994,7 +1033,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 3
         m_sRules "near Sofa|CardTable 4; flat 8"
        }
-       RZ_DressingPiece "{C26A9706D28AC07E}" {
+       RZ_DressingPiece "{0011E15E039923A2}" {
         m_sPrefab "{6AD9BBD18E454D48}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tarp.et"
         m_eRole INNER
         m_eUse WORK
@@ -1012,11 +1051,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
       m_eClose NONE
       m_eHarden NONE
      }
-     RZ_DressingKit "{9ED677363567EF23}" {
+     RZ_DressingKit "{ACD7318563682864}" {
       m_eFaction BANDITS
       m_ePlace STRONGHOLD
       m_aPieces {
-       RZ_DressingPiece "{7F5C7D49D67CD667}" {
+       RZ_DressingPiece "{69A6703B6A439D6F}" {
         m_sPrefab "{42BB51B86D7FD6F1}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Counter_RedHand.et"
         m_eRole CENTRE
         m_eUse NONE
@@ -1030,7 +1069,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eZone COURT
        }
-       RZ_DressingPiece "{0011E15E039923A2}" {
+       RZ_DressingPiece "{37095FB05A878EF9}" {
         m_sPrefab "{0DA6C77863C25D75}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_TollBarrier.et"
         m_eRole APPROACH
         m_eUse LEAN
@@ -1044,7 +1083,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone GATE
         m_sRules "faces road; flat 8"
        }
-       RZ_DressingPiece "{ACD7318563682864}" {
+       RZ_DressingPiece "{55FA926B04B15117}" {
         m_sPrefab "{751938FE13238EF9}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FireBarrel.et"
         m_eRole CENTRE
         m_eUse LEAN
@@ -1056,7 +1095,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 3
         m_sRules "near Sofa|CardTable 4; flat 8"
        }
-       RZ_DressingPiece "{69A6703B6A439D6F}" {
+       RZ_DressingPiece "{8E52F715C23D1A01}" {
         m_sPrefab "{65CF0FD454B5A3B9}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Sofa.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -1069,7 +1108,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 3
         m_sRules "near FireBarrel 3; faces FireBarrel; flat 6"
        }
-       RZ_DressingPiece "{37095FB05A878EF9}" {
+       RZ_DressingPiece "{732F7278DA8F5A21}" {
         m_sPrefab "{23F1B3D4E1AE83BD}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_SentryNest_RedHand.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -1082,7 +1121,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
        }
-       RZ_DressingPiece "{55FA926B04B15117}" {
+       RZ_DressingPiece "{3B70005595FA51D8}" {
         m_sPrefab "{BE834CB640BFC1BA}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_CardTable.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -1095,7 +1134,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 3
         m_sRules "near FireBarrel|Sofa 5; flat 6"
        }
-       RZ_DressingPiece "{8E52F715C23D1A01}" {
+       RZ_DressingPiece "{F444DAFA26CCB65E}" {
         m_sPrefab "{4E44857251B9F7C5}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_RedHandSheet.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1110,7 +1149,33 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone GATE
         m_sRules "faces road; flat 8"
        }
-       RZ_DressingPiece "{732F7278DA8F5A21}" {
+       RZ_DressingPiece "{F460F20D4A4189D2}" {
+        m_sPrefab "{7BD81B58D6A7FA91}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_WreckGate.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iSeats 1
+        m_eAt GATE
+        m_vPlan 9 0 31
+        m_vFootMin -3.18 0 -5
+        m_vFootMax 3.98 0 1.72
+        m_sFoot "0.04 -0.01 1.83 4.6 78; 2.97 0.59 2.02 2.27 0; -2.8 0.7 0.76 0.76 0; 0.77 -3.23 2.27 4.09 110"
+        m_iTier 2
+        m_eZone GATE
+        m_sRules "faces road; flat 8"
+       }
+       RZ_DressingPiece "{20E4C498778146D3}" {
+        m_sPrefab "{938E5C1925D97B3A}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_FuelDump.et"
+        m_eRole EDGE
+        m_eUse WORK
+        m_iSeats 1
+        m_vPlan 19 0 6
+        m_vFootMin -1.33 0 -1.55
+        m_vFootMax 1.58 0 0.88
+        m_sFoot "-0.01 0.01 0.82 1.23 5; -0.3 0.1 0.76 0.76 0; 0.35 -0.1 0.76 0.76 0; 1.2 0.5 0.76 0.76 0; -1.1 0.6 0.16 0.38 20; -1.1 0.2 0.16 0.38 8; -1.2 -0.2 0.16 0.38 -15; 0.9 -1.1 0.85 0.84 0; s 0.9 -1.1"
+        m_iTier 4
+        m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 8; flat 6"
+       }
+       RZ_DressingPiece "{810C3794A85C9A1B}" {
         m_sPrefab "{F9136286B0F575CC}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Barricade_Scrap.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1124,7 +1189,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_sRules "faces out"
        }
-       RZ_DressingPiece "{3B70005595FA51D8}" {
+       RZ_DressingPiece "{DE62A8E52A3B4932}" {
         m_sPrefab "{1893A854370DF417}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Small_Civilian.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -1136,9 +1201,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|FireBarrel|CookPot 6; flat 5; noline"
+        m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; noline"
        }
-       RZ_DressingPiece "{F444DAFA26CCB65E}" {
+       RZ_DressingPiece "{1E711E62A6CA89F0}" {
         m_sPrefab "{1893A854370DF417}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Small_Civilian.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -1150,9 +1215,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|FireBarrel|CookPot 6; flat 5; noline"
+        m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; noline"
        }
-       RZ_DressingPiece "{F460F20D4A4189D2}" {
+       RZ_DressingPiece "{8DE5830E39D795A1}" {
         m_sPrefab "{92A040301017908A}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_ScrapShelter.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -1164,9 +1229,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-0.3 0.03 2.22 2.28 4; 0.16 0.12 1.92 1.74 10; 0.6 0.9 0.2 0.18 0"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|FireBarrel|CookPot 6; flat 6"
+        m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 6"
        }
-       RZ_DressingPiece "{20E4C498778146D3}" {
+       RZ_DressingPiece "{6370C058C2BBC2A7}" {
         m_sPrefab "{2CA928D7FADD1FBA}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CookPot.et"
         m_eRole INNER
         m_eUse COOK
@@ -1180,7 +1245,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone KITCHEN
         m_sRules "door side 4; away Latrine 15; away use:Sleep 6; flat 6"
        }
-       RZ_DressingPiece "{810C3794A85C9A1B}" {
+       RZ_DressingPiece "{9FFCEAEB2B71273F}" {
         m_sPrefab "{0AA08FC6D5A6FF79}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Firewood.et"
         m_eRole INNER
         m_eUse CHOP
@@ -1192,9 +1257,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot 4; flat 6"
+        m_sRules "near CookPot|FieldKitchen 7; flat 6"
        }
-       RZ_DressingPiece "{DE62A8E52A3B4932}" {
+       RZ_DressingPiece "{9F8DD2C0A579C819}" {
         m_sPrefab "{4B17C267BBBF2FD4}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_TrophyWall.et"
         m_eRole EDGE
         m_eUse NONE
@@ -1209,7 +1274,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone GATE
         m_sRules "faces road; flat 8"
        }
-       RZ_DressingPiece "{1E711E62A6CA89F0}" {
+       RZ_DressingPiece "{F08CC1E737D55F26}" {
         m_sPrefab "{34030C655055CC99}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Clutter.et"
         m_eRole INNER
         m_eUse NONE
@@ -1221,7 +1286,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 5
         m_sRules "near use:Sit 4; jitter"
        }
-       RZ_DressingPiece "{8DE5830E39D795A1}" {
+       RZ_DressingPiece "{B8136B2FA0EE6253}" {
         m_sPrefab "{BEFDEB4AE9255602}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Kennel.et"
         m_eRole EDGE
         m_eUse NONE
@@ -1236,7 +1301,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone GATE
         m_sRules "faces road; flat 8"
        }
-       RZ_DressingPiece "{6370C058C2BBC2A7}" {
+       RZ_DressingPiece "{3E870B289914FC40}" {
         m_sPrefab "{22B8DA94254353A4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FirePit.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -1246,9 +1311,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 4.68 0 2.27
         m_sFoot "1.75 0.35 0.34 6.01 74; -1.51 -0.63 0.34 6.01 18; 0.4 -1.8 0.88 1.46 8; -0.58 1.78 0.79 0.54 140; 2.65 -1.32 0.46 0.66 102; 0.9 0.9 0.43 0.42 0; 1.2 -1.1 0.1 0.1 0; -0.18 0.08 1.94 1.41 0; s 1.7 0.4; s -1.5 -0.6; s 0.4 -1.8; s -0.6 1.7"
         m_iTier 3
-        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot 4; flat 6"
+        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot|FieldKitchen 4; flat 6"
        }
-       RZ_DressingPiece "{9FFCEAEB2B71273F}" {
+       RZ_DressingPiece "{D30C36D78AA7ED27}" {
         m_sPrefab "{246DFC7CF5548873}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Large_Civilian.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -1260,9 +1325,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0.01 5.36 3.63 4; 1 2.6 0.47 0.47 200; 2.49 -1.41 1.96 1.48 30; -1.9 -1.8 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|FireBarrel|CookPot 6; flat 5"
+        m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5"
        }
-       RZ_DressingPiece "{9F8DD2C0A579C819}" {
+       RZ_DressingPiece "{7D965BDBC0CFA3F1}" {
         m_sPrefab "{5A04E1440160CFEE}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Latrine.et"
         m_eRole EDGE
         m_eUse NONE
@@ -1273,9 +1338,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 3.06 0 1.64
         m_sFoot "1.53 1.46 3.06 0.21 3; -1.41 -1.53 3.06 0.21 88; -0.6 0.8 0.43 0.42 0; 0.63 0.92 0.79 0.54 70"
         m_iTier 3
-        m_sRules "away CookPot|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"
+        m_sRules "away CookPot|FieldKitchen|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"
        }
-       RZ_DressingPiece "{F08CC1E737D55F26}" {
+       RZ_DressingPiece "{EF6EE4953B824934}" {
         m_sPrefab "{F9136286B0F575CC}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Barricade_Scrap.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1295,7 +1360,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
       m_fRing 8
       m_fYard 14
       m_aLayers {
-       RZ_DressingPiece "{B8136B2FA0EE6253}" {
+       RZ_DressingPiece "{83D4DAD87D929A88}" {
         m_sPrefab "{89388E792C7480BD}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Scrap_RedHand_L.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1307,7 +1372,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{3E870B289914FC40}" {
+       RZ_DressingPiece "{6B8BC6C50207B950}" {
         m_sPrefab "{4DBE1E831937CDA6}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Scrap_RedHand_M.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1319,7 +1384,19 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{D30C36D78AA7ED27}" {
+       RZ_DressingPiece "{99F6C70991A6517E}" {
+        m_sPrefab "{C33B879C18E2F5A0}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Scrap_RedHand_Wreck.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iSeats 1
+        m_vFootMin -2.3 0 -1.25
+        m_vFootMax 2.23 0 1.32
+        m_sFoot "-0.03 -0.01 2.49 4.53 90; 1.2 0.9 0.85 0.84 0"
+        m_iTier 1
+        m_eZone WIRE
+        m_eLayer WIRE
+       }
+       RZ_DressingPiece "{F947B9335629B766}" {
         m_sPrefab "{BEB068AE484D3335}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Scrap_RedHand_S.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1331,7 +1408,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{7D965BDBC0CFA3F1}" {
+       RZ_DressingPiece "{B450726A22F9509A}" {
         m_sPrefab "{187E2DD759F54ABB}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Scrap_RedHand_XS.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1343,7 +1420,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{EF6EE4953B824934}" {
+       RZ_DressingPiece "{E53DE546D1D71326}" {
         m_sPrefab "{AFB0AE97E6224159}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_BoardDoor_RedHand.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1354,7 +1431,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eLayer DOOR
        }
-       RZ_DressingPiece "{83D4DAD87D929A88}" {
+       RZ_DressingPiece "{CFA2C6D03824F0B4}" {
         m_sPrefab "{23F1B3D4E1AE83BD}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_SentryNest_RedHand.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -1368,11 +1445,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
        }
       }
      }
-     RZ_DressingKit "{6B8BC6C50207B950}" {
+     RZ_DressingKit "{D7AD99A6DB14B76A}" {
       m_eFaction BANDITS
       m_ePlace OUTPOST
       m_aPieces {
-       RZ_DressingPiece "{99F6C70991A6517E}" {
+       RZ_DressingPiece "{C6C25688BE7FF4F0}" {
         m_sPrefab "{42BB51B86D7FD6F1}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Counter_RedHand.et"
         m_eRole CENTRE
         m_eUse NONE
@@ -1386,7 +1463,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eZone COURT
        }
-       RZ_DressingPiece "{F947B9335629B766}" {
+       RZ_DressingPiece "{EACF446CA4D8D0C6}" {
         m_sPrefab "{0DA6C77863C25D75}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_TollBarrier.et"
         m_eRole APPROACH
         m_eUse LEAN
@@ -1399,7 +1476,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone GATE
         m_sRules "faces road; flat 8"
        }
-       RZ_DressingPiece "{B450726A22F9509A}" {
+       RZ_DressingPiece "{FCCFDB8496AD1482}" {
         m_sPrefab "{751938FE13238EF9}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FireBarrel.et"
         m_eRole CENTRE
         m_eUse LEAN
@@ -1411,7 +1488,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 3
         m_sRules "near Sofa|CardTable 4; flat 8"
        }
-       RZ_DressingPiece "{E53DE546D1D71326}" {
+       RZ_DressingPiece "{CAF72EA754C162D6}" {
         m_sPrefab "{65CF0FD454B5A3B9}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Sofa.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -1424,7 +1501,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 3
         m_sRules "near FireBarrel 3; faces FireBarrel; flat 6"
        }
-       RZ_DressingPiece "{CFA2C6D03824F0B4}" {
+       RZ_DressingPiece "{CF8C83854ABA3380}" {
         m_sPrefab "{23F1B3D4E1AE83BD}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_SentryNest_RedHand.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -1437,7 +1514,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3; bank"
        }
-       RZ_DressingPiece "{D7AD99A6DB14B76A}" {
+       RZ_DressingPiece "{938C154B68A8E17C}" {
         m_sPrefab "{BE834CB640BFC1BA}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_CardTable.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -1450,7 +1527,21 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 3
         m_sRules "near FireBarrel|Sofa 5; flat 6"
        }
-       RZ_DressingPiece "{C6C25688BE7FF4F0}" {
+       RZ_DressingPiece "{50AE258011D9BD01}" {
+        m_sPrefab "{7BD81B58D6A7FA91}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_WreckGate.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iSeats 1
+        m_eAt GATE
+        m_vPlan 8 0 26
+        m_vFootMin -3.18 0 -5
+        m_vFootMax 3.98 0 1.72
+        m_sFoot "0.04 -0.01 1.83 4.6 78; 2.97 0.59 2.02 2.27 0; -2.8 0.7 0.76 0.76 0; 0.77 -3.23 2.27 4.09 110"
+        m_iTier 2
+        m_eZone GATE
+        m_sRules "faces road; flat 8"
+       }
+       RZ_DressingPiece "{101D9BD313C2474A}" {
         m_sPrefab "{1893A854370DF417}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Small_Civilian.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -1462,9 +1553,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|FireBarrel|CookPot 6; flat 5; noline"
+        m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; noline"
        }
-       RZ_DressingPiece "{EACF446CA4D8D0C6}" {
+       RZ_DressingPiece "{1A47FB18A13D6C7E}" {
         m_sPrefab "{1893A854370DF417}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Small_Civilian.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -1476,9 +1567,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|FireBarrel|CookPot 6; flat 5; noline"
+        m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; noline"
        }
-       RZ_DressingPiece "{FCCFDB8496AD1482}" {
+       RZ_DressingPiece "{4CBB1E1C0F6EB298}" {
         m_sPrefab "{2CA928D7FADD1FBA}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CookPot.et"
         m_eRole INNER
         m_eUse COOK
@@ -1492,7 +1583,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone KITCHEN
         m_sRules "door side 4; away Latrine 15; away use:Sleep 6; flat 6"
        }
-       RZ_DressingPiece "{CAF72EA754C162D6}" {
+       RZ_DressingPiece "{019F7152AC1559E0}" {
         m_sPrefab "{0AA08FC6D5A6FF79}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Firewood.et"
         m_eRole INNER
         m_eUse CHOP
@@ -1504,9 +1595,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot 4; flat 6"
+        m_sRules "near CookPot|FieldKitchen 7; flat 6"
        }
-       RZ_DressingPiece "{CF8C83854ABA3380}" {
+       RZ_DressingPiece "{A1183A21E474CA60}" {
         m_sPrefab "{4E44857251B9F7C5}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_RedHandSheet.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1521,7 +1612,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone GATE
         m_sRules "faces road; flat 8"
        }
-       RZ_DressingPiece "{938C154B68A8E17C}" {
+       RZ_DressingPiece "{51B160BB716AE56B}" {
         m_sPrefab "{34030C655055CC99}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Clutter.et"
         m_eRole INNER
         m_eUse NONE
@@ -1533,7 +1624,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 5
         m_sRules "near use:Sit 4; jitter"
        }
-       RZ_DressingPiece "{50AE258011D9BD01}" {
+       RZ_DressingPiece "{93088530C092F83D}" {
         m_sPrefab "{92A040301017908A}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_ScrapShelter.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -1545,7 +1636,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-0.3 0.03 2.22 2.28 4; 0.16 0.12 1.92 1.74 10; 0.6 0.9 0.2 0.18 0"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|FireBarrel|CookPot 6; flat 6"
+        m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 6"
        }
       }
       m_eClose ROAD
@@ -1553,7 +1644,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
       m_fRing 7
       m_fYard 12
       m_aLayers {
-       RZ_DressingPiece "{101D9BD313C2474A}" {
+       RZ_DressingPiece "{A09C849FDC2F1EEE}" {
         m_sPrefab "{89388E792C7480BD}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Scrap_RedHand_L.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1565,7 +1656,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{1A47FB18A13D6C7E}" {
+       RZ_DressingPiece "{3FCB3EB3BFADA251}" {
         m_sPrefab "{4DBE1E831937CDA6}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Scrap_RedHand_M.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1577,7 +1668,19 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{4CBB1E1C0F6EB298}" {
+       RZ_DressingPiece "{0D73C546C99E1721}" {
+        m_sPrefab "{C33B879C18E2F5A0}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Scrap_RedHand_Wreck.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iSeats 1
+        m_vFootMin -2.3 0 -1.25
+        m_vFootMax 2.23 0 1.32
+        m_sFoot "-0.03 -0.01 2.49 4.53 90; 1.2 0.9 0.85 0.84 0"
+        m_iTier 1
+        m_eZone WIRE
+        m_eLayer WIRE
+       }
+       RZ_DressingPiece "{F325D24CFE6D92DB}" {
         m_sPrefab "{BEB068AE484D3335}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Scrap_RedHand_S.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1589,7 +1692,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{019F7152AC1559E0}" {
+       RZ_DressingPiece "{C0F0F5410BC56E14}" {
         m_sPrefab "{187E2DD759F54ABB}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Scrap_RedHand_XS.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1601,7 +1704,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{A1183A21E474CA60}" {
+       RZ_DressingPiece "{A63555A50D333453}" {
         m_sPrefab "{23F1B3D4E1AE83BD}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_SentryNest_RedHand.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -1615,11 +1718,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
        }
       }
      }
-     RZ_DressingKit "{51B160BB716AE56B}" {
+     RZ_DressingKit "{8EE8BE4A20F37C45}" {
       m_eFaction BANDITS
       m_ePlace ROAD_POST
       m_aPieces {
-       RZ_DressingPiece "{93088530C092F83D}" {
+       RZ_DressingPiece "{667214F3E00FD1E3}" {
         m_sPrefab "{751938FE13238EF9}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FireBarrel.et"
         m_eRole CENTRE
         m_eUse LEAN
@@ -1631,7 +1734,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 3
         m_sRules "near Sofa|CardTable 4; flat 8"
        }
-       RZ_DressingPiece "{A09C849FDC2F1EEE}" {
+       RZ_DressingPiece "{B683D6F7930E606F}" {
         m_sPrefab "{BE834CB640BFC1BA}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_CardTable.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -1644,7 +1747,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 3
         m_sRules "near FireBarrel|Sofa 5; flat 6"
        }
-       RZ_DressingPiece "{3FCB3EB3BFADA251}" {
+       RZ_DressingPiece "{10C17AFC392567A9}" {
         m_sPrefab "{F9136286B0F575CC}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Barricade_Scrap.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1657,7 +1760,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_sRules "faces out"
        }
-       RZ_DressingPiece "{0D73C546C99E1721}" {
+       RZ_DressingPiece "{A4E08461C1612EC4}" {
         m_sPrefab "{6AD9BBD18E454D48}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tarp.et"
         m_eRole INNER
         m_eUse WORK
@@ -1675,11 +1778,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
       m_eClose NONE
       m_eHarden NONE
      }
-     RZ_DressingKit "{F325D24CFE6D92DB}" {
+     RZ_DressingKit "{DBC0465CA0371A1D}" {
       m_eFaction SURVIVORS
       m_ePlace STRONGHOLD
       m_aPieces {
-       RZ_DressingPiece "{C0F0F5410BC56E14}" {
+       RZ_DressingPiece "{949B1CC327085399}" {
         m_sPrefab "{E6E9C05B5B74D698}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Counter_Haven.et"
         m_eRole CENTRE
         m_eUse NONE
@@ -1693,19 +1796,19 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eZone COURT
        }
-       RZ_DressingPiece "{A63555A50D333453}" {
-        m_sPrefab "{A87BA5629BBB3401}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Lookout_Haven.et"
+       RZ_DressingPiece "{5F78CDB75826AC0D}" {
+        m_sPrefab "{81B31E441FDA6A9A}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Watchtower_Haven.et"
         m_eRole APPROACH
         m_eUse WATCH
         m_iSeats 1
-        m_vPlan -4 0 27
-        m_vFootMin -0.46 0 -0.63
-        m_vFootMax 0.96 0 0.66
-        m_sFoot "-0.01 0.01 0.82 1.23 4; -0.01 -0.04 0.49 0.56 180; 0.89 0.41 0.14 0.13 0; s 0 -0.1"
+        m_vPlan -4 0 28
+        m_vFootMin -1.78 0 -0.91
+        m_vFootMax 2.35 0 0.92
+        m_sFoot "0 0 1.48 1.83 180; 1.89 0.36 0.49 0.56 180; -1.71 0.61 0.14 0.13 0; s 1.9 0.3"
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3"
        }
-       RZ_DressingPiece "{8EE8BE4A20F37C45}" {
+       RZ_DressingPiece "{3B65CDFE7737F785}" {
         m_sPrefab "{49A0AD7737455195}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Gate_Haven.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1719,7 +1822,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone GATE
         m_sRules "faces road; flat 8"
        }
-       RZ_DressingPiece "{667214F3E00FD1E3}" {
+       RZ_DressingPiece "{806103B7C1CD76A6}" {
         m_sPrefab "{F92F47ADCE2433C7}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_BearDoor.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1733,7 +1836,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone COURT
         m_sRules "door front 3; faces out"
        }
-       RZ_DressingPiece "{B683D6F7930E606F}" {
+       RZ_DressingPiece "{3900F94864920846}" {
         m_sPrefab "{D205C96A784B806B}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Table.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -1744,9 +1847,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 2.36 0 1.31
         m_sFoot "0 0.01 1.99 2.38 7; 1.6 0.2 0.88 1.46 95; -1.5 -1.1 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
         m_iTier 2
-        m_sRules "near CookPot|FirePit 8; flat 5; noline"
+        m_sRules "near CookPot|FieldKitchen|FirePit 8; flat 5; noline"
        }
-       RZ_DressingPiece "{10C17AFC392567A9}" {
+       RZ_DressingPiece "{436D1EEDD47213EF}" {
         m_sPrefab "{2CA928D7FADD1FBA}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CookPot.et"
         m_eRole INNER
         m_eUse COOK
@@ -1760,7 +1863,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone KITCHEN
         m_sRules "door side 4; away Latrine 15; away use:Sleep 6; flat 6"
        }
-       RZ_DressingPiece "{A4E08461C1612EC4}" {
+       RZ_DressingPiece "{167102F8D13099D1}" {
         m_sPrefab "{63C79FDEA1459DEF}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Memorial.et"
         m_eRole CENTRE
         m_eUse WORK
@@ -1775,7 +1878,49 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone COURT
         m_sRules "wall 3; near Table 8; faces in"
        }
-       RZ_DressingPiece "{DBC0465CA0371A1D}" {
+       RZ_DressingPiece "{3662813F9E631E33}" {
+        m_sPrefab "{F8E774B78B29ABE3}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_WorkBoard.et"
+        m_eRole APPROACH
+        m_eUse GATHER
+        m_iSeats 1
+        m_eAt GATE
+        m_vPlan 10 0 28
+        m_vFootMin -1.71 0 -1.65
+        m_vFootMax 1.11 0 0.52
+        m_sFoot "0 0.12 2.23 0.36 0; -1.1 -0.3 0.88 1.46 -15; s 0 -1.2"
+        m_iTier 4
+        m_eZone GATE
+        m_sRules "faces road; flat 8"
+       }
+       RZ_DressingPiece "{601A4144CEF330E2}" {
+        m_sPrefab "{3931378F351F2AB4}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_LanternPost.et"
+        m_eRole INNER
+        m_eUse NONE
+        m_iSeats 1
+        m_eAt DOOR
+        m_vPlan -3 0 15
+        m_vFootMin -0.08 0 -0.06
+        m_vFootMax 0.06 0 0.07
+        m_sFoot "-0.01 0.01 0.14 0.13 0"
+        m_iTier 4
+        m_eZone COURT
+        m_sRules "door front 8"
+       }
+       RZ_DressingPiece "{70C0A62F751C4C77}" {
+        m_sPrefab "{3931378F351F2AB4}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_LanternPost.et"
+        m_eRole INNER
+        m_eUse NONE
+        m_iSeats 1
+        m_eAt DOOR
+        m_vPlan 2 0 18
+        m_vFootMin -0.08 0 -0.06
+        m_vFootMax 0.06 0 0.07
+        m_sFoot "-0.01 0.01 0.14 0.13 0"
+        m_iTier 4
+        m_eZone COURT
+        m_sRules "door front 8"
+       }
+       RZ_DressingPiece "{D1A9E71EAE5C0FF0}" {
         m_sPrefab "{EF36E0469A132682}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_WaterBarrel.et"
         m_eRole INNER
         m_eUse WORK
@@ -1786,9 +1931,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.6 0.6 0.43 0.42 0; 0.4 0.8 0.43 0.42 0; s 0 1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot 5; kind well 25; flat 6"
+        m_sRules "near CookPot|FieldKitchen 5; kind well 25; flat 6"
        }
-       RZ_DressingPiece "{949B1CC327085399}" {
+       RZ_DressingPiece "{833E1578D7E7EE22}" {
         m_sPrefab "{9A9A00A1296CEE93}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_WashStand.et"
         m_eRole INNER
         m_eUse WASH
@@ -1802,7 +1947,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone KITCHEN
         m_sRules "near WaterBarrel 3; flat 6"
        }
-       RZ_DressingPiece "{5F78CDB75826AC0D}" {
+       RZ_DressingPiece "{DEC7E872547FE3A1}" {
         m_sPrefab "{D2FB51325F7D7BC5}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_WashingLine.et"
         m_eRole EDGE
         m_eUse WORK
@@ -1816,7 +1961,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone SLEEP
         m_sRules "flat 5"
        }
-       RZ_DressingPiece "{3B65CDFE7737F785}" {
+       RZ_DressingPiece "{2489EA5E40064647}" {
         m_sPrefab "{54693ACA3D1C3A9F}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Garden.et"
         m_eRole EDGE
         m_eUse WORK
@@ -1829,7 +1974,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 4
         m_sRules "soil; flat 4; away gate 10"
        }
-       RZ_DressingPiece "{806103B7C1CD76A6}" {
+       RZ_DressingPiece "{6EB4D37CA518144B}" {
         m_sPrefab "{972C9B0757FDC5B6}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Barricade_Fence.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1843,7 +1988,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_sRules "faces out"
        }
-       RZ_DressingPiece "{3900F94864920846}" {
+       RZ_DressingPiece "{BA35046352EAA3E6}" {
         m_sPrefab "{73F6E3F5B85430A2}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_VegStall.et"
         m_eRole EDGE
         m_eUse WORK
@@ -1858,7 +2003,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone COURT
         m_sRules "faces front; flat 5"
        }
-       RZ_DressingPiece "{436D1EEDD47213EF}" {
+       RZ_DressingPiece "{506FB249B1D747B4}" {
         m_sPrefab "{D490D2E9A0478D9C}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_ChildrensCorner.et"
         m_eRole INNER
         m_eUse NONE
@@ -1872,7 +2017,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone SLEEP
         m_sRules "away gate 15; away Latrine 10; flat 5"
        }
-       RZ_DressingPiece "{167102F8D13099D1}" {
+       RZ_DressingPiece "{37E455C0BCB5DC10}" {
         m_sPrefab "{0AA08FC6D5A6FF79}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Firewood.et"
         m_eRole INNER
         m_eUse CHOP
@@ -1884,9 +2029,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot 4; flat 6"
+        m_sRules "near CookPot|FieldKitchen 7; flat 6"
        }
-       RZ_DressingPiece "{3662813F9E631E33}" {
+       RZ_DressingPiece "{965806BEC646FB4B}" {
         m_sPrefab "{22B8DA94254353A4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FirePit.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -1896,9 +2041,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 4.68 0 2.27
         m_sFoot "1.75 0.35 0.34 6.01 74; -1.51 -0.63 0.34 6.01 18; 0.4 -1.8 0.88 1.46 8; -0.58 1.78 0.79 0.54 140; 2.65 -1.32 0.46 0.66 102; 0.9 0.9 0.43 0.42 0; 1.2 -1.1 0.1 0.1 0; -0.18 0.08 1.94 1.41 0; s 1.7 0.4; s -1.5 -0.6; s 0.4 -1.8; s -0.6 1.7"
         m_iTier 3
-        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot 4; flat 6"
+        m_sRules "near Table|CrateChairs|CardTable|CrateSeats|Sofa|FieldTable 8; away use:Sleep 6; away CookPot|FieldKitchen 4; flat 6"
        }
-       RZ_DressingPiece "{601A4144CEF330E2}" {
+       RZ_DressingPiece "{EEB5789EEEE19006}" {
         m_sPrefab "{1893A854370DF417}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Small_Civilian.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -1910,9 +2055,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|FireBarrel|CookPot 6; flat 5; noline"
+        m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; noline"
        }
-       RZ_DressingPiece "{70C0A62F751C4C77}" {
+       RZ_DressingPiece "{ADD1DB02A18CA491}" {
         m_sPrefab "{5AAE19ADE6DFD2F7}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CrateChairs.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -1923,9 +2068,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 1.96 0 1.45
         m_sFoot "0 0 0.88 1.46 14; 0.08 0.97 0.49 0.56 190; 1 -0.3 0.47 0.47 255; -1 -0.4 0.41 0.41 0; 1.89 1.11 0.14 0.13 0; -2.11 1.31 0.14 0.13 0; s 0.1 1; s 1 -0.3; s -1 -0.4"
         m_iTier 3
-        m_sRules "near FirePit|CookPot 8; flat 6"
+        m_sRules "near FirePit|CookPot|FieldKitchen 8; flat 6"
        }
-       RZ_DressingPiece "{D1A9E71EAE5C0FF0}" {
+       RZ_DressingPiece "{23FEFC60A9E0EBB8}" {
         m_sPrefab "{972C9B0757FDC5B6}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Barricade_Fence.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1939,7 +2084,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_sRules "faces out"
        }
-       RZ_DressingPiece "{833E1578D7E7EE22}" {
+       RZ_DressingPiece "{2089320616A6229F}" {
         m_sPrefab "{246DFC7CF5548873}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Large_Civilian.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -1951,9 +2096,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0.01 5.36 3.63 4; 1 2.6 0.47 0.47 200; 2.49 -1.41 1.96 1.48 30; -1.9 -1.8 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|FireBarrel|CookPot 6; flat 5"
+        m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5"
        }
-       RZ_DressingPiece "{DEC7E872547FE3A1}" {
+       RZ_DressingPiece "{EFC1C624368426FB}" {
         m_sPrefab "{BEFDEB4AE9255602}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Kennel.et"
         m_eRole EDGE
         m_eUse NONE
@@ -1968,7 +2113,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone GATE
         m_sRules "faces road; flat 8"
        }
-       RZ_DressingPiece "{2489EA5E40064647}" {
+       RZ_DressingPiece "{450B26E59DD9975C}" {
         m_sPrefab "{5A04E1440160CFEE}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Latrine.et"
         m_eRole EDGE
         m_eUse NONE
@@ -1979,7 +2124,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 3.06 0 1.64
         m_sFoot "1.53 1.46 3.06 0.21 3; -1.41 -1.53 3.06 0.21 88; -0.6 0.8 0.43 0.42 0; 0.63 0.92 0.79 0.54 70"
         m_iTier 3
-        m_sRules "away CookPot|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"
+        m_sRules "away CookPot|FieldKitchen|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"
        }
       }
       m_eClose ALL
@@ -1987,7 +2132,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
       m_fRing 8
       m_fYard 14
       m_aLayers {
-       RZ_DressingPiece "{6EB4D37CA518144B}" {
+       RZ_DressingPiece "{8249C3662D4D3596}" {
         m_sPrefab "{A0E61E2AE1BB97F4}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Fence_Haven_L.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -1999,7 +2144,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{BA35046352EAA3E6}" {
+       RZ_DressingPiece "{B3DC41E3EEDF3805}" {
         m_sPrefab "{B9DEA42FE360CD5F}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Fence_Haven_M.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2011,7 +2156,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{506FB249B1D747B4}" {
+       RZ_DressingPiece "{62F7A55AFEE0970B}" {
         m_sPrefab "{06D5EB49DE1FE5C5}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Fence_Haven_S.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2023,7 +2168,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{37E455C0BCB5DC10}" {
+       RZ_DressingPiece "{DE198E1737DF77F8}" {
         m_sPrefab "{52F820850084F23B}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Fence_Haven_XS.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2035,7 +2180,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{965806BEC646FB4B}" {
+       RZ_DressingPiece "{A3C1185E5276105F}" {
         m_sPrefab "{3031E52CC8F3EDF8}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_BoardWindow.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2046,7 +2191,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eLayer WINDOW
        }
-       RZ_DressingPiece "{EEB5789EEEE19006}" {
+       RZ_DressingPiece "{D98BC5FE0C059F9F}" {
         m_sPrefab "{629DC4055C69EEA2}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_BoardDoor.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2057,7 +2202,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eLayer DOOR
        }
-       RZ_DressingPiece "{ADD1DB02A18CA491}" {
+       RZ_DressingPiece "{F68F8A6FD41950F1}" {
         m_sPrefab "{A87BA5629BBB3401}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Lookout_Haven.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -2071,11 +2216,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
        }
       }
      }
-     RZ_DressingKit "{23FEFC60A9E0EBB8}" {
+     RZ_DressingKit "{5DE2A23018934D66}" {
       m_eFaction SURVIVORS
       m_ePlace OUTPOST
       m_aPieces {
-       RZ_DressingPiece "{2089320616A6229F}" {
+       RZ_DressingPiece "{576FC17DBB3EC9FB}" {
         m_sPrefab "{E6E9C05B5B74D698}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Counter_Haven.et"
         m_eRole CENTRE
         m_eUse NONE
@@ -2089,7 +2234,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eZone COURT
        }
-       RZ_DressingPiece "{EFC1C624368426FB}" {
+       RZ_DressingPiece "{CA70A05765DAC287}" {
         m_sPrefab "{A87BA5629BBB3401}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Lookout_Haven.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -2101,7 +2246,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3"
        }
-       RZ_DressingPiece "{450B26E59DD9975C}" {
+       RZ_DressingPiece "{8EFD5096371EBE71}" {
         m_sPrefab "{F92F47ADCE2433C7}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_BearDoor.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2115,7 +2260,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone COURT
         m_sRules "door front 3; faces out"
        }
-       RZ_DressingPiece "{8249C3662D4D3596}" {
+       RZ_DressingPiece "{59F284D3A19129B0}" {
         m_sPrefab "{D205C96A784B806B}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Table.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -2126,9 +2271,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 2.36 0 1.31
         m_sFoot "0 0.01 1.99 2.38 7; 1.6 0.2 0.88 1.46 95; -1.5 -1.1 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
         m_iTier 2
-        m_sRules "near CookPot|FirePit 8; flat 5; noline"
+        m_sRules "near CookPot|FieldKitchen|FirePit 8; flat 5; noline"
        }
-       RZ_DressingPiece "{B3DC41E3EEDF3805}" {
+       RZ_DressingPiece "{0BD9FCCCBD840535}" {
         m_sPrefab "{2CA928D7FADD1FBA}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CookPot.et"
         m_eRole INNER
         m_eUse COOK
@@ -2142,7 +2287,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone KITCHEN
         m_sRules "door side 4; away Latrine 15; away use:Sleep 6; flat 6"
        }
-       RZ_DressingPiece "{62F7A55AFEE0970B}" {
+       RZ_DressingPiece "{19A49F90ACC6BED8}" {
         m_sPrefab "{EF36E0469A132682}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_WaterBarrel.et"
         m_eRole INNER
         m_eUse WORK
@@ -2153,9 +2298,37 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.6 0.6 0.43 0.42 0; 0.4 0.8 0.43 0.42 0; s 0 1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot 5; kind well 25; flat 6"
+        m_sRules "near CookPot|FieldKitchen 5; kind well 25; flat 6"
        }
-       RZ_DressingPiece "{DE198E1737DF77F8}" {
+       RZ_DressingPiece "{EA946C2299F776F9}" {
+        m_sPrefab "{3931378F351F2AB4}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_LanternPost.et"
+        m_eRole INNER
+        m_eUse NONE
+        m_iSeats 1
+        m_eAt DOOR
+        m_vPlan -3 0 13
+        m_vFootMin -0.08 0 -0.06
+        m_vFootMax 0.06 0 0.07
+        m_sFoot "-0.01 0.01 0.14 0.13 0"
+        m_iTier 4
+        m_eZone COURT
+        m_sRules "door front 8"
+       }
+       RZ_DressingPiece "{08B0E2FA2B37A398}" {
+        m_sPrefab "{F8E774B78B29ABE3}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_WorkBoard.et"
+        m_eRole APPROACH
+        m_eUse GATHER
+        m_iSeats 1
+        m_eAt GATE
+        m_vPlan -11 0 24
+        m_vFootMin -1.71 0 -1.65
+        m_vFootMax 1.11 0 0.52
+        m_sFoot "0 0.12 2.23 0.36 0; -1.1 -0.3 0.88 1.46 -15; s 0 -1.2"
+        m_iTier 4
+        m_eZone GATE
+        m_sRules "faces road; flat 8"
+       }
+       RZ_DressingPiece "{96EA21D6F6B40F7A}" {
         m_sPrefab "{9A9A00A1296CEE93}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_WashStand.et"
         m_eRole INNER
         m_eUse WASH
@@ -2169,7 +2342,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone KITCHEN
         m_sRules "near WaterBarrel 3; flat 6"
        }
-       RZ_DressingPiece "{A3C1185E5276105F}" {
+       RZ_DressingPiece "{D81D6AF125BDB2A3}" {
         m_sPrefab "{D2FB51325F7D7BC5}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_WashingLine.et"
         m_eRole EDGE
         m_eUse WORK
@@ -2183,7 +2356,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone SLEEP
         m_sRules "flat 5"
        }
-       RZ_DressingPiece "{D98BC5FE0C059F9F}" {
+       RZ_DressingPiece "{4F78F2B0BFAE15F1}" {
         m_sPrefab "{54693ACA3D1C3A9F}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Garden.et"
         m_eRole EDGE
         m_eUse WORK
@@ -2196,7 +2369,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 4
         m_sRules "soil; flat 4; away gate 10"
        }
-       RZ_DressingPiece "{F68F8A6FD41950F1}" {
+       RZ_DressingPiece "{CBB01C0C1872FE51}" {
         m_sPrefab "{63C79FDEA1459DEF}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Memorial.et"
         m_eRole CENTRE
         m_eUse WORK
@@ -2211,7 +2384,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone COURT
         m_sRules "wall 3; near Table 8; faces in"
        }
-       RZ_DressingPiece "{5DE2A23018934D66}" {
+       RZ_DressingPiece "{5C8255E7B411CE2E}" {
         m_sPrefab "{0AA08FC6D5A6FF79}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Firewood.et"
         m_eRole INNER
         m_eUse CHOP
@@ -2223,9 +2396,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot 4; flat 6"
+        m_sRules "near CookPot|FieldKitchen 7; flat 6"
        }
-       RZ_DressingPiece "{576FC17DBB3EC9FB}" {
+       RZ_DressingPiece "{CE2361CA89BDE3ED}" {
         m_sPrefab "{972C9B0757FDC5B6}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Barricade_Fence.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2239,7 +2412,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_sRules "faces out"
        }
-       RZ_DressingPiece "{CA70A05765DAC287}" {
+       RZ_DressingPiece "{322741C3ADCEF26E}" {
         m_sPrefab "{1893A854370DF417}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tent_Small_Civilian.et"
         m_eRole INNER
         m_eUse SLEEP
@@ -2251,9 +2424,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 2.22 4.17 -6; 1.42 0.92 0.79 0.54 60; -1.33 0.99 0.43 0.34 20; -1.3 1 0.88 1.46 15; 1.2 -1 0.43 0.42 0"
         m_iTier 3
         m_eZone SLEEP
-        m_sRules "away FirePit|FireBarrel|CookPot 6; flat 5; noline"
+        m_sRules "away FirePit|FireBarrel|CookPot|FieldKitchen 6; flat 5; noline"
        }
-       RZ_DressingPiece "{8EFD5096371EBE71}" {
+       RZ_DressingPiece "{DC4F890B3266AB27}" {
         m_sPrefab "{D490D2E9A0478D9C}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_ChildrensCorner.et"
         m_eRole INNER
         m_eUse NONE
@@ -2273,7 +2446,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
       m_fRing 7
       m_fYard 12
       m_aLayers {
-       RZ_DressingPiece "{59F284D3A19129B0}" {
+       RZ_DressingPiece "{02D3F6B2D1528EF6}" {
         m_sPrefab "{A0E61E2AE1BB97F4}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Fence_Haven_L.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2285,7 +2458,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{0BD9FCCCBD840535}" {
+       RZ_DressingPiece "{1A30A7F5C7E34F2D}" {
         m_sPrefab "{B9DEA42FE360CD5F}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Fence_Haven_M.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2297,7 +2470,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{19A49F90ACC6BED8}" {
+       RZ_DressingPiece "{350F85DE88F0C746}" {
         m_sPrefab "{06D5EB49DE1FE5C5}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Fence_Haven_S.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2309,7 +2482,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{EA946C2299F776F9}" {
+       RZ_DressingPiece "{20C4CF3F6D827824}" {
         m_sPrefab "{52F820850084F23B}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Fence_Haven_XS.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2321,7 +2494,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{08B0E2FA2B37A398}" {
+       RZ_DressingPiece "{AEF8C9AB23B529AC}" {
         m_sPrefab "{629DC4055C69EEA2}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_BoardDoor.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2332,7 +2505,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eLayer DOOR
        }
-       RZ_DressingPiece "{96EA21D6F6B40F7A}" {
+       RZ_DressingPiece "{C7652D5518CC7C9C}" {
         m_sPrefab "{A87BA5629BBB3401}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Lookout_Haven.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -2346,11 +2519,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
        }
       }
      }
-     RZ_DressingKit "{D81D6AF125BDB2A3}" {
+     RZ_DressingKit "{6444EBD2D10E0014}" {
       m_eFaction SURVIVORS
       m_ePlace SAFEHOUSE
       m_aPieces {
-       RZ_DressingPiece "{4F78F2B0BFAE15F1}" {
+       RZ_DressingPiece "{9D40DBB3FF621752}" {
         m_sPrefab "{E6E9C05B5B74D698}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Counter_Haven.et"
         m_eRole CENTRE
         m_eUse NONE
@@ -2364,7 +2537,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eZone COURT
        }
-       RZ_DressingPiece "{CBB01C0C1872FE51}" {
+       RZ_DressingPiece "{54906C4845165DF3}" {
         m_sPrefab "{F92F47ADCE2433C7}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_BearDoor.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2378,7 +2551,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone COURT
         m_sRules "door front 3; faces out"
        }
-       RZ_DressingPiece "{5C8255E7B411CE2E}" {
+       RZ_DressingPiece "{4C2A6120DE4BFA49}" {
         m_sPrefab "{D205C96A784B806B}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Table.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -2389,9 +2562,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 2.36 0 1.31
         m_sFoot "0 0.01 1.99 2.38 7; 1.6 0.2 0.88 1.46 95; -1.5 -1.1 0.43 0.42 0; s -0.5 0.8; s 0.5 0.85; s -0.4 -0.8; s 0.6 -0.75"
         m_iTier 2
-        m_sRules "near CookPot|FirePit 8; flat 5; noline"
+        m_sRules "near CookPot|FieldKitchen|FirePit 8; flat 5; noline"
        }
-       RZ_DressingPiece "{CE2361CA89BDE3ED}" {
+       RZ_DressingPiece "{37F607647776A14F}" {
         m_sPrefab "{2CA928D7FADD1FBA}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CookPot.et"
         m_eRole INNER
         m_eUse COOK
@@ -2405,7 +2578,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone KITCHEN
         m_sRules "door side 4; away Latrine 15; away use:Sleep 6; flat 6"
        }
-       RZ_DressingPiece "{322741C3ADCEF26E}" {
+       RZ_DressingPiece "{048BF02668FCA461}" {
         m_sPrefab "{EF36E0469A132682}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_WaterBarrel.et"
         m_eRole INNER
         m_eUse WORK
@@ -2416,9 +2589,23 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0 0 0.76 0.76 0; 0.7 0.2 0.76 0.76 0; -0.6 0.6 0.43 0.42 0; 0.4 0.8 0.43 0.42 0; s 0 1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot 5; kind well 25; flat 6"
+        m_sRules "near CookPot|FieldKitchen 5; kind well 25; flat 6"
        }
-       RZ_DressingPiece "{DC4F890B3266AB27}" {
+       RZ_DressingPiece "{7805C6B0D6F7E045}" {
+        m_sPrefab "{3931378F351F2AB4}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_LanternPost.et"
+        m_eRole INNER
+        m_eUse NONE
+        m_iSeats 1
+        m_eAt DOOR
+        m_vPlan 3 0 10
+        m_vFootMin -0.08 0 -0.06
+        m_vFootMax 0.06 0 0.07
+        m_sFoot "-0.01 0.01 0.14 0.13 0"
+        m_iTier 4
+        m_eZone COURT
+        m_sRules "door front 8"
+       }
+       RZ_DressingPiece "{344AA61DF08918A5}" {
         m_sPrefab "{D2FB51325F7D7BC5}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_WashingLine.et"
         m_eRole EDGE
         m_eUse WORK
@@ -2432,7 +2619,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone SLEEP
         m_sRules "flat 5"
        }
-       RZ_DressingPiece "{02D3F6B2D1528EF6}" {
+       RZ_DressingPiece "{E4AD3DFD1646D921}" {
         m_sPrefab "{54693ACA3D1C3A9F}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Garden.et"
         m_eRole EDGE
         m_eUse WORK
@@ -2445,7 +2632,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 4
         m_sRules "soil; flat 4; away gate 10"
        }
-       RZ_DressingPiece "{1A30A7F5C7E34F2D}" {
+       RZ_DressingPiece "{99B3823C02B01567}" {
         m_sPrefab "{0AA08FC6D5A6FF79}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Firewood.et"
         m_eRole INNER
         m_eUse CHOP
@@ -2457,7 +2644,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
         m_iTier 3
         m_eZone KITCHEN
-        m_sRules "near CookPot 4; flat 6"
+        m_sRules "near CookPot|FieldKitchen 7; flat 6"
        }
       }
       m_eClose ROAD
@@ -2465,7 +2652,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
       m_fRing 6
       m_fYard 10
       m_aLayers {
-       RZ_DressingPiece "{350F85DE88F0C746}" {
+       RZ_DressingPiece "{76FFD3614A925DAA}" {
         m_sPrefab "{A0E61E2AE1BB97F4}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Fence_Haven_L.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2477,7 +2664,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{20C4CF3F6D827824}" {
+       RZ_DressingPiece "{C3A5F74E42D42E90}" {
         m_sPrefab "{B9DEA42FE360CD5F}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Fence_Haven_M.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2489,7 +2676,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{AEF8C9AB23B529AC}" {
+       RZ_DressingPiece "{251EF40D1F00451A}" {
         m_sPrefab "{06D5EB49DE1FE5C5}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Fence_Haven_S.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2501,7 +2688,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{C7652D5518CC7C9C}" {
+       RZ_DressingPiece "{C2612A1E348DB5EC}" {
         m_sPrefab "{52F820850084F23B}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Fence_Haven_XS.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2513,7 +2700,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{6444EBD2D10E0014}" {
+       RZ_DressingPiece "{DA1BF53E9FD8F705}" {
         m_sPrefab "{3031E52CC8F3EDF8}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_BoardWindow.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2524,7 +2711,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eLayer WINDOW
        }
-       RZ_DressingPiece "{9D40DBB3FF621752}" {
+       RZ_DressingPiece "{CFE3F5629F99186A}" {
         m_sPrefab "{629DC4055C69EEA2}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_BoardDoor.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2535,7 +2722,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eLayer DOOR
        }
-       RZ_DressingPiece "{54906C4845165DF3}" {
+       RZ_DressingPiece "{64D443D814F80C91}" {
         m_sPrefab "{A87BA5629BBB3401}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Lookout_Haven.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -2549,11 +2736,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
        }
       }
      }
-     RZ_DressingKit "{4C2A6120DE4BFA49}" {
+     RZ_DressingKit "{0FBA469C65D03B4D}" {
       m_eFaction INSTITUTE
       m_ePlace STRONGHOLD
       m_aPieces {
-       RZ_DressingPiece "{37F607647776A14F}" {
+       RZ_DressingPiece "{0B9DDF9AC7056C81}" {
         m_sPrefab "{EB833CE54B9B5CB3}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Counter_Halcyon.et"
         m_eRole CENTRE
         m_eUse NONE
@@ -2567,7 +2754,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eZone COURT
        }
-       RZ_DressingPiece "{048BF02668FCA461}" {
+       RZ_DressingPiece "{36E6C33A271901E6}" {
         m_sPrefab "{DD5B2D11564E77F4}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_GuardPost_Halcyon.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -2579,7 +2766,21 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3"
        }
-       RZ_DressingPiece "{7805C6B0D6F7E045}" {
+       RZ_DressingPiece "{F147C85597657552}" {
+        m_sPrefab "{1D4F7FF69108284E}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Gate_Halcyon.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iSeats 1
+        m_eAt GATE
+        m_vPlan 9 0 31
+        m_vFootMin -3.35 0 -0.34
+        m_vFootMax 1.82 0 0.72
+        m_sFoot "-1.6 0 2.21 0.52 4; 0.2 0.3 0.45 0.45 0; 0.9 0.5 0.45 0.45 0; 1.6 0.2 0.45 0.45 0; -3 0.2 0.7 0.09 0"
+        m_iTier 1
+        m_eZone GATE
+        m_sRules "faces road; flat 8"
+       }
+       RZ_DressingPiece "{49ADEA80E2363F30}" {
         m_sPrefab "{D6418426EDC4960F}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_PlagueBoard.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2593,7 +2794,35 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone GATE
         m_sRules "faces road; flat 8"
        }
-       RZ_DressingPiece "{344AA61DF08918A5}" {
+       RZ_DressingPiece "{BC82FB72E0A0207C}" {
+        m_sPrefab "{11B3078C58279DBE}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Triage.et"
+        m_eRole APPROACH
+        m_eUse WORK
+        m_iSeats 1
+        m_eAt GATE
+        m_vPlan 14 0 17
+        m_vFootMin -0.95 0 -1.35
+        m_vFootMax 2.47 0 1.16
+        m_sFoot "0 0 1.31 0.79 0; -0.5 -0.9 0.41 0.41 0; 0.6 0.95 0.41 0.41 0; 1.9 0.2 1.01 1.01 8; s -0.5 -0.9"
+        m_iTier 3
+        m_eZone GATE
+        m_sRules "faces road; flat 6"
+       }
+       RZ_DressingPiece "{2E9AB5E7C5DD12D1}" {
+        m_sPrefab "{EF394A2223CB1A74}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_WarningSigns.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iSeats 1
+        m_eAt CLOSED
+        m_vPlan -10 0 30
+        m_vFootMin -1.15 0 -0.08
+        m_vFootMax 1.15 0 0.72
+        m_sFoot "-0.8 0 0.7 0.09 6; 0.8 0.1 0.7 0.09 -8; 0 0.5 0.45 0.45 0"
+        m_iTier 4
+        m_eZone GATE
+        m_sRules "faces road; flat 8"
+       }
+       RZ_DressingPiece "{1D6A1E9582396FF2}" {
         m_sPrefab "{CD2853590569D1BF}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_FieldTable.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -2608,7 +2837,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sRules "wall 4; faces in; flat 5"
         m_bIndoors 1
        }
-       RZ_DressingPiece "{E4AD3DFD1646D921}" {
+       RZ_DressingPiece "{262394E27BE5B9DD}" {
         m_sPrefab "{A6D5EF2811D86237}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Tent_Halcyon.et"
         m_eRole INNER
         m_eUse WORK
@@ -2619,10 +2848,10 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0.01 0.39 7.92 8.62 0; 0 3.4 1.31 0.79 0; 2 2.9 1.01 1.01 6; s 0 4.2"
         m_iTier 3
         m_eZone SICK
-        m_sRules "away CookPot 10; flat 5"
+        m_sRules "away CookPot|FieldKitchen 10; flat 5"
         m_bIndoors 1
        }
-       RZ_DressingPiece "{99B3823C02B01567}" {
+       RZ_DressingPiece "{C41D153AD2E8D503}" {
         m_sPrefab "{CD2853590569D1BF}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_FieldTable.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -2637,7 +2866,19 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sRules "wall 4; faces in; flat 5"
         m_bIndoors 1
        }
-       RZ_DressingPiece "{76FFD3614A925DAA}" {
+       RZ_DressingPiece "{8E159440DEA7CB66}" {
+        m_sPrefab "{EA7633F098B73E55}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Loudspeaker_Halcyon.et"
+        m_eRole EDGE
+        m_eUse NONE
+        m_iSeats 1
+        m_vPlan -17 0 6
+        m_vFootMin -0.08 0 -0.64
+        m_vFootMax 1.41 0 1.05
+        m_sFoot "-0.01 0.01 0.14 0.13 0; 0.7 0.2 0.88 1.46 25"
+        m_iTier 4
+        m_sRules "flat 8"
+       }
+       RZ_DressingPiece "{2945031628A7F73A}" {
         m_sPrefab "{6DA398CC698F5F39}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_DeconShower.et"
         m_eRole INNER
         m_eUse WASH
@@ -2652,7 +2893,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone COURT
         m_sRules "door front 3; faces out"
        }
-       RZ_DressingPiece "{C3A5F74E42D42E90}" {
+       RZ_DressingPiece "{50372014835E181D}" {
         m_sPrefab "{F2958F7B2FC579F9}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Generator.et"
         m_eRole EDGE
         m_eUse WORK
@@ -2665,7 +2906,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 3
         m_sRules "wall 3; behind threat; near ColdBox 6; away use:Sleep 10; away door 6"
        }
-       RZ_DressingPiece "{251EF40D1F00451A}" {
+       RZ_DressingPiece "{A24731A43FB8952D}" {
         m_sPrefab "{D03875D64E385E10}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_ColdBox.et"
         m_eRole INNER
         m_eUse WORK
@@ -2680,7 +2921,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sRules "wall 2; guarded; faces wall"
         m_bIndoors 1
        }
-       RZ_DressingPiece "{C2612A1E348DB5EC}" {
+       RZ_DressingPiece "{78A25D6F85FFE93B}" {
         m_sPrefab "{C2DFE8CFEB201E19}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_SampleTable.et"
         m_eRole INNER
         m_eUse WORK
@@ -2695,7 +2936,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sRules "guarded; flat 5"
         m_bIndoors 1
        }
-       RZ_DressingPiece "{DA1BF53E9FD8F705}" {
+       RZ_DressingPiece "{D97C48A727A7889B}" {
         m_sPrefab "{D95DD76AEF1F70A2}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Antenna.et"
         m_eRole EDGE
         m_eUse WORK
@@ -2707,7 +2948,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 4
         m_sRules "high"
        }
-       RZ_DressingPiece "{CFE3F5629F99186A}" {
+       RZ_DressingPiece "{CA1D6106AE622D99}" {
         m_sPrefab "{972C9B0757FDC5B6}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Barricade_Fence.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2721,7 +2962,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_sRules "faces out"
        }
-       RZ_DressingPiece "{64D443D814F80C91}" {
+       RZ_DressingPiece "{1E2095DAFB0297B5}" {
         m_sPrefab "{972C9B0757FDC5B6}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Barricade_Fence.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2735,7 +2976,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_sRules "faces out"
        }
-       RZ_DressingPiece "{0FBA469C65D03B4D}" {
+       RZ_DressingPiece "{C6F6D43CDB441801}" {
         m_sPrefab "{B2267422073B1F81}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_NotebookBench.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -2750,7 +2991,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sRules "wall 3"
         m_bIndoors 1
        }
-       RZ_DressingPiece "{0B9DDF9AC7056C81}" {
+       RZ_DressingPiece "{40377473DFE6E7E6}" {
         m_sPrefab "{10303A31D2DBD4EE}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_RadioTable.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -2765,7 +3006,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sRules "wall 3; faces in"
         m_bIndoors 1
        }
-       RZ_DressingPiece "{36E6C33A271901E6}" {
+       RZ_DressingPiece "{81CE6683E03EFC80}" {
         m_sPrefab "{6AD9BBD18E454D48}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Tarp.et"
         m_eRole INNER
         m_eUse WORK
@@ -2780,7 +3021,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sRules "wall 3; faces wall"
         m_bIndoors 1
        }
-       RZ_DressingPiece "{F147C85597657552}" {
+       RZ_DressingPiece "{70CA887B7FD089B8}" {
         m_sPrefab "{5A04E1440160CFEE}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Latrine.et"
         m_eRole EDGE
         m_eUse NONE
@@ -2791,9 +3032,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 3.06 0 1.64
         m_sFoot "1.53 1.46 3.06 0.21 3; -1.41 -1.53 3.06 0.21 88; -0.6 0.8 0.43 0.42 0; 0.63 0.92 0.79 0.54 70"
         m_iTier 3
-        m_sRules "away CookPot|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"
+        m_sRules "away CookPot|FieldKitchen|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"
        }
-       RZ_DressingPiece "{49ADEA80E2363F30}" {
+       RZ_DressingPiece "{DFF1EBA57E8F3948}" {
         m_sPrefab "{5AAE19ADE6DFD2F7}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CrateChairs.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -2803,10 +3044,10 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_vFootMax 1.96 0 1.45
         m_sFoot "0 0 0.88 1.46 14; 0.08 0.97 0.49 0.56 190; 1 -0.3 0.47 0.47 255; -1 -0.4 0.41 0.41 0; 1.89 1.11 0.14 0.13 0; -2.11 1.31 0.14 0.13 0; s 0.1 1; s 1 -0.3; s -1 -0.4"
         m_iTier 3
-        m_sRules "near FirePit|CookPot 8; flat 6"
+        m_sRules "near FirePit|CookPot|FieldKitchen 8; flat 6"
         m_bIndoors 1
        }
-       RZ_DressingPiece "{BC82FB72E0A0207C}" {
+       RZ_DressingPiece "{36415A9AE28084D1}" {
         m_sPrefab "{C8E028123EA5E256}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_SmokingBench.et"
         m_eRole EDGE
         m_eUse SIT
@@ -2819,7 +3060,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 5
         m_sRules "door back 4; faces wall"
        }
-       RZ_DressingPiece "{2E9AB5E7C5DD12D1}" {
+       RZ_DressingPiece "{48008D204A434F28}" {
         m_sPrefab "{F2958F7B2FC579F9}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Generator.et"
         m_eRole EDGE
         m_eUse WORK
@@ -2838,7 +3079,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
       m_fRing 9
       m_fYard 12
       m_aLayers {
-       RZ_DressingPiece "{1D6A1E9582396FF2}" {
+       RZ_DressingPiece "{BDFDB55CECE99357}" {
         m_sPrefab "{EE342B1320F70A12}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Fence_Halcyon_L.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2850,7 +3091,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{262394E27BE5B9DD}" {
+       RZ_DressingPiece "{49209FCB983DD6B6}" {
         m_sPrefab "{0E2559FD946A1407}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Fence_Halcyon_M.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2862,7 +3103,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{C41D153AD2E8D503}" {
+       RZ_DressingPiece "{3C77CFCC11143911}" {
         m_sPrefab "{022FBA7466FFC8D7}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Fence_Halcyon_S.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2874,7 +3115,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{8E159440DEA7CB66}" {
+       RZ_DressingPiece "{4997DE328D25E7B5}" {
         m_sPrefab "{F7CD03C29A2997DA}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Fence_Halcyon_XS.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2886,7 +3127,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{2945031628A7F73A}" {
+       RZ_DressingPiece "{FC66C30785972626}" {
         m_sPrefab "{3031E52CC8F3EDF8}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_BoardWindow.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2897,7 +3138,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eLayer WINDOW
        }
-       RZ_DressingPiece "{50372014835E181D}" {
+       RZ_DressingPiece "{DBD93B7E89AF5759}" {
         m_sPrefab "{629DC4055C69EEA2}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_BoardDoor.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2908,7 +3149,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eLayer DOOR
        }
-       RZ_DressingPiece "{A24731A43FB8952D}" {
+       RZ_DressingPiece "{AFC8894F8CC0D51A}" {
         m_sPrefab "{DD5B2D11564E77F4}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_GuardPost_Halcyon.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -2920,7 +3161,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sRules "covers gate; covers road; faces road; away gate 3"
         m_eLayer LOOKOUT
        }
-       RZ_DressingPiece "{78A25D6F85FFE93B}" {
+       RZ_DressingPiece "{AE74559FEE0BE1C8}" {
         m_sPrefab "{54BD72BBCD1C830E}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Floodlight.et"
         m_eRole EDGE
         m_eUse NONE
@@ -2932,7 +3173,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sRules "faces out"
         m_eLayer LIGHT
        }
-       RZ_DressingPiece "{D97C48A727A7889B}" {
+       RZ_DressingPiece "{8BE5B132227231AF}" {
         m_sPrefab "{EE0EB7D8CF961F6F}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_StoresBoard.et"
         m_eRole CENTRE
         m_eUse NONE
@@ -2947,11 +3188,11 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
        }
       }
      }
-     RZ_DressingKit "{CA1D6106AE622D99}" {
+     RZ_DressingKit "{74B5CDD265082F98}" {
       m_eFaction INSTITUTE
       m_ePlace OUTPOST
       m_aPieces {
-       RZ_DressingPiece "{1E2095DAFB0297B5}" {
+       RZ_DressingPiece "{24A93D889AD8BA20}" {
         m_sPrefab "{EB833CE54B9B5CB3}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Counter_Halcyon.et"
         m_eRole CENTRE
         m_eUse NONE
@@ -2965,7 +3206,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eZone COURT
        }
-       RZ_DressingPiece "{C6F6D43CDB441801}" {
+       RZ_DressingPiece "{27BD70A8CE4F8AEB}" {
         m_sPrefab "{DD5B2D11564E77F4}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_GuardPost_Halcyon.et"
         m_eRole APPROACH
         m_eUse WATCH
@@ -2977,7 +3218,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_sRules "covers gate; covers road; faces road; away gate 3"
        }
-       RZ_DressingPiece "{40377473DFE6E7E6}" {
+       RZ_DressingPiece "{65D879A22D7987E6}" {
         m_sPrefab "{D6418426EDC4960F}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_PlagueBoard.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -2991,7 +3232,35 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone GATE
         m_sRules "faces road; flat 8"
        }
-       RZ_DressingPiece "{81CE6683E03EFC80}" {
+       RZ_DressingPiece "{64A579F31BE6BAA8}" {
+        m_sPrefab "{1D4F7FF69108284E}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Gate_Halcyon.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iSeats 1
+        m_eAt GATE
+        m_vPlan 9 0 23
+        m_vFootMin -3.35 0 -0.34
+        m_vFootMax 1.82 0 0.72
+        m_sFoot "-1.6 0 2.21 0.52 4; 0.2 0.3 0.45 0.45 0; 0.9 0.5 0.45 0.45 0; 1.6 0.2 0.45 0.45 0; -3 0.2 0.7 0.09 0"
+        m_iTier 1
+        m_eZone GATE
+        m_sRules "faces road; flat 8"
+       }
+       RZ_DressingPiece "{EA1E6861A3295D30}" {
+        m_sPrefab "{EF394A2223CB1A74}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_WarningSigns.et"
+        m_eRole APPROACH
+        m_eUse NONE
+        m_iSeats 1
+        m_eAt CLOSED
+        m_vPlan -7 0 22
+        m_vFootMin -1.15 0 -0.08
+        m_vFootMax 1.15 0 0.72
+        m_sFoot "-0.8 0 0.7 0.09 6; 0.8 0.1 0.7 0.09 -8; 0 0.5 0.45 0.45 0"
+        m_iTier 4
+        m_eZone GATE
+        m_sRules "faces road; flat 8"
+       }
+       RZ_DressingPiece "{FF57406D3DACCEB6}" {
         m_sPrefab "{CD2853590569D1BF}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_FieldTable.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -3005,7 +3274,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WORK
         m_sRules "wall 4; faces in; flat 5"
        }
-       RZ_DressingPiece "{70CA887B7FD089B8}" {
+       RZ_DressingPiece "{B9F29ABD03429B32}" {
         m_sPrefab "{A6D5EF2811D86237}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Tent_Halcyon.et"
         m_eRole INNER
         m_eUse WORK
@@ -3016,9 +3285,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "0.01 0.39 7.92 8.62 0; 0 3.4 1.31 0.79 0; 2 2.9 1.01 1.01 6; s 0 4.2"
         m_iTier 3
         m_eZone SICK
-        m_sRules "away CookPot 10; flat 5"
+        m_sRules "away CookPot|FieldKitchen 10; flat 5"
        }
-       RZ_DressingPiece "{DFF1EBA57E8F3948}" {
+       RZ_DressingPiece "{0FBE1318C7714BE2}" {
         m_sPrefab "{F2958F7B2FC579F9}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Generator.et"
         m_eRole EDGE
         m_eUse WORK
@@ -3031,7 +3300,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 3
         m_sRules "wall 3; behind threat; near ColdBox 6; away use:Sleep 10; away door 6"
        }
-       RZ_DressingPiece "{36415A9AE28084D1}" {
+       RZ_DressingPiece "{C489214D5316226B}" {
         m_sPrefab "{D95DD76AEF1F70A2}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Antenna.et"
         m_eRole EDGE
         m_eUse WORK
@@ -3043,7 +3312,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 4
         m_sRules "high"
        }
-       RZ_DressingPiece "{48008D204A434F28}" {
+       RZ_DressingPiece "{6EC79DEACF99F26C}" {
         m_sPrefab "{6DA398CC698F5F39}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_DeconShower.et"
         m_eRole INNER
         m_eUse WASH
@@ -3058,7 +3327,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone COURT
         m_sRules "door front 3; faces out"
        }
-       RZ_DressingPiece "{BDFDB55CECE99357}" {
+       RZ_DressingPiece "{53F8A771AF40B142}" {
         m_sPrefab "{D03875D64E385E10}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_ColdBox.et"
         m_eRole INNER
         m_eUse WORK
@@ -3072,7 +3341,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone STORES
         m_sRules "wall 2; guarded; faces wall"
        }
-       RZ_DressingPiece "{49209FCB983DD6B6}" {
+       RZ_DressingPiece "{45A7CD86A38D3B9E}" {
         m_sPrefab "{B2267422073B1F81}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_NotebookBench.et"
         m_eRole CENTRE
         m_eUse SIT
@@ -3092,7 +3361,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
       m_fRing 7
       m_fYard 12
       m_aLayers {
-       RZ_DressingPiece "{3C77CFCC11143911}" {
+       RZ_DressingPiece "{3A94846A2C62641E}" {
         m_sPrefab "{EE342B1320F70A12}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Fence_Halcyon_L.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -3104,7 +3373,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{4997DE328D25E7B5}" {
+       RZ_DressingPiece "{4B8A0916479EBE9C}" {
         m_sPrefab "{0E2559FD946A1407}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Fence_Halcyon_M.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -3116,7 +3385,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{FC66C30785972626}" {
+       RZ_DressingPiece "{4C86EE4B5FE5ECA6}" {
         m_sPrefab "{022FBA7466FFC8D7}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Fence_Halcyon_S.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -3128,7 +3397,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{DBD93B7E89AF5759}" {
+       RZ_DressingPiece "{A51472DCDBE49A78}" {
         m_sPrefab "{F7CD03C29A2997DA}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Fence_Halcyon_XS.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -3140,7 +3409,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_eZone WIRE
         m_eLayer WIRE
        }
-       RZ_DressingPiece "{AFC8894F8CC0D51A}" {
+       RZ_DressingPiece "{4AAD2AEBF5D8BC34}" {
         m_sPrefab "{629DC4055C69EEA2}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_BoardDoor.et"
         m_eRole APPROACH
         m_eUse NONE
@@ -3151,7 +3420,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iTier 1
         m_eLayer DOOR
        }
-       RZ_DressingPiece "{AE74559FEE0BE1C8}" {
+       RZ_DressingPiece "{EF753D739C57FA8D}" {
         m_sPrefab "{DD5B2D11564E77F4}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_GuardPost_Halcyon.et"
         m_eRole APPROACH
         m_eUse WATCH

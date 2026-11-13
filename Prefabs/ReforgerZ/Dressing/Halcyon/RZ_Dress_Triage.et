@@ -1,0 +1,76 @@
+GenericEntity {
+ ID "C0A1D49D2DE510FF"
+ components {
+  RplComponent "{C9E69CC52CFED6BB}" {
+  }
+  Hierarchy "{506F4F64BB566348}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
+   ID "22D77F1378AEDB61"
+   components {
+    Hierarchy "{72ACDE5093A04BB6}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "48A6D4516ED2EC31"
+   components {
+    Hierarchy "{EBDB1603251BD00C}" {
+    }
+   }
+   coords -0.5 0 -0.9
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "60F2E91C698AB985"
+   components {
+    Hierarchy "{6BF96A7162C920DE}" {
+    }
+   }
+   coords 0.6 0 0.95
+  }
+  GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
+   ID "9F7F850335B92BE3"
+   components {
+    Hierarchy "{495E5912DA6A144E}" {
+    }
+   }
+   coords 0.5 0.78 0
+  }
+  GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
+   ID "51976581C884D933"
+   components {
+    Hierarchy "{A8573E5101A26385}" {
+    }
+   }
+   coords -0.5 0.78 0.05
+  }
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "38408334F7A7E1F6"
+   components {
+    Hierarchy "{D973D640F2F875AF}" {
+    }
+   }
+   coords 1.9 0 0.2
+   angles 0 8 0
+  }
+  GenericEntity {
+   ID "B48A4A20E4E2D866"
+   components {
+    SCR_AISmartActionSentinelComponent "{E83C14D46F1F2D7C}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition -0.5 1.6 0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{262CB451B5BA2BF5}" {
+    }
+   }
+   coords -0.5 0 -0.9
+  }
+ }
+}

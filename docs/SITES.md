@@ -20,6 +20,7 @@ Workbench plugins.
 ## Contents
 
 - [Where a place stands](#where-a-place-stands)
+- [From the reference board](#from-the-reference-board)
 - [The site grid](#the-site-grid)
 - [Real footprints](#real-footprints)
 - [The surroundings and the threat](#the-surroundings-and-the-threat)
@@ -48,7 +49,7 @@ Who asks, and when:
 
 | Place | A fresh season | A saved season, once at the start |
 |---|---|---|
-| A stronghold (its quartermaster's spot; Halcyon's is the lab) | Of the first 24 towns that suit the faction (the Haven's safest first; Bastion's and the Red Hand's in a random order), the one whose best building suits it best; the first that is just right (a church; a school or a hall; a garage) is taken. No town has a building: near a town's middle, as before | On an island, or with no building to move into: moved the same way, never into a town that holds a safehouse or an outpost. Its leader, its holding and the Haven's first safehouse go with it |
+| A stronghold (its quartermaster's spot; Halcyon's is the lab) | Of the first 24 towns that suit the faction (the Haven's safest first; Bastion's and the Red Hand's in a random order), the one whose best building suits it best; the first that is just right (a church; a school or a hall; a garage) is taken. No town has a building: near a town's middle, as before | On an island, or with no building to move into: moved the same way, never into a town that holds a safehouse or an outpost. In a building that suits it 0 of 3 (Bastion in a cottage): moved only when a town has one that suits it 2 or 3 (its own town counts). Its leader, its holding and the Haven's first safehouse go with it |
 | An outpost | Of five picks, the first town with a building to move into; else the last pick, in the open | On an island: given up, and the faction founds another if it's short. No building where it stands: moved to one in its own town, its leader with it; none in town: it keeps its camp in the open |
 | A Haven safehouse | Villages with a house first, then with any building, then open ground | The one at the quartermaster follows him. No house where it stands: moved to one in its own town. On an island: given up, and another picked |
 
@@ -61,6 +62,35 @@ Haven's on a beach, and a fresh site audit on Everon had one site at 48 with a t
 (16 sites, mean 85). After, three fresh audits: every site moves into a building, mean 88 to 90, worst
 72 to 74, no hard failure. The saved season on the PC moved the Haven to the church in Le Moule and
 the Red Hand to a garage, and gave up two outposts and a safehouse on islands.
+
+## From the reference board
+
+The author's reference board (film, TV and game bases, by faction) gave each faction pieces of its
+own, built from vanilla props in `tools/camp_kit/pieces.py` like every other piece:
+
+| Faction | Piece | Where it stands | The idea |
+|---|---|---|---|
+| Bastion | **Bunker** (stronghold) | by the gate, covering it | the fortified nest at an army camp's entrance: chest-high sandbags on three sides, a second course in front |
+| Bastion | **Motor pool** (stronghold) | by the gate | trucks on the forecourt: a stripped truck kept for parts, fuel drums, jerrycans, tyres |
+| Bastion | **Field kitchen** (stronghold, for the cook pot) | the kitchen | dinner still served: the kitchen trailer, a mess table, a water drum |
+| Bastion | **Aid post** (stronghold) | the sick zone | the busiest tent of a camp short of everything: a small tent, a table of instruments |
+| Bastion | **Floodlight** (stronghold, a layer) | on the wire, facing out | the lawn lit as the killing ground |
+| Red Hand | **Wreck in the wall** (a barrier run) | in the wire's gaps of 4.5 to 6 m | a wall made of what no longer drives |
+| Red Hand | **Wreck gate** (stronghold, outpost) | the gate | the way in narrowed by a van on its rims, a jeep behind it |
+| Red Hand | **Fuel dump** (stronghold) | the yard | what the toll is paid in: drums, jerrycans |
+| Haven | **Watchtower** (stronghold) | by the gate, covering it | a tower knocked together in a churchyard |
+| Haven | **Work board** (stronghold, outpost) | the gate | the patrol board by a town's gate |
+| Haven | **Lantern post** (stronghold, outpost, safehouse) | by the door | lights strung across a yard |
+| Halcyon | **Gate** (stronghold, field station) | the gate | a lab's gatehouse: a road block half across, cones, a no-entry sign |
+| Halcyon | **Warning signs** (stronghold, field station) | the closed road entries | restricted-area signs well before the building |
+| Halcyon | **Triage** (stronghold) | inside the gate | everyone is looked at before they go further |
+| Halcyon | **Loudspeaker** (stronghold) | the yard | the order that loops once the power is back (look only: no sound yet) |
+
+A place has more pieces than before: 26 at a stronghold, 17 at an outpost, 10 at a safehouse, 12 at
+a field station ([Settings](#settings) on the game mode change them). A piece too big for a cramped
+yard is dropped, as ever. Not used: vanilla's sandbag bunker and anything else that brings a
+camouflage net. A net isn't removed with its piece when the place is cleared, so the Tarp's net is
+the one net there is, and it has the same fault (on the handoff board).
 
 ## The site grid
 
@@ -277,6 +307,14 @@ the plan), **Ring** metres out on each side (7–9) and on the yard's side as de
 of the plan needs (at least **Yard**, 10–14, at most 32). Each side is then moved 3 m in to 6 m out
 (never nearer the building than 4 m) to where more of it is closed already or can take a barrier,
 so the line follows the real perimeter, meeting a neighbour's wall, a fence, a hedge or the water.
+
+**A yard that is closed already gets no barrier inside it.** Two rules keep the faction's barrier
+off ground that a wall or a fence already closes:
+
+| Rule | What |
+|---|---|
+| Walled already | a side with less than 60% closed where it stands looks up to 22 m further out: the first distance at which a wall, a fence, a hedge or buildings close 60% of it becomes that side, so the line is the churchyard's wall or the compound's fence, not a second line inside it |
+| What stands just outside | a gap with a wall, a fence, a hedge or a building within 6 m outside it, along most of a 3 m stretch, counts as closed already: no sandbags a step inside a garden fence |
 Every 0.5 m along the sides the doctrine closes, a **station** says what closes it:
 
 | Station | What |
@@ -700,7 +738,7 @@ with them. The cell (0.5 m) is fixed: the grid's bands and checks are measured i
 | Reading a site's grid | 15–160 ms in all (a stronghold's 50–160 ms), read in small parts (a row of heights, a 24 m square's entity query, 16 entities, a building, a row of water or shore), the longest part 1–17 ms; at **Site read ms** 2 a stronghold's first pieces spawn about a minute after a player comes within 300 m (in the full runtime test a field station took 15 steps, 19 s) |
 | Solving it | 40–300 ms in all (a stronghold's 140–300 ms), in parts: the start (the counters, the plan's frame, tracing the wire, where the entrance can walk), each piece, each side of the wire; the longest part 14–110 ms (the lab's start, or a tier 1 piece's three passes), the rest a few ms. At **Site read ms** 2 a site is read and solved in about 1–4 minutes of the background, once a run (pre-read: all of Everon's 16 in about half an hour after the land grid) |
 | Memory | a 72 m grid is 288 × 288 cells, two to an int (about 170 KB), with its heights and water marks every metre (about 170 KB), freed once laid out; the kept layout a few hundred bytes a piece (a stronghold with its layers about 60 pieces) |
-| Spawning | 4 pieces a tick for all places together, as before; a stronghold's 20 pieces and its layers' 30 to 50 are up in about a minute and a half |
+| Spawning | 4 pieces a tick for all places together, as before; a stronghold's 26 pieces and its layers' 30 to 50 are up in about two minutes |
 | People | unchanged in number: Live places (3), extras (6, the road post run counting as one); posts and routes worked out once with the layout (the routes' walkable squares a few ms, the grid's BFS only for the nearest square within 2 m), a few KB kept; the alert a heat lookup and a few comparisons every 10 s at a live place |
 | The story | its state read from data (the town's history, a scene lookup) when a site is laid out for a visit and once a season day; up to 11 spots kept a site (a few hundred bytes); its elements spawn with the place's pieces, after them (the first left out at **Pieces max**) |
 

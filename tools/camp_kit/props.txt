@@ -27,32 +27,38 @@ GenericEntity {D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.
 GenericEntity {30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et
 GenericEntity {801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et
 GenericEntity {3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et
+GenericEntity {25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et
 GenericEntity {B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et
 GenericEntity {E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et
 StaticModelEntity {AE28D47CF26E91EA}Prefabs/Props/Military/Fortification/CzechHedgehog_01_rusty.et
 GenericEntity {F7E3B5AB8E8D8B48}Prefabs/Props/Furniture/DeckChair_01/DeckChair_01_ochre.et
 GenericEntity {BC3EEB0F1E36272F}Prefabs/Props/Forest/DeerSkull_01/DeerSkull_01_board.et
 GenericEntity {FEB4961C91993C22}Prefabs/Structures/Civilian/DogHouse_01.et
+GenericEntity {AA96C0FB1A65B886}Prefabs/Props/Military/FieldKitchenTrailerUSSR_01.et
 GenericEntity {876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et
 GameEntity {D9842C11742C00CF}Prefabs/Props/Civilian/Fireplace_01.et
 GenericEntity {1A8791C2BC2B8B75}Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et
 SCR_DestructibleEntity {9E939BD958DD48D1}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et
 GenericEntity {D63716E01EF9AC74}Prefabs/Props/Forest/ForestBench_01/ForestBench_01.et
+GameEntity {616F4E93658E5A3A}Prefabs/Props/Military/Generators/GeneratorFloodlight_USSR_01.et
 GameEntity {0E94F28FD722B1D8}Prefabs/Props/Military/Generators/GeneratorFloodlight_US_01.et
 GenericEntity {4F6BB0502ED3EFBB}Prefabs/Props/Military/Generators/GeneratorPortable_US_01_Off.et
 GenericEntity {1BE2B6FF4806EB3E}Prefabs/Props/Civilian/Guitar_01/Guitar_01.et
 GenericEntity {30A496094B91F0C3}Prefabs/Props/Civilian/Hutch_01.et
+GenericEntity {62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et
 GenericEntity {74D1DB7828061BD7}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_pile_small.et
 GenericEntity {A8D8015D0E2B600A}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_mattress.et
 GenericEntity {986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et
 GameEntity {862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et
 GameEntity {50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et
+GenericEntity {8B56905B6705B929}Prefabs/Props/Recreation/Beach/LifeGuardTower_01/LifeGuardTower_01_darkgreen.et
 GenericEntity {799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et hier
 GenericEntity {9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et hier
 GenericEntity {89CF04517B5283CB}Prefabs/Props/Garbage/Generic/LitterInterior_01/Piles/LitterInterior_USSR_01_pile_V1.et hier
 GenericEntity {E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et hier
 GenericEntity {8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et hier
 GenericEntity {6105032F794BA64B}Prefabs/Props/Civilian/LogChopping_01.et
+GenericEntity {962A737E048E4B9E}Prefabs/Props/Civilian/Loudspeaker_01/Loudspeaker.et
 GenericEntity {6BE5C753730DBFED}Prefabs/Props/Wrecks/M923A1_wreck/M923A1_wreck_static.et
 SCR_DestructibleEntity {D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et
 GenericEntity {2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et
@@ -79,6 +85,7 @@ GenericEntity {1E84244AFD39A88E}Prefabs/Props/Commercial/ShelfUniversal_01_narro
 GenericEntity {DC6B28A772BCC731}Prefabs/Structures/Recreation/Beach/ShowerBeach_01.et
 GenericEntity {F188F489FD7864C0}Prefabs/Props/Furniture/ShowerCurtains_01_straight.et
 GenericEntity {C1977A326F2AA011}Prefabs/Structures/Signs/Military/SignCheckpoint_01_stop.et
+GenericEntity {1C5C824E26DB1D62}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_entryforbidden_pole.et
 GenericEntity {1BC300CA46DEDA79}Prefabs/Structures/Signs/Warnings/SignNoEntryBothDir_01_pole.et
 GenericEntity {6FD13E995D293853}Prefabs/Props/Furniture/SinkOld_01.et
 GenericEntity {C9FF63225FD6B69D}Prefabs/Props/Furniture/SkewerGrill_01/SkewerGrill_01.et
@@ -108,6 +115,7 @@ GenericEntity {48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclave
 GenericEntity {8AC23039E7EC0375}Prefabs/Props/Furniture/TowelRack_01.et
 GenericEntity {56FFF0C990358ED2}Prefabs/Props/Wrecks/UAZ452_wreck/UAZ452_wreck_static.et
 GenericEntity {18D107DB09E20A36}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_blue_static.et
+GenericEntity {44277710A8E45F97}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_rusty_static.et
 GenericEntity {AE300E34EA8FF40C}Prefabs/Props/Wrecks/Ural4320_wreck/Ural4320_wreck_static.et
 StaticModelEntity {7839491ACC2102B9}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_small.et
 GenericEntity {6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et

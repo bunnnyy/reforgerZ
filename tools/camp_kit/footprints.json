@@ -218,6 +218,14 @@
    "oz": -0.019,
    "feet": false
   },
+  "ConeTraffic_01_red.et": {
+   "w": 0.449,
+   "d": 0.448,
+   "h": 0.555,
+   "ox": 0.0,
+   "oz": 0.001,
+   "feet": true
+  },
   "CrateWooden_01_plain.et": {
    "w": 0.879,
    "d": 1.455,
@@ -266,6 +274,14 @@
    "oz": 0.003,
    "feet": true
   },
+  "FieldKitchenTrailerUSSR_01.et": {
+   "w": 2.251,
+   "d": 4.082,
+   "h": 3.169,
+   "ox": 0.0,
+   "oz": -0.035,
+   "feet": true
+  },
   "FileOffice_01_Stack.et": {
    "w": 0.258,
    "d": 0.293,
@@ -290,6 +306,14 @@
    "oz": -0.073,
    "feet": false
   },
+  "Flag_1_2_RedCross_01.et": {
+   "w": 2.402,
+   "d": 2.002,
+   "h": 1.709,
+   "ox": 0.0,
+   "oz": -1.0,
+   "feet": false
+  },
   "FlowerpotFlowers_01_begonia_white.et": {
    "w": 0.28,
    "d": 0.273,
@@ -305,6 +329,14 @@
    "ox": 0.002,
    "oz": -0.007,
    "feet": false
+  },
+  "GeneratorFloodlight_USSR_01.et": {
+   "w": 3.05,
+   "d": 1.677,
+   "h": 3.799,
+   "ox": 0.028,
+   "oz": -0.004,
+   "feet": true
   },
   "GeneratorFloodlight_US_01.et": {
    "w": 3.05,
@@ -336,6 +368,14 @@
    "h": 2.036,
    "ox": 0.033,
    "oz": -0.011,
+   "feet": true
+  },
+  "Jerrycan_01.et": {
+   "w": 0.164,
+   "d": 0.376,
+   "h": 0.519,
+   "ox": 0.002,
+   "oz": -0.002,
    "feet": true
   },
   "Junk_01_pile_small.et": {
@@ -376,6 +416,14 @@
    "h": 0.354,
    "ox": 0.001,
    "oz": 0.0,
+   "feet": true
+  },
+  "LifeGuardTower_01_darkgreen.et": {
+   "w": 1.484,
+   "d": 1.828,
+   "h": 2.18,
+   "ox": -0.0,
+   "oz": -0.001,
    "feet": true
   },
   "LitterInterior_USSR_01_bowl.et": {
@@ -425,6 +473,14 @@
    "ox": -0.003,
    "oz": 0.009,
    "feet": true
+  },
+  "Loudspeaker.et": {
+   "w": 0.2,
+   "d": 0.339,
+   "h": 0.261,
+   "ox": 0.0,
+   "oz": 0.009,
+   "feet": false
   },
   "M923A1_wreck_static.et": {
    "w": 3.205,
@@ -570,6 +626,14 @@
    "oz": 0.039,
    "feet": true
   },
+  "Sandbag_01_bunker_burlap_camonet.et": {
+   "w": 6.613,
+   "d": 8.043,
+   "h": 3.345,
+   "ox": 0.037,
+   "oz": 0.019,
+   "feet": false
+  },
   "Sandbag_01_end_burlap.et": {
    "w": 2.035,
    "d": 1.33,
@@ -633,6 +697,14 @@
    "ox": 0.0,
    "oz": -0.05,
    "feet": true
+  },
+  "SignIndustrial_USSR_02_warnings_entryforbidden_pole.et": {
+   "w": 0.702,
+   "d": 0.087,
+   "h": 2.942,
+   "ox": 0.0,
+   "oz": 0.002,
+   "feet": false
   },
   "SignNoEntryBothDir_01_pole.et": {
    "w": 0.702,
@@ -859,6 +931,14 @@
    "feet": true
   },
   "UAZ469_wreck_blue_static.et": {
+   "w": 2.274,
+   "d": 4.088,
+   "h": 1.636,
+   "ox": -0.028,
+   "oz": 0.169,
+   "feet": false
+  },
+  "UAZ469_wreck_rusty_static.et": {
    "w": 2.274,
    "d": 4.088,
    "h": 1.636,

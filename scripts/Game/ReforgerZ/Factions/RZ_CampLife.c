@@ -196,16 +196,16 @@ class RZ_CampLifeSettings
 	[Attribute("1", desc: "Holdings, safehouses and field stations move into the building in their town that suits their faction (by kind and size) and lay their pieces out by it and its road entries. Off, or no building fits: rings round the centre")]
 	bool m_bBuildings;
 
-	[Attribute("20", UIWidgets.Slider, "Pieces at a stronghold", "0 30 1")]
+	[Attribute("26", UIWidgets.Slider, "Pieces at a stronghold", "0 30 1")]
 	int m_iPiecesStronghold;
 
-	[Attribute("13", UIWidgets.Slider, "Pieces at an outpost", "0 20 1")]
+	[Attribute("17", UIWidgets.Slider, "Pieces at an outpost", "0 20 1")]
 	int m_iPiecesOutpost;
 
-	[Attribute("8", UIWidgets.Slider, "Pieces at a Haven safehouse", "0 15 1")]
+	[Attribute("10", UIWidgets.Slider, "Pieces at a Haven safehouse", "0 15 1")]
 	int m_iPiecesSafehouse;
 
-	[Attribute("9", UIWidgets.Slider, "Pieces at a Halcyon field station (its outposts)", "0 15 1")]
+	[Attribute("12", UIWidgets.Slider, "Pieces at a Halcyon field station (its outposts)", "0 15 1")]
 	int m_iPiecesFieldStation;
 
 	[Attribute("4", UIWidgets.Slider, "Pieces at a road post (beside the barrier)", "0 8 1")]
@@ -949,8 +949,16 @@ class RZ_CampLife
 	//! rings). True with buildings off: nothing to judge by.
 	bool HasBuilding(RZ_EFaction faction, RZ_ECampPlace kind, vector pos)
 	{
+		return TierAt(faction, kind, pos) >= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How well the building a place of this kind at pos moves into suits it (SiteTier: 3 just right,
+	//! 0 any building); -1 when it finds none. 3 with buildings off: nothing to judge by.
+	int TierAt(RZ_EFaction faction, RZ_ECampPlace kind, vector pos)
+	{
 		if (!m_Settings.m_bDressing || !m_Settings.m_bBuildings || kind == RZ_ECampPlace.ROAD_POST)
-			return true;
+			return 3;
 
 		RZ_CampPlace p = new RZ_CampPlace();
 		p.m_sKey = "probe";
@@ -961,7 +969,10 @@ class RZ_CampLife
 		if (site.m_bNone)
 			site = PickSite(p, ground, true);
 
-		return !site.m_bNone;
+		if (site.m_bNone)
+			return -1;
+
+		return site.m_iTier;
 	}
 
 	//------------------------------------------------------------------------------------------------

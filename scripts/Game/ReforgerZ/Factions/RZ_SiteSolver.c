@@ -1411,9 +1411,11 @@ class RZ_SiteSolver
 				}
 				case RZ_SiteRules.R_DOOR:
 				{
+					// Close by the door, then a little further out: the wall's own margin takes the nearest spots
 					vector door = DoorOfKind(rule.m_sWhat);
 					Ring(door, 1 + HalfSize(e), 8, spots, yaws);
 					Ring(door, 3 + HalfSize(e), 8, spots, yaws);
+					Ring(door, 6 + HalfSize(e), 8, spots, yaws);
 					break;
 				}
 				case RZ_SiteRules.R_WALL:

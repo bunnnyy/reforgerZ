@@ -2368,7 +2368,7 @@ Warnings worth acting on:
 | `Camp life: pre-reading <n> sites in the background, strongholds first.` | Once a run, when the land grid is read (Pre-read): every site is read and laid out as data before anyone comes near |
 | `Camp life: <Faction> <KIND> at <grid> moves into <the school> (<w> x <d> m, <prefab>), <n> road entries.` / `... no building fits, laid out on rings.` | Once per place a run, the first time a player comes near: the building camp life picked ([DESIGN.md](DESIGN.md#camp-life)). "Rings" means open ground: no building of 25 m² or more anywhere near; 0 road entries means the gate and barricades stand in front of the building (or off its first side facing land) |
 | `Quartermasters: <Faction>'s stronghold takes a building in <town> (suits it <n> of 3).` | A quartermaster placed by the game: the town and how well its building suits the faction ([SITES.md](SITES.md#where-a-place-stands)). 0 of 3 is any building big enough: worth a look at the photo |
-| `Quartermasters: <Faction>'s stronghold moves from <grid> to <grid> (no building to move into \| on an island).` / `... and no town has a building for it: it stays.` | Once, at the start of a saved season whose stronghold stood in the open or on an island. "It stays" on a real map is worth a report |
+| `Quartermasters: <Faction>'s stronghold moves from <grid> to <grid> (no building to move into \| on an island \| its building doesn't suit it).` / `... and no town has a building for it: it stays.` | Once, at the start of a saved season whose stronghold stood in the open or on an island. "It stays" on a real map is worth a report |
 | `Haven safehouses: the one at <grid> moves to <grid> in <town> (<why>).` / `... the one in <town> is on an island: given up, another is picked.` | The same for a saved safehouse: with the quartermaster, to a house in its own town, or given up |
 | `Territory: <holding> moves from <grid> to <grid> (no building where it stood).` / `Territory: <holding> is on an island: given up.` | The same for a saved outpost |
 | `Camp life: <Faction> <KIND> at <grid>: <n> of <m> planned pieces fit, laid out <where>; <c> counter(s), <s> left out facing water or a drop.` | The first time a run dresses a place, once its ground is read: how much of its plan fit and where. Few fitting everywhere: the footprint traces may be catching grass or bushes (the VERIFY); the `Sites:` line says why each was dropped |
@@ -3979,7 +3979,7 @@ editor's time of day)
   and no extra comes out.
 - [ ] Shoot near a camp (when Hunted): they fight as before, then go back to their jobs.
 - [ ] Do AI walk through the tents (the navmesh VERIFY)? Is one more person per camp and the server
-  frame time fine with 3 live places and a stronghold's 20 pieces?
+  frame time fine with 3 live places and a stronghold's 26 pieces?
 
 **Sites** ([SITES.md](SITES.md); the log's `Sites:` lines)
 - [ ] Run `tools/runtime_test/run.sh sites everon` (or take a play log), then `render.py --placed`

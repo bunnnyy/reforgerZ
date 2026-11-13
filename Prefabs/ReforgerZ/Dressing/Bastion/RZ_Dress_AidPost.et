@@ -1,0 +1,86 @@
+GenericEntity {
+ ID "8B67B4865D66A229"
+ components {
+  RplComponent "{0490A392436A0D29}" {
+  }
+  Hierarchy "{22A17ACA4FC20F84}" {
+  }
+ }
+ coords 0 0 0
+ {
+  StaticModelEntity : "{01AE5FD77A9A4C21}Prefabs/Structures/Military/Camps/TentSmallUS_01/TentSmallUS_01.et" {
+   ID "0E6985018F504696"
+   components {
+    Hierarchy "{25157F93BBCE08F0}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
+   ID "04CAFD7A4ECF28D9"
+   components {
+    Hierarchy "{753F3F667D8A62D2}" {
+    }
+   }
+   coords 2.3 0 0.6
+   angles 0 85 0
+  }
+  GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
+   ID "CC091C6EECEB2A76"
+   components {
+    Hierarchy "{5D8B1F5D55C482E8}" {
+    }
+   }
+   coords 2.3 0.78 0.9
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "CC382DCBD74C390F"
+   components {
+    Hierarchy "{92334C7164E2A909}" {
+    }
+   }
+   coords -1.6 0 1.2
+   angles 0 12 0
+  }
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "4CF96C61436BF226"
+   components {
+    Hierarchy "{79939EBE26D8AB45}" {
+    }
+   }
+   coords -1.5 0 0.3
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "96A431F76E3FCF4B"
+   components {
+    Hierarchy "{AC8628778ACF710A}" {
+    }
+   }
+   coords -1.6 0.62 1.2
+   angles 0 12 0
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "8798387D6ACC5785"
+   components {
+    Hierarchy "{AABF43AEE2AB3A46}" {
+    }
+   }
+   coords 1.5 0 1.6
+  }
+  GenericEntity {
+   ID "A77038E0DC53C60B"
+   components {
+    SCR_AISmartActionSentinelComponent "{03115B46CA8FF6FD}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 2.3 1.6 0.7
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{8916916C8ACFCBD7}" {
+    }
+   }
+   coords 1.5 0 0.7
+  }
+ }
+}

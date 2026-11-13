@@ -1,0 +1,62 @@
+GenericEntity {
+ ID "2C0759ACA8C61EE3"
+ components {
+  RplComponent "{02B42E499A0D5C10}" {
+  }
+  Hierarchy "{CF8F6FC404828A23}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{8B56905B6705B929}Prefabs/Props/Recreation/Beach/LifeGuardTower_01/LifeGuardTower_01_darkgreen.et" {
+   ID "637E98F3BA1078FB"
+   components {
+    Hierarchy "{6E532BAA43A03D13}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 180 0
+  }
+  GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
+   ID "0F71C146A666FCCC"
+   components {
+    Hierarchy "{F31C4DB6FA042A8F}" {
+    }
+   }
+   coords 1.9 0 0.4
+   angles 0 180 0
+  }
+  SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
+   ID "D5CF6CA6966CECE6"
+   components {
+    Hierarchy "{8A52AB9A98844638}" {
+    }
+   }
+   coords -1.7 0 0.6
+  }
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+   ID "084C30B73438FA2F"
+   components {
+    Hierarchy "{FC122C52D3A2A982}" {
+    }
+   }
+   coords -1.7 1.6 0.6
+  }
+  GenericEntity {
+   ID "486E0B6E3B19EFDF"
+   components {
+    SCR_AISmartActionSentinelComponent "{62E19B5459C5BF2F}" {
+     Tags {
+      "RZ_Watch"
+     }
+     m_vLookPosition 1.9 1.6 10
+     m_fLookDirectionRange 120
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{3BA4129095E5C1EE}" {
+    }
+   }
+   coords 1.9 0 0.3
+  }
+ }
+}

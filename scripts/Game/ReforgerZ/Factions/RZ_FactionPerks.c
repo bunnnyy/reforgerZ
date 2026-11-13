@@ -222,7 +222,7 @@ class RZ_FactionPerks
 	//! that suit the faction, the one whose best building suits it best (a church for the Haven, a
 	//! school or a hall for Bastion, a garage for the Red Hand), on dry and even ground; the first
 	//! that is just right is taken. False when none has a building big enough.
-	protected bool ChooseBuiltPos(RZ_EFaction f, out vector pos)
+	protected bool ChooseBuiltPos(RZ_EFaction f, out vector pos, int atLeast = 0)
 	{
 		RZ_CampLife camp = m_GM.GetCampLife();
 		if (!camp)
@@ -257,7 +257,7 @@ class RZ_FactionPerks
 				break;
 		}
 
-		if (bestTier < 0)
+		if (bestTier < atLeast)
 			return false;
 
 		RZ_Log.Info(string.Format("Quartermasters: %1's stronghold takes a building in %2 (suits it %3 of 3).", RZ_Factions.GetName(f), bestName, bestTier));
@@ -318,10 +318,25 @@ class RZ_FactionPerks
 		vector was = m_aQmPos[f];
 		RZ_CampLife camp = m_GM.GetCampLife();
 		string why = "";
+		int atLeast = 0;
+		int tier = 3;
+		if (camp)
+			tier = camp.TierAt(f, RZ_ECampPlace.STRONGHOLD, was);
+
 		if (!RZ_Mainland.OnMainland(was))
+		{
 			why = "on an island";
-		else if (camp && !camp.HasBuilding(f, RZ_ECampPlace.STRONGHOLD, was))
+		}
+		else if (tier < 0)
+		{
 			why = "no building to move into";
+		}
+		else if (tier == 0)
+		{
+			// Any old building (Bastion in a cottage): it moves only for one that is good or just right
+			why = "its building doesn't suit it";
+			atLeast = 2;
+		}
 
 		if (why.IsEmpty())
 			return;
@@ -329,8 +344,11 @@ class RZ_FactionPerks
 		// Its own town counts as free while it looks
 		m_aHasQm[f] = false;
 		vector pos;
-		bool built = ChooseBuiltPos(f, pos);
+		bool built = ChooseBuiltPos(f, pos, atLeast);
 		m_aHasQm[f] = true;
+		if (!built && atLeast > 0)
+			return;
+
 		if (!built)
 		{
 			RZ_Log.Warn(string.Format("Quartermasters: %1's stronghold at %2 is %3, and no town has a building for it: it stays.", RZ_Factions.GetName(f), RZ_SettlementScanner.GridReference(was), why));

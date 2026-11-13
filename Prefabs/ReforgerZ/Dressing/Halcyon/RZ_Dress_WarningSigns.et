@@ -1,0 +1,38 @@
+GenericEntity {
+ ID "0543E4C92A614190"
+ components {
+  RplComponent "{5657EA16764B863D}" {
+  }
+  Hierarchy "{CC58AE067B10CD15}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{1C5C824E26DB1D62}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_entryforbidden_pole.et" {
+   ID "B8A21849642FDE93"
+   components {
+    Hierarchy "{01E3551179FCF5B3}" {
+    }
+   }
+   coords -0.8 0 0
+   angles 0 6 0
+  }
+  GenericEntity : "{1C5C824E26DB1D62}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_entryforbidden_pole.et" {
+   ID "5EF6E971995131AE"
+   components {
+    Hierarchy "{9E1769204D1317CA}" {
+    }
+   }
+   coords 0.8 0 0.1
+   angles 0 -8 0
+  }
+  GenericEntity : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+   ID "F979B42E789D5E7B"
+   components {
+    Hierarchy "{D474DB4261977999}" {
+    }
+   }
+   coords 0 0 0.5
+  }
+ }
+}

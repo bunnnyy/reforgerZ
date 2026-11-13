@@ -60,6 +60,12 @@ FP = {
     "TinWall_01_6m_A_rusty.et": (6.0, 0.4, "r", "metal"), "TinWall_01_3m_rusty.et": (3.1, 0.2, "r", "metal"),
     "Sandbag_01_long_high_burlap.et": (3.4, 1.2, "r", "sand"), "RoadBlock_01.et": (2.2, 0.5, "r", "metal"),
     "GeneratorFloodlight_US_01.et": (3.0, 1.7, "r", "light"), "SignCheckpoint_01_stop.et": (0.7, 0.5, "r", "board"),
+    # The reference pieces' props (docs/SITES.md, "From the reference board")
+    "Ural4320_wreck_static.et": (2.6, 7.4, "r", "metal"), "UAZ469_wreck_rusty_static.et": (1.8, 4.0, "r", "metal"),
+    "S105_wreck_static.et": (1.7, 4.2, "r", "metal"), "S1203_wreck_static.et": (1.9, 4.5, "r", "metal"), "FieldKitchenTrailerUSSR_01.et": (2.0, 3.4, "r", "metal"),
+    "Jerrycan_01.et": (0.35, 0.17, "r", "metal"), "GeneratorFloodlight_USSR_01.et": (3.0, 1.7, "r", "light"),
+    "LifeGuardTower_01_darkgreen.et": (2.4, 2.4, "r", "wood"), "Loudspeaker.et": (0.4, 0.4, "c", "metal"), "ConeTraffic_01_red.et": (0.4, 0.4, "c", "plastic"),
+    "SignIndustrial_USSR_02_warnings_entryforbidden_pole.et": (0.6, 0.1, "r", "board"),
 }
 
 def P(name, x, z, yaw=0, y=0, pitch=0, roll=0):
@@ -269,6 +275,53 @@ piece("SmokingBench", "Halcyon", "Sit", "Edge", "A bench by the back door for th
     P("ForestBench_01.et", 0, 0, 2), P("LitterInterior_USSR_01_tincan_V1.et", 1.3, 0.4), P("LitterInterior_USSR_01_tincan_V2.et", 1.4, 0.2), P("LanternMilitary_US_01.et", -1.3, 0.3),
     S("RZ_Sit", -0.35, 0.3, "sit", 0, 2.0), S("RZ_Sit", 0.35, 0.3, "smoke", 0, 2.0)])
 
+# ------------------------------------------------------------------- From the reference board (docs/SITES.md)
+# Ideas taken from film, TV and game bases, built from vanilla props. The idea each came from is in its line.
+piece("Bunker_Bastion", "Bastion", "Watch", "Approach", "The gate's bunker: chest-high sandbags on three sides, another course on the front, a pallet floor, a crate and a lamp inside (the fortified nest at the entrance of an army camp).", [
+    P("Sandbag_01_long_high_burlap.et", 0, 1.8, 0), P("Sandbag_01_long_high_burlap.et", -2.1, 0.2, 90), P("Sandbag_01_long_high_burlap.et", 2.1, 0.2, 90),
+    P("Sandbag_01_long_burlap.et", 0, 1.8, 0, 1.2), P("Pallet_01.et", 0, -0.6, 6), P("CrateWooden_01_plain.et", 0.8, -0.5, 10), P("LanternMilitary_US_01.et", 0.8, -0.5, 0, 0.62), P("Sandbag_01_end_burlap.et", -1.3, -1.5, 80),
+    S("RZ_Watch", -0.2, 0.5, "loiter", 0, 10)])
+piece("MotorPool", "Bastion", "Work", "Edge", "A dead truck kept for parts on the forecourt: fuel drums and jerrycans by the cab, a stack of tyres, a crate of tools.", [
+    P("Ural4320_wreck_static.et", 0, 0, 6), P("BarrelMetal_01_grey.et", 2.5, 2.2), P("BarrelMetal_01_grey.et", 3.2, 2.0), P("Jerrycan_01.et", 2.6, 1.3, 30), P("Jerrycan_01.et", 3.0, 1.2, -10),
+    P("TirePile_01_small.et", -2.8, -2.4), P("CrateWooden_01_plain.et", 2.6, -0.6, 15),
+    S("RZ_Work", 2.0, 0.4, "loiter", 0, 0.4)])
+piece("FieldKitchen", "Bastion", "Cook", "Inner", "The field kitchen on its trailer, still serving: a table for the mess tins, a water drum, kindling (dinner is still served at the blockade).", [
+    P("FieldKitchenTrailerUSSR_01.et", 0, 0, 0), P("TableMilitary_US_01.et", 2.7, 0.2, 90), P("LitterInterior_USSR_01_bowl.et", 2.7, 0.4, 0, 0.78), P("LitterInterior_USSR_01_mug.et", 2.6, -0.3, 0, 0.78),
+    P("BarrelMetal_01_blue.et", -1.9, 0.9), P("WoodKindling_01.et", -1.8, -1.0, 40),
+    S("RZ_Cook", 1.4, 0.2, "loiter", 0, 0.2)])
+piece("AidPost", "Bastion", "Work", "Inner", "The aid post: a small tent with a table of instruments beside it, a crate of dressings and a bucket, a blanket airing (the busiest tent of a camp short of everything).", [
+    P("TentSmallUS_01.et", 0, 0), P("TableMilitary_US_01.et", 2.3, 0.6, 85), P("ToolsSurgical_01_autoclavedrum.et", 2.3, 0.9, 0, 0.78), P("CrateWooden_01_plain.et", -1.6, 1.2, 12), P("Bucket_02.et", -1.5, 0.3),
+    P("BlanketFolded_01_green.et", -1.6, 1.2, 12, 0.62), P("Stool_01.et", 1.5, 1.6),
+    S("RZ_Work", 1.5, 0.7, "loiter", 2.3, 0.7)])
+piece("Floodlight_Bastion", "Bastion", "None", "Edge", "A floodlight mast on its trailer, lit, facing out over the wire (the lawn is the killing ground).", [P("GeneratorFloodlight_USSR_01.et", 0, 0, 180)])
+piece("Scrap_RedHand_Wreck", "RedHand", "None", "Approach", "A car wreck dragged into the line, a tyre against its wheel (a wall made of what no longer drives).", [
+    P("S105_wreck_static.et", 0, 0, 90), P("Tire_UAZ469.et", 1.2, 0.9, 0, 0, 90)])
+piece("WreckGate", "RedHand", "None", "Approach", "The way in, narrowed by a van on its rims: tyres stacked at its nose, an oil drum, a jeep wreck behind it for cover.", [
+    P("S1203_wreck_static.et", 0, 0, 78), P("TirePile_01_small.et", 2.9, 0.6), P("BarrelMetal_01_rust.et", -2.8, 0.7), P("UAZ469_wreck_rusty_static.et", 0.6, -3.2, 110)])
+piece("FuelDump", "RedHand", "Work", "Edge", "The crew's fuel: drums on a pallet, jerrycans in a row, a tyre to sit on (what the toll is paid in).", [
+    P("Pallet_01.et", 0, 0, 5), P("BarrelMetal_01_rust.et", -0.3, 0.1, 0, 0.15), P("BarrelMetal_01_blue.et", 0.35, -0.1, 0, 0.15), P("BarrelMetal_01_rust.et", 1.2, 0.5),
+    P("Jerrycan_01.et", -1.1, 0.6, 20), P("Jerrycan_01.et", -1.1, 0.2, 8), P("Jerrycan_01.et", -1.2, -0.2, -15), P("Tire_UAZ469.et", 0.9, -1.1),
+    S("RZ_Work", 0.9, -1.1, "smoke", 0, 0)])
+piece("Watchtower_Haven", "Haven", "Watch", "Approach", "The lookout: a tower knocked together by the gate, a lantern on its post, a chair at its foot for the one who can't climb (a scaffold tower in a churchyard).", [
+    P("LifeGuardTower_01_darkgreen.et", 0, 0, 180), P("ChairOld_01.et", 1.9, 0.4, 180), P("WoodenFenceOld_01_pole.et", -1.7, 0.6), P("LanternMilitary_US_01.et", -1.7, 0.6, 0, 1.6),
+    S("RZ_Watch", 1.9, 0.3, "sit", 1.9, 10)])
+piece("WorkBoard", "Haven", "Gather", "Approach", "The work board inside the gate: who's on the wall, who's on the wood, who's on the pot; a crate to stand the chalk on (the patrol board by a town's gate).", [
+    P("ChalkBoard_01.et", 0, 0, 0), P("Notice_A4_Vertical_V1.et", -0.3, -0.04, 180, 1.3), P("Notice_A4_Vertical_V1.et", 0.25, -0.04, 180, 1.25), P("CrateWooden_01_plain.et", -1.1, -0.3, -15),
+    S("RZ_Gather", 0, -1.2, "loiter", 0, 0)])
+piece("LanternPost", "Haven", "None", "Inner", "A lantern on a post by the path, lit at dusk (a string of lights across a yard).", [
+    P("WoodenFenceOld_01_pole.et", 0, 0), P("LanternMilitary_US_01.et", 0, 0, 0, 1.6)])
+piece("Gate_Halcyon", "Halcyon", "None", "Approach", "The gate: a road block pulled half across, cones, a no-entry sign on its pole (the boom and the gatehouse of a lab in the woods).", [
+    P("RoadBlock_01.et", -1.6, 0, 4), P("ConeTraffic_01_red.et", 0.2, 0.3), P("ConeTraffic_01_red.et", 0.9, 0.5), P("ConeTraffic_01_red.et", 1.6, 0.2),
+    P("SignIndustrial_USSR_02_warnings_entryforbidden_pole.et", -3.0, 0.2, 0)])
+piece("WarningSigns", "Halcyon", "None", "Approach", "No-entry signs on the way in, well before the building, and a cone (restricted-area signs before you see the lab).", [
+    P("SignIndustrial_USSR_02_warnings_entryforbidden_pole.et", -0.8, 0, 6), P("SignIndustrial_USSR_02_warnings_entryforbidden_pole.et", 0.8, 0.1, -8), P("ConeTraffic_01_red.et", 0, 0.5)])
+piece("Loudspeaker_Halcyon", "Halcyon", "None", "Edge", "A loudspeaker on a post, wired to the generator (the order that loops once the power is back).", [
+    P("WoodenFenceOld_01_pole.et", 0, 0), P("Loudspeaker.et", 0, 0, 0, 1.7), P("CrateWooden_01_plain.et", 0.7, 0.2, 25)])
+piece("Triage", "Halcyon", "Work", "Approach", "Triage inside the gate: a table where everyone is looked at before they go further, two stools, a crate of forms, a sample drum.", [
+    P("TableMilitary_US_01.et", 0, 0, 0), P("Stool_01.et", -0.5, -0.9), P("Stool_01.et", 0.6, 0.95), P("FileOffice_01_Stack.et", 0.5, 0, 0, 0.78),
+    P("ToolsSurgical_01_autoclavedrum.et", -0.5, 0.05, 0, 0.78), P("CrateWooden_02_1x1x1.et", 1.9, 0.2, 8),
+    S("RZ_Work", -0.5, -0.9, "sit", -0.5, 0)])
+
 # ------------------------------------------------------------------- The layers (docs/SITES.md, "Building in layers")
 # The wire: runs of each faction's barrier along the line, longest first (build.py reads each run's
 # length from its footprint). Each run lies along its own x, its front (+Z) out of the site.
@@ -356,7 +409,7 @@ RULES = {
     "FireBarrel": (3, "yard", "near Sofa|CardTable 4; flat 8"),
     "Tent_Small_Civilian": (3, "sleep", "away " + FIRES + " 6; flat 5; noline"),
     "Tent_Large_Civilian": (3, "sleep", "away " + FIRES + " 6; flat 5"),
-    "Firewood": (3, "kitchen", "near CookPot 4; flat 6"),
+    "Firewood": (3, "kitchen", "near CookPot 7; flat 6"),
     "CookPot": (3, "kitchen", "door side 4; away Latrine 15; away use:Sleep 6; flat 6"),
     "WashStand": (3, "kitchen", "near WaterBarrel 3; flat 6"),
     "Latrine": (3, "yard", "away CookPot|WaterBarrel 15; away Table|FirePit|CardTable|Sofa 10; away gate 10; away door 8; behind threat"),
@@ -418,9 +471,27 @@ RULES = {
     "Floodlight": (3, "yard", "faces out"),
     "BoardWindow": (1, "yard", ""), "BoardDoor": (1, "yard", ""), "BoardDoor_Bastion": (1, "yard", ""), "BoardDoor_RedHand": (1, "yard", ""),
     "StoresBoard": (2, "court", "faces out"),
+    # From the reference board
+    "Bunker_Bastion": (1, "yard", "covers gate; covers road; faces road; away gate 3; bank"),
+    "MotorPool": (4, "gate", "faces road; away gate 4; flat 6"),
+    "FieldKitchen": (3, "kitchen", "door side 4; away Latrine 15; away use:Sleep 6; flat 6"),
+    "AidPost": (3, "sick", "away CookPot 8; flat 5"),
+    "Floodlight_Bastion": (3, "yard", "faces out"),
+    "Scrap_RedHand_Wreck": (1, "wire", ""),
+    "WreckGate": (2, "gate", "faces road; flat 8"),
+    "FuelDump": (4, "yard", "away " + FIRES + " 8; flat 6"),
+    "Watchtower_Haven": (1, "yard", "covers gate; covers road; faces road; away gate 3"),
+    "WorkBoard": (4, "gate", "faces road; flat 8"),
+    "LanternPost": (4, "court", "door front 8"),
+    "Gate_Halcyon": (1, "gate", "faces road; flat 8"),
+    "WarningSigns": (4, "gate", "faces road; flat 8"),
+    "Loudspeaker_Halcyon": (4, "yard", "flat 8"),
+    "Triage": (3, "gate", "faces road; flat 6"),
     # Counters (laid by the quartermaster, not by the solver)
     "Counter_Bastion": (1, "court", ""), "Counter_RedHand": (1, "court", ""), "Counter_Haven": (1, "court", ""), "Counter_Halcyon": (1, "court", ""),
 }
+# Bastion's field kitchen is its cook pot: every rule that names the pot means either
+RULES = {name: (tier, zone, rules.replace("CookPot", "CookPot|FieldKitchen")) for name, (tier, zone, rules) in RULES.items()}
 # A kit's own tier for a piece (the Haven's long table is what the Haven is for)
 KIT_TIER = {("SURVIVORS", "Table"): 2}
 
@@ -430,12 +501,12 @@ KIT_TIER = {("SURVIVORS", "Table"): 2}
 # and door boards, the lookout, the light, the stores board, and the plan's pieces that go indoors
 # at a building (valuable or delicate).
 WIRE_BASTION = ["Wire_Bastion_L", "Wire_Bastion_M", "Wire_Bastion_S", "Wire_Bastion_XS"]
-WIRE_REDHAND = ["Scrap_RedHand_L", "Scrap_RedHand_M", "Scrap_RedHand_S", "Scrap_RedHand_XS"]
+WIRE_REDHAND = ["Scrap_RedHand_L", "Scrap_RedHand_M", "Scrap_RedHand_Wreck", "Scrap_RedHand_S", "Scrap_RedHand_XS"]
 WIRE_HAVEN = ["Fence_Haven_L", "Fence_Haven_M", "Fence_Haven_S", "Fence_Haven_XS"]
 WIRE_HALCYON = ["Fence_Halcyon_L", "Fence_Halcyon_M", "Fence_Halcyon_S", "Fence_Halcyon_XS"]
 DOCTRINE = {
     ("MILITARY", "STRONGHOLD"): dict(close="all", harden="all", ring=8, yard=14, wire=WIRE_BASTION, window="BoardWindow", door="BoardDoor_Bastion",
-                                     lookout=["SentryNest_Bastion"], stores="StoresBoard", indoors=["Tarp"]),
+                                     lookout=["SentryNest_Bastion"], light="Floodlight_Bastion", stores="StoresBoard", indoors=["Tarp"]),
     ("MILITARY", "OUTPOST"): dict(close="two", harden="all", ring=7, yard=12, wire=["Sandbags_Bastion_L", "Sandbags_Bastion_M", "Wire_Bastion_S", "Wire_Bastion_XS"],
                                   window="BoardWindow", door="BoardDoor_Bastion", lookout=["SentryNest_Bastion"]),
     ("MILITARY", "ROAD_POST"): dict(close="none", harden="none"),
@@ -460,6 +531,7 @@ AT = {
     "BearDoor": "door", "Memorial": "door", "DeconShower": "door",
     "TrophyWall": "front", "VegStall": "front",
     "Gate_Bastion": "gate", "Gate_Haven": "gate", "Kennel": "gate",
+    "WreckGate": "gate", "WorkBoard": "gate", "Gate_Halcyon": "gate", "Triage": "gate", "WarningSigns": "closed", "LanternPost": "door",
 }
 AT.update({name: "counter" for name in C if name.startswith("Counter_")})
 
@@ -473,9 +545,10 @@ AT.update({name: "counter" for name in C if name.startswith("Counter_")})
 # build.py refuses a plan whose pieces overlap.
 KITS = [
     ("MILITARY", "STRONGHOLD", "Military order gone a little ragged: tents in a loose row behind a sandbag line with a gap for the road, the board and the flag at the heart, the stores' window to one side.", [
-        ("Counter_Bastion", -10, 9, 0), ("SentryNest_Bastion", 0, 26, 0), ("Gate_Bastion", -9, 31, 0), ("RosterBoard", -3, 5, 8), ("FlagPole", 2, 3, 0), ("FirePit", 5, -3, 0),
-        ("Barricade_Sandbag", -7, 24.5, 4), ("Barricade_Sandbag", 7, 24.5, -6), ("Table", -4, -4, 12), ("Tent_Small_Bastion", -14, -10, 4), ("Tent_Small_Bastion", -9, -12.5, -3),
-        ("Tent_Large_Bastion", 1, -16, 2), ("CookPot", 15, -3, 30), ("Firewood", 18.5, -10.5, 60), ("ShavingStand", -16, -3, 90), ("CrateSeats", 10, 3, 20),
+        ("Counter_Bastion", -10, 9, 0), ("Bunker_Bastion", 0, 26, 0), ("Gate_Bastion", -9, 31, 0), ("RosterBoard", -3, 5, 8), ("FlagPole", 2, 3, 0), ("FirePit", 5, -3, 0),
+        ("Barricade_Sandbag", -10.5, 24.5, 4), ("Barricade_Sandbag", 10.5, 24.5, -6), ("Table", -4, -4, 12), ("MotorPool", 10, 33, 0), ("AidPost", 22, 10, -10),
+        ("Tent_Small_Bastion", -14, -10, 4), ("Tent_Small_Bastion", -9, -12.5, -3),
+        ("Tent_Large_Bastion", 1, -16, 2), ("FieldKitchen", 17, -1, 30), ("Firewood", 17.5, -11.5, 60), ("ShavingStand", -16, -3, 90), ("CrateSeats", 10, 3, 20),
         ("DutyBoard", -8, 4, 10), ("Tarp", 15, 8, 25), ("Tent_Small_Bastion", 10, -13, -8), ("DryingLine", 21.5, -16.5, 35), ("Latrine", -22, -18, 140), ("Duckboards", -5, -8.5, 0)]),
     ("MILITARY", "OUTPOST", "A section at a farm on the junction: a nest and a sandbag run on the road, two tents squared to it, the fire, the table and the roll board in the yard.", [
         ("Counter_Bastion", -10, 7, 0), ("SentryNest_Bastion", 0, 20, 0), ("FirePit", 4, 0, 0), ("Barricade_Sandbag", -7, 18.5, 6), ("Tent_Small_Bastion", -8, -8, 6),
@@ -485,34 +558,38 @@ KITS = [
         ("SentryNest_Bastion", 7.5, 2, 0), ("Barricade_Sandbag", -7.5, 2.5, 0), ("FireBarrel", 7.5, -4.5, 0), ("Tarp", -8.5, -4.5, 10)]),
     ("BANDITS", "STRONGHOLD", "A squat, not a camp: things where they were dropped, but round the fire. The toll on the road, the sofa round the barrel, tents tucked behind scrap, the fence's table by the way in.", [
         ("Counter_RedHand", -9, 4, 20), ("TollBarrier", -2, 25, 6), ("FireBarrel", 1, 2, 0), ("Sofa", -4, -2.5, 160), ("SentryNest_RedHand", 9, 22, -20),
-        ("CardTable", 6, 6, 35), ("RedHandSheet", -10, 21, 25), ("Barricade_Scrap", 15, 16, -40), ("Tent_Small_Civilian", -12, -9, 30), ("Tent_Small_Civilian", -6, -13, -15),
+        ("CardTable", 6, 6, 35), ("RedHandSheet", -10, 21, 25), ("WreckGate", 9, 31, 0), ("FuelDump", 19, 6, 0), ("Barricade_Scrap", 15, 16, -40), ("Tent_Small_Civilian", -12, -9, 30), ("Tent_Small_Civilian", -6, -13, -15),
         ("ScrapShelter", 4, -14, 10), ("CookPot", 13, -5, 60), ("Firewood", 17.5, -12, 80), ("TrophyWall", -19, 4, 95), ("Clutter", 8, -1, 0),
         ("Kennel", -16, 12, 40), ("FirePit", -6, 10, 0), ("Tent_Large_Civilian", 10, -17, -20), ("Latrine", 22.5, -20.5, 200), ("Barricade_Scrap", -17, 17, 30)]),
     ("BANDITS", "OUTPOST", "A crew camp on the road: the toll barrier and a lookout behind tyres, the fire barrel and the sofa, the card table, two tents at the back.", [
         ("Counter_RedHand", -7, 3, 20), ("TollBarrier", 0, 20, 0), ("FireBarrel", 1, 2, 0), ("Sofa", -3.5, -2.5, 160), ("SentryNest_RedHand", 8, 17, -20),
-        ("CardTable", 6, 5, 35), ("Tent_Small_Civilian", -9, -9, 30), ("Tent_Small_Civilian", -3, -11, -15), ("CookPot", 10.5, -4, 60), ("Firewood", 14.5, -11.5, 80),
+        ("CardTable", 6, 5, 35), ("WreckGate", 8, 26, 0), ("Tent_Small_Civilian", -9, -9, 30), ("Tent_Small_Civilian", -3, -11, -15), ("CookPot", 10.5, -4, 60), ("Firewood", 14.5, -11.5, 80),
         ("RedHandSheet", -8, 17, 25), ("Clutter", 4.5, -2, 0), ("ScrapShelter", 3, -12, 10)]),
     ("BANDITS", "ROAD_POST", "A roadblock for the toll: the fire barrel and the card table on one verge, scrap and a net on the other.", [
         ("FireBarrel", 7, -2, 0), ("CardTable", 8, 4, 90), ("Barricade_Scrap", -8, 4, 0), ("Tarp", -8.5, -3, 15)]),
     ("SURVIVORS", "STRONGHOLD", "A village kept going: the long table and the memorial in the yard, the cook pot and the water by the kitchen side, the washing and the garden behind, the bear at the gate.", [
-        ("Counter_Haven", 5, 11, -10), ("Lookout_Haven", -4, 27, 0), ("Gate_Haven", 4, 33, 0), ("BearDoor", 0, 24, 0), ("Table", 2, 3, 6), ("CookPot", 9, -2, 40), ("Memorial", -6, 6, 20),
+        ("Counter_Haven", 5, 11, -10), ("Watchtower_Haven", -4, 28, 0), ("Gate_Haven", 4, 33, 0), ("BearDoor", 0, 24, 0), ("Table", 2, 3, 6), ("CookPot", 9, -2, 40), ("Memorial", -6, 6, 20),
+        ("WorkBoard", 10, 28, 0), ("LanternPost", -3, 15, 0), ("LanternPost", 2, 18, 0),
         ("WaterBarrel", 6, -9, 0), ("WashStand", 3, -11, 10), ("WashingLine", -9, -14, 12), ("Garden", -16, -6, 80), ("Barricade_Fence", -8, 23, 8),
         ("VegStall", 14, 9, -30), ("ChildrensCorner", -10, 2, 35), ("Firewood", 13.5, -9, 70), ("FirePit", -2, -4, 0), ("Tent_Small_Civilian", 15.5, -16, -25),
         ("CrateChairs", -3, -10, 10), ("Barricade_Fence", 8, 23, -6), ("Tent_Large_Civilian", 8, -17, 10), ("Kennel", -14, 12, 30), ("Latrine", -20, -18, 130)]),
     ("SURVIVORS", "OUTPOST", "A farmyard: the table and the memorial, the cook pot and the water, the washing and the garden at the back, a tent for whoever came last.", [
         ("Counter_Haven", 5, 9, -10), ("Lookout_Haven", 5, 22, 0), ("BearDoor", 0, 20, 0), ("Table", 2, 2, 6), ("CookPot", 9, -3, 40), ("WaterBarrel", 5, -9, 0),
+        ("LanternPost", -3, 13, 0), ("WorkBoard", -11, 24, 0),
         ("WashStand", 2, -11, 10), ("WashingLine", -8, -13, 12), ("Garden", -13, -4, 80), ("Memorial", -6, 5, 20), ("Firewood", 12.5, -10.5, 70),
         ("Barricade_Fence", -7, 19, 8), ("Tent_Small_Civilian", 14.5, -17.5, -25), ("ChildrensCorner", -7.5, 0.5, 35)]),
     ("SURVIVORS", "SAFEHOUSE", "A house that kept its door open: the bear at the gate, the table outside, the pot and the barrel by the kitchen, the line and the bed of vegetables in the garden.", [
-        ("Counter_Haven", -4, 6, 10), ("BearDoor", 0, 14, 0), ("Table", 2, 2, 6), ("CookPot", 8, -2, 40), ("WaterBarrel", 5, -8, 0),
+        ("Counter_Haven", -4, 6, 10), ("BearDoor", 0, 14, 0), ("Table", 2, 2, 6), ("CookPot", 8, -2, 40), ("WaterBarrel", 5, -8, 0), ("LanternPost", 3, 10, 0),
         ("WashingLine", -7, -9, 12), ("Garden", -11, -2, 80), ("Firewood", 11.5, -9.5, 70)]),
     ("INSTITUTE", "STRONGHOLD", "The lab grounds: a clean room in a dirty world. The work goes on indoors; outside only the decon shower at the one door, the generators behind sandbags, the antenna, the guards at the gate, a bench for the night shift (in a building, the tables, the tents and the cold store are indoors, as data).", [
-        ("Counter_Halcyon", -10, 12, 10), ("GuardPost_Halcyon", 0, 26, 0), ("PlagueBoard", 0, 22, 0), ("FieldTable", -2, 4, 3), ("Tent_Halcyon", 0, -11, 0), ("FieldTable", 3.5, 3, -8),
+        ("Counter_Halcyon", -10, 12, 10), ("GuardPost_Halcyon", 0, 26, 0), ("Gate_Halcyon", 9, 31, 0), ("PlagueBoard", 0, 22, 0), ("Triage", 14, 17, 0), ("WarningSigns", -10, 30, 0),
+        ("FieldTable", -2, 4, 3), ("Tent_Halcyon", 0, -11, 0), ("FieldTable", 3.5, 3, -8), ("Loudspeaker_Halcyon", -17, 6, 0),
         ("DeconShower", -8, -9, 10), ("Generator", 14, -10, 20), ("ColdBox", 10, -1, -30), ("SampleTable", 7, -7, -15), ("Antenna", 16, 3, 0),
         ("Barricade_Fence", -7, 21, 3), ("Barricade_Fence", 7, 21, -3), ("NotebookBench", -7, 7, 15), ("RadioTable", 10, 8, -20), ("Tarp", -12, -1, 35),
         ("Latrine", -18, -16, 120), ("CrateChairs", -3, -2, 0), ("SmokingBench", -16, -9, 70), ("Generator", 17, -14, 10)]),
     ("INSTITUTE", "OUTPOST", "A field station at a house: a table for the notes, the ward tent and the decon shower in the yard, the cold store on the generator, the antenna, the plague board at the gate.", [
-        ("Counter_Halcyon", -6, 8, 10), ("GuardPost_Halcyon", 5, 18, 0), ("PlagueBoard", 0, 16, 0), ("FieldTable", -2, 3, 3), ("Tent_Halcyon", 1, -9, 0), ("Generator", 10, -6, 20),
+        ("Counter_Halcyon", -6, 8, 10), ("GuardPost_Halcyon", 5, 18, 0), ("PlagueBoard", 0, 16, 0), ("Gate_Halcyon", 9, 23, 0), ("WarningSigns", -7, 22, 0),
+        ("FieldTable", -2, 3, 3), ("Tent_Halcyon", 1, -9, 0), ("Generator", 10, -6, 20),
         ("Antenna", 11, 2, 0), ("DeconShower", -7, -6, 10), ("ColdBox", 5, 0.5, -30), ("NotebookBench", -7, 2, 15)]),
 ]
 

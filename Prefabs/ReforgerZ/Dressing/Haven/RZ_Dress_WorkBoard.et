@@ -1,0 +1,54 @@
+GenericEntity {
+ ID "B26BE2E2ADA73097"
+ components {
+  RplComponent "{EA9CCF9ED74C8B29}" {
+  }
+  Hierarchy "{B3E53B901D65867C}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et" {
+   ID "CC2C362AA23AAF07"
+   components {
+    Hierarchy "{E4D19881DBB64E9D}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "D722DA985B6BBD90"
+   coords -0.3 1.3 -0.04
+   angles 0 180 0
+  }
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "25D1DD5F2F85180B"
+   coords 0.25 1.25 -0.04
+   angles 0 180 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "5F968AF1687504F2"
+   components {
+    Hierarchy "{1D81F9E7FE2A5871}" {
+    }
+   }
+   coords -1.1 0 -0.3
+   angles 0 -15 0
+  }
+  GenericEntity {
+   ID "2C3A89F11B01EE8A"
+   components {
+    SCR_AISmartActionSentinelComponent "{AB2E1005498139CB}" {
+     Tags {
+      "RZ_Gather"
+     }
+     m_vLookPosition 0 1.6 1.2
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{6B2ED99523A15E2F}" {
+    }
+   }
+   coords 0 0 -1.2
+  }
+ }
+}
