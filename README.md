@@ -367,8 +367,9 @@ tools/compile_check.sh
                  or Windows in Git Bash)
 tools/runtime_test/
                  runs the game mode on that server with a fake player, (run.sh sites) the site
-                 audit and (run.sh tasks) the task place audit on Arland, Everon or Cain;
-                 places.py draws the task places (test only, not the mod)
+                 audit and (run.sh tasks) the task place audit on Arland, Everon or Cain, and
+                 (run.sh layer) the behaviour layer test: a pack of Bacon's bodies hunting the
+                 fake player on Arland; places.py draws the task places (test only, not the mod)
 tools/zombie_lab/
                  measures Bacon Zombies' own AI on that server, on Everon: groups, waypoints,
                  sight, sharing, speeds, health, the clock, frame time (test only, not the mod)

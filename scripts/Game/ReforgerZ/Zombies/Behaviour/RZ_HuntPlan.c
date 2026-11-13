@@ -737,7 +737,14 @@ class RZ_GroupPlan
 			b.m_vJitter = RZ_Util.RandomPointInRing(vector.Zero, 1, 3);
 			RZ_KindProfile kp = bh.Kind(b.m_eKind);
 			if (kp.m_fStanceMax > 0)
-				b.m_fStance = Math.Clamp(Math.RandomFloat(kp.m_fStanceMin, kp.m_fStanceMax) + Math.RandomFloat(-0.04, 0.04), 0.5, 1);
+			{
+				// A kind with one stance (the scout): RandomFloat logs a script error on an empty range
+				float stance = kp.m_fStanceMin;
+				if (kp.m_fStanceMax > kp.m_fStanceMin)
+					stance = Math.RandomFloat(kp.m_fStanceMin, kp.m_fStanceMax);
+
+				b.m_fStance = Math.Clamp(stance + Math.RandomFloat(-0.04, 0.04), 0.5, 1);
+			}
 
 			b.m_vWatchFrom = member.GetOrigin();
 			b.m_fWatchAt = bh.Now();
@@ -1513,6 +1520,11 @@ class RZ_GroupPlan
 			return;
 		}
 
+		// The strike is on (Strike): no shadow point, and no freeze. The layer test: a target who
+		// kept facing a striking group 100 m off held it frozen there for good
+		if (m_eHunt == RZ_EHuntState.STRIKE)
+			return;
+
 		// Seen looking our way: freeze, low and silent
 		if (d < 120 && RZ_Behaviour.AngleOff(target, m_vCentre) < 30)
 			m_fFreezeUntil = now + Math.RandomFloat(3, 6);
@@ -1938,7 +1950,9 @@ class RZ_GroupPlan
 
 			bh.UpdateLod(b, nd);
 			float hp = RZ_Util.GetCharacterHealth(b.m_Body);
-			b.m_bHit = b.m_fHealth > 0 && hp >= 0 && hp < b.m_fHealth - 0.5;
+			// Its own falls and trips aren't a hit (the layer test: a running body loses about 2 of
+			// 100 to itself now and then, which released it and its neighbours 100-300 m out)
+			b.m_bHit = b.m_fHealth > 0 && hp >= 0 && hp < b.m_fHealth - 0.5 && !RZ_Util.HurtItself(b.m_Body);
 			b.m_fHealth = hp;
 			IEntity foe = target;
 			if (!foe)
@@ -2535,6 +2549,19 @@ class RZ_GroupPlan
 			w = Math.Clamp(4 + 0.1 * (200 - dt), 4, 20);
 		}
 
+		// A strike closes by its nearest body, not its centre: one member held up behind kept the
+		// centre back, and the others stood a slot short of their reach for good (the layer test:
+		// two hunters 38 m from their target for 200 s, the third stuck 91 m out)
+		float lead = dt;
+		if (m_Link)
+		{
+			foreach (RZ_BodyState front : m_aBodies)
+			{
+				if (front.m_Body)
+					lead = Math.Min(lead, RZ_Util.DistXZ(front.m_Body.GetOrigin(), target));
+			}
+		}
+
 		float phase = m_iElement * 1.3;
 		for (int i = 0; i < n; i++)
 		{
@@ -2586,10 +2613,10 @@ class RZ_GroupPlan
 			vector s = m_vAnchor + off;
 
 			// A strike fans out on an arc round the target, closing
-			if (m_Link && m_eHunt == RZ_EHuntState.STRIKE && dt > 30)
+			if (m_Link && m_eHunt == RZ_EHuntState.STRIKE && lead > 30)
 			{
-				float r = Math.Max(10, dt - 20);
-				float theta = (fi - c) * w / Math.Max(20, dt);
+				float r = Math.Max(10, lead - 20);
+				float theta = (fi - c) * w / Math.Max(20, lead);
 				vector back = -h;
 				vector rot = Vector(back[0] * Math.Cos(theta) - back[2] * Math.Sin(theta), 0, back[0] * Math.Sin(theta) + back[2] * Math.Cos(theta));
 				s = target + rot * r;

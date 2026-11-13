@@ -1909,6 +1909,59 @@ Home** unless the pack is coming back to a house or has a party walking at that 
 in the log), so a spawned group has no members, and a mission built on one may end by itself early
 (`ended by itself` in the log). None of this is part of the mod: the test files are copied into a throwaway addon folder.
 
+### Behaviour layer test without Workbench
+
+`tools/runtime_test/run.sh layer` shows the [behaviour layer](INFECTED.md#how-they-move-and-hunt) at
+work on the same server: the mod's own tribe code puts a pack out with Bacon's real bodies, the layer
+steers them, and a fake player is hunted. The full runtime test can't show it: its world has no AI
+navigation and its "zombies" are stand-ins, so the layer finds nothing to drive (its status line's
+counts stay at zero, or the groups are `by waypoint`), no hunt's bodies appear, and its fake player is
+no engine player, so a hunt can't start on him.
+
+```bash
+SERVER_DIR=~/rz_check/server EXTRA_ADDONS_DIR=<folder holding BaconZombies_622120A5448725E3> tools/runtime_test/run.sh layer
+```
+
+It takes 17 to 30 minutes (the first pass waits up to 11 for the walk home). It boots the site audit's Arland world with the mod's own game mode settings
+(Bacon's prefabs in every slot, as the task place audit does) and adds only what bodies need
+(`layer.py prepare`, on the throwaway copy): two tribe slots (Arland is under the wild-land floor),
+Bacon's faction, Arland's navmesh and a perception manager. Without the navmesh every AI move fails
+(`Failed move from ... to waypoint ...`, a script exception) and Bacon's bodies walk off toward the
+world's origin; without the perception manager no AI sees anyone. The fake player (id 901, a civilian
+Bacon attacks, made whole twenty times a second so a fight can be measured) is no engine player, so
+in the copy the mod's player lookups under `Zombies/` and in the game mode answer for him too
+(`RZB_Who`). Nothing in the layer is changed. Like the audits it runs in its own network namespace on
+Linux; on Windows stop any other server first.
+
+Twice, at noon and at 23:00, it walks the layer through its modes:
+
+| Stage | What the test does | What it shows |
+|---|---|---|
+| Hunt | Stands the player 380–450 m from the lair, outside no man's land (a hunt ends there), and calls `RZ_TribeBodies.StartHunt` with force, the function `/tribes hunt` calls | The hunt's groups put out round him and steered in: distances, speeds, pauses, and what Bacon's own perception holds of him meanwhile |
+| Engage | Leaves him there for 50 s after the first release | The release on a strike, the chase, Bacon's melee test passing, the health he loses |
+| Away | Moves him 430–620 m off (further and the bodies he left are put away) | Take-back, recover, steered again; the hunt lost after 60 s |
+| Home | Waits for the walk home: a part sent home holds where it is up to 10 minutes first, so the first pass waits up to 11 minutes for it and the second watches 60 s | The metres the parts sent home have left to their rest spots |
+| Hear | Fires the game mode's own shot handler 105–125 m from a steered group that isn't hunting, deaf or asleep, and moves him 420 m off the next second | The group's centre closing on the spot with nobody there to see |
+| Shot | Stands him 21–26 m from a steered body for 3 s, then fires | No release before the shot; every steered body within 30 m released inside the call |
+| Contact | Stands him 5–7 m from a steered body, in its sight | The contact release, and the group members that share it |
+| Put away | Moves him 720 m or more from every body, or takes him out of the world where the map has no such spot | Every body back to data |
+
+Every second it logs a row for each tribe group (`RZB g`), each body (`RZB b`: the layer's mode and the
+hook's, distance to the player, speed, distance to its slot, whether Bacon's perception saw him lately
+and holds him as an enemy, the stored perception factor, seconds since Bacon's melee test passed) and
+the player (`RZB f`: the health he lost that second), and a row for each health drop of a body with
+who the damage manager blames (`RZB dmg`). `python3 tools/runtime_test/layer.py summary <console.log>`
+prints the results table again from a log. The test fails on a check that didn't hold, a script
+exception from ReforgerZ's code, or a run that didn't finish; `[measured]` rows are numbers without a
+pass mark, `[not shown]` a stage that found nothing to test in that run (each boot seeds another pack:
+its temperament, its strategy and where its groups stand differ).
+
+| What it shows | What it can't |
+|---|---|
+| The layer's modes, releases and take-backs on real Bacon bodies, under the mod's own spawner and settings; speeds against the caps; what Bacon's perception holds while a body is steered; the hunt put out, lost and ended; the layer's own counters | A real player: a client's movement, camera, noise and stealth; how a hop, a freeze or a stance looks; the player effects (hold, stagger, knockdown) and their RPCs; a real weapon's shot; doors, houses and stairs (the player stands in the open); more than Arland's one pack; Everon |
+
+What it showed, and what it changed: [INFECTED.md](INFECTED.md#what-the-server-test-shows).
+
 ### Zombie lab: Bacon's real AI, measured
 
 `tools/zombie_lab/run.sh` measures what Bacon Zombies' own AI does, on the same server, in a
@@ -2013,7 +2066,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **175** lines with the tag, all but one in the game scripts (one is the comment in
+There are **176** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, two the hold prompt's and four its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2068,8 +2121,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PlacedThings.c:438` | `SCR_EntityHelper.DeleteEntityAndChildren` on the server removes a mod's replicated thing (the fireplace, its fire and light) on every client | The log says a fireplace was cleared but a player still sees it, or its fire burns on with nothing under it |
 | `Interactions/RZ_FuelPumps.c:172` | a fuel pump station (`RZ_FuelPumpStation.et`): `SetTotalFuelPercentage` on the server replicates its litres, and a held vanilla jerrycan beside a petrol pump offers **Refuel canister**, drawing from it until it's empty | At a petrol pump with a vanilla jerrycan in hand: no Refuel canister, or it never runs dry. Empty **Cars > Fuel pump station**: the pump is the hand pump again, in the object menu |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
-| `Core/RZ_Util.c:1155` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
-| `Core/RZ_Util.c:1360`, `:1238` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
+| `Core/RZ_Util.c:1169` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
+| `Core/RZ_Util.c:1374`, `:1252` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
 | `Factions/RZ_Disguise.c:1074`, `Factions/RZ_DisguiseMarks.c:779`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
 | `Factions/RZ_DisguiseWatch.c:193` | a character's world transform's forward axis (`mat[2]`) is where its body faces | If it's another axis, guards count as turned to you at the wrong angle: again looks and their noticing line come too often or never. Check by standing behind a Bastion sentry in their kit after a passed look |
 | `Factions/RZ_DisguiseWatch.c:206` | a sight trace (`TraceMove`, world and entities) from one of their people's eyes to a player's chest stops on walls and vehicles, and reports the player when it reaches them (again looks within 15 m, seen putting kit on within 30 m, a Red Hand crew seeing Bastion colours in a feud within 150 m) | If it never reaches the player, again looks are only owed and never come (the gate pass, roll call and leaders still limit a stay); if it always does, walls don't hide you. Check with `again look at` in the log |
@@ -2078,7 +2131,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_DisguiseMarks.c:643` | a worn ribbon's parent is the character, and a packed one's is the pack | Someone else's ribbon in a pack closes Haven doors, or a worn one doesn't: wear and pack one in turn |
 | `Factions/RZ_DisguiseMarks.c:225` | a worn piece's root parent is the character wearing it (kit marks saved across a restart) | Marks are never saved across a restart (no `kit mark put back` lines): after a restart a dead man's kit passes as clean, as before |
 | `Factions/RZ_DisguiseMarks.c:1019` | `TryDeleteItem` through the wearer's inventory manager takes a worn piece off (the last week's homecoming and handing back) | The piece stays on after "He's home. Mark him.": its mark is gone either way, so it passes as clean kit |
-| `Core/RZ_Util.c:1324` | `SCR_InventoryStorageManagerComponent.GetItems` walks every storage, so a rifle in a backpack is found (the parley's and the knock's empty hands) | A packed rifle passes a parley: the barrier's search uses the same check, and nobody walks out to meet you |
+| `Core/RZ_Util.c:1338` | `SCR_InventoryStorageManagerComponent.GetItems` walks every storage, so a rifle in a backpack is found (the parley's and the knock's empty hands) | A packed rifle passes a parley: the barrier's search uses the same check, and nobody walks out to meet you |
 | `Cure/RZ_Infection.c:1192` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
@@ -2121,7 +2174,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_WorkHold.c:277` | the item use vanilla's building makes (`TryUseItemOverrideParams` with `CMD_Item_Action`, argument 1, the held tool, no movement) loops the digging at a work site as at a vanilla build site, other players see it, and `FinishItemUse(true)` ends it | The tool is held still, or the digging never stops: turn **Dig with the tool** off (the hands animation is used) |
 | `Interactions/RZ_WorkHold.c:287` | the item use vanilla makes at a mine being disarmed (`CMD_Item_Action`, argument 0, on the thing itself, nothing in the hands) plays its kneel-and-work loop when the thing is our work site's invisible box, which is no item | Nothing plays (the engine refuses an entity with no item component: the lock still holds, and the work is done), or the character's hand is pulled to the box, or the box ends up in the hand: turn **Hands animation** off |
 
-### Low risk: contained or cosmetic (44)
+### Low risk: contained or cosmetic (45)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2150,7 +2203,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
 | `Zombies/RZ_Stealth.c:352` | a player runs at about 4 m/s and sprints at about 5.5 (measure both, and Bacon's run and sprint), so 2.6 and 5 m/s split walking, running and sprinting for visibility; the young's sprint is tuned about 10% faster than a sprinting player | Change `SPEED_WALK` and `SPEED_RUN` to the measured speeds, and the young's **Young sprint seconds** if they can't catch a sprinting player |
 | `Zombies/RZ_Stealth.c:1172` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
-| `Zombies/Behaviour/RZ_HuntPlan.c:2361` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
+| `Core/RZ_Util.c:1112` | a player's bullet or blow leaves that player as the damage manager's last instigator, so a steered body's own falls and trips (which name the body itself: the [layer test](#behaviour-layer-test-without-workbench) saw about 2 of 100 health go that way now and then) can be told from a hit | A body that fell and was then shot from beyond 30 m doesn't count the shot as a hit and stays steered: drop the check in `RZ_GroupPlan.Bodies` (falls then release bodies far out again) |
+| `Zombies/Behaviour/RZ_HuntPlan.c:2375` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
 | `World/Traces/RZ_DressPlacer.c:48` | the road network's points follow every drivable road near a camp or a scene (the shared placer, camp life's and Traces') | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
 | `World/Traces/RZ_TraceSounds.c:471` | a camp composition's child props carry their own prefab data, so `GetPrefabName` names them (the table lamp, the generator), and their origin is their world spot | The lit lantern and the hum stand near the place's middle, as before; only a composition named for its piece (`RZ_Dress_Loudspeaker`) is found |
 | `Factions/RZ_CampLife.c:4892` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
