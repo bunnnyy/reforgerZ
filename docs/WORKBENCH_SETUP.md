@@ -2088,10 +2088,10 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **179** lines with the tag, all but one in the game scripts (one is the comment in
+There are **181** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
-`Dialogue/`, two are the radio screen's, two the hold prompt's and four its animation and lock's in `Interactions/`), but one: the sites plugin's in
+`Dialogue/`, two are the radio screen's, two the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
 ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
@@ -2111,7 +2111,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (81)
+### Medium risk: big features, with a fallback (83)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2195,10 +2195,12 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Guidance/RZ_OpeningPlaces.c:447` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point, as before) and move the character after the hand-over instead |
 | `Guidance/RZ_OpeningPlaces.c:487` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
 | `Interactions/RZ_WorkSiteAction.c:186`, `:142` | the hold prompt at a work site: the prefab's `Duration 10` makes **RZ_WorkSiteAction** a timed hold with vanilla's progress ring; its progress comes from `GetActionProgressScript` on the holder's machine (the bar runs at 10 ÷ the site's seconds), `GetActionDuration` returns the 10, and `OnActionStart` runs there when the ring appears. Hold **Dig the latrine** (15 s) with a stopwatch; get hit by an infected half-way and watch the ring drop back | Without a Duration the prompt is instant: the server still counts the time at the site (*"Not finished"* until it's served), so the step is done by pressing it after standing there long enough. A wrong rate: set the action's Duration to the commonest hold (10) and live with the difference |
-| `Interactions/RZ_WorkHold.c:230` | `CharacterControllerComponent.SetDisableMovementControls(true)` on the player's own machine stops walking for a work site's hold while the hold key stays down and the camera still looks about (vanilla sets it for item placement); `false` gives the legs back | You can still walk off mid-hold (the bar then starts again past 1.5 m), or the look locks too, or the hold key stops counting: turn **Shared > Work sites > Lock movement** off and report which |
-| `Interactions/RZ_WorkHold.c:258` | `SCR_GadgetManagerComponent.SetGadgetMode(tool, IN_HAND)` draws a carried entrenching tool (vanilla's building-tool gadget) from the pack or a slot while the hold runs, within a couple of seconds | The tool stays put away: after 2.5 s the digging uses the hands animation instead. Take the tool in hand before you hold and it should dig |
-| `Interactions/RZ_WorkHold.c:277` | the item use vanilla's building makes (`TryUseItemOverrideParams` with `CMD_Item_Action`, argument 1, the held tool, no movement) loops the digging at a work site as at a vanilla build site, other players see it, and `FinishItemUse(true)` ends it | The tool is held still, or the digging never stops: turn **Dig with the tool** off (the hands animation is used) |
-| `Interactions/RZ_WorkHold.c:287` | the item use vanilla makes at a mine being disarmed (`CMD_Item_Action`, argument 0, on the thing itself, nothing in the hands) plays its kneel-and-work loop when the thing is our work site's invisible box, which is no item | Nothing plays (the engine refuses an entity with no item component: the lock still holds, and the work is done), or the character's hand is pulled to the box, or the box ends up in the hand: turn **Hands animation** off |
+| `Interactions/RZ_WorkHold.c:269` | `CharacterControllerComponent.SetDisableMovementControls(true)` on the player's own machine stops walking for a work site's hold while the hold key stays down and the camera still looks about (vanilla sets it for item placement); `false` gives the legs back | You can still walk off mid-hold (the bar then starts again past 1.5 m), or the look locks too, or the hold key stops counting: turn **Shared > Work sites > Lock movement** off and report which |
+| `Interactions/RZ_WorkHold.c:297` | `SCR_GadgetManagerComponent.SetGadgetMode(tool, IN_HAND)` draws a carried entrenching tool (vanilla's building-tool gadget) from the pack or a slot while the hold runs, within a couple of seconds | The tool stays put away: after 2.5 s the digging uses the hands animation instead. Take the tool in hand before you hold and it should dig |
+| `Interactions/RZ_WorkHold.c:316` | the item use vanilla's building makes (`TryUseItemOverrideParams` with `CMD_Item_Action`, argument 1, the held tool, no movement) loops the digging at a work site as at a vanilla build site, other players see it, and `FinishItemUse(true)` ends it | The tool is held still, or the digging never stops: turn **Dig with the tool** off (the hands animation is used) |
+| `Interactions/RZ_WorkHold.c:326` | `SetStanceChange(STANCECHANGE_TOCROUCH)` on the holder's own machine crouches them for work at a thing under 0.9 m (as the crouch key does, others see it, and the movement lock set after it doesn't stop it); `STANCECHANGE_TOERECTED` at the end stands them up if still crouched | They stand to work (no harm), or stay crouched after it (press the stance key) |
+| `Interactions/RZ_WorkHold.c:350` | vanilla's pick-up gesture (`TryPlayItemGesture(EItemGesturePickUp)`, no item named, as when taking something off the ground into the pack), played on the holder's own machine and again every 1.6 s while a work site's bar runs, shows them reaching down and taking hold, with empty hands or a weapon slung, others nearby see it, and the movement lock doesn't stop it | It returns false: the mine's item use (`:371`) is tried instead. It plays for the holder only: the item gestures' own replication; tell us |
+| `Interactions/RZ_WorkHold.c:371` | the item use vanilla makes at a mine being disarmed (`CMD_Item_Action`, argument 0, on the thing itself, nothing in the hands) plays its kneel-and-work loop when the thing is our work site's invisible box, which is no item. Now only tried when the pick-up gesture (`:350`) won't play | Nothing plays (most likely: the engine refuses an entity with no item component, which is why the first build showed nothing with no tool; the lock still holds, and the work is done), or the character's hand is pulled to the box, or the box ends up in the hand: turn **Hands animation** off |
 
 ### Low risk: contained or cosmetic (45)
 
@@ -4562,11 +4564,12 @@ on the talk screen says why something wasn't dealt)
   interact): vanilla's ring fills in about 15 s; let go half-way and it stops; walk off and it stops;
   get hit and it drops back to empty. **While you hold you can't walk and you work at it**: with an
   entrenching tool carried (in hand, then put away in the pack) you dig with it as at a vanilla
-  build site; with none you kneel and work with your hands (or stand still if the engine plays
-  nothing: say which). You can look about. Let go half-way: you can walk at once. Get hit: your
+  build site; with none you crouch and reach down and take hold, over and over, until the ring is
+  full, then stand up again (if you only stand still, say so, and whether the mine's kneel played
+  instead). You can look about. Let go half-way: you can walk at once. Get hit: your
   legs are free at once and the ring waits about a second and a half before it starts again. Die or
   go unconscious mid-hold, respawn: not stuck. With a pad the same. A second player watching says
-  what they saw you do (VERIFY `Interactions/RZ_WorkHold.c:230`, `:258`, `:277`, `:287`). Hold it through: the pit goes and the latrine screen stands
+  what they saw you do (VERIFY `Interactions/RZ_WorkHold.c:269`, `:297`, `:316`, `:326`, `:350`, `:371`). Hold it through: the pit goes and the latrine screen stands
   there; the step says *"That's done"* within 5 s. It's still there when you come back from the
   sergeant, and gone after you've been 200 m away.
 - [ ] A second player can't see your errand's prompt; a hold the server didn't count (pressed the

@@ -7,9 +7,14 @@
 //! - digging with an entrenching tool in hand is vanilla's building animation
 //!   (SCR_CampaignBuildingBuildUserAction: an item use with CMD_Item_Action, argument 1, the tool);
 //!   a tool carried but put away is taken in hand first;
-//! - any other work is the item use vanilla plays at a mine being disarmed (SCR_DisarmMineAction:
-//!   CMD_Item_Action, argument 0, on the thing itself), with nothing in the hands. If the engine
-//!   refuses it there's no animation, and the lock still holds.
+//! - any other work is done with the hands, with nothing in them: crouched when the thing is low (the
+//!   stance vanilla's own crouch key sets), reaching down and taking hold again and again (the
+//!   pick-up gesture vanilla plays when you take something from the ground, which needs no item),
+//!   played again every 1.6 s while the bar runs. Only if the engine won't play that gesture, the
+//!   item use vanilla plays at a mine being disarmed (SCR_DisarmMineAction: CMD_Item_Action,
+//!   argument 0, on the thing itself). The first build tried only that last one, and with no tool
+//!   nothing played: the site's box isn't an inventory item, which a mine is, so the engine
+//!   refuses it. Whatever plays, the lock still holds.
 //!
 //! The server decides nothing here and is asked nothing: it still counts the work its own way
 //! (RZ_WorkSites.WatchWorkers). A player is never left locked: the hold's end, letting go, a hit,
@@ -31,6 +36,8 @@ class RZ_WorkHold
 	protected static const string ITEM_COMMAND = "CMD_Item_Action";
 	protected static const int ARG_DIG = 1;			// vanilla's building: SCR_CampaignBuildingBuildUserAction
 	protected static const int ARG_HANDS = 0;		// vanilla's work at a thing on the ground: SCR_DisarmMineAction
+	protected static const float GESTURE_EVERY = 1.6;	// the hands' reach-and-take is played again this often (s)
+	protected static const float LOW = 0.9;			// a thing lower than this under the holder's feet + this is worked at crouched (m)
 
 	protected static bool s_bOn;
 	protected static IEntity s_User;
@@ -45,6 +52,9 @@ class RZ_WorkHold
 	protected static bool s_bLocked;
 	protected static bool s_bAnim;
 	protected static bool s_bWantTool;
+	protected static bool s_bGestures;		// the hands: the pick-up gesture, played again on the bar's frames
+	protected static float s_fNextGesture;
+	protected static bool s_bCrouched;		// crouched for the work: stood up again at the end
 
 	//------------------------------------------------------------------------------------------------
 	static bool IsOn()
@@ -102,6 +112,12 @@ class RZ_WorkHold
 
 		float now = RZ_UIW.Now();
 		s_fSeen = now;
+		if (s_bGestures && now >= s_fNextGesture)
+		{
+			s_fNextGesture = now + GESTURE_EVERY;
+			Gesture(s_User);
+		}
+
 		if (!s_bWantTool || s_bAnim)
 			return;
 
@@ -118,7 +134,7 @@ class RZ_WorkHold
 		{
 			s_bWantTool = false;
 			if ((s_iLook & LOOK_HANDS) != 0)
-				s_bAnim = StartHands(s_User, s_Site, s_fSeconds);
+				Hands();
 		}
 	}
 
@@ -148,6 +164,9 @@ class RZ_WorkHold
 		if (s_bAnim && s_User)
 			StopAnim(s_User);
 
+		if (s_bCrouched && s_User)
+			Stand(s_User);
+
 		if (s_bLocked)
 		{
 			if (s_User)
@@ -163,6 +182,8 @@ class RZ_WorkHold
 		s_bLocked = false;
 		s_bAnim = false;
 		s_bWantTool = false;
+		s_bGestures = false;
+		s_bCrouched = false;
 		s_Action = null;
 		s_User = null;
 		s_Site = null;
@@ -204,7 +225,25 @@ class RZ_WorkHold
 		}
 
 		if ((s_iLook & LOOK_HANDS) != 0)
-			s_bAnim = StartHands(s_User, s_Site, s_fSeconds);
+			Hands();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Work with the hands: crouched at a low thing, the reach-and-take played over and over; if the
+	//! engine won't play it, the mine's item use on the thing.
+	protected static void Hands()
+	{
+		if (s_Site && s_User && s_Site.GetOrigin()[1] < s_User.GetOrigin()[1] + LOW)
+			s_bCrouched = Crouch(s_User);
+
+		if (Gesture(s_User))
+		{
+			s_bGestures = true;
+			s_fNextGesture = RZ_UIW.Now() + GESTURE_EVERY;
+			return;
+		}
+
+		s_bAnim = StartHands(s_User, s_Site, s_fSeconds);
 	}
 
 	// ================================================================ Engine calls
@@ -281,6 +320,51 @@ class RZ_WorkHold
 	protected static bool StartDig(IEntity user, IEntity tool, float seconds)
 	{
 		return UseItem(user, tool, ARG_DIG, seconds, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Down on one knee for the work, if standing. True if it crouched. VERIFY: SetStanceChange
+	//! (STANCECHANGE_TOCROUCH) on the player's own machine crouches them as the crouch key does,
+	//! others see it, and the movement lock set after it doesn't stop it. Wrong: they stand to work.
+	protected static bool Crouch(IEntity user)
+	{
+		CharacterControllerComponent controller = Controller(user);
+		if (!controller || controller.GetStance() != ECharacterStance.STAND)
+			return false;
+
+		controller.SetStanceChange(ECharacterStanceChange.STANCECHANGE_TOCROUCH);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Up again after the work, if still crouched as the work left them.
+	protected static void Stand(IEntity user)
+	{
+		CharacterControllerComponent controller = Controller(user);
+		if (controller && !controller.IsDead() && controller.GetStance() == ECharacterStance.CROUCH)
+			controller.SetStanceChange(ECharacterStanceChange.STANCECHANGE_TOERECTED);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The hands reach down and take hold: vanilla's pick-up gesture, which it plays when you take
+	//! something off the ground into the pack, with no item named. True if it played. VERIFY: played
+	//! again every 1.6 s while the bar runs, TryPlayItemGesture(EItemGesturePickUp) on the player's own
+	//! machine shows the reach for them and for others nearby (as a pick-up from the ground does), with
+	//! empty hands or a weapon slung, and the movement lock doesn't stop it. Wrong (false): the mine's
+	//! item use is tried; it playing but nobody else seeing it is the item gestures' own replication.
+	protected static bool Gesture(IEntity user)
+	{
+		CharacterControllerComponent controller = Controller(user);
+		if (!controller || controller.IsDead() || controller.IsUnconscious())
+			return false;
+
+		if (controller.IsPlayingItemGesture())
+			return true;
+
+		if (!controller.CanPlayItemGesture())
+			return false;
+
+		return controller.TryPlayItemGesture(EItemGesture.EItemGesturePickUp);
 	}
 
 	//------------------------------------------------------------------------------------------------
