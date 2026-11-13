@@ -250,7 +250,6 @@ tables below).
 | Filter Parts | **Take the filter housing off** | 8 s | a toolbox and parts → nothing (fitted, packed away) |
 | Filter Parts | **Take the part off** | 6 s | a toolbox and parts → nothing (fitted, packed away) |
 | The Burying | **Dig the grave** | 15 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
-| The Round | **See to the sick** | 20 s | a mattress, a blanket, a bucket → the same (it stays) |
 | The Newcomer | **Search the shops for a coat** | 8 s | a crate of odds and ends → rummaged clutter |
 | The Newcomer | **Check the newcomer over** | 9 s | a mattress, a blanket, a bucket → the same (it stays) |
 | Make It Right | **Fill the water cans** | 7 s | empty cans and buckets → nothing (carried off) |
@@ -379,7 +378,7 @@ Some routines answer a small real fault at a place (`RZ_Faults`), rolled at most
 | **Filter Parts** | safehouse, the storekeeper | the water fault, 8+ people, Known | The pump house part at the next town (25 s; [Mechanic or Lab Tech] 12 s): 8 Favor, fixed |
 | **The Gate at Dusk** | safehouse, the lookout | dusk near, one guard or none, a town at 60+ infection within 1.5 km, not Every Ridge Calls | Stand at the gate 10 real min: 5 Favor |
 | **The Burying** | safehouse, the clerk | someone died at the house lately | Dig the grave at the edge of town (hold, 15 s; a grave stands there after): 3 Favor; a world record |
-| **The Round** | safehouse, the clerk | [Nurse or Doctor], no medic, 4+ people | A minute at each bed (2 min): 4 Favor |
+| **The Round** | safehouse, the clerk | [Nurse or Doctor], no medic, 4+ people | Go round the sick at their beds ([below](#the-round-at-the-beds)): 4 Favor, less for the wrong calls (no Fame unless every call was right), 2 more for every one right |
 | **The Newcomer** | safehouse, the clerk | the house took someone in this season day | A coat from the next town (20 s), or [Nurse or Doctor] check him over (30 s): 4 Favor |
 | **The Children's Hour** | safehouse | 5+ people, 08:00–17:00 | Watch the yard 5 real min: 4 Favor |
 | **Make It Right** (amends) | safehouse, the lookout | the Haven Watches you | Keep the gate (3 min) or carry the night water (15 s at the next town): amends |
@@ -410,6 +409,52 @@ Some routines answer a small real fault at a place (`RZ_Faults`), rolled at most
 
 *Simplified:* His Lighter's "crewman" is anyone who died near the camp, and The Market's ring is found
 at the party's spot as a step, not as an item.
+
+### The Round at the beds
+
+✅ Played as a scene (`Missions/Errands/RZ_DutyRound.c`, the duties' scene engine), laid out when it's
+taken. Two to four of the sick, each with a name and one of ten conditions (a fever going round the
+town, a cut gone bad, a bite hidden under a sleeve, hunger from giving their food to the children, a
+broken wrist, a child waiting for their mother, an old man who's stopped trying, a chest that's
+worse lying flat, a burn, and a wound too far gone), at most one of each.
+
+**Where they lie**, in this order, with the place and every piece's fit or drop in the log
+(`Errands: The Round: ...`):
+
+| Where | When | How it fits |
+|---|---|---|
+| Indoors | the house's ground floor has room for two cots or more | Against the walls, on the loose loot's floor points of the lowest storey, a cot (**Props > Round bed**) each: its long side to the wall, else its foot to the room, a little further out each try. Its measured box needs a floor under every corner (a downward trace) and nothing in the way at knee or chest height, and keeps a person's width from the other cots |
+| Under a tent | not indoors | A canvas shelter (**Props > Round tent**) 6–14 m from the house, its open front away from it, else sideways: its box clear at knee and chest, level within 0.6 m, nothing over it. Up to 8 spots tried. The cots under it are laid out as JTF Bronze Props' casualty point lays them (three side by side, a fourth across the back); one whose box isn't clear is left out |
+| In the yard | neither | Cots 4–10 m from the house, their long side to the wall, each box clear, level within 0.3 m, nothing over it and apart from the others; a cot that won't fit is left out |
+
+Nothing is squeezed in: what doesn't fit is dropped. With no Round bed (or one that was never
+measured) there's nothing indoors and they lie on the ground under the tent or in the yard. If
+nowhere takes even one, the clerk says so and the errand pays nothing. The measured boxes are the
+cot's and the shelter's in `tools/camp_kit/footprints.json` ([SITES.md](SITES.md#real-footprints)),
+copied into `RZ_DutyRound.Box`. The cots and the tent go when the errand ends.
+
+**At each bed.** The patient lies on the cot (vanilla's unconscious state, so they lie still) and
+is a duty's person on the talk screen: only the bed you're at answers, the others are waiting their
+turn. Their conversation (`dialogue/duties/round.rzd`) is what they say, what happened to them and
+what they need. The bed's work sites stand along its open side, not in the wall:
+
+- **Five looks, time for three:** feel their brow, look them over for a wound, listen to their
+  breathing, look in their eyes, and ask what happened (also asked on the talk screen). Each tells
+  you something; together they tell you what it is.
+- **Three things to do, one right:** water and a cool cloth, clean and dress it [1 med], fetch
+  the clerk quietly (a bite: counts as reporting it), something to eat [1 food], splint and sling it
+  [1 med], sit with them and talk (morale), sit them up and get them talking, sit them up and keep
+  them up, cool water then a loose dressing [1 med], send for the medic from the next house. The
+  wrong one uses what it uses and does nothing for them, and they let you see that.
+- **A bite missed:** if the hidden bite was treated as something else, before the round's done the
+  patient sits up turned. The house deals with it: morale down, the town 2 more infected, and the
+  clerk tells you two of theirs are being stitched.
+
+**Pay**, scored as a duty's scene is: 4 Favor and what the choices earned; less for the wrong
+calls and no Fame then; every call right, 2 Favor more and the clerk says so.
+
+*Simplified:* the patient's lying pose is vanilla's unconscious state; the turned patient is told,
+not spawned as an infected.
 
 Four missions left the random pool for these and are gone from the code: Fuel for the Lights
 (Lights), Water Purifier (Filter Parts), Water Run (Water for {house}) and Medicine Before Dark

@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **361 prefab fields**: 46 on `RZ_GameModeComponent`, 298 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **339 entries**: 201 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 101 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **363 prefab fields**: 46 on `RZ_GameModeComponent`, 300 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **341 entries**: 201 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 103 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -555,6 +555,8 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | a standing civilian with no weapon and no AI, or a prop figure (`RZ_DutyPerson.et`) | — | Missions > Errands > Props > Duty person | optional | someone waiting in the line at the gate (The Line at the Door, The Wash-Down, The Look-Over, Intake): stands there until taken by the arm; empty = Puzzles > Civilian. A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | a small rack or case of vials (`RZ_DutyTray.et`; a vanilla medical case will do) | — | Missions > Errands > Props > Duty tray | optional | a sample tray set out for Bench Work; empty = Props > Crate. A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | BanditGear's vodka bottle (an existing prefab from the stack) | — | Missions > Errands > Props > Duty vodka | optional | the bottle The Still gives whoever ran the batch; empty = no bottle, only the pay. Put in the player's pack |
+| (existing prefab) | the base game's US army cot (set by default); only a prop measured in tools/camp_kit/footprints.json and known to RZ_DutyRound.Box is used | — | Missions > Errands > Props > Round bed | optional | the cot each of The Round's sick lies on, indoors, under the tent or in the yard; empty = no cots: they lie on the ground in the tent or yard, and never indoors. Placed by its measured box: dropped, never squeezed, where it doesn't fit. Gone when the errand ends |
+| (existing prefab) | the base game's medium US canvas shelter (set by default); only a prop measured in tools/camp_kit/footprints.json and known to RZ_DutyRound.Box is used | — | Missions > Errands > Props > Round tent | optional | the shelter The Round's sick lie under by the safehouse wall when the house has no room; empty = the yard by the wall. Placed by its measured box: clear, level, nothing over it. Gone when the errand ends |
 | `RZ_SoldiersID_Carried.et` | shipped as text: our item child with an RZ_MissionItemComponent added (it can't be equipped, no mission's drop takes it). Open it once in Workbench | `RZ_MissionItemComponent` | Missions > Errands > Props > Soldier's ID | optional | the card The Patrol That Didn't Come Back carries home; empty = Props > Carried. Put in the player's pack as a carried item |
 | `RZ_Passport_Forged.et` | shipped as text: our item child with an RZ_MissionItemComponent added (it can't be equipped, no mission's drop takes it). Open it once in Workbench | `RZ_MissionItemComponent` | Missions > Errands > Props > Forged papers | optional | the set False Hope at the Line buys off the forger; empty = Props > Carried. Put in the player's pack as a carried item |
 | `RZ_Show_Cash.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' StackofCash mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Cash | optional | banknotes on the swap table and the count's tarp; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
@@ -2086,10 +2088,10 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **177** lines with the tag, all but one in the game scripts (one is the comment in
+There are **181** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
-`Dialogue/`, two are the radio screen's, two the hold prompt's and four its animation and lock's in `Interactions/`), but one: the sites plugin's in
+`Dialogue/`, two are the radio screen's, two the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
 ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
@@ -2109,7 +2111,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (79)
+### Medium risk: big features, with a fallback (83)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2176,6 +2178,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Missions/Errands/RZ_Strangers.c:833` | the road network's `GetRoadsInAABB` gives a junction's roads as pieces that end at it (three ends within 25 m), so junctions of used roads count as crossroads | Strangers keep the road posts' crossroads; nothing else changes |
 | `Missions/Errands/RZ_Strangers.c:1209` | a dead stranger's inventory (`GetItems` on the body) shrinks when a player takes from it, so robbing one is told | No robbery is ever told; killing one still costs what it did |
 | `Missions/Errands/RZ_ErrandsDealer.c:260` | a local's labels set and cleared on its body as a knower comes and goes reach clients (the same labels for everyone near: per-player labels need an engine check) | A local shows to anyone near while a knower is there, as before |
+| `Missions/Errands/RZ_DutyRound.c:464` | `CharacterControllerComponent.SetUnconscious(true)` on a freshly spawned civilian with no AI, on the server, lays The Round's sick down for every client, they stay down, and the talk prompt on them still shows | They stand (or the prompt is gone): the beds are still seen to with your hands at their work sites; set **Props > Duty person** to a prop figure lying down, or lie them down another way |
+| `Missions/Errands/RZ_DutyRound.c:326` | a body laid down at a cot's top (0.45 m: its measured 0.51 less the sag) settles on it, not through it or floating over it | Lying in or over the cot: change `COT_TOP` in `RZ_DutyRound.c` |
 | `Missions/RZ_MissionGoods.c:6` | an item tagged as someone's goods keeps its entity through inventory moves, a body and a car's boot (the list holds entities, like the fence's bought list) | A tagged ration or carried item may count as ordinary food after a move; pay in kind can be left empty (**Props > Pay ration**) |
 | `Zombies/RZ_TribeProps.c:68`, `:354` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
 | `Zombies/RZ_TribeRest.c:987` | a dead leader's body withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stays where it fell through the vigil, and goes when it's inserted again at dawn | The body goes with the engine's usual cleanup; the vigil, its samples and its lines are unchanged |
@@ -2191,10 +2195,12 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Guidance/RZ_OpeningPlaces.c:447` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point, as before) and move the character after the hand-over instead |
 | `Guidance/RZ_OpeningPlaces.c:487` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
 | `Interactions/RZ_WorkSiteAction.c:186`, `:142` | the hold prompt at a work site: the prefab's `Duration 10` makes **RZ_WorkSiteAction** a timed hold with vanilla's progress ring; its progress comes from `GetActionProgressScript` on the holder's machine (the bar runs at 10 ÷ the site's seconds), `GetActionDuration` returns the 10, and `OnActionStart` runs there when the ring appears. Hold **Dig the latrine** (15 s) with a stopwatch; get hit by an infected half-way and watch the ring drop back | Without a Duration the prompt is instant: the server still counts the time at the site (*"Not finished"* until it's served), so the step is done by pressing it after standing there long enough. A wrong rate: set the action's Duration to the commonest hold (10) and live with the difference |
-| `Interactions/RZ_WorkHold.c:230` | `CharacterControllerComponent.SetDisableMovementControls(true)` on the player's own machine stops walking for a work site's hold while the hold key stays down and the camera still looks about (vanilla sets it for item placement); `false` gives the legs back | You can still walk off mid-hold (the bar then starts again past 1.5 m), or the look locks too, or the hold key stops counting: turn **Shared > Work sites > Lock movement** off and report which |
-| `Interactions/RZ_WorkHold.c:258` | `SCR_GadgetManagerComponent.SetGadgetMode(tool, IN_HAND)` draws a carried entrenching tool (vanilla's building-tool gadget) from the pack or a slot while the hold runs, within a couple of seconds | The tool stays put away: after 2.5 s the digging uses the hands animation instead. Take the tool in hand before you hold and it should dig |
-| `Interactions/RZ_WorkHold.c:277` | the item use vanilla's building makes (`TryUseItemOverrideParams` with `CMD_Item_Action`, argument 1, the held tool, no movement) loops the digging at a work site as at a vanilla build site, other players see it, and `FinishItemUse(true)` ends it | The tool is held still, or the digging never stops: turn **Dig with the tool** off (the hands animation is used) |
-| `Interactions/RZ_WorkHold.c:287` | the item use vanilla makes at a mine being disarmed (`CMD_Item_Action`, argument 0, on the thing itself, nothing in the hands) plays its kneel-and-work loop when the thing is our work site's invisible box, which is no item | Nothing plays (the engine refuses an entity with no item component: the lock still holds, and the work is done), or the character's hand is pulled to the box, or the box ends up in the hand: turn **Hands animation** off |
+| `Interactions/RZ_WorkHold.c:269` | `CharacterControllerComponent.SetDisableMovementControls(true)` on the player's own machine stops walking for a work site's hold while the hold key stays down and the camera still looks about (vanilla sets it for item placement); `false` gives the legs back | You can still walk off mid-hold (the bar then starts again past 1.5 m), or the look locks too, or the hold key stops counting: turn **Shared > Work sites > Lock movement** off and report which |
+| `Interactions/RZ_WorkHold.c:297` | `SCR_GadgetManagerComponent.SetGadgetMode(tool, IN_HAND)` draws a carried entrenching tool (vanilla's building-tool gadget) from the pack or a slot while the hold runs, within a couple of seconds | The tool stays put away: after 2.5 s the digging uses the hands animation instead. Take the tool in hand before you hold and it should dig |
+| `Interactions/RZ_WorkHold.c:316` | the item use vanilla's building makes (`TryUseItemOverrideParams` with `CMD_Item_Action`, argument 1, the held tool, no movement) loops the digging at a work site as at a vanilla build site, other players see it, and `FinishItemUse(true)` ends it | The tool is held still, or the digging never stops: turn **Dig with the tool** off (the hands animation is used) |
+| `Interactions/RZ_WorkHold.c:326` | `SetStanceChange(STANCECHANGE_TOCROUCH)` on the holder's own machine crouches them for work at a thing under 0.9 m (as the crouch key does, others see it, and the movement lock set after it doesn't stop it); `STANCECHANGE_TOERECTED` at the end stands them up if still crouched | They stand to work (no harm), or stay crouched after it (press the stance key) |
+| `Interactions/RZ_WorkHold.c:350` | vanilla's pick-up gesture (`TryPlayItemGesture(EItemGesturePickUp)`, no item named, as when taking something off the ground into the pack), played on the holder's own machine and again every 1.6 s while a work site's bar runs, shows them reaching down and taking hold, with empty hands or a weapon slung, others nearby see it, and the movement lock doesn't stop it | It returns false: the mine's item use (`:371`) is tried instead. It plays for the holder only: the item gestures' own replication; tell us |
+| `Interactions/RZ_WorkHold.c:371` | the item use vanilla makes at a mine being disarmed (`CMD_Item_Action`, argument 0, on the thing itself, nothing in the hands) plays its kneel-and-work loop when the thing is our work site's invisible box, which is no item. Now only tried when the pick-up gesture (`:350`) won't play | Nothing plays (most likely: the engine refuses an entity with no item component, which is why the first build showed nothing with no tool; the lock still holds, and the work is done), or the character's hand is pulled to the box, or the box ends up in the hand: turn **Hands animation** off |
 
 ### Low risk: contained or cosmetic (45)
 
@@ -2885,6 +2891,13 @@ session, tick off:
   the lab's stock, or on the Red Hand's black market): three beds, then the card; the stock is one
   less after, and nothing comes into your pack.
   Ask for any of the Trusted ones again the same season day: it isn't offered.
+- [ ] The Round ([ERRANDS.md](ERRANDS.md#the-round-at-the-beds)), as a Nurse or Doctor at a house with no
+  medic and 4+ people: the log's `Errands: The Round` lines say where the sick lie (indoors, under the
+  tent, in the yard) and every cot's fit or drop. Look: no cot or shelter in a wall, floating, sunk
+  into the floor or overlapping another; the sick lie still on the cots, not through them; the work
+  sites stand on the room side of each bed. Talk to the one you're at (the others say wait); a
+  wrong call on the hidden bite brings the turned line before the round ends. All of it is gone
+  when the errand ends.
 - [ ] The Haven's duties ([ERRANDS.md](ERRANDS.md#the-havens-duties)): by day at a safehouse, the
   school room (count, then four places to look 9 m off, each a prompt of its own) and the garden
   (dig a bed; ask again after the gap: the same bed now wants planting, then water, and two season
@@ -4555,11 +4568,12 @@ on the talk screen says why something wasn't dealt)
   interact): vanilla's ring fills in about 15 s; let go half-way and it stops; walk off and it stops;
   get hit and it drops back to empty. **While you hold you can't walk and you work at it**: with an
   entrenching tool carried (in hand, then put away in the pack) you dig with it as at a vanilla
-  build site; with none you kneel and work with your hands (or stand still if the engine plays
-  nothing: say which). You can look about. Let go half-way: you can walk at once. Get hit: your
+  build site; with none you crouch and reach down and take hold, over and over, until the ring is
+  full, then stand up again (if you only stand still, say so, and whether the mine's kneel played
+  instead). You can look about. Let go half-way: you can walk at once. Get hit: your
   legs are free at once and the ring waits about a second and a half before it starts again. Die or
   go unconscious mid-hold, respawn: not stuck. With a pad the same. A second player watching says
-  what they saw you do (VERIFY `Interactions/RZ_WorkHold.c:230`, `:258`, `:277`, `:287`). Hold it through: the pit goes and the latrine screen stands
+  what they saw you do (VERIFY `Interactions/RZ_WorkHold.c:269`, `:297`, `:316`, `:326`, `:350`, `:371`). Hold it through: the pit goes and the latrine screen stands
   there; the step says *"That's done"* within 5 s. It's still there when you come back from the
   sergeant, and gone after you've been 200 m away.
 - [ ] A second player can't see your errand's prompt; a hold the server didn't count (pressed the

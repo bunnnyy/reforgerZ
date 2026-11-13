@@ -80,7 +80,7 @@ class RZ_WorkSiteSettings
 	[Attribute("1", desc: "Lock movement: while the hold runs you can't walk (as with vanilla's building). It's let go the moment the hold ends, you're hit or you go down. Off = you can walk off, and past 1.5 m the bar starts again")]
 	bool m_bLockMovement;
 
-	[Attribute("1", desc: "Hands animation: while the hold runs you work with your hands at the thing (the animation vanilla plays at a mine being disarmed). Off = no animation unless digging with a tool")]
+	[Attribute("1", desc: "Hands animation: while the hold runs you work with your hands at the thing: crouched at a low one, reaching down and taking hold again and again (vanilla's pick-up gesture; if that won't play, the item use vanilla plays at a mine being disarmed). Off = no animation unless digging with a tool")]
 	bool m_bHandsAnimation;
 
 	[Attribute("1", desc: "Dig with the tool: at a latrine, a grave or a dig, a carried entrenching tool is taken in hand and vanilla's building animation plays. The tool is never needed: without one, the hands animation")]

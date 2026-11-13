@@ -1434,9 +1434,14 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
   - **Digging** (**Dig with the tool**, on): at a latrine, a grave or a dig, a carried
     entrenching tool is taken in hand and vanilla's building animation plays with it. The tool is
     never needed: the work takes the same time and is done the same without one.
-  - **Any other work, or digging with no tool** (**Hands animation**, on): the animation
-    vanilla plays at a mine being disarmed, kneeling at the thing with empty hands. If the engine
-    won't play it at a work site, nothing plays and the lock still holds.
+  - **Any other work, or digging with no tool** (**Hands animation**, on): crouched when the thing
+    is low (under 0.9 m above your feet: the stance vanilla's crouch key sets, stood up again at
+    the end if you're still crouched), reaching down and taking hold over and over: vanilla's
+    pick-up gesture (what it plays when you take something off the ground into the pack, which
+    needs no item), played again every 1.6 s while the bar runs. Only if the engine won't play that,
+    the item use vanilla plays at a mine being disarmed, on the thing itself. That item use was the
+    first build's only animation, and with no tool nothing played: the site's box isn't an
+    inventory item (a mine is), so the engine refuses it. Whatever plays, the lock still holds.
   - **Let go, always.** The hold's end, letting go, the site going, death, unconsciousness or
     another body release both at once. A hit frees the hands and legs for a second and a half
     (time to turn and run) before the bar starts again. As a net, the HUD's tick releases a hold
