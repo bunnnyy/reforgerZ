@@ -506,6 +506,9 @@ The game clock's night is 20:30 to 05:00.
   (no Last Helicopter contract), and wanderers shelter.
 - Players hear one line when rain or fog sets in, at most every 20 minutes each.
 - Fog, fog banks, rain and storms also make you harder to see ([Stealth](#stealth)).
+- The Atmospheric Weather Mod ([MOD_STACK.md](MOD_STACK.md#fire-and-weather)) replaces vanilla's
+  weather states with more fog, storm and wind. Only rain, fog and wind are read here, so its
+  weather counts like any other.
 - **Fog banks** (the Fog Bank event): one region at a time where heat added is ×0.6 and infected
   may spawn twice as close. The engine's fog is global, so it isn't touched; an optional mist
   prop is the only look.
@@ -2570,12 +2573,12 @@ picked-over one is thin.
 
 | Building type (from the prefab name) | What it tends to have | Items (slots) |
 |---|---|---|
-| Pharmacy (pharmacy, hospital, clinic) | Field dressings, gauze, aspirin, tourniquets, saline, medical gloves; rare: morphine, a medical bag | 8 |
-| Garage (garage, workshop, repair, fire station) | Jerrycans, the wrench kit, torches, work gloves, a hard hat, overalls, maps | 8 |
-| Farm (farm, barn, stable, shed, vet clinic) | Food, canteens, wool gloves and hats, raincoats, jerrycans; rare: binoculars, a compass, a backpack | 7 |
-| Police (police, gendarmerie) | Pistol and rifle magazines, torches, dressings, tourniquets, caps, gloves; rare: a pistol, a vest, a helmet, a radio | 8 |
-| Shop (shop, store, market, kiosk, petrol station, pub) | Food, canteens, torches, watches, maps, gloves and hats | 7 |
-| House (anything else) | Food, water, dressings, aspirin, a torch, a watch, a map, clothes | 5 |
+| Pharmacy (pharmacy, hospital, clinic) | Field dressings, gauze, aspirin, tourniquets, saline, medical gloves, face masks; rare: morphine, a medical bag, a gas mask, a hazmat suit | 10 |
+| Garage (garage, workshop, repair, fire station) | Jerrycans, the wrench kit, torches, work gloves, a hard hat, a fireman's helmet, overalls, a spade, maps; rare: a fire axe, a gas mask, an oxygen tank, a backpack | 10 |
+| Farm (farm, barn, stable, shed, vet clinic) | Food, raw meat, water, canteens, wood, wool gloves and hats, overalls, raincoats, a spade, jerrycans; rare: a fire axe, a machete, a knife, binoculars, a compass, a backpack | 9 |
+| Police (police, gendarmerie) | Pistol and rifle magazines, torches, dressings, tourniquets, caps, gloves, a holster, police trousers, a prisoner's uniform; rare: a pistol (PM or M9), a Vz. 58 rifle, smoke grenades, a vest, a helmet, a radio | 10 |
+| Shop (shop, store, market, kiosk, petrol station, pub) | Food, water, canteens, vodka, cigarettes, torches, watches, maps, gloves, hats and caps, a waist pack; rare: binoculars, a compass, a hiking backpack | 9 |
+| House (anything else) | Food, water, dressings, aspirin, a torch, a watch, a map, wood, clothes, someone's belongings; rare: a knife, binoculars, a compass, a backpack | 6 |
 
 Every destructible building has loot, whatever else its name makes it (a petrol station's
 building is a shop).
@@ -2584,14 +2587,25 @@ building is a shop).
   **Loot pool** items whose prefab names hold the type's keywords, always with the **built-in
   vanilla items** for the type added (the table above; `RZ_LootDefaults` in
   `Interactions/RZ_Search.c`), so a type's table is wide and no type is bare when the pool is
-  short or empty. A list set by hand is kept as it is, topped up with the built-in items only
-  while it's thin (fewer than 8 everyday finds, or 3 rare ones). The log's `Search:` line gives
-  each table's size.
+  short or empty. **Extra finds** (Search) then add items to one type's table on top: items no
+  keyword reaches, and items that belong in one kind of place only (a fire axe in garages and
+  farms). The game mode sets 41 of them, from the base game and from mods already in the stack
+  ([MOD_STACK.md](MOD_STACK.md#what-the-stack-gives-the-loot)). A list set by hand is kept as it
+  is: no extra finds, and topped up with the built-in items only while it's thin (fewer than 8
+  everyday finds, or 3 rare ones). Every item in a list is equally likely, so a longer list means
+  less of each: the slots per building were raised with the extra finds to keep food and medicine
+  as common as before. The log's `Search:` lines give each table's size and how many extra finds
+  were added.
+- **Food counts twice with Metabolism loaded** (an accident, kept for now): the mod brings its own
+  copies of the MRE, the crackers and the dried meat, spelled `prefabs/...`, so the pool's entries
+  and the built-in `Prefabs/...` ones don't match and both go into the table. Each of the three is
+  twice as likely as any other everyday find (the house table is 34 long, not 31). Matching them
+  by GUID would halve food in houses, shops and farms.
 - **Rolled once, then data.** The first time a player comes near, each of the building's slots
   holds something **75%** of the time (**Loot > Slot chance**) × the town's loot level, half that
   in a faction's town (a holding within 150 m). The first two slots (**Sure items**) always do
   while the town's loot level is 0.5 or more, one in a picked-over town. So a house in a fresh
-  town has 2 to 5 things, about 4, and one in a picked-over town one or two. No prefab is rolled
+  town has 3 to 6 things, about 5, and one in a picked-over town two or three. No prefab is rolled
   twice in one building unless it comes in twos (food, magazines, dressings, gauze, tablets): a
   slot that keeps drawing one already there stays empty. 10% of finds are rare (20% behind a
   lock), 10% electronics (×1.5 in powered towns). A locked place (a seeded lock on outside doors
@@ -2657,8 +2671,8 @@ a low shelf or in a corner. Wrecks' boots and bodies hold their things (below).
 
 | What | What it tends to have |
 |---|---|
-| Body (an infected killed within 60 m of a player) | Bandages, ammo, small things; sometimes a key or something to read |
-| A wreck's boot | Jerrycans, tools, rope, batteries, tyres; sometimes a car part |
+| Body (an infected killed within 60 m of a player) | Dressings, magazines, food, vodka, cigarettes, a watch, someone's belongings; rare: morphine, a knife, a smoke grenade; sometimes a key or something to read |
+| A wreck's boot | Jerrycans, the wrench kit, a spade, food, water, a torch, a map; rare: binoculars, a hiking backpack; sometimes a car part |
 
 **Bodies are looted with the vanilla inventory.** There's no prompt: when an infected dies within
 60 m of a player, what it carries is rolled at once: something 60% of the time, sometimes two
@@ -2810,6 +2824,14 @@ town); every other wreck is just a wreck, and is never fixable. A fixable car st
 as the car it will become (one of the **Car prefabs**, named after it: "the beige saloon"), parked
 and locked so nobody can get in, with its prompts in front of its grille.
 
+**It always has room to stand.** A car's box (a little wider and longer than the car, with the
+spot at its grille) must be on dry, near-level ground with nothing across it at bumper and window
+height and nothing overhead: no wall, fence, tree, step, roof or porch (`Interactions/RZ_CarRoom.c`).
+It's asked when the spot is picked and again the first time the car is put out near a player, when
+everything around it is there. A car with no room is moved to the nearest free spot within 40 m,
+at a heading that fits, and the log says so; a saved car standing in a wall is moved the same way.
+While no free spot is found it stays put away and is asked again.
+
 | Step | How | Settings (defaults) |
 |---|---|---|
 | **Look over the car** | Says what's missing: two or three of fuel, a battery, a tyre, spark plugs, all different (on the repair screen, below, where it's used) | **Min parts** 2, **Max parts** 3 |
@@ -2818,14 +2840,6 @@ and locked so nobody can get in, with its prompts in front of its grille.
 | **Hotwire** | Long and loud: 45 s, half its heat when you start and all of it at the end. It fails about one time in three: the starter grinds, the heat is made all the same, and you try again. A Mechanic does it in 15 s and fails one time in ten | 45 s, Mechanic 15 s, 20 heat, fail 0.35, Mechanic 0.1 |
 | **Or its keys** | Only a fifth of cars have keys in a house in their town: each building rolled there holds them one time in ten, lying with its loot (picking them up is finding them). A Mechanic wanderer who likes you may hand them over | keys 0.2, find 0.1 |
 | **Start the engine** | 15 heat. The parked copy becomes the drivable car with a quarter tank, and from then on it's vanilla | |
-
-**It always has room to stand.** A car's box (a little wider and longer than the car, with the
-spot at its grille) must be on dry, near-level ground with nothing across it at bumper and window
-height and nothing overhead: no wall, fence, tree, step, roof or porch (`Interactions/RZ_CarRoom.c`).
-It's asked when the spot is picked and again the first time the car is put out near a player, when
-everything around it is there. A car with no room is moved to the nearest free spot within 40 m,
-at a heading that fits, and the log says so; a saved car standing in a wall is moved the same way.
-While no free spot is found it stays put away and is asked again.
 
 A new project turns up elsewhere six hours after one is started. Projects in a save keep the parts
 they were missing.

@@ -5496,6 +5496,28 @@
    "notes": ""
   },
   {
+   "id": "LootExtras",
+   "kind": "manual",
+   "system": "Hand-set list entries",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "items of the base game and the Workshop dependencies",
+   "components": [],
+   "actions": [],
+   "slots": [
+    "m_SearchSettings.m_aExtras[].m_aCommon",
+    "m_SearchSettings.m_aExtras[].m_aRare",
+    "m_SearchSettings.m_aExtras[].m_aElectronics"
+   ],
+   "listSlot": true,
+   "slotLabel": "Interactions > Search > Extra finds (each entry's three lists)",
+   "required": false,
+   "minimum": false,
+   "use": "items added to one building type's table on top of the pool and the built-in items (set: 41 items of the base game and the stack's mods; a list set by hand in Loot tables gets none)",
+   "notes": ""
+  },
+  {
    "id": "ExtraRecipes",
    "kind": "manual",
    "system": "Hand-set list entries",
@@ -6765,13 +6787,13 @@
    "category": "Interactions",
    "object": "Search",
    "field": "m_SearchSettings",
-   "covers": "**Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15)"
+   "covers": "**Loot pool**, loot tables, **Extra finds** (items added to one building type's table), chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15)"
   },
   {
    "category": "Interactions",
    "object": "Loot",
    "field": "m_LootSettings",
-   "covers": "**Loose loot** (on; off = nothing lies in houses), put out within 35 m, put away past 60 m (after a minute), **refill** (60 min ÷ the town's loot level), at most 220 items lying on the server, items at most per building (house 2, shop and farm 3, pharmacy, police and garage 4; locked +1), town loot per item taken (0.015) ([DESIGN.md](DESIGN.md#loot-in-houses))"
+   "covers": "**Loose loot** (on; off = nothing lies in houses), put out within 55 m (6 buildings a tick), put away past 80 m (after a minute), never rolled fresh with a player within 20 m, **refill** (45 min ÷ the town's loot level), at most 500 items lying on the server, slots per building (house 6, shop and farm 9, pharmacy, police and garage 10; locked +1), slot chance 0.75, 2 sure items, town loot per item taken (0.01), kept clear 20 m past a faction's place, the loot log (on) ([DESIGN.md](DESIGN.md#loot-in-houses))"
   },
   {
    "category": "Interactions",
@@ -7663,9 +7685,9 @@
     "m_fRefillMinutes": "45",
     "m_iMaxLying": "500",
     "m_iPlacePerTick": "6",
-    "m_iMaxHouse": "5",
-    "m_iMaxShop": "7",
-    "m_iMaxSpecial": "8",
+    "m_iMaxHouse": "6",
+    "m_iMaxShop": "9",
+    "m_iMaxSpecial": "10",
     "m_fSlotChance": "0.75",
     "m_iSureItems": "2",
     "m_fTownLootPerItem": "0.01",

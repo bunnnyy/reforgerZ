@@ -99,6 +99,43 @@ Workshop's; the server downloads their own dependencies (Functional Knives, IH_B
 scripts and stops the game's script module compiling on 1.9 (`SCR_CampaignBuildingLayoutComponent.c`:
 `TRAIT_BUILDING_OVERRIDE_KEEP_BUSH` not found). Don't add it until it's updated.
 
+## Fire and weather
+
+Dependencies in `addon.gproj` since 2026-11-13. Both load with ReforgerZ on the Linux server
+(the compile check runs with them). Neither has been seen in play yet.
+
+| Mod | Workshop ID | Size | Licence | What it adds | How it sits with ReforgerZ |
+|---|---|---|---|---|---|
+| [Make Fire Campfire & Wood](https://reforger.armaplatform.com/workshop/6983372A33E4D432) | `6983372A33E4D432` | 18 KB | APL-SA | A wood item, a fireplace you dig and light, and a fire you feed (about a minute per piece of wood, at most six) | Its scripts are in lowercase `scripts/`, so it doesn't break the Linux server, and it overrides no vanilla prefab. **Wood:** the mod gives it only at its own bush prefab, which no map has, so wood is a find in farms and houses (an extra find). **Building:** drop one wood, take an entrenching tool in hand (farms, garages and wrecks' boots have them), look at the wood and hold **Build fireplace** (13 s, two more wood from your pack); then light it. The fire burns people who stand in it |
+| [Atmospheric Weather Mod](https://reforger.armaplatform.com/workshop/64ED6553B8AF6B62) | `64ED6553B8AF6B62` | 10.5 MB | APL-ND | New clouds, fogs, a heavy thunderstorm, strong winds, a faster weather cycle | Config only, no scripts: it replaces vanilla's weather states. ReforgerZ only reads rain, fog and wind ([DESIGN.md](DESIGN.md#weather)), so its fog and storms count as ours do: fog and rain news, storms that ground the helicopter |
+
+Not built: a fire that draws the infected (heat), boiling water or cooking at a campfire, and
+clearing away a fire nobody uses. A built fireplace stays until someone dismantles it or the server
+restarts.
+
+## What the stack gives the loot
+
+No extra download: these mods are dependencies already, and some of their items are **Extra finds**
+on the game mode (**Search > Extra finds**, [DESIGN.md](DESIGN.md#loot-in-houses)), each in the
+kind of place it belongs. Checked against the mods' own files: every one is a pick-up item.
+
+| From | Items | Where they turn up | What else it does |
+|---|---|---|---|
+| Functional Knives | Knife, machete | House, farm, body (rare) | A blade for the spear recipe |
+| Metabolism | Water bottle | House, shop, farm, a wreck's boot | Drinkable; also a bottle for the Molotov recipe |
+| Domins Civilian Expansion | Fire axe, gas mask, oxygen tank, fireman's helmet, paramedic jacket | Garage and farm (the axe), pharmacy, garage | The gas mask counts as a Halcyon head piece for the disguise |
+| BasicHazmatSuit | Hazmat suit (hi-vis) | Pharmacy (rare) | The Halcyon coat for the disguise: findable now, not only bought or taken |
+| MedicalAccessories | Face mask, blue nitrile gloves | Pharmacy | — |
+| Clothing_pack_v2 | Denim and work overalls, a shirt, police trousers, a prisoner's uniform | Farm, house, police | — (its hats stay out: wrong GUIDs) |
+| BanditGear | Vodka, cigarettes, a tracksuit, a baseball cap, cargo trousers, a waist pack, a hiking backpack, a balaclava | Shop, house, body, a wreck's boot | Vodka is alcohol: it cleans a fresh bite and brews the home remedy (and works as vanilla morphine does) |
+| Lamas vanilla plus gear pack | US raincoat, boonie hat, M1 helmet | Farm, police (rare) | — |
+
+From Make Fire Campfire & Wood: wood, in farms and houses.
+
+From the base game, also as extra finds: a raw meat leg (farms; the stove's Cook meat), smoke
+grenades, the M9 pistol and a Vz. 58 rifle (police, rare), entrenching tools, a pistol holster and
+personal belongings; and the trousers, boots and Veshmeshok backpack the pool's keywords never reached.
+
 ## Not used
 
 | Mod | Why |

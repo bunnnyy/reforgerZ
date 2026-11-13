@@ -9,7 +9,8 @@
 //!   one flat loot pool by keywords (bandage words for pharmacies, tool and fuel words for
 //!   garages...) plus the built-in vanilla items for its type (RZ_LootDefaults), so a table is wide
 //!   and no type is bare when the pool is short or empty; a list set by hand gets them only while
-//!   it's thin. No prefab twice in one roll unless it stacks (PickFresh). Scaled by the town's loot
+//!   it's thin; Extra finds add items per type on top (not onto a list set by hand). No prefab
+//!   twice in one roll unless it stacks (PickFresh). Scaled by the town's loot
 //!   level (RZ_TownMemory.GetLootLevel); electronics get the power grid's multiplier
 //!   (RZ_PowerGrid.LootMult).
 //! - A wreck's boot is a container (RZ_WreckBoots.c), rolled when it's first put out near a player.
@@ -55,6 +56,9 @@ class RZ_SearchSettings
 
 	[Attribute(desc: "Loot tables per building type (optional; empty lists use the pool)")]
 	ref array<ref RZ_LootTable> m_aTables;
+
+	[Attribute(desc: "Extra finds per building type: added to that type's table on top of the loot pool's keyword matches and the built-in items. For an item no keyword reaches, or one that belongs in one kind of place only (a fire axe in garages). A list set by hand in Loot tables is kept as it is and gets none")]
+	ref array<ref RZ_LootTable> m_aExtras;
 
 	[Attribute("0.6", desc: "At full town loot (scaled by what the town has left): on an infected body, the chance it carries anything; a one-off find's chance per slot (loose loot in houses: Interactions > Loot > Slot chance; wrecks' boots: Boot chance)")]
 	float m_fFindChance;
@@ -191,6 +195,7 @@ class RZ_Search
 	protected bool m_bKeyPrefabWarned;
 	protected float m_fBodyMinuteAt = -100;
 	protected int m_iBodiesThisMinute;
+	protected int m_iExtras;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Search(RZ_GameModeComponent gm, RZ_Interactions hub, RZ_SearchSettings settings)
@@ -262,6 +267,9 @@ class RZ_Search
 		RZ_Log.Info(string.Format("Search: %1 items in the loot pool, %2 tables set by hand. Tables (common/rare/electronics): %3, %4, %5, %6, %7, %8, %9.",
 			pool, CountConfigured(), TableSizes("house"), TableSizes("shop"), TableSizes("farm"), TableSizes("pharmacy"), TableSizes("garage"), TableSizes("police"), TableSizes("body")));
 
+		if (m_iExtras > 0)
+			RZ_Log.Info(string.Format("Search: %1 extra finds added to the tables (Search > Extra finds).", m_iExtras));
+
 		string where = "off";
 		if (m_Settings.m_bLocks)
 			where = "on the outside doors";
@@ -320,6 +328,7 @@ class RZ_Search
 		// wide (a small table repeats itself from house to house)
 		bool handCommon = !t.m_aCommon.IsEmpty();
 		bool handRare = !t.m_aRare.IsEmpty();
+		bool handElectronics = !t.m_aElectronics.IsEmpty();
 		array<string> common = {};
 		array<string> rare = {};
 		TypeWords(type, common, rare);
@@ -345,6 +354,25 @@ class RZ_Search
 		if (t.m_aElectronics.IsEmpty())
 			AppendNew(builtElectronics, t.m_aElectronics);
 
+		// Extra finds: on top of the pool and the built-in items, never onto a list set by hand
+		if (m_Settings.m_aExtras)
+		{
+			foreach (RZ_LootTable extra : m_Settings.m_aExtras)
+			{
+				if (!extra || extra.m_sType != type)
+					continue;
+
+				if (!handCommon)
+					m_iExtras += AppendNew(extra.m_aCommon, t.m_aCommon);
+
+				if (!handRare)
+					m_iExtras += AppendNew(extra.m_aRare, t.m_aRare);
+
+				if (!handElectronics)
+					m_iExtras += AppendNew(extra.m_aElectronics, t.m_aElectronics);
+			}
+		}
+
 		m_mTables.Set(type, t);
 	}
 
@@ -362,14 +390,23 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The ones not in `into` yet.
-	protected void AppendNew(array<ResourceName> from, notnull array<ResourceName> into)
+	//! The ones not in `into` yet. Returns how many were added.
+	protected int AppendNew(array<ResourceName> from, notnull array<ResourceName> into)
 	{
+		if (!from)
+			return 0;
+
+		int added = 0;
 		foreach (ResourceName r : from)
 		{
 			if (!r.IsEmpty() && into.Find(r) < 0)
+			{
 				into.Insert(r);
+				added++;
+			}
 		}
+
+		return added;
 	}
 
 	//------------------------------------------------------------------------------------------------
