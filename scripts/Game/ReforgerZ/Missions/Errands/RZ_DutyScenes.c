@@ -122,6 +122,8 @@ class RZ_DutyBeat
 	static const int AT_FAR = 4;		// 180-350 m
 	static const int AT_SAME = 5;		// where the last beat was
 	static const int AT_NEAR = 6;		// 12-30 m from where the last beat was (off the path)
+	static const int AT_NEAR_DOOR = 8;	// a house's outside door 12-60 m from the last beat (else 5-150 m), on its doorstep: "the door of ..."
+	static const int AT_FAR_DOOR = 7;	// a house's outside door 180-350 m off (else 100-600 m), on its doorstep: "the far door"
 
 	string m_sKey;
 	string m_sLine;				// said as the player reaches it
@@ -235,6 +237,7 @@ class RZ_DutyScenes
 	protected static const float SAY_RANGE = 9;			// a beat's line is said this close
 	protected static const float SEEN_SQUAD = 20;		// their people see what your hands do within this
 	protected static const float SEEN_HOME = 25;		// and so does the place
+	protected static const float DOORSTEP = 1.5;		// a door beat stands this far out from the doorway
 	protected static const float OPTION_STEP = 0.9;		// between a beat's options, side by side
 	static const int TAG_PERSON = -18;					// RZ_PuzzleObjectComponent mission id: a duty's person to talk to (object index: the errand)
 	protected static const float PERSON_OFF = 1.8;
@@ -646,6 +649,21 @@ class RZ_DutyScenes
 			case RZ_DutyBeat.AT_OUT: at = RZ_PlaceFind.Near(s.m_vHome, 60, 140, need); break;
 			case RZ_DutyBeat.AT_FAR: at = RZ_PlaceFind.Near(s.m_vHome, 180, 350, need); break;
 			case RZ_DutyBeat.AT_NEAR: return RZ_WorkSites.Spot(s.m_vLast, 12, 30);
+			case RZ_DutyBeat.AT_NEAR_DOOR:
+			{
+				if (DoorStep(s.m_vLast, 12, 60, at) || DoorStep(s.m_vLast, 5, 150, at))
+					return at;
+
+				return RZ_WorkSites.Spot(s.m_vLast, 12, 30);
+			}
+			case RZ_DutyBeat.AT_FAR_DOOR:
+			{
+				if (DoorStep(s.m_vHome, 180, 350, at) || DoorStep(s.m_vHome, 100, 600, at))
+					return at;
+
+				at = RZ_PlaceFind.Near(s.m_vHome, 180, 350, need);
+				break;
+			}
 			case RZ_DutyBeat.AT_SAME: return s.m_vLast;
 		}
 
@@ -653,6 +671,49 @@ class RZ_DutyScenes
 			at = RZ_WorkSites.Spot(s.m_vHome, 20, 40);
 
 		return at;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The doorstep of a house's outside door lo-hi m from `home` (the door finder the locks and
+	//! Traces use, RZ_DoorGeometry): a beat whose words name a door, a step or a hatch stands there.
+	protected static bool DoorStep(vector home, float lo, float hi, out vector at)
+	{
+		array<IEntity> buildings = {};
+		RZ_BuildingQuery.FindBuildings(home, hi, buildings, 200);
+		array<IEntity> houses = {};
+		foreach (IEntity b : buildings)
+		{
+			float d = RZ_Util.DistXZ(home, b.GetOrigin());
+			if (d >= lo && d <= hi && RZ_PlaceCheck.IsHouse(b) && !RZ_LockedSpots.IsLockedBuilding(b))
+				houses.Insert(b);
+		}
+
+		for (int tries = 0; tries < 8 && !houses.IsEmpty(); tries++)
+		{
+			int pick = Math.RandomInt(0, houses.Count());
+			IEntity house = houses[pick];
+			houses.Remove(pick);
+			array<IEntity> doors = {};
+			RZ_DoorGeometry.FindDoors(house, 0, doors);
+			foreach (IEntity door : doors)
+			{
+				if (!RZ_DoorGeometry.IsOuterDoor(house, door))
+					continue;
+
+				vector normal = RZ_DoorGeometry.WallNormal(house, door);
+				if (normal == vector.Zero)
+					continue;
+
+				vector step = RZ_Util.GroundPos(RZ_DoorGeometry.DoorwayCentre(door) + normal * DOORSTEP);
+				if (RZ_PlaceCheck.IsWet(step))
+					continue;
+
+				at = step;
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -685,6 +746,15 @@ class RZ_DutyScenes
 			ResourceName prop;
 			if (i == 0)
 				prop = b.m_sProp;
+
+			// A thing to take stands there: the duty tray (a case of vials), else the crate; with both
+			// empty, the work sites' own base-game box
+			if (prop.IsEmpty() && o.m_eWork == RZ_EWork.TAKE)
+			{
+				prop = RZ_ErrandSettings.Get().Props().m_sDutyTray;
+				if (prop.IsEmpty())
+					prop = RZ_ErrandSettings.Get().Props().m_sCrate;
+			}
 
 			sites.Open(key, o.m_eWork, o.m_sLabel, o.m_fHold, at, s.m_iPlayer, prop, "", yaw);
 			s.m_aKeys.Insert(key);

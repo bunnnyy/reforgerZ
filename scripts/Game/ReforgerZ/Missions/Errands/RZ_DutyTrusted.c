@@ -26,7 +26,7 @@ class RZ_DutyTrusted
 			else if (truth == 2)
 				seen = paid[rng.Next() % 3];
 
-			RZ_DutyBeat b = RZ_DutyScript.T("debt" + i.ToString(), string.Format("The door of %1, twelve tins in the boss's book. %2", who, seen), RZ_DutyBeat.AT_NEAR);
+			RZ_DutyBeat b = RZ_DutyScript.T("debt" + i.ToString(), string.Format("The door of %1, twelve tins in the boss's book. %2", who, seen), RZ_DutyBeat.AT_NEAR_DOOR);
 			b.m_bAlone = true;
 			array<string> codes = {"wrong", "wrong", "wrong"};
 			codes[truth] = "right";

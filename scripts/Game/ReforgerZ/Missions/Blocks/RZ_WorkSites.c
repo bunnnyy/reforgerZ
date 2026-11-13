@@ -171,7 +171,8 @@ class RZ_WorkSites
 	protected static const float SLACK = 1.5;			// seconds the server forgives (its 1 s poll, the hold's network trip)
 	protected static const float LIFT = 0.6;			// the prompt stands this high over the ground
 	protected static const float PERSON_OFF = 1.2;		// the person stands this far behind the site
-	protected static const float PERSON_HALF = 0.3;		// a person's box: a 0.6 m square (RZ_SiteFoot.SEAT)
+	protected static const float PERSON_HALF = 0.3;
+	protected static const ResourceName TAKE_FALLBACK = "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et";	// the base game's cardboard box (world_kit.txt; footprints.json 0.4 x 0.7 m)		// a person's box: a 0.6 m square (RZ_SiteFoot.SEAT)
 
 	protected RZ_SharedSettings m_Shared;
 	protected ref array<ref RZ_WorkSite> m_aSites = {};
@@ -392,6 +393,10 @@ class RZ_WorkSites
 		if (look && after.IsEmpty())
 			s.m_sAfter = look.m_sAfter;
 
+		// Something to take always stands at a "Take ..." prompt: with no look or prop, a base-game box
+		if (kind == RZ_EWork.TAKE && s.m_sBefore.IsEmpty())
+			s.m_sBefore = TAKE_FALLBACK;
+
 		s.m_fOpenedAt = m_fClock;
 		m_aSites.Insert(s);
 		RZ_PlaceNeeds.Verify("work.site", s.m_vPos, s.m_sLabel);
@@ -456,8 +461,16 @@ class RZ_WorkSites
 		if (!best)
 			return false;
 
+		return FloorOf(best, at);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spot on this building's ground floor: one of the loose loot's anchors (RZ_LootAnchors) at its
+	//! lowest level, at the floor's height. False: no anchors (a shed, a ruin): nowhere inside.
+	static bool FloorOf(IEntity building, out vector at)
+	{
 		array<vector> anchors = {};
-		RZ_LootAnchors.Find(best, anchors, RZ_LootAnchors.MAX_ANCHORS);
+		RZ_LootAnchors.Find(building, anchors, RZ_LootAnchors.MAX_ANCHORS);
 		if (anchors.IsEmpty())
 			return false;
 

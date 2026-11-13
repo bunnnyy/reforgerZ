@@ -19,6 +19,7 @@ same code.
 - [The flags](#the-flags)
 - [The things](#the-things)
 - [The needs](#the-needs)
+- [A place is what its words say](#a-place-is-what-its-words-say)
 - [How a picker uses a need](#how-a-picker-uses-a-need)
 - [The live check](#the-live-check)
 - [The audit](#the-audit)
@@ -132,7 +133,7 @@ or way isn't offered here.
 | Need | The words | Flags | Things | Picked by |
 |---|---|---|---|---|
 | `opening.start` | outside the door you came out of, someone waiting | BUILDING(any/12) NOT_STEEP(30) (houses over the way are the roll's ranking, not its words) | NPC the contact within 15 m (empty: nobody stands there, the scene's note points at the nearest work) | the openings' place roll |
-| `opening.search` | the house (the chemist's, the garage...) over the way | BUILDING(house or the background's kind/15) NOT_STEEP(30) | | Across the Road (step 1) |
+| `opening.search` | the house (the chemist's, the garage...) over the way | BUILDING(house or the background's kind/15) NOT_STEEP(30), checked outside its side; the spot inside, on its ground floor | | Across the Road (step 1); its words by what's there ([below](#a-place-is-what-its-words-say)) |
 | `opening.water` | the well | WATER_SOURCE(8) | | Water, Water for the Fever |
 | `opening.pump` | the petrol station | BUILDING(fuel/20) | | The Pump |
 | `opening.downwind` | the pack's ground | NOT_STEEP(35) | | Downwind, by a lair |
@@ -166,6 +167,50 @@ or way isn't offered here.
 An errand way names its need in `RZ_ErrandWay.m_sNeed`; without one, its place kind's (`NeedKey`).
 A routine whose ask names `{next_town}` names the town its next-town way goes to, and isn't true
 (not dealt) when no town near has the place.
+
+## A place is what its words say
+
+A task's words that name a kind of building (the chemist's, the garage, the farm, the hall, the
+shops, the police station, the school) are true of the building it sends you to, by one rule on the
+building's prefab name, `RZ_PlaceCheck.WordsTrue`. The pickers' kinds (`RZ_OpeningRoll.KindOf`, used by
+the need flag BUILDING and by `RZ_WorkSites.Indoors`) ask it as well as the door slots' kind:
+
+| Kind | The words | True of (by prefab name) | Never |
+|---|---|---|---|
+| `clinic` | the chemist's | pharmacy, drugstore, apothecary, clinic, hospital, surgery, medical | anything military, a tent, a barracks, a camp, a shed, a vet's |
+| `aid` | the old aid post | the army's medical buildings (medical or hospital, under `/military/`) | tents and camp pieces |
+| `farm` | the farm, the vet's farm | farm, barn, stable, cowshed, pigsty | a shed |
+| `garage` | the garage | garage, workshop, auto or car service, mechanic, repair | |
+| `shop` | the shop, the shops | shop, store, market, kiosk, grocery, pub, bar, café, restaurant | anything military or industrial, a workshop |
+| `public` | the hall | town hall, school, church, chapel, office, hall, culture | fuel and gas stations, anything military |
+| `house` | the house, the doctor's house | a house (`IsHouse`: not a shed, garage, barn, ruin...) | |
+| the rest | the police post, the school, the petrol station, the radio hut, the old barracks | the landmark finder's words | |
+
+Vanilla's maps have no civilian chemist's: a medical building there is the army's (a wooden medical
+barracks, a field hospital). Before this rule a Nurse's *Across the Road* could send you to "the
+chemist's" that was a wooden barracks or a shed in a field.
+
+**Words by what's there.** A step whose words name a building has a variant for each kind it can
+send you to, picked by what stands near the giver, in this order; with none of them, it isn't
+offered (never with words that would lie). The step's line, the giver's lines, the tracker and the map
+all use the variant picked.
+
+| Task | Variants, in order |
+|---|---|
+| *Across the Road*, a Nurse or a Doctor | the chemist's (a real pharmacy) → the old aid post (the army's medical building) → the vet's farm (a farmhouse or barn) → the doctor's house (a house) |
+| *Across the Road*, a Lab Technician | the school → the chemist's → the old aid post → the house |
+| *Across the Road*, a Mechanic | the garage → the petrol station → the house |
+| *Across the Road*, a Hunter | the farm → the house |
+| *Across the Road*, a Police officer | the police post → the hall → the house |
+| *Across the Road*, a Soldier | the old barracks → the hall → the house |
+| *Across the Road*, a Radio ham | the radio hut → the house |
+| *Across the Road*, the Unemployed | the shop → the house |
+| *Across the Road*, anyone else | the house |
+| Errands that name a building (Clean Rifles' police station, Clean Paper's school, the hall's chairs, The Newcomer's shops, Not Past the Chapel's farmhouse) | that building in a town near the giver, else not offered |
+
+**Inside it.** *Across the Road*'s search stands inside the building its words name, on its ground
+floor, at one of the loose loot's anchors (`RZ_WorkSites.FloorOf`); a building with no anchors (a
+shed, a ruin) isn't picked. An errand's indoor work does the same ([ERRANDS.md](ERRANDS.md#work-sites)).
 
 ## How a picker uses a need
 
@@ -246,6 +291,7 @@ Log lines (also what `places.py summary` prints and `draw` reads):
 | `Places: <need>: P of A placed, N pass, F fail, score S[ UNDER]; fails: <why xN>; fallback: ...` | per need: asked, placed (the rest declined), passed; `<need> things` for the spawn tests |
 | `Places need: <need>: <flags>; <things> \| <words>` | the need it was checked against |
 | `Places fail: <need> at <grid> ("<text>"): <why>` | the first 8 failing places a need |
+| `Places words: <need> at <grid> ("<text>"): names <kind>, the building there is <name>` | a place whose words name a kind of building with no building of that kind there ([A place is what its words say](#a-place-is-what-its-words-say)); also `WORDS(names <kind>, stands at <name>)` in the need's fails |
 | `Places roll: <background>: <kind>: rank R, first pass \| second pass; doors refused: ...` | each roll |
 | `Places declined: opening.start for <background>: <why>`, then `Places roll: <background>: the spawn point at <grid>` | a roll that found nothing: its steps are asked from a spawn point, as in play |
 | `Places declined: <need> from <grid> ("<text>"): N candidates; <why> xN` | the first 8 asks a need declined, and why its candidates failed (declining is allowed: nothing there would make the words true) |

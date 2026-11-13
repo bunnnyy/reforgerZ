@@ -521,6 +521,22 @@ class RZ_PlaceAudit
 		RZ_PlaceNeed need = RZ_PlaceNeeds.Get(key);
 		string why;
 		RZ_PlaceCheck.Check(at, need, town, building, why);
+		// The words: the building there must be the kind they name, by the one name rule
+		string named = building;
+		float range = 15;
+		if (named.IsEmpty() && need && (need.m_iFlags & RZ_EPlaceFlag.BUILDING))
+		{
+			named = need.m_sBuilding;
+			range = need.m_fBuildingRange;
+		}
+
+		string seen;
+		if (!RZ_PlaceCheck.WordsTrueNear(at, named, range, seen))
+		{
+			why = RZ_PlaceCheck.Add(why, string.Format("WORDS(names %1, stands at %2)", named, seen));
+			RZ_Log.Info(string.Format("Places words: %1 at %2 (\"%3\"): names %4, the building there is %5", key, RZ_SettlementScanner.GridReference(at), text, named, seen));
+		}
+
 		string slots;
 		string fallbacks;
 		RZ_PlaceThings.SlotsSet(need, slots, fallbacks);

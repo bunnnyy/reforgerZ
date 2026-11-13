@@ -1152,6 +1152,10 @@ class RZ_Errands
 			}
 		}
 
+		// A place its picker put on a floor (the openings' search, inside the building it names)
+		if (!inside && at[1] > RZ_Util.GroundPos(at)[1] + 0.3)
+			inside = true;
+
 		ResourceName before;
 		if (w.m_eProp != RZ_EErrandProp.NONE)
 			before = m_Settings.Props().For(w.m_eProp);

@@ -379,12 +379,12 @@ class RZ_OpeningText
 	{
 		switch (bg)
 		{
-			case "nurse": result.Insert("clinic"); return;
-			case "doctor": result.Insert("clinic"); return;
+			case "nurse": result.Insert("clinic"); result.Insert("aid"); result.Insert("farm"); return;
+			case "doctor": result.Insert("clinic"); result.Insert("aid"); result.Insert("farm"); return;
 			case "mechanic": result.Insert("garage"); result.Insert("fuel"); return;
 			case "hunter": result.Insert("farm"); return;
 			case "police": result.Insert("police"); result.Insert("public"); return;
-			case "labtech": result.Insert("school"); result.Insert("clinic"); return;
+			case "labtech": result.Insert("school"); result.Insert("clinic"); result.Insert("aid"); return;
 			case "radioham": result.Insert("radio"); return;
 			case "soldier": result.Insert("military"); result.Insert("public"); return;
 			case "unemployed": result.Insert("shop"); return;
@@ -392,12 +392,23 @@ class RZ_OpeningText
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! What step 1 calls its building: "the chemist's" (the step adds whose road it's across).
-	static string SearchPlace(string kind)
+	//! What step 1 calls its building: "the chemist's" (the step adds whose road it's across). Words
+	//! for the building that's really there (docs/PLACES.md, "A place is what its words say"): a Nurse
+	//! or a Doctor with no chemist's near is sent to the army's old aid post, else a vet's farm, else
+	//! the doctor's house; nobody is sent to "the chemist's" that is a shed.
+	static string SearchPlace(string kind, string bg = "")
 	{
+		bool medic = bg == "nurse" || bg == "doctor";
+		if (medic && kind == "farm")
+			return "the vet's farm";
+
+		if (medic && kind.IsEmpty())
+			return "the doctor's house";
+
 		switch (kind)
 		{
 			case "clinic": return "the chemist's";
+			case "aid": return "the old aid post";
 			case "garage": return "the garage";
 			case "fuel": return "the petrol station";
 			case "farm": return "the farm";

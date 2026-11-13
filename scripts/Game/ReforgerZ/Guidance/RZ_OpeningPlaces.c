@@ -303,19 +303,43 @@ class RZ_OpeningRoll
 		int slot = RZ_DoorSlots.KindOf(b);
 		foreach (string k : kinds)
 		{
-			switch (k)
+			// The words must be true of it too (RZ_PlaceCheck.WordsTrue): an army medical hut is no chemist's
+			if (k == "house")
 			{
-				case "clinic": if (slot == RZ_EDoorWant.CLINIC) return k; break;
-				case "shop": if (slot == RZ_EDoorWant.SHOP) return k; break;
-				case "garage": if (slot == RZ_EDoorWant.GARAGE) return k; break;
-				case "farm": if (slot == RZ_EDoorWant.FARM) return k; break;
-				case "public": if (slot == RZ_EDoorWant.PUBLIC) return k; break;
-				case "house": if (RZ_PlaceCheck.IsHouse(b)) return k; break;
-				default: if (RZ_LandmarkFinder.Matches(k, name)) return k; break;
+				if (RZ_PlaceCheck.IsHouse(b))
+					return k;
+			}
+			else if (RZ_PlaceCheck.IsDoorKind(k))
+			{
+				if (slot == DoorWant(k) && RZ_PlaceCheck.WordsTrue(k, b))
+					return k;
+			}
+			else if (RZ_LandmarkFinder.Matches(k, name))
+			{
+				return k;
 			}
 		}
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The door slots' kind a door kind's words need ("aid" is the clinic slot's army half).
+	protected static int DoorWant(string kind)
+	{
+		if (kind == "clinic" || kind == "aid")
+			return RZ_EDoorWant.CLINIC;
+
+		if (kind == "shop")
+			return RZ_EDoorWant.SHOP;
+
+		if (kind == "garage")
+			return RZ_EDoorWant.GARAGE;
+
+		if (kind == "farm")
+			return RZ_EDoorWant.FARM;
+
+		return RZ_EDoorWant.PUBLIC;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -3313,7 +3313,7 @@ there, one line on arrival ("Someone with a list looks up."), and no Fame. All t
 
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
-| 1. Across the Road | Search a building 50–250 m from them: a work site's **Search it, quietly** (8 s; 6 s for a learning player, level 1; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot outside its side facing them, and come back. One of your background's kinds when one is there (below), else a house; no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
+| 1. Across the Road | Search a building 50–250 m from them: a work site's **Search it, quietly** (8 s; 6 s for a learning player, level 1; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot inside it, on its ground floor, and come back. One of your background's kinds when one is there (below), else a house, named for what it really is ([PLACES.md](PLACES.md#a-place-is-what-its-words-say)); no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
 | 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold, and back), else The Cut (dress their hand with anything medical you carry, once you've chosen **Look at the hand.** on the talk screen) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
 | 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
@@ -3331,7 +3331,7 @@ meets its need ([PLACES.md](PLACES.md#the-needs)) or the step can't run here.
 
 | Background | Step 1's building | Step 2 | What it needs to run | Done when |
 |---|---|---|---|---|
-| Nurse | the chemist's (clinic) | **The Fever**: treat their boy | something medical on you | you choose to see to him on the talk screen (**See to the boy.**, `opening.tend_fever`), then one medical item handed over at the contact |
+| Nurse | the chemist's, else the old aid post, the vet's farm or the doctor's house | **The Fever**: treat their boy | something medical on you | you choose to see to him on the talk screen (**See to the boy.**, `opening.tend_fever`), then one medical item handed over at the contact |
 | | | else **Water for the Fever** | a well within 400 m | **Fill what you can carry** at the well (8 s), and back (it'll be boiled) |
 | Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, 10 minutes before it lapses | an antidote on you | **Give him the antidote.** on the talk screen (`opening.tend_clock`), then the antidote handed over at the contact |
 | | | else **The Clock** with a dressing | something medical | **Keep him going.** on the talk screen (`opening.tend_clock_med`), then one medical item handed over |
