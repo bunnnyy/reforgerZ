@@ -20,7 +20,7 @@ class RZ_CarMenu : RZ_MenuBase
 	protected static const float CUT_GAP = 0.6;			// the server takes a pick at most every 0.5 s
 	protected static const float STATUS_X = 48;
 	protected static const float STATUS_Y = 392;		// CarStatus: under the car picture
-	protected static const float STATUS_Y_LOOM = 574;	// and under the loom's sticker
+	protected static const float STATUS_Y_LOOM = 636;	// and under the loom's sticker
 	protected static const float WIRE_BOX = 120;		// a wire's box, across
 	protected static const float WIRE_THIN = 14;
 	protected static const float WIRE_THICK = 30;
@@ -589,6 +589,9 @@ class RZ_CarMenu : RZ_MenuBase
 	{
 		RZ_UIW.Show(m_wRoot, "CarView", !m_bLoom);
 		RZ_UIW.Show(m_wRoot, "Loom", m_bLoom);
+		// The goal in plain words, over the wires: which two to cut, and what to leave
+		RZ_UIW.Show(m_wRoot, "LoomGoal", m_bLoom);
+		RZ_UIW.Show(m_wRoot, "LoomGoalSub", m_bLoom);
 		float statusY = STATUS_Y;
 		if (m_bLoom)
 			statusY = STATUS_Y_LOOM;
@@ -609,7 +612,7 @@ class RZ_CarMenu : RZ_MenuBase
 		RZ_UIW.SetText(m_wRoot, "PromptsText", "LEFT / RIGHT  PICK A WIRE    A  CUT    B  BACK TO THE JOBS");
 
 		int strikes = RZ_UIText.Int(m_aLoomHead, 1);
-		RZ_UIW.SetText(m_wRoot, "LoomStrikes", string.Format("WRONG CUTS %1 OF %2", strikes, RZ_UIText.Int(m_aLoomHead, 2)));
+		RZ_UIW.SetText(m_wRoot, "LoomStrikes", string.Format("RIGHT %1 OF 2 · WRONG %2 OF %3", RZ_UIText.Int(m_aLoomHead, 3), strikes, RZ_UIText.Int(m_aLoomHead, 2)));
 		Color strikeColour = RZ_UIColor.Dim();
 		if (strikes > 0)
 			strikeColour = ToneColour(RZ_Cars.TONE_MISSING);

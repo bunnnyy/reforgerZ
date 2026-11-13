@@ -2863,7 +2863,9 @@ feed. Two of the other four carry a stripe. Two wires start the car, the ignitio
 starter wire; one is the horn and one the dash lamps. A sticker under the column carries two lines
 ("The starter wire never sits next to the feed.", "The two you want sit side by side."). The loom
 is rolled until two true lines together leave only one pair of wires, neither line enough alone,
-so it's worked out, never guessed and never rushed: there's no timer.
+so it's worked out, never guessed and never rushed: there's no timer. The screen says the goal
+over the wires (cut two, the ignition and the starter; leave the feed, the horn and the lamps) and
+counts the right and the wrong cuts.
 
 | You cut | What happens |
 |---|---|

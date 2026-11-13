@@ -678,7 +678,9 @@ Frame (root, full screen)
    │     ├─ Panel  MarkerRingN   the frame's size, border, hidden unless the job is selected (tinted)
    │     ├─ Image  MarkerDotN    32 × 32 at (7, 7), tinted by the job's state
    │     └─ Text   (MarkerNumN)  over the dot, mono bold 20, #15171A, "1" … "5"
-   ├─ Frame  Loom           at (48, 120), 640 × 450, hidden: the loom, shown in CarView's place at a hotwire
+   ├─ Text   LoomGoal       at (48, 120), 640 × 28, mono bold 22, amber, hidden: "CUT TWO WIRES: THE IGNITION AND THE STARTER", shown with the loom
+   ├─ Text   LoomGoalSub    at (48, 150), 640 × 26, condensed 20, #D9D2BE, hidden: "Leave the feed, the horn and the lamps.", shown with the loom
+   ├─ Frame  Loom           at (48, 182), 640 × 450, hidden: the loom, shown in CarView's place at a hotwire
    │  ├─ Image  (LoomBg)      640 × 256, #0C0E0F, and Panel (LoomLine), its #2A2E31 border
    │  ├─ Frame  WireBox0 … WireBox4   120 × 240 each at (10 + 124 × N, 8): one wire
    │  │  ├─ Image  WireBgN      the box's size, #1B1F22, shown on the picked wire
@@ -694,8 +696,8 @@ Frame (root, full screen)
    │  │  ├─ Text   WireKindN    at (0, 220), regular 16, centred, dim: "thick", "striped" or "plain"
    │  │  ├─ Panel  WireFocusN   the box's size, amber border, shown on the picked wire
    │  │  └─ Button WireN        the box's size, on top, no children: a click cuts the wire (its tag is N)
-   │  ├─ Text   (LoomLabel)   at (0, 268), mono bold 18, dim, "THE STICKER UNDER THE COLUMN"
-   │  ├─ Text   LoomStrikes   right-aligned, ending at (640, 268), mono bold 18 ("WRONG CUTS 0 OF 2", red once above 0)
+   │  ├─ Text   (LoomLabel)   at (0, 268), mono bold 18, dim, "THE STICKER"
+   │  ├─ Text   LoomStrikes   right-aligned, ending at (640, 268), mono bold 18 ("RIGHT 0 OF 2 · WRONG 0 OF 2", red once a cut was wrong)
    │  └─ Text   LoomClues     at (0, 298), 640 × 150, condensed 22, #F4F0E6, wraps: the sticker's lines
    ├─ Text   CarStatus      at (48, 392), 640 × 300, regular 24, #F4F0E6, wraps: what the last job said (hidden when
    │                        empty). The script moves it to (48, 574) while the loom is up

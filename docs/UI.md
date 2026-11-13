@@ -790,8 +790,10 @@ engine** sits bottom right, dim with what it still needs until it can go.
 **The loom** (`car_hotwire.html`). **Hotwire** on a car with no keys puts the loom under the
 steering column in the picture's place ([DESIGN.md](DESIGN.md#hotwiring-the-loom)): five wires side
 by side, each drawn in its colour with the colour's name under it and "thick", "striped" or "plain"
-under that, so no two are told apart by colour alone. The thick one is labelled FEED. Under the
-wires, the sticker's lines and "WRONG CUTS 0 OF 2"; under those, what the last cut said. A cut wire
+under that, so no two are told apart by colour alone. Over the wires, the goal in plain words:
+**CUT TWO WIRES: THE IGNITION AND THE STARTER**, and under it "Leave the feed, the horn and the
+lamps." The thick one is labelled FEED. Under the wires, the sticker's lines and the count
+"RIGHT 0 OF 2 · WRONG 0 OF 2"; under those, what the last cut said. A cut wire
 shows its gap with bright copper ends (one of the two) or sooty ones (a wrong one) and is labelled
 with what it was. The picked wire has an amber outline. The jobs stay on the right, none lit. Back
 returns to the jobs and leaves the loom as it is.

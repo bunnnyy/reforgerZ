@@ -2187,8 +2187,8 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_UIData.c:1223` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
 | `UI/RZ_ObjectMenu.c:328` | `FrameSlot.SetSize` on the object menu's centred panel (anchor and alignment 0.5) keeps it centred as it grows for [the status strip](UI.md#the-status-strip-and-locked-rows) (940 tall) and shrinks without one (810) | The panel jumps off-centre or keeps one height: set its slot to 1,200 × 940 in `RZ_ObjectMenu.layout` and remove the `SetSize` line; things without a strip then have a gap above their text |
 | `UI/RZ_CraftMenu.c:384` | the same on the crafting screen's panel: 960 tall at a stove (the strip), 858 at a workbench | As above, with `RZ_CraftMenu.layout` at 1,600 × 960 |
-| `UI/RZ_CarMenu.c:596` | `FrameSlot.SetPos` moves the car repair screen's `CarStatus` text (a frame slot, anchored top left) from under the picture (48, 392) to under the loom's sticker (48, 574) and back | What a cut said prints over the sticker's lines: make `Loom` shorter in `RZ_CarMenu.layout`, or give the loom its own status text and hide `CarStatus` while it's up |
-| `UI/RZ_CarMenu.c:698` | `FrameSlot.SetPos` and `SetSize` on an image in a frame place and size it as the layout's position and size would: the loom's wires (`WireTopN`, `WireMidN`, `WireBotN`, 30 wide for the thick feed) and their cut ends | Every wire is 14 wide where the layout put it and the feed looks like the rest (it still says "thick" and FEED): add a second, 30-wide set of bars to `RZ_CarMenu.layout` and show those for the feed |
+| `UI/RZ_CarMenu.c:599` | `FrameSlot.SetPos` moves the car repair screen's `CarStatus` text (a frame slot, anchored top left) from under the picture (48, 392) to under the loom's sticker (48, 636) and back | What a cut said prints over the sticker's lines: make `Loom` shorter in `RZ_CarMenu.layout`, or give the loom its own status text and hide `CarStatus` while it's up |
+| `UI/RZ_CarMenu.c:701` | `FrameSlot.SetPos` and `SetSize` on an image in a frame place and size it as the layout's position and size would: the loom's wires (`WireTopN`, `WireMidN`, `WireBotN`, 30 wide for the thick feed) and their cut ends | Every wire is 14 wide where the layout put it and the feed looks like the rest (it still says "thick" and FEED): add a second, 30-wide set of bars to `RZ_CarMenu.layout` and show those for the feed |
 
 ## 7. Log lines to check
 
@@ -4176,9 +4176,11 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
 - [ ] **The hotwire's loom** (**Interactions > Cars > Wire cutting** on, the default), with a pad:
   on a car with no keys pick Ignition, **Hotwire**. The loom takes the picture's place: five wires,
   each with its colour in words and "thick", "striped" or "plain" under it, the thick one labelled
-  FEED, three lines on the sticker (the feed's, and two that settle it) and "WRONG CUTS 0 OF 2";
-  what the last cut said sits under the sticker, not over it (VERIFY `UI/RZ_CarMenu.c:596`), and the
-  feed is drawn thicker than the rest (VERIFY `UI/RZ_CarMenu.c:698`). The footer reads A **Cut**, B
+  FEED, the goal over the wires ("CUT TWO WIRES: THE IGNITION AND THE STARTER", then what to
+  leave), three lines on the sticker (the feed's, and two that settle it) and "RIGHT 0 OF 2 · WRONG
+  0 OF 2", neither line clipped or over the wires;
+  what the last cut said sits under the sticker, not over it (VERIFY `UI/RZ_CarMenu.c:599`), and the
+  feed is drawn thicker than the rest (VERIFY `UI/RZ_CarMenu.c:701`). The footer reads A **Cut**, B
   **Back to the jobs**. Left and right move the amber outline; A on the feed only says it's the
   feed. Work the two lines out and cut the two: the first shows copper ends and its name, the second
   hotwires the car ("A spark, a cough from the starter. The wires are live."), the loom goes and the

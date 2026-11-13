@@ -655,9 +655,9 @@ FrameWidgetClass "{38130A52A986C600}" {
       }
      }
     }
-    FrameWidgetClass "{B651EF5D0DE82776}" {
-     Name "Loom"
-     Slot FrameWidgetSlot "{532BB4523F22DF59}" {
+    TextWidgetClass "{7C1E0B5A93D2F461}" {
+     Name "LoomGoal"
+     Slot FrameWidgetSlot "{7C1E0B5A93D2F462}" {
       Anchor 0 0 0 0
       PositionX 48
       OffsetLeft 48
@@ -665,8 +665,54 @@ FrameWidgetClass "{38130A52A986C600}" {
       OffsetTop 120
       SizeX 640
       OffsetRight -688
+      SizeY 28
+      OffsetBottom -148
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     Color 0.89 0.639 0.231 1
+     Text "CUT TWO WIRES: THE IGNITION AND THE STARTER"
+     "Font Size" 22
+     "Min Font Size" 22
+     FontProperties FontProperties "{7C1E0B5A93D2F463}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{7C1E0B5A93D2F464}" {
+     Name "LoomGoalSub"
+     Slot FrameWidgetSlot "{7C1E0B5A93D2F465}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 150
+      OffsetTop 150
+      SizeX 640
+      OffsetRight -688
+      SizeY 26
+      OffsetBottom -176
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     Color 0.851 0.824 0.745 1
+     Text "Leave the feed, the horn and the lamps."
+     "Font Size" 20
+     "Min Font Size" 20
+     FontProperties FontProperties "{7C1E0B5A93D2F466}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    FrameWidgetClass "{B651EF5D0DE82776}" {
+     Name "Loom"
+     Slot FrameWidgetSlot "{532BB4523F22DF59}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 182
+      OffsetTop 182
+      SizeX 640
+      OffsetRight -688
       SizeY 450
-      OffsetBottom -570
+      OffsetBottom -632
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2275,7 +2321,7 @@ FrameWidgetClass "{38130A52A986C600}" {
         Alignment 0 0
        }
        Color 0.639 0.62 0.565 1
-       Text "THE STICKER UNDER THE COLUMN"
+       Text "THE STICKER"
        "Font Size" 18
        "Min Font Size" 18
        FontProperties FontProperties "{893A5E6528305D33}" {
@@ -2297,7 +2343,7 @@ FrameWidgetClass "{38130A52A986C600}" {
         Alignment 0 0
        }
        Color 0.639 0.62 0.565 1
-       Text "WRONG CUTS 0 OF 2"
+       Text "RIGHT 0 OF 2 · WRONG 0 OF 2"
        "Font Size" 18
        "Min Font Size" 18
        "Horizontal Alignment" Right

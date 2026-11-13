@@ -61,7 +61,9 @@
   .start .pk { opacity: .5; }
 
   /* the loom, in the picture's place */
-  .loom { position: absolute; left: 48px; top: 120px; width: 640px; height: 256px; background: #0c0e0f; border: 1px solid #22262a; }
+  .goal { position: absolute; left: 48px; top: 120px; width: 640px; font: 700 22px/1.2 'JetBrains Mono', monospace; color: #E3A33B; letter-spacing: .04em; }
+  .goalsub { position: absolute; left: 48px; top: 150px; width: 640px; font: 400 20px/1.2 Inter, 'Segoe UI', sans-serif; color: #D9D2BE; }
+  .loom { position: absolute; left: 48px; top: 182px; width: 640px; height: 256px; background: #0c0e0f; border: 1px solid #22262a; }
   .w { position: absolute; top: 8px; width: 120px; height: 240px; }
   .w:nth-child(1) { left: 10px; } .w:nth-child(2) { left: 134px; } .w:nth-child(3) { left: 258px; } .w:nth-child(4) { left: 382px; } .w:nth-child(5) { left: 506px; }
   .w.on { background: var(--row); outline: 2px solid var(--acc); }
@@ -77,9 +79,9 @@
   .w.cut .core .a::after { bottom: -2px; } .w.cut .core .b::before { top: -2px; }
   .nm { position: absolute; left: 0; right: 0; top: 198px; text-align: center; font: 700 18px/1.3 'JetBrains Mono', monospace; color: var(--bone); }
   .kd { position: absolute; left: 0; right: 0; top: 220px; text-align: center; font: 400 16px/1.2 Inter, sans-serif; color: var(--dim); }
-  .loomlabel { position: absolute; left: 48px; top: 388px; width: 640px; display: flex; justify-content: space-between; font: 700 18px/1 'JetBrains Mono', monospace; color: var(--dim); letter-spacing: .12em; }
-  .clues { position: absolute; left: 48px; top: 418px; width: 640px; font: 400 22px/1.4 Inter, 'Segoe UI', sans-serif; color: var(--spoken); }
-  .loomstatus { top: 574px; }
+  .loomlabel { position: absolute; left: 48px; top: 450px; width: 640px; display: flex; justify-content: space-between; font: 700 18px/1 'JetBrains Mono', monospace; color: var(--dim); letter-spacing: .12em; }
+  .clues { position: absolute; left: 48px; top: 480px; width: 640px; font: 400 22px/1.4 Inter, 'Segoe UI', sans-serif; color: var(--spoken); }
+  .loomstatus { top: 636px; }
 
   .callout { position: absolute; font: 600 14px/1.3 'JetBrains Mono', Consolas, monospace; color: rgba(242,194,48,.85); letter-spacing: .1em; }
 </style>
@@ -94,6 +96,8 @@
     <div class="head"><b>The blue two-door</b><span>Missing: tyre, keys</span></div>
     <div class="close">X</div>
 
+    <div class="goal">CUT TWO WIRES: THE IGNITION AND THE STARTER</div>
+    <div class="goalsub">Leave the feed, the horn and the lamps.</div>
     <div class="loom">
       <div class="w striped" style="--c:#F2C230"><span class="lab "></span><span class="core"><i class="a"></i><i class="m"></i><i class="b"></i></span><span class="nm">YELLOW</span><span class="kd">striped</span></div>
       <div class="w thick" style="--c:#E8E2D0"><span class="lab ">FEED</span><span class="core"><i class="a"></i><i class="m"></i><i class="b"></i></span><span class="nm">WHITE</span><span class="kd">thick</span></div>
@@ -101,7 +105,7 @@
       <div class="w striped on" style="--c:#C8352B"><span class="lab "></span><span class="core"><i class="a"></i><i class="m"></i><i class="b"></i></span><span class="nm">RED</span><span class="kd">striped</span></div>
       <div class="w " style="--c:#5E9E5C"><span class="lab "></span><span class="core"><i class="a"></i><i class="m"></i><i class="b"></i></span><span class="nm">GREEN</span><span class="kd">plain</span></div>
     </div>
-    <div class="loomlabel"><span>THE STICKER UNDER THE COLUMN</span><span>WRONG CUTS 0 OF 2</span></div>
+    <div class="loomlabel"><span>THE STICKER</span><span>RIGHT 1 OF 2 · WRONG 0 OF 2</span></div>
     <div class="clues">The thick one is the battery feed. Never cut it.<br>The starter wire never sits next to the feed.<br>The two you want sit side by side.</div>
     <div class="status loomstatus">Stripped back to bright copper. That's one of the two.</div>
 
