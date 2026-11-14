@@ -157,6 +157,25 @@ class RZ_SiteBuilder
 			return;
 		}
 
+		// The site builder's own screen (RZ_SiteBuilderScreen); a client that can't open it asks for
+		// the object menu instead (OpenRowsMenu)
+		RZ_SiteBuilderSession screen = SessionOf(playerId);
+		if (screen.m_sSelected.IsEmpty() && screen.m_Building)
+			screen.m_sSelected = screen.m_Building.m_sId;
+
+		RZ_SiteBuilderScreen.Send(screen);
+		RZ_Log.Info(string.Format("Site builder: opened for player %1.", playerId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The object-menu version of the site builder: rows (the fallback when the screen can't open).
+	static void OpenRowsMenu(int playerId)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!gm || !user)
+			return;
+
 		RZ_SiteBuilderSession s = SessionOf(playerId);
 		if (gm.GetScreenGuard() && gm.GetScreenGuard().IsAnyOpen(playerId) && !gm.GetScreenGuard().IsOpen(playerId, RZ_ScreenGuard.KIND_OBJECT))
 		{
@@ -171,7 +190,7 @@ class RZ_SiteBuilder
 			return;
 		}
 
-		RZ_Log.Info(string.Format("Site builder: opened for player %1.", playerId));
+		RZ_Log.Info(string.Format("Site builder: the object menu for player %1.", playerId));
 	}
 
 	//------------------------------------------------------------------------------------------------

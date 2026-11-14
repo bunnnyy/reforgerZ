@@ -449,6 +449,14 @@ class RZ_PlayerUIComponent : ScriptComponent
 		{
 			RZ_PowerMenu.OnPayload(this, payload);
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_SITES)
+		{
+			RZ_SiteBuilderMenu.OnPayload(this, payload);
+		}
+		else if (kind == RZ_UIFeed.PAYLOAD_SITEHUD)
+		{
+			RZ_SiteHud.OnPayload(payload);
+		}
 		else if (kind == RZ_UIFeed.PAYLOAD_TRACKER)
 		{
 			m_sTracker = payload;
@@ -873,6 +881,25 @@ class RZ_PlayerUIComponent : ScriptComponent
 	// ================================================================ Client: commands
 	//------------------------------------------------------------------------------------------------
 	//! A command for the server: CMD_NOTE with the note's text, the board clears (admins).
+	//! The site builder's screen: a button's action for a site (World/HandBuilt/RZ_SiteBuilderScreen.c).
+	void SendSiteAct(string act, string id)
+	{
+		if (Replication.IsServer())
+			RpcAsk_SiteAct(act, id);
+		else
+			Rpc(RpcAsk_SiteAct, act, id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_SiteAct(string act, string id)
+	{
+		int playerId = OwnerPlayerId();
+		if (playerId > 0)
+			RZ_SiteBuilder.ClientAct(playerId, act, id);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void SendCommand(int cmd, string text)
 	{
 		if (Replication.IsServer())

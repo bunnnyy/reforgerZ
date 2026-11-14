@@ -96,6 +96,8 @@ class RZ_UIFeed
 	static const int PAYLOAD_POWER = 21;	// the power panel: P, B, C, A records; F busy; X|reason closes (World/RZ_PowerPanel.c)
 	static const int PAYLOAD_HISTORY = 22;	// the Journal's past jobs, asked when it opens (Missions/RZ_JobHistory.c)
 	static const int PAYLOAD_SITECAM = 23;	// the site builder: x|y|z|radius, Game Master's camera to look at the site (World/HandBuilt/RZ_SiteBuilderEditor.c)
+	static const int PAYLOAD_SITES = 25;	// the site builder's screen: H, S and C records; X|reason closes (World/HandBuilt/RZ_SiteBuilderScreen.c)
+	static const int PAYLOAD_SITEHUD = 26;	// the site builder's HUD while a site is built: B and C records; "" hides it (UI/RZ_SiteHud.c)
 	static const int PAYLOAD_SITEMARKS = 24;	// the site builder: the site's edge and its role spots, drawn while it's built; "" clears (World/HandBuilt/RZ_SiteBuilderEditor.c)
 	static const int DETAIL_MAX = 1500;
 	static const int ERRAND_ID_BASE = 100000;	// errand rows' ids: -(base + errand id)

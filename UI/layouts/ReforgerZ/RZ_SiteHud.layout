@@ -1,0 +1,586 @@
+FrameWidgetClass "{0A782C585118F2C1}" {
+ Name "SiteHud"
+ Slot FrameWidgetSlot "{0C3B4C8B7526ECC9}" {
+  Anchor 1 0 1 0
+  PositionX -494
+  OffsetLeft -494
+  PositionY 120
+  OffsetTop 120
+  SizeX 470
+  OffsetRight 24
+  SizeY 470
+  OffsetBottom -590
+  Alignment 0 0
+ }
+ {
+  ImageWidgetClass "{D2D2689C0EA26DBF}" {
+   Name "HudBg"
+   Slot FrameWidgetSlot "{57111117E28CDBEB}" {
+    Anchor 0 0 0 0
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 470
+    OffsetRight -470
+    SizeY 470
+    OffsetBottom -470
+    Alignment 0 0
+   }
+   Color 0.071 0.078 0.086 0.88
+   Size 1 1
+  }
+  ImageWidgetClass "{410B6BC33FDD8D25}" {
+   Name "HudAccent"
+   Slot FrameWidgetSlot "{1C63C02F99B0FAB9}" {
+    Anchor 0 0 0 0
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 4
+    OffsetRight -4
+    SizeY 470
+    OffsetBottom -470
+    Alignment 0 0
+   }
+   Color 0.91 0.698 0.227 1
+   Size 1 1
+  }
+  TextWidgetClass "{317B664D1FBBF6E2}" {
+   Name "HudHead"
+   Slot FrameWidgetSlot "{5CE003B84E79DAB9}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 14
+    OffsetTop 14
+    SizeX 434
+    OffsetRight -454
+    SizeY 24
+    OffsetBottom -38
+    Alignment 0 0
+   }
+   Color 0.604 0.592 0.561 1
+   Text "BUILDING - BASTION STRONGHOLD"
+   "Font Size" 17
+   "Min Font Size" 17
+   FontProperties FontProperties "{79C039702C39D353}" {
+    Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{60FF7560C8B42D88}" {
+   Name "HudName"
+   Slot FrameWidgetSlot "{73BDAFF0E9401FF9}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 38
+    OffsetTop 38
+    SizeX 434
+    OffsetRight -454
+    SizeY 38
+    OffsetBottom -76
+    Alignment 0 0
+   }
+   Color 0.925 0.914 0.882 1
+   Text "Lamentin"
+   "Font Size" 30
+   "Min Font Size" 30
+   FontProperties FontProperties "{1E01005B6E0B8A30}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{1A9124C708505480}" {
+   Name "HudInfo"
+   Slot FrameWidgetSlot "{E9BCC04409FA345D}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 78
+    OffsetTop 78
+    SizeX 434
+    OffsetRight -454
+    SizeY 26
+    OffsetBottom -104
+    Alignment 0 0
+   }
+   Color 0.604 0.592 0.561 1
+   Text "41 objects - unsaved changes"
+   "Font Size" 19
+   "Min Font Size" 19
+   FontProperties FontProperties "{EAF18C108A0F6018}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{F12EF613C3EC713A}" {
+   Name "HudSpotsHead"
+   Slot FrameWidgetSlot "{FF3B5772A9D436EB}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 112
+    OffsetTop 112
+    SizeX 434
+    OffsetRight -454
+    SizeY 24
+    OffsetBottom -136
+    Alignment 0 0
+   }
+   Color 0.604 0.592 0.561 1
+   Text "ROLE SPOTS - 7 OF 11"
+   "Font Size" 17
+   "Min Font Size" 17
+   FontProperties FontProperties "{FD6898FD74258039}" {
+    Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+   }
+  }
+  ImageWidgetClass "{938F6E6FFACA2D8E}" {
+   Name "HudBarBg"
+   Slot FrameWidgetSlot "{0DF3731AED2A6CFE}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 140
+    OffsetTop 140
+    SizeX 430
+    OffsetRight -450
+    SizeY 6
+    OffsetBottom -146
+    Alignment 0 0
+   }
+   Color 0.2 0.216 0.231 1
+   Size 1 1
+  }
+  ImageWidgetClass "{CDBC42E196B68A35}" {
+   Name "HudBarFill"
+   Slot FrameWidgetSlot "{151DF688C5C79A7E}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 140
+    OffsetTop 140
+    SizeX 200
+    OffsetRight -220
+    SizeY 6
+    OffsetBottom -146
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Size 1 1
+  }
+  TextWidgetClass "{2DF6E385A374DF88}" {
+   Name "HudSpot0"
+   Slot FrameWidgetSlot "{A548C64608F0F1AD}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 156
+    OffsetTop 156
+    SizeX 209
+    OffsetRight -229
+    SizeY 26
+    OffsetBottom -182
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{5620526497119E35}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{3613DF2F81966FE0}" {
+   Name "HudSpot1"
+   Slot FrameWidgetSlot "{79B335AB1E05BA47}" {
+    Anchor 0 0 0 0
+    PositionX 235
+    OffsetLeft 235
+    PositionY 156
+    OffsetTop 156
+    SizeX 209
+    OffsetRight -444
+    SizeY 26
+    OffsetBottom -182
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{22A96F9C70287C4F}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{BD3A9661BA9CC6A3}" {
+   Name "HudSpot2"
+   Slot FrameWidgetSlot "{A2742EF000F750EE}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 184
+    OffsetTop 184
+    SizeX 209
+    OffsetRight -229
+    SizeY 26
+    OffsetBottom -210
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{73DD8870EC48FC68}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{1D3B7F475DBB970A}" {
+   Name "HudSpot3"
+   Slot FrameWidgetSlot "{89D0098E79BA06F1}" {
+    Anchor 0 0 0 0
+    PositionX 235
+    OffsetLeft 235
+    PositionY 184
+    OffsetTop 184
+    SizeX 209
+    OffsetRight -444
+    SizeY 26
+    OffsetBottom -210
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{25B10BBCAD792DE7}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{12C5C51900F17651}" {
+   Name "HudSpot4"
+   Slot FrameWidgetSlot "{F8DCFE6EC286EAFE}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 212
+    OffsetTop 212
+    SizeX 209
+    OffsetRight -229
+    SizeY 26
+    OffsetBottom -238
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{F65758C24494321F}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{C74772FD8477A1AC}" {
+   Name "HudSpot5"
+   Slot FrameWidgetSlot "{FCE127F4F7469B9C}" {
+    Anchor 0 0 0 0
+    PositionX 235
+    OffsetLeft 235
+    PositionY 212
+    OffsetTop 212
+    SizeX 209
+    OffsetRight -444
+    SizeY 26
+    OffsetBottom -238
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{E99B709E9ACE2A60}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{36E9FDA957795D00}" {
+   Name "HudSpot6"
+   Slot FrameWidgetSlot "{B3156AF463D34985}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 240
+    OffsetTop 240
+    SizeX 209
+    OffsetRight -229
+    SizeY 26
+    OffsetBottom -266
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{483D7DF8C0F1E681}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{AECC17EB9DE6B2A1}" {
+   Name "HudSpot7"
+   Slot FrameWidgetSlot "{40EAB0B802FB70D7}" {
+    Anchor 0 0 0 0
+    PositionX 235
+    OffsetLeft 235
+    PositionY 240
+    OffsetTop 240
+    SizeX 209
+    OffsetRight -444
+    SizeY 26
+    OffsetBottom -266
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{BF2F6BC06C69261A}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{12DF9C3A4A942A6A}" {
+   Name "HudSpot8"
+   Slot FrameWidgetSlot "{A0E6B52535618651}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 268
+    OffsetTop 268
+    SizeX 209
+    OffsetRight -229
+    SizeY 26
+    OffsetBottom -294
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{024869E510CC1D30}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{F6E0162C5BAAD69C}" {
+   Name "HudSpot9"
+   Slot FrameWidgetSlot "{46434489CB088989}" {
+    Anchor 0 0 0 0
+    PositionX 235
+    OffsetLeft 235
+    PositionY 268
+    OffsetTop 268
+    SizeX 209
+    OffsetRight -444
+    SizeY 26
+    OffsetBottom -294
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{85BF7D76FC2A0C19}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{A92473E31BF6C8BE}" {
+   Name "HudSpot10"
+   Slot FrameWidgetSlot "{2CD817B8A747BEC8}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 296
+    OffsetTop 296
+    SizeX 209
+    OffsetRight -229
+    SizeY 26
+    OffsetBottom -322
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{65D0879A04B3682B}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{304728F6F9C20A06}" {
+   Name "HudSpot11"
+   Slot FrameWidgetSlot "{8AE1C7688D5449A6}" {
+    Anchor 0 0 0 0
+    PositionX 235
+    OffsetLeft 235
+    PositionY 296
+    OffsetTop 296
+    SizeX 209
+    OffsetRight -444
+    SizeY 26
+    OffsetBottom -322
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{3B6D760032C46220}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{00BB8D00D0CC1518}" {
+   Name "HudSpot12"
+   Slot FrameWidgetSlot "{887F76CBF65EED22}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 324
+    OffsetTop 324
+    SizeX 209
+    OffsetRight -229
+    SizeY 26
+    OffsetBottom -350
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{C35D7FFEC43AB5F8}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{7DF14806709126E1}" {
+   Name "HudSpot13"
+   Slot FrameWidgetSlot "{5E8D8CDB9DA3BED5}" {
+    Anchor 0 0 0 0
+    PositionX 235
+    OffsetLeft 235
+    PositionY 324
+    OffsetTop 324
+    SizeX 209
+    OffsetRight -444
+    SizeY 26
+    OffsetBottom -350
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{BFE06D431020DD14}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{821B40AC9E623066}" {
+   Name "HudSpot14"
+   Slot FrameWidgetSlot "{F10DD18237321914}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 352
+    OffsetTop 352
+    SizeX 209
+    OffsetRight -229
+    SizeY 26
+    OffsetBottom -378
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{863F1D856D858B73}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{867C133589DC4122}" {
+   Name "HudSpot15"
+   Slot FrameWidgetSlot "{C3F8408F48E0F5F7}" {
+    Anchor 0 0 0 0
+    PositionX 235
+    OffsetLeft 235
+    PositionY 352
+    OffsetTop 352
+    SizeX 209
+    OffsetRight -444
+    SizeY 26
+    OffsetBottom -378
+    Alignment 0 0
+   }
+   Color 0.592 0.769 0.349 1
+   Text "Quartermaster"
+   "Font Size" 20
+   "Min Font Size" 20
+   FontProperties FontProperties "{D906B2A4B128C276}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  ImageWidgetClass "{50C2405D8C77E470}" {
+   Name "HudTypeBg"
+   Slot FrameWidgetSlot "{198D80444A0FBE71}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 392
+    OffsetTop 392
+    SizeX 430
+    OffsetRight -450
+    SizeY 34
+    OffsetBottom -426
+    Alignment 0 0
+   }
+   Color 0.165 0.176 0.192 1
+   Size 1 1
+  }
+  TextWidgetClass "{CC4006E139898C07}" {
+   Name "HudType"
+   Slot FrameWidgetSlot "{E7FEC043CE514DF3}" {
+    Anchor 0 0 0 0
+    PositionX 32
+    OffsetLeft 32
+    PositionY 396
+    OffsetTop 396
+    SizeX 406
+    OffsetRight -438
+    SizeY 28
+    OffsetBottom -424
+    Alignment 0 0
+   }
+   Color 0.925 0.914 0.882 1
+   Text "Next spot: Gate"
+   "Font Size" 21
+   "Min Font Size" 21
+   FontProperties FontProperties "{DF9237CE938992C6}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{A2690E5850224006}" {
+   Name "HudHint"
+   Slot FrameWidgetSlot "{F2C05AC7F6C8F5BA}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 432
+    OffsetTop 432
+    SizeX 434
+    OffsetRight -454
+    SizeY 30
+    OffsetBottom -462
+    Alignment 0 0
+   }
+   Color 0.604 0.592 0.561 1
+   Text "Site builder: put spots, save, stop"
+   "Font Size" 18
+   "Min Font Size" 18
+   FontProperties FontProperties "{8ACF548141C568C9}" {
+    Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+   }
+  }
+ }
+}
