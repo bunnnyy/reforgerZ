@@ -25,6 +25,7 @@ resets it, and a death costs what you carried and a little time.
 | Habits ([HABITS.md](HABITS.md)), the locker ([LOCKER.md](LOCKER.md)) | |
 | **Quest items** (below): they come round with you | |
 | The journal, the tracker, Legacy, unlocks, your companion's loyalty ([COMPANION.md](COMPANION.md)) | |
+| The map's fog (built: [UI.md](../docs/UI.md#the-maps-fog); it's already kept across deaths on the profile) | A reset clears it (`RZ_MapFog.ClearFor`) |
 
 The spawn screen no longer offers a background after your first: it shows the character, where
 you'll come round and **Reset character** ([below](#reset-character)).

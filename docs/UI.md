@@ -216,7 +216,8 @@ are play-test aids; the status log prints the summary anyway: [INFECTED.md](INFE
 `/talkdebug` (server admins) reads the conversation trees of the person you're talking to; `/traces`
 (server admins) writes the door marks near you to the server log, with `town`, `write` and `clear`
 as play-test aids ([TRACES.md](TRACES.md#admin-saving-and-the-log)); `/sites` (server admins and
-game masters) opens the site builder ([SITES.md](SITES.md#hand-built-sites)); `/mydead
+game masters) opens the site builder ([SITES.md](SITES.md#hand-built-sites)); `/fog` (server admins)
+reads the map's fog, `/fog all` clears your map and `/fog reset` fogs it again ([The map's fog](#the-maps-fog)); `/mydead
 hidden` or `/mydead shown` keeps your name out of public text if you die out there
 ([INFECTED.md](INFECTED.md#your-dead-run)). They work without any layout. With **Board menus** off,
 reading the board is a notice and notes are written with `/note` only.
@@ -1483,6 +1484,45 @@ gone zoom** (450), fading in between, so it never covers the streets you're read
 shows or hides it, `RZ_MapLegend` (**I**, pad **Y**); its own prompt says so, and the choice lasts
 the session.
 
+### The map's fog
+
+The map shows only what this character has seen (approved by the author as fog of war: seen ground
+stays seen). Code: `World/RZ_MapFog.c` (the server), `UI/RZ_MapFogDraw.c` (the drawing).
+**Map > Map fog** (on); off, the map is as above.
+
+| Part | How |
+|---|---|
+| **The fog** | Unseen ground is under a dark grey layer (#2E3032 at **How dark**, 0.82), so the roads and the coast still show faintly through it. It's drawn on a canvas the icon layer makes first in the map's root, under the markers and the search area, so it needs only `RZ_MapIconsUI` on the map config (no layout) |
+| **Walking** | Reveals **Reveal radius** (150 m) round you each time you enter a new square |
+| **High ground** | **High radius** (400 m) while you stand **Tower height** (6 m) above the ground under you (a tower, a roof), or your ground is **Hill rise** (35 m) above the average of the land 400 m round; looked at as you move and every 10 s standing still |
+| **A found map** | A paper map put out as loot (not the one every life starts with) reveals its town, the settlement's radius plus 150 m and at least **Town radius** (500 m), once you carry it (looked for every 5 s); a line on the notice card says so |
+| **A notice board** | Reading a safehouse's board reveals its town the same way |
+| **Asking about the roads** | The Haven's service (Known) also reveals a strip **Road strip** (200 m) wide from where you stand to the place of the job you track |
+| **Friends' camps** | Every 30 s, a faction you're Known with shares **Camp radius** (300 m) round each of its holdings; the Haven, round its safehouses too |
+
+**Places as rumours.** The places the map names (the lab, strongholds, outposts, safehouses, the
+power and radio stations, the sealed checkpoints) show their marker once their square is seen.
+Before that, a place everyone knows of is a **rumour**: a range ring 350 m round a spot off the
+place (the same spot every time, never the place), labelled "Safehouse, somewhere here". Your
+objective and the packs' rings are as above. **Places as rumours** off: the markers as before.
+
+**The data.** One bit per square (**Square**, 100 m; at most 256 a side: Everon is 128 × 128, about
+2 KB), kept on the player's profile (`m_aFog`, with `m_sFogGrid`, the grid it was kept for; another
+grid clears it), so it's saved with the profile, kept across deaths, and starts over with a wipe's
+fresh state. A character reset (planned, [designs/PERSISTENCE.md](../designs/PERSISTENCE.md)) clears
+it (`RZ_MapFog.ClearFor`). The server sends the whole fog to its player alone as run lengths (payload
+kind 25: `F|x0|z0|cell|w|h|opacity|1`, then `R|` alternating unseen and seen runs, row by row, unseen
+first): when the map opens (the client asks) and at most every 3 s while it changes. The client
+merges unseen runs into rectangles once per change and draws them as polygons only when the map
+pans, zooms or the fog changes.
+
+**Admin.** `/fog` (the read-out: squares seen and the payload's size), `/fog all` (your whole map
+clear), `/fog reset` (fogged again); on a pad, the talk screen's **[Admin] Clear my map's fog
+(again: fog it)** does the one or the other.
+
+Planned: selling a town's survey, sharing maps, a notebook page on a first visit, and the roads
+followed for real ([designs/MAP_FOG.md](../designs/MAP_FOG.md)).
+
 ## Controllers
 
 Everything in ReforgerZ must work on console (Xbox, PlayStation) and with a gamepad on PC, as well
@@ -1601,9 +1641,10 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_ScreenCapture` | server | While a screen acts for its player, catches what would have been that player's notice for the screen's status line |
 | `RZ_ScreenGuard` | server, once a second | Watches open talk, reader, repair, shop, crafting, cooking and radio screens, object menus and power panels and closes them in danger (below) |
 | `RZ_PlayerEffectsComponent` | on the player controller | The infected's close moves on the owner's machine: a hold (with the hint and Jump to kick free), a stagger, a knockdown; the server decides each one ([INFECTED.md](INFECTED.md#how-they-move-and-hunt)) |
-| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/traces`, `/sites`, `/rep`, `/talkdebug`, `/mydead`, `/season`, `/anonymous`, `/lastentry`, `/epilogue`, sent as commands to the server, which checks them again. Registered with the first notice. Each has a way without typing ([Controllers](#controllers)), but the admins' `/epilogue` |
+| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/traces`, `/sites`, `/fog`, `/rep`, `/talkdebug`, `/mydead`, `/season`, `/anonymous`, `/lastentry`, `/epilogue`, sent as commands to the server, which checks them again. Registered with the first notice. Each has a way without typing ([Controllers](#controllers)), but the admins' `/epilogue` |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards, the subtitles (the arrow to an in-person speaker every frame), the radio-line box and the quest tracker |
 | `RZ_SayLine`, `RZ_ESaySource` | server, client (`UI/RZ_UIData.c`) | A spoken line's who and how: name, role, faction, source, channel, where the speaker is ([Subtitles](#subtitles-and-the-reader)) |
+| `RZ_MapFog` (`World/RZ_MapFog.c`), `RZ_MapFogDraw` (`UI/RZ_MapFogDraw.c`) | server, on the second tick; client, in the map's icon layer | What each character has seen of the map (a bit per square on the profile), sent to its player as run lengths (payload kind 25); drawn over the map as merged rectangles ([The map's fog](#the-maps-fog)) |
 | `RZ_SpeakerFinder` | server (`UI/RZ_UIFeed.c`) | The nearest person to a player, for a spoken line whose caller gave no body |
 | `RZ_DoorMarkClient` | client, from the HUD's update | Traces' door marks as decals near the player, from the game mode's replicated list and the kit's atlas ([TRACES.md](TRACES.md#doors-you-can-see)); nothing without the atlas |
 | `RZ_PowerLampsClient` | client, from the HUD's update | The map's own lamps, dark but where there's power, from the game mode's replicated list: finds the lamps round the player once (a 100 m square at a time, out to 800 m) and puts out the ones outside it ([DESIGN.md](DESIGN.md#the-power-grid)); nothing with **World > Power grid > Street lamps** off |

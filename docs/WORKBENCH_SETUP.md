@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **369 prefab fields**: 46 on `RZ_GameModeComponent`, 306 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **346 entries**: 201 prefabs the plugin creates, 38 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **369 prefab fields**: 46 on `RZ_GameModeComponent`, 306 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **346 entries**: 201 prefabs the plugin creates, 38 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 50 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -1616,6 +1616,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 4–12 s, 11 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout**, the **object row layout** (the object menu; empty = world prompts) ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
 | Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits), **Work sites** (on, reach 3 m, time scale 1, 40 sites at once; while holding: **Lock movement** on, **Hands animation** on, **Dig with the tool** on) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
+| Map | Map fog | `m_MapFogSettings` | **On** (the map shows only what this character has seen), **Reveal radius** (150 m), **High radius** (400 m) with **Tower height** (6 m) and **Hill rise** (35 m), **Square** (100 m; changing it clears every fog), **How dark** (0.82), **Town radius** (500 m: a found paper map, a notice board), **Camp radius** (300 m: a faction you're Known with), **Road strip** (200 m: asking about the roads), **Places as rumours** (on) ([UI.md](UI.md#the-maps-fog)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
 | Debug | (top level) |  | Status log every few minutes (on) |
 <!-- /manifest:settings -->
@@ -1835,6 +1836,12 @@ pot* opened beside the nearest building must stand with a kitchen thing (the sto
 or the pot), never a cardboard box; then one at the nearest cook pot a camp has laid out must stand at
 it with nothing more put out. Lines `RZT kitchen: ...`, the sum `RZT kitchen: done, N failures`, and
 `RZT kitchen FAIL ...` for each miss (the run fails on any).
+
+**The map's fog** (`RZT_Fog.c`, [UI.md](UI.md#the-maps-fog)): first, a few seconds in, before
+anything moves the tester: where he stands is seen and ground 1.5 km off isn't; walking 600 m reveals
+new ground; a paper map put in his pack, registered as found in a far town, reveals that town; the
+profile's fog survives the save's JSON round trip; the payload is small. Lines `RZT fog OK|FAIL ...`
+and the sum `RZT fog: N checks, N failed` (the run fails on any FAIL).
 
 **Carrying** (`RZT_Carry.c`, [DESIGN.md](DESIGN.md#carrying)): four minutes in, the tester carries
 three crates from the open into the nearest building with a ground floor (each hold done for him):
@@ -2169,8 +2176,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **198** lines with the tag, all but one in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
+There are **201** lines with the tag, all but one in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
@@ -2180,7 +2187,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-38)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-39)
 come last.
 
 ### High risk: the core loop (2)
@@ -2296,10 +2303,12 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1475` | a quartermaster or the medic moved and turned with `SetWorldTransform` on the server stays at their hand-placed spot, facing its way, on every client | They stand where they spawned; the quartermaster turns to serve as before |
 | `World/HandBuilt/RZ_HandSpots.c:402` | a short flat trace through a spot inside a wall, a crate or a tent's side reports a hit (the spot turns red), and the excluded marker cone doesn't | A spot in a wall isn't flagged; the author sees it in play |
 
-### Low risk: contained or cosmetic (47)
+### Low risk: contained or cosmetic (49)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `World/RZ_MapFog.c:119` | the map's fog's grid from `BaseWorld.GetBoundBox()` covers the terrain (the log's `Map fog: <w> x <h> squares`) | A box larger than the map only adds squares nobody walks; a smaller one leaves its edge never fogged |
+| `World/RZ_MapFog.c:512` | a paper map in a character's inventory has the character as its root parent, so a found map is seen as carried | A found map never reveals its town; walking and boards still do |
 | `World/HandBuilt/RZ_SiteBuilderEditor.c:121` | setting the manual camera's world transform moves Game Master's camera to look at the site (**Go there**) | The camera stays: fly it to your character |
 | `World/HandBuilt/RZ_SiteBuilderEditor.c:170` | debug shapes made on a game client (`Shape.CreateLines`, `CreateSphere`) draw in the world for that player, Game Master's camera too, not only in Workbench | The menu's words only: the checklist and where the first red spot is |
 | `Interactions/RZ_Interactions.c:187` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
@@ -2348,7 +2357,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PowerLooks.c:102` | the power station's generator: `RZ_PowerGeneratorSound.et` (no mesh, vanilla's diesel generator sounds on a `StaticSoundComponent`), spawned by the server, plays on every client that streams it in and stops when the server deletes it, as vanilla's placed generators do | No sound at a running station: empty **World > Power grid > Generator sound prefab**; the panel and the notices still say it runs |
 | `UI/RZ_PowerLampsClient.c:185` | street lamps: `StreetLampComponent.SetBroken(true)` on a client puts that lamp out there (its light and its glow), and `SetBroken(false)` lets it light itself at night again | Lamps stay lit in dark towns, or stay out after the main switch: turn **World > Power grid > Street lamps** off, and every lamp is left as the map has it |
 
-### The UI (38)
+### The UI (39)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -2391,7 +2400,8 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `Interactions/RZ_RadioScreen.c:54` | the server runs `PerformAction` for an action on a carried radio in vanilla's inspection context (`knob_toggle`, beside Turn on/off), as for vanilla's own | View radio in hand does nothing: use it with the radio on the ground or at a house radio; or make the action local and ask the server through `RZ_PlayerUIComponent` |
 | `UI/RZ_DeathBrief.c:425` | the death brief, opened with `OpenMenu` while the spawn screen (or vanilla's deploy menu) is open, goes on top and takes the input: the screen under it ignores A and B until the brief closes, and the press that closes it (A's release, or Space, a click or B with the 0.4 s wait) doesn't deploy or open the pause menu under it | A press that closes the brief also deploys or opens the pause menu: lengthen `LEAVE_DELAY` in `RZ_DeathBriefMenu`, or turn **UI > Death brief** off |
 | `UI/RZ_DeathBrief.c:174` | a server tick after a death, the dead character's damage manager still gives the instigator of the last blow: an AI's or an infected's entity (`GetInstigatorEntity`), a player's id, nothing for a fall | The brief says "Nobody saw how" (or "The infected" with one standing over the body) where it could have named a faction; nothing else depends on it |
-| `UI/RZ_MapIcons.c:642` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
+| `UI/RZ_MapIcons.c:659` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
+| `UI/RZ_MapFogDraw.c:187` | the map's fog: `PolygonDrawCommand` quads on a script-made `CanvasWidget` over the full-screen map draw in screen pixels, a few hundred without a hitch when the map pans or zooms, and at **How dark** 0.82 the map's roads and coast show faintly through | Turn **Map > Map fog > On** off: the map is as before (the places' pins come back too) |
 | `UI/RZ_UIData.c:1223` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
 | `UI/RZ_ObjectMenu.c:328` | `FrameSlot.SetSize` on the object menu's centred panel (anchor and alignment 0.5) keeps it centred as it grows for [the status strip](UI.md#the-status-strip-and-locked-rows) (940 tall) and shrinks without one (810) | The panel jumps off-centre or keeps one height: set its slot to 1,200 × 940 in `RZ_ObjectMenu.layout` and remove the `SetSize` line; things without a strip then have a gap above their text |
 | `UI/RZ_CraftMenu.c:384` | the same on the crafting screen's panel: 960 tall at a stove (the strip), 858 at a workbench | As above, with `RZ_CraftMenu.layout` at 1,600 × 960 |
@@ -2593,6 +2603,9 @@ Warnings worth acting on:
 | `Camp life: <Faction> <KIND> at <grid>: solved, <n> pieces and <l> of its layers (the wire <p>% closed), <i> indoors, <d> dropped, laid out <where>; <c> counter(s).` | With **Solver** on, the first time a run dresses a place, once its ground is read and solved ([SITES.md](SITES.md#the-solver)); the `<n> of <m> planned pieces fit` line is the same with Solver off |
 | `Camp life: <Faction> <KIND> at <grid>: laid out again as before (<n> pieces and <l> of its layers, <where>), <c> counter(s).` | Each later visit in the run: the kept layout, no reading |
 | `Spawn timing: <place> <n> pieces in <t> ms, player at <d> m (now <d2> m); <c> ms of server time in all, the longest tenth <l> ms.` / `Spawn timing: <place> left with <n> pieces up and <k> still to come, <t> ms after it came (...)` | Once per visit, when a place's last piece is up (or it went before): how long it took from the moment its people came, and what it cost ([SITES.md](SITES.md#how-fast-a-place-fills)). Over a few seconds when you arrive on foot means **Spawn ms** is too low or a site wasn't pre-read |
+| `Map fog: <w> x <h> squares of <m> m from <x>, <z> (on\|off)` | Once at start ([UI.md](UI.md#the-maps-fog)): the fog's grid over this map (Everon about 128 x 128) |
+| `Map fog: player <id> learnt the ground round <grid> (<n> squares)` | A found paper map carried, or a town's notice board read: its town revealed |
+| `Map fog: player <id> has seen <n> of <m> squares; payload <k> characters` | `/fog` (admins), and after `/fog all` or `/fog reset` |
 | `Hand-built: <world> has <n> sites (<s> shipped, <h> saved on this machine), <u> in use, <o> objects.` | Once at start ([SITES.md](SITES.md#hand-built-sites)): the hand-built saves for this map. 0 sites on a map nobody built on |
 | `Camp life: <title> at <grid>: hand-built (<n> objects, <r> role spots, saved <date>), automated layout off; its spots: complete` (or `<k> missing (Gate, Cook spot, ...)`) / `... being built by hand, automated layout off.` | A place with a hand-built save in use comes out near a player (its objects, no automated piece), or one the site builder is building |
 | `Site builder: <player> went to <site> (<id>).` / `... builds <site> (<id>), empty / from the automated layout (<n> pieces) / from its save (<n> objects).` / `... stopped building <site> (<id>); <n> objects cleared, the site is <STATE>.` | The site builder's **Go there**, **Build here** and **Stop building** |
@@ -4002,6 +4015,17 @@ when it happens)
 - [ ] You are here: open the map and a yellow arrow on a dark disc sits where you stand, above the
   other icons; turn round and it turns with you (an arrow pointing the wrong way, or turning about a
   corner, is the rotation VERIFY); it follows you in a car; dead, it's gone.
+- [ ] The map's fog ([UI.md](UI.md#the-maps-fog)), with a pad and on a TV: open the map on a fresh profile and
+  all but the ground round you is under a dark grey layer, with the roads and the coast still faintly
+  visible through it (too dark or too light: **Map > Map fog > How dark**). Pan and zoom: the fog moves
+  with the map, without a stutter, its squares' edges on the grid (fog off its place, missing, or a
+  hitch is the drawing VERIFY `UI/RZ_MapFogDraw.c:187`). Walk 300 m and open it again: a trail
+  150 m wide is clear; climb a tower or a hill and more opens. A safehouse you haven't seen is a
+  yellow ring labelled "Safehouse, somewhere here", not on the house; walk to it and its marker
+  comes. Your tracked objective always shows. Pick up a paper map found in a town's loot (not the
+  one you start with): its town clears within 5 s with a notice. Read a safehouse's board: its
+  town clears. Die and come back: the fog is as you left it. `/fog all` and `/fog reset` (or the
+  talk screen's [Admin] row) clear and fog your map.
 - [ ] The map key: open the full-screen map zoomed out and the key is in the bottom-left, its icons
   in their colours, its last row the diamond (Your objective) and the amber disc (Search area); zoom in on a town and it fades out, zoom out and it comes back. I (pad Y) hides
   it and shows it again, and it stays hidden the next time you open the map. It covers none of

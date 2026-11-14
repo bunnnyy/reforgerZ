@@ -117,6 +117,10 @@ class RZ_NoticeBoard
 		}
 
 		Expire(h);
+		// A town's board shows its streets: the map's fog lifts round the town (World/RZ_MapFog.c)
+		if (m_GM.GetMapFog())
+			m_GM.GetMapFog().RevealTown(playerId, h.m_vPos);
+
 		if (SendMenu(playerId))
 			return;
 

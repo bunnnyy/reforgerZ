@@ -7569,6 +7569,12 @@
   },
   {
    "category": "Map",
+   "object": "Map fog",
+   "field": "m_MapFogSettings",
+   "covers": "**On** (the map shows only what this character has seen), **Reveal radius** (150 m), **High radius** (400 m) with **Tower height** (6 m) and **Hill rise** (35 m), **Square** (100 m; changing it clears every fog), **How dark** (0.82), **Town radius** (500 m: a found paper map, a notice board), **Camp radius** (300 m: a faction you're Known with), **Road strip** (200 m: asking about the roads), **Places as rumours** (on) ([UI.md](UI.md#the-maps-fog))"
+  },
+  {
+   "category": "Map",
    "object": "(top level)",
    "covers": "**Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout)"
   },
@@ -8804,6 +8810,25 @@
     "m_bNametags": "1",
     "m_fNametagRange": "8",
     "m_iNametagMax": "3"
+   }
+  },
+  {
+   "field": "m_MapFogSettings",
+   "category": "Map",
+   "label": "Map fog",
+   "cls": "RZ_MapFogSettings",
+   "defaults": {
+    "m_bOn": "1",
+    "m_fRevealRadius": "150",
+    "m_fHighRadius": "400",
+    "m_fTowerHeight": "6",
+    "m_fHillRise": "35",
+    "m_fCell": "100",
+    "m_fOpacity": "0.82",
+    "m_fTownRadius": "500",
+    "m_fCampRadius": "300",
+    "m_fRoadWidth": "200",
+    "m_bRumours": "1"
    }
   },
   {

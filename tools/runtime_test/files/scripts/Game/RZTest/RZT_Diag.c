@@ -623,6 +623,11 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 60 && m_iRZTSec % 20 == 0)
 			RZT_Fresh.PartTick(this);
 
+		// The map's fog (RZT_Fog.c): walking reveals, a found map, the save, the payload; first, so
+		// nothing else moves the tester while it walks him
+		if (m_iRZTSec >= 12 && !RZT_Fog.Tick(this))
+			return;
+
 		// The openings' play-test faults (RZT_Openings.c), before the missions move the tester about
 		if (m_iRZTSec >= 12 && !RZT_Openings.Tick(this, m_aRZTRoute[0]))
 			return;

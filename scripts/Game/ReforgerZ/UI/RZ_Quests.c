@@ -1070,4 +1070,24 @@ class RZ_QuestTracker
 
 		return ln.Add("objective_spot").AddInt(-1).AddInt(x).AddInt(z).Add(now).End();
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the tracked job's current objective is (the map's mark, and the map's fog when asking
+	//! about the roads). False if nothing is tracked or it has no place.
+	bool ObjectivePlace(int playerId, out vector at, out bool rough, out float radius)
+	{
+		int id = TrackedFor(playerId);
+		if (id == 0)
+			return false;
+
+		RZ_ObjList list = new RZ_ObjList();
+		RZ_QuestJob j = JobFor(playerId, id, GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId), list);
+		if (!j || !j.m_bHasPlace || j.m_vPlace == vector.Zero)
+			return false;
+
+		at = j.m_vPlace;
+		rough = j.m_bRough;
+		radius = j.m_fRadius;
+		return true;
+	}
 }
