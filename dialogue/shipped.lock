@@ -912,10 +912,10 @@ occupant.nurse.symptoms
 occupant.nurse.symptoms/@back
 occupant.nurse.symptoms/@back1
 occupant.nurse.symptoms/@chest
-opening.channel
-opening.channel/@dusk
-opening.channel/@here
-opening.channel/@where
+retired opening.channel
+retired opening.channel/@dusk
+retired opening.channel/@here
+retired opening.channel/@where
 opening.earlier_who
 opening.earlier_who/@back
 opening.earlier_who/@back1
@@ -935,11 +935,11 @@ opening.greet.raider
 opening.greet.soldier
 opening.greet.stranger
 opening.greet.unemployed
-opening.settle
-opening.settle/@enough
-opening.settle/@good
-opening.settle/@later
-opening.settle/@split
+retired opening.settle
+retired opening.settle/@enough
+retired opening.settle/@good
+retired opening.settle/@later
+retired opening.settle/@split
 retired opening.tend_clock
 retired opening.tend_clock/@give
 retired opening.tend_clock/@later

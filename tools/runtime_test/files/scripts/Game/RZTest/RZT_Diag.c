@@ -657,6 +657,11 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 12 && !RZT_Ferda.Tick(this, m_aRZTRoute[0]))
 			return;
 
+		// The whole opening by level (RZT_OpeningChain.c): the door, the favour, the line's short form,
+		// the runner, Ferda by level, the case delivered to Halcyon
+		if (m_iRZTSec >= 12)
+			RZT_OpeningChain.Tick(this);
+
 		if (m_iRZTSec > 5 && m_iRZTSec % 3 == 0 && !m_bRZTMissionsDone)
 		{
 			if (!GetMissions().RZT_Step())

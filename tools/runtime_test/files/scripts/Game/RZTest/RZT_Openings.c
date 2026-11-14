@@ -185,7 +185,7 @@ class RZT_Openings
 			// Every handed step ends where it's done: none waits to be handed in by walking back
 			int waits = 0;
 			string which = "";
-			array<RZ_OpeningStepDef> defs = {chain.m_Search, chain.m_SearchShort, chain.m_Lead, chain.m_LeadNote, chain.m_TalkFirst, chain.m_TalkNext, chain.m_TalkFind};
+			array<RZ_OpeningStepDef> defs = {chain.m_Lead, chain.m_LeadNote, chain.m_TalkFirst, chain.m_TalkNext};
 			for (int ti = 0; ti < 40; ti++)
 			{
 				RZ_OpeningStepDef td = chain.Def(ti);

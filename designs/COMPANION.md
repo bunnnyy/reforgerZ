@@ -15,7 +15,7 @@ One at most per character. He comes from the world, never a menu:
 |---|---|
 | Someone you saved | Survivors Trapped, a distress call, a hostage freed: at the end, if you were kind and he has nowhere to go, he asks to come |
 | A wanderer | a wanderer who knows you well (regard high, 3 or more meetings) asks once |
-| The opening's contact | after the opening (OPENING.md), if you stood with his street against Ferda |
+| The opening's contact | after the opening ([DESIGN.md](../docs/DESIGN.md#the-fixer)), if you stood with his street against Ferda |
 | A faction's lad | Known with a faction, its quartermaster can send one of his people with you for a real day (a loan, not a friend) |
 
 Each has a background of his own (a mechanic, a medic, a hunter, a soldier, a nobody), a voice

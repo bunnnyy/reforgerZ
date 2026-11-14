@@ -4,21 +4,10 @@ class RZ_DialoguePack_openings
 	static void Add(RZ_DialogueDB db)
 	{
 		Add0(db);
-		Add1(db);
 	}
 
 	protected static void Add0(RZ_DialogueDB db)
 	{
-		db.Conv("opening.channel", "radio:open", "cflag:opening.step=2 & cflag:opening.task=10 & cflag:opening.answered=0", "I hear you. Who's calling?", 0, 0, "plain");
-		db.Node("start");
-		db.Say("", "Anyone at all, on this. I've been calling since it got light. I'm in a house on my own with the shutters down and a radio, and nobody's answered. Just say you're there. I don't need anything else.");
-		db.Choice("here", "I'm here. You're not on your own.", "heard", "", "", "", "", "", "", "", "");
-		db.Choice("where", "I hear you. Where are you?", "heard", "", "", "", "", "", "", "", "");
-		db.Node("heard");
-		db.Public();
-		db.Say("", "Somebody. Somebody's there. Thank you. I'll keep the set on, and I'll call again at dusk, the same time every day, if you'll listen.");
-		db.Do("cset:opening.answered=1");
-		db.Choice("dusk", "I'll listen at dusk.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("opening.earlier_who", "opening", "cflag:opening.who=3 & cflag:opening.step>=1 & cflag:opening.step<=3", "Who do you think I am?", 4, 1, "plain");
 		db.Node("start");
 		db.Say("cflag:opening.earlier=2", "Someone who did me wrong on the road. Took what I had and left me the walk. Different face, though. I'm choosing to think so.");
@@ -105,18 +94,6 @@ class RZ_DialoguePack_openings
 		db.Say("cflag:opening.why=2", "It's me, from next door. They went out to see about food three days ago, and I stayed to see about you. Neither of us had anything better on.");
 		db.Say("cflag:opening.why=3", "It's me, from next door. I chalked the door and sat out here four nights. Didn't have anywhere else to be. Never have, really.");
 		db.Say("cflag:opening.first=1", "You're alive. It's me, from next door. I'd stopped knocking. Don't worry about the money I lent you. Money's a joke now, and not a good one.");
-		db.Conv("opening.settle", "opening", "cflag:opening.step=2 & cflag:opening.task=16 & cflag:opening.settled=0", "All right. What's the trouble?", 0, 0, "plain");
-		db.Node("start");
-		db.Say("", "The Kerns and the Orlovs share the coal shed out the back. The Kerns say the Orlovs took the last of it in the night. The Orlovs say it was theirs, and the Kerns' boy kicked their dog.");
-		db.Say("", "Nobody's lying, which is the trouble. They've stopped speaking, and it's cold at night. They'll listen to you. Say something they can both live with.");
-		db.Choice("split", "Split the coal, and the boy says sorry.", "settled", "half", "half", "persuade none 1 bg:elder", "", "", "cset:opening.settled=1", "cset:opening.settled=2", "cset:opening.settled=2");
-		db.Choice("later", "Let me think on it.", "hub", "", "", "", "", "", "", "", "");
-		db.Node("settled");
-		db.Say("", "Old Kern laughed. Nobody's heard him laugh since the roads shut. The Orlov girl is fetching the dog to be apologised to, and there's a kettle on in both houses.");
-		db.Choice("good", "Good. Tell them I said so.", "hub", "", "", "", "", "", "", "", "");
-		db.Node("half");
-		db.Say("", "They heard you. They didn't like it. They'll take turns with the coal and not look at each other on the stairs. It'll do until somebody's colder.");
-		db.Choice("enough", "That'll have to do for now.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("opening.where_now", "opening", "cflag:opening.step=3", "Where will you go now?", 4, 1, "plain");
 		db.Node("start");
 		db.Say("cflag:opening.end=3", "Not where you're going. The Red Hand would have the coat off my back before I'd said hello. I'll find a door with a bear on it, and somebody behind it who'll open up.");
@@ -159,10 +136,6 @@ class RZ_DialoguePack_openings
 		db.Say("", "To see about the next town. Bread, somebody said. Somebody always says bread. They took the map off the table and said back by dark.");
 		db.Say("", "That was three days ago. There's three days of dark between back by dark and now. I've stopped counting them.");
 		db.Choice("look", "Should we go and look for them?", "look", "", "", "", "", "", "", "", "");
-	}
-
-	protected static void Add1(RZ_DialogueDB db)
-	{
 		db.Choice("back", "Let me ask you something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("look");
 		db.Say("", "Not today, and not the two of us. If they got anywhere, someone at a Haven safehouse will have their names. They write down everyone who comes to the door. Ask there.");

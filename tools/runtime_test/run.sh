@@ -51,8 +51,9 @@
 #   The map's fog (RZT_Fog.c): where the tester stands is seen, walking 600 m reveals new ground, a paper map in his pack reveals its far town, the fog survives the save's JSON round trip, the payload is small ("RZT fog OK|FAIL ...", "RZT fog: N checks");
 #   The door and the favour (RZT_Favour.c): for every background, the door asks who you were and a habit is picked (each habit's effect checked), the favour's fetch is handed at a place, the hand-over waits for its reply (standing by him never counts), and the background's way settles it without a hand-over ("RZT favour OK|FAIL ...", "RZT favour: N checks");
 #   The fixer (RZT_Ferda.c): Ferda Kroupa comes for the case (two men, tracked on him, the Red Hand's people leave the sale to him), the street rallied (its door job at a real doorway, three jobs, then RALLIED), the hand-over (sold, Get It Back next) and the warning, the story about Bastion as the good liar (TALKED, no standing), slipping away (SLIPPED), a fight (FOUGHT), his note on a real door's step, a veteran's note only ("RZT ferda OK|FAIL ...", "RZT ferda: N checks");
+#   The opening by level (RZT_OpeningChain.c): a fresh Nurse at levels 1, 2 and 3 runs the whole chain: the door asks or not, the favour or none, the line or its short form, the runner, Ferda's visit, one scene or his note, and the case delivered to Halcyon by the reply.
 #   The line (RZT_Line.c): a road above the line near a town (150-250 m outside the warning zone, 600 m to 2 km off), the scene played with the tester at it: the loudspeakers, a runner who breaks from cover (or is laid down), shot in the warning zone not the kill zone, dead there with the case by him, the line said, the tester never shot and never in the zones ("RZT line OK|FAIL ...", "RZT line: N checks");
-#   A fresh spawn (RZT_Fresh.c): as a veteran, the opening has its contact within 15 m and the door's favour first, the last life's questline part and jobs aren't the new one's, and the Quests tab lists nothing taken ("RZT fresh OK|FAIL ...", "RZT fresh: N checks");
+#   A fresh spawn (RZT_Fresh.c): as a veteran, the opening has its contact within 15 m and the chain starting at the door, not the lead to work, the last life's questline part and jobs aren't the new one's, and the Quests tab lists nothing taken ("RZT fresh OK|FAIL ...", "RZT fresh: N checks");
 #   - starts every registered mission type one at a time, moves the player where the quest tracker
 #     points, then ends it (alternately won and failed) so Setup, Update, rewards and cleanup all run;
 #   - checks every objective's place on the way (RZT_ObjPlace.c): for each mission and questline
@@ -285,6 +286,7 @@ grep -E 'RZT openings' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT case' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT line' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT ferda' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT chain' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT fresh' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT favour' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT kitchen' "$LOG" | sed 's/.*RZT /  /'
@@ -305,7 +307,8 @@ grep -q 'RZT openings FAIL' "$LOG" && { echo "FAILED: an opening's step (the son
 grep -q 'RZT case FAIL' "$LOG" && { echo "FAILED: the runner's case (found, carried, kept over a death, handed over by reply: RZT_Case.c)"; exit 1; }
 grep -q 'RZT line FAIL' "$LOG" && { echo "FAILED: the opening's line (a road above it, the runner shot in the warning zone, the line said, the tester never shot: RZT_Line.c)"; exit 1; }
 grep -q 'RZT ferda FAIL' "$LOG" && { echo "FAILED: the opening's fixer (he comes for the case, each way through him, his note on a real door: RZT_Ferda.c)"; exit 1; }
-grep -q 'RZT fresh FAIL' "$LOG" && { echo "FAILED: a fresh spawn (its contact, the favour first, a clean Quests tab: RZT_Fresh.c)"; exit 1; }
+grep -q 'RZT chain FAIL' "$LOG" && { echo "FAILED: the opening by level (RZT_OpeningChain.c: the door, the favour, the line's short form, the runner, Ferda by level, the case at Halcyon)"; exit 1; }
+grep -q 'RZT fresh FAIL' "$LOG" && { echo "FAILED: a fresh spawn (its contact, the chain from the door, a clean Quests tab: RZT_Fresh.c)"; exit 1; }
 grep -q 'RZT fog FAIL' "$LOG" && { echo "FAILED: the map's fog (RZT_Fog.c: walking reveals, a found map, the save, the payload)"; exit 1; }
 grep -q 'RZT masts FAIL' "$LOG" && { echo "FAILED: the masts (RZT_Masts.c: found, put up, given, overheard, a voice found by bearings)"; exit 1; }
 grep -q 'RZT grid FAIL' "$LOG" && { echo "FAILED: the grid past the station (RZT_Grid.c: substations, a break and a splice, the stakes' caps, a cut)"; exit 1; }

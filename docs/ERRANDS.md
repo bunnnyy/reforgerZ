@@ -338,7 +338,6 @@ tables below).
 | The Name on the Tag | **Take the ID** | 6 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The openings: Water, Water for the Fever | **Fill what you can carry** | 8 s | empty cans and buckets → nothing |
 | The openings: The Fever, The Clock | **Treat his fever**, **Give him the antidote**, **Clean and bind the bite** | 8 s | a mattress, a blanket, a bucket, with the son or the bitten friend lying on it (the prompt at his side) → the same |
-| The openings: Down the Road | **Search it, quietly** | 6–8 s | a crate of odds and ends → rummaged clutter (inside the building its words name) |
 | Strangers: The Funeral for the Car, Two in the Back (push-start) | **Push the car** | 10 s | the car itself |
 | Strangers: Two in the Back ([Mechanic]) | **Fix the car** | 15 s | a toolbox and parts → nothing |
 | Strangers: The Digger | **Dig the grave** | 15 s | a marked plot → a grave |
@@ -1179,16 +1178,16 @@ objective** is handed and tracked, and talking to the contact ends it and hands 
 (nobody outside, or the contact dead: the step is handed at once). Every step is done where it's
 done (`m_bEndsThere`): none sends you back. The next starts there, said by the contact walking with
 you ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)). The chain is the door's favour, its
-hand-over and the runner; the old step 1 and step 2s below stay as steps (The Fever is the Nurse's
-and the Doctor's way through the favour) but no chain hands them now.
+hand-over, the line and the runner. The old step 2s below stay as step definitions (The Fever is the
+Nurse's and the Doctor's way through the favour) but no chain hands them; the old step 1 and the two
+step 2s that ran through talk (Open Channel, Two Families) are gone.
 
 | Step | Key | Way | The step |
 |---|---|---|---|
-| ✅ Outside the Door, Find *the next person*, Back to *the contact* (the talk objectives) | `opening.talk`, `opening.talk.find`, `opening.talk.next` | talk | "Talk to *the contact*." (Find: "Find *Emil* at *Emil's house in Morton*. Talk to them."; Back to only when no next person could stand): never done by being there (`StepCounts` false), only by opening talk with them, when it ends quietly (no past job); 45 minutes before it lapses, which ends the opening |
+| ✅ Outside the Door, Back to *the contact* (the talk objectives) | `opening.talk`, `opening.talk.next` | talk | "Talk to *the contact*.": never done by being there (`StepCounts` false), only by opening talk with them, when it ends quietly (no past job); 45 minutes before it lapses, which ends the opening |
 | ✅ The favour (The Medicine, The Battery, The Last Box, The Spare Key, The Cool Box, A Battery for the Set, The Rifle, A Tin, The Rota, The Last Sack) | `opening.favour.<n>` | do | one named thing fetched for the contact at a place its words are true of, 90–450 m off (the neighbour's door, the lad's house, the house next door: 35–300 m): a work site's hold on its ground floor (the neighbour's: on the real door's doorstep), the thing (or a toolbox, a crate, papers) standing there; done there. Its thing is held for you until the hand-over; 45 minutes before it lapses ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) |
 | ✅ Give Him the *thing* | `opening.favour.give.<n>` | give | done only by the hand-over reply on the contact's talk screen (*[Errand] Here's your battery.*), there and then (`RZ_Errands.FinishNow`); standing by him never counts (`StepCounts` false). He walks with you, so the step's place follows him |
 | ✅ Your background's way (Hotwire It, The Tracks, Open Up, The Back Door, Kept Cold, Give It Here; the Nurse's and the Doctor's is The Fever) | `opening.favour.way.<background>`, `opening.fever` | do | handed instead of the fetch when its tagged reply is picked ([Mechanic] *Forget the battery. Show me the car.*): a hold at its place, done there; no hand-over follows. The Radio Operator's, the Raider's and the Elder's ways are replies that settle the favour there and then |
-| ✅ Down the Road (no chain hands it now) | `opening.search`, `opening.search.short` | sneak | a building 150–450 m from the contact (quiet), named for what it is (the chemist's, the old aid post, the vet's farm, the doctor's house...: [PLACES.md](PLACES.md#a-place-is-what-its-words-say)): hold **Search it, quietly** at the crate inside it (8 s; 6 s), done there (off: 20 s, 10 s there) |
 | ✅ Water | `opening.water` | do | the nearest well or water tower: hold **Fill what you can carry** at the cans by it (8 s; off: 15 s there), done there |
 | ✅ The Cut | `opening.hand` | give | one medical item handed over at the giver when you pick the hand-over reply (*[Errand] Hold still. Let me dress that hand.*): done there and then, in that talk (`RZ_Errands.FinishNow`), and the next step is said into the same talk; never later for walking back |
 | ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | do | their son lies there (a body laid on the care work site's mattress, on the nearest house's ground floor, else beside his father), the tracker on him: hold **Treat his fever** at him (8 s), one medical item taken; **Fill what you can carry** at the well (8 s) |
@@ -1198,11 +1197,9 @@ and the Doctor's way through the favour) but no chain hands them now.
 | ✅ The Station Keys | `opening.keys` | do | inside the locked building whose key the giver gave you |
 | ✅ The Toll | `opening.toll` | talk | 10 s within 30 m of a Red Hand toll with no shot near it |
 | ✅ A Sample | `opening.sample` | do | at the remains with a sample in your pack (the crate or effects prop: none) |
-| ✅ Open Channel | `opening.channel` | do | anywhere, once you've answered on the open channel |
 | ✅ A Fair Swap | `opening.swap` | give | 5 s with a wanderer (the place follows them) |
 | ✅ Hold the Gate | `opening.gate` | do | 60 s within 15 m of the gate |
 | ✅ The Debt | `opening.debt` | press | 10 s at a house's door (the crate prop) |
-| ✅ Two Families | `opening.settle` | talk | once the conversation has settled it |
 | ✅ The Line | `opening.line.walk`, `opening.line.watch` | do | walk with the contact to a road above the line (he leads; the marker on him), then watch it with him: the loudspeakers, a drone, a runner shot by the line in the warning zone ([DESIGN.md](DESIGN.md#the-line)). Both done by the scene, never by standing anywhere; 30 minutes before each lapses. Its short form: no step, the runner found already down |
 | ✅ The Runner | `opening.case.seen`, `opening.case` | do | take Halcyon's cold case from the runner: the man you saw shot, where he fell (`.seen`), or (the line's short form) one who fell 200–600 m off (by a road, else a yard on the edge of town): done when it's in your pack, there; 90 minutes before it lapses. Then the case's lead ([DESIGN.md](DESIGN.md#the-case)) |
 | ✅ The Case | `opening.case.lead` | do | take the case to Halcyon's field station (the nearest Halcyon holding, else the lab): done only by the hand-over reply at Halcyon's people (selling it to the Red Hand or handing it to Bastion drops it); 10 hours before it lapses, handed again to whoever carries a case |

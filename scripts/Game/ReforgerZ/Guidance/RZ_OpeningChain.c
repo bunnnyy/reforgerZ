@@ -2,18 +2,13 @@
 //! (Missions/Errands), handed straight to the player (RZ_Errands.Hand), so the tracker, the Quests
 //! tab and the talk screen show them as they show any errand. With someone outside, each step
 //! starts with a talk objective (RZ_OpeningTalkDef: "Talk to {giver}.", done only by talking to
-//! them), and the step itself is handed in that conversation:
-//! 1. close by, quietly: search a building near the contact (one of your background's kinds when
-//!    one is near), done there;
-//! 2. your background's own system (RZ_OpeningSteps.c), else water from the nearest well, or
-//!    something medical for the contact's hand;
-//! 3. the runner: the case he was carrying, by the road on the edge of town (RZ_OpeningCase), done
-//!    when it's in your pack; then the lead to Halcyon's field station, and the main story.
-//! With no case to find here (no prefab, the cure is out, nowhere a runner could have fallen) the
-//! chain ends as it did: the walk to where your background belongs (levels 0-1), else the nearest
-//! place with work (the lead), with no Fame; an opening with nobody outside, at the lead.
+//! them), and the step itself is handed in that conversation. The favour's steps are
+//! RZ_OpeningFavours'; here: the line (RZ_OpeningLine), the runner and his case (RZ_OpeningCase),
+//! the old ends (the walk to where your background belongs, the lead to the nearest work) when no
+//! case can be found here, and the step defs of the old step 2s (RZ_OpeningSteps.c: only The Fever
+//! still runs, as the Nurse's and the Doctor's way through their favour).
 //! The steps pay nothing through the errand ledger: the chain pays its own Fame at the end
-//! (RZ_Openings), and two step 2s their own small effect (RZ_OpeningTasks.Resolved). Server only.
+//! (RZ_Openings). Server only.
 
 //------------------------------------------------------------------------------------------------
 //! A step of the chain: its definition is the errand's, its done tells the opening.
@@ -98,17 +93,13 @@ class RZ_OpeningTalkDef : RZ_OpeningStepDef
 //------------------------------------------------------------------------------------------------
 class RZ_OpeningChain
 {
-	static const string KEY_SEARCH = "opening.search";
 	static const string KEY_WALK = "opening.walk";
 	static const string KEY_LEAD = "opening.lead";
 	static const string KEY_TALK = "opening.talk";
 
 	ref RZ_OpeningTalkDef m_TalkFirst;			// before the first step: whoever's outside
-	ref RZ_OpeningTalkDef m_TalkNext;			// back to them: only when no next person could stand (hand-off)
-	ref RZ_OpeningTalkDef m_TalkFind;			// handed on: the next person, at their place
+	ref RZ_OpeningTalkDef m_TalkNext;			// back to them, between steps
 
-	ref RZ_OpeningStepDef m_Search;
-	ref RZ_OpeningStepDef m_SearchShort;		// a learning player's step 1 (level 1)
 	ref RZ_OpeningStepDef m_Lead;				// levels 2-3: the nearest place with work, from whoever's outside
 	ref RZ_OpeningStepDef m_LeadNote;			// the same with nobody outside: the scene's read says it
 	ref RZ_OpeningStepDef m_Case;				// the chain's end: the runner and his case
@@ -123,10 +114,6 @@ class RZ_OpeningChain
 	{
 		m_TalkFirst = new RZ_OpeningTalkDef(KEY_TALK, "Outside the Door", 0);
 		m_TalkNext = new RZ_OpeningTalkDef(KEY_TALK + ".next", "Back to {giver}", 0);
-		m_TalkFind = new RZ_OpeningTalkDef(KEY_TALK + ".find", "Find {giver}", 0);
-		m_TalkFind.m_aWays[0].m_sStep = "Find {giver} at {place}. Talk to them.";
-		m_Search = Search(KEY_SEARCH, 20);
-		m_SearchShort = Search(KEY_SEARCH + ".short", 10);
 
 		RZ_ErrandWay w = Task(RZ_EOpeningTask.WATER, "opening.water", "Water", "do", RZ_EErrandPlace.SUBJECT, 15, 8,
 			"Fill what you can carry at {place}.");
@@ -325,25 +312,6 @@ class RZ_OpeningChain
 		// The clock: a bite doesn't wait
 		Def(RZ_EOpeningTask.CLOCK).m_fLapseMinutes = 10;
 		Def(RZ_EOpeningTask.CLOCK_MED).m_fLapseMinutes = 10;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected RZ_OpeningStepDef Search(string key, float seconds)
-	{
-		RZ_OpeningStepDef d = new RZ_OpeningStepDef(key, "Down the Road", 1);
-		RZ_ErrandWay w = d.Way("sneak");
-		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
-		w.m_fSeconds = seconds;
-		w.m_fRadius = 10;
-		w.m_bQuiet = true;
-		w.m_bEndsThere = true;
-		w.m_sStep = "Search {place} down the road, quietly.";
-		w.Work(RZ_EWork.SEARCH, "Search it, quietly");
-		w.Take("I haven't dared go into {place}. Go and look. Walk, don't run: they hear running.",
-			"I need eyes on {place}. Two days I've watched it from here. Nothing moves. That's what worries me.");
-		w.Done("You went in and came out again. Most don't, from that end of the road.",
-			"Anything? It doesn't matter. You went in. That's more than most manage.");
-		return d;
 	}
 
 	//------------------------------------------------------------------------------------------------

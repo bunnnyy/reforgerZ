@@ -136,7 +136,6 @@ or way isn't offered here.
 | `opening.start` | outside the door you came out of, someone waiting | BUILDING(any/12) NOT_STEEP(30) (houses down the road are the roll's ranking, not its words) | NPC the contact within 15 m (empty: nobody stands there, the scene's note points at the nearest work) | the openings' place roll |
 | `opening.favour` | where the contact's favour sends you: the chemist's, the garage, his shed, the school, the shop, the church, the house next door | BUILDING(house or the favour's kind/15) NOT_STEEP(30), checked outside its side; the spot inside, on its ground floor | | The door's favour (its fetch); its words by what's there ([below](#a-place-is-what-its-words-say)) |
 | `opening.favour.door` | the neighbour's door: a real outside door, its doorstep | BUILDING(house/6) NOT_STEEP(30), checked outside its side; the spot on the doorstep of the house's real outside door | | The Spare Key (the Police Officer's and the Ex-Con's favour) and its ways |
-| `opening.search` | the house (the chemist's, the garage...) down the road; the next person's house (no chain hands it now) | BUILDING(house or the background's kind/15) NOT_STEEP(30), checked outside its side; the spot inside, on its ground floor | | Down the Road (step 1), the next person (Find *name*); its words by what's there ([below](#a-place-is-what-its-words-say)) |
 | `opening.water` | the well | WATER_SOURCE(8) | | Water, Water for the Fever |
 | `opening.pump` | the petrol station | BUILDING(fuel/20) | | The Pump |
 | `opening.downwind` | the pack's ground | NOT_STEEP(35) | | Downwind, by a lair |
@@ -196,7 +195,8 @@ the need flag BUILDING and by `RZ_WorkSites.Indoors`) ask it as well as the door
 
 Vanilla's maps have no civilian chemist's: a medical building there is the army's (a wooden medical
 barracks, a field hospital). Before this rule a Nurse's *Down the Road* could send you to "the
-chemist's" that was a wooden barracks or a shed in a field.
+chemist's" that was a wooden barracks or a shed in a field. That step (Down the Road) is gone; the
+opening's favour uses the same rule (`RZ_OpeningFavours.Kinds`).
 
 **Words by what's there.** A step whose words name a building has a variant for each kind it can
 send you to, picked by what stands near the giver, in this order; with none of them, it isn't
@@ -205,18 +205,17 @@ all use the variant picked.
 
 | Task | Variants, in order |
 |---|---|
-| *Down the Road*, a Nurse or a Doctor | the chemist's (a real pharmacy) → the old aid post (the army's medical building) → the vet's farm (a farmhouse or barn) → the doctor's house (a house) |
-| *Down the Road*, a Lab Technician | the school → the chemist's → the old aid post → the house |
-| *Down the Road*, a Mechanic | the garage → the petrol station → the house |
-| *Down the Road*, a Hunter | the farm → the house |
-| *Down the Road*, a Police officer | the police post → the hall → the house |
-| *Down the Road*, a Soldier | the old barracks → the hall → the house |
-| *Down the Road*, a Radio ham | the radio hut → the house |
-| *Down the Road*, the Unemployed | the shop → the house |
-| *Down the Road*, anyone else | the house |
+| The favour, a Nurse or a Doctor (the boy's medicine) | the chemist's (a real pharmacy) → the old aid post (the army's medical building) → the doctor's house |
+| The favour, a Lab Technician (the cool box) | the school → the chemist's → the old aid post |
+| The favour, a Mechanic (the battery) | the garage → the petrol station |
+| The favour, a Hunter (the last box) | the farm, else his own shed's house |
+| The favour, a Radio Operator (a battery for the set) | the shop |
+| The favour, an Elder (the rota) | the church → the hall |
+| The favour, the Unemployed or a Drifter (the sack) | the shop |
+| The favour, a Police Officer, Ex-Con, Soldier or Raider | a house (the neighbour's, the lad's, the house next door) |
 | Errands that name a building (Clean Rifles' police station, Clean Paper's school, the hall's chairs, The Newcomer's shops, Not Past the Chapel's farmhouse) | that building in a town near the giver, else not offered |
 
-**Inside it.** *Down the Road*'s search stands inside the building its words name, on its ground
+**Inside it.** The favour's thing stands inside the building its words name, on its ground
 floor, at one of the loose loot's anchors (`RZ_WorkSites.FloorOf`); a building with no anchors (a
 shed, a ruin) isn't picked. An errand's indoor work does the same ([ERRANDS.md](ERRANDS.md#work-sites)).
 
@@ -241,13 +240,7 @@ giver's places each time a talk menu is built). The pickers:
   with houses 150–450 m off, a house with them, a lone fitting one, a lone house), the best kept;
   12 towns; a second pass at half the clear distances (without the last starts) before the spawn
   point. Why doors were refused is counted (`WhyText`) and logged with a spawn-point fallback.
-- **Step 1** (`RZ_Openings.PickSearch`): a house 150–450 m from the contact, the background's kind
-  first, the spot outside its side facing the contact; none, and the chain skips step 1.
-- **The next person** (handed on, `RZ_Openings.FindNext`): a house 200–600 m on from step 1's place,
-  150 m or more from the first giver, the one nearest where the chain ends first, not locked; the
-  spot outside its side facing step 1's place meets `opening.search`; none, and step 2 is the first
-  giver's (back to them).
-- **Step 2** (`RZ_OpeningSteps.c`): the well and the pump at a dry spot by them; the tree line, the
+- **The old step 2s** (`RZ_OpeningSteps.c`, no chain hands them now; the place audit still checks their needs): the well and the pump at a dry spot by them; the tree line, the
   gate and the debt through `Near`; A Sample by a road's verge, else in a yard.
 - **Errand ways** (`RZ_Errands.PlaceFor`): out from the giver through `Near`; a town by name: the
   nearest of four towns with such a place, nearer that town than any other.
@@ -324,7 +317,6 @@ make the words true: the step or way isn't offered there).
 
 | Need | Arland before | Arland after | Everon before | Everon after |
 |---|---|---|---|---|
-| Step 1, `opening.search` | 15 of 39 (24 failed: in water 16, no house within 15 m 15, at the line 6) | 29 of 29 (9 skipped: no house near the start) | 27 of 39 (12 failed: no house 12) | 39 of 39 |
 | Its start, `opening.start` | 39 lone starts (no other house within 250 m) | 24 of 24; 15 rolls found no free town with a door off the line or a lair, those lives start at a spawn point by a house | 16 of 39 lone | 39 of 39 |
 | A Sample's remains and sample | 0 of 39 (no remains) | 38 of 38 | 0 of 39 | 39 of 39 |
 | The Debt, `opening.debt` | 0 of 39 | 11 of 11 | 13 of 39 | 36 of 36 |
