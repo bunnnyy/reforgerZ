@@ -132,6 +132,17 @@ class RZ_SiteBuilderMarks
 {
 	protected static ref array<ref Shape> s_aShapes;
 	protected static const int RING_STEPS = 48;
+	protected static const ResourceName LABELS = "{DCD088BA4828B4D3}UI/layouts/ReforgerZ/RZ_SiteMarks.layout";
+	protected static const int MAX_LABELS = 48;		// Mark0-Mark47 in the layout
+	protected static const float NEAR = 25;			// closer than this (from the camera) a label shows its name
+	protected static const float HIGH = 2.5;		// the badge stands this far over the spot
+
+	protected static Widget s_wLabels;
+	protected static bool s_bPlacing;
+	protected static ref array<vector> s_aLabelPos = {};
+	protected static ref array<string> s_aLabelName = {};
+	protected static ref array<string> s_aLabelLetter = {};
+	protected static ref array<int> s_aLabelState = {};
 
 	//------------------------------------------------------------------------------------------------
 	static void OnPayload(string payload)
@@ -140,19 +151,222 @@ class RZ_SiteBuilderMarks
 			s_aShapes = {};
 
 		s_aShapes.Clear();
+		s_aLabelPos.Clear();
+		s_aLabelName.Clear();
+		s_aLabelLetter.Clear();
+		s_aLabelState.Clear();
 		if (payload.IsEmpty())
+		{
+			StopLabels();
 			return;
+		}
 
 		array<string> records = {};
 		payload.Split(";", records, true);
+		// The patrol loops' points, by loop, in the order they were put down
+		array<ref array<vector>> loops = {};
+		for (int k = 0; k < 3; k++)
+		{
+			loops.Insert(new array<vector>());
+		}
+
 		foreach (string rec : records)
 		{
 			array<string> f = {};
 			rec.Split("|", f, false);
 			if (f.Count() >= 5 && f[0] == "R")
+			{
 				Ring(Vector(f[1].ToFloat(), f[2].ToFloat(), f[3].ToFloat()), f[4].ToFloat());
-			else if (f.Count() >= 6 && f[0] == "S")
-				Post(Vector(f[2].ToFloat(), f[3].ToFloat(), f[4].ToFloat()), f[5].ToInt());
+				continue;
+			}
+
+			if (f.Count() < 6 || f[0] != "S")
+				continue;
+
+			vector at = Vector(f[2].ToFloat(), f[3].ToFloat(), f[4].ToFloat());
+			int state = f[5].ToInt();
+			Post(at, state);
+			string type = f[1];
+			string problem = "";
+			if (f.Count() >= 7)
+				problem = f[6];
+
+			int loop = 1;
+			if (f.Count() >= 8)
+				loop = Math.Clamp(f[7].ToInt(), 1, 3);
+
+			string name = RZ_HandSpots.Label(type);
+			string letter = Letter(type);
+			if (type == "route")
+			{
+				loops[loop - 1].Insert(at);
+				name = string.Format("Patrol %1, point %2", loop, loops[loop - 1].Count());
+				letter = loops[loop - 1].Count().ToString();
+			}
+
+			if (state == 2)
+				name += " (suggested)";
+			else if (!problem.IsEmpty())
+				name += " · " + problem;
+
+			s_aLabelPos.Insert(at);
+			s_aLabelName.Insert(name);
+			s_aLabelLetter.Insert(letter);
+			s_aLabelState.Insert(state);
+		}
+
+		foreach (int li, array<vector> pts : loops)
+		{
+			Loop(pts, li);
+		}
+
+		StartLabels();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spot type's badge letter.
+	protected static string Letter(string type)
+	{
+		switch (type)
+		{
+			case "gate": return "G";
+			case "watch": return "W";
+			case "sit": return "S";
+			case "work": return "K";
+			case "sleep": return "Z";
+			case "lean": return "L";
+			case "qm": return "Q";
+			case "leader": return "Ld";
+			case "cook": return "C";
+			case "meal": return "T";
+			case "water": return "Wa";
+			case "wash": return "Ws";
+			case "medic": return "M";
+			case "stores": return "St";
+			case "chop": return "Ch";
+			case "latrine": return "La";
+		}
+
+		return "?";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A patrol loop: its points joined in order, dashed, and closed back to the first.
+	protected static void Loop(array<vector> pts, int index)
+	{
+		int n = pts.Count();
+		if (n < 2)
+			return;
+
+		array<int> colours = {ARGB(255, 232, 178, 58), ARGB(255, 93, 202, 165), ARGB(255, 133, 183, 235)};
+		int colour = colours[index % 3];
+		int segments = n - 1;
+		if (n >= 3)
+			segments = n;
+
+		for (int i = 0; i < segments; i++)
+		{
+			vector a = RZ_Util.GroundPos(pts[i]) + Vector(0, 0.4, 0);
+			vector b = RZ_Util.GroundPos(pts[(i + 1) % n]) + Vector(0, 0.4, 0);
+			float len = vector.Distance(a, b);
+			int dashes = Math.Max(1, Math.Floor(len / 1.5));
+			float count = dashes;
+			for (int d = 0; d < dashes; d++)
+			{
+				float from = d;
+				vector line[2];
+				line[0] = a + (b - a) * (from / count);
+				line[1] = a + (b - a) * ((from + 0.6) / count);
+				s_aShapes.Insert(Shape.CreateLines(colour, ShapeFlags.NOZBUFFER, line, 2));
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void StartLabels()
+	{
+		if (!s_wLabels)
+		{
+			WorkspaceWidget ws = GetGame().GetWorkspace();
+			if (ws)
+				s_wLabels = ws.CreateWidgets(LABELS);
+
+			// Round badges: the icon set's disc
+			for (int i = 0; s_wLabels && i < MAX_LABELS; i++)
+			{
+				RZ_UIW.Icon(s_wLabels, "MarkBadge" + i.ToString(), "marker_disc");
+			}
+		}
+
+		if (!s_bPlacing)
+		{
+			s_bPlacing = true;
+			GetGame().GetCallqueue().CallLater(PlaceLabels, 0, true);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void StopLabels()
+	{
+		if (s_bPlacing)
+		{
+			s_bPlacing = false;
+			GetGame().GetCallqueue().Remove(PlaceLabels);
+		}
+
+		if (s_wLabels)
+			s_wLabels.RemoveFromHierarchy();
+
+		s_wLabels = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every frame: each label over its cone; the name when the camera is near, else the letter.
+	protected static void PlaceLabels()
+	{
+		WorkspaceWidget ws = GetGame().GetWorkspace();
+		BaseWorld world = GetGame().GetWorld();
+		if (!s_wLabels || !ws || !world)
+			return;
+
+		vector cam[4];
+		world.GetCurrentCamera(cam);
+		for (int i = 0; i < MAX_LABELS; i++)
+		{
+			string idx = i.ToString();
+			Widget label = RZ_UIW.Find(s_wLabels, "Mark" + idx);
+			if (!label)
+				continue;
+
+			if (i >= s_aLabelPos.Count())
+			{
+				label.SetVisible(false);
+				continue;
+			}
+
+			vector top = RZ_Util.GroundPos(s_aLabelPos[i]) + Vector(0, HIGH, 0);
+			vector screen = ws.ProjWorldToScreen(top, world); // VERIFY: reference-resolution units, z below 0 behind the camera (as the nametags read it)
+			if (screen[2] < 0)
+			{
+				label.SetVisible(false);
+				continue;
+			}
+
+			bool near = vector.Distance(cam[3], top) < NEAR;
+			int state = s_aLabelState[i];
+			Color badge = RZ_SiteBuilderMenu.Lin(151, 196, 89);
+			if (state == 1)
+				badge = RZ_SiteBuilderMenu.Lin(240, 149, 149);
+			else if (state == 2)
+				badge = RZ_SiteBuilderMenu.Lin(232, 178, 58);
+
+			RZ_UIW.Tint(s_wLabels, "MarkBadge" + idx, badge);
+			RZ_UIW.SetText(s_wLabels, "MarkLetter" + idx, s_aLabelLetter[i]);
+			RZ_UIW.SetText(s_wLabels, "MarkName" + idx, s_aLabelName[i]);
+			RZ_UIW.Show(s_wLabels, "MarkName" + idx, near);
+			RZ_UIW.Show(s_wLabels, "MarkNameBg" + idx, near);
+			RZ_UIW.SetPos(label, screen[0] - 110, screen[1] - 46);
+			label.SetVisible(true);
 		}
 	}
 

@@ -257,9 +257,155 @@ modded class RZ_SiteBuilder
 		if (Problems(s) > 0)
 			problem = FirstProblem(s);
 
+		// Every spot type with what's there and what the site needs (the bar's buttons), and each
+		// patrol loop (its walk points, numbered by their seats: loop 1, 2, 3)
+		array<ref RZ_HandNeed> needs = {};
+		int missingAll;
+		RZ_HandSpots.Check(site.m_eFaction, site.m_eKind, s.m_aSpots, needs, missingAll);
+		foreach (string t : types)
+		{
+			if (t == "route")
+				continue;
+
+			int tWant = 0;
+			int tRequired = 0;
+			foreach (RZ_HandNeed need : needs)
+			{
+				if (need.m_sType == t)
+				{
+					tWant = need.m_iWant;
+					tRequired = Bit(need.m_bRequired);
+				}
+			}
+
+			RZ_UILine typeLine = new RZ_UILine("T");
+			checklist += typeLine.Add(t).AddInt(RZ_HandSpots.Count(s.m_aSpots, t)).AddInt(tWant).AddInt(tRequired).End();
+		}
+
+		for (int loop = 1; loop <= LOOPS; loop++)
+		{
+			int points = 0;
+			float length = 0;
+			vector first;
+			vector last;
+			foreach (RZ_HandSpot rp : s.m_aSpots)
+			{
+				if (rp.m_sType != "route" || LoopOf(rp) != loop)
+					continue;
+
+				if (points == 0)
+					first = rp.m_vPos;
+				else
+					length += RZ_Util.DistXZ(last, rp.m_vPos);
+
+				last = rp.m_vPos;
+				points++;
+			}
+
+			if (points >= 3)
+				length += RZ_Util.DistXZ(last, first);
+
+			RZ_UILine loopLine = new RZ_UILine("L");
+			checklist += loopLine.AddInt(loop).AddInt(points).AddInt(RZ_Util.RoundToInt(length)).End();
+		}
+
 		RZ_UILine hudLine = new RZ_UILine("B");
 		string pay = hudLine.Add(Name(site)).Add(head).AddInt(now.Count()).AddInt(Bit(Unsaved(s))).AddInt(outside).AddInt(have).AddInt(want).Add(type).Add(problem).End();
 		return pay + checklist;
+	}
+
+	static const int LOOPS = 3;		// patrol loops a site can have (a walk point's seats are its loop)
+
+	//------------------------------------------------------------------------------------------------
+	//! A walk point's patrol loop: its seats, 1 when it has none.
+	static int LoopOf(RZ_HandSpot sp)
+	{
+		return Math.Clamp(sp.m_iSeats, 1, LOOPS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The build bar's actions (UI/RZ_SiteHud.c): a spot at a point Game Master's cursor clicked
+	//! ("spot_at", id "type|x|y|z|loop"), the last spot taken up ("spot_undo"), a loop's points gone
+	//! ("loop_delete", id the loop). True when it was one of them.
+	protected static bool BarAct(RZ_SiteBuilderSession s, string act, string id)
+	{
+		if (!s.m_Building)
+			return false;
+
+		RZ_SiteEntry site = s.m_Building;
+		if (act == "spot_at")
+		{
+			array<string> f = {};
+			id.Split("|", f, false);
+			if (f.Count() < 5 || !RZ_HandSpots.IsKnown(f[0]))
+				return true;
+
+			vector pos = Vector(f[1].ToFloat(), f[2].ToFloat(), f[3].ToFloat());
+			if (RZ_Util.DistXZ(pos, site.m_vPos) > site.m_fRadius * 1.5)
+			{
+				Say(s, "That's outside the site: put it inside the white ring.");
+				return true;
+			}
+
+			// Facing: the watch and the gate look out from the middle, everyone else in toward it
+			float yaw = RZ_Compass.Bearing(pos, site.m_vPos);
+			if (f[0] == "watch" || f[0] == "gate")
+				yaw = RZ_Compass.Bearing(site.m_vPos, pos);
+
+			int seats = 1;
+			if (f[0] == "route")
+				seats = Math.Clamp(f[4].ToInt(), 1, LOOPS);
+
+			AddSpot(s, f[0], pos, yaw, seats);
+			int have;
+			int want;
+			Spots(s, site, null, have, want, "");
+			string what = RZ_HandSpots.Label(f[0]);
+			if (f[0] == "route")
+				what = string.Format("Patrol %1, point %2", seats, CountLoop(s, seats));
+
+			Say(s, string.Format("Put: %1 (%2 of %3 spots).", what, have, want));
+			return true;
+		}
+
+		if (act == "spot_undo")
+		{
+			if (s.m_aSpots.IsEmpty())
+				return true;
+
+			string gone = RZ_HandSpots.Label(s.m_aSpots[s.m_aSpots.Count() - 1].m_sType);
+			RemoveSpot(s, s.m_aSpots.Count() - 1);
+			Say(s, "Taken up: " + gone + ".");
+			return true;
+		}
+
+		if (act == "loop_delete")
+		{
+			int loop = id.ToInt();
+			for (int i = s.m_aSpots.Count() - 1; i >= 0; i--)
+			{
+				if (s.m_aSpots[i].m_sType == "route" && LoopOf(s.m_aSpots[i]) == loop)
+					RemoveSpot(s, i);
+			}
+
+			Say(s, string.Format("Patrol %1 deleted.", loop));
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static int CountLoop(RZ_SiteBuilderSession s, int loop)
+	{
+		int n = 0;
+		foreach (RZ_HandSpot sp : s.m_aSpots)
+		{
+			if (sp.m_sType == "route" && LoopOf(sp) == loop)
+				n++;
+		}
+
+		return n;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -304,10 +450,32 @@ modded class RZ_SiteBuilder
 			return;
 		}
 
-		if (!id.IsEmpty() && s.m_iView != VIEW_LEAVE)
+		if (!id.IsEmpty() && s.m_iView != VIEW_LEAVE && !act.StartsWith("bar_"))
 		{
 			s.m_sSelected = id;
 			s.m_iView = VIEW_SITE;
+		}
+
+		// The build bar (in Game Master): its own actions, and save and stop; the screen opens only to
+		// ask about unsaved changes
+		if (act.StartsWith("bar_"))
+		{
+			string barAct = act.Substring(4, act.Length() - 4);
+			RZ_Log.Info(string.Format("Site builder: %1's build bar: %2.", RZ_Util.PlayerName(playerId), barAct));
+			if (s.m_Building)
+				s.m_sSelected = s.m_Building.m_sId;
+
+			if (!BarAct(s, barAct, id))
+				Act(s, barAct);
+
+			SyncSpots(s);
+			SendMarks(s);
+			if (s.m_iView == VIEW_LEAVE)
+				RZ_SiteBuilderScreen.Send(s);
+			else
+				RZ_SiteBuilderScreen.SendHud(s);
+
+			return;
 		}
 
 		if (act != "select")

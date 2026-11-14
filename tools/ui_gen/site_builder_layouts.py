@@ -230,28 +230,57 @@ def menu():
 
 # ------------------------------------------------------------------------------------ the HUD
 def hud():
+    """The build bar (UI/RZ_SiteHud.c): a compact panel top right while a site is built, clicked with
+    Game Master's cursor. Three pages of eight buttons (people, places, patrols), Undo, Save, Stop."""
     g = G("RZ_SiteHud")
-    W, H = 360, 330
-    k = [image(g, "HudBg", 0, 0, W, H, (0.063, 0.071, 0.078, 0.9)), image(g, "HudAccent", 0, 0, 3, H, AMBER)]
-    k.append(text(g, "HudHead", 16, 10, W - 28, 20, DIM, "BUILDING - BASTION STRONGHOLD", 14, BOLD))
-    k.append(text(g, "HudName", 16, 30, W - 28, 28, TEXT, "Lamentin", 22, COND_BOLD))
-    k.append(text(g, "HudInfo", 16, 58, W - 28, 20, DIM, "41 objects - unsaved changes", 15))
-    k.append(text(g, "HudSpotsHead", 16, 84, W - 28, 20, DIM, "ROLE SPOTS - 7 OF 11", 14, BOLD))
-    k.append(image(g, "HudBarBg", 16, 106, W - 32, 4, (0.2, 0.216, 0.231, 1)))
-    k.append(image(g, "HudBarFill", 16, 106, 160, 4, (0.592, 0.769, 0.349, 1)))
-    half = (W - 32) // 2
-    for i in range(SPOTS):
-        x = 16 + (i % 2) * half
-        y = 116 + (i // 2) * 21
-        k.append(image(g, "HudSpotIcon%d" % i, x, y + 3, 15, 15, (0.592, 0.769, 0.349, 1)))
-        k.append(text(g, "HudSpot%d" % i, x + 20, y, half - 24, 20, (0.592, 0.769, 0.349, 1), "Quartermaster", 15))
-    k.append(image(g, "HudTypeBg", 16, 290, W - 32, 28, (0.165, 0.176, 0.192, 1)))
-    k.append(text(g, "HudType", 26, 294, W - 52, 22, TEXT, "< Wash spot >", 17, BOLD))
+    W = 460
+    bw = (W - 40) // 2
+    H = 330
+    k = [image(g, "BarBg", 0, 0, W, H, (0.055, 0.059, 0.067, 0.94)), image(g, "BarAccent", 0, 0, 3, H, AMBER)]
+    k.append(text(g, "BarName", 16, 10, W - 170, 28, TEXT, "Lamentin", 22, COND_BOLD))
+    k.append(text(g, "BarProgress", W - 160, 14, 150, 24, DIM, "7/11 - unsaved", 17))
+    k.append(button(g, "PagePrev", 16, 46, 40, 32, [image(g, "PagePrevBg", 0, 0, 40, 32, (0.141, 0.157, 0.173, 1)),
+        text(g, "PagePrevText", 13, 1, 20, 30, TEXT, "<", 22, BOLD)]))
+    k.append(text(g, "PageTitle", 70, 50, W - 140, 26, DIM, "People - 1/3", 18))
+    k.append(button(g, "PageNext", W - 56, 46, 40, 32, [image(g, "PageNextBg", 0, 0, 40, 32, (0.141, 0.157, 0.173, 1)),
+        text(g, "PageNextText", 14, 1, 20, 30, TEXT, ">", 22, BOLD)]))
+    for i in range(8):
+        x = 16 + (i % 2) * (bw + 8)
+        y = 88 + (i // 2) * 40
+        k.append(button(g, "Btn%d" % i, x, y, bw, 34, [
+            image(g, "BtnBg%d" % i, 0, 0, bw, 34, (0.141, 0.157, 0.173, 1)),
+            text(g, "BtnName%d" % i, 10, 5, bw - 70, 26, TEXT, "Gate", 19),
+            text(g, "BtnState%d" % i, bw - 60, 5, 54, 26, DIM, "0/1", 18)]))
+    k.append(text(g, "BarHint", 16, 252, W - 32, 22, AMBER, "", 16))
+    fw = (W - 32 - 16) // 3
+    for i, n in enumerate(["Undo", "Save", "Stop"]):
+        k.append(button(g, "Bar" + n, 16 + i * (fw + 8), 282, fw, 34, [
+            image(g, "Bar%sBg" % n, 0, 0, fw, 34, (0.141, 0.157, 0.173, 1)),
+            text(g, "Bar%sText" % n, 12, 5, fw - 20, 26, TEXT, n, 19)]))
     panel = frame(g, "SiteHudPanel", -W - 24, 96, W, H, k, anchor="1 0 1 0")
     root = frame(g, "SiteHud", 0, 0, 0, 0, [panel], anchor="0 0 1 1")
     write("RZ_SiteHud.layout", root)
 
 
+MARKS = 48
+
+
+def marks():
+    """The role spots' labels over their cones (UI/RZ_SiteMarkLabels.c): a letter far away, the name
+    up close. Each label's anchor point (where its cone is) is 110, 46 inside it."""
+    g = G("RZ_SiteMarks")
+    kids = []
+    for i in range(MARKS):
+        kids.append(frame(g, "Mark%d" % i, 0, 0, 220, 60, [
+            image(g, "MarkNameBg%d" % i, 0, 0, 220, 26, (0.055, 0.059, 0.067, 0.85), False),
+            text(g, "MarkName%d" % i, 8, 2, 206, 22, TEXT, "Gate", 17, visible=False),
+            image(g, "MarkBadge%d" % i, 96, 30, 28, 28, AMBER),
+            text(g, "MarkLetter%d" % i, 100, 32, 24, 24, (0.13, 0.11, 0.08, 1), "G", 17, BOLD)], visible=False))
+    root = frame(g, "SiteMarks", 0, 0, 0, 0, kids, anchor="0 0 1 1")
+    write("RZ_SiteMarks.layout", root)
+
+
 if __name__ == "__main__":
     menu()
     hud()
+    marks()

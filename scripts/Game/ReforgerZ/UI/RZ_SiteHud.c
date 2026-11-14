@@ -1,16 +1,49 @@
-//! The site builder's HUD (docs/SITES.md, "The site builder"; UI/LAYOUTS.md, RZ_SiteHud): while you
-//! build a site, a panel top right shows it, its objects (and whether they're saved), the role spots
-//! as a checklist with a bar, and the next spot's type; the site builder's screen does the rest. The
-//! server sends it every two seconds while you build (World/HandBuilt/RZ_SiteBuilderScreen.c); ""
-//! hides it. It takes no input: it can't steal Game Master's or the character's buttons.
+//! The site builder's build bar (docs/SITES.md, "The site builder"; UI/LAYOUTS.md, RZ_SiteHud): while
+//! you build a site, a compact panel top right shows it, how many of its spots are done, and three
+//! pages of buttons (People, Places, Patrols) to put spots down with Game Master's cursor: pick a
+//! spot type, then click the ground (Game Master's own left click, EditorSetSelection) and it's put
+//! there. Patrols: up to three loops, each a list of points clicked in order (closed back to the
+//! first). Undo takes up the last spot, Save and Stop are the site builder's. The server sends it
+//! every two seconds while you build (World/HandBuilt/RZ_SiteBuilderScreen.c); "" hides it.
+//! Hidden while the site builder's screen is open.
 class RZ_SiteHud
 {
 	protected static const ResourceName LAYOUT = "{4382F77E3ACA1D25}UI/layouts/ReforgerZ/RZ_SiteHud.layout";
-	protected static const int SPOTS = 16;		// HudSpot0-HudSpot15
-	protected static const float BAR = 328;		// HudBarFill's full width
+	protected static const int BUTTONS = 8;		// Btn0-Btn7
+	protected static const int PAGES = 3;
+	protected static const int LOOPS = 3;
 
 	protected static Widget s_wRoot;
 	protected static bool s_bHidden;			// the site builder's screen is open: it shows the same
+	protected static ref RZ_SiteBarClick s_Click;
+	protected static int s_iPage;				// 0 people, 1 places, 2 patrols
+	protected static string s_sArmed;			// the spot type the next ground click puts down ("" none)
+	protected static int s_iLoop = 1;			// the patrol loop points go to
+	protected static bool s_bListening;
+	protected static string s_sProgress;
+
+	protected static ref array<ref array<string>> s_aTypes = {};	// T|type|have|want|required
+	protected static ref array<ref array<string>> s_aLoops = {};	// L|loop|points|length
+
+	//------------------------------------------------------------------------------------------------
+	//! A page's spot types, in its button order.
+	protected static void PageTypes(int page, notnull array<string> types, notnull array<string> names)
+	{
+		array<string> peopleTypes = {"gate", "watch", "sit", "work", "sleep", "lean", "qm", "leader"};
+		array<string> peopleNames = {"Gate", "Watch", "Seat", "Work", "Sleep", "Lean", "Quartermaster", "Leader"};
+		array<string> placeTypes = {"cook", "meal", "water", "wash", "medic", "stores", "chop", "latrine"};
+		array<string> placeNames = {"Cook", "Canteen", "Water", "Wash", "Medic", "Stores", "Chop", "Latrine"};
+		if (page == 0)
+		{
+			types.Copy(peopleTypes);
+			names.Copy(peopleNames);
+		}
+		else if (page == 1)
+		{
+			types.Copy(placeTypes);
+			names.Copy(placeNames);
+		}
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Hidden while the site builder's screen is open (it would sit over it).
@@ -26,90 +59,354 @@ class RZ_SiteHud
 	{
 		if (payload.IsEmpty())
 		{
-			if (s_wRoot)
-				s_wRoot.RemoveFromHierarchy();
-
-			s_wRoot = null;
+			Close();
 			return;
 		}
 
-		if (!s_wRoot)
-		{
-			WorkspaceWidget ws = GetGame().GetWorkspace();
-			if (!ws)
-				return;
-
-			s_wRoot = ws.CreateWidgets(LAYOUT);
-			if (!s_wRoot)
-				return;
-		}
+		if (!s_wRoot && !Make())
+			return;
 
 		s_wRoot.SetVisible(!s_bHidden);
-
 		array<ref array<string>> recs = {};
 		RZ_MenuBase.Records(payload, recs);
 		array<string> head = null;
-		array<ref array<string>> check = {};
+		s_aTypes.Clear();
+		s_aLoops.Clear();
 		foreach (array<string> f : recs)
 		{
 			string tag = RZ_UIText.Str(f, 0);
 			if (tag == "B")
 				head = f;
-			else if (tag == "C")
-				check.Insert(f);
+			else if (tag == "T")
+				s_aTypes.Insert(f);
+			else if (tag == "L")
+				s_aLoops.Insert(f);
 		}
 
 		if (!head)
 			return;
 
-		RZ_UIW.SetText(s_wRoot, "HudHead", RZ_UIText.Str(head, 2));
-		RZ_UIW.SetText(s_wRoot, "HudName", RZ_UIText.Clean(RZ_UIText.Str(head, 1), 34));
-		string info = string.Format("%1 objects", RZ_UIText.Int(head, 3));
+		RZ_UIW.SetText(s_wRoot, "BarName", RZ_UIText.Clean(RZ_UIText.Str(head, 1), 30));
+		string progress = string.Format("%1/%2", RZ_UIText.Int(head, 6), RZ_UIText.Int(head, 7));
 		if (RZ_UIText.Int(head, 4) == 1)
-			info += " · unsaved changes";
-		else
-			info += " · saved";
+			progress += " · unsaved";
 
-		if (RZ_UIText.Int(head, 5) > 0)
-			info += string.Format(" · %1 outside the ring", RZ_UIText.Int(head, 5));
+		s_sProgress = progress;
+		Draw();
+	}
 
-		RZ_UIW.SetText(s_wRoot, "HudInfo", info);
-		int have = RZ_UIText.Int(head, 6);
-		int want = Math.Max(1, RZ_UIText.Int(head, 7));
-		RZ_UIW.SetText(s_wRoot, "HudSpotsHead", string.Format("ROLE SPOTS · %1 OF %2", have, RZ_UIText.Int(head, 7)));
-		Widget fill = RZ_UIW.Find(s_wRoot, "HudBarFill");
-		if (fill)
-			FrameSlot.SetSizeX(fill, BAR * have / want);
+	//------------------------------------------------------------------------------------------------
+	protected static bool Make()
+	{
+		WorkspaceWidget ws = GetGame().GetWorkspace();
+		if (!ws)
+			return false;
 
-		for (int i = 0; i < SPOTS; i++)
+		s_wRoot = ws.CreateWidgets(LAYOUT);
+		if (!s_wRoot)
+			return false;
+
+		s_Click = new RZ_SiteBarClick();
+		array<string> names = {"PagePrev", "PageNext", "BarUndo", "BarSave", "BarStop"};
+		foreach (string n : names)
 		{
-			string idx = i.ToString();
-			bool there = i < check.Count();
-			RZ_UIW.Show(s_wRoot, "HudSpot" + idx, there);
-			RZ_UIW.Show(s_wRoot, "HudSpotIcon" + idx, there);
-			if (!there)
-				continue;
-
-			array<string> c = check[i];
-			bool ok = RZ_UIText.Int(c, 2) == 1;
-			string icon = "track_next";
-			Color col = RZ_SiteBuilderMenu.Lin(240, 149, 149);
-			if (ok)
-			{
-				icon = "track_done";
-				col = RZ_SiteBuilderMenu.Lin(151, 196, 89);
-			}
-			else if (RZ_UIText.Int(c, 3) != 1)
-			{
-				col = RZ_SiteBuilderMenu.Lin(154, 151, 143);
-			}
-
-			RZ_UIW.Icon(s_wRoot, "HudSpotIcon" + idx, icon);
-			RZ_UIW.Tint(s_wRoot, "HudSpotIcon" + idx, col);
-			RZ_UIW.SetText(s_wRoot, "HudSpot" + idx, RZ_UIText.Str(c, 1));
-			RZ_UIW.Tint(s_wRoot, "HudSpot" + idx, col);
+			RZ_UIW.OnClick(s_wRoot, n, s_Click);
 		}
 
-		RZ_UIW.SetText(s_wRoot, "HudType", "<   " + RZ_UIText.Str(head, 8) + "   >");
+		for (int i = 0; i < BUTTONS; i++)
+		{
+			RZ_UIW.OnClick(s_wRoot, "Btn" + i.ToString(), s_Click);
+			RZ_UIW.SetTag(RZ_UIW.Find(s_wRoot, "Btn" + i.ToString()), i);
+		}
+
+		if (!s_bListening)
+		{
+			s_bListening = true;
+			GetGame().GetInputManager().AddActionListener("EditorSetSelection", EActionTrigger.DOWN, OnGroundClick);
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Close()
+	{
+		if (s_wRoot)
+			s_wRoot.RemoveFromHierarchy();
+
+		s_wRoot = null;
+		s_sArmed = "";
+		if (s_bListening)
+		{
+			s_bListening = false;
+			GetGame().GetInputManager().RemoveActionListener("EditorSetSelection", EActionTrigger.DOWN, OnGroundClick);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static array<string> TypeRecord(string type)
+	{
+		foreach (array<string> t : s_aTypes)
+		{
+			if (RZ_UIText.Str(t, 1) == type)
+				return t;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Draw()
+	{
+		if (!s_wRoot)
+			return;
+
+		array<string> titles = {"People", "Places", "Patrols"};
+		RZ_UIW.SetText(s_wRoot, "PageTitle", string.Format("%1 · %2/%3", titles[s_iPage], s_iPage + 1, PAGES));
+		RZ_UIW.SetText(s_wRoot, "BarProgress", s_sProgress);
+		Color idle = RZ_SiteBuilderMenu.Lin(36, 40, 44);
+		Color picked = RZ_SiteBuilderMenu.Lin(232, 178, 58);
+		Color ink = RZ_SiteBuilderMenu.Lin(236, 233, 225);
+		Color dark = RZ_SiteBuilderMenu.Lin(33, 29, 20);
+		Color green = RZ_SiteBuilderMenu.Lin(151, 196, 89);
+		Color red = RZ_SiteBuilderMenu.Lin(240, 149, 149);
+		Color grey = RZ_SiteBuilderMenu.Lin(154, 151, 143);
+		for (int i = 0; i < BUTTONS; i++)
+		{
+			string idx = i.ToString();
+			string name = "";
+			string state = "";
+			Color stateCol = grey;
+			bool on = false;
+			if (s_iPage < 2)
+			{
+				array<string> types = {};
+				array<string> names = {};
+				PageTypes(s_iPage, types, names);
+				string type = types[i];
+				name = names[i];
+				on = s_sArmed == type;
+				array<string> rec = TypeRecord(type);
+				int have = 0;
+				int want = 0;
+				bool required = false;
+				if (rec)
+				{
+					have = RZ_UIText.Int(rec, 2);
+					want = RZ_UIText.Int(rec, 3);
+					required = RZ_UIText.Int(rec, 4) == 1;
+				}
+
+				if (want <= 0 || !required)
+				{
+					state = "+";
+					if (have > 0)
+						state = have.ToString();
+				}
+				else if (have >= want)
+				{
+					state = "done";
+					stateCol = green;
+				}
+				else
+				{
+					state = string.Format("%1/%2", have, want);
+					stateCol = red;
+				}
+			}
+			else
+			{
+				PatrolButton(i, name, state, on);
+			}
+
+			RZ_UIW.Show(s_wRoot, "Btn" + idx, !name.IsEmpty());
+			RZ_UIW.SetText(s_wRoot, "BtnName" + idx, name);
+			RZ_UIW.SetText(s_wRoot, "BtnState" + idx, state);
+			RZ_UIW.Tint(s_wRoot, "BtnBg" + idx, idle);
+			RZ_UIW.Tint(s_wRoot, "BtnName" + idx, ink);
+			RZ_UIW.Tint(s_wRoot, "BtnState" + idx, stateCol);
+			if (on)
+			{
+				RZ_UIW.Tint(s_wRoot, "BtnBg" + idx, picked);
+				RZ_UIW.Tint(s_wRoot, "BtnName" + idx, dark);
+				RZ_UIW.Tint(s_wRoot, "BtnState" + idx, dark);
+			}
+		}
+
+		string hint = "";
+		if (s_sArmed == "route")
+			hint = string.Format("Click the ground: patrol %1's next point", s_iLoop);
+		else if (!s_sArmed.IsEmpty())
+			hint = "Click the ground to put it there";
+
+		RZ_UIW.SetText(s_wRoot, "BarHint", hint);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The patrols page: a button per loop (picked = points go to it), then add a point, undo it
+	//! (Undo below does the same for any spot), delete the picked loop.
+	protected static void PatrolButton(int i, out string name, out string state, out bool on)
+	{
+		name = "";
+		state = "";
+		on = false;
+		if (i < LOOPS)
+		{
+			int loop = i + 1;
+			int points = 0;
+			int length = 0;
+			foreach (array<string> l : s_aLoops)
+			{
+				if (RZ_UIText.Int(l, 1) == loop)
+				{
+					points = RZ_UIText.Int(l, 2);
+					length = RZ_UIText.Int(l, 3);
+				}
+			}
+
+			name = string.Format("Patrol %1", loop);
+			state = "new";
+			if (points > 0)
+				state = string.Format("%1 pts", points);
+
+			if (length > 0)
+				name += string.Format(" · %1 m", length);
+
+			on = s_iLoop == loop;
+			return;
+		}
+
+		if (i == 4)
+		{
+			name = "Add point";
+			on = s_sArmed == "route";
+		}
+		else if (i == 5)
+		{
+			name = "Delete patrol";
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A click on the bar (RZ_SiteBarClick).
+	static void OnClicked(Widget w)
+	{
+		string name = w.GetName();
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (name == "PagePrev")
+		{
+			s_iPage = (s_iPage + PAGES - 1) % PAGES;
+			s_sArmed = "";
+		}
+		else if (name == "PageNext")
+		{
+			s_iPage = (s_iPage + 1) % PAGES;
+			s_sArmed = "";
+		}
+		else if (name == "BarUndo" && ui)
+		{
+			ui.SendSiteAct("bar_spot_undo", "");
+		}
+		else if (name == "BarSave" && ui)
+		{
+			ui.SendSiteAct("bar_save", "");
+		}
+		else if (name == "BarStop" && ui)
+		{
+			s_sArmed = "";
+			ui.SendSiteAct("bar_stop", "");
+		}
+		else if (name.StartsWith("Btn"))
+		{
+			PressButton(RZ_UIW.GetTag(w));
+		}
+
+		Draw();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void PressButton(int i)
+	{
+		if (s_iPage < 2)
+		{
+			array<string> types = {};
+			array<string> names = {};
+			PageTypes(s_iPage, types, names);
+			if (i < 0 || i >= types.Count())
+				return;
+
+			// Picked again: let go
+			if (s_sArmed == types[i])
+				s_sArmed = "";
+			else
+				s_sArmed = types[i];
+
+			return;
+		}
+
+		if (i < LOOPS)
+		{
+			s_iLoop = i + 1;
+			s_sArmed = "route";
+			return;
+		}
+
+		if (i == 4)
+		{
+			if (s_sArmed == "route")
+				s_sArmed = "";
+			else
+				s_sArmed = "route";
+
+			return;
+		}
+
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (i == 5 && ui)
+			ui.SendSiteAct("bar_loop_delete", s_iLoop.ToString());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Game Master's left click with a spot type picked: it's put where the cursor points on the
+	//! ground (not when the click was on the bar itself).
+	protected static void OnGroundClick(float value = 0, EActionTrigger reason = 0)
+	{
+		if (!s_wRoot || s_bHidden || s_sArmed.IsEmpty())
+			return;
+
+		Widget under = WidgetManager.GetWidgetUnderCursor(); // VERIFY: the widget under the mouse cursor in Game Master (null over the world)
+		if (under && RZ_UIW.IsInside(under, s_wRoot))
+			return;
+
+		SCR_MenuLayoutEditorComponent layout = SCR_MenuLayoutEditorComponent.Cast(SCR_MenuLayoutEditorComponent.GetInstance(SCR_MenuLayoutEditorComponent));
+		vector pos;
+		if (!layout || !layout.GetCursorWorldPos(pos)) // VERIFY: Game Master's cursor point on the ground, as its own context actions read it
+			return;
+
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (!ui)
+			return;
+
+		ui.SendSiteAct("bar_spot_at", string.Format("%1|%2|%3|%4|%5", s_sArmed, pos[0], pos[1], pos[2], s_iLoop));
+		// One of a kind at a time; patrol points go on
+		if (s_sArmed != "route")
+			s_sArmed = "";
+
+		Draw();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Passes a click on the build bar to it.
+class RZ_SiteBarClick : ScriptedWidgetEventHandler
+{
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (!w)
+			return false;
+
+		RZ_SiteHud.OnClicked(w);
+		return true;
 	}
 }

@@ -1745,11 +1745,47 @@ class RZ_CampLife
 				door.m_fFacing = hs.m_fYaw;
 				people.m_aPosts.Insert(door);
 			}
-			else if (hs.m_sType == "route")
+		}
+
+		// The patrol loops drawn by hand: each loop's walk points in the order they were put down
+		// (their seats are the loop: 1, 2, 3), walked round and back to the first. Loop 1 is the
+		// patrol along the wire, 2 the walk out the approach, 3 the threat side's.
+		array<int> loopKinds = {RZ_SiteRoute.WIRE, RZ_SiteRoute.APPROACH, RZ_SiteRoute.THREAT};
+		for (int loop = 1; loop <= 3; loop++)
+		{
+			RZ_SiteRoute patrol = new RZ_SiteRoute();
+			patrol.m_iKind = loopKinds[loop - 1];
+			foreach (RZ_HandSpot lp : site.m_aSpots)
 			{
-				walk.m_aPoints.Insert(hs.m_vPos);
-				walk.m_aStop.Insert(false);
+				if (lp.m_sType != "route" || Math.Clamp(lp.m_iSeats, 1, 3) != loop)
+					continue;
+
+				patrol.m_aPoints.Insert(lp.m_vPos);
+				patrol.m_aStop.Insert(false);
 			}
+
+			if (patrol.m_aPoints.Count() < 2)
+				continue;
+
+			if (patrol.m_aPoints.Count() >= 3)
+			{
+				patrol.m_aPoints.Insert(patrol.m_aPoints[0]);
+				patrol.m_aStop.Insert(false);
+			}
+
+			patrol.m_aStop[patrol.m_aStop.Count() - 1] = true;
+			for (int pi = 0; pi + 1 < patrol.m_aPoints.Count(); pi++)
+			{
+				patrol.m_fOut = patrol.m_fOut + RZ_Util.DistXZ(patrol.m_aPoints[pi], patrol.m_aPoints[pi + 1]);
+			}
+
+			people.m_aRoutes.Insert(patrol);
+			if (loop > 1 || walk.m_aPoints.Count() > 0)
+				continue;
+
+			// The first loop is also the walk out (Halcyon's courier and the friendly side take it)
+			walk.m_aPoints.Copy(patrol.m_aPoints);
+			walk.m_aStop.Copy(patrol.m_aStop);
 		}
 
 		if (walk.m_aPoints.Count() >= 2)
