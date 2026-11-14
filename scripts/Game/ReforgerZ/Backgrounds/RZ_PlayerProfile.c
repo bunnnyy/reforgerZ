@@ -22,6 +22,13 @@ class RZ_PlayerProfile
 	ref array<string> m_aGuideSeen = {};	// once-only tips already given
 	ref array<float> m_aStarts = {};	// openings (Guidance/RZ_Openings.c): the last two starts, x and z, newest first
 
+	// The runner's case (Guidance/RZ_OpeningCase.c): a quest item that stays yours across a death
+	int m_iCaseState;					// RZ_OpeningCase.STATE_*: none, carried (the lead), to Halcyon, sold, to Bastion
+	int m_iCaseLife = -1;				// the character the state belongs to (RZ_OpeningCase.CharacterStamp)
+	int m_iCaseSeason = -1;				// the season this player's case last counted (one a season)
+	bool m_bCaseHeld;					// died carrying it: it comes back in the next spawn's pack
+	float m_fCaseWarm;					// and how warm it was then (0 cold, 1 warm)
+
 	// The quest tracker (UI/RZ_Quests.c): the job this player follows, kept across relogs
 	int m_iTrackedId;					// its journal row id, 0 = none
 	string m_sTrackedTitle;				// its title, to find it again after a restart

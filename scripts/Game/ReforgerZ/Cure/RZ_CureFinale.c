@@ -1205,6 +1205,16 @@ class RZ_CureFinale
 				continue;
 			}
 
+			// The season's first live case from an opening (Guidance/RZ_OpeningCase.c): Halcyon's
+			// tissue is already in the cold room
+			if (r == HALCYON && m_S.tissue[r] == 0 && m_S.act1[r] != 0 && m_GM.GetFacts() && m_GM.GetFacts().Flag("case.tissue") == 1)
+			{
+				m_S.tissue[r] = 2;
+				m_GM.GetFacts().SetFlag("case.tissue", 2);
+				AddStep(r, 2, "live tissue, the runner's case");
+				continue;
+			}
+
 			if (m_S.tissue[r] == 0 && m_S.act1[r] != 0 && want == NONE)
 				want = r;
 		}

@@ -275,6 +275,14 @@ class RZ_OpeningText
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The runner's step's piece of the story (RZ_OpeningCase): the shot, out by the line.
+	static void CaseBeat(notnull array<string> lines)
+	{
+		lines.Insert("That was a shot. Out by the line. Somebody ran for it again.");
+		lines.Insert("They always go at dusk. They think the drones can't see in the dark. The drones can.");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! They call you over (a subtitle with their name) when a step waits for you to talk to them:
 	//! before the first by who they are; before a later one, by the step just done (`step`), the
 	//! Drifter's next ask once one is done (`asks`).

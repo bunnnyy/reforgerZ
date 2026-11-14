@@ -797,6 +797,11 @@ class RZ_Dialogue
 				return;
 			}
 		}
+		else if (RZ_OpeningCase.IsOurs(replyId) && RZ_OpeningCase.Get())
+		{
+			// The runner's case handed over (Guidance/RZ_OpeningCase.c), whoever they are
+			RZ_OpeningCase.Get().Pick(s, replyId, user);
+		}
 		else
 		{
 			s.m_Adapter.Pick(m_GM, s, playerId, replyId, user);
@@ -897,6 +902,10 @@ class RZ_Dialogue
 		else
 		{
 			s.m_Adapter.Replies(m_GM, s, s.m_iPlayer, user, all);
+			// Whoever carries the runner's case: its hand-over, at any Halcyon, Red Hand or Bastion person
+			if (RZ_OpeningCase.Get())
+				RZ_OpeningCase.Get().AddReplies(s, user, all);
+
 			if (s.m_Tree)
 				m_Trees.HubReplies(s, all);
 		}
