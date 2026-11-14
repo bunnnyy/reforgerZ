@@ -143,6 +143,26 @@ class RZ_SiteBuilderMarks
 	protected static ref array<string> s_aLabelName = {};
 	protected static ref array<string> s_aLabelLetter = {};
 	protected static ref array<int> s_aLabelState = {};
+	protected static ref array<int> s_aLabelId = {};		// the cone's RplId (0 none): the label follows the cone
+	protected static bool s_bPreview;						// a spot being placed: the last label follows the cursor
+	protected static vector s_vPreview;
+	protected static string s_sPreviewLetter;
+	protected static string s_sPreviewName;
+
+	//------------------------------------------------------------------------------------------------
+	//! The spot about to be put down, at Game Master's cursor (UI/RZ_SiteHud.c); off with an empty type.
+	static void SetPreview(bool on, vector pos, string type, string name)
+	{
+		s_bPreview = on;
+		s_vPreview = pos;
+		s_sPreviewLetter = Letter(type);
+		if (type == "route")
+			s_sPreviewLetter = "+";
+
+		s_sPreviewName = name;
+		if (on)
+			StartLabels();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static void OnPayload(string payload)
@@ -155,6 +175,7 @@ class RZ_SiteBuilderMarks
 		s_aLabelName.Clear();
 		s_aLabelLetter.Clear();
 		s_aLabelState.Clear();
+		s_aLabelId.Clear();
 		if (payload.IsEmpty())
 		{
 			StopLabels();
@@ -185,7 +206,9 @@ class RZ_SiteBuilderMarks
 
 			vector at = Vector(f[2].ToFloat(), f[3].ToFloat(), f[4].ToFloat());
 			int state = f[5].ToInt();
-			Post(at, state);
+			// The label is the spot's mark now (its badge follows the cone); suggestions keep a post
+			if (state == 2)
+				Post(at, state);
 			string type = f[1];
 			string problem = "";
 			if (f.Count() >= 7)
@@ -213,6 +236,11 @@ class RZ_SiteBuilderMarks
 			s_aLabelName.Insert(name);
 			s_aLabelLetter.Insert(letter);
 			s_aLabelState.Insert(state);
+			int id = 0;
+			if (f.Count() >= 9)
+				id = f[8].ToInt();
+
+			s_aLabelId.Insert(id);
 		}
 
 		foreach (int li, array<vector> pts : loops)
@@ -338,13 +366,42 @@ class RZ_SiteBuilderMarks
 			if (!label)
 				continue;
 
-			if (i >= s_aLabelPos.Count())
+			// The last label is the preview while a spot is being placed
+			bool preview = s_bPreview && i == MAX_LABELS - 1;
+			if (i >= s_aLabelPos.Count() && !preview)
 			{
 				label.SetVisible(false);
 				continue;
 			}
 
-			vector top = RZ_Util.GroundPos(s_aLabelPos[i]) + Vector(0, HIGH, 0);
+			vector spot;
+			string letter;
+			string name;
+			int state;
+			if (preview)
+			{
+				spot = s_vPreview;
+				letter = s_sPreviewLetter;
+				name = s_sPreviewName;
+				state = 2;
+			}
+			else
+			{
+				spot = s_aLabelPos[i];
+				letter = s_aLabelLetter[i];
+				name = s_aLabelName[i];
+				state = s_aLabelState[i];
+				// The cone itself where it's streamed in: dragging it in Game Master moves the label
+				if (s_aLabelId[i] != 0)
+				{
+					RplId rid = s_aLabelId[i];
+					RplComponent rc = RplComponent.Cast(Replication.FindItem(rid));
+					if (rc && rc.GetEntity())
+						spot = rc.GetEntity().GetOrigin();
+				}
+			}
+
+			vector top = RZ_Util.GroundPos(spot) + Vector(0, HIGH, 0);
 			vector screen = ws.ProjWorldToScreen(top, world); // VERIFY: reference-resolution units, z below 0 behind the camera (as the nametags read it)
 			if (screen[2] < 0)
 			{
@@ -352,8 +409,7 @@ class RZ_SiteBuilderMarks
 				continue;
 			}
 
-			bool near = vector.Distance(cam[3], top) < NEAR;
-			int state = s_aLabelState[i];
+			bool near = preview || vector.Distance(cam[3], top) < NEAR;
 			Color badge = RZ_SiteBuilderMenu.Lin(151, 196, 89);
 			if (state == 1)
 				badge = RZ_SiteBuilderMenu.Lin(240, 149, 149);
@@ -361,8 +417,8 @@ class RZ_SiteBuilderMarks
 				badge = RZ_SiteBuilderMenu.Lin(232, 178, 58);
 
 			RZ_UIW.Tint(s_wLabels, "MarkBadge" + idx, badge);
-			RZ_UIW.SetText(s_wLabels, "MarkLetter" + idx, s_aLabelLetter[i]);
-			RZ_UIW.SetText(s_wLabels, "MarkName" + idx, s_aLabelName[i]);
+			RZ_UIW.SetText(s_wLabels, "MarkLetter" + idx, letter);
+			RZ_UIW.SetText(s_wLabels, "MarkName" + idx, name);
 			RZ_UIW.Show(s_wLabels, "MarkName" + idx, near);
 			RZ_UIW.Show(s_wLabels, "MarkNameBg" + idx, near);
 			RZ_UIW.SetPos(label, screen[0] - 160, screen[1] - 84);

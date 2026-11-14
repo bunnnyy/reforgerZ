@@ -21,6 +21,7 @@ class RZ_SiteHud
 	protected static int s_iLoop = 1;			// the patrol loop points go to
 	protected static bool s_bListening;
 	protected static string s_sProgress;
+	protected static bool s_bPreviewing;		// the preview follows the cursor while a type is picked
 
 	protected static ref array<ref array<string>> s_aTypes = {};	// T|type|have|want|required
 	protected static ref array<ref array<string>> s_aLoops = {};	// L|loop|points|length
@@ -179,6 +180,7 @@ class RZ_SiteHud
 	//------------------------------------------------------------------------------------------------
 	protected static void Close()
 	{
+		Preview(false);
 		if (s_wRoot)
 			s_wRoot.RemoveFromHierarchy();
 
@@ -288,6 +290,44 @@ class RZ_SiteHud
 			hint = "Click the ground to put it there";
 
 		RZ_UIW.SetText(s_wRoot, "BarHint", hint);
+		Preview(!s_sArmed.IsEmpty());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! While a spot type is picked, its cone's label follows Game Master's cursor on the ground, so
+	//! you see where it'll go before you click.
+	protected static void Preview(bool on)
+	{
+		if (on == s_bPreviewing)
+			return;
+
+		s_bPreviewing = on;
+		if (on)
+		{
+			GetGame().GetCallqueue().CallLater(PreviewTick, 0, true);
+			return;
+		}
+
+		GetGame().GetCallqueue().Remove(PreviewTick);
+		RZ_SiteBuilderMarks.SetPreview(false, vector.Zero, "", "");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void PreviewTick()
+	{
+		SCR_MenuLayoutEditorComponent layout = SCR_MenuLayoutEditorComponent.Cast(SCR_MenuLayoutEditorComponent.GetInstance(SCR_MenuLayoutEditorComponent));
+		vector pos;
+		if (s_sArmed.IsEmpty() || !s_wRoot || !layout || !layout.GetCursorWorldPos(pos))
+		{
+			RZ_SiteBuilderMarks.SetPreview(false, vector.Zero, "", "");
+			return;
+		}
+
+		string name = RZ_HandSpots.Label(s_sArmed) + ": click to put it here";
+		if (s_sArmed == "route")
+			name = string.Format("Patrol %1: click to add a point", s_iLoop);
+
+		RZ_SiteBuilderMarks.SetPreview(true, pos, s_sArmed, name);
 	}
 
 	//------------------------------------------------------------------------------------------------

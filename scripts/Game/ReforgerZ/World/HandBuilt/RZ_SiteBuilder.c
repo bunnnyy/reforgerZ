@@ -1353,10 +1353,22 @@ class RZ_SiteBuilder
 		foreach (int i, RZ_HandSpot sp : s.m_aSpots)
 		{
 			int state = 0;
-			if (!RZ_HandSpots.Problem(sp, site.m_vPos, site.m_fRadius, s.m_aSpots, s.m_aMarks[i]).IsEmpty())
+			string problem = RZ_HandSpots.Problem(sp, site.m_vPos, site.m_fRadius, s.m_aSpots, s.m_aMarks[i]);
+			if (!problem.IsEmpty())
 				state = 1;
 
-			payload += string.Format(";S|%1|%2|%3|%4|%5", sp.m_sType, sp.m_vPos[0], sp.m_vPos[1], sp.m_vPos[2], state);
+			problem.Replace("|", " ");
+			problem.Replace(";", ",");
+			// The cone's network id: the label follows the cone while it's dragged in Game Master
+			string rpl = "";
+			if (s.m_aMarks[i])
+			{
+				RplComponent rc = RplComponent.Cast(s.m_aMarks[i].FindComponent(RplComponent));
+				if (rc)
+					rpl = rc.Id().ToString();
+			}
+
+			payload += string.Format(";S|%1|%2|%3|%4|%5|%6|%7|%8", sp.m_sType, sp.m_vPos[0], sp.m_vPos[1], sp.m_vPos[2], state, problem, sp.m_iSeats, rpl);
 		}
 
 		// One suggestion for each kind of spot still short of what the site needs

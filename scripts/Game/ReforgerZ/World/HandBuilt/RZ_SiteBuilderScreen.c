@@ -422,6 +422,8 @@ modded class RZ_SiteBuilder
 				continue;
 
 			any = true;
+			SyncSpots(s);
+			SendMarks(s);
 			RZ_SiteBuilderScreen.SendHud(s);
 		}
 
