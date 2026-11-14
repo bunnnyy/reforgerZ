@@ -29,6 +29,10 @@ class RZ_PlayerProfile
 	bool m_bCaseHeld;					// died carrying it: it comes back in the next spawn's pack
 	float m_fCaseWarm;					// and how warm it was then (0 cold, 1 warm)
 
+	// The habit (Backgrounds/RZ_Habits.c): picked at the opening's door, kept for the character
+	int m_iHabit;						// RZ_EPlayerHabit
+	int m_iHabitLife = -1;				// the character it belongs to (RZ_OpeningCase.CharacterStamp)
+
 	// The quest tracker (UI/RZ_Quests.c): the job this player follows, kept across relogs
 	int m_iTrackedId;					// its journal row id, 0 = none
 	string m_sTrackedTitle;				// its title, to find it again after a restart

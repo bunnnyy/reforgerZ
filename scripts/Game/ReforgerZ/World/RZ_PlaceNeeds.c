@@ -1234,6 +1234,14 @@ class RZ_PlaceNeeds
 		n.Building("house", 15);
 		n.Steep(30);
 
+		n = Add("opening.favour", "where the contact's favour sends you: the chemist's, the garage, his shed, the school, the shop, the church, the house next door");
+		n.Building("house", 15);
+		n.Steep(30);
+
+		n = Add("opening.favour.door", "the neighbour's door: a real outside door, its doorstep");
+		n.Building("house", 6);
+		n.Steep(30);
+
 		n = Add("opening.water", "the well");
 		n.Water(8);
 

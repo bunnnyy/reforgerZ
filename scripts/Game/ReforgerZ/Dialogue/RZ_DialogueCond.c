@@ -30,6 +30,7 @@ class RZ_DCtx
 	bool m_bRadio;					// the open channel: no body, nothing personal on air
 	string m_sRun;					// a mission's people: "<mission id>" (the `run` scene scope)
 	ref map<string, string> m_mBind = new map<string, string>();	// bindings picked when a topic opens: name -> "town:N" | "house:N"
+	string m_sLiarOn;				// A good liar (Backgrounds/RZ_Habits.c): the one persuade this conversation made easier
 
 	//------------------------------------------------------------------------------------------------
 	vector Pos()

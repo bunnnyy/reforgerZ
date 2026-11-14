@@ -563,7 +563,7 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! H|player name|background|life|the whole picture (RZ_RepNamesPage.Header)
+	//! H|player name|background|life|the whole picture (RZ_RepNamesPage.Header)|the habit's line (RZ_Habits.StandingLine, "" none)
 	//! F|faction|fame|infamy|favor|tier|need|need line|rep (RZ_ERep)|notoriety|word|note|left to forgive (-1 no budget)|owed (0/1)
 	//! The fields after the need line are new (docs/REPUTATION.md, "Reputations"): older layouts
 	//! read the first eight and ignore the rest. The word is what the faction calls you; owed is 1 while
@@ -582,7 +582,7 @@ class RZ_UIFeed
 			bgName = bg.m_sName;
 
 		RZ_UILine head = new RZ_UILine("H");
-		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iLives).Add(RZ_RepNamesPage.Header(m_GM, playerId)).End();
+		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iLives).Add(RZ_RepNamesPage.Header(m_GM, playerId)).Add(RZ_Habits.StandingLine(p)).End();
 		IEntity standingEnt = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		vector standingAt = vector.Zero;
 		if (standingEnt)

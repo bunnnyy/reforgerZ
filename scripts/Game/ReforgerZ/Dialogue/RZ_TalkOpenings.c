@@ -10,6 +10,8 @@
 class RZ_TalkOpening : RZ_TalkGeneric
 {
 	static const int HAND_OVER = 38;	// the hand-over reply (RZ_Openings.HandOver)
+	static const int WAY = 39;			// your background's way through the favour (RZ_Openings.TakeWay)
+	static const int HABIT_BASE = 40;	// + RZ_EPlayerHabit: an answer to who you were (RZ_Openings.TakeHabit)
 
 	protected int m_iOpening;
 
@@ -90,9 +92,46 @@ class RZ_TalkOpening : RZ_TalkGeneric
 	{
 		super.Replies(gm, s, playerId, user, replies);
 		RZ_Openings openings = RZ_Openings.Get();
+		if (!openings)
+			return;
+
+		// Beat 1: who you were (three answers, each a habit), first while the question waits
+		if (openings.HabitReplies(playerId, m_iOpening))
+		{
+			for (int h = RZ_EPlayerHabit.LIAR; h >= RZ_EPlayerHabit.STEADY; h--)
+			{
+				RZ_TalkReply hr = Reply(HABIT_BASE + h, RZ_OpeningFavours.HabitLabel(h));
+				hr.m_bOwn = true;
+				hr.m_sTag = RZ_TalkJobs.Tag(RZ_Habits.Name(h));
+				hr.m_iRank = RZ_TalkReply.RANK_ON;
+				replies.InsertAt(hr, 0);
+			}
+		}
+
+		// Beat 2's other way: your background's, tagged with it
+		string wayLabel;
+		string wayTag;
+		string wayNeed;
+		if (openings.WayReply(playerId, m_iOpening, user, wayLabel, wayTag, wayNeed))
+		{
+			RZ_TalkReply wr = Reply(WAY, wayLabel);
+			wr.m_bOwn = true;
+			wr.m_bJob = true;
+			wr.m_sTag = wayTag;
+			wr.m_iRank = RZ_TalkReply.RANK_ON;
+			if (!wayNeed.IsEmpty())
+			{
+				wr.m_bEnabled = false;
+				wr.m_sNeed = wayNeed;
+				wr.m_iRank = RZ_TalkReply.RANK_LOCKED;
+			}
+
+			replies.InsertAt(wr, 0);
+		}
+
 		string label;
 		string need;
-		if (!openings || !openings.HandOverReply(playerId, m_iOpening, user, label, need))
+		if (!openings.HandOverReply(playerId, m_iOpening, user, label, need))
 			return;
 
 		RZ_TalkReply r = Reply(HAND_OVER, label);
@@ -113,15 +152,32 @@ class RZ_TalkOpening : RZ_TalkGeneric
 	//------------------------------------------------------------------------------------------------
 	override void Pick(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
 	{
-		if (replyId != HAND_OVER)
+		RZ_Openings openings = RZ_Openings.Get();
+		if (replyId == HAND_OVER)
 		{
-			super.Pick(gm, s, playerId, replyId, user);
+			if (openings)
+				openings.HandOver(playerId, m_iOpening, user, s.m_aNew);
+
 			return;
 		}
 
-		RZ_Openings openings = RZ_Openings.Get();
-		if (openings)
-			openings.HandOver(playerId, m_iOpening, user, s.m_aNew);
+		if (replyId == WAY)
+		{
+			if (openings)
+				openings.TakeWay(playerId, m_iOpening, user, s.m_aNew);
+
+			return;
+		}
+
+		if (replyId > HABIT_BASE && replyId <= HABIT_BASE + RZ_EPlayerHabit.LIAR)
+		{
+			if (openings)
+				openings.TakeHabit(playerId, m_iOpening, replyId - HABIT_BASE, s.m_aNew);
+
+			return;
+		}
+
+		super.Pick(gm, s, playerId, replyId, user);
 	}
 
 	//------------------------------------------------------------------------------------------------

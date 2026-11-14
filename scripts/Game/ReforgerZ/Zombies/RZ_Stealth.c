@@ -592,7 +592,13 @@ class RZ_Stealth
 					around = around * m_Settings.m_fFogMult;
 
 				around = Math.Max(Math.Clamp(m_Settings.m_fEnvFloor, 0, 1), around);
-				st.m_fBase = Math.Clamp(StanceMult(RZ_Senses.GetStance(ent)) * MoveMult(speed) * around, 0, 1);
+				int stance = RZ_Senses.GetStance(ent);
+				float stanceMult = StanceMult(stance);
+				// Light feet (Backgrounds/RZ_Habits.c): a little quieter crouched
+				if (stance == 1)
+					stanceMult = stanceMult * RZ_Habits.CrouchMult(playerId);
+
+				st.m_fBase = Math.Clamp(stanceMult * MoveMult(speed) * around, 0, 1);
 			}
 
 			st.m_fVis = Math.Clamp(st.m_fBase + m_Settings.m_fNoiseWeight * st.m_fNoise, 0, 1);
