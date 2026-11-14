@@ -1002,9 +1002,9 @@ for holdings and safehouses, 600 m for road posts). From then:
 
 | Measured on the dedicated server (full runtime test, Arland, 2026-11-14) | Before | Now |
 |---|---|---|
-| A place laid out already (24 to 48 pieces) | 4 pieces a 5 s tick: 30 to 60 s | 15 to 42 ms |
+| A place laid out already (9 to 50 pieces) | 4 pieces a 5 s tick: 10 to 60 s | 5 to 116 ms (median 22 ms over 47 visits) |
 | A place not read yet (a stronghold, an outpost, a safehouse) | read and solved at 2 ms a second (1 to 4 minutes), then 30 to 60 s of spawning | 1.3 to 2.6 s |
-| Server time spent spawning | the same per piece | 0 to 3 ms a place in all, the longest tenth 3 ms |
+| Server time spent spawning | the same per piece | 0 to 4 ms a place in all, the longest tenth 4 ms; 0 script errors in 23 minutes |
 | Distance a place starts from | 300 m | 400 m |
 
 What limits it now is the read and solve of a site nobody laid out yet (their longest single parts,
