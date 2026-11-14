@@ -2940,6 +2940,7 @@ one exception is a lock that is part of the mission (the Locked Bunker's keypad)
 | Unlocked | **Unlock** at the door with its key (quiet), or opening the door from inside (the latch) | Its doors open for anyone |
 | Locked again | **Lock** at the door with its key | Locked; the door pulls shut once you step away |
 | Forced | **Force the door** with a crowbar: 10 s, 10 heat at the start and 25 when it gives | Open and broken: it can't be locked until the reset |
+| Picked | **Pick the lock** with a lockpick (the bench's recipe): 14 s, 3 heat; 70% it turns (**Search > Pick chance**), else the pick snaps and is gone | Unlocked, not broken: its key locks it again |
 | Reset | Three hours after it was unlocked, latched or forced | Locked again, its outside doors pulled shut |
 
 - **Which doors.** Only outside doors: a door entity of the building that stands within 1.2 m of
@@ -3119,22 +3120,38 @@ isn't saved and doesn't count toward the replacement timer.
 
 ### Light crafting
 
-At a workbench, eight built-in recipes, and more can be added as data (sixteen in all at most). A
-recipe whose output prefab isn't set is hidden. A recipe takes its time at the bench (5 to 15 s;
+At a workbench, fifteen built-in recipes, and more can be added as data (twenty-four in all at most). A
+recipe whose output prefab isn't set is hidden. A recipe takes its time at the bench (5 to 20 s;
 moving away stops it) and some make noise (heat). Its inputs are checked when you start and again
 when the work is done, each carried item counting for one input only; then each is taken from your
-pack, and the item is given only if every one came out.
+pack, and the item is given only if every one came out. A **tool** (a knife, a wrench) has to be
+carried and is kept. Nothing you wear or hold in your hands is ever used up: a worn shirt isn't
+rags (a tool may be in your hands).
 
-| Recipe | Takes |
-|---|---|
-| Improvised bandage | a rag or cloth |
-| Molotov | a bottle, fuel, a rag |
-| Tin rattle (noisemaker) | 2 empty tins, wire or string |
-| Spear | a knife, a pole or plank, wire |
-| Tin-can tripwire | 2 empty tins, wire |
-| Spike trap | 2 planks, nails |
-| Purification tablets | bleach or iodine |
-| Purify water | untreated water, a tablet |
+| Recipe | Takes | Makes |
+|---|---|---|
+| Improvised bandage | a rag or cloth | a field dressing |
+| Molotov | a bottle, fuel, a rag | a molotov |
+| Tin rattle (noisemaker) | 2 empty tins, wire or string | a thrown noisemaker |
+| Spear | a knife, a pole or plank, wire | a spear |
+| Tin-can tripwire | 2 empty tins, wire | a tripwire kit |
+| Spike trap | 2 planks, nails | a spike trap kit |
+| Purification tablets | bleach or iodine | tablets |
+| Purify water | untreated water, a tablet | clean water |
+| Rags | a shirt or trousers; a knife (kept) | 2 rags: the cloth for bandages, molotovs, dressings and filters |
+| Lockpick | wire; a knife (kept) | a lockpick: picks a locked door quietly ([Locks and keys](#locks-and-keys)) |
+| Planks for a barricade | 3 wood, nails | the planks that board up a real doorway ([Barricades, traps and generators](#barricades-traps-and-generators)) |
+| Water filters | an empty bottle, charcoal, a rag | 3 water filters: each cleans one bottle of untreated water (they count as tablets) |
+| Radio lure | a radio, torch cells | a radio lure: thrown, it hisses static for over a minute (eight bursts, 9 s apart, 25 heat each) and the infected come to it |
+| Salvaged spark plugs | 2 scrap metal, wire; a wrench (kept) | spark plugs, the car part ([Cars](#cars-found-rare-and-hard-to-fix)) |
+| Hand-drawn map | a writing pad | a paper map you can open (it shows what the base game's map shows; copying what you've explored onto it is planned with the map's fog) |
+
+The inputs are found by name (Interactions > Crafting's keywords), so the mods' items count where
+their names fit. The junk the new recipes take lies in houses, shops, farms, garages, police posts,
+bodies and wrecks' boots ([MOD_STACK.md](MOD_STACK.md#what-the-stack-gives-the-loot)): wire, nails,
+empty tins, scrap metal, salt, torch cells, a writing pad, bleach. *Skipped:* a burning torch (the
+base game has no light a torch could be) and a gas mask filter (nothing in the game wears a filter
+down).
 
 **The crafting screen.** With **UI > Craft row layout** set, **Use the workbench** opens the
 crafting screen ([UI.md](UI.md#the-crafting-screen)) and the bench's **Make:** actions hide: the
@@ -3146,8 +3163,16 @@ recipe takes as a notice, and the first eight recipes are **Make:** actions, as 
 
 **At a stove.** A stove, oven or fireplace boils untreated water (30 s), brews the **home remedy**
 (alcohol and herbs, 20 s; at a stove since the workbench's eight action slots are full) and cooks
-the **stove recipes** (**Interactions > Crafting > Stove recipes**, data like the bench's extra
-recipes: for example Metabolism's raw meat in and its cooked meat out; none by default). Each is
+the built-in stove recipes and the **stove recipes** (**Interactions > Crafting > Stove recipes**, data like the bench's extra
+recipes: for example Metabolism's raw meat in and its cooked meat out).
+
+| Stove recipe | Takes | Makes |
+|---|---|---|
+| Sterile dressing (boil) | a rag, clean water | a sterile dressing: a bandage, and an antiseptic that cleans a fresh bite (its name has *swab*) |
+| Charcoal (burn) | 2 wood | charcoal, for the water filter |
+| Jerky (dry) | raw meat, salt | 2 dried meat (Metabolism's food) |
+| Stew (cook) | 2 dry rations (dried meat, crackers or an MRE), clean water | a stew: half a meal and some drink, more than the rations apart |
+ Each is
 hidden when what it makes isn't set; sixteen in all at most. Lighting the fire adds 2 heat and
 marks a campfire for strangers, as boiling does, and a stove recipe adds its own heat when it's
 done. Its inputs are checked and taken as a bench recipe's are.

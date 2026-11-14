@@ -246,6 +246,10 @@ cp "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Work_Stove.et* "$ROOT"/Prefabs/ReforgerZ/Wo
 # The runner's cold case (Guidance > Cold case), for the case check (RZT_Case.c)
 mkdir -p "$ADDON/Prefabs/ReforgerZ/Guidance"
 cp "$ROOT"/Prefabs/ReforgerZ/Guidance/RZ_ColdCase.et* "$ADDON/Prefabs/ReforgerZ/Guidance/"
+# The crafting items and the recipes' outputs (RZT_Craft.c sets them on the test world's Crafting)
+mkdir -p "$ADDON/Prefabs/ReforgerZ/Crafting" "$ADDON/Prefabs/ReforgerZ/Interactions"
+cp "$ROOT"/Prefabs/ReforgerZ/Crafting/RZ_*.et* "$ADDON/Prefabs/ReforgerZ/Crafting/"
+cp "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_Planks.et* "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_SparkPlugs.et* "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_Tablets.et* "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_TinRattle.et* "$ADDON/Prefabs/ReforgerZ/Interactions/"
 "$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
 "$PY" "$HERE/sites.py" prepare "$ADDON" Worlds/RZTest/RZTest.ent || exit 2
 
@@ -280,6 +284,7 @@ grep -E 'RZT favour' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT kitchen' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT fog' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT patrol' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT craft' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (epilogue check: .*FAILED|epilogue done|epilogue: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E '\[ReforgerZ\] Sites audit: [0-9]+ sites,' "$LOG" | sed 's/.*\[ReforgerZ\] /  /'
@@ -295,5 +300,6 @@ grep -q 'RZT fog FAIL' "$LOG" && { echo "FAILED: the map's fog (RZT_Fog.c: walki
 grep -q 'RZT favour FAIL' "$LOG" && { echo "FAILED: the door and the favour (who you were, the habit, the fetch, the hand-over by reply, the background's way: RZT_Favour.c)"; exit 1; }
 grep -q 'RZT kitchen FAIL' "$LOG" && { echo "FAILED: kitchen work at a kitchen (RZT_Kitchen.c: a kitchen thing at the prompt, the camp's own cook pot)"; exit 1; }
 grep -q 'RZT patrol FAIL' "$LOG" && { echo "FAILED: a patrol's finds or its marker (RZT_Patrol.c: each find's thing there, a door find at a real doorway, the marker on the walker)"; exit 1; }
+grep -q 'RZT craft FAIL' "$LOG" && { echo "FAILED: a new recipe or the lockpick (RZT_Craft.c)"; exit 1; }
 grep -q 'RZT Power test: .*FAILED' "$LOG" && { echo "FAILED: the power station's looks (the dressing, the generator's sound or the lamps' list)"; exit 1; }
 exit 0

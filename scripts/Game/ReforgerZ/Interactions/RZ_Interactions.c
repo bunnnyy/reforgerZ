@@ -1994,7 +1994,15 @@ class RZ_Interactions
 		RZ_Spot s = FindSpot(t.m_iSpot);
 		switch (t.m_iKind)
 		{
-			case RZ_ETaskKind.FORCE: m_Search.CompleteForce(t.m_iPlayerId, s, user); return;
+			case RZ_ETaskKind.FORCE:
+			{
+				if (t.m_iArg == RZ_DoorLocks.PICK_ARG)
+					m_Doors.CompletePick(t.m_iPlayerId, s, user);
+				else
+					m_Search.CompleteForce(t.m_iPlayerId, s, user);
+
+				return;
+			}
 			case RZ_ETaskKind.BURN: m_Traps.CompleteBurn(t.m_iPlayerId, s, user); return;
 			case RZ_ETaskKind.HOTWIRE: m_Cars.CompleteHotwire(t.m_iPlayerId, s, t.m_iArg); return;
 			case RZ_ETaskKind.FIT: m_Cars.CompleteFit(t.m_iPlayerId, s, t.m_iArg, user); return;

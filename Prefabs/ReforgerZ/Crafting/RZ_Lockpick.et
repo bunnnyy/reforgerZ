@@ -1,0 +1,34 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "DAAC890912F9051F"
+ components {
+  MeshObject "{2EFB5C91383F3572}" {
+   Object "{EF0853B90BA0680C}Assets/Props/Civilian/Pen_01/Pen_01.xob"
+  }
+  RigidBody "{5D0FCF691CE406D4}" {
+   Mass 0.05
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Lockpick"
+     Description "Two bits of wire, bent just so. Picks a lock quietly, if it doesn't snap first."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.05
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{2DBB1A7E86C54A0D}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 0.6
+     }
+    }
+    m_Size SLOT_1x1
+   }
+  }
+ }
+ coords 0 0 0
+}

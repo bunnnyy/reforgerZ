@@ -1,0 +1,34 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "C5382758A74E66D4"
+ components {
+  MeshObject "{61030B858A4391EC}" {
+   Object "{407938CF48D8B657}Assets/Props/Debris/Metal/FragmentMetal_dbr_01.xob"
+  }
+  RigidBody "{B230D6DB65A66D66}" {
+   Mass 1
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Scrap metal"
+     Description "A twisted bit of a car. A man with a wrench can make something of it."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 1
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{3867293445684E9F}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 0.6
+     }
+    }
+    m_Size SLOT_1x1
+   }
+  }
+ }
+ coords 0 0 0
+}

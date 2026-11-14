@@ -1,0 +1,19 @@
+GenericEntity : "{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et" {
+ ID "43CA95E3BC07292B"
+ components {
+  B_FoodWaterGadgetComponent "{64E345AB440DEB9E}" {
+   m_iFoodValue 0.5
+   m_iThirstValue 0.2
+   m_fSicknessChance 0
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Stew"
+     Description "Dry rations boiled up with water into something hot. More filling than the rations were."
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

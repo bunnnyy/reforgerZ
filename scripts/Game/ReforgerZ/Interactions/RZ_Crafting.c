@@ -56,11 +56,18 @@ class RZ_Recipe
 	[Attribute("2", desc: "Heat it makes when it's done (hammering at the bench, the smell of food at a stove, where lighting the fire adds 2 more)")]
 	float m_fHeat;
 
+	[Attribute("", desc: "A tool it needs carried and keeps (keywords, comma separated; empty = none): a knife, a wrench")]
+	string m_sTool;
+
+	[Attribute("1", desc: "How many of the output it makes")]
+	int m_iOut;
+
 	// Set by code for the built-in recipes (not attributes): what the crafting screen calls each
 	// input ("" = from its first keyword) and the recipe's icon in the imageset ("" = none).
 	string m_sShow1;
 	string m_sShow2;
 	string m_sShow3;
+	string m_sShowTool;
 	string m_sIcon;
 	// A stove's: what it is (RZ_Crafting.STOVE_*; 0 a stove recipe, and every bench recipe) and the
 	// button's verb ("Boil"; "" at the bench, where it's Craft)
@@ -99,6 +106,81 @@ class RZ_CraftSettings
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Water purification tablets (bleach or iodine)", "et")]
 	ResourceName m_sTabletsPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Rags (a shirt or trousers cut up with a knife): the cloth for bandages, molotovs, dressings and filters", "et")]
+	ResourceName m_sRagsPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Lockpick (wire bent with a knife): picks a locked door quietly (Search > Lockpick keywords)", "et")]
+	ResourceName m_sLockpickPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Planks for a barricade (wood and nails): the planks that board a doorway (RZ_PlaceableComponent BARRICADE)", "et")]
+	ResourceName m_sBarricadePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Water filter (a bottle, charcoal, a rag): counts as a purification tablet (its name has a Water tablet keyword)", "et")]
+	ResourceName m_sFilterPrefab;
+
+	[Attribute("3", desc: "Water filters one recipe makes (each cleans one bottle)")]
+	int m_iFiltersMade;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Radio lure (a radio and torch cells): thrown, it plays static for a while and draws the infected (RZ_NoisemakerComponent)", "et")]
+	ResourceName m_sLurePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Salvaged spark plugs (scrap and wire, with a wrench): a car part (Cars > Spark plug keywords)", "et")]
+	ResourceName m_sPlugsPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Hand-drawn map (a writing pad): a paper map you can open", "et")]
+	ResourceName m_sMapCopyPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Stove: sterile dressing (a rag boiled in clean water): a bandage that also cleans a bite (its name has an Antiseptic keyword)", "et")]
+	ResourceName m_sSterilePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Stove: charcoal (wood burned down), for the filter", "et")]
+	ResourceName m_sCharcoalPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Stove: jerky (raw meat and salt): dried meat, Jerky made of it", "et")]
+	ResourceName m_sJerkyPrefab;
+
+	[Attribute("2", desc: "Pieces of jerky one leg of meat makes")]
+	int m_iJerkyMade;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Stove: stew (two dry rations and clean water): more food and drink than they are apart", "et")]
+	ResourceName m_sStewPrefab;
+
+	[Attribute("trousers,pants_,jeans,shirt,sweatshirt,overalls,tracksuit", desc: "Clothes that cut up into rags")]
+	string m_sClothesWords;
+
+	[Attribute("wrench,spanner,toolkit,tool_kit,toolbox,tool_box,repairkit,repair_kit", desc: "Wrench keywords (salvaged spark plugs; kept)")]
+	string m_sWrenchWords;
+
+	[Attribute("scrap", desc: "Scrap metal keywords")]
+	string m_sScrapWords;
+
+	[Attribute("radio_anprc,portable_radio,radiosmall,transistor", desc: "Radio keywords (the lure: a radio item, not a set in a house)")]
+	string m_sRadioWords;
+
+	[Attribute("rz_cells,torchcells,torch_cells,dry_cell", desc: "Torch cell keywords (the lure; never a car battery)")]
+	string m_sCellWords;
+
+	[Attribute("writingpad,writing_pad,notepad", desc: "Writing pad keywords (the map)")]
+	string m_sPadWords;
+
+	[Attribute("charcoal", desc: "Charcoal keywords (the filter)")]
+	string m_sCharcoalWords;
+
+	[Attribute("woodstick,wood_stick,firewood,kindling", desc: "Wood keywords (charcoal, the barricade's planks)")]
+	string m_sWoodWords;
+
+	[Attribute("meatleg,meat_leg,rawmeat,raw_meat", desc: "Raw meat keywords (jerky)")]
+	string m_sRawMeatWords;
+
+	[Attribute("salt", desc: "Salt keywords (jerky)")]
+	string m_sSaltWords;
+
+	[Attribute("meat_01_dry,crackers,mre", desc: "Dry ration keywords (stew)")]
+	string m_sRationWords;
+
+	[Attribute("waterbottle,water_bottle", desc: "Clean water keywords (the sterile dressing, stew; untreated water's name has none)")]
+	string m_sCleanWaterWords;
 
 	[Attribute("rag,cloth,shirt,towel,bandana,sheet,tshirt", desc: "Cloth keywords")]
 	string m_sClothWords;
@@ -151,8 +233,9 @@ class RZ_Crafting
 	static const int STOVE_BREW = 2;		// brewing the home remedy
 
 	protected static const int SLOTS = 8;				// recipes in the action menu: four choice slots, four use slots
-	protected static const int SCREEN_RECIPES = 16;		// recipes on the crafting screen
-	protected static const int INPUTS = 3;
+	protected static const int SCREEN_RECIPES = 24;		// recipes on the crafting screen (its list scrolls)
+	protected static const int INPUTS = 4;				// three taken, then the kept tool (TOOL)
+	protected static const int TOOL = 3;
 	protected static const int PAYLOAD_ROOM = 5200;		// the screen's recipe records, leaving room for the header and a stove's tiles (RZ_UIFeed caps payloads at 6000)
 	protected static const int STOVE_SLOTS = 4;			// a stove's choice slots in the action menu
 
@@ -206,6 +289,13 @@ class RZ_Crafting
 		Show(AddBuiltIn("Spike trap", m_Settings.m_sPlankWords, 2, m_Settings.m_sNailWords, 1, "", 0, m_Settings.m_sSpikeTrapPrefab, 15, 4), "Plank", "Nails", "", "item_spiketrap");
 		Show(AddBuiltIn("Purification tablets", m_Settings.m_sBleachWords, 1, "", 0, "", 0, m_Settings.m_sTabletsPrefab, 8, 0), "Bleach or iodine", "", "", "item_tablets");
 		Show(AddBuiltIn("Purify water", m_Water.m_sDirtyWaterWords, 1, m_Water.m_sTabletWords, 1, "", 0, m_Water.m_sCleanWaterPrefab, 5, 0), "Untreated water", "Purification tablet", "", "item_tablets");
+		Tool(Show(AddBuiltIn("Rags", m_Settings.m_sClothesWords, 1, "", 0, "", 0, m_Settings.m_sRagsPrefab, 6, 0), "Shirt or trousers", "", "", "item_bandage"), m_Settings.m_sBladeWords, "Knife", 2);
+		Tool(Show(AddBuiltIn("Lockpick", m_Settings.m_sWireWords, 1, "", 0, "", 0, m_Settings.m_sLockpickPrefab, 10, 0), "Wire", "", "", ""), m_Settings.m_sBladeWords, "Knife", 1);
+		Show(AddBuiltIn("Planks for a barricade", m_Settings.m_sWoodWords, 3, m_Settings.m_sNailWords, 1, "", 0, m_Settings.m_sBarricadePrefab, 15, 4), "Wood", "Nails", "", "");
+		Tool(Show(AddBuiltIn("Water filters", m_Settings.m_sBottleWords, 1, m_Settings.m_sCharcoalWords, 1, m_Settings.m_sClothWords, 1, m_Settings.m_sFilterPrefab, 10, 0), "Empty bottle", "Charcoal", "Rag or cloth", "item_tablets"), "", "", Math.Max(1, m_Settings.m_iFiltersMade));
+		Show(AddBuiltIn("Radio lure", m_Settings.m_sRadioWords, 1, m_Settings.m_sCellWords, 1, "", 0, m_Settings.m_sLurePrefab, 12, 1), "Radio", "Torch cells", "", "item_noisemaker");
+		Tool(Show(AddBuiltIn("Salvaged spark plugs", m_Settings.m_sScrapWords, 2, m_Settings.m_sWireWords, 1, "", 0, m_Settings.m_sPlugsPrefab, 15, 2), "Scrap metal", "Wire", "", ""), m_Settings.m_sWrenchWords, "Wrench", 1);
+		Show(AddBuiltIn("Hand-drawn map", m_Settings.m_sPadWords, 1, "", 0, "", 0, m_Settings.m_sMapCopyPrefab, 20, 0), "Writing pad", "", "", "");
 
 		if (m_Settings.m_aRecipes)
 		{
@@ -219,15 +309,29 @@ class RZ_Crafting
 
 	//------------------------------------------------------------------------------------------------
 	//! A built-in recipe's names on the crafting screen (r is null when its output isn't set).
-	protected void Show(RZ_Recipe r, string show1, string show2, string show3, string icon)
+	protected RZ_Recipe Show(RZ_Recipe r, string show1, string show2, string show3, string icon)
 	{
 		if (!r)
-			return;
+			return null;
 
 		r.m_sShow1 = show1;
 		r.m_sShow2 = show2;
 		r.m_sShow3 = show3;
 		r.m_sIcon = icon;
+		return r;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A built-in recipe's kept tool ("" = none) and how many it makes (r is null when its output isn't set).
+	protected RZ_Recipe Tool(RZ_Recipe r, string tool, string show, int made)
+	{
+		if (!r)
+			return null;
+
+		r.m_sTool = tool;
+		r.m_sShowTool = show;
+		r.m_iOut = made;
+		return r;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -319,6 +423,9 @@ class RZ_Crafting
 		if (!r.m_sIn3.IsEmpty() && r.m_iN3 > 0)
 			text += ", " + InputText(r.m_sIn3, r.m_iN3);
 
+		if (!r.m_sTool.IsEmpty())
+			text += string.Format(", and a %1 (kept)", InputName(r, TOOL));
+
 		return text;
 	}
 
@@ -348,6 +455,9 @@ class RZ_Crafting
 		if (i == 2 && r.m_iN3 > 0)
 			return r.m_sIn3;
 
+		if (i == TOOL)
+			return r.m_sTool;
+
 		return "";
 	}
 
@@ -364,6 +474,9 @@ class RZ_Crafting
 		if (i == 1)
 			return r.m_iN2;
 
+		if (i == TOOL)
+			return 1;
+
 		return r.m_iN3;
 	}
 
@@ -376,6 +489,8 @@ class RZ_Crafting
 			show = r.m_sShow1;
 		else if (i == 1)
 			show = r.m_sShow2;
+		else if (i == TOOL)
+			show = r.m_sShowTool;
 
 		if (!show.IsEmpty())
 			return show;
@@ -405,6 +520,7 @@ class RZ_Crafting
 		if (inv)
 			inv.GetItems(items);
 
+		array<IEntity> kept = {};
 		for (int i = 0; i < INPUTS; i++)
 		{
 			int want = InputCount(r, i);
@@ -416,15 +532,51 @@ class RZ_Crafting
 				if (found >= want)
 					break;
 
-				if (picked.Contains(item) || !RZ_ItemHelper.Matches(item, words))
+				if (picked.Contains(item) || kept.Contains(item) || !RZ_ItemHelper.Matches(item, words))
 					continue;
 
-				picked.Insert(item);
+				// What's worn or in the hands is never cut up or used up (a worn shirt isn't rags);
+				// a tool may be in the hands
+				if (i != TOOL && IsWorn(user, item))
+					continue;
+
+				// The tool is used, not taken: it stays out of `picked`
+				if (i == TOOL)
+					kept.Insert(item);
+				else
+					picked.Insert(item);
+
 				found++;
 			}
 
 			haves.Insert(found);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The item is worn or held: it sits in the character's loadout (clothes, a pack, a vest), its
+	//! weapon slots or its own gadget slots (a watch, a compass), not inside a pocket or a pack.
+	protected bool IsWorn(IEntity user, IEntity item)
+	{
+		InventoryItemComponent iic = InventoryItemComponent.Cast(item.FindComponent(InventoryItemComponent));
+		if (!iic)
+			return false;
+
+		InventoryStorageSlot slot = iic.GetParentSlot();
+		if (!slot)
+			return false;
+
+		BaseInventoryStorageComponent storage = slot.GetStorage();
+		if (!storage)
+			return false;
+
+		if (EquipedLoadoutStorageComponent.Cast(storage) || EquipedWeaponStorageComponent.Cast(storage))
+			return true;
+
+		if (!BaseEquipmentStorageComponent.Cast(storage))
+			return false;
+
+		return storage.GetOwner() == user; // VERIFY: worn clothes sit in the character's loadout storage, what's in the hands in its weapon storage and a worn watch or compass in an equipment storage the character owns, while a pocket's or a pack's things sit in the clothing's own storage
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -514,7 +666,11 @@ class RZ_Crafting
 		if (s)
 			at = s.m_vPos;
 
-		RZ_ItemHelper.Give(r.m_sOutput, user, at);
+		for (int n = 0; n < Math.Max(1, r.m_iOut); n++)
+		{
+			RZ_ItemHelper.Give(r.m_sOutput, user, at);
+		}
+
 		if (r.m_fHeat > 0)
 			m_GM.GetHeat().AddHeat(at, r.m_fHeat);
 
@@ -1091,6 +1247,11 @@ class RZ_Crafting
 			m_aStove.Insert(brew);
 		}
 
+		AddStove(NewStove("Sterile dressing", m_Settings.m_sClothWords, 1, m_Settings.m_sCleanWaterWords, 1, m_Settings.m_sSterilePrefab, 25, 1), "Rag or cloth", "Clean water", "item_bandage", "Boil", 1);
+		AddStove(NewStove("Charcoal", m_Settings.m_sWoodWords, 2, "", 0, m_Settings.m_sCharcoalPrefab, 30, 2), "Wood", "", "", "Burn", 1);
+		AddStove(NewStove("Jerky", m_Settings.m_sRawMeatWords, 1, m_Settings.m_sSaltWords, 1, m_Settings.m_sJerkyPrefab, 40, 2), "Raw meat", "Salt", "need_food", "Dry", Math.Max(1, m_Settings.m_iJerkyMade));
+		AddStove(NewStove("Stew", m_Settings.m_sRationWords, 2, m_Settings.m_sCleanWaterWords, 1, m_Settings.m_sStewPrefab, 30, 2), "Dry rations", "Clean water", "need_food", "Cook", 1);
+
 		if (!m_Settings.m_aStoveRecipes)
 			return;
 
@@ -1104,6 +1265,32 @@ class RZ_Crafting
 			r.m_sIcon = "need_food";
 			m_aStove.Insert(r);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A built-in stove recipe, or null when its output isn't set (hidden).
+	protected RZ_Recipe NewStove(string name, string in1, int n1, string in2, int n2, ResourceName output, float seconds, float heat)
+	{
+		if (output.IsEmpty() || m_aStove.Count() >= SCREEN_RECIPES)
+			return null;
+
+		return NewRecipe(name, in1, n1, in2, n2, "", 0, output, seconds, heat);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts a built-in stove recipe on the list with its names, icon, verb and how many it makes.
+	protected void AddStove(RZ_Recipe r, string show1, string show2, string icon, string verb, int made)
+	{
+		if (!r)
+			return;
+
+		r.m_sShow1 = show1;
+		r.m_sShow2 = show2;
+		r.m_sIcon = icon;
+		r.m_iStove = STOVE_COOK;
+		r.m_sVerb = verb;
+		r.m_iOut = made;
+		m_aStove.Insert(r);
 	}
 
 	//------------------------------------------------------------------------------------------------
