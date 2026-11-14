@@ -589,13 +589,25 @@ class RZ_StandingPage : RZ_NotebookPage
 		AddChoose(actions, labels);
 		actions.Insert("MenuSelect");
 		labels.Insert("Open");
+		actions.Insert("RZ_TrackJob");
+		labels.Insert("Reset character");
 		AddTabsAndClose(actions, labels);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override string PromptLine()
 	{
-		return "D-pad: choose · A: open · LB/RB: tabs · B: close";
+		return "D-pad: choose · A: open · Y: reset character · LB/RB: tabs · B: close";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Y (T or Space): Reset character. The server asks first and resets only on a second press
+	//! within its window (Backgrounds/RZ_Character.c); the answers come as notices.
+	override void Track()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+			ui.AskReset();
 	}
 
 	//------------------------------------------------------------------------------------------------
