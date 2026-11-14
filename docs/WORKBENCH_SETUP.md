@@ -2130,7 +2130,8 @@ Last, it walks the player through every
 settlement, the safehouses and the lab, into the Perimeter, to death and coming round. It logs
 every notice the player is sent, and prints the script exceptions (there should be none), how many
 mission types started and which didn't, the objective places checked and every wrong one (it fails
-on one), and how far each questline got. It takes 60 to 90 minutes.
+on one), and how far each questline got. It takes 60 to 90 minutes. When the scripts don't compile
+(the harness's own included), it prints the errors and fails at once, `FAIL: the Game scripts didn't compile`.
 Until the Perimeter test the line leaves the fake player alone: a spot the test moves him to may lie
 in the line's band (The Blind Spot's does by design), and a death there would move him off the
 route a questline was following (he comes round at a camp). It logs

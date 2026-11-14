@@ -252,6 +252,9 @@ class RZT_Craft
 				return;
 			}
 
+			s_vPickBuilding = spot.m_vBuilding;
+			s_sPickKey = spot.m_sBuildingKey;
+			s_sPickType = spot.m_sType;
 			hub.GetDoors().CompletePick(RZT_Fake.ID, spot, user);
 			s_iStep = 4;
 			s_fWait = 0;
@@ -260,8 +263,8 @@ class RZT_Craft
 
 		// The pick's hold: done when the task completes (about Pick seconds)
 		s_fWait += dt;
-		RZ_Spot door = hub.RZT_FindSpot(s_iPickSpot);
-		if (door && !hub.GetSearch().IsLocked(door))
+		// By the building, not the spot: a spot can be rebuilt with a new id once its lock changes
+		if (!hub.GetSearch().IsBuildingLocked(s_vPickBuilding, s_sPickKey, s_sPickType))
 		{
 			Print("RZT craft: the lockpick opened the locked door, quietly");
 			Finish();
@@ -397,6 +400,9 @@ class RZT_Craft
 
 	// ================================================================ The lockpick
 	static int s_iPickSpot = -1;
+	static vector s_vPickBuilding;		// the picked door's building, kept: its spot can be rebuilt
+	static string s_sPickKey;
+	static string s_sPickType;
 
 	//------------------------------------------------------------------------------------------------
 	//! Goes to the nearest locked building, waits for a door spot, puts a pick in the pack. True when

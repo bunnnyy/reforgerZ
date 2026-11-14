@@ -52,7 +52,11 @@ class RZT_Case
 	//! id, so replication refuses it): the tester holds it through the case's test stand-in.
 	static void Hold(IEntity me, IEntity item, bool inPack)
 	{
-		if (inPack || !item)
+		if (!item)
+			return;
+
+		// The insert can say yes and still not hold it (a 1x1 case fits, replication refuses it): look
+		if (inPack && RZ_ColdCaseComponent.CarriedBy(me) == item)
 			return;
 
 		RZ_ColdCaseComponent.s_TestHolder = me;

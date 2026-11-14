@@ -30,6 +30,7 @@ class RZT_Openings
 	static const ResourceName DRESSING = "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et";
 	static const ResourceName SITE = "{4B78886FD8E5AC98}Prefabs/ReforgerZ/Work/RZ_WorkSite.et";
 	static const ResourceName PERSON = "{8C7093AF368F496A}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_1.et";
+	static const ResourceName CRATE = "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et";	// vanilla: the test world's errand crate
 	static const ResourceName BOARDED = "{828D8E56E748FB2D}Prefabs/ReforgerZ/Interactions/RZ_BoardedDoorway.et";
 
 	//------------------------------------------------------------------------------------------------
@@ -94,6 +95,10 @@ class RZT_Openings
 
 			if (RZ_ErrandSettings.Get().Props().m_sDutyPerson.IsEmpty())
 				RZ_ErrandSettings.Get().Props().m_sDutyPerson = PERSON;
+
+			// ... and the errands' crate (the rules errand sorts tins in one)
+			if (RZ_ErrandSettings.Get().Props().m_sCrate.IsEmpty())
+				RZ_ErrandSettings.Get().Props().m_sCrate = CRATE;
 
 			s_vGiver = RZ_Util.GroundPos(town + Vector(4, 0, 4));
 			RZT_Fake.MoveTo(s_vGiver + Vector(2, 0, 0));
@@ -285,6 +290,14 @@ class RZT_Openings
 			return false;
 		}
 
+		// The checks that run beside this one move the tester too (the case's death, Ferda's visit):
+		// while the step waits, he's put back at its place when he's been taken off it
+		if (s_iSec > 64 && s_iSec < 88 && s_Rules && RZT_Fake.s_Ent && RZ_Util.DistXZ(RZT_Fake.s_Ent.GetOrigin(), s_Rules.m_vPlace) > 6)
+		{
+			Print(string.Format("RZT openings: the tester was moved %1 m off the rules errand's place; put back", RZ_Util.RoundToInt(RZ_Util.DistXZ(RZT_Fake.s_Ent.GetOrigin(), s_Rules.m_vPlace))));
+			RZT_Fake.MoveTo(s_Rules.m_vPlace + Vector(0.8, 0, 0));
+		}
+
 		if (s_iSec == 76)
 		{
 			// Rule 2: what its words name stands there, 10 s and more after arriving
@@ -298,6 +311,9 @@ class RZT_Openings
 				RZT_Rules.s_iMissing++;
 				Print(string.Format("RZT rules FAIL thing: errand %1 '%2' at %3: nothing stands at its work site 10 s after arriving", s_Rules.m_iId, s_Rules.Fill(s_Rules.GetWay().StepText()), RZ_SettlementScanner.GridReference(s_Rules.m_vPlace)));
 			}
+
+			if (!standing && sites3)
+				Print("RZT openings: the rules errand's site: " + sites3.RZT_State(rulesKey, RZT_Fake.s_Ent.GetOrigin()));
 
 			Check(standing, "the crate stands at the rules errand's work site");
 			int done3 = 0;
@@ -359,5 +375,16 @@ modded class RZ_WorkSites
 			return null;
 
 		return s.m_Person;
+	}
+
+	//! What the site holds now, for a failure's log line
+	string RZT_State(string key, vector from)
+	{
+		RZ_WorkSite s = Find(key);
+		if (!s)
+			return string.Format("no site '%1' (%2 sites)", key, m_aSites.Count());
+
+		return string.Format("site at %1 m, box %2, look %3 (fit %4), done %5, closed %6, choice %7, spawn %8 m, despawn %9 m",
+			RZ_Util.RoundToInt(RZ_Util.DistXZ(s.m_vPos, from)), s.m_Box != null, s.m_BeforeProp != null, s.m_iFit, s.m_bDone, s.m_bClosed, ChoiceOf(s) != null, SpawnRadius(), DespawnRadius());
 	}
 }
