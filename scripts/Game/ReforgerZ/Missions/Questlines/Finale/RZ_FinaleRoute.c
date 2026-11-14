@@ -21,6 +21,47 @@ class RZ_QM_RouteScene : RZ_QM_MajorScene
 {
 	int m_iRoute = -2;
 	bool m_bSworn;
+	string m_sThenFlag;		// a stage of two places (ObjThen): its first line is done once the run has this flag
+	int m_iFirstSpot = -1;	// the person the first line is about (its marker on their body), -1: the scene's place
+
+	//------------------------------------------------------------------------------------------------
+	//! The first of a two-place stage's lines (docs/MISSION_RULES.md, rule 23) is done when the run's
+	//! flag says so (the Red Hand's proof dose given, before the case goes to the lab).
+	void ObjThenLines(string first, string then)
+	{
+		ObjThen(first, then);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected bool ObjFirstDone()
+	{
+		if (m_sThenFlag.IsEmpty())
+			return false;
+
+		RZ_QuestRun run = Run(RZ_GameModeComponent.GetInstance());
+		return run && run.Flag(m_sThenFlag) != 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! While a two-place stage's first line is current, it points at its person where they stand
+	//! (docs/MISSION_RULES.md, rule 9); then the scene's own place.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_iFirstSpot >= 0 && !ObjFirstDone())
+		{
+			RZ_HalcyonSpot s = GetSpot(m_iFirstSpot);
+			if (s)
+			{
+				vector at = s.m_vPos;
+				if (s.m_Ent)
+					at = s.m_Ent.GetOrigin();
+
+				return RZ_ObjPlace.Spot(at, 3);
+			}
+		}
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
 	protected ref map<int, string> m_mSubjects = new map<int, string>();	// spot -> the finale person standing there
 
 	//------------------------------------------------------------------------------------------------

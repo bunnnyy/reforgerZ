@@ -3153,7 +3153,7 @@ any map fireplace with vanilla's fireplace component. Its fire is read through v
 
 | Kit | Per player | Lasts | What it does |
 |---|---|---|---|
-| Planks (barricade) | 3 | 60 min | Boards up a doorway. Infected against it make noise; 8 hits break it. The town counts as Barricaded |
+| Planks (barricade) | 3 | 60 min | Boards up a real doorway: set within 3 m of a building's outside door, the boards go up in it, facing out (nowhere else: *"There's no door here to board up."*). Infected against it make noise; 8 hits break it. The town counts as Barricaded |
 | Tin-can tripwire | 3 | 60 min | Rattles (20 heat) when something walks through; the owner hears it within 400 m |
 | Spike trap | 2 | 60 min | Kills an infected that walks onto it, three times. Players aren't hurt |
 | Generator | 1 running | 30 min per fuel item | 6 heat a minute; lights hook within 40 m; a radio within 30 m hears every open channel; standing near it charges your radio and torch |

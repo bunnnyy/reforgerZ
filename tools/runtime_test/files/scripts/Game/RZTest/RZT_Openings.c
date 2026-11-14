@@ -3,7 +3,12 @@
 // - The Fever: its son lies there (a body on the care work site, laid down), the tracker's place is
 //   on him, and standing by the giver for 20 s does nothing; the hold done with a dressing on you
 //   finishes it and takes the dressing.
-// - A hand-over (The Cut): RZ_Errands.FinishNow finishes it there and then, and only with the thing.
+// - A hand-over (The Cut): 15 s by the giver with the thing on you does nothing; RZ_Errands.FinishNow
+//   (the reply) finishes it there and then, and only with the thing.
+// - Every handed step (all backgrounds) ends where it's done: none waits to be handed in by walking back.
+// - The rules check's errand (RZT_Rules.c): a named person's ask at a work site near them; its crate
+//   stands there, the hold does the step, 15 s back with the giver doesn't hand it in while the talk
+//   screen is on, and the hand-in reply does (counted "by reply").
 // - Doors: a real outside door is found near the town, and a door-like prop is refused in the open.
 // Lines: "RZT openings OK|FAIL <what>" and "RZT openings: N checks, M failed".
 
@@ -15,6 +20,11 @@ class RZT_Openings
 	static int s_iFails;
 	static ref RZ_Errand s_Fever;
 	static ref RZ_Errand s_Cut;
+	static ref RZ_Errand s_Rules;
+	static ref RZT_RulesDef s_RulesDef;		// held here: an errand keeps only a weak reference to its definition
+	static string s_sRulesGiver;
+	static bool s_bTalkWas;
+	static ResourceName s_sReplyWas;
 	static vector s_vGiver;
 
 	static const ResourceName DRESSING = "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et";
@@ -161,12 +171,53 @@ class RZT_Openings
 
 			Check(!errands.FinishNow(s_Cut, me), "the hand-over is refused without a dressing");
 			GiveDressing();
-			Check(errands.FinishNow(s_Cut, me), "the hand-over finishes at once with one");
-			Check(s_Cut.m_eState == RZ_EErrandState.DONE, "the cut is done in the same second, not later");
+			// Now stand by the giver with the dressing on you: nothing may finish it but the reply
+			RZT_Fake.MoveTo(s_vGiver + Vector(1, 0, 0));
 			return false;
 		}
 
-		if (s_iSec == 46)
+		if (s_iSec == 60)
+		{
+			Check(s_Cut.m_eState == RZ_EErrandState.HELD && !s_Cut.m_bStepDone, "15 s by the giver with a dressing did not finish the cut (only the reply does)");
+			Check(errands.FinishNow(s_Cut, me), "the hand-over reply finishes it at once");
+			Check(s_Cut.m_eState == RZ_EErrandState.DONE, "the cut is done in the same second, not later");
+
+			// Every handed step ends where it's done: none waits to be handed in by walking back
+			int waits = 0;
+			string which = "";
+			array<RZ_OpeningStepDef> defs = {chain.m_Search, chain.m_SearchShort, chain.m_Lead, chain.m_LeadNote, chain.m_TalkFirst, chain.m_TalkNext, chain.m_TalkFind};
+			for (int ti = 0; ti < 40; ti++)
+			{
+				RZ_OpeningStepDef td = chain.Def(ti);
+				if (td)
+					defs.Insert(td);
+			}
+
+			foreach (RZ_OpeningStepDef walkDef : chain.m_aWalk)
+			{
+				defs.Insert(walkDef);
+			}
+
+			foreach (RZ_OpeningStepDef sd : defs)
+			{
+				if (!sd)
+					continue;
+
+				foreach (RZ_ErrandWay sw : sd.m_aWays)
+				{
+					if (!sw.m_bEndsThere)
+					{
+						waits++;
+						which += " " + sd.m_sKey;
+					}
+				}
+			}
+
+			Check(waits == 0, string.Format("%1 opening steps checked; %2 wait to be handed in by walking back%3", defs.Count(), waits, which));
+			return false;
+		}
+
+		if (s_iSec == 62)
 		{
 			IEntity door;
 			vector centre;
@@ -195,6 +246,89 @@ class RZT_Openings
 			}
 
 			Print(string.Format("RZT openings: contacts %1; the nurse's: %2; sent on to: %3", names, RZ_OpeningText.Who("nurse"), RZ_OpeningText.NextWho("nurse")));
+
+			// The rules check's errand (RZT_Rules.c): a named person's ask at a work site near them
+			RZ_NamedPeople people = errands.GetPeople();
+			RZ_NamedPerson giver;
+			for (int h = 0; h < 40 && !giver && people; h++)
+			{
+				giver = people.Get(RZ_NamedPeople.HoldingKey(h, 0));
+			}
+
+			if (giver)
+			{
+				s_sRulesGiver = giver.m_sKey;
+				vector stepAt = RZ_Mission.LandPointNear(giver.m_vPos, 10, 18);
+				s_RulesDef = new RZT_RulesDef();
+				s_Rules = errands.RZT_Give(s_RulesDef, RZT_Fake.ID, giver.m_sKey, stepAt);
+			}
+
+			Check(s_Rules != null, "the rules check's errand was taken from a named person");
+			if (!s_Rules)
+			{
+				Print(string.Format("RZT openings: %1 checks, %2 failed", s_iChecks, s_iFails));
+				s_bDone = true;
+				return true;
+			}
+
+			RZT_Fake.MoveTo(s_Rules.m_vPlace + Vector(0.8, 0, 0));
+			return false;
+		}
+
+		if (s_iSec == 76)
+		{
+			// Rule 2: what its words name stands there, 10 s and more after arriving
+			RZ_WorkSites sites3 = RZ_WorkSites.Get();
+			string rulesKey = RZ_Errands.WorkKey(s_Rules);
+			RZT_Rules.s_aChecked.Insert(s_Rules.m_iId);
+			RZT_Rules.s_iThings++;
+			bool standing = sites3 && sites3.PropOf(rulesKey) != null;
+			if (!standing)
+			{
+				RZT_Rules.s_iMissing++;
+				Print(string.Format("RZT rules FAIL thing: errand %1 '%2' at %3: nothing stands at its work site 10 s after arriving", s_Rules.m_iId, s_Rules.Fill(s_Rules.GetWay().StepText()), RZ_SettlementScanner.GridReference(s_Rules.m_vPlace)));
+			}
+
+			Check(standing, "the crate stands at the rules errand's work site");
+			int done3 = 0;
+			if (sites3)
+				done3 = sites3.CompleteAllFor(rulesKey, RZT_Fake.ID, RZT_Fake.s_Ent.GetOrigin(), 25);
+
+			Print(string.Format("RZT openings: the rules errand's hold done for the tester (%1 site)", done3));
+			return false;
+		}
+
+		if (s_iSec == 88)
+		{
+			Check(s_Rules.m_bStepDone, "the rules errand's step is done at its place");
+			// Back with the giver: with the talk screen on, only the reply hands it in. The test world
+			// has no talk screen, so it's switched on for this part (the server only reads the flag
+			// and that a reply layout is named) and put back after
+			s_bTalkWas = RZ_DialogueSettings.Get().m_bTalkScreen;
+			s_sReplyWas = RZ_UISettings.Get().m_sTalkReplyLayout;
+			RZ_DialogueSettings.Get().m_bTalkScreen = true;
+			if (s_sReplyWas.IsEmpty())
+				RZ_UISettings.Get().m_sTalkReplyLayout = "{00000000000000A1}UI/RZT_Reply.layout";
+
+			RZ_NamedPerson back = errands.GetPeople().Get(s_sRulesGiver);
+			if (back)
+				RZT_Fake.MoveTo(back.m_vPos + Vector(1, 0, 0));
+
+			return false;
+		}
+
+		if (s_iSec == 106)
+		{
+			Check(RZ_Dialogue.IsOn(), "the talk screen is on for the hand-in check");
+			Check(s_Rules.m_eState == RZ_EErrandState.HELD, "15 s back with the giver did not hand the errand in (the talk screen is on)");
+			if (s_Rules.m_eState == RZ_EErrandState.HELD)
+				errands.RZT_ReplyHandIn(s_Rules, RZT_Fake.ID);
+
+			RZ_DialogueSettings.Get().m_bTalkScreen = s_bTalkWas;
+			RZ_UISettings.Get().m_sTalkReplyLayout = s_sReplyWas;
+
+			Check(s_Rules.m_eState == RZ_EErrandState.DONE, "the hand-in reply finished the errand");
+			Print("RZT rules (so far): " + RZT_Rules.Summary());
 			Print(string.Format("RZT openings: %1 checks, %2 failed", s_iChecks, s_iFails));
 			s_bDone = true;
 			return true;

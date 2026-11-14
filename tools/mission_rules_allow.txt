@@ -8,7 +8,7 @@
 1 RZ_Quest_Authors.c Carry the method from the field station to the clinic  # the same: a safehouse's sick room
 
 # 3: doors
-3 RZ_BoardedDoorway.et BuildingParts/Doors  # pending: the openings work (a trap's barricade and the BOARDS work look's after-prop must stand in a real doorway)
+3 RZ_BoardedDoorway.et BuildingParts/Doors  # never in the open: a trap's barricade goes up in a real doorway within 3 m (RZ_Traps), a BOARDS work look only within 1.2 m of one (RZ_DoorGeometry.DoorPropFits), else it's left out
 
 # 10: a woman's name or word in a shown line (everyone met is a man): women only mentioned, never met
 10 gate.rzd say My mother said to come to the soldiers if anything happe  # the boy's mother, back home; never met
@@ -146,12 +146,10 @@
 14 RZ_OpeningChain.c Fill what you can carry  # one place: filling cans at the well; "carry" is how much
 14 RZ_WorkSites.c Fill and stack the sandbags  # one place: the bags are filled and stacked where the wall goes
 14 RZ_ErrandRoutinesPeople.c Fill and stack the sandbags  # the same
-14 RZ_ErrandDuties.c Carry and stack the crates  # pending: the carry-tasks work (real crates picked up and put down)
-14 RZ_Errand_MarginProof.c Stack the chairs  # pending: the carry-tasks work ("stack the chairs ... and bring them back": a real carry)
 
 # 19: completing by walking up to a person
-19 RZ_Errands.c !byTalk && carrier > 0 && RZ_Arrive.AtSpot  # pending: the openings work (a handed errand must hand in by reply too; with the talk screen off there's no reply to pick)
-19 RZ_Errands.c !byTalk && RZ_Arrive.AtSpot(me, giverAt  # pending: the openings work (the same)
+19 RZ_Errands.c !byTalk && carrier > 0 && RZ_Arrive.AtSpot  # only with the talk screen off (no reply to pick); with it on, every errand, handed ones too, hands in by its reply
+19 RZ_Errands.c !byTalk && RZ_Arrive.AtSpot(me, giverAt  # the same: the talk-screen-off fallback
 
 # 23: two places in one objective line
 23 RZ_Errand_UnknownFace.c Write your own letter and carry it into  # one place: the letter is written on the way and handed in there
@@ -160,4 +158,3 @@
 23 RZ_Errand_RedDoor.c then go back to the boy at  # the way back is its own line: the boy at the house is who asked (the card's giver speaks for him)
 23 RZ_HalcyonContracts.c Follow the first case's trail  # a step chain: its steps are the objectives (RZ_StepChain), this line never shows
 23 RZ_PuzzleLogic.c Work out who infected the ward  # a puzzle: the thinking has no place; the answer at the lab is the one step
-23 RZ_Route_RedHand.c Dose someone bitten who asks  # pending: the finale's stage lines (one line per stage); split with the route's dose flag

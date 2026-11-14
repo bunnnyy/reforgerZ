@@ -172,13 +172,24 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlementNotHeldBy(gm, 0, 70, RZ_Factions.Bit(RZ_EFaction.BANDITS), this);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
+		// LZ on the edge of town where a helicopter could land: on the mainland and off the line
+		// (docs/PLACES.md, "The mainland"), else another town
+		RZ_Settlement s;
+		bool landed = false;
+		for (int tries = 0; tries < 8 && !landed; tries++)
+		{
+			m_iSettlement = PickSettlementNotHeldBy(gm, 0, 70, RZ_Factions.Bit(RZ_EFaction.BANDITS), this);
+			s = gm.GetSettlement(m_iSettlement);
+			if (!s)
+				return false;
+
+			m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 150);
+			landed = RZ_Mainland.OnMainland(m_vPos) && !RZ_Perimeter.IsNearLineAt(m_vPos);
+		}
+
+		if (!landed)
 			return false;
 
-		// LZ on the edge of town where a helicopter could land
-		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 150);
 		m_sTitle = "Last Helicopter";
 		m_sBrief = string.Format("Our last working helicopter is setting down at the LZ outside %1 on its run between posts, with people and stock aboard. It lifts off in %2 minutes. The rotors bring in every infected for a kilometre, and anyone else who wants a look at what's aboard. Keep the LZ clear and be there when it goes.",
 			s.m_sName, RZ_Util.RoundToInt(COUNTDOWN / 60));
@@ -818,6 +829,17 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The Last Pilot's wreck is at the line by design (docs/MISSION_RULES.md, rule 8); any other
+	//! crash is where the place need says, on the mainland.
+	override string PlaceNeedKey()
+	{
+		if (!m_sPilot.IsEmpty())
+			return "mission.line";
+
+		return "mission";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The Last Pilot: his wreck at the line, before StartMission.
 	void SetWreck(vector pos, string pilot)
 	{
@@ -854,12 +876,22 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 		}
 		else
 		{
-			m_iSettlement = PickSettlement(gm, 0, 100);
-			RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-			if (!s)
-				return false;
+			// On the mainland and off the line (docs/PLACES.md, "The mainland"): a wreck on an island
+			// or in the perimeter's band is tried again, a few towns over
+			bool found = false;
+			for (int tries = 0; tries < 8 && !found; tries++)
+			{
+				m_iSettlement = PickSettlement(gm, 0, 100);
+				RZ_Settlement s = gm.GetSettlement(m_iSettlement);
+				if (!s)
+					return false;
 
-			m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 150, s.m_fRadius + 600);
+				m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 150, s.m_fRadius + 600);
+				found = RZ_Mainland.OnMainland(m_vPos) && !RZ_Perimeter.IsNearLineAt(m_vPos);
+			}
+
+			if (!found)
+				return false;
 		}
 
 		// Each drop where its faction really is, when it holds a town in reach

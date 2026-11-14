@@ -730,6 +730,14 @@ class RZ_Mission
 		return RZ_Util.DirectionText(from, m_vPos);
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! The place need its spot is checked against as it starts (docs/PLACES.md, "The live check"):
+	//! "mission" (dry, mainland, off the line, near its town); the perimeter's own jobs "mission.line".
+	string PlaceNeedKey()
+	{
+		return "mission";
+	}
+
 	// ================================================================ Objectives
 	// docs/MISSIONS.md, "Objectives": what the tracker and the Quests tab show. Every mission names
 	// its ask (m_sObjective, set beside its brief) or declares its steps (ObjSteps, ObjStepDone,
