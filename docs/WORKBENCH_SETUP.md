@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **381 prefab fields**: 46 on `RZ_GameModeComponent`, 318 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **364 entries**: 218 prefabs the plugin creates, 39 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 50 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **382 prefab fields**: 46 on `RZ_GameModeComponent`, 319 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **364 entries**: 218 prefabs the plugin creates, 39 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 51 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -1590,6 +1590,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
 | World | Power grid | `m_PowerSettings` | Control prefab, **Use cabinets** (on: the map's own electrical cabinet at the station carries the control as an invisible spot), **Control yaw** (0: turns the control prefab if its front doesn't face out from the wall), **Generator sound prefab** and **Dressing prefab** (both set; empty = that part is off), **Street lamps** (on: the map's own lamps stay dark at night but in towns with power; off = left as the map has them), region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
 | World | Radio station | `m_RadioStationSettings` | Console prefab, takeover (30 s), cooldown (10 min, halved with power) |
+| World | Masts | `m_MastSettings` | On (1), masts at least (3) and at most (5), region (2500 m), climb hold (25 s), bearing hold (10 s), fog cleared (1000 m), minutes between warnings (6), overheard lines (9), the drone operators (15), trapped voices (90) and how long one calls (30), Fame for handing one to a faction (5), Red Hand Favor for selling one (15), **Cabinet prefab** (empty: Puzzles > Radio mast) ([DESIGN.md](DESIGN.md#the-masts)) |
 | World | Wildlife | `m_WildlifeSettings` | **Doe** and **Buck** prefabs (WildlifeExpansion's; no doe = off), **Meat** (the raw meat leg), herds on the server (2), does a herd (up to 3), buck chance (0.7), chance a minute for a player in the country (0.25; ×0.5 at night), minutes before the same player gets another (20), put out 150 to 300 m away and put away past 450 m, margin from towns and faction places (150 m), meat a deer (1 to 2), shot range (260 m), deer a minute that leave meat (4) ([DESIGN.md](DESIGN.md#wildlife)) |
 | World | Placed things | `m_PlacedSettings` | **Enabled** (on), **Placed prefabs** (keywords in the prefab names of what players build: `fm_campfire`, the fireplace of Make Fire Campfire & Wood; a tent mod's own names go here), **Unused days** (3 real days; fractions work for a test), use radius (15 m), clear distance (never cleared with a player within 100 m), most tracked (40) ([DESIGN.md](DESIGN.md#things-players-build)) |
 | World | Long Table | `m_LongTableSettings` | **Enabled**, **Chance** a season has one (0.75), hunger per hour (6), take hours (3, ÷ season speed), body radius (300 m), the host on the road (on), the **guest rule** (on), **trade keywords** (ammunition and medicine) ([DESIGN.md](DESIGN.md#the-long-table)) |
@@ -1865,6 +1866,16 @@ pot* opened beside the nearest building must stand with a kitchen thing (the sto
 or the pot), never a cardboard box; then one at the nearest cook pot a camp has laid out must stand at
 it with nothing more put out. Lines `RZT kitchen: ...`, the sum `RZT kitchen: done, N failures`, and
 `RZT kitchen FAIL ...` for each miss (the run fails on any).
+
+**The masts** (`RZT_Masts.c`, [DESIGN.md](DESIGN.md#the-masts)): twelve seconds in, before the
+missions move the tester: the masts are found, each on dry mainland; a crewman's promise settles a
+mast and binds it to the Red Hand; the first mast is put up with its part (a jerrycan for its fuel,
+the base game's: the crafting items don't go into a pack on the test server), the part is taken, the
+fog is cleared 800 m off it, and kept open it's everyone's; it has something to overhear; with a
+second handed to the Haven, a trapped voice starts calling, one bearing doesn't fix him, two do, and
+a Distress Call starts at the spot. Lines `RZT masts: <name> at <grid>, missing <part>, trouble
+<kind>`, `RZT masts: overheard: ...`, `RZT masts OK|FAIL ...` and the sum `RZT masts: N checks, N
+failed` (the run fails on any FAIL).
 
 **The map's fog** (`RZT_Fog.c`, [UI.md](UI.md#the-maps-fog)): first, a few seconds in, before
 anything moves the tester: where he stands is seen and ground 1.5 km off isn't; walking 600 m reveals
@@ -2509,6 +2520,8 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] No checkpoint barricade prefab set: road checkpoints are off (the roads give 0 spots).
 [ReforgerZ] Power grid: <the station> at grid G (picked), N towns in its region, dark, locked up. Control <where>; <its looks>.
 [ReforgerZ] Radio station: the radio mast near Beauregard at grid 31-27 (picked).
+[ReforgerZ] Masts: <name> (<n>) at <grid>, missing <part>, trouble NONE|MAN|CREW|PACK, down|up, <whose> (found|save).
+[ReforgerZ] Masts: N on this map, N up.
 [ReforgerZ] Haven safehouses: 2 (picked).
 [ReforgerZ] Wanderers: 7 on the roads (new roster, seed S).
 [ReforgerZ] Faction leaders: 5 (new, seed S). Haven 2, Bastion 1, Red Hand 1, Halcyon 1
@@ -4712,6 +4725,15 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
 
 **World**
 - [ ] Walking near the map edge: drone and loudspeaker at 300 m, warning shot at 100 m.
+- [ ] The masts ([DESIGN.md](DESIGN.md#the-masts)), with a pad: at a mast, **Look at the mast**
+  opens its menu with the tag's words; the climb is locked with its reason until the trouble is
+  settled and the part is on you. Talk to the old radio man and give him what he asks for by the
+  reply; at a crew's mast try the tins, the Red Hand word and the promise. Climb (25 s, held): the
+  part is taken, the map clears for 1 km round it, and the set speaks. Hand it to a faction, keep it
+  open, or sell it: the line on the radio, the Fame or Favor once. With a radio in its region, wait
+  for a warning (6 min) and an overheard line (9 min); near the line, the drone operators. With two
+  up, wait for the trapped voice (or set **Masts > Minutes between trapped voices** low), take a
+  bearing at two masts and find the Distress Call where they cross. Log lines `Masts: ...`.
 - [ ] A safehouse shows occupants; you can hand in food, declare a bite at a Shelter (smaller
   slowdown) and a Town (bigger), and buy expired antibiotics for 5 Favor.
 - [ ] As a Haven Champion, walk into a safehouse with a hunter squad on you: it turns away, and

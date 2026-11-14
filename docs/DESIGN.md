@@ -610,6 +610,66 @@ four preset messages to everyone, signed with your name and filled in with real 
 horde warning, food for the hungriest safehouse, meet here, and "still here". One broadcast
 every 10 minutes server-wide (5 with power). **Cosmetic and social only:** no Fame, no Favor.
 
+### The masts
+
+Code: `World/RZ_Masts.c`, `Dialogue/RZ_TalkMasts.c`. **World > Masts** (on). The grid and the loop's
+relay wait in [designs/POWER_AND_RADIO.md](../designs/POWER_AND_RADIO.md).
+
+Three to five of the map's own masts and aerials, each over a region (2.5 km round it). A mast is a
+place you put up, and **whoever puts it up says whose voice it is**: it isn't more radio range.
+
+**Where.** The radio station's finder's masts and aerials within 1.5 km of a town, on dry mainland,
+off the line, 1.5 km apart and 800 m from the radio station; too few (under three), the highest
+ground by the bigger towns. Named for what's there and the town below ("the radio mast above
+Arleville"). Saved with the season. At its foot stands one prop, **Look at the mast** (the console
+the radio station uses, or **Cabinet prefab**), which opens the object menu: the tag's words (what's
+missing, who's at its foot, whose it is) and the rows below. Without the object menu, its first four
+rows are the prop's prompts. It exists while a player is within 300 m.
+
+**Down: one part and one trouble**, dealt from where it stands and the same all season:
+
+| Part | Counted by the item's name |
+|---|---|
+| A battery | a battery (a car's) |
+| A coil of wire | the crafting wire |
+| A radio set | a portable radio (never a radio lure) |
+| Two torch cells | the crafting cells |
+| A can of fuel | a jerrycan |
+
+| Trouble | Who or what | How it's settled |
+|---|---|---|
+| A man lives there | an old radio man (a civilian, named) by the cabinet | On his talk screen: **[Errand] "Here. Now let me up."**, locked until you carry what he asked for (two tins, something medical or fuel), which it takes. He asks you to keep it open. |
+| The crew holds it | a Red Hand crewman (the Red Hand's occupant look) | **[Trade]** two tins for the book; **[Known · Red Hand]** he waves you through; or **[Promise]** it's the Red Hand's when it's up (it's sold the moment it goes up) |
+| A pack below | a tribe's lair within 800 m | Nothing to talk round: the climb makes noise (6 heat), and at night it draws the pack to the mast |
+| Nothing | the wind | Just the climb |
+
+**The climb.** With the trouble settled and the part on you, **Climb and fit** the part: a 25 s hold
+at the prop (work sites; held with the hands, nothing more put out), which takes the part when it's
+done. The mast is up; the one who climbed it sees the land round it (the map's fog cleared for 1 km,
+[UI.md](UI.md#the-maps-fog)), and the set says so on the radio.
+
+**Whose it is.** Once it's up, the menu offers the one who put it up (anyone else once he's gone):
+
+| Choice | What it does |
+|---|---|
+| Hand it to the Haven, Bastion or Halcyon | That faction's mast: a deed ("put the mast above Arleville up for us") and 5 Fame with them, once a mast a season a player; its warnings go to those Known with them |
+| Keep it open | Everyone's: its warnings go to anyone with a radio in its region. The old radio man, if it's his, stays and tells you what's come through. |
+| Sell it to the Red Hand | 15 Red Hand Favor, once a mast a season a player; its warnings go to those Known with them, and anyone else listening hears the crew's price |
+
+**Up, a mast gives its region** (players alive within 2.5 km with a radio):
+
+| | |
+|---|---|
+| Warnings | every 6 minutes, to the people it serves, a spoken radio line that's true now: a pack lairing within 1 km of you (and which way), a storm, a truck on the road |
+| Listening in | every 9 minutes, anyone with a radio there overhears a faction's working traffic (not the mast's own faction's): a truck through to a place, one leaving in N minutes, a post's relief, a toll's night. On the Red Hand's mast only those Known with them hear it. |
+| The drone operators | every 15 minutes, at a mast within 3 km of the line: bored voices past the line, never answering anyone |
+| Finding a voice | with two masts up, every 90 minutes a trapped man calls from a spot in an up mast's region, for 30 minutes. Each up mast's menu offers **Take a bearing on the voice** (a 10 s hold); a bearing from a second mast fixes him, and a **Distress Call** starts at that spot ([MISSIONS.md](MISSIONS.md)) |
+
+Every line is a voice on the radio (**Radio: the mast above ...**, **Radio: overheard**, **Radio:
+past the line**), never a card. *Simplified:* the prop at the foot is always ours (the map's own
+cabinet isn't used yet); a cut mast and its job to put it back and all masts up opening the
+loop's relay wait in the design.
+
 ### The government broadcast
 
 A looping flavour message to everyone every 25 minutes, and in the notebook at each player's first spawn (no card: [UI.md](UI.md#notices)).

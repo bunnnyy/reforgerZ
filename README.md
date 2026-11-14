@@ -180,6 +180,11 @@ and one way to end it: **research the cure.**
   lanterns where people live, dogs that go quiet before a hunt, one stroke of a church bell and the
   town loudspeaker. Every prop is optional: the words always come. Nothing pays.
 - **Notes between players**: a notice board at every Haven safehouse.
+- **Masts you put up and give away** ([DESIGN.md](docs/DESIGN.md#the-masts)): three to five of the
+  map's own masts, each missing a part, with an old radio man, a Red Hand crewman or a pack at its
+  foot. Climb it with the part and say whose voice it is (a faction's, everyone's, or the Red Hand's
+  to sell): its region hears warnings, overhears factions' traffic, and with two up a trapped man's
+  voice can be found by taking bearings.
 - **Loot the world**: a few things lie loose in every building, on worktops and floors and suited
   to it (medicine in a pharmacy, tools in a garage), and you pick them up the game's way; picked-over
   towns are thin; bodies looted like any body, car wrecks' boots to open like any storage; treating each other is the
@@ -259,7 +264,8 @@ scripts/Game/ReforgerZ/
                  deer herds in the country and their meat, the things players build cleared
                  when unused (fireplaces, tents),
                  town memory, the power grid (where its station is, the control at it, its
-                 dressing and generator sound, the power panel's server side and its breakers), the radio station, the world facts (what content
+                 dressing and generator sound, the power panel's server side and its breakers), the radio station, the masts (put up, given
+                 away, their warnings, listening in and a trapped voice's bearings), the world facts (what content
                  reads: season flags, canon, claims and soft holds, text tokens) and its world
                  memory (reasons, signals, the town log, world records, the truth deck) with its
                  writers, the marks spawner, the Long Table, the land grid (water, height, trees,

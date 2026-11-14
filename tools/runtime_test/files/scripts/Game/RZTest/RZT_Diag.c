@@ -628,6 +628,10 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 12 && !RZT_Fog.Tick(this))
 			return;
 
+		// The masts (RZT_Masts.c): found, put up, given, overheard, a voice found by two bearings
+		if (m_iRZTSec >= 12 && !RZT_Masts.Tick(this))
+			return;
+
 		// The openings' play-test faults (RZT_Openings.c), before the missions move the tester about
 		if (m_iRZTSec >= 12 && !RZT_Openings.Tick(this, m_aRZTRoute[0]))
 			return;

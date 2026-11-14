@@ -429,6 +429,15 @@ class RZ_PuzzleActionHelper
 			return true;
 		}
 
+		// A mast's cabinet (World/RZ_Masts.c): its rows as prompts, without the object menu
+		if (comp.GetMissionId() == RZ_Masts.TAG)
+		{
+			if (RZ_Masts.Get())
+				RZ_Masts.Get().HandleChoice(playerId, option, owner, user);
+
+			return true;
+		}
+
 		// World interactions: search spots, wrecks, workbenches, wells, bells, radios, cars
 		if (comp.GetMissionId() == RZ_Interactions.TAG)
 		{
@@ -573,6 +582,15 @@ class RZ_PuzzleActionHelper
 		{
 			if (gm.GetRadioStation())
 				gm.GetRadioStation().HandleRead(playerId);
+
+			return true;
+		}
+
+		// A mast's cabinet (World/RZ_Masts.c): its menu
+		if (comp.GetMissionId() == RZ_Masts.TAG)
+		{
+			if (RZ_Masts.Get())
+				RZ_Masts.Get().HandleRead(playerId, owner);
 
 			return true;
 		}

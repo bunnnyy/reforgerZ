@@ -63,6 +63,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Radio station: a broadcast point players can take over to send preset messages (console prefab, cooldown; cosmetic only, docs/DESIGN.md, Time and environment)", category: "ReforgerZ|World")]
 	protected ref RZ_RadioStationSettings m_RadioStationSettings;
 
+	[Attribute(desc: "Masts: the map's own masts and aerials players put up and give away, each over a region: warnings, listening in, the drone operators, finding a trapped man's voice (docs/DESIGN.md, The masts)", category: "ReforgerZ|World")]
+	protected ref RZ_MastSettings m_MastSettings;
+
 	[Attribute(desc: "Wildlife: deer herds out in the country near players, from the Workshop mod WildlifeExpansion (doe and buck prefabs, caps, meat; docs/DESIGN.md, Wildlife). Off while the doe prefab is empty", category: "ReforgerZ|World")]
 	protected ref RZ_WildlifeSettings m_WildlifeSettings;
 
@@ -472,6 +475,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Wildlife m_Wildlife;
 	protected ref RZ_PlacedThings m_PlacedThings;
 	protected ref RZ_RadioStation m_RadioStation;
+	protected ref RZ_Masts m_Masts;
 	protected ref RZ_StoryArcs m_StoryArcs;
 	protected ref RZ_Questlines m_Questlines;
 	protected ref RZ_Headlines m_Headlines;
@@ -657,6 +661,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_RadioStationSettings)
 			m_RadioStationSettings = RZ_RadioStationSettings.Cast(RZ_Util.NewWithDefaults("RZ_RadioStationSettings"));
 
+		if (!m_MastSettings)
+			m_MastSettings = RZ_MastSettings.Cast(RZ_Util.NewWithDefaults("RZ_MastSettings"));
+
 		if (!m_WildlifeSettings)
 			m_WildlifeSettings = RZ_WildlifeSettings.Cast(RZ_Util.NewWithDefaults("RZ_WildlifeSettings"));
 
@@ -793,6 +800,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Environment = new RZ_Environment(this, m_EnvironmentSettings);
 		m_PowerGrid = new RZ_PowerGrid(this, m_PowerSettings);
 		m_RadioStation = new RZ_RadioStation(this, m_RadioStationSettings);
+		m_Masts = new RZ_Masts(this, m_MastSettings);
 		m_Wildlife = new RZ_Wildlife(this, m_WildlifeSettings);
 		m_PlacedThings = new RZ_PlacedThings(this, m_PlacedSettings);
 		m_StoryArcs = new RZ_StoryArcs(this, m_StorySettings);
@@ -893,6 +901,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Wildlife.Setup();
 		m_PlacedThings.Setup();
 		m_RadioStation.Setup();
+		m_Masts.Setup();
 
 		SetupLab();
 		// Fresh season only: starting infection and safe towns from the season's rules. After the
@@ -989,6 +998,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Wildlife.Tick(dt, ids, players);
 		m_PlacedThings.Tick(dt, ids, players);
 		m_RadioStation.Tick(dt, ids, players);
+		m_Masts.Tick(dt, ids, players);
 		m_Interactions.Tick(dt, ids, players);
 		m_Missions.Tick(dt, ids, players);
 		m_Errands.Tick(dt, ids, players);
@@ -1076,6 +1086,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! On every machine: the client's own deer check reads the prefabs from it (null where none is set).
 	RZ_WildlifeSettings GetWildlifeSettings() { return m_WildlifeSettings; }
 	RZ_RadioStation GetRadioStation() { return m_RadioStation; }
+	RZ_Masts GetMasts() { return m_Masts; }
 	RZ_StoryArcs GetStoryArcs() { return m_StoryArcs; }
 	RZ_Questlines GetQuestlines() { return m_Questlines; }
 	RZ_MajorSettings GetMajorSettings() { return m_MajorSettings; }
@@ -3180,6 +3191,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_PowerGrid.Restore(data.power);
 		m_PlacedThings.Restore(data.placed);
 		m_RadioStation.Restore(data.radio);
+		m_Masts.Restore(data.masts);
 		m_Facts.Restore(data.facts);
 		m_Shared.Restore(data.shared);
 		m_StoryArcs.Restore(data.story);
@@ -3273,6 +3285,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_RadioStation && m_RadioStation.IsActive())
 			data.radio = m_RadioStation.Save();
+
+		if (m_Masts && m_Masts.IsOn())
+			data.masts = m_Masts.Save();
 
 		if (m_StoryArcs && m_StoryArcs.IsEnabled())
 			data.story = m_StoryArcs.Save();
