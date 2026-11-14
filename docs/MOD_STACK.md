@@ -191,6 +191,34 @@ From Make Fire Campfire & Wood: wood, in farms and houses.
 
 From WildlifeExpansion: nothing lies in houses, but a shot deer leaves raw meat ([Wildlife](#wildlife)).
 
+**Added for the recipes and their use** (2026-11-14; only things that do something in play: a recipe
+takes them, a system uses them, they're worn, or the fence buys them):
+
+| Item | From | Where (common / rare) | What it does |
+|---|---|---|---|
+| Wire, nails, empty tin, scrap metal, salt, torch cells, writing pad, bleach | ReforgerZ (`Prefabs/ReforgerZ/Crafting/`) | houses, shops, farms, garages, police, bodies, wrecks' boots, each where it belongs | the bench's and stove's inputs ([DESIGN.md](DESIGN.md#light-crafting)): tripwires, rattles, spears, spike traps and tablets can now be made too |
+| Portable radio | BanditGear | house, shop, garage (electronics) | plays music; a radio for the lure |
+| Sandals, dirty sneakers, black and dirty wool gloves, black leather gloves, black tracksuit, second jeans, black cargo trousers, dirty sweatshirt, trench coats, a sweatshirt hood, a black hood | BanditGear | house, shop, farm, body (common; trench coats rare) | worn; gloves lower the bite chance; trousers and shirts cut up into rags |
+| Bandit jackets, a three-hole balaclava | BanditGear | body (rare) | worn; "bandit" counts as Red Hand clothing for the disguise |
+| Altyn helmet, 6B2 vest, ShM-62 gas mask | BanditGear | police (rare) | protection; the helmet lowers the bite chance |
+| Hazmat mask, black hazmat suit | BasicHazmatSuit | pharmacy (rare) | Halcyon's coat and beak for the disguise |
+| Pilot gloves | BasicHazmatSuit | garage | worn; lower the bite chance |
+| Third shirt | Clothing_pack_v2 | house | worn; cuts up into rags |
+| Paramedic trousers, boots and vest; firefighter suit | Domins Civilian Expansion | pharmacy (the vest rare), garage (the suit rare) | worn |
+| US knife | Functional Knives | garage, police (rare) | a blade: the rags' and lockpick's tool, the spear |
+| Woodland cap | Lamas vanilla plus gear pack | farm | worn |
+| First-aid kits (US, Soviet) | base game | pharmacy (rare) | heal; clean a fresh bite (Disinfect and bandage it) |
+| Vostok and SandY watches, B12 binoculars | base game | house, shop, police (rare) | the fence buys watches and binoculars |
+| Swiss and ALICE backpacks, black canteen | base game | house, police, garage (rare) | storage; the canteen holds water |
+
+Left out as decoration or broken: Suspicious Item Props' other things (props, not items), MoreGMProps,
+Timmmmmbs' compositions, JTF's props, the hand bandages (gloves whose name would count as a bandage),
+the Altyn's visors and damaged copies, Clothing_pack_v2's caps (wrong GUIDs), weapon parts, pouches
+and scabbards. Table sizes now (common / rare / electronics): house 40/13/3, shop 25/8/3, farm 26/8/2,
+pharmacy 15/10/2, garage 15/9/3, police 17/17/2, body 21/10/2, wreck's boot 13/4/2. A house holds a
+tin, salt, bleach, a pad or torch cells about one time in ten each; a garage wire, nails or scrap
+about four times in ten.
+
 From the base game, also as extra finds: a raw meat leg (farms; the stove's Cook meat), smoke
 grenades, the M9 pistol and a Vz. 58 rifle (police, rare), entrenching tools, a pistol holster and
 personal belongings; and the trousers, boots and Veshmeshok backpack the pool's keywords never reached.

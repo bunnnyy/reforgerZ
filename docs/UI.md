@@ -978,8 +978,9 @@ with nothing under way (it says what's missing instead). The server checks the s
 that serial, the bench is there and you're within range and not busy, then runs the bench's own
 code (`HandleRecipe`: the inputs checked, the timed work started); what it says is caught for the
 status line and the screen is sent again. When the work is done the server checks the inputs again
-and takes each with `TryDeleteItem`; the output is given only when every one came out. Up to sixteen
-recipes are listed (the action menu has room for the first eight). The picture and its description
+and takes each with `TryDeleteItem`; the output is given only when every one came out. Up to twenty-four
+recipes are listed, in a list that scrolls (the action menu has room for the first eight). A recipe's
+kept tool shows as one more input row ("Knife", need 1). The picture and its description
 come from the output's preview copy on the client (`RZ_ItemPreview`).
 
 **Fallbacks.** While the screen is used, the bench's **Make:** actions hide
@@ -1022,7 +1023,7 @@ the fire is lit while anyone's boiling, brewing or cooking on that stove, the pl
 The client opens the same menu (`RZ_CraftMenu`, the `RZ_CraftMenu` preset) in its stove mode. A pick goes back as
 `RpcAsk_Craft`, and the server runs the stove's own code (`HandleStove`: boiling, brewing, or a stove
 recipe's timed work, `TASK_COOK`); when it's done the inputs are checked again and taken, and what it
-says is caught for the status line. Up to sixteen rows are listed (the action menu has room for the
+says is caught for the status line. Up to twenty-four rows are listed, in a list that scrolls (the action menu has room for the
 first four).
 
 **Fallbacks.** While the screen is used, the stove's **Boil water**, **Brew a home remedy** and

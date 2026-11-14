@@ -241,6 +241,10 @@ mkdir -p "$ADDON/Prefabs/ReforgerZ/Work"
 cp "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Carried_*.et* "$ADDON/Prefabs/ReforgerZ/Work/"
 # The kitchen work looks (tools/camp_kit/work_looks.py) the kitchen check stands at a prompt
 cp "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Work_Stove.et* "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Work_KitchenTable.et* "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Work_ServeTable.et* "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Work_Pot.et* "$ADDON/Prefabs/ReforgerZ/Work/"
+# The crafting items and the recipes' outputs (RZT_Craft.c sets them on the test world's Crafting)
+mkdir -p "$ADDON/Prefabs/ReforgerZ/Crafting" "$ADDON/Prefabs/ReforgerZ/Interactions"
+cp "$ROOT"/Prefabs/ReforgerZ/Crafting/RZ_*.et* "$ADDON/Prefabs/ReforgerZ/Crafting/"
+cp "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_Planks.et* "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_SparkPlugs.et* "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_Tablets.et* "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_TinRattle.et* "$ADDON/Prefabs/ReforgerZ/Interactions/"
 "$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
 "$PY" "$HERE/sites.py" prepare "$ADDON" Worlds/RZTest/RZTest.ent || exit 2
 
@@ -271,6 +275,7 @@ grep -E 'RZT carry(: done| FAIL|: off|: no building)' "$LOG" | sed 's/.*RZT /  /
 grep -E 'RZT openings' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT fresh' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT kitchen' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT craft' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (epilogue check: .*FAILED|epilogue done|epilogue: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E '\[ReforgerZ\] Sites audit: [0-9]+ sites,' "$LOG" | sed 's/.*\[ReforgerZ\] /  /'
@@ -282,5 +287,6 @@ grep -q 'RZT carry FAIL' "$LOG" && { echo "FAILED: carrying for real (the pile, 
 grep -q 'RZT openings FAIL' "$LOG" && { echo "FAILED: an opening's step (the son, a hand-over, a door: RZT_Openings.c)"; exit 1; }
 grep -q 'RZT fresh FAIL' "$LOG" && { echo "FAILED: a fresh spawn (its contact, step 1, a clean Quests tab: RZT_Fresh.c)"; exit 1; }
 grep -q 'RZT kitchen FAIL' "$LOG" && { echo "FAILED: kitchen work at a kitchen (RZT_Kitchen.c: a kitchen thing at the prompt, the camp's own cook pot)"; exit 1; }
+grep -q 'RZT craft FAIL' "$LOG" && { echo "FAILED: a new recipe or the lockpick (RZT_Craft.c)"; exit 1; }
 grep -q 'RZT Power test: .*FAILED' "$LOG" && { echo "FAILED: the power station's looks (the dressing, the generator's sound or the lamps' list)"; exit 1; }
 exit 0

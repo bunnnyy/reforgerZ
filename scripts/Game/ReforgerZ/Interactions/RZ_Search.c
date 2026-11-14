@@ -112,6 +112,18 @@ class RZ_SearchSettings
 	[Attribute("25", desc: "Heat forcing a door makes")]
 	float m_fForceHeat;
 
+	[Attribute("lockpick,lock_pick,picklock", desc: "Lockpick keywords (picks a lock quietly; the bench's Lockpick recipe makes one)")]
+	string m_sLockpickWords;
+
+	[Attribute("14", desc: "Seconds to pick a lock")]
+	float m_fPickSeconds;
+
+	[Attribute("0.7", desc: "Chance a pick opens the lock; else the pick snaps (used up) and the lock holds")]
+	float m_fPickChance;
+
+	[Attribute("3", desc: "Heat picking a lock makes (forcing makes Heat forcing a door)")]
+	float m_fPickHeat;
+
 	[Attribute("180", desc: "Real minutes before an unlocked, forced or latched lock is back to its default (locked, doors shut)")]
 	float m_fRelockMinutes;
 

@@ -1,0 +1,34 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "904E99FDFBD432D3"
+ components {
+  MeshObject "{E80A4727F88566BC}" {
+   Object "{1B98D6F1E0135F12}Assets/Props/Civilian/SodaBottle_01/SodaBottle_01.xob"
+  }
+  RigidBody "{D2C107925B73F675}" {
+   Mass 0.8
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Bleach"
+     Description "Household bleach. At a workbench it makes purification tablets."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.8
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{7516D6A92D6C5974}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 0.6
+     }
+    }
+    m_Size SLOT_1x1
+   }
+  }
+ }
+ coords 0 0 0
+}

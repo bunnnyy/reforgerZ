@@ -184,7 +184,7 @@ and one way to end it: **research the cure.**
   to it (medicine in a pharmacy, tools in a garage), and you pick them up the game's way; picked-over
   towns are thin; bodies looted like any body, car wrecks' boots to open like any storage; treating each other is the
   game's own, and a Nurse or Doctor also slows a bite; locked doors that keep the infected out (they bang on them)
-  and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting,
+  and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting (nineteen recipes at the bench and the stove, with junk to find for them; a lockpick for locked doors),
   traps, fire (a full fuel can in your hands at the door), water and secure radio channels.
 - **Teaches itself**: no tutorial pop-ups, just a note where you wake, a wind-up radio and
   people who tell you things.

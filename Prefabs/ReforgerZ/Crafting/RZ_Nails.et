@@ -1,0 +1,34 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "7F47CC862103B33E"
+ components {
+  MeshObject "{70057F540649725E}" {
+   Object "{63D5A74A4D27B669}Assets/Props/Garbage/Generic/LitterInterior_01/LitterInterior_01_TinCan_02.xob"
+  }
+  RigidBody "{D83810D5C883E3CB}" {
+   Mass 0.5
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Nails"
+     Description "A tin of bent nails. Enough to board up a door or set some spikes."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.5
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{6E0C59B13C83CA78}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 0.6
+     }
+    }
+    m_Size SLOT_1x1
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -1,0 +1,25 @@
+GenericEntity : "{4D54E83B5BBADD07}Prefabs/ReforgerZ/Interactions/RZ_TinRattle.et" {
+ ID "25F76C1BD0DCC44E"
+ components {
+  MeshObject "{51EC93F29BA5F234}" {
+   Object "{16B8DF2B48A440A2}Assets/Props/Civilian/RadioSmall_01/RadioSmall_01.xob"
+  }
+  InventoryItemComponent "{51FAA3E3CF6F087A}" {
+   Attributes SCR_ItemAttributeCollection "{51FAA3E3C2D19BD4}" {
+    ItemDisplayName WeaponUIInfo "{56CA8ED293FE862B}" {
+     Name "Radio lure"
+     Description "A radio with fresh cells, tuned to the loudest static there is. Throw it and it hisses for a minute or more. Everything dead for streets around comes to look."
+    }
+   }
+  }
+  RZ_NoisemakerComponent "{6AD67DC2A8163827}" {
+   m_fHeat 25
+   m_fDelay 2
+   m_iPulses 8
+   m_fPulseInterval 9
+   m_bOnThrow 1
+   m_bDeleteAfter 1
+  }
+ }
+ coords 0 0 0
+}

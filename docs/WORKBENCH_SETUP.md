@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **369 prefab fields**: 46 on `RZ_GameModeComponent`, 306 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **346 entries**: 201 prefabs the plugin creates, 38 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **380 prefab fields**: 46 on `RZ_GameModeComponent`, 317 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **363 entries**: 217 prefabs the plugin creates, 39 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -795,7 +795,7 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | vanilla drivable civilian cars | — | Interactions > Cars > Car prefabs (list) | optional | what a fixed car becomes (empty = no fixable cars) |
 | `RZ_CarBattery.et` | an item; keep "battery" in its name | — | Interactions > Cars > Battery | optional | car parts |
 | `RZ_Tyre.et` | an inventory item with a tyre mesh; keep "tyre" in its name | — | Interactions > Cars > Tyre | optional | car parts. The repo's is vanilla Item_Base with the UAZ tyre's mesh: 9 kg, 2x2 |
-| `RZ_SparkPlugs.et` | an item; keep "spark" in its name | — | Interactions > Cars > Spark | optional | car parts |
+| `RZ_SparkPlugs.et` | an item; keep "spark" in its name | — | Interactions > Cars > Spark; Interactions > Crafting > Plugs | optional | car parts |
 | `RZ_FuelCan_Full.et` | a full jerrycan item | — | Interactions > Cars > Fuel prefab | optional | the hand pump, fuel, fire |
 | `RZ_BoardedDoorway.et` | planks across a door frame, with collision | — | Interactions > Traps > Barricade prefab | optional | the boarded doorway |
 | `RZ_TripwireSet.et` | a set tripwire prop | — | Interactions > Traps > Tripwire set | optional | look of a set tripwire (optional) |
@@ -811,11 +811,33 @@ and the UI files) need none, and eight have no base:
 | `RZ_Water_Dirty.et` | Metabolism's water bottle, named "Untreated water", with B_FoodWaterGadgetComponent's m_fSicknessChance 0.5 (its name matches the dirty-water keywords) | — | Interactions > General > Dirty water | optional | wells, stoves |
 | (existing prefab) | Metabolism's WaterBottle.et ({D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et) | — | Interactions > General > Clean water | optional | wells, stoves |
 
+#### Crafting
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_Rags.et` | an item with the gauze bandage mesh; keep "rag" in its name (Cloth keywords) | — | Interactions > Crafting > Rags | optional | the cloth for bandages, molotovs, dressings and filters |
+| `RZ_Lockpick.et` | a small item (the pen mesh); keep "lockpick" in its name (Search > Lockpick keywords) | — | Interactions > Crafting > Lockpick | optional | picking a locked door quietly |
+| `RZ_WaterFilter_Purification.et` | the tablets item renamed; keep "purification" in its name (a Water tablet keyword) and no "charcoal" | — | Interactions > Crafting > Filter | optional | cleaning a bottle of untreated water |
+| `RZ_RadioLure.et` | the tin rattle with the small radio mesh and a longer noise (RZ_NoisemakerComponent: 8 bursts 9 s apart, 25 heat each) | — | Interactions > Crafting > Lure | optional | drawing the infected away |
+| `RZ_MapCopy.et` | vanilla's folded paper map renamed | — | Interactions > Crafting > Map copy | optional | a map you can open |
+| `RZ_SterileDressing_Swab.et` | the field dressing renamed; keep "swab" (an Antiseptic keyword) and "dressing" (a Bandage keyword) in its name | — | Interactions > Crafting > Sterile | optional | a bandage that cleans a bite |
+| `RZ_Charcoal.et` | an item with the kindling mesh; keep "charcoal" in its name | — | Interactions > Crafting > Charcoal | optional | the water filter |
+| `RZ_Stew.et` | Metabolism's MRE with more food and some drink (B_FoodWaterGadgetComponent) | — | Interactions > Crafting > Stew | optional | food |
+| (existing prefab) | the dried meat (Metabolism's food) | — | Interactions > Crafting > Jerky | optional | food that keeps |
+
 #### Loot items
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_Planks.et` | an inventory item with a planks mesh | `RZ_PlaceableComponent` (Kind BARRICADE); `RZ_PlaceAction` | (loot or shop) | optional | barricades. The repo's is vanilla Item_Base with the junk planks' mesh: 4 kg, 2x2. Its prefab name has "plank", so crafting uses it too |
+| `RZ_Wire.et` | an inventory item with the metal fragment mesh; keep "wire" in its name | — | (loot or shop) | optional | tripwires, rattles, spears, lockpicks, spark plugs. Search > Extra finds (MOD_STACK.md) |
+| `RZ_Nails.et` | an inventory item with a tin mesh; keep "nail" in its name | — | (loot or shop) | optional | spike traps, barricade planks. Search > Extra finds (MOD_STACK.md) |
+| `RZ_TinCan_Empty.et` | an inventory item with a tin mesh; keep "tincan" in its name | — | (loot or shop) | optional | tin rattles, tripwires. Search > Extra finds (MOD_STACK.md) |
+| `RZ_Scrap.et` | an inventory item with the metal fragment mesh; keep "scrap" in its name | — | (loot or shop) | optional | salvaged spark plugs. Search > Extra finds (MOD_STACK.md) |
+| `RZ_Salt.et` | an inventory item with a tin mesh; keep "salt" in its name | — | (loot or shop) | optional | jerky. Search > Extra finds (MOD_STACK.md) |
+| `RZ_Cells.et` | an inventory item with a small box mesh; keep "rz_cells" in its name and never "battery" (a car part keyword) | — | (loot or shop) | optional | the radio lure. Search > Extra finds (MOD_STACK.md) |
+| `RZ_WritingPad.et` | an inventory item with the notebook mesh; keep "writingpad" in its name | — | (loot or shop) | optional | the hand-drawn map. Search > Extra finds (MOD_STACK.md) |
+| `RZ_Bleach.et` | an inventory item with a plastic bottle mesh; keep "bleach" in its name and never "bottle" | — | (loot or shop) | optional | purification tablets. Search > Extra finds (MOD_STACK.md) |
+| `RZ_Planks.et` | an inventory item with a planks mesh | `RZ_PlaceableComponent` (Kind BARRICADE); `RZ_PlaceAction` | Interactions > Crafting > Barricade (and loot or shop) | optional | barricades. The repo's is vanilla Item_Base with the junk planks' mesh: 4 kg, 2x2. Its prefab name has "plank", so crafting uses it too |
 | `RZ_PortableGenerator.et` | a generator item | `RZ_PlaceableComponent` (Kind GENERATOR); `RZ_PlaceAction`; `RZ_PlaceAction` (Refuel on) | (loot or shop) | optional | a generator |
 | `RZ_Bottle.et` | a vanilla grenade with the explosion removed and a bottle mesh | `RZ_NoisemakerComponent` (Heat 20, On throw on, Delete after on) | (loot or shop) | optional | a thrown noise |
 | `RZ_Firecracker.et` | a small item | `RZ_NoisemakerComponent` (Heat 15, Delay 5, Pulses 4, Pulse interval 3, On throw off, Delete after on, Arm label Light the fuse); `RZ_ArmNoisemakerAction` | (loot or shop) | optional | a timed noise |
@@ -1836,6 +1858,21 @@ or the pot), never a cardboard box; then one at the nearest cook pot a camp has 
 it with nothing more put out. Lines `RZT kitchen: ...`, the sum `RZT kitchen: done, N failures`, and
 `RZT kitchen FAIL ...` for each miss (the run fails on any).
 
+**The new recipes and the lockpick** (`RZT_Craft.c`, [DESIGN.md](DESIGN.md#light-crafting)): three
+minutes in, each of the eighteen new item prefabs (the recipes' outputs and the loot's junk) must
+load and spawn with an inventory item on it. Then each of the eleven new recipes is made for the
+tester through the bench's own `FinishRecipe`, from its inputs put in his pack (a pack on his back
+first): it must make as many as it says (two rags, three filters, two jerky), take every input and
+keep a tool (the knife, the wrench). On the dedicated server a text-written item spawns but doesn't
+go into a pack until Workbench has registered it (opening it once), so these recipes run with
+base-game stand-ins: the test sets their keywords and outputs (an aspirin bottle for the nails,
+cells, pad and salt, a compass for the wire, gauze for a rag...). Then the nearest locked building
+gets a door spot and its lock is picked (the pick's chance set to 1): it must open. Lines `RZT craft:
+N of 18 of the recipes' and the loot's own prefabs load as items`, `RZT craft: <recipe> at the
+bench|stove: N made from N inputs[, the tool kept]`, `RZT craft: the lockpick opened the locked door,
+quietly`, the sum `RZT craft: done, N failures`, and `RZT craft FAIL ...` for each miss (the run
+fails on any).
+
 **Carrying** (`RZT_Carry.c`, [DESIGN.md](DESIGN.md#carrying)): four minutes in, the tester carries
 three crates from the open into the nearest building with a ground floor (each hold done for him):
 at the pile its crate and the others beside it stand; carrying, a put-down prompt opens inside, on
@@ -2169,7 +2206,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **198** lines with the tag, all but one in the game scripts (one is the comment in
+There are **199** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2296,10 +2333,11 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1475` | a quartermaster or the medic moved and turned with `SetWorldTransform` on the server stays at their hand-placed spot, facing its way, on every client | They stand where they spawned; the quartermaster turns to serve as before |
 | `World/HandBuilt/RZ_HandSpots.c:402` | a short flat trace through a spot inside a wall, a crate or a tent's side reports a hit (the spot turns red), and the excluded marker cone doesn't | A spot in a wall isn't flagged; the author sees it in play |
 
-### Low risk: contained or cosmetic (47)
+### Low risk: contained or cosmetic (48)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `Interactions/RZ_Crafting.c:579` | what you wear or hold is never a recipe's input: worn clothes sit in the character's loadout storage, what's in the hands in its weapon storage, a worn watch or compass in an equipment storage the character owns, and a pocket's or a pack's things in the clothing's own storage | A worn shirt or trousers could be cut up into rags, or a worn item used for a bandage: take it off and say so |
 | `World/HandBuilt/RZ_SiteBuilderEditor.c:121` | setting the manual camera's world transform moves Game Master's camera to look at the site (**Go there**) | The camera stays: fly it to your character |
 | `World/HandBuilt/RZ_SiteBuilderEditor.c:170` | debug shapes made on a game client (`Shape.CreateLines`, `CreateSphere`) draw in the world for that player, Game Master's camera too, not only in Workbench | The menu's words only: the checklist and where the first red spot is |
 | `Interactions/RZ_Interactions.c:187` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
@@ -2806,7 +2844,7 @@ dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by
 `Work sites: <key> "<label>" done by <player>` (a mission's are `mission.<id>.point.N`, `.truck`,
 `.tissue`, `.well`, `.sample`, `.chain`, `.charge.N`; the Red Hand van's `cargovan.N`; a stranger's `stranger.N`), `Work sites: measured <look>: W x D m`
 once per look, `Work sites: <key> look <look> fits at <grid> (N m off, heading N)` or `... doesn't fit at <grid>, <plainer look> instead` (then its own fits line), `Work sites: <key> has nothing of its kind at <grid> (<look> and its plainer looks don't fit within 8 m): only its prompt` (a fault), kitchen work: `Errands: <errand> kitchen work at the camp's cook pot, <grid> (N m from the place)` (or `the hand-built site's cook spot`) or `Errands: <errand> kitchen work: no cook pot laid out within 60 m of <grid>, at its own table`, `Errands: <errand> '<prompt>' has nothing standing at its work site (no look, no person)` (a fault: the words name a thing nothing stands for), carrying for real ([DESIGN.md](DESIGN.md#carrying)): `Carry: errand.N, 3 crates from <grid> (outside) to <grid> (indoors, on the ground floor)`, `Carry: errand.N, N of 3 crates put down indoors, on the ground floor`, `Carry: errand.N, a crate put down at <grid>, not at the stack`, `Errands: <errand> carries <things>, but no building within 60 m of <grid>: carried to its door`, `Carry: the thing in the arms didn't attach to the character; ...` (once),
-`Work sites: <key> after look <look> doesn't fit ...`, `Work sites: <key> has no room for its person at <grid>, left out`, `Doors: <prop> left out at <grid> (<key>): no real doorway within 1.2 m, and no door is ever spawned in the open`, `Duties: no real door within reach for beat <key> at <grid>: it stands in the open (no door is spawned)`, `Work sites: the Site prefab has no
+`Work sites: <key> after look <look> doesn't fit ...`, `Work sites: <key> has no room for its person at <grid>, left out`, `Doors: <prop> left out at <grid> (<key>): no real doorway within 1.2 m, and no door is ever spawned in the open`, `Doors: lock picked at <grid> by player <id>` and `Doors: a pick snapped at <grid> (player <id>)` (a lockpick at a locked door), `Duties: no real door within reach for beat <key> at <grid>: it stands in the open (no door is spawned)`, `Work sites: the Site prefab has no
 RZ_WorkSiteComponent, so it shows no prompt` once if the prefab is wrong, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
 <place> fixed`, every 30 minutes `Errands | live N | asked N, called out N | <family>: dealt N,
 declined N, lapsed N, overtaken N, done N, Favor N, Fame N (amends N), ways ...`, and `Errands admin
@@ -3120,6 +3158,22 @@ session, tick off:
   is in it and the status line says "Done: ...". B closes it; work under way goes on while you
   stay. The mouse: click a recipe, then Craft. Text reads from the sofa on a TV. With **UI > Craft
   row layout** empty, the Make actions and "Use the workbench" as a notice are back.
+- [ ] The new recipes (DESIGN.md, "Light crafting"), with a pad: check **Interactions > Crafting**'s
+  new outputs came through (Rags, Lockpick, Barricade, Filter, Lure, Plugs, Map copy, Sterile,
+  Charcoal, Jerky, Stew). At a workbench the list has fifteen and scrolls; a kept tool (Knife,
+  Wrench) is a row of its own and is still in your pack afterwards. Cut a shirt from your pack into
+  two rags, and make sure the shirt you're **wearing** is never used (VERIFY
+  `Interactions/RZ_Crafting.c:579`). At a stove or a lit campfire: Sterile dressing (boil), Charcoal
+  (burn), Jerky (dry), Stew (cook). The new items look right in the hand and the inventory and lie
+  on a table without falling through it (their meshes are props': wire and scrap a metal fragment,
+  nails, salt and the empty tin a tin, cells a paper wrap, the pad a notebook, bleach a plastic
+  bottle, rags the gauze, the lockpick a pen, charcoal kindling). Throw the radio lure: it hisses
+  for over a minute and the infected come. A hand-drawn map opens as a map. A water filter cleans a
+  bottle as a tablet does; a sterile dressing cleans a fresh bite (**Clean the bite**).
+- [ ] Pick a lock: at a locked place's outside door, **Pick the lock (lockpick)** with a pick in
+  your pack takes about 14 s, quietly; it opens (not broken: its key locks it again) or the pick
+  snaps. Log: `Doors: lock picked at <grid> by player <id>` or `Doors: a pick snapped at <grid>
+  (player <id>)`.
 - [ ] The object menu, with a pad (**UI > Object row layout** set, the `RZ_ObjectMenu` preset added):
   at a stove only **Look at the stove** shows; it opens the menu with "Stove", the town, what you
   see and the options (Boil water, Brew a home remedy). The D-pad moves, A on Boil water starts it

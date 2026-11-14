@@ -1,0 +1,34 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "7480447D3D26BEC0"
+ components {
+  MeshObject "{A78B96832648DA4A}" {
+   Object "{14DFCFC2B9855919}Assets/Props/Garbage/Generic/LitterInterior_01/LitterInterior_01_TinCan_03.xob"
+  }
+  RigidBody "{85CD9356F00B8A63}" {
+   Mass 0.4
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Salt"
+     Description "A tin of cooking salt. Rub it into meat and the meat keeps."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.4
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{3606A45C90BEDA6D}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 0.6
+     }
+    }
+    m_Size SLOT_1x1
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -1,0 +1,34 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "5E0D3DD1E2899E30"
+ components {
+  MeshObject "{E1AFDBC4D84DE38D}" {
+   Object "{10D42E6612680C88}Assets/Props/Garbage/Generic/LitterInterior_01/LitterInterior_01_Cigarettes_01.xob"
+  }
+  RigidBody "{317E83E8EAE6D11D}" {
+   Mass 0.2
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Torch cells"
+     Description "Four torch cells in a paper wrap. Probably not flat."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.2
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{F8D7C1E7650819BA}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 0.6
+     }
+    }
+    m_Size SLOT_1x1
+   }
+  }
+ }
+ coords 0 0 0
+}
