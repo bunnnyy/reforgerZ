@@ -790,7 +790,7 @@ class RZ_QuestTracker
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Keeps the tracked job valid (a newly taken job is tracked if nothing is; one that ended
+	//! Keeps the tracked job valid (a newly taken job is always tracked; one that ended
 	//! falls back to the newest taken, unless the player untracked on purpose) and sends the
 	//! tracker if it changed.
 	protected void Push(int playerId, IEntity ent, bool force)
@@ -848,7 +848,8 @@ class RZ_QuestTracker
 			}
 		}
 
-		if (newest != 0 && (!tracked || p.m_bTrackOff))
+		// A job just taken (agreed to in a talk) is followed at once, whatever was followed before
+		if (newest != 0)
 		{
 			tracked = FindJob(jobs, newest);
 			p.m_bTrackOff = false;

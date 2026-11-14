@@ -371,7 +371,8 @@ under the secure-radio panel while that shows), for the one job you follow. The 
 
 **What's tracked.** Nothing, until you pick a job in the Quests tab or take one. Taking a job (being
 counted on it: a job offered to you that you reached, a questline you took part in, an errand you
-agreed to) tracks the newest one if nothing is tracked. When the tracked job ends, the newest one still
+agreed to) tracks it at once, whatever was tracked before: the job you just said yes to is the
+one on the tracker, within 2 s of the talk. When the tracked job ends, the newest one still
 taken is tracked. Picking the tracked job again stops tracking it, and then nothing is tracked
 until you take a new job. The choice is saved on your profile (`m_iTrackedId`, with the title to
 find it again after a restart), so it survives a relog. A job you haven't taken is tracked only if
