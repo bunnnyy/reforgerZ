@@ -456,6 +456,7 @@ modded class RZ_GameModeComponent
 				Print(string.Format("RZT all questlines tried: %1 of %2 reached an ending, %3 stages entered", m_iRZTQuestEnded, m_aRZTQuestKeys.Count(), m_iRZTQuestStages));
 				Print("RZT objective places (missions and questlines): " + RZT_Obj.Summary());
 				Print("RZT person objectives: " + RZT_PersonObj.Summary());
+				Print("RZT rules: " + RZT_Rules.Summary());
 				m_bRZTQuestsDone = true;
 				return;
 			}

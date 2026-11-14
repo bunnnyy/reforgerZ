@@ -1221,7 +1221,7 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 		m_sTitle = "Missing Scout";
 		m_sDeed = "found the scout near {town}";
 		m_sBrief = string.Format("One of our scouts never came back from %1. He was marking which houses still stood and which wells were clean. Search the area, find his notes and bring them to the safehouse in %2. If you find him, we'll read his name at supper.", s.m_sName, homeName);
-		m_sObjective = string.Format("Find the missing scout's notes in %1 and take the notes to the safehouse in %2.", s.m_sName, homeName);
+		ObjThen(string.Format("Find the missing scout's notes in %1.", s.m_sName), string.Format("Take the notes to the safehouse in %1.", homeName));
 		return true;
 	}
 

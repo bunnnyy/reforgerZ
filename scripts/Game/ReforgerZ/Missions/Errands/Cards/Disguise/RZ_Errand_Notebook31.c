@@ -37,7 +37,7 @@ class RZ_Errand_Notebook31 : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Find the body of {dead} {where_place}, take notebook {number} (15 s there), and sell it at the Red Hand's fence. Then tell {giver} it was gone.";
+		w.m_sStep = "Find the body of {dead} {where_place} and take notebook {number} for the Red Hand's fence (15 s there). Then tell {giver} it was gone.";
 		w.Work(RZ_EWork.TAKE, "Take the notebook");
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 15;

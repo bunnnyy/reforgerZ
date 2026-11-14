@@ -1750,7 +1750,7 @@ class RZ_Mission_Requisition : RZ_Mission_Choice
 		m_sTitle = "Requisition";
 		m_sDeed = "brought in what the stores were short of";
 		m_sBrief = string.Format("Every name on our roster has to eat, and the Haven's stores in %1 hold more than they're letting on. Collect a contribution and bring it to our drop at %2. It's for their protection. Their people in %3 will call it theft and ask for it back, and it's for whoever carries it to decide if they get it.", s.m_sName, b.m_sName, havenName);
-		m_sObjective = string.Format("Collect a contribution from the Haven stores in %1 and bring it to the drop at %2.", s.m_sName, b.m_sName);
+		ObjThen(string.Format("Collect a contribution from the Haven stores in %1.", s.m_sName), string.Format("Bring it to the drop at %1.", b.m_sName));
 		return true;
 	}
 

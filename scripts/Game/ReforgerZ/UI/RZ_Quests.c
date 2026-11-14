@@ -689,6 +689,21 @@ class RZ_QuestTracker
 			return;
 		}
 
+		// A first place before the step's own (RZ_ErrandWay.First): its own line
+		if (w && w.HasFirst() && e.m_vFirst != vector.Zero)
+		{
+			string first = e.Fill(w.m_sFirst);
+			if (!e.m_bFirstDone)
+			{
+				list.Add(first, RZ_EObjState.CURRENT, RZ_ObjPlace.Spot(e.m_vFirst, wayR));
+				list.Add(step, RZ_EObjState.NEXT, stepAt);
+				list.Add(back, RZ_EObjState.NEXT, backAt);
+				return;
+			}
+
+			list.Add(first, RZ_EObjState.DONE, null);
+		}
+
 		if (e.m_bStepDone)
 		{
 			list.Add(step, RZ_EObjState.DONE, stepAt);

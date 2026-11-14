@@ -890,6 +890,13 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 	protected static const float EXCON_SECONDS = 8;
 
 	//------------------------------------------------------------------------------------------------
+	//! Out: the crew walks with you.
+	override protected bool ObjFirstDone()
+	{
+		return m_Escort.IsStarted();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.BANDITS, RZ_ETier.TRUSTED, 35, 35);
@@ -983,7 +990,7 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		m_sTitle = "Bust Out";
 		m_sDeed = "broke one of ours out at {town}";
 		m_sBrief = string.Format("Bastion is holding some of ours in a stockade near %1. They owe us, and nobody pays from a stockade. Cut them out and walk them to %2. In one of their uniforms, the guards won't look twice.", postName, m_sMeetName);
-		m_sObjective = string.Format("Free the crew from the stockade near %1 and walk the crew to %2.", postName, m_sMeetName);
+		ObjThen(string.Format("Free the crew from the stockade near %1.", postName), string.Format("Walk the crew to %1.", m_sMeetName));
 		if (!m_Escort.Begin(gm, LandPointNear(m_vGate, 3, 6)))
 			return false;
 

@@ -127,7 +127,8 @@ class RZ_Routine_Market : RZ_ErrandDef
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT2;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
-		w.m_sStep = "Find the ring {subject_place}, give it to the groom's mother at {house} (5 s at the door), then tell {giver}.";
+		w.First(RZ_EErrandPlace.SUBJECT, "Search the grass where the wedding party was {subject_place} for the ring (20 s there).", 20);
+		w.m_sStep = "Give the ring to the groom's mother at {house} (5 s at the door), then tell {giver}.";
 		w.m_iFame = 2;
 		w.m_iPayFaction = RZ_EFaction.SURVIVORS;
 		w.Done("To the mother? Soft. You're soft. I'll remember that, and so will the price of everything.");
@@ -137,7 +138,8 @@ class RZ_Routine_Market : RZ_ErrandDef
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT2;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
-		w.m_sStep = "Find the ring {subject_place}, sell it to the groom's mother at {house} for two tins (5 s at the door), then tell {giver}.";
+		w.First(RZ_EErrandPlace.SUBJECT, "Search the grass where the wedding party was {subject_place} for the ring (20 s there).", 20);
+		w.m_sStep = "Sell the ring to the groom's mother at {house} for two tins (5 s at the door), then tell {giver}.";
 		w.m_iFavor = 4;
 		w.Done("Two tins from a mother. That's business. Ugly business, but business.");
 	}

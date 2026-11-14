@@ -1273,6 +1273,7 @@ class RZ_QM_AuthorsAnswer : RZ_QM_HalcyonScene
 class RZ_QM_AuthorsOffer : RZ_QM_HalcyonScene
 {
 	protected int m_iOfferClue = -1;
+	protected bool m_bHeard;				// someone heard the offer (its clue read)
 	protected int m_iCoSpot = -1;
 
 	protected static const int OBJ_MAN = 0;
@@ -1320,7 +1321,7 @@ class RZ_QM_AuthorsOffer : RZ_QM_HalcyonScene
 
 		m_sTitle = "Authors: the Red Hand's offer";
 		m_sBrief = QFill(gm, "The Red Hand wants to buy my batch. They've sent someone to make the offer properly. Hear him out, and bring me his terms. I will say no. I'd like to know what I'm saying no to.");
-		m_sObjective = QFill(gm, "Hear the Red Hand's offer for the batch and bring the terms to {director}.");
+		ObjThen(QFill(gm, "Hear the Red Hand's offer for the batch."), QFill(gm, "Bring the terms to {director}."));
 		return true;
 	}
 
@@ -1329,7 +1330,17 @@ class RZ_QM_AuthorsOffer : RZ_QM_HalcyonScene
 	override protected void OnClueRead(RZ_GameModeComponent gm, int playerId, int idx, IEntity source)
 	{
 		if (idx == m_iOfferClue)
+		{
+			m_bHeard = true;
 			SetSpotOn(m_iCoSpot, true);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The offer heard: the terms go to the director now (ObjThen).
+	override protected bool ObjFirstDone()
+	{
+		return m_bHeard;
 	}
 
 	//------------------------------------------------------------------------------------------------

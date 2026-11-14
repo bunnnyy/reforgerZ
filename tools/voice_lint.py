@@ -397,6 +397,9 @@ def missing_objectives(root=si.ROOT):
                 m = re.match(r"^\s*(?:(\w+)\.)?m_sObjective\s*=", line)
                 if m:
                     objectives.add(m.group(1) or "")
+                # ObjThen(first, then): the objective in two lines (RZ_Mission.ObjThen)
+                elif re.match(r"^\s*ObjThen\(", line):
+                    objectives.add("")
             flush()
     return findings
 

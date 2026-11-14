@@ -125,6 +125,7 @@ CALL_CHANNELS = {
     "MissionStage": {1: "title", 2: "journal"},
     "ObjSteps": {"*": "objective"},
     "ObjOptional": {"*": "objective"},
+    "ObjThen": {"*": "objective"},
     "Task": {7: "objective"},       # an opening's step 2 (Guidance/RZ_OpeningChain.c)
     "Note": {"*": "journal"},
     "GiveUp": {1: "journal"},
@@ -138,6 +139,7 @@ ASSIGN_CHANNELS = {
     "m_sLabel": "label",
     "m_sChoices": "choice",
     "m_sObjective": "objective",
+    "m_sObjThen": "objective",
     "m_sStep": "objective",
     "m_sHaven": "hint", "m_sBastion": "hint", "m_sRedHand": "hint", "m_sHalcyon": "hint",
     "m_sWanderer": "hint", "m_sRadio": "hint", "m_sPlain": "hint", "m_sShort": "hint",

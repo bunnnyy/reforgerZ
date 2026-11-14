@@ -232,6 +232,15 @@ the four nearest towns is tried. A way whose place doesn't exist here isn't offe
 ask names `{next_town}` isn't dealt when no town near has the place. You're at a place within the way's own
 radius or 15 m, whichever is wider, in a vehicle too ([arriving](DESIGN.md#mission-building-blocks)).
 
+**A first place.** A way done at two places has a first one of its own (`RZ_ErrandWay.First`: its
+place, its line, its seconds), so each place is one objective ([MISSION_RULES.md](MISSION_RULES.md),
+rule 23): The Market's ring (search the grass where the wedding party was, 20 s, then the groom's
+mother's door) and Petr's key (from under his step, 5 s, then Petr in the queue). Standing at the first
+place its seconds tells you the step; the step itself counts only after. A way whose words named a
+second place nothing checked now names the one place it's done: the sales "at the fence" (Notebook
+31, The Name on the Tape, His Effects, The Patrol That Didn't Come Back) take the thing *for* the
+fence (its Favor comes with the hand-in), and The Boy's ways talk him round where he is.
+
 **Done** is coming back and handing it in, in their talk: the giver's *[Errand] It's done: <title>.*
 reply, first on their list ([DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies)); something you
 carried back has to be on you, or on a helper beside you (*"Where is it, then? Bring it here with

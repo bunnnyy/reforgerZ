@@ -380,6 +380,9 @@ tools/voice_sim.py
                  replays the voice bank's picker: pool sizes and joke shares by mood
 tools/strings_inventory.py
                  lists every line of player text in the scripts and the conversations
+tools/mission_rules.py, tools/mission_rules_allow.txt
+                 the mission rules check: every task against docs/MISSION_RULES.md from the
+                 source; the allowlist holds the hits that are right, and the pending ones
 tools/voice_lint.py, tools/voice_lint_baseline.txt
                  the text lint: checks player text against the writing rules; the baseline
                  holds today's findings, so only new or changed text fails

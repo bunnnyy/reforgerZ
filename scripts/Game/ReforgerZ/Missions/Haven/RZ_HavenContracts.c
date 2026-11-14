@@ -563,6 +563,13 @@ class RZ_Mission_TheInformant : RZ_PuzzleMission
 	protected static const int SPOTTED_INFAMY = 10;
 
 	//------------------------------------------------------------------------------------------------
+	//! Bought: the names are yours to carry.
+	override protected bool ObjFirstDone()
+	{
+		return m_bBought;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.TRUSTED, 30, 25);
@@ -602,7 +609,7 @@ class RZ_Mission_TheInformant : RZ_PuzzleMission
 		m_iTalk = AddClue("The seller", "A thin man in a good coat, who looks at your hands before your face. \"You're new. What are you buying?\"");
 		m_sTitle = "The Informant";
 		m_sBrief = string.Format("The Red Hand sells out of a dead drop outside %1. Wait there like a buyer, buy what they're selling, and bring us the names you hear. Any safehouse will do. Don't get made.", s.m_sName);
-		m_sObjective = string.Format("Buy at the Red Hand's dead drop outside %1 and bring the names to a Haven safehouse.", s.m_sName);
+		ObjThen(string.Format("Buy the names at the Red Hand's dead drop outside %1.", s.m_sName), "Bring the names to a Haven safehouse.");
 		return true;
 	}
 

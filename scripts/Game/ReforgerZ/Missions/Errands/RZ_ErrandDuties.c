@@ -610,7 +610,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		snares.m_fSeconds = 30;
 		snares.m_fRadius = 40;
 		snares.m_bSquad = true;
-		snares.m_sStep = "Go out with {squad} to the snare line {place}, check the snares there with the hunter beside you, and bring what's caught back to {giver}.";
+		snares.m_sStep = "Go out with {squad} to the snare line {place}, check the snares there with the hunter beside you, then bring what's caught to {giver}.";
 		snares.Work(RZ_EWork.SEARCH, "Check the snares", 15);
 		snares.m_iFavor = 7;
 		snares.m_iFame = 1;

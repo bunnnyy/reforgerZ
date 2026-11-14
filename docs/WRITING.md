@@ -604,10 +604,13 @@ so it never leans on the brief.
 | Search the houses over the way. | Search the chemist's down the road, quietly. Then go on to Ruth, at Ruth's house in Morton. |
 | Search the houses over the way. | Search the houses across the road from Lucie Brandt's, quietly. |
 | Secure it and hold the area for a minute. | Hold the cellar cache in Levie for a minute. |
-| Find him. | Find the downed pilot outside Morton and walk the pilot to Levie. |
+| Find him. | Find the downed pilot outside Morton. (Then, once he walks: Walk the pilot to Levie.) |
 
-The text lint's `objective` check holds the pronoun and length rules, and that every mission with a
-brief names its objective ([Checking text](#checking-text)).
+A job done at two places is two lines, one place each ([MISSION_RULES.md](MISSION_RULES.md), rule
+23): a mission sets them with `ObjThen`, an errand's way with `First`; "..., then tell {giver}" needs
+neither (the way back is its own line). The text lint's `objective` check holds the pronoun and
+length rules, and that every mission with a brief names its objective (`m_sObjective` or `ObjThen`)
+([Checking text](#checking-text)); `tools/mission_rules.py` finds two places in one line.
 
 ## Dark humour, not edginess
 

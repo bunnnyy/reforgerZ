@@ -85,7 +85,7 @@ class RZ_Mission_SilentVillage : RZ_PuzzleMission
 		if (names.Count() < 9)
 			return false;
 
-		string priest = "Father " + RZ_NoteText.FirstName(m_Rng);
+		string priest = "Father " + RZ_NoteText.ManName(m_Rng);
 		int n1 = AddClue("A diary page", string.Format("%1, %2. %3 says the bell at %4 rang by itself last night. Nobody was pulling the rope. He went down to the crypt to look. That was this morning.\n%5",
 			v.m_sName, RZ_NoteText.Day(m_Rng.Int(4, 8)), priest, churchName, RZ_NoteText.Signoff(m_Rng, names[0])));
 		int n2 = AddClue("A letter, never sent", string.Format("The sick ones aren't turning here. They get up in the night and walk to %1 and go down the steps, quietly, like it's Mass. %2 followed her husband. I'm locking us in the cellar.\n%3",

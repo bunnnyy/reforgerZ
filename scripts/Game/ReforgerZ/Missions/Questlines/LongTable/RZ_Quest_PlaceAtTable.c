@@ -475,7 +475,7 @@ class RZ_QM_PlaceDead : RZ_QM_PlaceBase
 		m_iSettlement = gm.FindNearestSettlement(m_vDead);
 		m_sTitle = "The dead";
 		m_sBrief = QFill(gm, string.Format("{host} says the dead don't need what they have. Someone died to the infected near %1 not long ago. Stand where they fell, before anyone else finds them. Then go back to the farm gate and tell him.", PlaceName(gm, m_vDead)));
-		m_sObjective = QFill(gm, string.Format("Stand where someone fell near %1, then tell {host} at the farm gate.", PlaceName(gm, m_vDead)));
+		ObjThen(QFill(gm, string.Format("Stand where someone fell near %1.", PlaceName(gm, m_vDead))), QFill(gm, "Tell {host} at the farm gate."));
 		return true;
 	}
 
@@ -526,6 +526,13 @@ class RZ_QM_PlaceDead : RZ_QM_PlaceBase
 	{
 		if (idx == m_iBodyClue && playerId == GuestId(gm))
 			Seen(gm, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seen first: the host at the farm gate is next (ObjThen).
+	override protected bool ObjFirstDone()
+	{
+		return m_bSeen;
 	}
 
 	//------------------------------------------------------------------------------------------------
