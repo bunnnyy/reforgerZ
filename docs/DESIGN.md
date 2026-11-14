@@ -1295,7 +1295,10 @@ more, and routes are straight lines. The family's people stand where they're spa
 the host and the injured man vanish when they go home. The jar looks like an MRE (Metabolism's
 mesh). The supper sign is the base game's chalkboard (its words are its prompt). The dead taken at
 dawn are the deaths the house hears of (the infected's, a wanderer's), not any body on the map.
-Nobody new is taken because of the reach.
+Nobody new is taken because of the reach, so the wanderers' good word doesn't take more of them
+than the takings above. Not built: their jars in the Haven kitchens' stock, and laying the farm out
+by hand with the site builder (it's laid out by code, near players only). The injured man needs a
+road (a map without a road network never shows him).
 
 ## Haven safehouses
 

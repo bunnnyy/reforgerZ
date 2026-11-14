@@ -54,6 +54,16 @@ class RZT_Table
 	}
 }
 
+// The host's meeting counts against the unasked-contact gap: the test clears it before the boy and
+// the injured man (in play they wait the gap, as they should)
+modded class RZ_NoticeLanes
+{
+	void RZT_ClearContact(int playerId)
+	{
+		m_mLastContact.Remove(playerId);
+	}
+}
+
 modded class RZ_LongTableReach
 {
 	//------------------------------------------------------------------------------------------------
@@ -68,7 +78,13 @@ modded class RZ_LongTableReach
 	void RZT_Harvest() { m_S.m_iHarvestDay = 1; m_bHarvestDone = false; }
 	void RZT_Mark() { m_iMarkUnix = 0; TryDoorMark(); }
 	bool RZT_Marked() { return m_iMarkUnix != 0; }
-	void RZT_ClearMet() { m_aMetBoy.Clear(); m_aMetInjured.Clear(); }
+	void RZT_ClearMet()
+	{
+		m_aMetBoy.Clear();
+		m_aMetInjured.Clear();
+		if (RZ_NoticeLanes.Get())
+			RZ_NoticeLanes.Get().RZT_ClearContact(RZT_Fake.ID);
+	}
 }
 
 modded class RZ_LongTable
