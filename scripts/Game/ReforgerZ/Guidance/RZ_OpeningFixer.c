@@ -89,6 +89,7 @@ class RZ_FixerVisit
 	IEntity m_Contact;			// weak: the opening's contact, asked first
 	string m_sContact;
 	string m_sContactTitle;
+	IEntity m_Me;				// weak: the player's character (refreshed each tick)
 	IEntity m_Ferda;			// weak
 	ref array<IEntity> m_aCrew = {};
 	IEntity m_Neighbour;		// weak: the man you warn, after a sale
@@ -398,6 +399,7 @@ class RZ_OpeningFixer
 			return false;
 		}
 
+		v.m_Me = me;
 		RZ_Shared shared = m_GM.GetShared();
 		vector at = RZ_Mission.LandPointNear(me.GetOrigin(), SPOT_MIN, SPOT_MAX);
 		v.m_Ferda = SpawnMan(ManPrefab(v.m_iId * 3), at, me.GetOrigin(), shared);
@@ -467,11 +469,10 @@ class RZ_OpeningFixer
 	{
 		DropStep(v);
 		RZ_Errands errands = m_GM.GetErrands();
-		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(v.m_iPlayer);
-		if (!errands || !errands.IsOn() || !me)
+		if (!errands || !errands.IsOn() || !v.m_Me)
 			return;
 
-		RZ_Errand e = errands.Hand(d, v.m_iPlayer, "fixer:" + v.m_iId.ToString(), giverName, giverName, faction, place, place, placeText, me);
+		RZ_Errand e = errands.Hand(d, v.m_iPlayer, "fixer:" + v.m_iId.ToString(), giverName, giverName, faction, place, place, placeText, v.m_Me);
 		if (!e)
 			return;
 
@@ -529,7 +530,7 @@ class RZ_OpeningFixer
 	//! The street's next job, or stand with it once all three are done.
 	protected void NextJob(RZ_FixerVisit v)
 	{
-		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(v.m_iPlayer);
+		IEntity me = v.m_Me;
 		if (!me)
 			return;
 
@@ -1007,6 +1008,7 @@ class RZ_OpeningFixer
 		}
 
 		IEntity me = players[idx];
+		v.m_Me = me;
 		if (v.m_iPhase == PHASE_WAIT)
 		{
 			// The clock runs while you're back in the street; on the way, he meets you at the latest

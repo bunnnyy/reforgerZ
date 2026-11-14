@@ -645,6 +645,10 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 12 && !RZT_Line.Tick(this))
 			return;
 
+		// The opening's fixer (RZT_Ferda.c): Ferda comes for the case; each way through him; his note
+		if (m_iRZTSec >= 12 && !RZT_Ferda.Tick(this, m_aRZTRoute[0]))
+			return;
+
 		if (m_iRZTSec > 5 && m_iRZTSec % 3 == 0 && !m_bRZTMissionsDone)
 		{
 			if (!GetMissions().RZT_Step())
