@@ -103,7 +103,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	static const int CMD_TRACES = 11;	// /traces (admins): the door marks near you, to the server log (World/Traces)
 	static const int CMD_FOG = 13;		// /fog (admins): the map's fog read-out; "all" clears your map, "reset" fogs it again (World/RZ_MapFog.c)
 	static const int CMD_SITES = 12;	// /sites (admins, game masters): the site builder (World/HandBuilt/RZ_SiteBuilder.c)
-	static const int CMD_COUNT = 13;	// one more than the last CMD_*: the table of when each was last asked (a command past it was dropped unheard)
+	static const int CMD_LEVEL = 14;	// /level [0-3] (admins): your guidance level, set from your next life (Guidance/RZ_Guidance.c)
+	static const int CMD_COUNT = 15;	// one more than the last CMD_*: the table of when each was last asked (a command past it was dropped unheard)
 
 	//------------------------------------------------------------------------------------------------
 	//! The local player's component (client), or null.
@@ -1075,6 +1076,12 @@ class RZ_PlayerUIComponent : ScriptComponent
 			{
 				if (gm.GetMapFog())
 					gm.GetMapFog().Command(playerId, note);
+				break;
+			}
+			case CMD_LEVEL:
+			{
+				if (gm.GetGuidance())
+					gm.GetGuidance().Command(playerId, note);
 				break;
 			}
 			case CMD_MYDEAD:

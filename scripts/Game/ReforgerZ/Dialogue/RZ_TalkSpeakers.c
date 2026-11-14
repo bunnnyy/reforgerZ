@@ -190,6 +190,7 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	static const int DUTY_ROW = 37;			// the duty a giver offers beside their pressing errand (RZ_Errands.TalkDuty)
 	static const int ADMIN_TALKRESET = 36;	// /talkdebug reset: this person's scenes undecided again
 	static const int ADMIN_SITES = 38;		// /sites: the site builder (World/HandBuilt/RZ_SiteBuilder.c)
+	static const int ADMIN_LEVEL = 40;		// /level next: your guidance level one on, 3 back to 0, from your next life (Guidance/RZ_Guidance.c)
 	static const int ADMIN_FOG = 39;		// /fog all or /fog reset: your whole map clear, or fogged again if it is (World/RZ_MapFog.c)
 
 	protected IEntity m_Owner;
@@ -570,6 +571,12 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 
 		if (gm.GetMapFog() && gm.GetMapFog().IsOn())
 			replies.Insert(AdminReply(ADMIN_FOG, "[Admin] Clear my map's fog (again: fog it)"));
+
+		if (gm.GetGuidance())
+		{
+			int level = gm.GetGuidance().GetPlayerLevel(playerId);
+			replies.Insert(AdminReply(ADMIN_LEVEL, string.Format("[Admin] My guidance level: %1 (pick: %2 from next life)", level, (level + 1) % 4)));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -750,7 +757,7 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	//! The admin replies (none of them changes the game). True if replyId was one.
 	protected bool PickAdmin(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
 	{
-		if (replyId != ADMIN_TREES && replyId != ADMIN_TRIBES && replyId != ADMIN_REP && replyId != ADMIN_TRACES && replyId != ADMIN_TALKTEST && replyId != ADMIN_TALKRESET && replyId != ADMIN_SITES && replyId != ADMIN_FOG)
+		if (replyId != ADMIN_TREES && replyId != ADMIN_TRIBES && replyId != ADMIN_REP && replyId != ADMIN_TRACES && replyId != ADMIN_TALKTEST && replyId != ADMIN_TALKRESET && replyId != ADMIN_SITES && replyId != ADMIN_FOG && replyId != ADMIN_LEVEL)
 			return false;
 
 		if (!RZ_NoticeBoard.IsAdmin(playerId))
@@ -772,6 +779,8 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 			RZ_SiteBuilder.Open(playerId);
 		else if (replyId == ADMIN_FOG && gm.GetMapFog())
 			gm.GetMapFog().Command(playerId, "toggle");
+		else if (replyId == ADMIN_LEVEL && gm.GetGuidance())
+			gm.GetGuidance().Command(playerId, "next");
 
 		return true;
 	}

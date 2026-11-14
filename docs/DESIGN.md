@@ -3721,7 +3721,7 @@ Warm, it still counts; the station says so.
 
 | At | The reply | What happens |
 |---|---|---|
-| Halcyon's people | **[Errand] Hand over the runner's case** | The director (else whoever stands for him): where you got it, and that the date on the tag is a filing error you'd do well to forget. +10 Halcyon Fame (small). You take part in **Proof** for this character (`RZ_QuestRun.Did`). The season's first live case is banked as live tissue for Halcyon's route ([FINALE.md](FINALE.md#live-tissue)); a later one is an ordinary sample; a player's second this season counts for nothing. Before 25% cure, **The Date on the Tag** |
+| Halcyon's people | **[Errand] Hand over the runner's case** | The director (else whoever stands for him): where you got it, and that the date on the tag is a filing error you'd do well to forget (said once: by The Date on the Tag when it comes next, else by him). +10 Halcyon Fame (small). You take part in **Proof** for this character (`RZ_QuestRun.Did`). The season's first live case is banked as live tissue for Halcyon's route ([FINALE.md](FINALE.md#live-tissue)); a later one is an ordinary sample; a player's second this season counts for nothing. Before 25% cure, **The Date on the Tag** |
 | The Red Hand's | **[Trade] Sell the runner's case** (not while Ferda is on his way or in the street: he's the buyer, [below](#the-fixer)) | +15 Red Hand Favor, +5 Halcyon Infamy. Halcyon's field lead hands you **Get It Back** |
 | Bastion's | **[Errand] Hand the runner's case in** | "Then it's evidence." +5 Bastion Fame (small). Halcyon's field lead hands you **The Case at the Post** |
 
@@ -3831,6 +3831,9 @@ never disappears.
 | 3, veteran | 8+ | The floor: an opening's one-line read, step 1 and The Runner (always with someone at the door), the open channels (every 42 min), and critical tips as one short line |
 
 A player who comes back after 30+ real days gets two levels more guidance for two lives.
+For play-tests, a server admin's `/level 0` to `/level 3` (or the talk screen's **[Admin] My guidance
+level** row, which steps it on) sets their own level from their next life: their counted lives become
+that level's first, the refresher is cleared and the life they're in doesn't count.
 The [opening](#openings-how-every-life-starts) sets its chain by level; the wanderer who comes
 looking is for a brand-new life with nobody outside.
 

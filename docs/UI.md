@@ -217,7 +217,9 @@ are play-test aids; the status log prints the summary anyway: [INFECTED.md](INFE
 (server admins) writes the door marks near you to the server log, with `town`, `write` and `clear`
 as play-test aids ([TRACES.md](TRACES.md#admin-saving-and-the-log)); `/sites` (server admins and
 game masters) opens the site builder ([SITES.md](SITES.md#hand-built-sites)); `/fog` (server admins)
-reads the map's fog, `/fog all` clears your map and `/fog reset` fogs it again ([The map's fog](#the-maps-fog)); `/mydead
+reads the map's fog, `/fog all` clears your map and `/fog reset` fogs it again ([The map's fog](#the-maps-fog)); `/level`
+(server admins, for play-tests) reads your guidance level and `/level 0` to `/level 3` sets it from your next life
+([DESIGN.md](DESIGN.md#experience-levels)); `/mydead
 hidden` or `/mydead shown` keeps your name out of public text if you die out there
 ([INFECTED.md](INFECTED.md#your-dead-run)). They work without any layout. With **Board menus** off,
 reading the board is a notice and notes are written with `/note` only.

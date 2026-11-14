@@ -639,6 +639,9 @@ class RZ_OpeningCase
 	//! this character, the tissue, and before 25% cure The Date on the Tag.
 	protected void ToHalcyon(RZ_TalkSession s, int playerId, IEntity user, bool warm, bool director)
 	{
+		// The Date on the Tag comes next: its own first line says the date's a filing error
+		RZ_CureResearch cure = m_GM.GetCure();
+		bool dateNext = cure && cure.ShownProgress() < CURE_DATE;
 		if (director)
 		{
 			if (warm)
@@ -646,7 +649,8 @@ class RZ_OpeningCase
 			else
 				s.m_aNew.Insert("Where did you get this? No. Don't tell me. It's alive, and it's cold, and that's all I need to know.");
 
-			s.m_aNew.Insert("The date on the tag is a filing error. I'd be grateful if you forgot you read it.");
+			if (!dateNext)
+				s.m_aNew.Insert("The date on the tag is a filing error. I'd be grateful if you forgot you read it.");
 		}
 		else
 		{
@@ -665,8 +669,7 @@ class RZ_OpeningCase
 		if (run)
 			run.Did(m_GM, playerId, RZ_EQuestApproach.TALK, "brought the runner's case in");
 
-		RZ_CureResearch cure = m_GM.GetCure();
-		if (cure && cure.ShownProgress() < CURE_DATE)
+		if (dateNext)
 			OpenDate(playerId, user, s.m_sName);
 	}
 
