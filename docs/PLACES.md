@@ -144,7 +144,9 @@ or way isn't offered here.
 | `opening.keys` | the locked building near the giver, and its key | BUILDING(any/6) | SLOT the key (not offered) | The Station Keys |
 | `opening.sample` | what's left of a big one by the road, and the sample by it | ROAD(12) NOT_STEEP(25) NOT_LOCKED | REMAINS within 4 m, ITEM the sample within 4 m (either slot empty: not offered) | A Sample |
 | `opening.sample.yard` | what's left of a big one in a yard down the road, and the sample by it | HOUSES(1/20) NOT_STEEP(25) NOT_LOCKED | the same | A Sample, with no road near |
-| `opening.runner` | the runner, fallen by the road, and the case he carried | ROAD(15) NOT_STEEP(25) NOT_LOCKED | REMAINS the runner within 4 m [Puzzles > Civilian], ITEM the case within 4 m [Guidance > Cold case] (either empty: not offered) | The Runner (the opening's step 3, [DESIGN.md](DESIGN.md#the-case)) |
+| `opening.line` | the road above the line, where you watch it with him | ROAD(10) NOT_STEEP(20) | | The line (the opening's step 3, [DESIGN.md](DESIGN.md#the-line)): a viewpoint 150-250 m outside the warning zone, 600 m to 2 km off |
+| `opening.line.open` | the rise above the line, where you watch it with him (a world with no road network) | NOT_STEEP(20) | | The line, in a world with no road network |
+| `opening.runner` | the runner, fallen by the road, and the case he carried | ROAD(15) NOT_STEEP(25) NOT_LOCKED | REMAINS the runner within 4 m [Puzzles > Civilian], ITEM the case within 4 m [Guidance > Cold case] (either empty: not offered) | The Runner (the opening's step 4, the line's short form, [DESIGN.md](DESIGN.md#the-case)) |
 | `opening.runner.yard` | the runner, fallen in a yard on the edge of town, and the case he carried | HOUSES(1/25) NOT_STEEP(25) NOT_LOCKED | the same | The Runner, with no road near |
 | `opening.gate` | the gate | NOT_STEEP(30) | | Hold the Gate |
 | `opening.debt` | the house with the owing in it | HOUSES(1/15) | | The Debt |

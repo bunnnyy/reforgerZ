@@ -8,7 +8,7 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 
 | # | Design | What | Status |
 |---|---|---|---|
-| 1 | [OPENING.md](OPENING.md) | The opening rebuilt as five beats (the door, the favour, the line, the Halcyon case, the Red Hand fixer) that lead into Proof | approved 2026-11-14; steps 1 and 2 of 5 built (the case and Proof's door; the door's question, the habits and the favours), the rest waits |
+| 1 | [OPENING.md](OPENING.md) | The opening rebuilt as five beats (the door, the favour, the line, the Halcyon case, the Red Hand fixer) that lead into Proof | approved 2026-11-14; beats 1-4 built (the door, the favour, the line, the case), the fixer and the shorter forms wait |
 | 2 | [PERSISTENCE.md](PERSISTENCE.md) | A character lasts across deaths until reset: quests, reputation and quest items kept, loot lost, coming round at the nearest camp that takes you in | approved 2026-11-14, not started; the rest assume it |
 | 3 | [TONIGHT.md](TONIGHT.md) | Three true things near you at every respawn and join | approved 2026-11-14 |
 | 4 | [HABITS.md](HABITS.md) | Eight small habits earned by doing, three at a time, fading if unused | approved 2026-11-14 |

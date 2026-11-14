@@ -3,9 +3,10 @@
 **Designed, not built** (the rest of it). Approved by the author on 2026-11-14 (hook B, the case;
 the fixer is Red Hand). **Built:** beat 1 (the door asks who you were, a habit), beat 2 (the favour by
 background and its other way: [DESIGN.md](../docs/DESIGN.md#openings-how-every-life-starts),
-[habits](../docs/DESIGN.md#habits)) and beat 4's case and the main story's door: the runner, the case,
-its lead and its hand-overs, Proof's door ([DESIGN.md](../docs/DESIGN.md#the-case)). What follows is
-what waits: beat 3 (the line), beat 5 (the fixer) and the shorter forms.
+[habits](../docs/DESIGN.md#habits)), beat 3 (the line and its short form:
+[DESIGN.md](../docs/DESIGN.md#the-line)) and beat 4's case and the main story's door: the runner, the
+case, its lead and its hand-overs, Proof's door ([DESIGN.md](../docs/DESIGN.md#the-case)). What follows
+is what waits: beat 5 (the fixer) and the rest of the shorter forms.
 
 The author's ask: the start should guide you into what's happening, one reason after another, and
 end by putting you on the main story. It takes the structure of a good RPG opening (a personal hook,
@@ -22,24 +23,11 @@ hand-overs by reply, one objective per step, the next step said in words.
 |---|---|---|---|
 | 1 | **The door** | Built ([DESIGN.md](../docs/DESIGN.md#openings-how-every-life-starts)) | the talk screen, the tracker, replies |
 | 2 | **The favour** | Built ([DESIGN.md](../docs/DESIGN.md#openings-how-every-life-starts)) | searching, stealth, door marks, the infected, your background's own skill |
-| 3 | **The line** | Favour done, he wants out. You go with him toward the line. The loudspeakers, then a drone. Ahead, a man with a pack runs for it and is shot by snipers nobody sees, at a distance. Then quiet | the perimeter, the season's premise: nobody gets out |
-| 4 | **The case** | Built ([DESIGN.md](../docs/DESIGN.md#the-case)): today the runner is already down when you get there; once beat 3 is built he falls in front of you | the main story's thing, the factions by name |
+| 3 | **The line** | Built ([DESIGN.md](../docs/DESIGN.md#the-line)) | the perimeter, the season's premise: nobody gets out |
+| 4 | **The case** | Built ([DESIGN.md](../docs/DESIGN.md#the-case)) | the main story's thing, the factions by name |
 | 5 | **The fixer comes to town** | Back in town, a Red Hand crew is asking who picked it up. You pick a side, several ways (below) | sides, standing, grey choices, the town's people |
 
 Then the lead to the station and the main story: built ([DESIGN.md](../docs/DESIGN.md#the-case)).
-
-## Beat 3: the line
-
-- **Where:** the opening's start is rolled with a viewpoint on the line in reach: a spot 150 to 250 m
-  outside the perimeter's warning zone, on a road, 600 m to 2 km from the start (added to the start's
-  place rules; a start with none falls back to beat 3's short form below).
-- **The scene:** the contact stops at the viewpoint. The loudspeakers start; a drone passes. A runner
-  (a spawned body with a pack) breaks from cover 100 m ahead and runs at the line; the perimeter's
-  unseen snipers kill him in the warning zone. The player is never the target and never inside the
-  zone; the scene ends if the player walks toward the line (the perimeter's own warnings as built).
-- **The line:** the contact, after a while: *"Eleven days. They said aid was coming."*
-- **Short form** (no viewpoint, a veteran, or a crowded server): the shot is heard, the runner is
-  found already down at the edge of town, and the broadcast says the rest.
 
 ## Beat 5: the fixer
 
@@ -69,8 +57,8 @@ He never hunts a player (no spawned squad follows you); he turns up where the Re
 | Level | The opening |
 |---|---|
 | 1, learning | All five beats |
-| 2, familiar | The door (no questions), the favour, the line's short form, the case, Ferda as one visit |
-| 3, veteran | The door, the line's short form, the case, Ferda's note on the door; about 5 minutes |
+| 2, familiar | The door (no questions), the favour, the line's short form (built), the case, Ferda as one visit |
+| 3, veteran | The door, the line's short form (built), the case, Ferda's note on the door; about 5 minutes |
 
 ## Many players
 
@@ -90,7 +78,8 @@ and its participation by life, the finale's live tissue, the tracker.
    on the Tag, Get It Back, The Case at the Post).
 2. Built: beats 1 and 2, the questions, the habits, the favours by background with their ways
    through (`RZT_Favour.c` checks them).
-3. Beat 3: the viewpoint in the start's rules, the runner, the short form.
+3. Built: beat 3, the viewpoint, the runner shot in the warning zone, the short form (`RZT_Line.c`
+   checks it).
 4. Beat 5: Ferda's visit and its five ways; his later turns.
 5. The shorter forms and the server checks (a fresh life reaches the case; each favour's thing is
    there; each way through Ferda ends). The case's own check is built (`RZT_Case.c`).

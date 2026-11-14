@@ -31,7 +31,8 @@ enum RZ_EOpeningStage
 	LEAD,		// the last step with nobody outside (or no case): to the nearest place with work
 	CASE,		// the chain's end: the runner and Halcyon's cold case (RZ_OpeningCase), then the lead to the station
 	FAVOUR,		// beat 2: the contact's favour, one named thing fetched (or your background's way through it)
-	GIVE		// and handed over to him, by a reply (skipped when your background's way settled it)
+	GIVE,		// and handed over to him, by a reply (skipped when your background's way settled it)
+	LINE		// beat 3: walk with him to the road above the line and watch it (RZ_OpeningLine); the runner falls there
 }
 
 //------------------------------------------------------------------------------------------------
@@ -104,6 +105,8 @@ class RZ_Opening
 	bool m_bWayTaken;			// your background's way through it was taken (no hand-over then)
 	bool m_bHabitAsked;			// beat 1: the question was put (the habit replies show till one's picked)
 	bool m_bHabitPicked;
+	ref RZ_LineScene m_Line;	// beat 3, the line, while it runs (null: not yet, or its short form)
+	bool m_bLineShort;			// the line's short form: the runner is found already down
 	int m_iRemarks;				// the walking contact's remarks said (bits: 1 a door mark, 2 an infected, 4 a locked door, 8 the broadcast)
 	float m_fWalkFrom;			// when they started walking with you
 	int m_iErrand = -1;			// the current step's errand id
@@ -137,6 +140,7 @@ class RZ_Openings
 	protected static const float CONTACT_OUT = 6;		// the contact stands this far out of the door
 	protected static const float NEXT_STEP_DELAY = 4;
 	protected static const float ASK_AGAIN = 120;		// called again once, this long into a wait or into step 1
+	protected static const float LINE_THERE = 25;		// at the road above the line: you this close to it (he within 10 m more)
 	protected static const float CONTACT_GONE = 150;	// the contact goes once nobody is this close (the walk, or over)
 	protected static const float CONTACT_MAX = 2700;	// and once the opening is 45 minutes old, with nobody within 50 m
 	protected static const float SEARCH_MIN = 150;		// step 1's house: this far from the contact...
@@ -508,6 +512,7 @@ class RZ_Openings
 			o.m_iFavour = RZ_OpeningFavours.For(o.m_sBackground);
 			o.m_aPlan.Insert(RZ_EOpeningStage.FAVOUR);
 			o.m_aPlan.Insert(RZ_EOpeningStage.GIVE);
+			o.m_aPlan.Insert(RZ_EOpeningStage.LINE);
 			o.m_aPlan.Insert(RZ_EOpeningStage.CASE);
 		}
 
@@ -950,6 +955,13 @@ class RZ_Openings
 		if (!e || e.m_eState == RZ_EErrandState.DONE)
 		{
 			Lapsed(o);
+			return;
+		}
+
+		// The line: its walk (the marker on him as he leads) and its scene
+		if (Stage(o) == RZ_EOpeningStage.LINE && o.m_Line && !o.m_bWaitTalk)
+		{
+			TickLine(o, me, e);
 			return;
 		}
 
@@ -1484,7 +1496,36 @@ class RZ_Openings
 		string placeText;
 		int faction = RZ_EFaction.SURVIVORS;
 		int step = 1;
-		if (stage == RZ_EOpeningStage.CASE)
+		if (stage == RZ_EOpeningStage.LINE)
+		{
+			step = 3;
+			if (!o.m_Line && !StartLine(o, giverAt))
+			{
+				// The short form: no scene; the runner is found already down (the case's own place)
+				o.m_iStage++;
+				StartStage(o, me, tree, beat, sayNow);
+				return;
+			}
+
+			place = o.m_Line.m_vView;
+			placeText = "the road above the line, " + RZ_Util.DirectionText(giverAt, place);
+			d = m_Chain.m_LineWalk;
+			if (o.m_Line.m_iPhase != RZ_LineScene.WALK)
+			{
+				d = m_Chain.m_LineWatch;
+				placeText = "the road above the line";
+			}
+		}
+		else if (stage == RZ_EOpeningStage.CASE && o.m_Line && o.m_Line.m_Body && m_Case.CanRun(giverAt))
+		{
+			// After the line: the man you saw shot, where he fell
+			step = 3;
+			d = m_Chain.m_CaseSeen;
+			faction = RZ_EFaction.INSTITUTE;
+			place = RZ_Util.GroundPos(o.m_Line.m_Body.GetOrigin());
+			placeText = "on the road below, where he fell";
+		}
+		else if (stage == RZ_EOpeningStage.CASE)
 		{
 			if (!m_Case.CanRun(giverAt) || !m_Case.RunnerPlace(giverAt, place, placeText))
 			{
@@ -1685,14 +1726,137 @@ class RZ_Openings
 		o.m_iErrand = e.m_iId;
 		if (stage == RZ_EOpeningStage.TASK)
 			m_Tasks.Start(o, me, e);
+		else if (stage == RZ_EOpeningStage.CASE && d == m_Chain.m_CaseSeen)
+		{
+			m_Case.SpawnCaseBy(e.m_vPlace, o.m_iPlayer);
+			o.m_Remains = o.m_Line.m_Body;
+		}
 		else if (stage == RZ_EOpeningStage.CASE)
+		{
 			o.m_Remains = m_Case.SpawnRunner(e.m_vPlace, o.m_iPlayer);
+			if (o.m_bLineShort)
+				HeardShot(o, e.m_vPlace);
+		}
+
 
 		RZ_UIFeed feed = m_GM.GetUIFeed();
 		if (feed && feed.GetTracker())
 			feed.GetTracker().Follow(o.m_iPlayer, -(RZ_UIFeed.ERRAND_ID_BASE + e.m_iId), e.Fill(d.m_sTitle));
 
 		RZ_Log.Info(string.Format("Openings: %1 step %2 (%3) for %4, %5", o.m_sName, step, d.m_sKey, RZ_Util.PlayerName(o.m_iPlayer), RZ_Util.DirectionText(me.GetOrigin(), place)));
+	}
+
+	// ================================================================ Beat 3: the line
+	//------------------------------------------------------------------------------------------------
+	//! The line's scene for this opening (RZ_OpeningLine): a road above it in reach, the runner's
+	//! body set, a learning player and no crowd there. False: the short form (logged), and the runner
+	//! is found already down.
+	protected bool StartLine(RZ_Opening o, vector giverAt)
+	{
+		string why;
+		vector view;
+		vector breakAt;
+		vector fall;
+		vector away;
+		if (o.m_iLevel >= 2)
+			why = "a familiar player";
+		else if (m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN).IsEmpty())
+			why = "no runner's body (Puzzles > Civilian)";
+		else if (!RZ_OpeningLine.FindViewpoint(m_GM, giverAt, view, breakAt, fall, away))
+			why = "no road above the line in reach: " + RZ_OpeningLine.s_sWhy;
+		else if (RZ_OpeningLine.Crowded(view, o.m_iPlayer, m_aIds, m_aPlayers))
+			why = "other players near the line";
+
+		if (!why.IsEmpty())
+		{
+			o.m_bLineShort = true;
+			RZ_Log.Info(string.Format("Openings: the line's short form for %1 at %2 (%3): the runner is found already down", RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(giverAt), why));
+			return false;
+		}
+
+		RZ_LineScene sc = new RZ_LineScene();
+		sc.m_vView = view;
+		sc.m_vBreak = breakAt;
+		sc.m_vFall = fall;
+		sc.m_vOut = away;
+		sc.m_iPlayer = o.m_iPlayer;
+		o.m_Line = sc;
+		// He leads the way there (the marker rides on him: TickLine)
+		if (o.m_Escort && !o.m_Escort.IsDead())
+		{
+			o.m_Escort.m_eState = RZ_EEscortState.WAITING;
+			o.m_Escort.SetDestination(view);
+			o.m_Escort.Go();
+		}
+
+		RZ_Log.Info(string.Format("Openings: the line for %1: the road above it at %2, %3 m off; the runner breaks at %4", RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(view), RZ_Util.RoundToInt(RZ_Util.DistXZ(giverAt, view)), RZ_SettlementScanner.GridReference(breakAt)));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! While the line's step runs: the walk there (done when you and he are both at the road above
+	//! it), then the scene (done when it's over). Never by standing anywhere (StepCounts).
+	protected void TickLine(RZ_Opening o, IEntity me, RZ_Errand e)
+	{
+		RZ_LineScene sc = o.m_Line;
+		RZ_Errands errands = m_GM.GetErrands();
+		if (sc.m_iPhase == RZ_LineScene.WALK)
+		{
+			if (o.m_Contact)
+				e.m_vPlace = o.m_Contact.GetOrigin();
+
+			bool there = RZ_Util.DistXZ(me.GetOrigin(), sc.m_vView) <= LINE_THERE;
+			bool his = !o.m_Escort || o.m_Escort.IsDead() || o.m_Escort.IsNear(sc.m_vView, LINE_THERE + 10);
+			if (there && his)
+			{
+				sc.m_iPhase = RZ_LineScene.WAIT;
+				sc.m_fAt = 0;
+				RZ_Log.Info(string.Format("Openings: the line for %1: at the road above it", RZ_Util.PlayerName(o.m_iPlayer)));
+				errands.FinishNow(e, me);
+			}
+
+			return;
+		}
+
+		e.m_vPlace = sc.m_vView;
+		RZ_OpeningLine.Tick(m_GM, sc, o.m_Contact, o.m_sSpeaker, m_Settings.m_sCompanionPrefab, POLL, m_aIds, m_aPlayers);
+		if (sc.m_iPhase == RZ_LineScene.OVER)
+			errands.FinishNow(e, me);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The line's step is done: the walk (the watch is handed a moment later, where you stand), or
+	//! the scene (he walks with you again, and on to the runner).
+	protected void LineStepDone(RZ_Opening o)
+	{
+		RZ_LineScene sc = o.m_Line;
+		if (sc && sc.m_iPhase != RZ_LineScene.OVER)
+		{
+			o.m_bNext = true;
+			o.m_fNextAt = m_fClock + 1;
+			return;
+		}
+
+		if (o.m_Escort && !o.m_Escort.IsDead())
+		{
+			o.m_Escort.m_eState = RZ_EEscortState.WAITING;
+			o.m_Escort.Follow(o.m_iPlayer);
+			o.m_Escort.Go();
+		}
+
+		Next(o);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The line's short form: the shot is heard from where he fell, and the contact says what it was.
+	protected void HeardShot(RZ_Opening o, vector at)
+	{
+		RZ_Perimeter perimeter = m_GM.GetPerimeter();
+		if (perimeter && perimeter.IsActive())
+			perimeter.SpawnEffect(at);
+
+		if (o.m_Contact)
+			m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, "That came from the line. Somebody tried it.", o.m_Contact);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1877,6 +2041,10 @@ class RZ_Openings
 			return !sd || !RZ_OpeningTasks.HandsOver(sd.m_iTask);
 		}
 
+		// The line: done by its scene (TickLine), never by being there
+		if (Stage(o) == RZ_EOpeningStage.LINE)
+			return false;
+
 		// The runner's step: done once the case is in your pack
 		if (Stage(o) == RZ_EOpeningStage.CASE)
 			return RZ_OpeningCase.Carries(me);
@@ -1919,6 +2087,12 @@ class RZ_Openings
 		if (stage == RZ_EOpeningStage.WALK)
 		{
 			Arrive(o);
+			return;
+		}
+
+		if (stage == RZ_EOpeningStage.LINE)
+		{
+			LineStepDone(o);
 			return;
 		}
 
@@ -2136,8 +2310,12 @@ class RZ_Openings
 
 		o.m_bEnded = true;
 		DropStep(o, why);
+		RZ_OpeningLine.Cleanup(o.m_Line);
 		// A Sample's remains go back to the engine's own corpse cleanup
 		RZ_OpeningTasks.KeepBody(o.m_Remains, false);
+		if (o.m_Line && o.m_Line.m_Body && o.m_Line.m_Body != o.m_Remains)
+			RZ_OpeningTasks.KeepBody(o.m_Line.m_Body, false);
+
 		o.m_Remains = null;
 		SetFlag(o, FLAG_STEP, 4);
 		SetFlag(o, FLAG_FIRST, 0);

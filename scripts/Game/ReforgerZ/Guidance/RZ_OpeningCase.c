@@ -257,6 +257,21 @@ class RZ_OpeningCase
 			RZ_OpeningTasks.KeepBody(body, true);
 		}
 
+		if (SpawnCaseBy(ground, playerId))
+		{
+			RZ_PlaceNeeds.VerifyThings("opening.runner", ground, "the runner");
+			RZ_Log.Info(string.Format("Openings: the runner and his case put out for %1 at %2", RZ_Util.PlayerName(playerId), RZ_SettlementScanner.GridReference(ground)));
+		}
+
+		return body;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The case by a runner's body (his pack spilled beside him), tagged: the line's runner where he
+	//! fell (RZ_OpeningLine), or the case's own runner (SpawnRunner). False: the prefab has no case component.
+	bool SpawnCaseBy(vector at, int playerId)
+	{
+		vector ground = RZ_Util.GroundPos(at);
 		IEntity item = RZ_Util.SpawnPrefab(CasePrefab(m_GM), RZ_Util.RandomPointInRing(ground, 0.6, 1.1) + Vector(0, 0.3, 0), Math.RandomFloat(0, 360));
 		RZ_ColdCaseComponent c = RZ_ColdCaseComponent.Of(item);
 		if (!c)
@@ -265,15 +280,14 @@ class RZ_OpeningCase
 				SCR_EntityHelper.DeleteEntityAndChildren(item);
 
 			RZ_Log.Warn("Openings: the cold case prefab has no RZ_ColdCaseComponent; no case for " + RZ_Util.PlayerName(playerId));
-			return body;
+			return false;
 		}
 
 		c.SetTag(Tag(), playerId);
 		RZ_GameModeComponent.TrackLooseItem(item);
 		m_aCases.Insert(item);
-		RZ_PlaceNeeds.VerifyThings("opening.runner", ground, "the runner");
-		RZ_Log.Info(string.Format("Openings: the runner and his case put out for %1 at %2", RZ_Util.PlayerName(playerId), RZ_SettlementScanner.GridReference(ground)));
-		return body;
+		RZ_Log.Info(string.Format("Openings: the case lies by the runner for %1 at %2", RZ_Util.PlayerName(playerId), RZ_SettlementScanner.GridReference(ground)));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

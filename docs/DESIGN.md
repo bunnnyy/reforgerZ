@@ -3314,12 +3314,12 @@ and for the first five minutes cards come at most one every 45 s; the rules and 
 
 ### Openings: how every life starts
 
-Built so far of the new opening ([designs/OPENING.md](../designs/OPENING.md)): its end, [the case](#the-case),
-which leads into Proof. Planned there: the door's questions and habits, the favours by background,
-the line and the runner's last run, and the Red Hand fixer.
+Built of the new opening ([designs/OPENING.md](../designs/OPENING.md)): the door's question and
+[habits](#habits), the favours by background, [the line](#the-line) and [the case](#the-case), which
+leads into Proof. Planned there: the Red Hand fixer and the shorter forms by level.
 
 Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningScenes.c`, `RZ_OpeningChain.c`,
-`RZ_OpeningSteps.c`, `RZ_OpeningText.c`, `Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
+`RZ_OpeningSteps.c`, `RZ_OpeningText.c`, `RZ_OpeningLine.c`, `Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
 
 Every life starts somewhere random that suits who you were, coming out of a door for a reason, and
 within a few seconds someone outside is talking to you and there is one obvious thing to do: the
@@ -3473,10 +3473,10 @@ a talk objective comes before the first step, and before a next person's step (a
 
 | Level | The chain |
 |---|---|
-| 0, brand new | The door (who you were), the favour, the runner (about 25 minutes, then the case's walk to the station); the reasons lean to the hiding place |
+| 0, brand new | The door (who you were), the favour, the line, the runner (about 30 minutes, then the case's walk to the station); the reasons lean to the hiding place |
 | 1, learning | The same |
-| 2, familiar | The same; the shorter forms are planned ([designs/OPENING.md](../designs/OPENING.md)) |
-| 3, veteran | The same, but the door asks nothing: the last character's habit carries |
+| 2, familiar | The same, but the line is its short form (the runner is found already down); the other shorter forms are planned ([designs/OPENING.md](../designs/OPENING.md)) |
+| 3, veteran | As familiar, and the door asks nothing: the last character's habit carries |
 
 Every life starts with the door's favour from the person at the door (the author's play-test as a
 veteran: nobody there and the lead tracked at once read as "the first mission is already skipped").
@@ -3494,7 +3494,8 @@ the chain is Where the Work Is alone. The steps:
 | The door | Their first talk asks who you were, in passing (*"You're steady with that bag. Still a nurse, under all that?"*), and three replies answer it; the one you pick is this character's [habit](#habits) | the talk screen, replies, the tracker | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
 | 1. The favour | Their problem, which fits your background: fetch one named thing for them from a place its words are true of (a work site's hold there, the thing standing at it), done there; or your background's own way through it (below) | searching, moving quietly, door marks, the infected, your background's own skill | |
 | 2. The hand-over | Give it to them: the [Errand] reply on their talk screen (*"Here's your battery."*), there and then; standing by them never does it. They walk with you, so it's never a walk back. Skipped when your background's way settled it | hand-overs are replies | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
-| 3. The Runner | Take the case from a runner who fell 200–600 m off, by a road or in a yard on the edge of town ([the case](#the-case)); done when it's in your pack, there. Then the lead to Halcyon's field station | the main story: the cure, Halcyon, the factions by name | The line ("That was a shot. Out by the line. Somebody tried for it.") |
+| 3. The line | Walk with them to a road above the line, then watch it with them: the loudspeakers, a drone, a man with a pack running for it and shot by snipers nobody sees ([the line](#the-line)); done when the scene is over. Its short form (no road above the line in reach, a familiar player, a crowd there): no scene, and the runner is found already down | the Perimeter: nobody gets out | "Eleven days. They said aid was coming." |
+| 4. The Runner | Take the case from the runner: the man you saw shot, where he fell, or (the short form) one who fell 200–600 m off, by a road or in a yard on the edge of town ([the case](#the-case)); done when it's in your pack, there. Then the lead to Halcyon's field station | the main story: the cure, Halcyon, the factions by name | The short form's shot: "That came from the line. Somebody tried it." |
 | (else) To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter and the cure; their send-off says who holds the place |
 
 No place here for your background's favour (nothing its words would be true of within reach): a
@@ -3581,12 +3582,63 @@ so the Unemployed's and the Drifter's favour is a sack, with no way of their own
 level wait ([designs/OPENING.md](../designs/OPENING.md)). The old step 1 (Down the Road) and step 2s
 (`RZ_OpeningSteps.c`) are out of the chain; The Fever's care step is the Nurse's and the Doctor's way.
 
+### The line
+
+Code: `Guidance/RZ_OpeningLine.c` (the scene), `Guidance/RZ_Openings.c` (the stage). The opening's
+beat 3 ([designs/OPENING.md](../designs/OPENING.md)): favour done, the contact wants out.
+
+**Where.** When the stage starts, a viewpoint is looked for from where the contact stands: a point on
+a road (the need `opening.line`, [PLACES.md](PLACES.md#the-needs)) 150–250 m outside the
+Perimeter's warning zone and 600 m to 2 km away, with dry land 100 m further toward the line (where
+the runner breaks from cover) and 15 m inside the warning zone (where he's dropped), and away from
+the sealed checkpoints (their warning radius plus 300 m). A world with no road network takes open
+ground on a ring of points instead (`opening.line.open`). On an island map the line is past the
+shore, so the runner may run on toward the water; where he falls is always land.
+
+**The short form.** No viewpoint in reach, a familiar or veteran player (level 2 and up), Puzzles >
+Civilian empty, or two other players within 800 m of the viewpoint: no scene. The runner is found
+already down (the case's own place, below) and the shot is heard from there (the Perimeter's warning
+shot effect), with the contact's *"That came from the line. Somebody tried it."*
+
+**The walk** (`opening.line.walk`, *"Walk with {giver} to the road above the line."*). The contact
+who walks with you leads the way there (the escort's route); the marker rides on him. Done when you
+are within 25 m of the viewpoint and he's within 35 m (or he's dead, or doesn't walk with you); never
+by standing anywhere else.
+
+**The watch** (`opening.line.watch`, *"Watch the line with {giver}."*), handed where you stand:
+
+| Seconds in | What happens |
+|---|---|
+| 3 | The loudspeakers (the broadcast's own words, as the Perimeter's loudspeaker), and the Perimeter's drone (Perimeter > Drone prefab) over the road ahead |
+| 12 | A man with a pack breaks from cover 100 m ahead and runs at the line: a one-man civilian group (Guidance > Companion) on the escort block, told to sprint, spawned only for you |
+| as he crosses into the warning zone | The loudspeaker at him: *"You on the road. Stop where you are. Stop now."* The drone follows him |
+| 15 m inside the warning zone | The Perimeter's shot: its effect where he is and he's killed, never in the kill zone, never at you. He's kept from the corpse cleanup until the opening ends |
+| 6 s after | Quiet, then the contact: *"Eleven days. They said aid was coming."* |
+| 6 s after that | The watch is done; the contact walks with you again, and the runner's step starts at his body |
+
+The player is never the target and is never kept out of the zone: walk toward the line and the
+Perimeter's own warnings and shots run as built. A runner who never gets a body (no Companion
+prefab, no escort room, 25 s without one) is laid down where he'd have fallen and the shot is heard
+there; one who hasn't reached the zone after 60 s is shot where he stands.
+
+**Log lines:** `Openings: the line for <player>: the road above it at <grid>, <n> m off; the runner
+breaks at <grid>`, `... at the road above it`, `the line for <player> at <grid>: the loudspeakers, a
+drone <0|1>`, `... a runner breaks from cover at <grid>`, `... the runner was shot at <grid>, <n> m
+inside the warning zone[ (stalled on the way)]`, `... the runner laid down at <grid> (<why>)`,
+`... "Eleven days. They said aid was coming." said by <speaker> (<0|1>)`, and `the line's short form
+for <player> at <grid> (<why>): the runner is found already down`, its why saying what ruled the
+road points out when none fitted.
+
+*Simplified:* the runner's case lies by him (his pack spilled), not inside his pack.
+
 ### The case
 
 Code: `Guidance/RZ_OpeningCase.c`, `Guidance/RZ_ColdCase.c`. The opening's last step and the main
 story's door: the first part of [designs/OPENING.md](../designs/OPENING.md) that's built.
 
-**The runner.** Step 3 (`opening.case`, **The Runner**) puts a dead man where he fell, 200–600 m
+**The runner.** After the line ([above](#the-line)), the runner's step (`opening.case.seen`, **The
+Runner**) is at the man you saw shot: the case lies by his body. In the line's short form (and on any
+chain without it), the step (`opening.case`) puts a dead man where he fell, 200–600 m
 from whoever gives it (as far as 1 km when nothing nearer fits): by a road, else in a yard on the edge
 of town, never in a field, the water or at the line (the needs `opening.runner` and
 `opening.runner.yard`, [PLACES.md](PLACES.md#the-needs)). He's **Puzzles > Civilian**, killed
@@ -3631,16 +3683,15 @@ warm it was (`RZ_PlayerProfile.m_bCaseHeld`), and the respawned character has it
 Whether a record is "this character's" asks one helper (`RZ_OpeningCase.CharacterStamp`), so a
 character that outlives a death changes it in one place.
 
-**Log lines:** `Openings: the runner and his case put out for <player> at <grid>`, `the case's lead
-for <player>: <place>`, `<player> handed the case over (to Halcyon|sold to the Red Hand|to Bastion,
+**Log lines:** `Openings: the runner and his case put out for <player> at <grid>`, `the case lies by the
+runner for <player> at <grid>`, `the case's lead for <player>: <place>`, `<player> handed the case over (to Halcyon|sold to the Red Hand|to Bastion,
 cold|warm)`, `the season's first live case is in: live tissue for Halcyon's route, banked`,
 `<player>'s second case this season counts for nothing`, `<stage> for <player> at <place>`,
 `<player> read the clinic's first file (The Date on the Tag)`, `<player> took the case back (...)`,
 `<player> died with the case; it's kept for the next spawn`, `the kept case given back to <player>`,
 and the finale's `live tissue, the runner's case`.
 
-*Simplified:* the runner was already dead when you came (the line's own run and the shot are
-planned); the case's tag is read in the reader, and in the pack only its fixed description shows;
+*Simplified:* in the line's short form the runner is already dead when you come; the case's tag is read in the reader, and in the pack only its fixed description shows;
 Get It Back and The Case at the Post take it from a spot inside the holding, not from a real lock-up
 or shelf; Ferda Kroupa, the Red Hand's fixer, isn't built (a Red Hand person buys it).
 
