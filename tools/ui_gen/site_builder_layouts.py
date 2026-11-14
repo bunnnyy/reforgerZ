@@ -122,7 +122,7 @@ def write(name, lines):
 
 
 # ------------------------------------------------------------------------------------ the menu
-ROWS = 12
+ROWS = 10
 SPOTS = 16
 
 
@@ -132,7 +132,10 @@ def menu():
     px = 48
     kids = [image(g, "PanelBg", 0, 0, W, H, PANEL), image(g, "PanelAccent", 0, 0, W, 4, AMBER)]
     kids.append(text(g, "Title", px, 26, 700, 44, TEXT, "SITE BUILDER", 34, COND_BOLD))
-    kids.append(text(g, "Sub", W - px - 760, 36, 760, 30, DIM, "Everon - 17 sites - 3 hand-built", 20))
+    kids.append(button(g, "CloseButton", W - px - 44, 26, 44, 44, [
+        image(g, "CloseBg", 0, 0, 44, 44, (0.106, 0.122, 0.133, 1)),
+        text(g, "CloseText", 13, 6, 30, 32, AMBER, "X", 24, BOLD)]))
+    kids.append(text(g, "Sub", W - px - 820, 36, 760, 30, DIM, "Everon - 17 sites - 3 hand-built", 20))
     # The faction tabs, each a button: its name and an underline
     tx = px
     names = ["All", "Haven", "Bastion", "Red Hand", "Halcyon"]
@@ -147,7 +150,7 @@ def menu():
     kids.append(text(g, "TabRightHint", tx + 4, 92, 40, 30, DIM, "RB", 18, BOLD))
     kids.append(image(g, "TabRule", px, 132, W - 2 * px, 2, (0.2, 0.216, 0.231, 1)))
     # The list pane
-    lx, ly, lw, lh = px, 150, 820, 660
+    lx, ly, lw, lh = px, 150, 820, 640
     list_kids = [image(g, "ListBg", 0, 0, lw, lh, PANE)]
     fx = 16
     for i, n in enumerate(["All", "Not built", "Hand-built", "Pinned"]):
@@ -159,19 +162,22 @@ def menu():
     list_kids.append(text(g, "SortText", lw - 336, lh - 34, 320, 28, DIM, "LT RT filter", 18))
     ry = 62
     for i in range(ROWS):
-        list_kids.append(button(g, "Row%d" % i, 12, ry, lw - 24, 46, [
-            image(g, "RowBg%d" % i, 0, 0, lw - 24, 46, ROW, False),
-            image(g, "RowMark%d" % i, 0, 0, 5, 46, AMBER, False),
-            text(g, "RowName%d" % i, 18, 8, 470, 32, TEXT, "Le Moule stronghold", 24, COND),
-            text(g, "RowKind%d" % i, 18 + 470, 12, 110, 26, DIM, "Haven", 18),
-            image(g, "RowStateBg%d" % i, lw - 24 - 200, 9, 190, 28, (0.267, 0.267, 0.255, 1)),
-            text(g, "RowState%d" % i, lw - 24 - 192, 11, 178, 26, TEXT, "AUTOMATED", 18, BOLD)]))
-        ry += 48
+        rw = lw - 24
+        list_kids.append(button(g, "Row%d" % i, 12, ry, rw, 52, [
+            image(g, "RowBg%d" % i, 0, 0, rw, 52, ROW, False),
+            image(g, "RowMark%d" % i, 0, 0, 5, 52, AMBER, False),
+            text(g, "RowName%d" % i, 18, 9, 470, 34, TEXT, "Le Moule stronghold", 27, COND),
+            image(g, "RowDot%d" % i, 500, 21, 10, 10, AMBER, False),
+            text(g, "RowSpots%d" % i, rw - 300, 13, 84, 28, DIM, "7/11", 21),
+            text(g, "RowHead%d" % i, 8, 20, rw - 16, 26, DIM, "THE HAVEN", 17, BOLD, False),
+            image(g, "RowStateBg%d" % i, rw - 200, 12, 190, 28, (0.267, 0.267, 0.255, 1)),
+            text(g, "RowState%d" % i, rw - 192, 14, 178, 26, TEXT, "AUTOMATED", 18, BOLD)]))
+        ry += 54
     list_kids.append(text(g, "ListMore", 16, lh - 34, 300, 28, DIM, "", 18))
     list_kids.append(text(g, "ListEmpty", 24, 80, lw - 48, 60, DIM, "No site here.", 22, visible=False))
     kids.append(frame(g, "ListPane", lx, ly, lw, lh, list_kids))
     # The detail pane
-    dx, dy, dw, dh = px + lw + 24, 150, W - 2 * px - lw - 24, 660
+    dx, dy, dw, dh = px + lw + 24, 150, W - 2 * px - lw - 24, 640
     d = [image(g, "DetailBg", 0, 0, dw, dh, (0.063, 0.07, 0.078, 1))]
     d.append(text(g, "DetailHead", 24, 20, dw - 48, 26, DIM, "THE HAVEN - STRONGHOLD", 18, BOLD))
     d.append(text(g, "DetailName", 24, 48, dw - 48, 50, TEXT, "Le Moule", 40, COND_BOLD))
@@ -180,7 +186,7 @@ def menu():
     d.append(image(g, "DetailPinBg", 336, 104, 110, 32, (0.267, 0.267, 0.255, 1), False))
     d.append(text(g, "DetailPin", 348, 107, 96, 28, TEXT, "PINNED", 20, BOLD, False))
     ky = 152
-    for i in range(3):
+    for i in range(4):
         d.append(text(g, "Key%d" % i, 24, ky, 180, 30, DIM, "Where", 22))
         d.append(text(g, "Val%d" % i, 210, ky, dw - 234, 30, TEXT, "26-54, 1.2 km NE of you", 22))
         ky += 34
@@ -189,16 +195,16 @@ def menu():
     half = (dw - 48) // 2
     for i in range(SPOTS):
         cx = 24 + (i % 2) * half
-        cy = sy + (i // 2) * 30
+        cy = sy + (i // 2) * 28
         d.append(image(g, "SpotIcon%d" % i, cx, cy + 4, 22, 22, (0.592, 0.769, 0.349, 1)))
         d.append(text(g, "Spot%d" % i, cx + 30, cy, half - 38, 30, (0.592, 0.769, 0.349, 1), "Quartermaster", 22))
-    d.append(frame(g, "SpotPicker", 24, sy + 250, dw - 48, 40, [
+    d.append(frame(g, "SpotPicker", 24, sy + 232, dw - 48, 40, [
         image(g, "SpotPickerBg", 0, 0, dw - 48, 40, (0.165, 0.176, 0.192, 1)),
         text(g, "SpotPickerLabel", 12, 7, 150, 28, DIM, "Next spot", 20),
         button(g, "SpotPrev", 170, 0, 44, 40, [text(g, "SpotPrevText", 12, 0, 30, 38, AMBER, "<", 30, BOLD)]),
         text(g, "SpotPickerType", 222, 6, dw - 48 - 290, 30, TEXT, "Wash spot", 22, BOLD),
         button(g, "SpotNext", dw - 48 - 60, 0, 44, 40, [text(g, "SpotNextText", 14, 0, 30, 38, AMBER, ">", 30, BOLD)])], visible=False))
-    d.append(text(g, "DetailNote", 24, dh - 62, dw - 48, 54, AMBER, "", 20, wrap=True))
+    d.append(text(g, "DetailNote", 24, dh - 46, dw - 48, 40, AMBER, "", 19, wrap=True))
     kids.append(frame(g, "DetailPane", dx, dy, dw, dh, d))
     # The unsaved-changes question, over the panes
     q = [image(g, "AskBg", 0, 0, 900, 260, (0.11, 0.122, 0.133, 1)), image(g, "AskAccent", 0, 0, 900, 4, AMBER),
@@ -209,7 +215,7 @@ def menu():
     kids.append(image(g, "BarRule", px, H - 112, W - 2 * px, 2, (0.2, 0.216, 0.231, 1)))
     kids.append(hlayout(g, "Prompts", px, H - 92, W - 2 * px, 44))
     kids.append(text(g, "PromptsText", px, H - 86, W - 2 * px, 32, DIM, "A GO THERE    X BUILD    Y USE    B CLOSE", 20))
-    kids.append(text(g, "Message", px, H - 40, W - 2 * px, 30, AMBER, "", 20))
+    kids.append(text(g, "Message", px, H - 146, W - 2 * px, 30, (0.592, 0.769, 0.349, 1), "", 20))
     root = frame(g, "SiteBuilderMenu", 0, 0, 0, 0, [
         image(g, "Dim", 0, 0, 0, 0, (0.031, 0.035, 0.039, 0.65)),
         frame(g, "SitePanel", -W / 2, -H / 2, W, H, kids, anchor="0.5 0.5 0.5 0.5")], anchor="0 0 1 1")

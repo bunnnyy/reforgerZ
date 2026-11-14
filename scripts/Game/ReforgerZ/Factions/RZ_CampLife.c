@@ -1965,6 +1965,27 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The building a place of this kind at pos moved into ("the town hall"), "" none known yet.
+	string BuildingNear(RZ_ECampPlace kind, vector pos)
+	{
+		foreach (RZ_CampPlace p : m_aPlaces)
+		{
+			if (p.m_eKind != kind || !p.m_Site || p.m_Site.m_bNone || RZ_Util.DistXZ(p.m_vPos, pos) > 5)
+				continue;
+
+			string what = p.m_Site.m_sWhat;
+			if (what.StartsWith("a "))
+				what = "the " + what.Substring(2, what.Length() - 2);
+			else if (what.StartsWith("an "))
+				what = "the " + what.Substring(3, what.Length() - 3);
+
+			return what;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Every site camp life lays out on this map, as the site builder lists them: the holdings, the
 	//! Haven safehouses and the road posts standing now (the audit's list).
 	void ListSites(notnull array<ref RZ_SiteEntry> result)

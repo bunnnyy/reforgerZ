@@ -102,7 +102,8 @@ modded class RZ_SiteBuilder
 		RZ_HandSpots.Types(types);
 		string type = RZ_HandSpots.Label(types[s.m_iSpotType % types.Count()]);
 		RZ_UILine headLine = new RZ_UILine("H");
-		string pay = headLine.Add(RZ_HandBuilt.Get().GetWorld()).AddInt(all.Count()).AddInt(hand).Add(buildingId).AddInt(Bit(unsaved)).AddInt(view).Add(ask).Add(s.m_sArmed).Add(type).End();
+		string pay = headLine.Add(RZ_HandBuilt.Get().GetWorld()).AddInt(all.Count()).AddInt(hand).Add(buildingId).AddInt(Bit(unsaved)).AddInt(view).Add(ask).Add(s.m_sArmed).Add(type).Add(s.m_sSaid).End();
+		s.m_sSaid = "";
 		vector me = PlayerPos(s.m_iPlayer);
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		foreach (RZ_SiteEntry e : all)
@@ -143,7 +144,11 @@ modded class RZ_SiteBuilder
 			line.Add(e.m_sId).Add(Name(e)).Add(KindText(e.m_eKind)).AddInt(e.m_eFaction).AddInt(StateOf(e));
 			line.AddInt(RZ_Util.RoundToInt(RZ_Util.DistXZ(me, e.m_vPos))).Add(RZ_Util.DirectionText(me, e.m_vPos)).Add(RZ_SettlementScanner.GridReference(e.m_vPos));
 			line.AddInt(Bit(pinned)).AddInt(building).AddInt(have).AddInt(want).AddInt(objects).Add(when);
-			line.AddInt(RZ_HandBuilt.Get().BackupCount(e.m_sId)).AddInt(Bit(e.m_eKind == RZ_ECampPlace.ROAD_POST)).AddInt(up);
+			string house = "";
+			if (gm && gm.GetCampLife())
+				house = gm.GetCampLife().BuildingNear(e.m_eKind, e.m_vPos);
+
+			line.AddInt(RZ_HandBuilt.Get().BackupCount(e.m_sId)).AddInt(Bit(e.m_eKind == RZ_ECampPlace.ROAD_POST)).AddInt(up).Add(house);
 			pay += line.End();
 		}
 

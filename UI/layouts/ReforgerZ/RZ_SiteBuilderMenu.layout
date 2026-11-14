@@ -101,16 +101,82 @@ FrameWidgetClass "{D9B053C041968B5C}" {
       Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
+    ButtonWidgetClass "{6A6472AF1AB66D8F}" {
+     Name "CloseButton"
+     Slot FrameWidgetSlot "{0EC0A1BEC7A7A10A}" {
+      Anchor 0 0 0 0
+      PositionX 1548
+      OffsetLeft 1548
+      PositionY 26
+      OffsetTop 26
+      SizeX 44
+      OffsetRight -1592
+      SizeY 44
+      OffsetBottom -70
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{F3360CEF47D09FD2}" {
+       Name "CloseButtonBox"
+       Slot ButtonWidgetSlot "{771FC552F15E30A7}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{49851BA48CD3AF1F}" {
+         Name "CloseBg"
+         Slot FrameWidgetSlot "{E8940D164550D0FF}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 44
+          OffsetRight -44
+          SizeY 44
+          OffsetBottom -44
+          Alignment 0 0
+         }
+         Color 0.011 0.0138 0.0159 1
+         Size 1 1
+        }
+        TextWidgetClass "{DA2B51AAB10372E1}" {
+         Name "CloseText"
+         Slot FrameWidgetSlot "{FE80D7A803714BBE}" {
+          Anchor 0 0 0 0
+          PositionX 13
+          OffsetLeft 13
+          PositionY 6
+          OffsetTop 6
+          SizeX 30
+          OffsetRight -43
+          SizeY 32
+          OffsetBottom -38
+          Alignment 0 0
+         }
+         Color 0.8073 0.4451 0.0421 1
+         Text "X"
+         "Font Size" 24
+         "Min Font Size" 24
+         FontProperties FontProperties "{7FE81B281784187D}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
     TextWidgetClass "{70CF64CA99568143}" {
      Name "Sub"
      Slot FrameWidgetSlot "{036384187A486D5A}" {
       Anchor 0 0 0 0
-      PositionX 832
-      OffsetLeft 832
+      PositionX 772
+      OffsetLeft 772
       PositionY 36
       OffsetTop 36
       SizeX 760
-      OffsetRight -1592
+      OffsetRight -1532
       SizeY 30
       OffsetBottom -66
       Alignment 0 0
@@ -529,8 +595,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
       OffsetTop 150
       SizeX 820
       OffsetRight -868
-      SizeY 660
-      OffsetBottom -810
+      SizeY 640
+      OffsetBottom -790
       Alignment 0 0
      }
      {
@@ -544,8 +610,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         OffsetTop 0
         SizeX 820
         OffsetRight -820
-        SizeY 660
-        OffsetBottom -660
+        SizeY 640
+        OffsetBottom -640
         Alignment 0 0
        }
        Color 0.004 0.0046 0.0052 1
@@ -821,12 +887,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 484
         OffsetLeft 484
-        PositionY 626
-        OffsetTop 626
+        PositionY 606
+        OffsetTop 606
         SizeX 320
         OffsetRight -804
         SizeY 28
-        OffsetBottom -654
+        OffsetBottom -634
         Alignment 0 0
        }
        Color 0.3232 0.3093 0.2749 1
@@ -847,8 +913,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         OffsetTop 62
         SizeX 796
         OffsetRight -808
-        SizeY 46
-        OffsetBottom -108
+        SizeY 52
+        OffsetBottom -114
         Alignment 0 0
        }
        style blank
@@ -870,8 +936,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 796
             OffsetRight -796
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -888,8 +954,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 5
             OffsetRight -5
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -902,42 +968,83 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 18
             OffsetLeft 18
-            PositionY 8
-            OffsetTop 8
+            PositionY 9
+            OffsetTop 9
             SizeX 470
             OffsetRight -488
-            SizeY 32
-            OffsetBottom -40
+            SizeY 34
+            OffsetBottom -43
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
            Text "Le Moule stronghold"
-           "Font Size" 24
-           "Min Font Size" 24
+           "Font Size" 27
+           "Min Font Size" 27
            FontProperties FontProperties "{140DD6E05FA1C690}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
            }
           }
-          TextWidgetClass "{E11FB8128C80BEEB}" {
-           Name "RowKind0"
-           Slot FrameWidgetSlot "{579B6B047DCF89C8}" {
+          ImageWidgetClass "{E0B89BBE0CC1F037}" {
+           Name "RowDot0"
+           Slot FrameWidgetSlot "{65B2C5308A0EFF74}" {
             Anchor 0 0 0 0
-            PositionX 488
-            OffsetLeft 488
-            PositionY 12
-            OffsetTop 12
-            SizeX 110
-            OffsetRight -598
-            SizeY 26
-            OffsetBottom -38
+            PositionX 500
+            OffsetLeft 500
+            PositionY 21
+            OffsetTop 21
+            SizeX 10
+            OffsetRight -510
+            SizeY 10
+            OffsetBottom -31
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.8073 0.4451 0.0421 1
+           Size 1 1
+          }
+          TextWidgetClass "{CA66B48DB4D1777D}" {
+           Name "RowSpots0"
+           Slot FrameWidgetSlot "{6BE92EFF9354BFE2}" {
+            Anchor 0 0 0 0
+            PositionX 496
+            OffsetLeft 496
+            PositionY 13
+            OffsetTop 13
+            SizeX 84
+            OffsetRight -580
+            SizeY 28
+            OffsetBottom -41
             Alignment 0 0
            }
            Color 0.3232 0.3093 0.2749 1
-           Text "Haven"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{8F1A9CED514B176C}" {
+           Text "7/11"
+           "Font Size" 21
+           "Min Font Size" 21
+           FontProperties FontProperties "{C9820D90EC8F171F}" {
             Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+          TextWidgetClass "{A99CADED83A70EF3}" {
+           Name "RowHead0"
+           Slot FrameWidgetSlot "{10298269272C969C}" {
+            Anchor 0 0 0 0
+            PositionX 8
+            OffsetLeft 8
+            PositionY 20
+            OffsetTop 20
+            SizeX 780
+            OffsetRight -788
+            SizeY 26
+            OffsetBottom -46
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.3232 0.3093 0.2749 1
+           Text "THE HAVEN"
+           "Font Size" 17
+           "Min Font Size" 17
+           FontProperties FontProperties "{00CAB0D76D0B8741}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
            }
           }
           ImageWidgetClass "{685E3CD6EF52FB7A}" {
@@ -946,12 +1053,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 596
             OffsetLeft 596
-            PositionY 9
-            OffsetTop 9
+            PositionY 12
+            OffsetTop 12
             SizeX 190
             OffsetRight -786
             SizeY 28
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.0579 0.0579 0.0529 1
@@ -963,12 +1070,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 604
             OffsetLeft 604
-            PositionY 11
-            OffsetTop 11
+            PositionY 14
+            OffsetTop 14
             SizeX 178
             OffsetRight -782
             SizeY 26
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
@@ -989,12 +1096,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 12
         OffsetLeft 12
-        PositionY 110
-        OffsetTop 110
+        PositionY 116
+        OffsetTop 116
         SizeX 796
         OffsetRight -808
-        SizeY 46
-        OffsetBottom -156
+        SizeY 52
+        OffsetBottom -168
         Alignment 0 0
        }
        style blank
@@ -1016,8 +1123,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 796
             OffsetRight -796
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1034,8 +1141,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 5
             OffsetRight -5
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1048,42 +1155,83 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 18
             OffsetLeft 18
-            PositionY 8
-            OffsetTop 8
+            PositionY 9
+            OffsetTop 9
             SizeX 470
             OffsetRight -488
-            SizeY 32
-            OffsetBottom -40
+            SizeY 34
+            OffsetBottom -43
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
            Text "Le Moule stronghold"
-           "Font Size" 24
-           "Min Font Size" 24
+           "Font Size" 27
+           "Min Font Size" 27
            FontProperties FontProperties "{B4AE46878A2CCBE6}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
            }
           }
-          TextWidgetClass "{7834FF8E322F1978}" {
-           Name "RowKind1"
-           Slot FrameWidgetSlot "{D9391A3C99FBFEB9}" {
+          ImageWidgetClass "{65EF4D20CE443A90}" {
+           Name "RowDot1"
+           Slot FrameWidgetSlot "{0746576C82F2E135}" {
             Anchor 0 0 0 0
-            PositionX 488
-            OffsetLeft 488
-            PositionY 12
-            OffsetTop 12
-            SizeX 110
-            OffsetRight -598
-            SizeY 26
-            OffsetBottom -38
+            PositionX 500
+            OffsetLeft 500
+            PositionY 21
+            OffsetTop 21
+            SizeX 10
+            OffsetRight -510
+            SizeY 10
+            OffsetBottom -31
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.8073 0.4451 0.0421 1
+           Size 1 1
+          }
+          TextWidgetClass "{D0A8886E1388516A}" {
+           Name "RowSpots1"
+           Slot FrameWidgetSlot "{3F1B4B5DA6EF1441}" {
+            Anchor 0 0 0 0
+            PositionX 496
+            OffsetLeft 496
+            PositionY 13
+            OffsetTop 13
+            SizeX 84
+            OffsetRight -580
+            SizeY 28
+            OffsetBottom -41
             Alignment 0 0
            }
            Color 0.3232 0.3093 0.2749 1
-           Text "Haven"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{436094E02162E88B}" {
+           Text "7/11"
+           "Font Size" 21
+           "Min Font Size" 21
+           FontProperties FontProperties "{4D94D4106E757329}" {
             Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+          TextWidgetClass "{006592688B28E4A8}" {
+           Name "RowHead1"
+           Slot FrameWidgetSlot "{662E325C22B76329}" {
+            Anchor 0 0 0 0
+            PositionX 8
+            OffsetLeft 8
+            PositionY 20
+            OffsetTop 20
+            SizeX 780
+            OffsetRight -788
+            SizeY 26
+            OffsetBottom -46
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.3232 0.3093 0.2749 1
+           Text "THE HAVEN"
+           "Font Size" 17
+           "Min Font Size" 17
+           FontProperties FontProperties "{EBDFA2B27391CE93}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
            }
           }
           ImageWidgetClass "{AB2BE631549D0F62}" {
@@ -1092,12 +1240,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 596
             OffsetLeft 596
-            PositionY 9
-            OffsetTop 9
+            PositionY 12
+            OffsetTop 12
             SizeX 190
             OffsetRight -786
             SizeY 28
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.0579 0.0579 0.0529 1
@@ -1109,12 +1257,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 604
             OffsetLeft 604
-            PositionY 11
-            OffsetTop 11
+            PositionY 14
+            OffsetTop 14
             SizeX 178
             OffsetRight -782
             SizeY 26
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
@@ -1135,12 +1283,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 12
         OffsetLeft 12
-        PositionY 158
-        OffsetTop 158
+        PositionY 170
+        OffsetTop 170
         SizeX 796
         OffsetRight -808
-        SizeY 46
-        OffsetBottom -204
+        SizeY 52
+        OffsetBottom -222
         Alignment 0 0
        }
        style blank
@@ -1162,8 +1310,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 796
             OffsetRight -796
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1180,8 +1328,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 5
             OffsetRight -5
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1194,42 +1342,83 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 18
             OffsetLeft 18
-            PositionY 8
-            OffsetTop 8
+            PositionY 9
+            OffsetTop 9
             SizeX 470
             OffsetRight -488
-            SizeY 32
-            OffsetBottom -40
+            SizeY 34
+            OffsetBottom -43
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
            Text "Le Moule stronghold"
-           "Font Size" 24
-           "Min Font Size" 24
+           "Font Size" 27
+           "Min Font Size" 27
            FontProperties FontProperties "{A52566B63BBEC304}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
            }
           }
-          TextWidgetClass "{00098E3F717DE0E6}" {
-           Name "RowKind2"
-           Slot FrameWidgetSlot "{7692DF95294B5951}" {
+          ImageWidgetClass "{6FFB09E303210FD8}" {
+           Name "RowDot2"
+           Slot FrameWidgetSlot "{8E6B8B8BD0B099C0}" {
             Anchor 0 0 0 0
-            PositionX 488
-            OffsetLeft 488
-            PositionY 12
-            OffsetTop 12
-            SizeX 110
-            OffsetRight -598
-            SizeY 26
-            OffsetBottom -38
+            PositionX 500
+            OffsetLeft 500
+            PositionY 21
+            OffsetTop 21
+            SizeX 10
+            OffsetRight -510
+            SizeY 10
+            OffsetBottom -31
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.8073 0.4451 0.0421 1
+           Size 1 1
+          }
+          TextWidgetClass "{AD2E29C5D49F355F}" {
+           Name "RowSpots2"
+           Slot FrameWidgetSlot "{199D4030E0FFD581}" {
+            Anchor 0 0 0 0
+            PositionX 496
+            OffsetLeft 496
+            PositionY 13
+            OffsetTop 13
+            SizeX 84
+            OffsetRight -580
+            SizeY 28
+            OffsetBottom -41
             Alignment 0 0
            }
            Color 0.3232 0.3093 0.2749 1
-           Text "Haven"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{192201525FD16DD5}" {
+           Text "7/11"
+           "Font Size" 21
+           "Min Font Size" 21
+           FontProperties FontProperties "{79C109F14B9FF0B4}" {
             Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+          TextWidgetClass "{1D63303EDD9AB75E}" {
+           Name "RowHead2"
+           Slot FrameWidgetSlot "{04433DA1BC4CFA56}" {
+            Anchor 0 0 0 0
+            PositionX 8
+            OffsetLeft 8
+            PositionY 20
+            OffsetTop 20
+            SizeX 780
+            OffsetRight -788
+            SizeY 26
+            OffsetBottom -46
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.3232 0.3093 0.2749 1
+           Text "THE HAVEN"
+           "Font Size" 17
+           "Min Font Size" 17
+           FontProperties FontProperties "{96D2B3B61091F539}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
            }
           }
           ImageWidgetClass "{C07B6B5DBA5839FE}" {
@@ -1238,12 +1427,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 596
             OffsetLeft 596
-            PositionY 9
-            OffsetTop 9
+            PositionY 12
+            OffsetTop 12
             SizeX 190
             OffsetRight -786
             SizeY 28
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.0579 0.0579 0.0529 1
@@ -1255,12 +1444,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 604
             OffsetLeft 604
-            PositionY 11
-            OffsetTop 11
+            PositionY 14
+            OffsetTop 14
             SizeX 178
             OffsetRight -782
             SizeY 26
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
@@ -1281,12 +1470,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 12
         OffsetLeft 12
-        PositionY 206
-        OffsetTop 206
+        PositionY 224
+        OffsetTop 224
         SizeX 796
         OffsetRight -808
-        SizeY 46
-        OffsetBottom -252
+        SizeY 52
+        OffsetBottom -276
         Alignment 0 0
        }
        style blank
@@ -1308,8 +1497,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 796
             OffsetRight -796
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1326,8 +1515,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 5
             OffsetRight -5
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1340,42 +1529,83 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 18
             OffsetLeft 18
-            PositionY 8
-            OffsetTop 8
+            PositionY 9
+            OffsetTop 9
             SizeX 470
             OffsetRight -488
-            SizeY 32
-            OffsetBottom -40
+            SizeY 34
+            OffsetBottom -43
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
            Text "Le Moule stronghold"
-           "Font Size" 24
-           "Min Font Size" 24
+           "Font Size" 27
+           "Min Font Size" 27
            FontProperties FontProperties "{E485AB83318163D9}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
            }
           }
-          TextWidgetClass "{AFBD60830DD4E3FD}" {
-           Name "RowKind3"
-           Slot FrameWidgetSlot "{65AF3885744A6015}" {
+          ImageWidgetClass "{39095ED461C7457D}" {
+           Name "RowDot3"
+           Slot FrameWidgetSlot "{5C2583EEEF0DE0C1}" {
             Anchor 0 0 0 0
-            PositionX 488
-            OffsetLeft 488
-            PositionY 12
-            OffsetTop 12
-            SizeX 110
-            OffsetRight -598
-            SizeY 26
-            OffsetBottom -38
+            PositionX 500
+            OffsetLeft 500
+            PositionY 21
+            OffsetTop 21
+            SizeX 10
+            OffsetRight -510
+            SizeY 10
+            OffsetBottom -31
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.8073 0.4451 0.0421 1
+           Size 1 1
+          }
+          TextWidgetClass "{3BA8E7453DDE7825}" {
+           Name "RowSpots3"
+           Slot FrameWidgetSlot "{7C6BB8F60DF4EE6E}" {
+            Anchor 0 0 0 0
+            PositionX 496
+            OffsetLeft 496
+            PositionY 13
+            OffsetTop 13
+            SizeX 84
+            OffsetRight -580
+            SizeY 28
+            OffsetBottom -41
             Alignment 0 0
            }
            Color 0.3232 0.3093 0.2749 1
-           Text "Haven"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{A3035BCE726FCFFD}" {
+           Text "7/11"
+           "Font Size" 21
+           "Min Font Size" 21
+           FontProperties FontProperties "{727FE5D107356EB0}" {
             Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+          TextWidgetClass "{59F5AE05E3D3F2A3}" {
+           Name "RowHead3"
+           Slot FrameWidgetSlot "{005DBE49EBF0D427}" {
+            Anchor 0 0 0 0
+            PositionX 8
+            OffsetLeft 8
+            PositionY 20
+            OffsetTop 20
+            SizeX 780
+            OffsetRight -788
+            SizeY 26
+            OffsetBottom -46
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.3232 0.3093 0.2749 1
+           Text "THE HAVEN"
+           "Font Size" 17
+           "Min Font Size" 17
+           FontProperties FontProperties "{D9CCD825036CF1DD}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
            }
           }
           ImageWidgetClass "{81E43205D4B530A3}" {
@@ -1384,12 +1614,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 596
             OffsetLeft 596
-            PositionY 9
-            OffsetTop 9
+            PositionY 12
+            OffsetTop 12
             SizeX 190
             OffsetRight -786
             SizeY 28
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.0579 0.0579 0.0529 1
@@ -1401,12 +1631,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 604
             OffsetLeft 604
-            PositionY 11
-            OffsetTop 11
+            PositionY 14
+            OffsetTop 14
             SizeX 178
             OffsetRight -782
             SizeY 26
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
@@ -1427,12 +1657,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 12
         OffsetLeft 12
-        PositionY 254
-        OffsetTop 254
+        PositionY 278
+        OffsetTop 278
         SizeX 796
         OffsetRight -808
-        SizeY 46
-        OffsetBottom -300
+        SizeY 52
+        OffsetBottom -330
         Alignment 0 0
        }
        style blank
@@ -1454,8 +1684,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 796
             OffsetRight -796
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1472,8 +1702,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 5
             OffsetRight -5
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1486,42 +1716,83 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 18
             OffsetLeft 18
-            PositionY 8
-            OffsetTop 8
+            PositionY 9
+            OffsetTop 9
             SizeX 470
             OffsetRight -488
-            SizeY 32
-            OffsetBottom -40
+            SizeY 34
+            OffsetBottom -43
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
            Text "Le Moule stronghold"
-           "Font Size" 24
-           "Min Font Size" 24
+           "Font Size" 27
+           "Min Font Size" 27
            FontProperties FontProperties "{15D133B8E8EB3288}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
            }
           }
-          TextWidgetClass "{12871E814F97AA3E}" {
-           Name "RowKind4"
-           Slot FrameWidgetSlot "{145CD05A8E9F6C34}" {
+          ImageWidgetClass "{9FAF43CEA3250510}" {
+           Name "RowDot4"
+           Slot FrameWidgetSlot "{B398CD8B5B6EEACD}" {
             Anchor 0 0 0 0
-            PositionX 488
-            OffsetLeft 488
-            PositionY 12
-            OffsetTop 12
-            SizeX 110
-            OffsetRight -598
-            SizeY 26
-            OffsetBottom -38
+            PositionX 500
+            OffsetLeft 500
+            PositionY 21
+            OffsetTop 21
+            SizeX 10
+            OffsetRight -510
+            SizeY 10
+            OffsetBottom -31
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.8073 0.4451 0.0421 1
+           Size 1 1
+          }
+          TextWidgetClass "{037791D1889C7889}" {
+           Name "RowSpots4"
+           Slot FrameWidgetSlot "{55BE9F0B8ABAF019}" {
+            Anchor 0 0 0 0
+            PositionX 496
+            OffsetLeft 496
+            PositionY 13
+            OffsetTop 13
+            SizeX 84
+            OffsetRight -580
+            SizeY 28
+            OffsetBottom -41
             Alignment 0 0
            }
            Color 0.3232 0.3093 0.2749 1
-           Text "Haven"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{9827812A5CBA2EEB}" {
+           Text "7/11"
+           "Font Size" 21
+           "Min Font Size" 21
+           FontProperties FontProperties "{D1C4DF2462BF0DC2}" {
             Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+          TextWidgetClass "{778357B1DF139B13}" {
+           Name "RowHead4"
+           Slot FrameWidgetSlot "{7F5FED230724F110}" {
+            Anchor 0 0 0 0
+            PositionX 8
+            OffsetLeft 8
+            PositionY 20
+            OffsetTop 20
+            SizeX 780
+            OffsetRight -788
+            SizeY 26
+            OffsetBottom -46
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.3232 0.3093 0.2749 1
+           Text "THE HAVEN"
+           "Font Size" 17
+           "Min Font Size" 17
+           FontProperties FontProperties "{A564049D8070E453}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
            }
           }
           ImageWidgetClass "{30C16817E69253AA}" {
@@ -1530,12 +1801,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 596
             OffsetLeft 596
-            PositionY 9
-            OffsetTop 9
+            PositionY 12
+            OffsetTop 12
             SizeX 190
             OffsetRight -786
             SizeY 28
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.0579 0.0579 0.0529 1
@@ -1547,12 +1818,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 604
             OffsetLeft 604
-            PositionY 11
-            OffsetTop 11
+            PositionY 14
+            OffsetTop 14
             SizeX 178
             OffsetRight -782
             SizeY 26
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
@@ -1573,12 +1844,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 12
         OffsetLeft 12
-        PositionY 302
-        OffsetTop 302
+        PositionY 332
+        OffsetTop 332
         SizeX 796
         OffsetRight -808
-        SizeY 46
-        OffsetBottom -348
+        SizeY 52
+        OffsetBottom -384
         Alignment 0 0
        }
        style blank
@@ -1600,8 +1871,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 796
             OffsetRight -796
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1618,8 +1889,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 5
             OffsetRight -5
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1632,42 +1903,83 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 18
             OffsetLeft 18
-            PositionY 8
-            OffsetTop 8
+            PositionY 9
+            OffsetTop 9
             SizeX 470
             OffsetRight -488
-            SizeY 32
-            OffsetBottom -40
+            SizeY 34
+            OffsetBottom -43
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
            Text "Le Moule stronghold"
-           "Font Size" 24
-           "Min Font Size" 24
+           "Font Size" 27
+           "Min Font Size" 27
            FontProperties FontProperties "{6576CF8831713292}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
            }
           }
-          TextWidgetClass "{C29586A1A00FF053}" {
-           Name "RowKind5"
-           Slot FrameWidgetSlot "{D633C757FA39F167}" {
+          ImageWidgetClass "{B9A0EEDF17793819}" {
+           Name "RowDot5"
+           Slot FrameWidgetSlot "{6A5C75F3772DB516}" {
             Anchor 0 0 0 0
-            PositionX 488
-            OffsetLeft 488
-            PositionY 12
-            OffsetTop 12
-            SizeX 110
-            OffsetRight -598
-            SizeY 26
-            OffsetBottom -38
+            PositionX 500
+            OffsetLeft 500
+            PositionY 21
+            OffsetTop 21
+            SizeX 10
+            OffsetRight -510
+            SizeY 10
+            OffsetBottom -31
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.8073 0.4451 0.0421 1
+           Size 1 1
+          }
+          TextWidgetClass "{96D060D681879D58}" {
+           Name "RowSpots5"
+           Slot FrameWidgetSlot "{4C8FB48186CC9874}" {
+            Anchor 0 0 0 0
+            PositionX 496
+            OffsetLeft 496
+            PositionY 13
+            OffsetTop 13
+            SizeX 84
+            OffsetRight -580
+            SizeY 28
+            OffsetBottom -41
             Alignment 0 0
            }
            Color 0.3232 0.3093 0.2749 1
-           Text "Haven"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{252623F2779F3E0B}" {
+           Text "7/11"
+           "Font Size" 21
+           "Min Font Size" 21
+           FontProperties FontProperties "{6670B2DA622D7B14}" {
             Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+          TextWidgetClass "{30B69DBE280D648F}" {
+           Name "RowHead5"
+           Slot FrameWidgetSlot "{A118B5F85339DB95}" {
+            Anchor 0 0 0 0
+            PositionX 8
+            OffsetLeft 8
+            PositionY 20
+            OffsetTop 20
+            SizeX 780
+            OffsetRight -788
+            SizeY 26
+            OffsetBottom -46
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.3232 0.3093 0.2749 1
+           Text "THE HAVEN"
+           "Font Size" 17
+           "Min Font Size" 17
+           FontProperties FontProperties "{BC596D55932FE505}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
            }
           }
           ImageWidgetClass "{D28AF110108D44CE}" {
@@ -1676,12 +1988,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 596
             OffsetLeft 596
-            PositionY 9
-            OffsetTop 9
+            PositionY 12
+            OffsetTop 12
             SizeX 190
             OffsetRight -786
             SizeY 28
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.0579 0.0579 0.0529 1
@@ -1693,12 +2005,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 604
             OffsetLeft 604
-            PositionY 11
-            OffsetTop 11
+            PositionY 14
+            OffsetTop 14
             SizeX 178
             OffsetRight -782
             SizeY 26
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
@@ -1719,12 +2031,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 12
         OffsetLeft 12
-        PositionY 350
-        OffsetTop 350
+        PositionY 386
+        OffsetTop 386
         SizeX 796
         OffsetRight -808
-        SizeY 46
-        OffsetBottom -396
+        SizeY 52
+        OffsetBottom -438
         Alignment 0 0
        }
        style blank
@@ -1746,8 +2058,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 796
             OffsetRight -796
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1764,8 +2076,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 5
             OffsetRight -5
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1778,42 +2090,83 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 18
             OffsetLeft 18
-            PositionY 8
-            OffsetTop 8
+            PositionY 9
+            OffsetTop 9
             SizeX 470
             OffsetRight -488
-            SizeY 32
-            OffsetBottom -40
+            SizeY 34
+            OffsetBottom -43
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
            Text "Le Moule stronghold"
-           "Font Size" 24
-           "Min Font Size" 24
+           "Font Size" 27
+           "Min Font Size" 27
            FontProperties FontProperties "{EC949CFB90956081}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
            }
           }
-          TextWidgetClass "{5306A71DEAD1BC7E}" {
-           Name "RowKind6"
-           Slot FrameWidgetSlot "{6CAA69B520009D14}" {
+          ImageWidgetClass "{40C0F66719F7AF6B}" {
+           Name "RowDot6"
+           Slot FrameWidgetSlot "{FBC385962FC590F4}" {
             Anchor 0 0 0 0
-            PositionX 488
-            OffsetLeft 488
-            PositionY 12
-            OffsetTop 12
-            SizeX 110
-            OffsetRight -598
-            SizeY 26
-            OffsetBottom -38
+            PositionX 500
+            OffsetLeft 500
+            PositionY 21
+            OffsetTop 21
+            SizeX 10
+            OffsetRight -510
+            SizeY 10
+            OffsetBottom -31
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.8073 0.4451 0.0421 1
+           Size 1 1
+          }
+          TextWidgetClass "{F72DAF15AD464137}" {
+           Name "RowSpots6"
+           Slot FrameWidgetSlot "{AF0B3CADEA12FD74}" {
+            Anchor 0 0 0 0
+            PositionX 496
+            OffsetLeft 496
+            PositionY 13
+            OffsetTop 13
+            SizeX 84
+            OffsetRight -580
+            SizeY 28
+            OffsetBottom -41
             Alignment 0 0
            }
            Color 0.3232 0.3093 0.2749 1
-           Text "Haven"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{0DD901075728D7AD}" {
+           Text "7/11"
+           "Font Size" 21
+           "Min Font Size" 21
+           FontProperties FontProperties "{DE499D2C4F6210D3}" {
             Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+          TextWidgetClass "{D1682FEF3CAA4EA8}" {
+           Name "RowHead6"
+           Slot FrameWidgetSlot "{263472AC0092318B}" {
+            Anchor 0 0 0 0
+            PositionX 8
+            OffsetLeft 8
+            PositionY 20
+            OffsetTop 20
+            SizeX 780
+            OffsetRight -788
+            SizeY 26
+            OffsetBottom -46
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.3232 0.3093 0.2749 1
+           Text "THE HAVEN"
+           "Font Size" 17
+           "Min Font Size" 17
+           FontProperties FontProperties "{28C87A4828F28B14}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
            }
           }
           ImageWidgetClass "{9BD5B8FC65090B3D}" {
@@ -1822,12 +2175,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 596
             OffsetLeft 596
-            PositionY 9
-            OffsetTop 9
+            PositionY 12
+            OffsetTop 12
             SizeX 190
             OffsetRight -786
             SizeY 28
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.0579 0.0579 0.0529 1
@@ -1839,12 +2192,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 604
             OffsetLeft 604
-            PositionY 11
-            OffsetTop 11
+            PositionY 14
+            OffsetTop 14
             SizeX 178
             OffsetRight -782
             SizeY 26
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
@@ -1865,12 +2218,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 12
         OffsetLeft 12
-        PositionY 398
-        OffsetTop 398
+        PositionY 440
+        OffsetTop 440
         SizeX 796
         OffsetRight -808
-        SizeY 46
-        OffsetBottom -444
+        SizeY 52
+        OffsetBottom -492
         Alignment 0 0
        }
        style blank
@@ -1892,8 +2245,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 796
             OffsetRight -796
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1910,8 +2263,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 5
             OffsetRight -5
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -1924,42 +2277,83 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 18
             OffsetLeft 18
-            PositionY 8
-            OffsetTop 8
+            PositionY 9
+            OffsetTop 9
             SizeX 470
             OffsetRight -488
-            SizeY 32
-            OffsetBottom -40
+            SizeY 34
+            OffsetBottom -43
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
            Text "Le Moule stronghold"
-           "Font Size" 24
-           "Min Font Size" 24
+           "Font Size" 27
+           "Min Font Size" 27
            FontProperties FontProperties "{D60BCB9E177250A2}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
            }
           }
-          TextWidgetClass "{E08D3D05FF1AA657}" {
-           Name "RowKind7"
-           Slot FrameWidgetSlot "{D5EA694CFC2B12C2}" {
+          ImageWidgetClass "{8207CFB0B3C98540}" {
+           Name "RowDot7"
+           Slot FrameWidgetSlot "{CCBFFE19EAC5AE90}" {
             Anchor 0 0 0 0
-            PositionX 488
-            OffsetLeft 488
-            PositionY 12
-            OffsetTop 12
-            SizeX 110
-            OffsetRight -598
-            SizeY 26
-            OffsetBottom -38
+            PositionX 500
+            OffsetLeft 500
+            PositionY 21
+            OffsetTop 21
+            SizeX 10
+            OffsetRight -510
+            SizeY 10
+            OffsetBottom -31
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.8073 0.4451 0.0421 1
+           Size 1 1
+          }
+          TextWidgetClass "{9F2147B12F42F71C}" {
+           Name "RowSpots7"
+           Slot FrameWidgetSlot "{6DF063AB8009D186}" {
+            Anchor 0 0 0 0
+            PositionX 496
+            OffsetLeft 496
+            PositionY 13
+            OffsetTop 13
+            SizeX 84
+            OffsetRight -580
+            SizeY 28
+            OffsetBottom -41
             Alignment 0 0
            }
            Color 0.3232 0.3093 0.2749 1
-           Text "Haven"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{2E3B00ED9CA8DA6D}" {
+           Text "7/11"
+           "Font Size" 21
+           "Min Font Size" 21
+           FontProperties FontProperties "{41A2108E3F75BF9C}" {
             Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+          TextWidgetClass "{7A6FA37EF74C68F0}" {
+           Name "RowHead7"
+           Slot FrameWidgetSlot "{358F4547ECBDAE54}" {
+            Anchor 0 0 0 0
+            PositionX 8
+            OffsetLeft 8
+            PositionY 20
+            OffsetTop 20
+            SizeX 780
+            OffsetRight -788
+            SizeY 26
+            OffsetBottom -46
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.3232 0.3093 0.2749 1
+           Text "THE HAVEN"
+           "Font Size" 17
+           "Min Font Size" 17
+           FontProperties FontProperties "{072FE0894BDF5E38}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
            }
           }
           ImageWidgetClass "{3D0CD772395E54F5}" {
@@ -1968,12 +2362,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 596
             OffsetLeft 596
-            PositionY 9
-            OffsetTop 9
+            PositionY 12
+            OffsetTop 12
             SizeX 190
             OffsetRight -786
             SizeY 28
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.0579 0.0579 0.0529 1
@@ -1985,12 +2379,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 604
             OffsetLeft 604
-            PositionY 11
-            OffsetTop 11
+            PositionY 14
+            OffsetTop 14
             SizeX 178
             OffsetRight -782
             SizeY 26
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
@@ -2011,12 +2405,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 12
         OffsetLeft 12
-        PositionY 446
-        OffsetTop 446
+        PositionY 494
+        OffsetTop 494
         SizeX 796
         OffsetRight -808
-        SizeY 46
-        OffsetBottom -492
+        SizeY 52
+        OffsetBottom -546
         Alignment 0 0
        }
        style blank
@@ -2038,8 +2432,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 796
             OffsetRight -796
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -2056,8 +2450,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 5
             OffsetRight -5
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -2070,42 +2464,83 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 18
             OffsetLeft 18
-            PositionY 8
-            OffsetTop 8
+            PositionY 9
+            OffsetTop 9
             SizeX 470
             OffsetRight -488
-            SizeY 32
-            OffsetBottom -40
+            SizeY 34
+            OffsetBottom -43
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
            Text "Le Moule stronghold"
-           "Font Size" 24
-           "Min Font Size" 24
+           "Font Size" 27
+           "Min Font Size" 27
            FontProperties FontProperties "{A70255A154624649}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
            }
           }
-          TextWidgetClass "{71055F5BDCB013BC}" {
-           Name "RowKind8"
-           Slot FrameWidgetSlot "{AD2CB9AA55A123DC}" {
+          ImageWidgetClass "{D41FBCAF2D9863EC}" {
+           Name "RowDot8"
+           Slot FrameWidgetSlot "{674EAD3E65D8B9F2}" {
             Anchor 0 0 0 0
-            PositionX 488
-            OffsetLeft 488
-            PositionY 12
-            OffsetTop 12
-            SizeX 110
-            OffsetRight -598
-            SizeY 26
-            OffsetBottom -38
+            PositionX 500
+            OffsetLeft 500
+            PositionY 21
+            OffsetTop 21
+            SizeX 10
+            OffsetRight -510
+            SizeY 10
+            OffsetBottom -31
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.8073 0.4451 0.0421 1
+           Size 1 1
+          }
+          TextWidgetClass "{92C364CE0523A3AC}" {
+           Name "RowSpots8"
+           Slot FrameWidgetSlot "{04A075FA2F7346C6}" {
+            Anchor 0 0 0 0
+            PositionX 496
+            OffsetLeft 496
+            PositionY 13
+            OffsetTop 13
+            SizeX 84
+            OffsetRight -580
+            SizeY 28
+            OffsetBottom -41
             Alignment 0 0
            }
            Color 0.3232 0.3093 0.2749 1
-           Text "Haven"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{E5199C589999283C}" {
+           Text "7/11"
+           "Font Size" 21
+           "Min Font Size" 21
+           FontProperties FontProperties "{7435B6C6518FD83B}" {
             Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+          TextWidgetClass "{CFA24DD67CFB363E}" {
+           Name "RowHead8"
+           Slot FrameWidgetSlot "{7903DB66C498BAD6}" {
+            Anchor 0 0 0 0
+            PositionX 8
+            OffsetLeft 8
+            PositionY 20
+            OffsetTop 20
+            SizeX 780
+            OffsetRight -788
+            SizeY 26
+            OffsetBottom -46
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.3232 0.3093 0.2749 1
+           Text "THE HAVEN"
+           "Font Size" 17
+           "Min Font Size" 17
+           FontProperties FontProperties "{4265630872413C1F}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
            }
           }
           ImageWidgetClass "{99154AD180E7ACE1}" {
@@ -2114,12 +2549,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 596
             OffsetLeft 596
-            PositionY 9
-            OffsetTop 9
+            PositionY 12
+            OffsetTop 12
             SizeX 190
             OffsetRight -786
             SizeY 28
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.0579 0.0579 0.0529 1
@@ -2131,12 +2566,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 604
             OffsetLeft 604
-            PositionY 11
-            OffsetTop 11
+            PositionY 14
+            OffsetTop 14
             SizeX 178
             OffsetRight -782
             SizeY 26
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
@@ -2157,12 +2592,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 12
         OffsetLeft 12
-        PositionY 494
-        OffsetTop 494
+        PositionY 548
+        OffsetTop 548
         SizeX 796
         OffsetRight -808
-        SizeY 46
-        OffsetBottom -540
+        SizeY 52
+        OffsetBottom -600
         Alignment 0 0
        }
        style blank
@@ -2184,8 +2619,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 796
             OffsetRight -796
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -2202,8 +2637,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             OffsetTop 0
             SizeX 5
             OffsetRight -5
-            SizeY 46
-            OffsetBottom -46
+            SizeY 52
+            OffsetBottom -52
             Alignment 0 0
            }
            "Is Visible" 0
@@ -2216,42 +2651,83 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 18
             OffsetLeft 18
-            PositionY 8
-            OffsetTop 8
+            PositionY 9
+            OffsetTop 9
             SizeX 470
             OffsetRight -488
-            SizeY 32
-            OffsetBottom -40
+            SizeY 34
+            OffsetBottom -43
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
            Text "Le Moule stronghold"
-           "Font Size" 24
-           "Min Font Size" 24
+           "Font Size" 27
+           "Min Font Size" 27
            FontProperties FontProperties "{D739DF3346F56D8E}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
            }
           }
-          TextWidgetClass "{F3A71199964876AD}" {
-           Name "RowKind9"
-           Slot FrameWidgetSlot "{034E1319E921FC0E}" {
+          ImageWidgetClass "{283125888E7E0914}" {
+           Name "RowDot9"
+           Slot FrameWidgetSlot "{0D85FC00F8FBE5B9}" {
             Anchor 0 0 0 0
-            PositionX 488
-            OffsetLeft 488
-            PositionY 12
-            OffsetTop 12
-            SizeX 110
-            OffsetRight -598
-            SizeY 26
-            OffsetBottom -38
+            PositionX 500
+            OffsetLeft 500
+            PositionY 21
+            OffsetTop 21
+            SizeX 10
+            OffsetRight -510
+            SizeY 10
+            OffsetBottom -31
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.8073 0.4451 0.0421 1
+           Size 1 1
+          }
+          TextWidgetClass "{2760A427BE683331}" {
+           Name "RowSpots9"
+           Slot FrameWidgetSlot "{41B22B94002C78E4}" {
+            Anchor 0 0 0 0
+            PositionX 496
+            OffsetLeft 496
+            PositionY 13
+            OffsetTop 13
+            SizeX 84
+            OffsetRight -580
+            SizeY 28
+            OffsetBottom -41
             Alignment 0 0
            }
            Color 0.3232 0.3093 0.2749 1
-           Text "Haven"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{E96238B0269412EA}" {
+           Text "7/11"
+           "Font Size" 21
+           "Min Font Size" 21
+           FontProperties FontProperties "{9C8041DEC275D4CE}" {
             Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+          TextWidgetClass "{FA221A0831FDE665}" {
+           Name "RowHead9"
+           Slot FrameWidgetSlot "{896DDA6866519104}" {
+            Anchor 0 0 0 0
+            PositionX 8
+            OffsetLeft 8
+            PositionY 20
+            OffsetTop 20
+            SizeX 780
+            OffsetRight -788
+            SizeY 26
+            OffsetBottom -46
+            Alignment 0 0
+           }
+           "Is Visible" 0
+           Color 0.3232 0.3093 0.2749 1
+           Text "THE HAVEN"
+           "Font Size" 17
+           "Min Font Size" 17
+           FontProperties FontProperties "{40C0527BE212EBB5}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
            }
           }
           ImageWidgetClass "{089B26DC1CEBC965}" {
@@ -2260,12 +2736,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 596
             OffsetLeft 596
-            PositionY 9
-            OffsetTop 9
+            PositionY 12
+            OffsetTop 12
             SizeX 190
             OffsetRight -786
             SizeY 28
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.0579 0.0579 0.0529 1
@@ -2277,12 +2753,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
             Anchor 0 0 0 0
             PositionX 604
             OffsetLeft 604
-            PositionY 11
-            OffsetTop 11
+            PositionY 14
+            OffsetTop 14
             SizeX 178
             OffsetRight -782
             SizeY 26
-            OffsetBottom -37
+            OffsetBottom -40
             Alignment 0 0
            }
            Color 0.8378 0.8154 0.7523 1
@@ -2297,310 +2773,18 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         }
        }
       }
-      ButtonWidgetClass "{5989BCD6BCF4C3FA}" {
-       Name "Row10"
-       Slot FrameWidgetSlot "{624CB84B4694DE53}" {
-        Anchor 0 0 0 0
-        PositionX 12
-        OffsetLeft 12
-        PositionY 542
-        OffsetTop 542
-        SizeX 796
-        OffsetRight -808
-        SizeY 46
-        OffsetBottom -588
-        Alignment 0 0
-       }
-       style blank
-       {
-        FrameWidgetClass "{5CB0A3CDB24EDFB9}" {
-         Name "Row10Box"
-         Slot ButtonWidgetSlot "{F057068F128E989C}" {
-          HorizontalAlign 3
-          VerticalAlign 3
-         }
-         {
-          ImageWidgetClass "{5239AD8029B683E6}" {
-           Name "RowBg10"
-           Slot FrameWidgetSlot "{E15BDEE8E4D740B3}" {
-            Anchor 0 0 0 0
-            PositionX 0
-            OffsetLeft 0
-            PositionY 0
-            OffsetTop 0
-            SizeX 796
-            OffsetRight -796
-            SizeY 46
-            OffsetBottom -46
-            Alignment 0 0
-           }
-           "Is Visible" 0
-           Color 0.011 0.013 0.0151 1
-           Size 1 1
-          }
-          ImageWidgetClass "{E00F9E321276033D}" {
-           Name "RowMark10"
-           Slot FrameWidgetSlot "{252A96E9E10A1C0F}" {
-            Anchor 0 0 0 0
-            PositionX 0
-            OffsetLeft 0
-            PositionY 0
-            OffsetTop 0
-            SizeX 5
-            OffsetRight -5
-            SizeY 46
-            OffsetBottom -46
-            Alignment 0 0
-           }
-           "Is Visible" 0
-           Color 0.8073 0.4451 0.0421 1
-           Size 1 1
-          }
-          TextWidgetClass "{100AC163D0745F35}" {
-           Name "RowName10"
-           Slot FrameWidgetSlot "{678B3FBE4A378A04}" {
-            Anchor 0 0 0 0
-            PositionX 18
-            OffsetLeft 18
-            PositionY 8
-            OffsetTop 8
-            SizeX 470
-            OffsetRight -488
-            SizeY 32
-            OffsetBottom -40
-            Alignment 0 0
-           }
-           Color 0.8378 0.8154 0.7523 1
-           Text "Le Moule stronghold"
-           "Font Size" 24
-           "Min Font Size" 24
-           FontProperties FontProperties "{859179508E8B3199}" {
-            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-           }
-          }
-          TextWidgetClass "{F1DC1D2E803ABDA4}" {
-           Name "RowKind10"
-           Slot FrameWidgetSlot "{B270092E6FE9D773}" {
-            Anchor 0 0 0 0
-            PositionX 488
-            OffsetLeft 488
-            PositionY 12
-            OffsetTop 12
-            SizeX 110
-            OffsetRight -598
-            SizeY 26
-            OffsetBottom -38
-            Alignment 0 0
-           }
-           Color 0.3232 0.3093 0.2749 1
-           Text "Haven"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{C7C7BE4BCE7C11F8}" {
-            Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
-           }
-          }
-          ImageWidgetClass "{3F8B32261B1262C3}" {
-           Name "RowStateBg10"
-           Slot FrameWidgetSlot "{4CDB89BE6BB5EE9B}" {
-            Anchor 0 0 0 0
-            PositionX 596
-            OffsetLeft 596
-            PositionY 9
-            OffsetTop 9
-            SizeX 190
-            OffsetRight -786
-            SizeY 28
-            OffsetBottom -37
-            Alignment 0 0
-           }
-           Color 0.0579 0.0579 0.0529 1
-           Size 1 1
-          }
-          TextWidgetClass "{C10E9FF6E0DA8E12}" {
-           Name "RowState10"
-           Slot FrameWidgetSlot "{B4F6D54CBD54DD4C}" {
-            Anchor 0 0 0 0
-            PositionX 604
-            OffsetLeft 604
-            PositionY 11
-            OffsetTop 11
-            SizeX 178
-            OffsetRight -782
-            SizeY 26
-            OffsetBottom -37
-            Alignment 0 0
-           }
-           Color 0.8378 0.8154 0.7523 1
-           Text "AUTOMATED"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{C1266B4AE34ACF7B}" {
-            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-           }
-          }
-         }
-        }
-       }
-      }
-      ButtonWidgetClass "{95A8B327D7B09B8D}" {
-       Name "Row11"
-       Slot FrameWidgetSlot "{328D0FB7AC9C4A95}" {
-        Anchor 0 0 0 0
-        PositionX 12
-        OffsetLeft 12
-        PositionY 590
-        OffsetTop 590
-        SizeX 796
-        OffsetRight -808
-        SizeY 46
-        OffsetBottom -636
-        Alignment 0 0
-       }
-       style blank
-       {
-        FrameWidgetClass "{F0123CFB11D58BEE}" {
-         Name "Row11Box"
-         Slot ButtonWidgetSlot "{50C5D9CF021A09DB}" {
-          HorizontalAlign 3
-          VerticalAlign 3
-         }
-         {
-          ImageWidgetClass "{10275B6D2AF4FFD3}" {
-           Name "RowBg11"
-           Slot FrameWidgetSlot "{B49526CE493EA22A}" {
-            Anchor 0 0 0 0
-            PositionX 0
-            OffsetLeft 0
-            PositionY 0
-            OffsetTop 0
-            SizeX 796
-            OffsetRight -796
-            SizeY 46
-            OffsetBottom -46
-            Alignment 0 0
-           }
-           "Is Visible" 0
-           Color 0.011 0.013 0.0151 1
-           Size 1 1
-          }
-          ImageWidgetClass "{2B5716219044CD98}" {
-           Name "RowMark11"
-           Slot FrameWidgetSlot "{DF927FFEC4F2F323}" {
-            Anchor 0 0 0 0
-            PositionX 0
-            OffsetLeft 0
-            PositionY 0
-            OffsetTop 0
-            SizeX 5
-            OffsetRight -5
-            SizeY 46
-            OffsetBottom -46
-            Alignment 0 0
-           }
-           "Is Visible" 0
-           Color 0.8073 0.4451 0.0421 1
-           Size 1 1
-          }
-          TextWidgetClass "{209911449D89FD03}" {
-           Name "RowName11"
-           Slot FrameWidgetSlot "{DAAEB5B82C0352EE}" {
-            Anchor 0 0 0 0
-            PositionX 18
-            OffsetLeft 18
-            PositionY 8
-            OffsetTop 8
-            SizeX 470
-            OffsetRight -488
-            SizeY 32
-            OffsetBottom -40
-            Alignment 0 0
-           }
-           Color 0.8378 0.8154 0.7523 1
-           Text "Le Moule stronghold"
-           "Font Size" 24
-           "Min Font Size" 24
-           FontProperties FontProperties "{D5B628209509BD92}" {
-            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-           }
-          }
-          TextWidgetClass "{381EEFD940BFA9C6}" {
-           Name "RowKind11"
-           Slot FrameWidgetSlot "{29D4702370393A38}" {
-            Anchor 0 0 0 0
-            PositionX 488
-            OffsetLeft 488
-            PositionY 12
-            OffsetTop 12
-            SizeX 110
-            OffsetRight -598
-            SizeY 26
-            OffsetBottom -38
-            Alignment 0 0
-           }
-           Color 0.3232 0.3093 0.2749 1
-           Text "Haven"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{40596973F910780A}" {
-            Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
-           }
-          }
-          ImageWidgetClass "{D3F0E0686281800D}" {
-           Name "RowStateBg11"
-           Slot FrameWidgetSlot "{C48F34939C6A80D1}" {
-            Anchor 0 0 0 0
-            PositionX 596
-            OffsetLeft 596
-            PositionY 9
-            OffsetTop 9
-            SizeX 190
-            OffsetRight -786
-            SizeY 28
-            OffsetBottom -37
-            Alignment 0 0
-           }
-           Color 0.0579 0.0579 0.0529 1
-           Size 1 1
-          }
-          TextWidgetClass "{C43AED82D60B8455}" {
-           Name "RowState11"
-           Slot FrameWidgetSlot "{DC3A5177C5ADFE69}" {
-            Anchor 0 0 0 0
-            PositionX 604
-            OffsetLeft 604
-            PositionY 11
-            OffsetTop 11
-            SizeX 178
-            OffsetRight -782
-            SizeY 26
-            OffsetBottom -37
-            Alignment 0 0
-           }
-           Color 0.8378 0.8154 0.7523 1
-           Text "AUTOMATED"
-           "Font Size" 18
-           "Min Font Size" 18
-           FontProperties FontProperties "{E3820F80E0F4B2BE}" {
-            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-           }
-          }
-         }
-        }
-       }
-      }
       TextWidgetClass "{7718BC50583A899D}" {
        Name "ListMore"
        Slot FrameWidgetSlot "{6EE95CD8CA4C4BFF}" {
         Anchor 0 0 0 0
         PositionX 16
         OffsetLeft 16
-        PositionY 626
-        OffsetTop 626
+        PositionY 606
+        OffsetTop 606
         SizeX 300
         OffsetRight -316
         SizeY 28
-        OffsetBottom -654
+        OffsetBottom -634
         Alignment 0 0
        }
        Color 0.3232 0.3093 0.2749 1
@@ -2646,8 +2830,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
       OffsetTop 150
       SizeX 700
       OffsetRight -1592
-      SizeY 660
-      OffsetBottom -810
+      SizeY 640
+      OffsetBottom -790
       Alignment 0 0
      }
      {
@@ -2661,8 +2845,8 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         OffsetTop 0
         SizeX 700
         OffsetRight -700
-        SizeY 660
-        OffsetBottom -660
+        SizeY 640
+        OffsetBottom -640
         Alignment 0 0
        }
        Color 0.0052 0.006 0.0069 1
@@ -2924,18 +3108,62 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
        }
       }
+      TextWidgetClass "{F9356DE81650A095}" {
+       Name "Key3"
+       Slot FrameWidgetSlot "{542B53D28BDF496B}" {
+        Anchor 0 0 0 0
+        PositionX 24
+        OffsetLeft 24
+        PositionY 254
+        OffsetTop 254
+        SizeX 180
+        OffsetRight -204
+        SizeY 30
+        OffsetBottom -284
+        Alignment 0 0
+       }
+       Color 0.3232 0.3093 0.2749 1
+       Text "Where"
+       "Font Size" 22
+       "Min Font Size" 22
+       FontProperties FontProperties "{416CC98B82F60A0E}" {
+        Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+       }
+      }
+      TextWidgetClass "{47C7410E4AC446EA}" {
+       Name "Val3"
+       Slot FrameWidgetSlot "{A8208BA3E7230646}" {
+        Anchor 0 0 0 0
+        PositionX 210
+        OffsetLeft 210
+        PositionY 254
+        OffsetTop 254
+        SizeX 466
+        OffsetRight -676
+        SizeY 30
+        OffsetBottom -284
+        Alignment 0 0
+       }
+       Color 0.8378 0.8154 0.7523 1
+       Text "26-54, 1.2 km NE of you"
+       "Font Size" 22
+       "Min Font Size" 22
+       FontProperties FontProperties "{DE022C4AB40ED89D}" {
+        Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+       }
+      }
       TextWidgetClass "{4DE6102D47E858FB}" {
        Name "SpotsHead"
        Slot FrameWidgetSlot "{1B0069F4C42367B2}" {
         Anchor 0 0 0 0
         PositionX 24
         OffsetLeft 24
-        PositionY 268
-        OffsetTop 268
+        PositionY 302
+        OffsetTop 302
         SizeX 652
         OffsetRight -676
         SizeY 28
-        OffsetBottom -296
+        OffsetBottom -330
         Alignment 0 0
        }
        Color 0.3232 0.3093 0.2749 1
@@ -2952,12 +3180,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 24
         OffsetLeft 24
-        PositionY 306
-        OffsetTop 306
+        PositionY 340
+        OffsetTop 340
         SizeX 22
         OffsetRight -46
         SizeY 22
-        OffsetBottom -328
+        OffsetBottom -362
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -2969,12 +3197,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 54
         OffsetLeft 54
-        PositionY 302
-        OffsetTop 302
+        PositionY 336
+        OffsetTop 336
         SizeX 288
         OffsetRight -342
         SizeY 30
-        OffsetBottom -332
+        OffsetBottom -366
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -2991,12 +3219,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 350
         OffsetLeft 350
-        PositionY 306
-        OffsetTop 306
+        PositionY 340
+        OffsetTop 340
         SizeX 22
         OffsetRight -372
         SizeY 22
-        OffsetBottom -328
+        OffsetBottom -362
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3008,12 +3236,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 380
         OffsetLeft 380
-        PositionY 302
-        OffsetTop 302
+        PositionY 336
+        OffsetTop 336
         SizeX 288
         OffsetRight -668
         SizeY 30
-        OffsetBottom -332
+        OffsetBottom -366
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3030,12 +3258,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 24
         OffsetLeft 24
-        PositionY 336
-        OffsetTop 336
+        PositionY 368
+        OffsetTop 368
         SizeX 22
         OffsetRight -46
         SizeY 22
-        OffsetBottom -358
+        OffsetBottom -390
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3047,12 +3275,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 54
         OffsetLeft 54
-        PositionY 332
-        OffsetTop 332
+        PositionY 364
+        OffsetTop 364
         SizeX 288
         OffsetRight -342
         SizeY 30
-        OffsetBottom -362
+        OffsetBottom -394
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3069,12 +3297,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 350
         OffsetLeft 350
-        PositionY 336
-        OffsetTop 336
+        PositionY 368
+        OffsetTop 368
         SizeX 22
         OffsetRight -372
         SizeY 22
-        OffsetBottom -358
+        OffsetBottom -390
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3086,12 +3314,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 380
         OffsetLeft 380
-        PositionY 332
-        OffsetTop 332
+        PositionY 364
+        OffsetTop 364
         SizeX 288
         OffsetRight -668
         SizeY 30
-        OffsetBottom -362
+        OffsetBottom -394
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3108,12 +3336,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 24
         OffsetLeft 24
-        PositionY 366
-        OffsetTop 366
+        PositionY 396
+        OffsetTop 396
         SizeX 22
         OffsetRight -46
         SizeY 22
-        OffsetBottom -388
+        OffsetBottom -418
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3125,12 +3353,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 54
         OffsetLeft 54
-        PositionY 362
-        OffsetTop 362
+        PositionY 392
+        OffsetTop 392
         SizeX 288
         OffsetRight -342
         SizeY 30
-        OffsetBottom -392
+        OffsetBottom -422
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3147,12 +3375,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 350
         OffsetLeft 350
-        PositionY 366
-        OffsetTop 366
+        PositionY 396
+        OffsetTop 396
         SizeX 22
         OffsetRight -372
         SizeY 22
-        OffsetBottom -388
+        OffsetBottom -418
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3164,12 +3392,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 380
         OffsetLeft 380
-        PositionY 362
-        OffsetTop 362
+        PositionY 392
+        OffsetTop 392
         SizeX 288
         OffsetRight -668
         SizeY 30
-        OffsetBottom -392
+        OffsetBottom -422
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3186,12 +3414,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 24
         OffsetLeft 24
-        PositionY 396
-        OffsetTop 396
+        PositionY 424
+        OffsetTop 424
         SizeX 22
         OffsetRight -46
         SizeY 22
-        OffsetBottom -418
+        OffsetBottom -446
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3203,12 +3431,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 54
         OffsetLeft 54
-        PositionY 392
-        OffsetTop 392
+        PositionY 420
+        OffsetTop 420
         SizeX 288
         OffsetRight -342
         SizeY 30
-        OffsetBottom -422
+        OffsetBottom -450
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3225,12 +3453,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 350
         OffsetLeft 350
-        PositionY 396
-        OffsetTop 396
+        PositionY 424
+        OffsetTop 424
         SizeX 22
         OffsetRight -372
         SizeY 22
-        OffsetBottom -418
+        OffsetBottom -446
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3242,12 +3470,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 380
         OffsetLeft 380
-        PositionY 392
-        OffsetTop 392
+        PositionY 420
+        OffsetTop 420
         SizeX 288
         OffsetRight -668
         SizeY 30
-        OffsetBottom -422
+        OffsetBottom -450
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3264,12 +3492,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 24
         OffsetLeft 24
-        PositionY 426
-        OffsetTop 426
+        PositionY 452
+        OffsetTop 452
         SizeX 22
         OffsetRight -46
         SizeY 22
-        OffsetBottom -448
+        OffsetBottom -474
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3281,12 +3509,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 54
         OffsetLeft 54
-        PositionY 422
-        OffsetTop 422
+        PositionY 448
+        OffsetTop 448
         SizeX 288
         OffsetRight -342
         SizeY 30
-        OffsetBottom -452
+        OffsetBottom -478
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3303,12 +3531,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 350
         OffsetLeft 350
-        PositionY 426
-        OffsetTop 426
+        PositionY 452
+        OffsetTop 452
         SizeX 22
         OffsetRight -372
         SizeY 22
-        OffsetBottom -448
+        OffsetBottom -474
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3320,12 +3548,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 380
         OffsetLeft 380
-        PositionY 422
-        OffsetTop 422
+        PositionY 448
+        OffsetTop 448
         SizeX 288
         OffsetRight -668
         SizeY 30
-        OffsetBottom -452
+        OffsetBottom -478
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3342,12 +3570,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 24
         OffsetLeft 24
-        PositionY 456
-        OffsetTop 456
+        PositionY 480
+        OffsetTop 480
         SizeX 22
         OffsetRight -46
         SizeY 22
-        OffsetBottom -478
+        OffsetBottom -502
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3359,12 +3587,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 54
         OffsetLeft 54
-        PositionY 452
-        OffsetTop 452
+        PositionY 476
+        OffsetTop 476
         SizeX 288
         OffsetRight -342
         SizeY 30
-        OffsetBottom -482
+        OffsetBottom -506
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3381,12 +3609,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 350
         OffsetLeft 350
-        PositionY 456
-        OffsetTop 456
+        PositionY 480
+        OffsetTop 480
         SizeX 22
         OffsetRight -372
         SizeY 22
-        OffsetBottom -478
+        OffsetBottom -502
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3398,12 +3626,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 380
         OffsetLeft 380
-        PositionY 452
-        OffsetTop 452
+        PositionY 476
+        OffsetTop 476
         SizeX 288
         OffsetRight -668
         SizeY 30
-        OffsetBottom -482
+        OffsetBottom -506
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3420,12 +3648,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 24
         OffsetLeft 24
-        PositionY 486
-        OffsetTop 486
+        PositionY 508
+        OffsetTop 508
         SizeX 22
         OffsetRight -46
         SizeY 22
-        OffsetBottom -508
+        OffsetBottom -530
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3437,12 +3665,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 54
         OffsetLeft 54
-        PositionY 482
-        OffsetTop 482
+        PositionY 504
+        OffsetTop 504
         SizeX 288
         OffsetRight -342
         SizeY 30
-        OffsetBottom -512
+        OffsetBottom -534
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3459,12 +3687,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 350
         OffsetLeft 350
-        PositionY 486
-        OffsetTop 486
+        PositionY 508
+        OffsetTop 508
         SizeX 22
         OffsetRight -372
         SizeY 22
-        OffsetBottom -508
+        OffsetBottom -530
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3476,12 +3704,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 380
         OffsetLeft 380
-        PositionY 482
-        OffsetTop 482
+        PositionY 504
+        OffsetTop 504
         SizeX 288
         OffsetRight -668
         SizeY 30
-        OffsetBottom -512
+        OffsetBottom -534
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3498,12 +3726,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 24
         OffsetLeft 24
-        PositionY 516
-        OffsetTop 516
+        PositionY 536
+        OffsetTop 536
         SizeX 22
         OffsetRight -46
         SizeY 22
-        OffsetBottom -538
+        OffsetBottom -558
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3515,12 +3743,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 54
         OffsetLeft 54
-        PositionY 512
-        OffsetTop 512
+        PositionY 532
+        OffsetTop 532
         SizeX 288
         OffsetRight -342
         SizeY 30
-        OffsetBottom -542
+        OffsetBottom -562
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3537,12 +3765,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 350
         OffsetLeft 350
-        PositionY 516
-        OffsetTop 516
+        PositionY 536
+        OffsetTop 536
         SizeX 22
         OffsetRight -372
         SizeY 22
-        OffsetBottom -538
+        OffsetBottom -558
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3554,12 +3782,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 380
         OffsetLeft 380
-        PositionY 512
-        OffsetTop 512
+        PositionY 532
+        OffsetTop 532
         SizeX 288
         OffsetRight -668
         SizeY 30
-        OffsetBottom -542
+        OffsetBottom -562
         Alignment 0 0
        }
        Color 0.3093 0.5526 0.0999 1
@@ -3576,12 +3804,12 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 24
         OffsetLeft 24
-        PositionY 552
-        OffsetTop 552
+        PositionY 568
+        OffsetTop 568
         SizeX 652
         OffsetRight -676
         SizeY 40
-        OffsetBottom -592
+        OffsetBottom -608
         Alignment 0 0
        }
        "Is Visible" 0
@@ -3753,18 +3981,18 @@ FrameWidgetClass "{D9B053C041968B5C}" {
         Anchor 0 0 0 0
         PositionX 24
         OffsetLeft 24
-        PositionY 598
-        OffsetTop 598
+        PositionY 594
+        OffsetTop 594
         SizeX 652
         OffsetRight -676
-        SizeY 54
-        OffsetBottom -652
+        SizeY 40
+        OffsetBottom -634
         Alignment 0 0
        }
        Color 0.8073 0.4451 0.0421 1
        Text ""
-       "Font Size" 20
-       "Min Font Size" 20
+       "Font Size" 19
+       "Min Font Size" 19
        Wrap 1
        FontProperties FontProperties "{EC7E70EBF27AE83F}" {
         Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
@@ -3929,15 +4157,15 @@ FrameWidgetClass "{D9B053C041968B5C}" {
       Anchor 0 0 0 0
       PositionX 48
       OffsetLeft 48
-      PositionY 900
-      OffsetTop 900
+      PositionY 794
+      OffsetTop 794
       SizeX 1544
       OffsetRight -1592
       SizeY 30
-      OffsetBottom -930
+      OffsetBottom -824
       Alignment 0 0
      }
-     Color 0.8073 0.4451 0.0421 1
+     Color 0.3093 0.5526 0.0999 1
      Text ""
      "Font Size" 20
      "Min Font Size" 20

@@ -37,6 +37,7 @@ class RZ_SiteBuilderSession
 	ref array<bool> m_aMarked = {};					// a marker was put out for the spot (gone since: it was deleted)
 	ref array<ref RZ_HandSpot> m_aSuggest = {};		// where the automated layout had each kind of spot
 	int m_iSpotType;								// the type the place row puts down (RZ_HandSpots.Types)
+	string m_sSaid;									// the last thing the builder was told (the screen's confirmation line)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -920,6 +921,7 @@ class RZ_SiteBuilder
 	//------------------------------------------------------------------------------------------------
 	protected static void Say(RZ_SiteBuilderSession s, string text)
 	{
+		s.m_sSaid = text;
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		if (gm)
 			gm.NotifyPlayer(s.m_iPlayer, TITLE, text);

@@ -19,7 +19,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	protected static string s_sPicked;			// the picked site's id, kept for the session
 	protected static bool s_bOpen;
 
-	protected static const int ROWS = 12;		// Row0-Row11 in the layout
+	protected static const int ROWS = 10;		// Row0-Row9 in the layout
 	protected static const int SPOTS = 16;		// Spot0-Spot15
 	protected static const int TABS = 5;
 	protected static const int FILTERS = 4;
@@ -32,6 +32,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	protected ref array<ref array<string>> m_aSites = {};
 	protected ref array<ref array<string>> m_aCheck = {};
 	protected ref array<int> m_aShown = {};		// m_aSites indexes the list shows, in its order
+	protected ref array<int> m_aItems = {};		// what each list line is: a site (its m_aShown index) or a faction's heading (-1 - faction)
 	protected string m_sMessage;
 
 	//------------------------------------------------------------------------------------------------
@@ -190,7 +191,11 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			if (s_iFilter == 3 && RZ_UIText.Int(site, 9) != 1)
 				continue;
 
+			// The All tab groups by faction (each under its heading), every tab nearest first
 			int d = RZ_UIText.Int(site, 6);
+			if (s_iTab == 0)
+				d += RZ_UIText.Int(site, 4) * 10000000;
+
 			int at = 0;
 			while (at < dist.Count() && dist[at] <= d)
 			{
@@ -199,6 +204,18 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 
 			dist.InsertAt(d, at);
 			m_aShown.InsertAt(i, at);
+		}
+
+		m_aItems.Clear();
+		int last = -1;
+		foreach (int row, int idx : m_aShown)
+		{
+			int fac = RZ_UIText.Int(m_aSites[idx], 4);
+			if (s_iTab == 0 && fac != last)
+				m_aItems.Insert(-1 - fac);
+
+			last = fac;
+			m_aItems.Insert(row);
 		}
 	}
 
@@ -711,44 +728,74 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	protected void DrawList()
 	{
-		array<string> factions = {"Haven", "Bastion", "Red Hand", "Halcyon"};
+		array<string> headings = {"THE HAVEN", "TASK FORCE BASTION", "THE RED HAND", "HALCYON"};
 		int picked = PickedRow();
-		if (picked >= 0)
+		int line = m_aItems.Find(picked);
+		if (line >= 0)
 		{
-			if (picked < m_iFirst)
-				m_iFirst = picked;
-			else if (picked >= m_iFirst + ROWS)
-				m_iFirst = picked - ROWS + 1;
+			// Keep the picked site's heading in view above it where it can be
+			int top = line;
+			if (top > 0 && m_aItems[top - 1] < 0)
+				top--;
+
+			if (top < m_iFirst)
+				m_iFirst = top;
+			else if (line >= m_iFirst + ROWS)
+				m_iFirst = line - ROWS + 1;
 		}
 
-		m_iFirst = Math.Clamp(m_iFirst, 0, Math.Max(0, m_aShown.Count() - ROWS));
+		m_iFirst = Math.Clamp(m_iFirst, 0, Math.Max(0, m_aItems.Count() - ROWS));
+		bool unsaved = RZ_UIText.Int(m_aHead, 5) == 1;
 		for (int r = 0; r < ROWS; r++)
 		{
 			string idx = r.ToString();
 			int at = m_iFirst + r;
 			Widget row = RZ_UIW.Find(m_wRoot, "Row" + idx);
-			bool there = at < m_aShown.Count();
+			bool there = at < m_aItems.Count();
 			if (row)
-			{
 				row.SetVisible(there);
-				RZ_UIW.SetTag(row, at);
-			}
 
 			if (!there)
 				continue;
 
-			array<string> site = m_aSites[m_aShown[at]];
-			bool on = at == picked;
-			RZ_UIW.SetText(m_wRoot, "RowName" + idx, RZ_UIText.Clean(RZ_UIText.Str(site, 2), 40));
-			string kind = RZ_UIText.Str(site, 3);
-			if (s_iTab == 0)
+			int item = m_aItems[at];
+			bool heading = item < 0;
+			RZ_UIW.SetTag(row, item);
+			RZ_UIW.Show(m_wRoot, "RowHead" + idx, heading);
+			RZ_UIW.Show(m_wRoot, "RowName" + idx, !heading);
+			RZ_UIW.Show(m_wRoot, "RowSpots" + idx, !heading);
+			RZ_UIW.Show(m_wRoot, "RowStateBg" + idx, !heading);
+			RZ_UIW.Show(m_wRoot, "RowState" + idx, !heading);
+			if (heading)
 			{
-				int fac = RZ_UIText.Int(site, 4);
-				if (fac >= 0 && fac < factions.Count())
-					kind = factions[fac];
+				int fac = Math.Clamp(-1 - item, 0, 3);
+				RZ_UIW.SetText(m_wRoot, "RowHead" + idx, headings[fac]);
+				RZ_UIW.Show(m_wRoot, "RowBg" + idx, false);
+				RZ_UIW.Show(m_wRoot, "RowMark" + idx, false);
+				RZ_UIW.Show(m_wRoot, "RowDot" + idx, false);
+				continue;
 			}
 
-			RZ_UIW.SetText(m_wRoot, "RowKind" + idx, kind);
+			array<string> site = m_aSites[m_aShown[item]];
+			bool on = item == picked;
+			RZ_UIW.SetText(m_wRoot, "RowName" + idx, RZ_UIText.Clean(RZ_UIText.Str(site, 2), 34));
+			int building = RZ_UIText.Int(site, 10);
+			RZ_UIW.Show(m_wRoot, "RowDot" + idx, building == 1 && unsaved);
+			// Spots: done of all, for a site that's built or being built
+			string spots = "–";
+			Color spotCol = Lin(143, 140, 133);
+			if (RZ_UIText.Int(site, 5) != 0 || building == 1)
+			{
+				int have = RZ_UIText.Int(site, 11);
+				int want = RZ_UIText.Int(site, 12);
+				spots = string.Format("%1/%2", have, want);
+				spotCol = Lin(240, 149, 149);
+				if (have >= want)
+					spotCol = Lin(151, 196, 89);
+			}
+
+			RZ_UIW.SetText(m_wRoot, "RowSpots" + idx, spots);
+			RZ_UIW.Tint(m_wRoot, "RowSpots" + idx, spotCol);
 			string words;
 			Color bg;
 			Color fg;
@@ -762,7 +809,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 				RZ_UIW.FocusWidget(row);
 		}
 
-		int below = m_aShown.Count() - m_iFirst - ROWS;
+		int below = m_aItems.Count() - m_iFirst - ROWS;
 		string more = "";
 		if (below > 0)
 			more = string.Format("▼ %1 more", below);
@@ -804,8 +851,13 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		bool pinned = RZ_UIText.Int(site, 9) == 1;
 		RZ_UIW.Show(m_wRoot, "DetailPinBg", pinned);
 		RZ_UIW.Show(m_wRoot, "DetailPin", pinned);
-		array<string> keys = {"Where", "Objects", "Last saved"};
+		array<string> keys = {"Building", "Where", "Objects", "Last saved"};
 		array<string> vals = {};
+		string house = RZ_UIText.Str(site, 18);
+		if (house.IsEmpty())
+			house = "not known until it's laid out";
+
+		vals.Insert(house);
 		vals.Insert(string.Format("%1, %2 of you", RZ_UIText.Str(site, 8), RZ_UIText.Str(site, 7)));
 		int objects = RZ_UIText.Int(site, 13);
 		string objText = "none: camp life lays it out";
@@ -821,7 +873,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			when = "never";
 
 		vals.Insert(when);
-		for (int k = 0; k < 3; k++)
+		for (int k = 0; k < 4; k++)
 		{
 			RZ_UIW.SetText(m_wRoot, "Key" + k.ToString(), keys[k]);
 			RZ_UIW.SetText(m_wRoot, "Val" + k.ToString(), vals[k]);
@@ -987,7 +1039,19 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		else if (armed == "delete")
 			message = "Press Delete again to delete the build for good: the automated layout comes back.";
 
-		RZ_UIW.SetText(m_wRoot, "Message", message);
+		Color tone = Lin(232, 178, 58);
+		if (message.IsEmpty())
+		{
+			string said = RZ_UIText.Str(m_aHead, 10);
+			if (!said.IsEmpty())
+				m_sMessage = said;
+
+			message = m_sMessage;
+			tone = Lin(151, 196, 89);
+		}
+
+		RZ_UIW.SetText(m_wRoot, "Message", RZ_UIText.Clean(message, 140));
+		RZ_UIW.Tint(m_wRoot, "Message", tone);
 	}
 
 	//------------------------------------------------------------------------------------------------
