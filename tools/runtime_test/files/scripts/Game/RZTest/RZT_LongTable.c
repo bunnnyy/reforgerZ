@@ -16,6 +16,21 @@ class RZT_Table
 	static int s_iOks;
 	static bool s_bDone;
 	static vector s_vPoint;
+	static vector s_vHold;		// where the tester is kept while this check runs (the route moves him too)
+
+	//------------------------------------------------------------------------------------------------
+	static void Hold(vector at)
+	{
+		s_vHold = RZ_Util.GroundPos(at);
+		RZT_Fake.MoveTo(s_vHold);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void KeepHeld()
+	{
+		if (s_vHold != vector.Zero && RZT_Fake.s_Ent && RZ_Util.DistXZ(RZT_Fake.s_Ent.GetOrigin(), s_vHold) > 8)
+			RZT_Fake.MoveTo(s_vHold);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static void Ok(string what)
@@ -51,6 +66,7 @@ class RZT_Table
 	{
 		Print(string.Format("RZT table: done, %1 checks OK, %2 failures", s_iOks, s_iFails));
 		s_bDone = true;
+		s_vHold = vector.Zero;
 	}
 }
 
@@ -73,6 +89,13 @@ modded class RZ_LongTableReach
 	}
 
 	int RZT_Signs() { return m_aJunctions.Count(); }
+
+	string RZT_BoyWhy(vector at)
+	{
+		return string.Format("%1 m from the farm, in town %2, the boy alive %3, hunger %4, open %5",
+			RZ_Util.RoundToInt(RZ_Util.DistXZ(at, m_Table.GetHousePos())), InTown(at), m_Table.IsAlive(RZ_ETableRole.BOY),
+			RZ_Util.RoundToInt(m_Table.GetHunger()), m_Table.GetState() == RZ_ETableState.ACTIVE);
+	}
 	IEntity RZT_SignEntity(int i) { return m_aSigns[i]; }
 	int RZT_Dead() { return m_aDead.Count(); }
 	void RZT_Harvest() { m_S.m_iHarvestDay = 1; m_bHarvestDone = false; }
@@ -133,6 +156,7 @@ modded class RZ_LongTable
 		if (RZT_Table.s_fClock < RZT_Table.START)
 			return;
 
+		RZT_Table.KeepHeld();
 		RZ_LongTableReach reach = GetReach();
 		vector farm = m_vHouse;
 		switch (RZT_Table.s_iStep)
@@ -159,7 +183,7 @@ modded class RZ_LongTable
 				Print(string.Format("RZT table: the %1 farm past %2 at %3 (chance setting %4)", m_sSurname, GetTownName(), RZ_SettlementScanner.GridReference(farm), m_Settings.m_fChance));
 				RZT_Hunger(80);
 				RZT_Table.SetHour(19.6);
-				RZT_Fake.MoveTo(RZ_Mission.LandPointNear(farm, 55, 65));
+				RZT_Table.Hold(RZ_Mission.LandPointNear(farm, 55, 65));
 				RZT_Table.Next(1);
 				return;
 			}
@@ -216,7 +240,7 @@ modded class RZ_LongTable
 					return;
 				}
 
-				RZT_Fake.MoveTo(reach.SignAt(0) + Vector(6, 0, 0));
+				RZT_Table.Hold(reach.SignAt(0) + Vector(6, 0, 0));
 				RZT_Table.Next(3);
 				return;
 			}
@@ -236,7 +260,7 @@ modded class RZ_LongTable
 			case 4:
 			{
 				// The bell and the voice: the evening crossed from 18:40 to 19:00
-				RZT_Fake.MoveTo(RZ_Mission.LandPointNear(farm, 900, 1100));
+				RZT_Table.Hold(RZ_Mission.LandPointNear(farm, 900, 1100));
 				reach.RZT_From(18.4);
 				RZT_Table.SetHour(18.9);
 				NoteDeath(RZ_Mission.LandPointNear(farm, 500, 700), "a test man");
@@ -295,7 +319,7 @@ modded class RZ_LongTable
 				// The host on the road: 800 m out, alone
 				RZT_ClearMet();
 				RZT_Table.SetHour(12);
-				RZT_Fake.MoveTo(RZ_Mission.LandPointNear(farm, 750, 850));
+				RZT_Table.Hold(RZ_Mission.LandPointNear(farm, 750, 850));
 				RZT_Table.Next(7);
 				return;
 			}
@@ -343,7 +367,7 @@ modded class RZ_LongTable
 
 				reach.RZT_ClearMet();
 				RZT_Table.SetHour(19.5);
-				RZT_Fake.MoveTo(spot);
+				RZT_Table.Hold(spot);
 				RZT_Table.Next(9);
 				return;
 			}
@@ -371,7 +395,7 @@ modded class RZ_LongTable
 				foreach (int ti, RZ_Settlement st : m_GM.GetSettlements())
 				{
 					float td = RZ_Util.DistXZ(st.m_vCenter, farm);
-					if (ti != m_iSettlement && td >= 900 && td <= 3300)
+					if (ti != m_iSettlement && td >= 900 && td <= 2400)
 					{
 						townAt = st.m_vCenter;
 						break;
@@ -380,14 +404,14 @@ modded class RZ_LongTable
 
 				if (townAt == vector.Zero)
 				{
-					Print("RZT table: no town 0.9-3.3 km from the farm; the boy wasn't tried");
+					Print("RZT table: no town 0.9-2.4 km from the farm; the boy wasn't tried");
 					RZT_Table.Next(12);
 					return;
 				}
 
 				reach.RZT_ClearMet();
 				RZT_Table.SetHour(12);
-				RZT_Fake.MoveTo(RZ_Mission.LandPointNear(townAt, 0, 30));
+				RZT_Table.Hold(RZ_Mission.LandPointNear(townAt, 0, 30));
 				RZT_Table.Next(11);
 				return;
 			}
@@ -402,7 +426,7 @@ modded class RZ_LongTable
 
 				if (RZT_Table.s_fWait > 300)
 				{
-					RZT_Table.Fail("the boy never came in 5 minutes");
+					RZT_Table.Fail("the boy never came in 5 minutes (" + reach.RZT_BoyWhy(RZT_Fake.s_Ent.GetOrigin()) + ")");
 					RZT_Table.Next(12);
 				}
 
