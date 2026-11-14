@@ -152,7 +152,26 @@ class RZT_Persist
 		old.EnsureArrays();
 		Check(old.m_iCharacter == 5 && old.m_iLives == 0, string.Format("an old save's life becomes its character (%1)", old.m_iCharacter));
 
-		// Put back
+		// Put back: the pack and what came back in it go, so the later checks find the tester as he was
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(me.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (inv)
+		{
+			array<IEntity> items = {};
+			inv.GetItems(items);
+			foreach (IEntity it : items)
+			{
+				if (it && RZ_MissionGoods.Owner(it) == "the test" && !inv.TryDeleteItem(it))
+					SCR_EntityHelper.DeleteEntityAndChildren(it);
+			}
+
+			if (pack && !inv.TryDeleteItem(pack))
+				SCR_EntityHelper.DeleteEntityAndChildren(pack);
+		}
+		else if (pack)
+		{
+			SCR_EntityHelper.DeleteEntityAndChildren(pack);
+		}
+
 		for (int g = 0; g < RZ_Factions.COUNT; g++)
 		{
 			p.m_aFame[g] = fame[g];
