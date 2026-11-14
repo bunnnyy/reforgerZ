@@ -323,14 +323,14 @@ screen's **[Admin] Site builder** (any person), or `/sites` in chat. It opens on
 you need one in the world. A client that can't open it (no preset or layout) gets the same actions as
 the object menu's rows instead (`RZ_SiteBuilder.OpenRowsMenu`).
 
-**The cards.** Every site camp life lays out on this map (the holdings, the Haven safehouses, the road
-posts standing now), nearest first, as small cards on the right, two across and four down (up and down
-a row, left and right a card, the wheel the next): each with its faction and kind, its name (two lines
-when long), an amber dot while you build it with unsaved changes, its state and its spots done of
-those it needs (green when complete, red when not, a dash when nothing's built). **The faction
-switcher** on top (`<` All factions, the Haven, Bastion, the Red Hand, Halcyon `>`, with the count and
-a dot for each; LB and RB, or its arrows) and **filters** top right (All, Not built, Hand-built,
-Pinned; LT and RT, or a click). An **X** top right closes it.
+**The list** (left) shows every site camp life lays out on this map (the holdings, the Haven
+safehouses, the road posts standing now), nearest first, ten rows at a time (the wheel or up and down
+move through it). **Faction tabs** across the top (All, Haven, Bastion, Red Hand, Halcyon, each with
+its count; LB and RB, or a click); the All tab groups the sites under their faction's heading.
+**Filters** above the list (All, Not built, Hand-built, Pinned; LT and RT, or a click). Each row: the
+site's name, an amber dot while you build it with unsaved changes, its spots done of those it needs
+(green when complete, red when not, a dash when nothing's built) and its state. An **X** top right
+closes it, and every button lights up under the mouse.
 
 | State | Means |
 |---|---|
@@ -339,20 +339,21 @@ Pinned; LT and RT, or a click). An **X** top right closes it.
 | **NOT IN USE** | your build is kept, but the automated layout is used |
 | **BUILDING NOW** / **SOMEONE BUILDING** | you, or another admin, are building it |
 
-**The picked site** (the big card, left): faction and kind, its name, its state (and **PINNED**), the building
+**The picked site** (right): faction and kind, its name, its state (and **PINNED**), the building
 it moved into, where it is from you, its objects (and **unsaved changes**), when it was last saved,
 and its role spots as a checklist: an icon and the spot's name, green when there, red when missing,
 grey when only nice to have. A line above the button bar confirms what the last button did ("Put:
 Gate (8 of 11 spots)", "Saved ...").
 
-**The button bar** shows only what can be done now (each also clicked with the mouse):
+**Big buttons** at the foot of the picked site (the same as the bar of pad buttons under the panes,
+each also clicked; the first in amber):
 
 | Button | Does |
 |---|---|
-| A | **Go there**: your character to the site's edge, Game Master's camera above it looking in |
-| X | **Build** (from the automated layout: go there first, it's put out once you're near) or **Edit** (the save, put out as Game Master objects) |
-| Y | **Use: hand-built / automated** for a saved site (the save stays either way, the site is laid out again at once), or **Build empty** for one never built |
-| R3 | **Pin** a saved site to its place every season ([Pinning a site](#pinning-a-site)); not a road post |
+| A | **Teleport there**: your character to the site's edge, Game Master's camera above it looking in |
+| X | **Edit the build** (the save, put out as Game Master objects), or **Start building** a site never built, which asks: **From its layout** (camp life's pieces stay as yours: go there first, they're put out once you're near), **Empty** (bare ground) or Cancel |
+| Y | **Use: hand-built / automated** for a saved site (the save stays either way, the site is laid out again at once) |
+| R3 | **Pin here every season: on / off** for a saved site ([Pinning a site](#pinning-a-site)); not a road post |
 | Menu | **More**: Restore (the save before this one, a second press) and Delete (the save and its backups, a second press: the site is automated again) |
 | B | Close |
 
@@ -360,7 +361,7 @@ While you build the picked site: **A** puts a spot at your feet, **LT / RT** (or
 picker's arrows) change the spot type shown as `< Gate >`, **X** saves (replacing a save asks for a
 second press), **Y** stops building, **R3** takes up the nearest spot. Going to another site or
 stopping with unsaved changes asks first: **Save, then go on**, **Discard and go on** (the site goes
-back to its last save) or **B** to stay. Closing the screen only says the site has unsaved changes;
+back to its last save) or **Stay**, each a button in the question. Closing the screen only says the site has unsaved changes;
 they stay standing for you to come back to. One admin builds a site at a time.
 
 **The build bar** (`UI/RZ_SiteHud.c`, layout `RZ_SiteHud.layout`): while you build, a compact panel

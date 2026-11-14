@@ -19,7 +19,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	protected static string s_sPicked;			// the picked site's id, kept for the session
 	protected static bool s_bOpen;
 
-	protected static const int ROWS = 8;		// Row0-Row7 in the layout: the small cards, two across
+	protected static const int ROWS = 10;		// Row0-Row9 in the layout
 	protected static const int SPOTS = 16;		// Spot0-Spot15
 	protected static const int TABS = 5;
 	protected static const int FILTERS = 4;
@@ -27,6 +27,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	protected int m_iParsed = -1;
 	protected bool m_bDone;
 	protected bool m_bMore;						// Menu pressed: the bar shows restore and delete
+	protected bool m_bChoose;					// Edit on a site never built: from its layout, or empty?
 	protected int m_iFirst;						// the list's first row shown
 	protected ref array<string> m_aHead = {};
 	protected ref array<ref array<string>> m_aSites = {};
@@ -86,10 +87,11 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		input.AddActionListener("MenuFavourite", EActionTrigger.DOWN, OnY);
 		input.AddActionListener("MenuDelete", EActionTrigger.DOWN, OnR3);
 		input.AddActionListener("MenuFilter", EActionTrigger.DOWN, OnMore);
-		RZ_UIW.OnClick(m_wRoot, "FactionPrev", m_Click);
-		RZ_UIW.OnClick(m_wRoot, "FactionNext", m_Click);
-		input.AddActionListener("MenuLeft", EActionTrigger.DOWN, OnLeft);
-		input.AddActionListener("MenuRight", EActionTrigger.DOWN, OnRight);
+		for (int t = 0; t < TABS; t++)
+		{
+			RZ_UIW.OnClick(m_wRoot, "Tab" + t.ToString(), m_Click);
+			RZ_UIW.SetTag(RZ_UIW.Find(m_wRoot, "Tab" + t.ToString()), t);
+		}
 
 		for (int f = 0; f < FILTERS; f++)
 		{
@@ -104,6 +106,18 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 
 		RZ_UIW.OnClick(m_wRoot, "SpotPrev", m_Click);
 		RZ_UIW.OnClick(m_wRoot, "SpotNext", m_Click);
+		for (int t = 0; t < 4; t++)
+		{
+			RZ_UIW.OnClick(m_wRoot, "Tile" + t.ToString(), m_Click);
+			RZ_UIW.SetTag(RZ_UIW.Find(m_wRoot, "Tile" + t.ToString()), t);
+		}
+
+		array<string> asks = {"AskSave", "AskDiscard", "AskStay", "ChooseLayout", "ChooseEmpty", "ChooseCancel"};
+		foreach (string askName : asks)
+		{
+			RZ_UIW.OnClick(m_wRoot, askName, m_Click);
+		}
+
 		s_bOpen = true;
 		RZ_SiteHud.SetHidden(true);
 	}
@@ -112,8 +126,6 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	override void OnMenuClose()
 	{
 		InputManager input = GetGame().GetInputManager();
-		input.RemoveActionListener("MenuLeft", EActionTrigger.DOWN, OnLeft);
-		input.RemoveActionListener("MenuRight", EActionTrigger.DOWN, OnRight);
 		input.RemoveActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
 		input.RemoveActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
 		input.RemoveActionListener("MenuTabLeft", EActionTrigger.DOWN, OnTabLeft);
@@ -212,6 +224,8 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		foreach (int row, int idx : m_aShown)
 		{
 			int fac = RZ_UIText.Int(m_aSites[idx], 4);
+			if (s_iTab == 0 && fac != last)
+				m_aItems.Insert(-1 - fac);
 
 			last = fac;
 			m_aItems.Insert(row);
@@ -281,25 +295,11 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	protected void OnUp(float value = 0, EActionTrigger reason = 0)
 	{
 		if (!Asking())
-			Pick(PickedRow() - 2);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void OnDown(float value = 0, EActionTrigger reason = 0)
-	{
-		if (!Asking())
-			Pick(PickedRow() + 2);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void OnLeft(float value = 0, EActionTrigger reason = 0)
-	{
-		if (!Asking())
 			Pick(PickedRow() - 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void OnRight(float value = 0, EActionTrigger reason = 0)
+	protected void OnDown(float value = 0, EActionTrigger reason = 0)
 	{
 		if (!Asking())
 			Pick(PickedRow() + 1);
@@ -402,6 +402,13 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	protected void OnA(float value = 0, EActionTrigger reason = 0)
 	{
+		if (m_bChoose)
+		{
+			m_bChoose = false;
+			Act("build_auto");
+			return;
+		}
+
 		string act = ButtonAct("A");
 		if (!act.IsEmpty())
 			Act(act);
@@ -410,7 +417,21 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	protected void OnX(float value = 0, EActionTrigger reason = 0)
 	{
+		if (m_bChoose)
+		{
+			m_bChoose = false;
+			Act("build_empty");
+			return;
+		}
+
 		string act = ButtonAct("X");
+		if (act == "choose")
+		{
+			m_bChoose = true;
+			m_iSeen = -1;
+			return;
+		}
+
 		if (!act.IsEmpty())
 			Act(act);
 	}
@@ -418,6 +439,9 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	protected void OnY(float value = 0, EActionTrigger reason = 0)
 	{
+		if (m_bChoose)
+			return;
+
 		string act = ButtonAct("Y");
 		if (!act.IsEmpty())
 			Act(act);
@@ -445,6 +469,13 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	//! B: out of the question (stay), out of the other buttons, else the screen closes.
 	override protected void Back()
 	{
+		if (m_bChoose)
+		{
+			m_bChoose = false;
+			m_iSeen = -1;
+			return;
+		}
+
 		if (Asking())
 		{
 			Act("leave_stay");
@@ -540,7 +571,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 
 		switch (button)
 		{
-			case "A": label = "Go there"; return "go";
+			case "A": label = "Teleport there"; return "go";
 			case "X":
 			{
 				if (other)
@@ -548,12 +579,12 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 
 				if (saved)
 				{
-					label = "Edit";
+					label = "Edit the build";
 					return "build_saved";
 				}
 
-				label = "Build";
-				return "build_auto";
+				label = "Start building";
+				return "choose";
 			}
 			case "Y":
 			{
@@ -566,20 +597,16 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 					return "use";
 				}
 
-				if (other)
-					return "";
-
-				label = "Build empty";
-				return "build_empty";
+				return "";
 			}
 			case "R3":
 			{
 				if (!saved || RZ_UIText.Int(site, 16) == 1)
 					return "";
 
-				label = "Pin: off";
+				label = "Pin here every season: off";
 				if (RZ_UIText.Int(site, 9) == 1)
-					label = "Pin: on";
+					label = "Pin here every season: on";
 
 				return "pin";
 			}
@@ -588,19 +615,81 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		return "";
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! A big button: the same as its pad button.
+	protected void PressTile(int i)
+	{
+		switch (i)
+		{
+			case 0: OnA(); break;
+			case 1: OnX(); break;
+			case 2: OnY(); break;
+			case 3: OnR3(); break;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The mouse over a button lights it (a lighter fill); leaving it, the screen draws it again.
+	override protected bool OnHoverRow(Widget w, string name, int tag, bool on)
+	{
+		string bg = BgOf(name);
+		if (bg.IsEmpty())
+			return false;
+
+		if (on)
+			RZ_UIW.Tint(m_wRoot, bg, Lin(58, 64, 71));
+		else
+			m_iSeen = -1;
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A button's fill: "Tile2" -> "TileBg2", "AskSave" -> "AskSaveBg" ("" none).
+	protected static string BgOf(string name)
+	{
+		array<string> numbered = {"Tile", "Row", "Filter"};
+		foreach (string n : numbered)
+		{
+			if (name.StartsWith(n) && name.Length() > n.Length())
+				return n + "Bg" + name.Substring(n.Length(), name.Length() - n.Length());
+		}
+
+		array<string> named = {"AskSave", "AskDiscard", "AskStay", "ChooseLayout", "ChooseEmpty", "ChooseCancel", "CloseButton", "SpotPrev", "SpotNext"};
+		if (named.Find(name) < 0)
+			return "";
+
+		if (name == "CloseButton")
+			return "CloseBg";
+
+		return name + "Bg";
+	}
+
 	// ================================================================ Mouse
 	//------------------------------------------------------------------------------------------------
 	override protected void OnClickOther(Widget w, string name)
 	{
 		int tag = RZ_UIW.GetTag(w);
-		if (name == "FactionPrev")
-			OnTabLeft();
-		else if (name == "FactionNext")
-			OnTabRight();
+		if (name.StartsWith("Tab"))
+			SetTab(tag);
 		else if (name.StartsWith("Filter") && !BuildingPicked())
 			SetFilter(tag);
 		else if (name.StartsWith("Row") && !Asking() && tag >= 0)
 			Pick(tag);
+		else if (name.StartsWith("Tile"))
+			PressTile(tag);
+		else if (name == "AskSave" && Asking())
+			Act("leave_save");
+		else if (name == "AskDiscard" && Asking())
+			Act("leave_discard");
+		else if (name == "AskStay" && Asking())
+			Act("leave_stay");
+		else if (name == "ChooseLayout")
+			OnA();
+		else if (name == "ChooseEmpty")
+			OnX();
+		else if (name == "ChooseCancel")
+			Back();
 		else if (name == "SpotPrev" && BuildingPicked())
 			Act("spot_back");
 		else if (name == "SpotNext" && BuildingPicked())
@@ -661,22 +750,24 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	protected void DrawTabs()
 	{
-		array<string> names = {"All factions", "The Haven", "Task Force Bastion", "The Red Hand", "Halcyon"};
-		int count = 0;
-		foreach (array<string> counted : m_aSites)
-		{
-			if (s_iTab == 0 || RZ_UIText.Int(counted, 4) == s_iTab - 1)
-				count++;
-		}
-
-		RZ_UIW.SetText(m_wRoot, "FactionName", string.Format("%1 (%2)", names[s_iTab], count));
+		array<string> names = {"All", "Haven", "Bastion", "Red Hand", "Halcyon"};
 		for (int t = 0; t < TABS; t++)
 		{
-			Color dot = Lin(80, 80, 80);
-			if (t == s_iTab)
-				dot = Lin(232, 178, 58);
+			int n = 0;
+			foreach (array<string> site : m_aSites)
+			{
+				if (t == 0 || RZ_UIText.Int(site, 4) == t - 1)
+					n++;
+			}
 
-			RZ_UIW.Tint(m_wRoot, "FactionDot" + t.ToString(), dot);
+			string idx = t.ToString();
+			RZ_UIW.SetText(m_wRoot, "TabText" + idx, string.Format("%1 (%2)", names[t], n));
+			RZ_UIW.Show(m_wRoot, "TabLine" + idx, t == s_iTab);
+			Color c = Lin(154, 151, 143);
+			if (t == s_iTab)
+				c = Lin(255, 255, 255);
+
+			RZ_UIW.Tint(m_wRoot, "TabText" + idx, c);
 		}
 
 		array<string> filters = {"All", "Not built", "Hand-built", "Pinned"};
@@ -758,8 +849,6 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		}
 
 		m_iFirst = Math.Clamp(m_iFirst, 0, Math.Max(0, m_aItems.Count() - ROWS));
-		// Whole rows of two cards
-		m_iFirst -= m_iFirst % 2;
 		bool unsaved = RZ_UIText.Int(m_aHead, 5) == 1;
 		for (int r = 0; r < ROWS; r++)
 		{
@@ -776,7 +865,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			int item = m_aItems[at];
 			bool heading = item < 0;
 			RZ_UIW.SetTag(row, item);
-			RZ_UIW.Show(m_wRoot, "RowHead" + idx, true);
+			RZ_UIW.Show(m_wRoot, "RowHead" + idx, heading);
 			RZ_UIW.Show(m_wRoot, "RowName" + idx, !heading);
 			RZ_UIW.Show(m_wRoot, "RowSpots" + idx, !heading);
 			RZ_UIW.Show(m_wRoot, "RowStateBg" + idx, !heading);
@@ -793,10 +882,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 
 			array<string> site = m_aSites[m_aShown[item]];
 			bool on = item == picked;
-			RZ_UIW.SetText(m_wRoot, "RowName" + idx, RZ_UIText.Clean(RZ_UIText.Str(site, 2), 60));
-			string cardKind = RZ_UIText.Str(site, 3);
-			cardKind.ToUpper();
-			RZ_UIW.SetText(m_wRoot, "RowHead" + idx, headings[Math.Clamp(RZ_UIText.Int(site, 4), 0, 3)] + " · " + cardKind);
+			RZ_UIW.SetText(m_wRoot, "RowName" + idx, RZ_UIText.Clean(RZ_UIText.Str(site, 2), 34));
 			int building = RZ_UIText.Int(site, 10);
 			RZ_UIW.Show(m_wRoot, "RowDot" + idx, building == 1 && unsaved);
 			// Spots: done of all, for a site that's built or being built
@@ -821,12 +907,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			RZ_UIW.SetText(m_wRoot, "RowState" + idx, words);
 			RZ_UIW.Tint(m_wRoot, "RowStateBg" + idx, bg);
 			RZ_UIW.Tint(m_wRoot, "RowState" + idx, fg);
-			Color cardBg = Lin(27, 30, 33);
-			if (on)
-				cardBg = Lin(42, 47, 52);
-
-			RZ_UIW.Tint(m_wRoot, "RowBg" + idx, cardBg);
-			RZ_UIW.Show(m_wRoot, "RowBg" + idx, true);
+			RZ_UIW.Show(m_wRoot, "RowBg" + idx, on);
 			RZ_UIW.Show(m_wRoot, "RowMark" + idx, on);
 			if (on && row)
 				RZ_UIW.FocusWidget(row);
@@ -854,7 +935,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		string kind = RZ_UIText.Str(site, 3);
 		kind.ToUpper();
 		RZ_UIW.SetText(m_wRoot, "DetailHead", factions[fac] + " · " + kind);
-		RZ_UIW.SetText(m_wRoot, "DetailName", RZ_UIText.Clean(RZ_UIText.Str(site, 2), 80));
+		RZ_UIW.SetText(m_wRoot, "DetailName", RZ_UIText.Clean(RZ_UIText.Str(site, 2), 44));
 		string words;
 		Color bg;
 		Color fg;
@@ -1084,5 +1165,46 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		RZ_UIW.Show(m_wRoot, "Ask", ask);
 		if (ask)
 			RZ_UIW.SetText(m_wRoot, "AskText", RZ_UIText.Str(m_aHead, 7));
+
+		if (ask || !Picked())
+			m_bChoose = false;
+
+		RZ_UIW.Show(m_wRoot, "Choose", m_bChoose);
+		if (m_bChoose)
+			RZ_UIW.SetText(m_wRoot, "ChooseText", "From its layout: camp life's pieces stay, yours to move, delete and add to (go there first, they're put out once you're near). Empty: bare ground, you place everything.");
+
+		DrawTiles();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The big buttons in the site's pane: what A, X, Y and R3 do now, each with its button's name.
+	protected void DrawTiles()
+	{
+		array<string> buttons = {"A", "X", "Y", "R3"};
+		foreach (int i, string b : buttons)
+		{
+			string idx = i.ToString();
+			string label;
+			string act = ButtonOf(b, label);
+			bool there = !act.IsEmpty() && !m_bChoose;
+			RZ_UIW.Show(m_wRoot, "Tile" + idx, there);
+			if (!there)
+				continue;
+
+			RZ_UIW.SetText(m_wRoot, "TileKey" + idx, b);
+			RZ_UIW.SetText(m_wRoot, "TileText" + idx, label);
+			Color fill = Lin(36, 40, 44);
+			Color ink = Lin(236, 233, 225);
+			if (i == 0)
+			{
+				// The first is the main one: amber
+				fill = Lin(232, 178, 58);
+				ink = Lin(33, 29, 20);
+			}
+
+			RZ_UIW.Tint(m_wRoot, "TileBg" + idx, fill);
+			RZ_UIW.Tint(m_wRoot, "TileText" + idx, ink);
+			RZ_UIW.Tint(m_wRoot, "TileKey" + idx, ink);
+		}
 	}
 }
