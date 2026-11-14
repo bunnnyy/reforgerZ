@@ -882,16 +882,29 @@ class RZ_Mission_ContactReport : RZ_TribeContract
 				pick = t;
 		}
 
-		if (!TakeTribe(gm, pick))
+		if (!pick)
 			return false;
 
-		m_vPos = LandPointNear(pick.m_vLair, 350, 600);
+		// Both listening points on dry mainland, off the line (the place need "mission", docs/PLACES.md):
+		// a pack by the shore or on an island has none, and isn't counted from here
+		RZ_PlaceNeed need = RZ_PlaceNeeds.Get("mission");
+		m_vPos = RZ_PlaceFind.Near(pick.m_vLair, 350, 600, need);
+		if (m_vPos == vector.Zero)
+			return false;
+
 		for (int i = 0; i < 8; i++)
 		{
-			m_vSecond = LandPointNear(pick.m_vLair, 350, 600);
+			vector second = RZ_PlaceFind.Near(pick.m_vLair, 350, 600, need);
+			if (second == vector.Zero)
+				continue;
+
+			m_vSecond = second;
 			if (RZ_Util.DistXZ(m_vSecond, m_vPos) >= 250)
 				break;
 		}
+
+		if (m_vSecond == vector.Zero || !TakeTribe(gm, pick))
+			return false;
 
 		m_sTitle = "Contact Report";
 		m_sDeed = "counted the calls for Bastion";

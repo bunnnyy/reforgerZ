@@ -180,8 +180,17 @@ class RZ_Mission_VisitPoints : RZ_Mission
 			return false;
 
 		string key = PointKey(idx);
-		if (!sites.Has(key) && sites.Open(key, m_eWork, m_sWorkLabel, m_fWorkHold, m_aPoints[idx], 0, m_sWorkBefore, m_sWorkAfter) < 0)
-			return false;
+		if (!sites.Has(key))
+		{
+			if (sites.Open(key, m_eWork, m_sWorkLabel, m_fWorkHold, m_aPoints[idx], 0, m_sWorkBefore, m_sWorkAfter) < 0)
+				return false;
+
+			// The site may stand a little off a point on a slope or the shore (RZ_WorkSites.Steady):
+			// the point follows it, so the marker and who's at it are where the work is
+			vector at = sites.PosOf(key);
+			if (at != vector.Zero)
+				m_aPoints[idx] = at;
+		}
 
 		// Whoever is at it takes part; a background's bonus holds faster
 		array<int> near = {};

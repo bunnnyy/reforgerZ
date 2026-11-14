@@ -1581,6 +1581,10 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
 - **The thing.** At the step's place stands its **before** look (a marked pit, a pile of planks, a
   crate, a toolbox), with one world prompt on an invisible box: the step's own words (*Dig the
   latrine*, *Board up the doors*, *Fill and stack the sandbags*).
+- **Where it stands.** On the ground, a spot that misses the place need `work.site` (steeper than
+  25°, wet, behind a lock: [PLACES.md](PLACES.md#the-needs)) moves to the nearest spot that meets it
+  within 10, 20 then 40 m, logged; the owner's point, marker and tracker line follow it. Indoors spots
+  stay where they're put.
 - **Several at one spot.** An owner with several things to do at one spot gathers their sites
   (`Gather`): one box stands for them, the spot's name its prompt (*The far door*); a press opens
   the object menu with each as a row ([UI.md](UI.md#default-first-then-menus), "One spot, one

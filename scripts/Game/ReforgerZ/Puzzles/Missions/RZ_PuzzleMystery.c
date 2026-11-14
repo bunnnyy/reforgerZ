@@ -258,7 +258,12 @@ class RZ_Mission_TheWitness : RZ_PuzzleMission
 		if (!s)
 			return false;
 
-		m_vSpot = LandPointNear(s.m_vCenter, s.m_fRadius + 100, s.m_fRadius + 500);
+		// The body on dry mainland, off the line (the place need "mission", docs/PLACES.md); none, no job here
+		RZ_PlaceNeed need = RZ_PlaceNeeds.Get("mission");
+		m_vSpot = RZ_PlaceFind.Near(s.m_vCenter, s.m_fRadius + 100, s.m_fRadius + 500, need, m_iSettlement);
+		if (m_vSpot == vector.Zero)
+			return false;
+
 		m_vPos = m_vSpot;
 
 		array<int> used = {m_iSettlement};
@@ -272,7 +277,10 @@ class RZ_Mission_TheWitness : RZ_PuzzleMission
 		RZ_Landmark mark = RZ_LandmarkFinder.FindNearest(y.m_vCenter, y.m_fRadius, kinds);
 		if (mark)
 		{
-			m_vCamp = LandPointNear(mark.m_vPos, 20, 60);
+			m_vCamp = RZ_PlaceFind.Near(mark.m_vPos, 20, 60, need);
+			if (m_vCamp == vector.Zero)
+				m_vCamp = LandPointNear(mark.m_vPos, 20, 60);
+
 			m_sCampName = string.Format("%1 in %2", mark.m_sName, y.m_sName);
 		}
 		else

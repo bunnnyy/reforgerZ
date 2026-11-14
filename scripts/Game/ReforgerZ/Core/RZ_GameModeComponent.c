@@ -2927,6 +2927,23 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			m_bHasLab = true;
 		}
 
+		// On dry mainland (the place need "world.place", docs/PLACES.md): every lab mission stands at
+		// the lab, so a town by the water must not put it in the water. A save's lab moves too
+		RZ_PlaceNeed dry = RZ_PlaceNeeds.Get("world.place");
+		string why;
+		if (dry && !RZ_PlaceCheck.Check(m_vLabPos, dry, -1, "", why))
+		{
+			vector moved = RZ_PlaceFind.Near(m_vLabPos, 0, 150, dry);
+			if (moved == vector.Zero)
+				moved = RZ_PlaceFind.Near(m_vLabPos, 0, 400, dry);
+
+			if (moved != vector.Zero)
+			{
+				RZ_Log.Info(string.Format("Lab: moved %1 m from %2 (%3) to dry ground", RZ_Util.RoundToInt(RZ_Util.DistXZ(m_vLabPos, moved)), RZ_SettlementScanner.GridReference(m_vLabPos), why));
+				m_vLabPos = moved;
+			}
+		}
+
 		m_vLabPos = RZ_Util.GroundPos(m_vLabPos);
 		m_Lab = RZ_Util.SpawnPrefab(m_sLabPrefab, m_vLabPos);
 		if (!m_Lab)
