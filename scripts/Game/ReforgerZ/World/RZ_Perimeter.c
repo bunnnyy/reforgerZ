@@ -204,6 +204,30 @@ class RZ_Perimeter
 
 	float GetWarnDistance() { return m_fWarn; }
 	float GetKillDistance() { return m_fKill; }
+	//! The warning zone's drone (Perimeter > Drone prefab, "" none) and its height, for the opening's line
+	ResourceName GetDronePrefab()
+	{
+		if (!m_Settings)
+			return "";
+
+		return m_Settings.m_sDronePrefab;
+	}
+
+	float GetDroneHeight()
+	{
+		if (!m_Settings)
+			return 25;
+
+		return m_Settings.m_fDroneHeight;
+	}
+
+	float GetCheckpointWarnRadius()
+	{
+		if (!m_Settings)
+			return 0;
+
+		return m_Settings.m_fCheckpointWarnRadius;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Works out the edge and builds the checkpoints. Called once by the game mode at start.

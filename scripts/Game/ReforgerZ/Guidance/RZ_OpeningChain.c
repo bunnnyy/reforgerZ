@@ -112,6 +112,9 @@ class RZ_OpeningChain
 	ref RZ_OpeningStepDef m_Lead;				// levels 2-3: the nearest place with work, from whoever's outside
 	ref RZ_OpeningStepDef m_LeadNote;			// the same with nobody outside: the scene's read says it
 	ref RZ_OpeningStepDef m_Case;				// the chain's end: the runner and his case
+	ref RZ_OpeningStepDef m_CaseSeen;			// the same, after the line: the man you saw shot
+	ref RZ_OpeningStepDef m_LineWalk;			// beat 3, the line: walk with him to the road above it
+	ref RZ_OpeningStepDef m_LineWatch;			// and watch it with him (RZ_OpeningLine)
 	ref array<ref RZ_OpeningStepDef> m_aWalk = {};	// by the ending faction (RZ_EFaction)
 	protected ref map<int, ref RZ_OpeningStepDef> m_mTasks = new map<int, ref RZ_OpeningStepDef>();
 
@@ -267,6 +270,43 @@ class RZ_OpeningChain
 			"Whoever he was, he's {place} now. He had a case with him. See what it is before somebody else does.");
 		cw.Done("Halcyon. The lab people. If that's alive, it's the only thing in the Zone that matters.",
 			"That's a Halcyon tag. Don't open it. Whatever's in there, it's theirs, and they'll want it cold.");
+
+		// After the line: the man you saw shot, where he fell
+		m_CaseSeen = new RZ_OpeningStepDef("opening.case.seen", "The Runner", 3);
+		m_CaseSeen.m_fLapseMinutes = 90;
+		RZ_ErrandWay sw = m_CaseSeen.Way("do");
+		sw.m_ePlace = RZ_EErrandPlace.SUBJECT;
+		sw.m_fSeconds = 1;
+		sw.m_fRadius = 12;
+		sw.m_bEndsThere = true;
+		sw.m_sStep = "Take the case from the runner, {place}.";
+		sw.Take("He had a pack on him. Whatever made a man run at that, it's still on him. Go and look. I can't.",
+			"Go down to him. Quick, before the drone comes back. Whatever he was carrying, he thought it was worth that.");
+		sw.Done("Halcyon. The lab people. If that's alive, it's the only thing in the Zone that matters.",
+			"That's a Halcyon tag. Don't open it. Whatever's in there, it's theirs, and they'll want it cold.");
+
+		// Beat 3, the line (RZ_OpeningLine): walk with him to the road above it, then watch it with him
+		m_LineWalk = new RZ_OpeningStepDef("opening.line.walk", "The Line", 3);
+		m_LineWalk.m_fLapseMinutes = 30;
+		RZ_ErrandWay lw = m_LineWalk.Way("do");
+		lw.m_ePlace = RZ_EErrandPlace.SUBJECT;
+		lw.m_fSeconds = 1;
+		lw.m_fRadius = 25;
+		lw.m_bEndsThere = true;
+		lw.m_sStep = "Walk with {giver} to {place}.";
+		lw.Take("I'm going to try the line. The road over the hill, while nobody's looking. Walk me as far as the top.",
+			"There's a road that goes up to the line. I want to see it for myself. Come as far as the top with me.");
+
+		m_LineWatch = new RZ_OpeningStepDef("opening.line.watch", "The Line", 3);
+		m_LineWatch.m_fLapseMinutes = 30;
+		RZ_ErrandWay lt = m_LineWatch.Way("do");
+		lt.m_ePlace = RZ_EErrandPlace.SUBJECT;
+		lt.m_fSeconds = 1;
+		lt.m_fRadius = 40;
+		lt.m_bEndsThere = true;
+		lt.m_sStep = "Watch the line with {giver}.";
+		lt.Take("Here. You can see the road from here. Just watch a minute.",
+			"This is as far as anyone goes. Stay low and watch.");
 
 		for (int f = 0; f < RZ_Factions.COUNT; f++)
 		{

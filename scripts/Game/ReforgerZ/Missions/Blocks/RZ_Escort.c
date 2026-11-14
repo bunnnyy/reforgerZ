@@ -39,6 +39,7 @@ class RZ_Escort
 	float m_fArriveRadius = 20;
 	float m_fFollowGap = 6;					// follow mode: stop this close behind the player
 	bool m_bHide = true;					// wait while infected are within 25 m
+	float m_fLeash = -1;					// stop when no player is this close (-1: Contracts > Escort leash)
 
 	protected ref array<vector> m_aRoute = {};
 	protected int m_iLeg;
@@ -381,6 +382,9 @@ class RZ_Escort
 		if (cs)
 			leash = cs.m_fEscortLeash;
 
+		if (m_fLeash > 0)
+			leash = m_fLeash;
+
 		if (m_iFollow > 0)
 		{
 			IEntity p = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iFollow);
@@ -634,6 +638,21 @@ class RZ_Escort
 	void Cleanup()
 	{
 		Despawn();
+		if (m_bCounted)
+		{
+			s_iRunning = Math.Max(0, s_iRunning - 1);
+			m_bCounted = false;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Frees the slot and lets the body go without deleting it (a body the owner keeps: the opening's
+	//! runner, where he fell). The escort is done with afterwards.
+	void Release()
+	{
+		m_bHasBody = false;
+		m_Body = null;
+		m_eState = RZ_EEscortState.DEAD;
 		if (m_bCounted)
 		{
 			s_iRunning = Math.Max(0, s_iRunning - 1);

@@ -1273,6 +1273,13 @@ class RZ_PlaceNeeds
 		n.Thing(RZ_EThingKind.REMAINS, "the runner", "runner", 4, NOT_OFFERED);
 		n.Thing(RZ_EThingKind.ITEM, "the case", "case", 4, NOT_OFFERED);
 
+		n = Add("opening.line", "the road above the line, where you watch it with him");
+		n.Road(10);
+		n.Steep(20);
+
+		n = Add("opening.line.open", "the rise above the line, where you watch it with him (a world with no road network)");
+		n.Steep(20);
+
 		n = Add("opening.runner.yard", "the runner, fallen in a yard on the edge of town, and the case he carried");
 		n.Houses(1, 25);
 		n.Steep(25);

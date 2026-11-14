@@ -641,6 +641,10 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 12 && !RZT_Case.Tick(this, m_aRZTRoute[0]))
 			return;
 
+		// The opening's line (RZT_Line.c): a road above it, the runner shot in the warning zone, the line said
+		if (m_iRZTSec >= 12 && !RZT_Line.Tick(this))
+			return;
+
 		if (m_iRZTSec > 5 && m_iRZTSec % 3 == 0 && !m_bRZTMissionsDone)
 		{
 			if (!GetMissions().RZT_Step())

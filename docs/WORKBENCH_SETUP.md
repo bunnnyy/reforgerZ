@@ -1944,7 +1944,16 @@ tissue (`case.tissue` 1), with Proof's part checked when Proof runs; a second ca
 nothing; a Red Hand speaker lists the sale, and selling sets Get It Back going. The test server
 can't put a text-written prefab in a pack (no registered resource id), so the tester holds the case
 through the case's test stand-in (`RZ_ColdCaseComponent.s_TestCarried`) and says so (`RZT case OK|FAIL
-<what>`, `RZT case: N checks, N failed`; the run fails on FAIL). The fake player logs `Openings: Tester <background>: NO OPENING` at boot: it isn't
+<what>`, `RZT case: N checks, N failed`; the run fails on FAIL). Then **the line** (`RZT_Line.c`): a
+road above the line near some town (150–250 m outside the warning zone, 600 m to 2 km off; the
+test world has no road network, so open ground stands in, as in play on such a map), where he'd fall
+in the warning zone and not the kill zone; the scene played with the tester held at the viewpoint:
+the loudspeakers, a runner who breaks from cover, shot in the warning zone (on this server Guidance >
+Companion is an unregistered text prefab and a base-game group stands in for him; when that has no
+members in time he's laid down where he'd have fallen, and the check says so), dead there with the
+case by him, the line said, and the tester never shot and never in the zones (`RZT line OK|FAIL
+<what>`, `RZT line: the runner N s in: state ...`, `RZT line: N checks, N failed`; the run fails on
+FAIL). The fake player logs `Openings: Tester <background>: NO OPENING` at boot: it isn't
 spawned through the spawn screen, so no place is rolled for it. From then
 on the fake player can't hold a prompt, so while it stands at a mission the open work sites within 25 m of
 it are done for it (the others wait until the tracker sends it there) (`RZT work sites: N done for '<title>'`), and a job finished that way ends by itself. An objection
@@ -2213,7 +2222,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **204** lines with the tag, all but one in the game scripts (one is the comment in
+There are **206** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2236,7 +2245,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (95)
+### Medium risk: big features, with a fallback (97)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2251,8 +2260,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_Loot.c:391` | a building's furniture props are found: as its children, or by the sphere query over every entity in its box (vanilla's props aren't flagged static and have no `Hierarchy`) | Loose loot lies only on the floor points in each building's box, and upstairs only on the guessed floor above: the `Loot: put out` lines say 0 on furniture everywhere |
 | `Interactions/RZ_Loot.c:1555` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
 | `Core/RZ_Util.c:787` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
-| `World/RZ_Perimeter.c:270` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
-| `World/RZ_Perimeter.c:953`, `:968` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
+| `World/RZ_Perimeter.c:294` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
+| `World/RZ_Perimeter.c:977`, `:992` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
 | `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Locks** off (nothing is locked) |
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:67` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
@@ -2353,9 +2362,11 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
 | `Guidance/RZ_OpeningCase.c:255` | the runner (Puzzles > Civilian) killed the moment he's spawned falls and lies where he was put, for every client, as A Sample's remains | He stands, dead to the server: the case still lies by him |
 | `Guidance/RZ_ColdCase.c:75` | `GetItems()` finds the cold case in a bag inside another bag, as for keys | A case carried that deep isn't seen: the hand-over reply doesn't show until it's in a pocket or the pack itself |
-| `Guidance/RZ_OpeningCase.c:811` | deleting the case while it's still in a dead body's storage (when `TryDeleteItem` refuses) leaves the body's storage sound | The body's inventory shows an empty slot or an error; the case still comes back on respawn |
+| `Guidance/RZ_OpeningCase.c:825` | deleting the case while it's still in a dead body's storage (when `TryDeleteItem` refuses) leaves the body's storage sound | The body's inventory shows an empty slot or an error; the case still comes back on respawn |
+| `Guidance/RZ_OpeningLine.c:284` | the line's runner (Guidance > Companion, a one-man civilian group on a move waypoint) sprints when `SetMovementTypeWanted(SPRINT)` is asked of him, as the infected's behaviour layer does | He walks or jogs at the line: the scene still plays, only slower (he's shot where he stands after 60 s) |
+| `Guidance/RZ_OpeningLine.c:378` | the line's drone (Perimeter > Drone prefab) moved with `SetOrigin` over the runner shows moving on every client | It hangs where it first appeared, over the place he broke from cover |
 | `Guidance/RZ_OpeningSteps.c:516` | A Sample's remains: a special spawned and killed at once on the server (`RZ_Util.KillCharacter`) falls and lies where it was spawned, for every client | The body stands, or isn't seen: the place check still passes (it's dead there). Spawn it a frame later, or use a body prop |
-| `Guidance/RZ_Openings.c:1149` | an opening's contact who walks with you: a one-man civilian AI group (**Guidance > Companion**, `RZ_OpeningCompanion.et`) follows the player on `RZ_Escort`'s move orders, and its leader (the `RZ_Civilian` body) carries the talk tags | They stand still where they were swapped in, or "Talk to" is missing on them: the log's `Openings: <name> walks with <player>` is there. The steps still start on their cards after a minute; report it, and set **Companion** empty (they hand you on instead) |
+| `Guidance/RZ_Openings.c:1183` | an opening's contact who walks with you: a one-man civilian AI group (**Guidance > Companion**, `RZ_OpeningCompanion.et`) follows the player on `RZ_Escort`'s move orders, and its leader (the `RZ_Civilian` body) carries the talk tags | They stand still where they were swapped in, or "Talk to" is missing on them: the log's `Openings: <name> walks with <player>` is there. The steps still start on their cards after a minute; report it, and set **Companion** empty (they hand you on instead) |
 | `Guidance/RZ_OpeningSteps.c:532` | the remains withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stay until the opening ends, then go with the engine's cleanup once inserted again (as the vigil's body) | The body goes with the engine's usual cleanup during the step; the sample still lies there |
 | `Guidance/RZ_Guidance.c:480` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
@@ -3656,6 +3667,19 @@ when it happens)
   Again at Bastion: *The Case at the Post*. Die carrying it: it isn't on the body, and the respawned
   character has it in the pack ("You still have the runner's case."). Keep it a game day: Halcyon's
   channel asks after it once. Log lines as in [DESIGN.md](DESIGN.md#the-case).
+- [ ] **The line** ([DESIGN.md](DESIGN.md#the-line)), with a pad, as a brand-new character (level 0
+  or 1), on Everon. After the favour the contact says he's going to try the line: *The Line* is
+  tracked, the marker on him, and he leads you to a road above the line (600 m to 2 km off). There:
+  the loudspeakers, the Perimeter's drone over the road ahead, and a man with a pack breaks from
+  cover 100 m ahead and runs (does he sprint? VERIFY `Guidance/RZ_OpeningLine.c:284`); as he enters
+  the warning zone the loudspeaker shouts at him and the drone follows him (VERIFY `:378`); 15 m in,
+  the shot: he drops. Quiet, then *"Eleven days. They said aid was coming."* Then *The Runner*: the
+  marker on his body, the case by him (walking to him puts you in the warning zone: the loudspeaker
+  and drone run as built, no shot unless you go on into the kill zone). Say how long the scene feels,
+  whether he's visible from the viewpoint, and whether you were ever shot at. As a familiar or veteran
+  character (or with two other players near the line): no scene, the shot heard and the contact's
+  *"That came from the line. Somebody tried it."*, the runner found already down. Log lines as in
+  [DESIGN.md](DESIGN.md#the-line): paste the `Openings: the line ...` ones.
 - [ ] **Openings** ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), with a pad. The spawn
   screen has no place picker: under Start, only the kind of place the picked background starts at
   ("A clinic, or a house near one"); left and right do nothing. Deploy as a Nurse: you stand 2 m out
