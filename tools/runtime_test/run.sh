@@ -221,6 +221,9 @@ cp -r "$HERE/files/." "$ADDON/"
 # so the power test spawns the real ones
 mkdir -p "$ADDON/Prefabs/ReforgerZ/World"
 cp "$ROOT"/Prefabs/ReforgerZ/World/RZ_PowerDressing.et* "$ROOT"/Prefabs/ReforgerZ/World/RZ_PowerGeneratorSound.et* "$ADDON/Prefabs/ReforgerZ/World/"
+# The hand-built sites' role spots (docs/SITES.md, "Role spots"): a shipped save's spots spawn them
+mkdir -p "$ADDON/Prefabs/ReforgerZ/World/HandBuilt"
+cp "$ROOT"/Prefabs/ReforgerZ/World/HandBuilt/RZ_HandSpot*.et* "$ADDON/Prefabs/ReforgerZ/World/HandBuilt/"
 "$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
 "$PY" "$HERE/sites.py" prepare "$ADDON" Worlds/RZTest/RZTest.ent || exit 2
 
