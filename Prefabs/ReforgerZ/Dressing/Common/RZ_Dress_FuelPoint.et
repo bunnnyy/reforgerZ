@@ -1,0 +1,57 @@
+GenericEntity {
+ ID "96533BAED7EC917B"
+ components {
+  RplComponent "{A3E2EA5E4123C90F}" {
+  }
+  Hierarchy "{CBDB9F1A3322B52B}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{CCE8A0B7AF404687}Prefabs/Props/CustomDestructible/new_WIP/US_fuelpump.et" {
+   ID "E9EE743A275B5D7C"
+   components {
+    Hierarchy "{97D174628F5BA320}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
+   ID "14A30ACB9F6C7B0C"
+   components {
+    Hierarchy "{4CA587268AFF558E}" {
+    }
+   }
+   coords 1.7 0 0.2
+   angles 0 0 0
+  }
+  GenericEntity : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
+   ID "82DF44952614C5EC"
+   components {
+    Hierarchy "{D6505A6623A76975}" {
+    }
+   }
+   coords 1.8 0 -0.557
+   angles 0 0 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "C4DDA03E106B6F72"
+   components {
+    Hierarchy "{BDB6D6345606AD25}" {
+    }
+   }
+   coords -1.4 0 0.3
+   angles 0 15 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "36E8F8BB8B3612E5"
+   components {
+    Hierarchy "{32EA08DFB9ADB82D}" {
+    }
+   }
+   coords -1.45 0 -0.1
+   angles 0 -20 0
+  }
+ }
+}

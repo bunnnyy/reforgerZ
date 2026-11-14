@@ -1743,7 +1743,7 @@ class RZ_QM_CargoFate : RZ_QuestMission
 			m_iPath = PATH_OUT;
 			m_iSecond = playerId;
 			Remember(gm, playerId, RZ_EQuestApproach.SNEAK, "walked the driver out");
-			RZ_Util.DeleteUnit(m_Driver);
+			RZ_Leaving.Remove(m_Driver);
 			m_Escort.Follow(playerId);
 			m_Escort.Go();
 			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, string.Format("{driver_short} picks up the bag. \"Don't take the road. They know the road.\" Take him to %1.", m_sRefuge)));
@@ -1764,7 +1764,7 @@ class RZ_QM_CargoFate : RZ_QuestMission
 				m_iPath = PATH_RING;
 				m_iSecond = playerId;
 				Remember(gm, playerId, RZ_EQuestApproach.FORCE, "took the driver's place in the pit");
-				RZ_Util.DeleteUnit(m_Driver);
+				RZ_Leaving.Remove(m_Driver);
 				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You climb into the ring instead of him. The crowd likes that better. Four rounds, and {driver_short} walks."));
 			}
 

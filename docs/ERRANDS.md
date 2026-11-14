@@ -119,7 +119,8 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
   two tins" is *[Errand] I'll hand over two tins.*, with [Errand] and its tags in front, and "Not now"
   is *Not now. Ask me again another time.* ([WRITING.md](WRITING.md#talk)). A way you can't take shows
   locked with what it needs (`RZ_Errands.WayLock`: *Needs Mechanic*, *Needs Trusted with Haven*,
-  *Needs 2 food*, *Needs 8 Haven Favor*); a Trust check or a threat isn't a lock, its tag shows the
+  *Needs 2 food*, *Needs 8 Haven Favor*), things handed over at the place too (*Needs 1 battery*:
+  you take the way with them on you, and the work there is locked without them); a Trust check or a threat isn't a lock, its tag shows the
   score. While the ways show, the giver's topics wait (they're waiting on your answer). The labels
   above stay the world prompt's.
 - **Errands and jobs are separate** (the author's rule). Errands and duties count only against
@@ -607,7 +608,11 @@ hands at a [work site](#work-sites) at the place (or behind it), then back to th
 
 | Duty | Rung | Their own work (roles) | Haven | Bastion | Red Hand | Halcyon | Tasks (one a run) and ways | Pay | Status |
 |---|---|---|---|---|---|---|---|---|---|
+<<<<<<< HEAD
+| Kitchen | 1 | cook, storekeeper, farmer | Kitchen Duty | Mess Duty | Feeding the Crew | Canteen | Peel and chop (18 s) · Stir the pot (20 s) · Ladle supper out (16 s), both at the cook pot (**Stir the pot** is [minded up close](#minding-the-pot)). Or **put two tins in the pot**, or **a leg of raw meat** (a deer's, [DESIGN.md](DESIGN.md#wildlife)) | 3 Favor; the tins 4 Favor and +1 food at a house, the meat 4 Favor and +2 (a house is fed by duties twice a season day at most) | ✅ |
+=======
 | Kitchen | 1 | cook, storekeeper, farmer | Kitchen Duty | Mess Duty | Feeding the Crew | Canteen | Peel and chop (18 s) · Stir the pot (20 s) · Ladle supper out (16 s), all three at the camp's own cook pot, else at a kitchen table or stove with the pot ([Work sites](#work-sites)). Or **put two tins in the pot**, or **a leg of raw meat** (a deer's, [DESIGN.md](DESIGN.md#wildlife)) | 3 Favor; the tins 4 Favor and +1 food at a house, the meat 4 Favor and +2 (a house is fed by duties twice a season day at most) | ✅ |
+>>>>>>> origin/claude/sleepy-volta-nwm433
 | Wood and water | 1 | storekeeper, farmer, mechanic, technician | Wood and Water | Fatigues | Earn Your Keep | The Boiler | Split the wood (18 s, at the woodpile) · Fill the water cans (15 s) · **Carry the crates in**: three crates from outside, one by one, stacked indoors ([carried for real](#carried-for-real)) | 3 Favor | ✅ |
 | Washing down | 1 | nurse, medic, lab assistant, clerk | Washing Down | Hygiene Detail | The Scrub | Decontamination, Minor | Scrub the tables (18 s) · Wash and hang the bedding (16 s, at the washing line) · Sluice the yard (18 s, a bucket) | 3 Favor | ✅ |
 | The line | 2 | nurse, medic, lookout, sentry, guard, toll man | The Line at the Door | The Wash-Down | The Look-Over | Intake | [A sorting duty](#the-sorting-duties): the people waiting at the gate. Take each by the arm to **the holding room** (a bite, clouded eyes), **the wash** (a fever) or **through the gate** | Up to 6 Favor by how many you got right; 1 Fame if every one | ✅ |
@@ -626,6 +631,22 @@ hands at a [work site](#work-sites) at the place (or behind it), then back to th
 | The animal house | 4 | lab assistant, technician | — | — | — | The Animal House | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
 
 
+### Minding the pot
+
+The kitchen duty's **Stir the pot** is played at the real cook pot in the
+[hands-on view](UI.md#the-hands-on-view) (`RZ_StoveHandsOn`): a short press on its prompt opens it.
+
+| | |
+|---|---|
+| The fire | Yours: **More wood** and **Rake the fire down** (the panel's buttons, 0 to 4). The pot follows it slowly: cold, warming, simmering, boiling hard, boiling over |
+| Cooking | Twenty seconds at a simmer, stirred lately and nothing stuck, and it's done: the step is done, as the hold was. The status line counts it |
+| Stir it | A place on the pot: resets the clock. Hot and not stirred for 9 s, it catches (no cooking till it's scraped off with a stir); 16 s, it burns through and is started again (nothing lost but the time) |
+| Taste it | A place on the pot: says what it wants (more heat, keep it so, calm the fire) |
+| Boiling over | Too much fire: it spills, and the third time the fire is half drowned |
+| Pay | The chore's own 3 Favor, nothing more |
+
+Every turn is said in the panel's **What you found**. A client without the view holds the prompt as before.
+
 ### The sorting duties
 
 The line, the dead, the bench and stock-taking are one game in four skins, **played at the place
@@ -635,8 +656,12 @@ with your hands**, never on a screen (`RZ_DutyGames`, `RZ_DutyGame`; the rule is
 the result. The server holds the truth and judges.
 
 **How it plays, in three lines.** Three or four subjects wait in a row at the place (bodies, people,
-trays). Each has **one prompt, its name** (*A courier*, *Tag 114*): it opens the
-[object menu](UI.md#the-object-menu) with its three places to look, a 2 s hold each once picked
+trays). Each has **one prompt, its name** (*A courier*, *Tag 114*): it opens it up close in the
+[hands-on view](UI.md#the-hands-on-view) (`RZ_DutyHandsOn`): the camera on the person, body, tray or
+crate, its three places glowing where they are on it (a look is a short hold there, and one seen
+shows again for nothing), everything said about it in the panel's **What you found**, and **Take
+them by the arm** as its button (the prompt then waits for the 3 s hold). A client that can't show
+the view gets the [object menu](UI.md#the-object-menu) with its three places to look, a 2 s hold each once picked
 (*Look at the arms*, *Look at the neck*, *Check the papers against the tag*), and taking it up
 (*Take them by the arm*, 3 s), under its tell, what you've seen of it, the looks left and the
 rules. You have fewer looks than there are places (subjects + 2), so the tells say where to spend
@@ -718,6 +743,13 @@ repeat soon. Two things the beats can do that a patrol's finds don't:
 - **Places to look, and fewer looks than places.** A beat can have several things to do, each at
   its own spot a few metres out, with only so many allowed before it moves on (the roll call: five
   places, three looks).
+- **Up close.** A beat whose things to do stand at one spot (an arrival at the decon line, a bag at
+  the incinerator, a bed on the ward, a kit, a thing off the tarp) opens in the
+  [hands-on view](UI.md#the-hands-on-view) (`RZ_BeatHandsOn`) on what stands there: its looks are
+  glowing places set out across it, its calls the panel's buttons (places too, when there are more
+  than three), and every line said out here in **What you found**. Choosing up close is the same as
+  the prompt's hold; the next beat at the same spot opens up close by itself. A beat with someone to
+  talk to stays the talk.
 - **A call that's scored.** The beat that follows asks what you make of it; the right answer is in
   what you saw. The scene pays by the share of calls got right, and Fame only when every one was.
 

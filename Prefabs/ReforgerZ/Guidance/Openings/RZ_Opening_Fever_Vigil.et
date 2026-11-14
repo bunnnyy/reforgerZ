@@ -24,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0 0.45 0
+   angles 0 0 0
   }
   GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
    ID "C5FFDE85B7CBA11B"
@@ -32,14 +33,17 @@ GenericEntity {
     }
    }
    coords 0.6 0 0.2
+   angles 0 0 0
   }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
    ID "777B1F900DE0C027"
    coords 0.5 0 -0.2
+   angles 0 0 0
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "407AB302817CA80C"
    coords -0.6 0 0.3
+   angles 0 0 0
   }
  }
 }

@@ -51,6 +51,7 @@ class RZ_SiteAudit
 	int m_iHandBuilt;		// hand-built sites in use: listed, not scored (World/HandBuilt)
 
 	static const float OVERLAP_AREA = 0.1;		// m2: less than this between two footprints isn't an overlap
+	static const float RUN_END = 0.15;		// m: a run on the line may touch what it meets this far into its ends
 	static const float FLOAT_SPREAD = 0.3;		// ground under one prop varying more than this: one edge floats or is buried
 	static const float THREAT_WATCH = 3;		// a side this threatened wants a watch facing it
 	static const int PERIMETER_STRONGHOLD = 80;	// a stronghold's wire closed this much at least (percent)
@@ -82,6 +83,18 @@ class RZ_SiteAudit
 			{
 				array<vector> quad = {};
 				foot.Corners(r, placed.m_vPos, placed.m_fYaw, 0, quad);
+				// A run on the line meets the next one, a road block or what closes the line at its ends,
+				// as the solver lays it: a fence's last 0.6 m may reach into it, any other run's touching
+				// end a little (docs/SITES.md, "Close it off")
+				if (placed.m_iLayer == RZ_ESiteLayer.WIRE || placed.m_iLayer == RZ_ESiteLayer.BLOCK)
+				{
+					float trim = RUN_END;
+					if (placed.m_Entry.Rules().m_bFence)
+						trim = RZ_SiteSolver.FENCE_OVERHANG;
+
+					TrimEnds(quad, trim);
+				}
+
 				rects.Insert(quad);
 				owner.Insert(pi);
 				seat.Insert(foot.IsSeat(r));
@@ -121,19 +134,29 @@ class RZ_SiteAudit
 				}
 			}
 
-			if (!seat[k] && grid && SolidArea(grid, rect) > OVERLAP_AREA)
+			if (!seat[k] && grid && SolidArea(grid, rect, entry.Rules().m_bFence) > OVERLAP_AREA)
 				AddOverlap(overlaps, overlapAt, PieceName(entry) + " and something standing there", Middle(rect));
 		}
 
 		// Floating or buried: the ground under one prop varies over 0.3 m
 		int floating = 0;
+		string floaters = "";
 		if (grid)
 		{
 			foreach (int f, array<vector> under : rects)
 			{
 				RZ_SitePlaced on = result.m_aPlaced[owner[f]];
 				if (!seat[f] && !on.m_bWall && Spread(grid, under, on.m_vPos, on.m_fYaw, on.m_fSlope) > FLOAT_SPREAD)
+				{
 					floating++;
+					if (floating <= 6)
+					{
+						if (!floaters.IsEmpty())
+							floaters += ", ";
+
+						floaters += PieceName(on.m_Entry);
+					}
+				}
 			}
 		}
 
@@ -385,11 +408,16 @@ class RZ_SiteAudit
 		string dropped = "";
 		foreach (RZ_SitePlaced drop : result.m_aDropped)
 		{
+			// A dense kit's extra is there if there's room: leaving one out costs nothing
 			int tier = TierOf(drop.m_Entry, p.m_eFaction);
-			if (tier == 1)
-				tierOneDropped++;
+			if (!drop.m_Entry.m_bExtra)
+			{
+				if (tier == 1)
+					tierOneDropped++;
 
-			dropCost += DropCost(tier);
+				dropCost += DropCost(tier);
+			}
+
 			if (!dropped.IsEmpty())
 				dropped += ", ";
 
@@ -475,7 +503,7 @@ class RZ_SiteAudit
 			layersText += ", over water: " + wet;
 
 		RZ_Log.Info(string.Format("Sites: %1: score %2; %3 of %4 pieces; %5; %6; %7dropped: %8; %9", what, scored, result.m_aPlaced.Count(), planned, perimeterText, layersText, front, dropped, overlapText)
-			+ string.Format("; %1 floating or buried; posts: %2", floating, PostText(gateText, posts.Count(), blindPosts, watchedSides, threatSides))
+			+ string.Format("; %1 floating or buried%2; posts: %3", floating, Listed(floaters), PostText(gateText, posts.Count(), blindPosts, watchedSides, threatSides))
 			+ string.Format("; paths: %1; routes %2 of %3 points walkable (%4); read %5 ms in %6 steps (most %7 ms, the longest part %8 ms)", paths, routePoints - badRoute, routePoints, routeText, grid.m_iReadMs, grid.m_iSteps, grid.m_iMaxStepMs, grid.m_iMaxUnitMs)
 			+ string.Format(", laid out in %1 ms in %2 steps (most %3 ms, the longest part %4 ms).", result.m_iSolveMs, solveSteps, solveMost, solvePart));
 
@@ -738,13 +766,19 @@ class RZ_SiteAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Measured from its first corner: world coordinates of thousands of metres, multiplied in single
+	//! precision, made a 2 cm touch between two fence runs read as an overlap of square metres.
 	protected static float SignedArea(array<vector> poly)
 	{
 		float sum = 0;
+		if (poly.IsEmpty())
+			return 0;
+
+		vector o = poly[0];
 		for (int i = 0; i < poly.Count(); i++)
 		{
-			vector u = poly[i];
-			vector v = poly[(i + 1) % poly.Count()];
+			vector u = poly[i] - o;
+			vector v = poly[(i + 1) % poly.Count()] - o;
 			sum += u[0] * v[2] - v[0] * u[2];
 		}
 
@@ -775,15 +809,67 @@ class RZ_SiteAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Square metres of solid cells (walls, trees, rocks, cars) whose middle lies in the quad.
-	protected static float SolidArea(RZ_SiteGrid grid, array<vector> quad)
+	//! " (a, b)" for a non-empty list, else "".
+	protected static string Listed(string names)
+	{
+		if (names.IsEmpty())
+			return "";
+
+		return " (" + names + ")";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Shortens a quad along its longer side by `trim` at each end (never under 0.2 m long).
+	protected static void TrimEnds(notnull array<vector> quad, float trim)
+	{
+		if (quad.Count() != 4)
+			return;
+
+		vector a = quad[1] - quad[0];
+		vector b = quad[3] - quad[0];
+		bool alongA = a.Length() >= b.Length();
+		vector side = b;
+		if (alongA)
+			side = a;
+
+		float len = side.Length();
+		if (len < 0.01)
+			return;
+
+		float cut = Math.Min(trim, (len - 0.2) * 0.5);
+		if (cut <= 0)
+			return;
+
+		vector step = side * (cut / len);
+		if (alongA)
+		{
+			quad[0] = quad[0] + step;
+			quad[3] = quad[3] + step;
+			quad[1] = quad[1] - step;
+			quad[2] = quad[2] - step;
+		}
+		else
+		{
+			quad[0] = quad[0] + step;
+			quad[1] = quad[1] + step;
+			quad[3] = quad[3] - step;
+			quad[2] = quad[2] - step;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Square metres of solid cells (walls, trees, rocks, cars) whose middle lies in the quad; for a
+	//! fence only walls and ruins (it runs through the rest: docs/SITES.md, "Close it off").
+	protected static float SolidArea(RZ_SiteGrid grid, array<vector> quad, bool fence = false)
 	{
 		int n = 0;
 		array<int> cells = {};
 		CellsIn(grid, quad, cells);
 		foreach (int c : cells)
 		{
-			if (grid.Flags(c % grid.m_iN, c / grid.m_iN) & RZ_SiteGrid.SOLID)
+			int cx = c % grid.m_iN;
+			int cz = c / grid.m_iN;
+			if ((grid.Flags(cx, cz) & RZ_SiteGrid.SOLID) && (!fence || (grid.LineAt(cx, cz) & RZ_SiteGrid.HARD)))
 				n++;
 		}
 

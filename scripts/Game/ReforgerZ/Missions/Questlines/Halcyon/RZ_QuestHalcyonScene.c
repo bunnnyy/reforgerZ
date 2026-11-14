@@ -88,7 +88,7 @@ class RZ_QM_HalcyonScene : RZ_QuestMission
 		if (on || !s.m_bUp)
 			return;
 
-		RZ_Util.DeleteUnit(s.m_Ent);
+		RZ_Leaving.Remove(s.m_Ent);
 		s.m_Ent = null;
 		s.m_bUp = false;
 	}

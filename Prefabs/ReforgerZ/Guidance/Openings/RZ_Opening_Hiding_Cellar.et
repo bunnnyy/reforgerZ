@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
    ID "3590F5539BB59FD6"
@@ -33,10 +34,12 @@ GenericEntity {
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "192391E3A62EA1A7"
    coords -0.3 0 -0.4
+   angles 0 0 0
   }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
    ID "F344D686158C3625"
    coords 0.2 0 -0.6
+   angles 0 0 0
   }
   GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
    ID "9DF672327F0BE8F9"
@@ -45,6 +48,7 @@ GenericEntity {
     }
    }
    coords 1.2 0 -0.3
+   angles 0 0 0
   }
  }
 }

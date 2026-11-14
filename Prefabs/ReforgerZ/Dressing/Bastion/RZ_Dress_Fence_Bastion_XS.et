@@ -1,0 +1,30 @@
+GenericEntity {
+ ID "10D6C35ED04AB5F8"
+ components {
+  RplComponent "{285D09DD3A264606}" {
+  }
+  Hierarchy "{03FFF86A5416A2AD}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{74F66E977B10C100}Prefabs/Structures/Walls/BarbedWire/NetFence_USSR_01/NetFence_USSR_01_1m.et" {
+   ID "175172C1612AA972"
+   components {
+    Hierarchy "{850C0D92AE38C5BB}" {
+    }
+   }
+   coords -0.866 0 0
+   angles 0 0 0
+  }
+  SCR_DestructibleEntity : "{1EDCD7CE5F02D279}Prefabs/Structures/Walls/BarbedWire/NetFence_USSR_01/NetFence_USSR_01_pole.et" {
+   ID "D8A0A4231E2312A7"
+   components {
+    Hierarchy "{C9D3633CE3D56E1C}" {
+    }
+   }
+   coords 0.753 0 0
+   angles 0 0 0
+  }
+ }
+}

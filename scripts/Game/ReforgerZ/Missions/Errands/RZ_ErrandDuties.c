@@ -244,7 +244,9 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		// At the camp's own cook pot when it has one; else at a kitchen table (or a stove) with the pot on
 		// it, and where none fits, the pot itself (docs/ERRANDS.md, "Work sites")
 		Task("Peel and chop for the pot", RZ_EWork.BENCH, "Peel and chop", 18, false, "Peel and chop at the kitchen table at {here}, then tell {giver}.", 3).Look(LOOK_KITCHEN_TABLE).AtKitchen();
-		Task("Mind the pot", RZ_EWork.HANDS, "Stir the pot", 20, false, "Stir the pot in the kitchen at {here}, then tell {giver}.", 3).Look(LOOK_STOVE).Fallback(LOOK_KITCHEN_TABLE).AtKitchen();
+		// Minding the pot is played up close (Missions/Errands/RZ_StoveHandsOn.c)
+		RZ_ErrandWay pot = Task("Mind the pot", RZ_EWork.HANDS, "Stir the pot", 20, false, "Stir the pot in the kitchen at {here}, then tell {giver}.", 3).Look(LOOK_STOVE).Fallback(LOOK_KITCHEN_TABLE).AtKitchen();
+		pot.m_bStove = true;
 		Task("Serve the line", RZ_EWork.HANDS, "Ladle supper out", 16, false, "Ladle supper out to the line at {here}, then tell {giver}.", 3).Look(LOOK_SERVE_TABLE).AtKitchen();
 		RZ_ErrandWay give = Way("give");
 		give.m_sLabel = "Put two tins in the pot";

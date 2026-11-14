@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords -0.8 0 0
+   angles 0 0 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
    ID "4274452EFFD5A57D"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0.8 0 0
+   angles 0 0 0
   }
   GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
    ID "1C5769BF97E46DB3"
@@ -31,10 +33,12 @@ GenericEntity {
     }
    }
    coords 0 1.3 0.06
+   angles 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
    ID "7B8239B237842EA0"
    coords -0.5 1.35 0.1
+   angles 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
    ID "B373DBB6F8820E1A"
@@ -44,6 +48,7 @@ GenericEntity {
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
    ID "6022A2BA95A44495"
    coords 0.1 1.33 0.12
+   angles 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
    ID "F934E5A3C7F16AB1"
@@ -53,6 +58,7 @@ GenericEntity {
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
    ID "7A45506B72470A92"
    coords 0.6 1.36 0.14
+   angles 0 0 0
   }
  }
 }

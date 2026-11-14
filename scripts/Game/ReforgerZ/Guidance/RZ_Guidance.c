@@ -248,6 +248,48 @@ class RZ_Guidance
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! /level (admins, for play-tests): your guidance level; "/level 0" to "/level 3" sets it from your
+	//! next character (your counted lives become that level's first, no refresher, and this character
+	//! won't count); "next" steps 0, 1, 2, 3, 0 (the talk screen's [Admin] row).
+	void Command(int playerId, string arg)
+	{
+		if (!RZ_NoticeBoard.IsAdmin(playerId))
+			return;
+
+		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
+		if (!p || !m_Settings)
+			return;
+
+		int level = GetLevel(p);
+		string a = arg.Trim();
+		int want = -1;
+		if (a.Contains("next"))
+			want = (level + 1) % 4;
+		else if (a == "0" || a == "1" || a == "2" || a == "3")
+			want = a.ToInt();
+
+		if (want < 0)
+		{
+			m_GM.NotifyPlayer(playerId, "Guidance level", string.Format("Level %1 (%2 counted lives). /level 0-3 sets it from your next character: 0 brand new, 1 learning, 2 familiar, 3 veteran.", level, p.m_iGuideLives));
+			return;
+		}
+
+		int lives = 0;
+		if (want == 1)
+			lives = m_Settings.m_iLivesLearning;
+		else if (want == 2)
+			lives = m_Settings.m_iLivesFamiliar;
+		else if (want == 3)
+			lives = m_Settings.m_iLivesVeteran;
+
+		p.m_iGuideLives = lives;
+		p.m_iGuideRefreshLeft = 0;
+		p.m_bGuideCounted = true;
+		RZ_Log.Info(string.Format("Guidance: %1 set to level %2 (%3 counted lives) by /level.", RZ_Util.PlayerName(playerId), want, lives));
+		m_GM.NotifyPlayer(playerId, "Guidance level", string.Format("Level %1 from your next character. Reset your character (the Standing page) to start an opening at it.", want));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The first meaningful life gets the goal "Find the Haven" (RZ_Objectives), unless its opening's
 	//! whole chain runs: its walk takes you to where you belong instead.
 	bool WantsHavenGoal(RZ_PlayerProfile p)

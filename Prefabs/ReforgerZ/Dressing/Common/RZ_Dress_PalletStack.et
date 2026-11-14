@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "E9F307188C78DFDA"
+ components {
+  RplComponent "{A1B3358EB4AF35E0}" {
+  }
+  Hierarchy "{6314022DE7B90F11}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
+   ID "A1053229E586D18A"
+   components {
+    Hierarchy "{ACEC0EF5A882A34E}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 4 0
+  }
+  GenericEntity : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
+   ID "165E01F3E0D0F523"
+   components {
+    Hierarchy "{265D6FAE7274929A}" {
+    }
+   }
+   coords 1.4 0 0.1
+   angles 0 -6 0
+  }
+  GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
+   ID "14AAFC9E1BEFA4DF"
+   components {
+    Hierarchy "{BFBAFE4AABD1B84A}" {
+    }
+   }
+   coords 0.1 0 1.3
+   angles 0 20 0
+  }
+ }
+}

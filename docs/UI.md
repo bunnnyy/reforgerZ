@@ -179,7 +179,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 
 | Screen | Preview | What it shows | Script | Status |
 |---|---|---|---|---|
-| HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; two at once, the most important first ([Notices](#notices)). The secure-radio indicator while a cracked channel lasts. One stealth bar: how much the infected notice you, six segments and HIDDEN, LOW, NOTICEABLE, SEEN, IN PLAIN SIGHT or LOUD, the speaker only while noise is part of it (only with [Stealth](DESIGN.md#the-hud) on). Under the bar during the cure finale's stand, within 150 m of the lab: the stand's line (`StandPanel`, `StandText`: *"CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00."*, routes never players; sent by `RZ_PlayerUIComponent.SendStand` every 2 s, gone 5 s after the last, [FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room)). Above the visibility meter while borrowed kit's look is coming: **the look line** (`RZ_Hud_Look`: `LookPanel`, the Watched eye `LookIcon` and `LookText`, *"PASS AS BASTION: 2 OF 2"* or *"…: SEEN THROUGH"*; owner-only through `RZ_UIFeed.PushLook`, sent only when it changes, gone once the look is done, the kit comes off or you're 200 m on; [REPUTATION.md](REPUTATION.md#borrowed-kit)). Top left, **the quest tracker** ([below](#the-quest-tracker), mockup `tracker.png`): only the job you track, its current objective, the known next one and a rough area (within a kilometre an arrow and metres); your other jobs are in the Quests tab only. Nothing to press, so it's the same on a pad (Track is in the notebook's Quests tab) | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer, the radio indicator, the stand's line, the look line and the tracker not seen yet |
+| HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; two at once, the most important first ([Notices](#notices)). The secure-radio indicator while a cracked channel lasts. One stealth bar: how much the infected notice you, six segments and HIDDEN, LOW, NOTICEABLE, SEEN, IN PLAIN SIGHT or LOUD, the speaker only while noise is part of it (only with [Stealth](DESIGN.md#the-hud) on). Under the bar during the cure finale's stand, within 150 m of the lab: the stand's line (`StandPanel`, `StandText`: *"CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00."*, routes never players; sent by `RZ_PlayerUIComponent.SendStand` every 2 s, gone 5 s after the last, [FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room)). Above the visibility meter while borrowed kit's look is coming: **the look line** (`RZ_Hud_Look`: `LookPanel`, the Watched eye `LookIcon` and `LookText`, *"PASS AS BASTION: 2 OF 2"* or *"…: SEEN THROUGH"*; owner-only through `RZ_UIFeed.PushLook`, sent only when it changes, gone once the look is done, the kit comes off or you're 200 m on; [REPUTATION.md](REPUTATION.md#borrowed-kit)). Top left, **the quest tracker** ([below](#the-quest-tracker), mockup `tracker.png`): only the job you track, its current objective, the known next one and where it is (an arrow and the distance); your other jobs are in the Quests tab only. Nothing to press, so it's the same on a pad (Track is in the notebook's Quests tab) | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer, the radio indicator, the stand's line, the look line and the tracker not seen yet |
 | The notebook | — | One menu with five tabs, the five rows below, in this order ([below](#the-notebook)) | `RZ_NotebookMenu` | Frame and pages built as text, not checked in play |
 | Notebook: Standing | `standing.png` (the old four-column page; the page is now design G2) | In the header, the whole picture after your name ([REPUTATION.md](REPUTATION.md#what-people-call-you)). One row per faction, stacked down the page with the faction's colour as a left bar, mostly icons: the emblem and name; **what they call you**, large (the reputation's name, or the tier word with Reputation > Names off; the tier icon beside it, both in the tier's colour); Favor (a coin and the number); the leaders you've met (a bust and how many, or NONE); what they need (its icon and word, or NONE); and a kit tell (a jacket, only for Bastion, the Red Hand and Halcyon with borrowed kit on: dim while they don't know you, yellow once they know your face or caught you, red while you're blown). No Fame or Infamy numbers, bars or grid. Up/down or the mouse only **highlights** a row (a bone wash and border); a click, A or Enter **opens** it (or closes it again). At most one row is open, filling the free space while the others shrink to their strip; with none open (the start) the four share the page. The open row has four blocks: *How they see you* (their word as a sentence, what the name counts as, what's left to forgive while there's Infamy, a line when they hunt you, and **Next**: the next name up with what earns it, "TRUSTED: 12 more Fame" or "KNOWN: work off 8 Infamy", none at the top), *Leaders you've met* (names and titles, then the nearest one's verdict), *What they need* (the need and its line) and *In their kit* (whether they know your face, catches, blown time, their tells, what their enemies do to their colours: the payload's `K` records). The other rows stay one line, so all four names are always on screen. Under the rows, **between the factions**: the truces and feuds on one line | `RZ_StandingPage` | Page built, not checked in play |
 | Notebook: Quests | `tracker.png` (right) | Every job you have (only jobs offered to you in person: [MISSIONS.md](MISSIONS.md#who-gets-offered-what)), in three groups: the season's story, questlines and jobs, errands; in each the ones you've taken first, then the ones offered. Each row: the type icon, the name, the rough area of its current objective, and TRACKED. The selected job's detail: the faction, who gave it and the area on one line, a short brief in the giver's voice, its **objectives** New Vegas style, the reward as far as you know it, and what you've found. **A** tracks it or untracks it ([below](#notebook-quests)) | `RZ_QuestsPage` | Page built as text, not checked in play |
@@ -217,7 +217,9 @@ are play-test aids; the status log prints the summary anyway: [INFECTED.md](INFE
 (server admins) writes the door marks near you to the server log, with `town`, `write` and `clear`
 as play-test aids ([TRACES.md](TRACES.md#admin-saving-and-the-log)); `/sites` (server admins and
 game masters) opens the site builder ([SITES.md](SITES.md#hand-built-sites)); `/fog` (server admins)
-reads the map's fog, `/fog all` clears your map and `/fog reset` fogs it again ([The map's fog](#the-maps-fog)); `/mydead
+reads the map's fog, `/fog all` clears your map and `/fog reset` fogs it again ([The map's fog](#the-maps-fog)); `/level`
+(server admins, for play-tests) reads your guidance level and `/level 0` to `/level 3` sets it from your next character
+([DESIGN.md](DESIGN.md#experience-levels)); `/mydead
 hidden` or `/mydead shown` keeps your name out of public text if you die out there
 ([INFECTED.md](INFECTED.md#your-dead-run)). They work without any layout. With **Board menus** off,
 reading the board is a notice and notes are written with `/note` only.
@@ -353,13 +355,15 @@ under the secure-radio panel while that shows), for the one job you follow. The 
   step drops its last "then tell {giver}" clause, since going back is the next line. The area line, the arrow and metres, the map's mark and the Quests
   tab's row all follow the current objective's place, and move on when it does. The job's own place
   (where it was given, or its town) is only the fallback for an objective without one.
-- **The area line.** Far off, the rough area in words ("Morton, a few km north-west",
-  `RZ_QuestText.RoughArea`). **Within a kilometre** of a spot you know: an amber arrow
+- **The area line.** A spot you know, **at any range** (the author: an arrow and "1.6 km", not
+  "a few km south"): an amber arrow
   (`TrackerArrow`, the `marker_self` icon, 20 across) turned toward it from where your character
-  faces, and the metres ("Camurac, 120 m": to 10 m from 100 m up, to 5 m below, to 1 m under 10,
-  `RZ_QuestText.Metres`), counting down to 0 m; the arrow goes in the last 2 m, where it would only
-  spin. A **search area** (you know only the rough circle): within a
-  kilometre of its edge, the arrow to its centre and the metres to its edge ("Search area, 240 m"),
+  faces, and the distance ("Camurac, 1.6 km"; under a km the metres, "Camurac, 120 m": to 10 m from
+  100 m up, to 5 m below, to 1 m under 10; `RZ_QuestText.Distance`, `Metres`), counting down to 0 m;
+  the arrow goes in the last 2 m, where it would only spin. Before the client has your position, the
+  server's rough area in words ("Morton, a few km north-west", `RZ_QuestText.RoughArea`). A
+  **search area** (you know only the rough circle): the arrow to its centre and the distance to its
+  edge ("Search area, 240 m"),
   then *In the search area* once you're inside it, no arrow; the centre is off the real spot, so
   the arrow never gives the spot away. Dead, or a job with no place: the words alone, no arrow.
   The arrow turns every frame and the text is set only when it changes, client-side from the
@@ -1145,9 +1149,10 @@ stay close (the timed action's own rule). The screen guard closes it in danger, 
 
 **How it works.** It lists the thing's own actions (`Interactions/RZ_ObjectScreen.c`). Every action
 that can be a row derives from `RZ_GroupedAction`; on one entity the puzzle slots (read, use,
-choice, keypad) form a menu when the puzzle object asks for one (a labelled prop that isn't a
-person; a world interaction spot by its kind, `RZ_Interactions.UsesMenu`), and any other grouped
-actions when two or more show. While this machine uses the menu, one prompt stays: the read
+choice, keypad) form a menu whenever there's a read and something to do, or two or more things to
+do (a single slot alone stays its one prompt; a world interaction spot decides by its kind,
+`RZ_Interactions.UsesMenu`; on a person with the talk screen, the talk screen holds them), and any
+other grouped actions when two or more show. No puzzle prompt shows on a dead person. While this machine uses the menu, one prompt stays: the read
 ("Look at the stove") or, without one, the first action under the group's title ("Ask the
 quartermaster"). Using it reaches the server, which runs the read with what it says caught
 (`RZ_ScreenCapture`; a paper goes into the text, not the reader), opens a screen-guard entry and
@@ -1175,6 +1180,32 @@ card, tells the server (`RpcAsk_ObjectFailed`: the prompt it used runs, and that
 prompts from then on) and shows the prompts; when the server is at its cap of open screens the
 client shows the prompts for a minute. A dedicated server never hides a prompt, so a client
 without the menu can use any of them.
+
+### The hands-on view
+
+A game's thing up close, in the world (`Interactions/RZ_HandsOn.c` on the server, `UI/RZ_HandsOnMenu.c`,
+layout `RZ_HandsOnMenu.layout` written by `tools/ui_gen/hands_on_layout.py`, preset `RZ_HandsOnMenu`).
+A duty's prompt on a subject (a person in the line, a body, a tray, a crate, a beat's bed or bag) opens
+it instead of the object menu's list, for a client that can show it:
+
+| Part | What it does |
+|---|---|
+| The camera | Comes in on the real person or prop from the side you stand on, the thing a little left of the middle (the panel is on the right). No new animations: the world and the camera do it |
+| The places to look | Glowing rings with a label, kept over their place each frame: a person's forearm, eyes and brow on their bones; a body's arms, neck and tag, a tray's seal, lamp and label, a crate's top, seal and chit on the prop's real box; a beat's looks set out across the thing as you see it. Open amber, seen in what they showed (green clean, amber odd, red bad), grey when there are no looks left |
+| A look | Eases the camera onto the place, a short hold fills under its label (1.2 s), then what was seen shows at the place, with a red flash for a bad find and an amber one for an odd one. A place seen already shows again in a moment and costs nothing |
+| The panel | The title, looks left, what's free to see and the rules, **What you found** (everything said about it: the tell as you walked up, every look, running out of looks, a beat's lines; the last ten), and up to three buttons (the game's calls: take them up, pass, the fire...) |
+
+Pad: D-pad or left stick between the places, **A** looks, **X / Y / R3** the buttons, **B** closes. Keys:
+arrows, Enter, R / F / V, Esc. Mouse: click a place or a button (each lights under the cursor), the X.
+
+A game that runs by itself ticks once a second while it's open: **the stove** (the kitchen's Stir the
+pot, [ERRANDS.md](ERRANDS.md#minding-the-pot)) is the pot up close, its fire raised and lowered with the
+buttons, stirred and tasted at its places.
+
+It's one prop of the game, never the whole game: you still walk to each subject, take it up with your
+hands and carry it to its place. The server holds the truth and checks every look. It closes when you
+walk more than 6 m off. **Fallback:** a client that can't open it says so and gets the object menu's
+list (and from there world prompts), as before.
 
 ### The status strip and locked rows
 
@@ -1507,7 +1538,8 @@ stays seen). Code: `World/RZ_MapFog.c` (the server), `UI/RZ_MapFogDraw.c` (the d
 
 | Part | How |
 |---|---|
-| **The fog** | Unseen ground is under a dark grey layer (#2E3032 at **How dark**, 0.82), so the roads and the coast still show faintly through it. It's drawn on a canvas the icon layer makes first in the map's root, under the markers and the search area, so it needs only `RZ_MapIconsUI` on the map config (no layout) |
+| **The fog** | Unseen ground is under a solid dark grey layer (#2E3032 at **How dark**, 1), so nothing of it shows: not its roads, coast or names. Past the edge of the fog's grid (the sea, the map's margins) the layer goes on another 30 km, so no edge of the map shows. It's drawn on a canvas the icon layer makes first in the map's root, under the markers and the search area, so it needs only `RZ_MapIconsUI` on the map config (no layout) |
+| **The grid** | The map's grid still reads through: light lines every 100 m and, a little stronger, every km, drawn over the fog on world multiples like the map's own; a step under 24 px on screen isn't drawn (zoomed out, only the km lines) |
 | **Walking** | Reveals **Reveal radius** (150 m) round you each time you enter a new square |
 | **High ground** | **High radius** (400 m) while you stand **Tower height** (6 m) above the ground under you (a tower, a roof), or your ground is **Hill rise** (35 m) above the average of the land 400 m round; looked at as you move and every 10 s standing still |
 | **A found map** | A paper map put out as loot (not the one every life starts with) reveals its town, the settlement's radius plus 150 m and at least **Town radius** (500 m), once you carry it (looked for every 5 s); a line on the notice card says so |
@@ -1515,11 +1547,9 @@ stays seen). Code: `World/RZ_MapFog.c` (the server), `UI/RZ_MapFogDraw.c` (the d
 | **Asking about the roads** | The Haven's service (Known) also reveals a strip **Road strip** (200 m) wide from where you stand to the place of the job you track |
 | **Friends' camps** | Every 30 s, a faction you're Known with shares **Camp radius** (300 m) round each of its holdings; the Haven, round its safehouses too |
 
-**Places as rumours.** The places the map names (the lab, strongholds, outposts, safehouses, the
-power and radio stations, the sealed checkpoints) show their marker once their square is seen.
-Before that, a place everyone knows of is a **rumour**: a range ring 350 m round a spot off the
-place (the same spot every time, never the place), labelled "Safehouse, somewhere here". Your
-objective and the packs' rings are as above. **Places as rumours** off: the markers as before.
+**Places once seen.** The places the map names (the lab, strongholds, outposts, safehouses, the
+power and radio stations, the sealed checkpoints) show their marker once their square is seen, and
+nothing before that. Your objective and the packs' rings are as above.
 
 **The data.** One bit per square (**Square**, 100 m; at most 256 a side: Everon is 128 × 128, about
 2 KB), kept on the player's profile (`m_aFog`, with `m_sFogGrid`, the grid it was kept for; another

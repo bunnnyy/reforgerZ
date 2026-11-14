@@ -122,7 +122,6 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	protected static const float TRACK_Y = 24;
 	protected static const float TRACK_Y_RADIO = 126;	// below the secure-radio panel while it shows
 	protected int m_iTrackerDrawn = -1;
-	protected static const float TRACK_NEAR = 995;	// under a km (995 m rounds to 1,000): the arrow and metres
 	protected bool m_bTrackShown;		// the tracker shows a job
 	protected bool m_bTrackAt;			// it points somewhere (x, z sent)
 	protected vector m_vTrackAt;		// where: the spot, or the search area's centre
@@ -485,11 +484,12 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The tracker's area line, every frame (docs/UI.md, "The quest tracker"). Within a km of a known
-	//! spot: an arrow turned to it from where you face and the metres ("Camurac, 120 m"); inside its
+	//! The tracker's area line, every frame (docs/UI.md, "The quest tracker"). A known spot, at any
+	//! range: an arrow turned to it from where you face and the distance ("Camurac, 120 m", "Camurac,
+	//! 1.6 km"); inside its
 	//! arrival radius the arrow goes and the words come back ("Camurac, close by"). A search area:
 	//! the arrow to its centre and the metres to its edge ("Search area, 240 m"), then "In the search
-	//! area" once you're inside it. Farther off, dead, or a job with no place: the server's words
+	//! area" once you're inside it. Dead, or a job with no place: the server's words
 	//! alone. Client-side from the position in the tracker's record; one rotation a frame, the
 	//! text and the arrow's visibility only when they change.
 	protected void DrawTrackerDir()
@@ -511,17 +511,17 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 				{
 					line = "In the search area";
 				}
-				else if (edge < TRACK_NEAR)
+				else
 				{
 					arrow = true;
-					line = "Search area, " + RZ_QuestText.Metres(edge);
+					line = "Search area, " + RZ_QuestText.Distance(edge);
 				}
 			}
-			else if (dist < TRACK_NEAR)
+			else
 			{
-				// Down to 0 m; the arrow goes in the last 2 m, where it would only spin
+				// Any range, down to 0 m; the arrow goes in the last 2 m, where it would only spin
 				arrow = dist >= 2;
-				line = RZ_QuestText.Metres(dist);
+				line = RZ_QuestText.Distance(dist);
 				if (!m_sTrackPlace.IsEmpty())
 					line = m_sTrackPlace + ", " + line;
 			}

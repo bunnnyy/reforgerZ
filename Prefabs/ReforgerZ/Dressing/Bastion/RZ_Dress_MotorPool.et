@@ -1,0 +1,117 @@
+GenericEntity {
+ ID "28B53E7304A1A139"
+ components {
+  RplComponent "{17489F78ECD1EC92}" {
+  }
+  Hierarchy "{9D6CF35CC82A4DEE}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{AE300E34EA8FF40C}Prefabs/Props/Wrecks/Ural4320_wreck/Ural4320_wreck_static.et" {
+   ID "B2CC9CDE0D649EE3"
+   components {
+    Hierarchy "{95B5E3FD568EDEA8}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 6 0
+  }
+  GenericEntity : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
+   ID "D9D459DE92B212D8"
+   components {
+    Hierarchy "{4518C772A60DCFC7}" {
+    }
+   }
+   coords 2.5 0 2.2
+   angles 0 0 0
+  }
+  GenericEntity : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
+   ID "6CDA528E33076E0B"
+   components {
+    Hierarchy "{5F53F5C7993674CA}" {
+    }
+   }
+   coords 3.2 0 2.0
+   angles 0 0 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "083496199B56095D"
+   components {
+    Hierarchy "{E0CCBA6D3B2D4605}" {
+    }
+   }
+   coords 2.57 0 1.248
+   angles 0 30 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "E5712DECEC284537"
+   components {
+    Hierarchy "{8DAC238E4ECC66A8}" {
+    }
+   }
+   coords 3.099 0 1.136
+   angles 0 -10 0
+  }
+  GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
+   ID "FF1168ACD0CA380D"
+   components {
+    Hierarchy "{1E3D5256B70ED76F}" {
+    }
+   }
+   coords -3.521 0 -2.4
+   angles 0 0 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "A808A417D8B80A25"
+   components {
+    Hierarchy "{6E940C04A6C16FE9}" {
+    }
+   }
+   coords 2.6 0 -0.6
+   angles 0 15 0
+  }
+  GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
+   ID "B9534C052FDF209F"
+   components {
+    Hierarchy "{E38232D0698EA3ED}" {
+    }
+   }
+   coords 2.6 0.83 -0.6
+   angles 0 25 0
+  }
+  GenericEntity : "{90A74133C1DC6226}Prefabs/Props/Industrial/Repair/EngineCrane_01.et" {
+   ID "A68C46C498E465BB"
+   components {
+    Hierarchy "{CA389CA76A12F0AB}" {
+    }
+   }
+   coords 0.302 0 5.019
+   angles 0 186 0
+  }
+  GenericEntity : "{B557358F8F64AE31}Prefabs/Props/Industrial/Repair/HydraulicCarJack_01.et" {
+   ID "E8AF6C095F1EBE03"
+   components {
+    Hierarchy "{34366A41673C7E5F}" {
+    }
+   }
+   coords -1.872 0 1.587
+   angles 0 20 0
+  }
+  GenericEntity {
+   ID "C3790201BD691018"
+   components {
+    SCR_AISmartActionSentinelComponent "{66E239B2C8430437}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 0.4
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{5B3BFDC176C0F35B}" {
+    }
+   }
+   coords 2.0 0 0.4
+  }
+ }
+}

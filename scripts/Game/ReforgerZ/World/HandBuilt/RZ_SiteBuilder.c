@@ -37,6 +37,8 @@ class RZ_SiteBuilderSession
 	ref array<bool> m_aMarked = {};					// a marker was put out for the spot (gone since: it was deleted)
 	ref array<ref RZ_HandSpot> m_aSuggest = {};		// where the automated layout had each kind of spot
 	int m_iSpotType;								// the type the place row puts down (RZ_HandSpots.Types)
+	string m_sSaid;									// the last thing the builder was told (the screen's confirmation line)
+	string m_sHow;									// how this build started: "saved", "auto" or "empty" (the bar's Reset)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -137,10 +139,14 @@ class RZ_SiteBuilder
 	{
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		if (!gm || !gm.GetCampLife())
+		{
+			RZ_Log.Info(string.Format("Site builder: player %1 asked, but camp life isn't running.", playerId));
 			return;
+		}
 
 		if (!MayBuild(playerId))
 		{
+			RZ_Log.Info(string.Format("Site builder: player %1 asked, but is neither a server admin nor a game master with the full editor.", playerId));
 			gm.NotifyPlayer(playerId, TITLE, "Only a server admin or a game master can build sites.");
 			return;
 		}
@@ -148,9 +154,29 @@ class RZ_SiteBuilder
 		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (!user)
 		{
+			RZ_Log.Info(string.Format("Site builder: player %1 asked with no character.", playerId));
 			gm.NotifyPlayer(playerId, TITLE, "The site builder opens on your character: spawn one first.");
 			return;
 		}
+
+		// The site builder's own screen (RZ_SiteBuilderScreen); a client that can't open it asks for
+		// the object menu instead (OpenRowsMenu)
+		RZ_SiteBuilderSession screen = SessionOf(playerId);
+		if (screen.m_sSelected.IsEmpty() && screen.m_Building)
+			screen.m_sSelected = screen.m_Building.m_sId;
+
+		RZ_SiteBuilderScreen.Send(screen);
+		RZ_Log.Info(string.Format("Site builder: opened for player %1.", playerId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The object-menu version of the site builder: rows (the fallback when the screen can't open).
+	static void OpenRowsMenu(int playerId)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!gm || !user)
+			return;
 
 		RZ_SiteBuilderSession s = SessionOf(playerId);
 		if (gm.GetScreenGuard() && gm.GetScreenGuard().IsAnyOpen(playerId) && !gm.GetScreenGuard().IsOpen(playerId, RZ_ScreenGuard.KIND_OBJECT))
@@ -160,7 +186,13 @@ class RZ_SiteBuilder
 		}
 
 		if (!RZ_ObjectScreen.OpenRows(playerId, user, TITLE, new RZ_SiteBuilderRows(s)))
+		{
+			RZ_Log.Info(string.Format("Site builder: player %1's menu couldn't open (the object row layout, or another screen open).", playerId));
 			gm.NotifyPlayer(playerId, TITLE, "The menu couldn't open (UI > Object row layout is empty, or another screen is open). Close other screens and try again.");
+			return;
+		}
+
+		RZ_Log.Info(string.Format("Site builder: the object menu for player %1.", playerId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -331,7 +363,7 @@ class RZ_SiteBuilder
 
 		foreach (IEntity put : s.m_aPut)
 		{
-			if (!put)
+			if (!put || IsMark(s, put))
 				continue;
 
 			if (RZ_Util.DistXZ(put.GetOrigin(), site.m_vPos) <= site.m_fRadius)
@@ -355,7 +387,7 @@ class RZ_SiteBuilder
 				continue;
 
 			IEntity e = ec.GetOwner();
-			if (!e || result.Contains(e) || RZ_CampLife.IsDressing(e))
+			if (!e || result.Contains(e) || RZ_CampLife.IsDressing(e) || IsMark(s, e))
 				continue;
 
 			float d = RZ_Util.DistXZ(e.GetOrigin(), site.m_vPos);
@@ -364,6 +396,31 @@ class RZ_SiteBuilder
 			else if (d <= site.m_fRadius * 1.5)
 				outside++;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spot's marker, never an object of the site: one of the session's, or a stray one of the
+	//! marker's prefab standing on a spot (it lost its spot, and isn't saved as a cone).
+	protected static bool IsMark(RZ_SiteBuilderSession s, IEntity e)
+	{
+		if (s.m_aMarks.Contains(e))
+			return true;
+
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!gm || !gm.GetCampLifeSettings() || !e.GetPrefabData())
+			return false;
+
+		ResourceName marker = gm.GetCampLifeSettings().m_sSpotMarker;
+		if (marker.IsEmpty() || e.GetPrefabData().GetPrefabName() != marker)
+			return false;
+
+		foreach (RZ_HandSpot sp : s.m_aSpots)
+		{
+			if (RZ_Util.DistXZ(sp.m_vPos, e.GetOrigin()) < 0.5)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -890,6 +947,7 @@ class RZ_SiteBuilder
 	//------------------------------------------------------------------------------------------------
 	protected static void Say(RZ_SiteBuilderSession s, string text)
 	{
+		s.m_sSaid = text;
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		if (gm)
 			gm.NotifyPlayer(s.m_iPlayer, TITLE, text);
@@ -961,6 +1019,7 @@ class RZ_SiteBuilder
 		}
 
 		s.m_Building = site;
+		s.m_sHow = how;
 		s.m_aPut.Clear();
 		array<IEntity> keep;
 		if (how == "auto")
@@ -1069,6 +1128,11 @@ class RZ_SiteBuilder
 		}
 
 		s.m_sSig = Sig(s);
+		// The cure's lab goes to its spot now (its own town only: RZ_GameModeComponent.MoveLab)
+		RZ_HandSpot labSpot = RZ_HandSpots.First(hs.m_aSpots, "lab");
+		if (labSpot)
+			RZ_GameModeComponent.GetInstance().MoveLab(labSpot.m_vPos, labSpot.m_fYaw);
+
 		int missing;
 		string check = RZ_HandSpots.Short(site.m_eFaction, site.m_eKind, hs.m_aSpots, missing);
 		int bad = Problems(s);
@@ -1321,10 +1385,22 @@ class RZ_SiteBuilder
 		foreach (int i, RZ_HandSpot sp : s.m_aSpots)
 		{
 			int state = 0;
-			if (!RZ_HandSpots.Problem(sp, site.m_vPos, site.m_fRadius, s.m_aSpots, s.m_aMarks[i]).IsEmpty())
+			string problem = RZ_HandSpots.Problem(sp, site.m_vPos, site.m_fRadius, s.m_aSpots, s.m_aMarks[i]);
+			if (!problem.IsEmpty())
 				state = 1;
 
-			payload += string.Format(";S|%1|%2|%3|%4|%5", sp.m_sType, sp.m_vPos[0], sp.m_vPos[1], sp.m_vPos[2], state);
+			problem.Replace("|", " ");
+			problem.Replace(";", ",");
+			// The cone's network id: the label follows the cone while it's dragged in Game Master
+			string rpl = "";
+			if (s.m_aMarks[i])
+			{
+				RplComponent rc = RplComponent.Cast(s.m_aMarks[i].FindComponent(RplComponent));
+				if (rc)
+					rpl = rc.Id().ToString();
+			}
+
+			payload += string.Format(";S|%1|%2|%3|%4|%5|%6|%7|%8", sp.m_sType, sp.m_vPos[0], sp.m_vPos[1], sp.m_vPos[2], state, problem, sp.m_iSeats, rpl);
 		}
 
 		// One suggestion for each kind of spot still short of what the site needs

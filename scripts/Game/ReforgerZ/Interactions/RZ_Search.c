@@ -194,6 +194,7 @@ class RZ_Search
 	protected static const int LOOSE_NOTES_KEPT = 600;
 	protected static const float NOTE_MINUTES = 30;
 	protected static const float STASH_RADIUS = 30;
+	protected static const float QUEST_CLEAR = 25;		// no lock within this (m) of an opening's or an errand's places
 	protected static const float STASH_MINUTES = 90;
 	protected static const int STASHES_KEPT = 6;
 	protected static const float BODY_WITNESS = 60;
@@ -662,11 +663,22 @@ class RZ_Search
 	//! A building's own lock, seeded from its position: the same buildings have one after a restart.
 	//! Never at a place people live or trade (safehouses, the lab, holdings, quartermasters): their
 	//! doors stay open to the people who use them. Never within 25 m of a running mission's props
-	//! (RZ_MissionManager.IsNearMissionProp) unless the lock is part of that mission. Only a
+	//! (RZ_MissionManager.IsNearMissionProp) unless the lock is part of that mission, nor within 25 m
+	//! of a running opening's places (the house you start in) or an errand's on offer or held. Only a
 	//! building with outside doors is really locked (RZ_DoorLocks.HasDoorLock).
 	bool HasLock(vector buildingPos, string type)
 	{
 		if (!HasOwnLock(buildingPos, type))
+			return false;
+
+		// Never where a job sends you: an opening's house (where you start) and places, an errand's
+		// places (the author: no spawn or quest place behind a locked door)
+		RZ_Guidance guidance = m_GM.GetGuidance();
+		if (guidance && guidance.GetOpenings() && guidance.GetOpenings().IsNearPlace(buildingPos, QUEST_CLEAR))
+			return false;
+
+		RZ_Errands errands = m_GM.GetErrands();
+		if (errands && errands.IsNearPlace(buildingPos, QUEST_CLEAR))
 			return false;
 
 		// Never next to a running mission's props (unless the lock is the mission's own)

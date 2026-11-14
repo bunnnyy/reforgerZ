@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{E949FE00A28F1A87}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_GeneratorPost.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

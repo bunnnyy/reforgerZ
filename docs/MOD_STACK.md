@@ -86,17 +86,24 @@ Workshop's; the server downloads their own dependencies (Functional Knives, IH_B
 
 | Mod | Workshop ID | MB | For | Note |
 |---|---|---|---|---|
-| SBBG - Wrecks | `6529635700E0B228` | 3.0 | all | Vanilla wrecks made placeable (UAZ-469 and UAZ-452, Ural and M923 cargo, an M997 ambulance, a BRDM, helicopter parts): blocked roads, the column, ambush sites |
+| SBBG - Wrecks | `6529635700E0B228` | 3.0 | all (not in the camp kits) | Vanilla wrecks made placeable (UAZ-469 and UAZ-452, Ural and M923 cargo, an M997 ambulance, a BRDM, helicopter parts): blocked roads, the column, ambush sites |
 | Lamas vanilla plus gear pack | `64FD478E9982027A` | 4.2 | Bastion | Era-correct US kit beside vanilla's olive M65: an M1 helmet without its strap, a US raincoat; the dark patrol cap a search can turn up |
 | BanditGear | `66B523AD189F3233` | 101.9 | Red Hand | Dirty scavenged clothing, balaclavas, gloves, Molotovs, spray-painted cars |
 | BasicHazmatSuit | `68AB4B626C8AB069` | 49.3 | Halcyon | Hooded hazmat suit with a gas mask in three colours. APL-ND |
 | MedicalAccessories | `66052DD2B655BF72` | 12.0 | Halcyon, Haven | Medical face mask and nitrile gloves |
 | Clothing_pack_v2 | `666D2C5F02F88A56` | 68.1 | Haven | Farmers, carpenters, overalls, a mechanic's uniform, prisoner uniforms (the convicts). Some hats have wrong GUIDs: don't use them |
 | Domins Civilian Expansion | `630B3E95B52F31DF` | 63.1 | Haven, Halcyon | Paramedic and fireman uniforms, gas mask, oxygen tank. Brings Functional Knives |
-| Timmmmmbs Garbage Composition | `62E8BD33444EA5A4` | 4.7 | Red Hand, Haven | Junk and scrap barricades. Brings IH_Better_GM_Props |
+| Timmmmmbs Garbage Composition | `62E8BD33444EA5A4` | 4.7 | Red Hand, Haven | Junk and scrap barricades (its five compositions aren't in the camp kits: they carry patrol points of their own). Brings IH_Better_GM_Props (476 MB on disk), whose guard tower, shipping container, forklift, stacked cases and fuel pump the camp kits use |
 | Placeable Posters | `62B40182B1190ACF` | 12.7 | all | Posters with your own textures. Built on the demolition charge and placed like one (on a wall), not free-standing props |
-| SecurityFences | `6AB0C0CC87D6EAB1` | 20.2 | Bastion, Halcyon | Mesh fence, razor coil, gates. Its keypad gates are a system, and its licence forbids changes |
-| MoreGMProps | `66A920DA264A9F98` | 122.7 | Bastion | Hesco and T-walls, burn piles |
+| SecurityFences | `6AB0C0CC87D6EAB1` | 20.2 | Halcyon | Mesh fence, razor coil, gates. The lab's barrier is its 6 m and 3 m sections, placed as they are. Its keypad gates are a system, and its licence forbids changes |
+| MoreGMProps | `66A920DA264A9F98` | 122.7 | Halcyon | Its riot fencing is in the camp kits (the queue for triage). Its blast walls, earth-filled barriers and concrete barriers were tried and left out (the author prefers razor wire to concrete); its burn pile isn't a kit piece (the dead zone is the story's) |
+
+**What the camp kits use** (`tools/camp_kit/props.txt`, [SITES.md](SITES.md#from-the-reference-board)): the
+pieces above, which cost no extra download. Looked at on the PC (2026-11-13) and left out: IH's
+diesel generator (the size of a van, bright green), SBBG's armoured car and ambulance props (not seen
+standing where they were put), and two-part prefabs whose children the kit can't measure (five blast
+walls or riot fences in one). The mods' wall prefabs carry a quarter turn of their own, which
+`build.py` overrides ([SITES.md](SITES.md#real-footprints)).
 
 **Rejected:** Borkeds Props (`670895D328DC3AA9`, 1980s lab computers) ships old copies of vanilla
 scripts and stops the game's script module compiling on 1.9 (`SCR_CampaignBuildingLayoutComponent.c`:

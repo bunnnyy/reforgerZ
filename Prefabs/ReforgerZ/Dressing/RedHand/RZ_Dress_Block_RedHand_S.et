@@ -1,0 +1,30 @@
+GenericEntity {
+ ID "06CC019E1A3BD472"
+ components {
+  RplComponent "{9B40D0CF7FFC6143}" {
+  }
+  Hierarchy "{73572F45E01E6E08}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{64C9C1D1C2C1B38D}Prefabs/Props/Infrastructure/Roadblocks/RoadBlock_01.et" {
+   ID "47B23FD779C67357"
+   components {
+    Hierarchy "{AD39403B3210DEA5}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
+   ID "F6F8C0181921448B"
+   components {
+    Hierarchy "{56B0D6E4154E4D79}" {
+    }
+   }
+   coords 0.3 0 0.7
+   angles 0 0 0
+  }
+ }
+}

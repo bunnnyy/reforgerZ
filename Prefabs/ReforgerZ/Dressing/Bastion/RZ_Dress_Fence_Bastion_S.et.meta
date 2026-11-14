@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{68D9CB5A28FFE247}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Fence_Bastion_S.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

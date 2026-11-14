@@ -282,6 +282,8 @@ class RZ_WorkSites
 	protected ref RZ_Carries m_Carries;
 	protected ref array<ref RZ_WorkSite> m_aSites = {};
 	protected ref array<ref RZ_WorkChoice> m_aChoices = {};
+	protected ref map<string, ref RZ_HandsOnGame> m_mHands = new map<string, ref RZ_HandsOnGame>();
+	protected ref map<string, ref RZ_HandsOnGame> m_mGames = new map<string, ref RZ_HandsOnGame>();	// sites whose work is a game up close (the stove): its press opens it, it says when it's done	// choices shown up close (RZ_HandsOn) instead of as a list
 	protected int m_iNextId = 1;
 	protected float m_fClock;
 	protected float m_fSpawnTimer;
@@ -708,6 +710,13 @@ class RZ_WorkSites
 
 		s.m_eNeed = item;
 		s.m_iNeed = count;
+		// The hold's prompt is locked without them, on every machine
+		if (s.m_Box)
+		{
+			RZ_WorkSiteComponent comp = RZ_WorkSiteComponent.Cast(s.m_Box.FindComponent(RZ_WorkSiteComponent));
+			if (comp)
+				comp.SetNeed(item, count);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -896,6 +905,64 @@ class RZ_WorkSites
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The choice `key` opens up close in the hands-on view (Interactions/RZ_HandsOn.c) for players
+	//! whose client can show it; the list stays for the rest. Null takes it off.
+	void SetHandsOn(string key, RZ_HandsOnGame game)
+	{
+		if (game)
+			m_mHands.Set(key, game);
+		else
+			m_mHands.Remove(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Site `key`'s work is `game`, up close (Interactions/RZ_HandsOn.c): pressing its prompt opens it
+	//! for a client that can show it (others hold the prompt as before); the game calls Complete.
+	void SetGame(string key, RZ_HandsOnGame game)
+	{
+		if (game)
+			m_mGames.Set(key, game);
+		else
+			m_mGames.Remove(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Site `key` done by `playerId`, as a finished hold (a game up close won).
+	void Complete(string key, int playerId)
+	{
+		RZ_WorkSite s = Find(key);
+		if (s && !s.m_bDone)
+			Finish(s, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The prop standing at site `key` now (its look while it's to do), or null.
+	IEntity BoxOf(string key)
+	{
+		RZ_WorkSite s = Find(key);
+		if (!s)
+			return null;
+
+		return s.m_Box;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! As if the player had picked site `siteKey` from the choice's list: its prompt waits for their
+	//! hold (the hands-on view's buttons that are work done with the body, like taking someone up).
+	void ArmChoice(string key, string siteKey, int playerId)
+	{
+		RZ_WorkChoice c = FindChoice(key);
+		RZ_WorkSite s = Find(siteKey);
+		if (!c || !s || s.m_bDone || s.m_bClosed)
+			return;
+
+		c.m_sArmed = siteKey;
+		c.m_iArmedBy = playerId;
+		c.m_fArmedAt = m_fClock;
+		PushChoice(c);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The choice is put away now (its sites are the owner's to close).
 	void Scatter(string key)
 	{
@@ -1018,6 +1085,14 @@ class RZ_WorkSites
 			return;
 		}
 
+		// Up close, where the game has a view of it and this player's client can show one
+		RZ_HandsOnGame hands = m_mHands.Get(c.m_sKey);
+		if (hands && RZ_HandsOn.CanShow(playerId))
+		{
+			RZ_HandsOn.Open(playerId, hands);
+			return;
+		}
+
 		if (!RZ_ObjectScreen.MenuFor(playerId))
 		{
 			Split(c.m_sKey);
@@ -1081,10 +1156,12 @@ class RZ_WorkSites
 				only = c.m_iArmedBy;
 
 			comp.Set(one.m_iId, one.m_sLabel, one.m_fSeconds, one.m_fFastSeconds, one.FastText(), only, LookFor(one.m_eKind));
+			comp.SetNeed(one.m_eNeed, one.m_iNeed);
 			return;
 		}
 
 		comp.Set(c.m_iId, c.m_sTitle, 0, 0, "", c.m_iOnly, 0, true);
+		comp.SetNeed(RZ_EErrandItem.NONE, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1153,6 +1230,13 @@ class RZ_WorkSites
 	//------------------------------------------------------------------------------------------------
 	protected void DropChoice(RZ_WorkChoice c)
 	{
+		RZ_HandsOnGame hands = m_mHands.Get(c.m_sKey);
+		if (hands)
+		{
+			RZ_HandsOn.CloseGame(hands);
+			m_mHands.Remove(c.m_sKey);
+		}
+
 		DeleteChoiceBox(c);
 		m_aChoices.RemoveItem(c);
 	}
@@ -1225,6 +1309,15 @@ class RZ_WorkSites
 			return;
 
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		// What the hold needs on you (a battery to fit): without it nothing is done or packed away
+		if (s.m_iNeed > 0 && RZ_Errands.CountItems(user, s.m_eNeed) < s.m_iNeed)
+		{
+			if (gm)
+				gm.NotifyPlayer(playerId, s.m_sLabel, string.Format("You haven't got that on you: %1.", RZ_Errands.ItemNeed(s.m_eNeed, s.m_iNeed)));
+
+			return;
+		}
+
 		if (s.m_iOnly > 0 && playerId != s.m_iOnly)
 		{
 			if (gm)
@@ -1238,6 +1331,14 @@ class RZ_WorkSites
 			if (gm)
 				gm.NotifyPlayer(playerId, s.m_sLabel, "They'd see you like that. Get low, keep out of the light, and start again.");
 
+			return;
+		}
+
+		// Work that's a game up close (the stove): the press opens it; the game says when it's done
+		RZ_HandsOnGame game = m_mGames.Get(s.m_sKey);
+		if (game && RZ_HandsOn.CanShow(playerId))
+		{
+			RZ_HandsOn.Open(playerId, game);
 			return;
 		}
 
@@ -1743,6 +1844,7 @@ class RZ_WorkSites
 		}
 
 		comp.Set(s.m_iId, s.m_sLabel, s.m_fSeconds, s.m_fFastSeconds, s.FastText(), s.m_iOnly, LookFor(s.m_eKind));
+		comp.SetNeed(s.m_eNeed, s.m_iNeed);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1791,6 +1893,13 @@ class RZ_WorkSites
 	//------------------------------------------------------------------------------------------------
 	protected void Drop(RZ_WorkSite s)
 	{
+		RZ_HandsOnGame game = m_mGames.Get(s.m_sKey);
+		if (game)
+		{
+			RZ_HandsOn.CloseGame(game);
+			m_mGames.Remove(s.m_sKey);
+		}
+
 		DeleteProps(s);
 		m_aSites.RemoveItem(s);
 	}

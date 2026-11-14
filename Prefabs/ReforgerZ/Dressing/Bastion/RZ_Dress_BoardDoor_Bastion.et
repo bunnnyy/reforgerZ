@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords -0.3 0 0.2
+   angles 0 0 0
   }
   GenericEntity : "{C7A49C5B54C86903}Prefabs/Props/Military/Sandbags/Sandbag_01_single_burlap.et" {
    ID "6B087D3AEDC86A2E"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0.3 0 0.2
+   angles 0 0 0
   }
   GenericEntity : "{C7A49C5B54C86903}Prefabs/Props/Military/Sandbags/Sandbag_01_single_burlap.et" {
    ID "EB7BE48AE25E6627"
@@ -30,7 +32,8 @@ GenericEntity {
     Hierarchy "{3BA7AAAEA8020705}" {
     }
    }
-   coords -0.3 0.17 0.2
+   coords -0.3 0.24 0.2
+   angles 0 0 0
   }
   GenericEntity : "{C7A49C5B54C86903}Prefabs/Props/Military/Sandbags/Sandbag_01_single_burlap.et" {
    ID "98EB85E8C6384F4D"
@@ -38,7 +41,8 @@ GenericEntity {
     Hierarchy "{3FD9DF4C153B8DBF}" {
     }
    }
-   coords 0.3 0.17 0.2
+   coords 0.3 0.24 0.2
+   angles 0 0 0
   }
   GenericEntity : "{C7A49C5B54C86903}Prefabs/Props/Military/Sandbags/Sandbag_01_single_burlap.et" {
    ID "7D6FE80B331188B4"
@@ -46,7 +50,8 @@ GenericEntity {
     Hierarchy "{F20D43E16EEA8DA5}" {
     }
    }
-   coords 0 0.34 0.2
+   coords 0 0.24 0.2
+   angles 0 0 0
   }
  }
 }

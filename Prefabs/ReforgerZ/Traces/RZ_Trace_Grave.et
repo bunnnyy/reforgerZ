@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
    ID "908E289CB9F381D1"
@@ -32,6 +33,7 @@ GenericEntity {
     }
    }
    coords 0 0 1.0
+   angles 0 0 0
   }
  }
 }

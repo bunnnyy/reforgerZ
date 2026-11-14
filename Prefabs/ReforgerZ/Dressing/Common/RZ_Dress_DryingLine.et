@@ -33,6 +33,7 @@ GenericEntity {
     }
    }
    coords 0.7 0 0.9
+   angles 0 0 0
   }
   GenericEntity {
    ID "AB2D739B68D7CD89"

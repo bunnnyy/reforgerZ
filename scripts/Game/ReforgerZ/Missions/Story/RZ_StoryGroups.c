@@ -112,7 +112,7 @@ class RZ_StoryGroups
 			if (groups[i].m_iMission != missionId)
 				continue;
 
-			RZ_Util.DeleteUnit(groups[i].m_Unit);
+			RZ_Leaving.Remove(groups[i].m_Unit);
 			groups.Remove(i);
 		}
 	}

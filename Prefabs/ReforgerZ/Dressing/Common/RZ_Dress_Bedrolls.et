@@ -1,0 +1,57 @@
+GenericEntity {
+ ID "A292B6E6C171EA1E"
+ components {
+  RplComponent "{14DE7957CED8F160}" {
+  }
+  Hierarchy "{E15488CEE3E79448}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
+   ID "EDFAF3AA9F42650E"
+   components {
+    Hierarchy "{CE3A2C7178A75A3C}" {
+    }
+   }
+   coords -1.0 0 0
+   angles 0 2 0
+  }
+  GenericEntity : "{6EB3EE4FE50E0319}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_red.et" {
+   ID "AF8A088A4442C275"
+   components {
+    Hierarchy "{83A0C77AC6F90086}" {
+    }
+   }
+   coords 1.0 0 0.1
+   angles 0 -2 0
+  }
+  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+   ID "7B5B3A3EEF46914D"
+   components {
+    Hierarchy "{B4F0A1773FCF8713}" {
+    }
+   }
+   coords -1.0 0 1.25
+   angles 0 30 0
+  }
+  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+   ID "5C941D7938D2BF04"
+   components {
+    Hierarchy "{75588158CBC3C6BB}" {
+    }
+   }
+   coords 1.0 0 1.3
+   angles 0 -20 0
+  }
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+   ID "C610DEA768CAF1D9"
+   components {
+    Hierarchy "{1C8667E1F73E5354}" {
+    }
+   }
+   coords 0 0 1.1
+   angles 0 0 0
+  }
+ }
+}

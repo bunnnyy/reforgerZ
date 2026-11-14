@@ -11,6 +11,7 @@ GenericEntity {
   StaticModelEntity : "{095874B519DCF161}Prefabs/Structures/Military/Camps/TentUS_01/TentUS_01_Assembled.et" {
    ID "1EF84BE7FBE89C39"
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
    ID "0465E623C78EB2C5"
@@ -19,6 +20,7 @@ GenericEntity {
     }
    }
    coords 0 0 3.9
+   angles 0 0 0
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
    ID "CE17F0B255A8CE94"
@@ -27,6 +29,7 @@ GenericEntity {
     }
    }
    coords 0 0 4.7
+   angles 0 0 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
    ID "6C5FD43315EA960E"
@@ -35,6 +38,7 @@ GenericEntity {
     }
    }
    coords 3.0 0 1.5
+   angles 0 0 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
    ID "54F34981DB3B25B9"
@@ -42,7 +46,8 @@ GenericEntity {
     Hierarchy "{81F7178AE0A3AEA2}" {
     }
    }
-   coords 3.0 0 0.4
+   coords 3.0 0 0.496
+   angles 0 0 0
   }
   GenericEntity : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
    ID "9DD082E3AD9E0868"
@@ -51,6 +56,7 @@ GenericEntity {
     }
    }
    coords -3.0 0 2.6
+   angles 0 0 0
   }
  }
 }

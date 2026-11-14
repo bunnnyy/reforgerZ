@@ -23,8 +23,8 @@ GenericEntity {
     Hierarchy "{B54AF70E48D70FD2}" {
     }
    }
-   coords -1.6 1.6 0.1
-   angles 0 4 0
+   coords -1.6 1.6 0.32
+   angles 0 184 0
   }
   GenericEntity : "{BC3EEB0F1E36272F}Prefabs/Props/Forest/DeerSkull_01/DeerSkull_01_board.et" {
    ID "175EE787A584C0FA"
@@ -32,8 +32,8 @@ GenericEntity {
     Hierarchy "{768614730C6618E6}" {
     }
    }
-   coords 0.3 1.8 0.12
-   angles 0 4 0
+   coords 0.3 1.8 0.34
+   angles 0 184 0
   }
   GenericEntity : "{BC3EEB0F1E36272F}Prefabs/Props/Forest/DeerSkull_01/DeerSkull_01_board.et" {
    ID "9023819439DC684E"
@@ -41,8 +41,8 @@ GenericEntity {
     Hierarchy "{5C74DD4F8A4AF399}" {
     }
    }
-   coords 1.9 1.5 0.14
-   angles 0 4 0
+   coords 1.9 1.5 0.36
+   angles 0 184 0
   }
   GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
    ID "7AECA0DE8BAF37C1"
@@ -50,7 +50,7 @@ GenericEntity {
     Hierarchy "{27B667178B05CB2A}" {
     }
    }
-   coords -2.6 0.3 0.5
+   coords -2.6 0.41 0.5
    angles 75 0 0
   }
   GenericEntity : "{74D1DB7828061BD7}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_pile_small.et" {
@@ -59,7 +59,7 @@ GenericEntity {
     Hierarchy "{C432B821F20458AB}" {
     }
    }
-   coords 2.4 0 0.9
+   coords 2.6 0 2.4
    angles 0 20 0
   }
  }

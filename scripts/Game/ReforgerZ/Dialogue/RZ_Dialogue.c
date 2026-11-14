@@ -151,6 +151,7 @@ class RZ_TalkReply
 	bool m_bAdmin;		// a server admin's reply: listed under [Admin], not with the others
 	bool m_bHeard;		// nothing new behind it: shown grey, still picked as any other
 	bool m_bWay;		// one of an errand's ways on offer: said as what you agree to (RZ_TalkWords.Agree)
+	int m_iFor;			// the job it moves, as the Quests tab's row id (RZ_Dialogue.ForErrand, ForMission); 0: none
 }
 
 //------------------------------------------------------------------------------------------------
@@ -180,6 +181,7 @@ class RZ_TalkSession
 	bool m_bQuiet;						// no filler greeting: only what they actually have to say (docs/DIALOGUE.md)
 	bool m_bGreeting;					// the greeting runs now (RZ_Dialogue.IsQuiet)
 	bool m_bSilent;						// nothing new is said on purpose: the replies show with no line
+	bool m_bAll;						// "There was something else." picked: every reply, not only the tracked job's
 }
 
 //------------------------------------------------------------------------------------------------
@@ -201,6 +203,7 @@ class RZ_Dialogue
 	static const int PAGE_BACK = 89;	// the page before (not 95: that's Make it right's reply)
 	static const int ADMIN_BACK = 97;	// Back.: from the [Admin] list to the replies
 	static const int ADMIN = 96;		// [Admin]: a server admin's replies, as their own list
+	static const int OTHER = 88;		// "There was something else.": every reply, after the tracked job's alone (not 62-87: a person's own actions)
 	static const int ROWS = 5;			// replies on the screen at once, the way out included
 	//! A house set without power can't call (OpenRadio, and the object menu's locked Call row)
 	static const string NO_POWER = "No power. It'll hear the channel, but it won't carry your voice. A generator close by would do it.";
@@ -764,12 +767,14 @@ class RZ_Dialogue
 		guard.Touch(playerId);
 
 		// The screen's own: a page on or back (round to the other end), the [Admin] list and back from it (nothing is said)
-		if (paging || replyId == ADMIN || replyId == ADMIN_BACK)
+		if (paging || replyId == ADMIN || replyId == ADMIN_BACK || replyId == OTHER)
 		{
 			if (replyId == MORE)
 				s.m_iPage = (s.m_iPage + 1) % s.m_iPages;
 			else if (replyId == PAGE_BACK)
 				s.m_iPage = (s.m_iPage + s.m_iPages - 1) % s.m_iPages;
+			else if (replyId == OTHER)
+				s.m_bAll = true;
 			else
 				s.m_bAdmin = replyId == ADMIN;
 
@@ -956,8 +961,14 @@ class RZ_Dialogue
 			s.m_bAdmin = false;
 		}
 
+		// The job you're tracking has replies here: only those, and "There was something else." for the rest
+		// (docs/DIALOGUE.md, "The order of the replies")
+		bool focus = !inNode && !s.m_bAdmin && !s.m_bAll && Focus(s, rows);
+
 		RZ_TalkReply way = OwnRow(LEAVE, RZ_TalkWords.WayOut(s));
 		string listKey = "hub";
+		if (focus)
+			listKey = "tracked";
 		if (s.m_bAdmin)
 		{
 			rows.Clear();
@@ -1038,6 +1049,63 @@ class RZ_Dialogue
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The tracked job's replies alone, then "There was something else." False (rows untouched): you track
+	//! nothing, or nothing here moves it.
+	protected bool Focus(RZ_TalkSession s, notnull array<ref RZ_TalkReply> rows)
+	{
+		int tracked = m_GM.GetProfile(s.m_iPlayer).m_iTrackedId;
+		if (tracked == 0)
+			return false;
+
+		array<ref RZ_TalkReply> mine = {};
+		foreach (RZ_TalkReply r : rows)
+		{
+			if (r.m_iFor == tracked)
+				mine.Insert(r);
+		}
+
+		if (mine.IsEmpty())
+			return false;
+
+		// Nothing else to show: no such row
+		bool others = mine.Count() < rows.Count();
+		rows.Clear();
+		foreach (RZ_TalkReply keep : mine)
+		{
+			rows.Insert(keep);
+		}
+
+		if (others)
+			rows.Insert(OwnRow(OTHER, "There was something else."));
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An errand's row on the Quests tab, for RZ_TalkReply.m_iFor; 0 for none (an id below 0).
+	static int ForErrand(int errandId)
+	{
+		if (errandId < 0)
+			return 0;
+
+		return -(RZ_UIFeed.ERRAND_ID_BASE + errandId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A mission's row on the Quests tab, for RZ_TalkReply.m_iFor: a questline's stage is its
+	//! questline's row (RZ_QuestTracker.IsStageOfListedRun).
+	static int ForMission(RZ_GameModeComponent gm, RZ_Mission m, int playerId)
+	{
+		if (!m)
+			return 0;
+
+		if (RZ_QuestTracker.IsStageOfListedRun(gm, m, playerId))
+			return -m.m_iQuestRun;
+
+		return m.m_iId;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Stable sort by rank (RZ_TalkReply.RANK_*): jobs you're on, new jobs, locked jobs, trade and
 	//! services, information, small talk. Insertion sort: a hub has a few dozen replies at most.
 	protected static void ByRank(notnull array<ref RZ_TalkReply> rows)
@@ -1071,7 +1139,7 @@ class RZ_Dialogue
 	protected bool Heard(RZ_TalkSession s, RZ_TalkReply r)
 	{
 		// A job on offer is never grey: it's always something new to take
-		if (r.m_bAdmin || r.m_bJob || r.m_iId == LEAVE || r.m_iId == ADMIN || r.m_iId == ADMIN_BACK)
+		if (r.m_bAdmin || r.m_bJob || r.m_iId == LEAVE || r.m_iId == ADMIN || r.m_iId == ADMIN_BACK || r.m_iId == OTHER)
 			return false;
 
 		if (RZ_DialogueTrees.IsOurs(r.m_iId))

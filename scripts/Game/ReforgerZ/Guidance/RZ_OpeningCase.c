@@ -282,7 +282,7 @@ class RZ_OpeningCase
 	bool SpawnCaseBy(vector at, int playerId)
 	{
 		vector ground = RZ_Util.GroundPos(at);
-		IEntity item = RZ_Util.SpawnPrefab(CasePrefab(m_GM), RZ_Util.RandomPointInRing(ground, 0.6, 1.1) + Vector(0, 0.3, 0), Math.RandomFloat(0, 360));
+		IEntity item = RZ_Util.SpawnPrefab(CasePrefab(m_GM), RZ_Util.RandomPointInRing(ground, 1.5, 2.0) + Vector(0, 0.3, 0), Math.RandomFloat(0, 360));
 		RZ_ColdCaseComponent c = RZ_ColdCaseComponent.Of(item);
 		if (!c)
 		{
@@ -534,6 +534,10 @@ class RZ_OpeningCase
 		r.m_bOwn = true;
 		r.m_bJob = true;
 		r.m_iRank = RZ_TalkReply.RANK_ON;
+		int lead;
+		if (m_mLead.Find(s.m_iPlayer, lead))
+			r.m_iFor = RZ_Dialogue.ForErrand(lead);
+
 		replies.InsertAt(r, 0);
 	}
 
@@ -675,6 +679,9 @@ class RZ_OpeningCase
 	//! this character, the tissue, and before 25% cure The Date on the Tag.
 	protected void ToHalcyon(RZ_TalkSession s, int playerId, IEntity user, bool warm, bool director)
 	{
+		// The Date on the Tag comes next: its own first line says the date's a filing error
+		RZ_CureResearch cure = m_GM.GetCure();
+		bool dateNext = cure && cure.ShownProgress() < CURE_DATE;
 		if (director)
 		{
 			if (warm)
@@ -682,7 +689,8 @@ class RZ_OpeningCase
 			else
 				s.m_aNew.Insert("Where did you get this? No. Don't tell me. It's alive, and it's cold, and that's all I need to know.");
 
-			s.m_aNew.Insert("The date on the tag is a filing error. I'd be grateful if you forgot you read it.");
+			if (!dateNext)
+				s.m_aNew.Insert("The date on the tag is a filing error. I'd be grateful if you forgot you read it.");
 		}
 		else
 		{
@@ -701,8 +709,7 @@ class RZ_OpeningCase
 		if (run)
 			run.Did(m_GM, playerId, RZ_EQuestApproach.TALK, "brought the runner's case in");
 
-		RZ_CureResearch cure = m_GM.GetCure();
-		if (cure && cure.ShownProgress() < CURE_DATE)
+		if (dateNext)
 			OpenDate(playerId, user, s.m_sName);
 	}
 

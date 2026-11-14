@@ -1,0 +1,1529 @@
+FrameWidgetClass "{0A782C585118F2C1}" {
+ Name "SiteHud"
+ Slot FrameWidgetSlot "{0C3B4C8B7526ECC9}" {
+  Anchor 0 0 1 1
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 0
+  OffsetRight 0
+  SizeY 0
+  OffsetBottom 0
+  Alignment 0 0
+ }
+ {
+  FrameWidgetClass "{6B4D3EF4EAED12AD}" {
+   Name "SiteHudPanel"
+   Slot FrameWidgetSlot "{171B13431ACA9103}" {
+    Anchor 1 0 1 0
+    PositionX -484
+    OffsetLeft -484
+    PositionY 96
+    OffsetTop 96
+    SizeX 460
+    OffsetRight 24
+    SizeY 330
+    OffsetBottom -426
+    Alignment 0 0
+   }
+   {
+    ImageWidgetClass "{CB35C2FD824E1D10}" {
+     Name "BarBg"
+     Slot FrameWidgetSlot "{F884F2006B656650}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 460
+      OffsetRight -460
+      SizeY 330
+      OffsetBottom -330
+      Alignment 0 0
+     }
+     Color 0.0044 0.0048 0.0056 0.94
+     Size 1 1
+    }
+    ImageWidgetClass "{B6D7A97EF2A167F7}" {
+     Name "BarAccent"
+     Slot FrameWidgetSlot "{2569BB68C3CB4148}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 3
+      OffsetRight -3
+      SizeY 330
+      OffsetBottom -330
+      Alignment 0 0
+     }
+     Color 0.8073 0.4451 0.0421 1
+     Size 1 1
+    }
+    TextWidgetClass "{CA57F3CB2C17A82E}" {
+     Name "BarName"
+     Slot FrameWidgetSlot "{05C47D4FDECD7B38}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 10
+      OffsetTop 10
+      SizeX 290
+      OffsetRight -306
+      SizeY 28
+      OffsetBottom -38
+      Alignment 0 0
+     }
+     Color 0.8378 0.8154 0.7523 1
+     Text "Lamentin"
+     "Font Size" 22
+     "Min Font Size" 22
+     FontProperties FontProperties "{06D01831B1ED78DB}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{027417471F26DF96}" {
+     Name "BarProgress"
+     Slot FrameWidgetSlot "{9F1FD18E1AA16359}" {
+      Anchor 0 0 0 0
+      PositionX 300
+      OffsetLeft 300
+      PositionY 14
+      OffsetTop 14
+      SizeX 150
+      OffsetRight -450
+      SizeY 24
+      OffsetBottom -38
+      Alignment 0 0
+     }
+     Color 0.3232 0.3093 0.2749 1
+     Text "7/11 - unsaved"
+     "Font Size" 17
+     "Min Font Size" 17
+     FontProperties FontProperties "{49AC14DDBEFDFCF6}" {
+      Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+     }
+    }
+    ButtonWidgetClass "{426F85E63E9297E8}" {
+     Name "PagePrev"
+     Slot FrameWidgetSlot "{8AF1C70CA0905286}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 46
+      OffsetTop 46
+      SizeX 40
+      OffsetRight -56
+      SizeY 32
+      OffsetBottom -78
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{992ABC4C16A92F16}" {
+       Name "PagePrevBox"
+       Slot ButtonWidgetSlot "{2FAE4FAC178906B2}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{35B107008DEB840A}" {
+         Name "PagePrevBg"
+         Slot FrameWidgetSlot "{23DE7CC970D57C82}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 40
+          OffsetRight -40
+          SizeY 32
+          OffsetBottom -32
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{8A62E691DEBB1494}" {
+         Name "PagePrevText"
+         Slot FrameWidgetSlot "{3C81E975B3C17079}" {
+          Anchor 0 0 0 0
+          PositionX 13
+          OffsetLeft 13
+          PositionY 1
+          OffsetTop 1
+          SizeX 20
+          OffsetRight -33
+          SizeY 30
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "<"
+         "Font Size" 22
+         "Min Font Size" 22
+         FontProperties FontProperties "{3FC0E6566B601DB7}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    TextWidgetClass "{F2276B6CAC504B22}" {
+     Name "PageTitle"
+     Slot FrameWidgetSlot "{96CE70B16A36A02C}" {
+      Anchor 0 0 0 0
+      PositionX 70
+      OffsetLeft 70
+      PositionY 50
+      OffsetTop 50
+      SizeX 320
+      OffsetRight -390
+      SizeY 26
+      OffsetBottom -76
+      Alignment 0 0
+     }
+     Color 0.3232 0.3093 0.2749 1
+     Text "People - 1/3"
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{3853911B1DD23641}" {
+      Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+     }
+    }
+    ButtonWidgetClass "{43FB90A80FEC0407}" {
+     Name "PageNext"
+     Slot FrameWidgetSlot "{AD372FEEC678A77A}" {
+      Anchor 0 0 0 0
+      PositionX 404
+      OffsetLeft 404
+      PositionY 46
+      OffsetTop 46
+      SizeX 40
+      OffsetRight -444
+      SizeY 32
+      OffsetBottom -78
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{91979F04F2BFC7E2}" {
+       Name "PageNextBox"
+       Slot ButtonWidgetSlot "{D0226A3A3330F86C}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{61EBB49A11B9FB5F}" {
+         Name "PageNextBg"
+         Slot FrameWidgetSlot "{2FCC85770FCD1933}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 40
+          OffsetRight -40
+          SizeY 32
+          OffsetBottom -32
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{7F7EC3F776C93A4A}" {
+         Name "PageNextText"
+         Slot FrameWidgetSlot "{380EF6C41AB605F1}" {
+          Anchor 0 0 0 0
+          PositionX 14
+          OffsetLeft 14
+          PositionY 1
+          OffsetTop 1
+          SizeX 20
+          OffsetRight -34
+          SizeY 30
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text ">"
+         "Font Size" 22
+         "Min Font Size" 22
+         FontProperties FontProperties "{A2364657A9401884}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{C13D3FA3F91C56EA}" {
+     Name "Btn0"
+     Slot FrameWidgetSlot "{743413916C12E878}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 88
+      OffsetTop 88
+      SizeX 210
+      OffsetRight -226
+      SizeY 34
+      OffsetBottom -122
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{868F0A419D0A856A}" {
+       Name "Btn0Box"
+       Slot ButtonWidgetSlot "{88C344B7DD8A6D88}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{34E2192872D126E9}" {
+         Name "BtnBg0"
+         Slot FrameWidgetSlot "{EEF449FFED5A9671}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 210
+          OffsetRight -210
+          SizeY 34
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{5F355455B82F3700}" {
+         Name "BtnName0"
+         Slot FrameWidgetSlot "{9B5B8D0356470D13}" {
+          Anchor 0 0 0 0
+          PositionX 10
+          OffsetLeft 10
+          PositionY 5
+          OffsetTop 5
+          SizeX 140
+          OffsetRight -150
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "Gate"
+         "Font Size" 19
+         "Min Font Size" 19
+         FontProperties FontProperties "{936CD083BB5F4137}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{4B668E067F448E03}" {
+         Name "BtnState0"
+         Slot FrameWidgetSlot "{D8795C6FD8E36210}" {
+          Anchor 0 0 0 0
+          PositionX 150
+          OffsetLeft 150
+          PositionY 5
+          OffsetTop 5
+          SizeX 54
+          OffsetRight -204
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.3232 0.3093 0.2749 1
+         Text "0/1"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{E917E936DB79C014}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{743619346F8110E1}" {
+     Name "Btn1"
+     Slot FrameWidgetSlot "{86020F975C66CC0A}" {
+      Anchor 0 0 0 0
+      PositionX 234
+      OffsetLeft 234
+      PositionY 88
+      OffsetTop 88
+      SizeX 210
+      OffsetRight -444
+      SizeY 34
+      OffsetBottom -122
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{6A1633BD19260EAE}" {
+       Name "Btn1Box"
+       Slot ButtonWidgetSlot "{F4C48220A77576C0}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{92915D65ACEF2414}" {
+         Name "BtnBg1"
+         Slot FrameWidgetSlot "{B6254A5D0A869E18}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 210
+          OffsetRight -210
+          SizeY 34
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{EA3FB037C249DD84}" {
+         Name "BtnName1"
+         Slot FrameWidgetSlot "{8D7BDDE321896CD5}" {
+          Anchor 0 0 0 0
+          PositionX 10
+          OffsetLeft 10
+          PositionY 5
+          OffsetTop 5
+          SizeX 140
+          OffsetRight -150
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "Gate"
+         "Font Size" 19
+         "Min Font Size" 19
+         FontProperties FontProperties "{CA8868A3B25EADB5}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{32454FACE10D77D5}" {
+         Name "BtnState1"
+         Slot FrameWidgetSlot "{B3F5298D7B0D636B}" {
+          Anchor 0 0 0 0
+          PositionX 150
+          OffsetLeft 150
+          PositionY 5
+          OffsetTop 5
+          SizeX 54
+          OffsetRight -204
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.3232 0.3093 0.2749 1
+         Text "0/1"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{85A49B3C72324A62}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{45BE662C153509CD}" {
+     Name "Btn2"
+     Slot FrameWidgetSlot "{5BB43B4D36DD2C0D}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 128
+      OffsetTop 128
+      SizeX 210
+      OffsetRight -226
+      SizeY 34
+      OffsetBottom -162
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{82B4C5795CBF4C65}" {
+       Name "Btn2Box"
+       Slot ButtonWidgetSlot "{0D0200F1CBC805CE}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{83342ED71ED2A78D}" {
+         Name "BtnBg2"
+         Slot FrameWidgetSlot "{E23D2F17E3BBA073}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 210
+          OffsetRight -210
+          SizeY 34
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{3B4611D9AE9D10D8}" {
+         Name "BtnName2"
+         Slot FrameWidgetSlot "{918978A311031542}" {
+          Anchor 0 0 0 0
+          PositionX 10
+          OffsetLeft 10
+          PositionY 5
+          OffsetTop 5
+          SizeX 140
+          OffsetRight -150
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "Gate"
+         "Font Size" 19
+         "Min Font Size" 19
+         FontProperties FontProperties "{5EBC34D04441CFDC}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{005CE86DE1C431C0}" {
+         Name "BtnState2"
+         Slot FrameWidgetSlot "{52458AC57C9B16A1}" {
+          Anchor 0 0 0 0
+          PositionX 150
+          OffsetLeft 150
+          PositionY 5
+          OffsetTop 5
+          SizeX 54
+          OffsetRight -204
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.3232 0.3093 0.2749 1
+         Text "0/1"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{A4E349B174D765D9}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{2E85D266D2FA9695}" {
+     Name "Btn3"
+     Slot FrameWidgetSlot "{BCE3D3600B5D7499}" {
+      Anchor 0 0 0 0
+      PositionX 234
+      OffsetLeft 234
+      PositionY 128
+      OffsetTop 128
+      SizeX 210
+      OffsetRight -444
+      SizeY 34
+      OffsetBottom -162
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{4F1CB44D9F3E2075}" {
+       Name "Btn3Box"
+       Slot ButtonWidgetSlot "{152F823A764AF249}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{1707B50263798CD0}" {
+         Name "BtnBg3"
+         Slot FrameWidgetSlot "{C4C2A8432706721C}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 210
+          OffsetRight -210
+          SizeY 34
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{9594C97076E9FC23}" {
+         Name "BtnName3"
+         Slot FrameWidgetSlot "{113147BC3EF738B5}" {
+          Anchor 0 0 0 0
+          PositionX 10
+          OffsetLeft 10
+          PositionY 5
+          OffsetTop 5
+          SizeX 140
+          OffsetRight -150
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "Gate"
+         "Font Size" 19
+         "Min Font Size" 19
+         FontProperties FontProperties "{6A2596F65287F865}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{ECA79CF58B130462}" {
+         Name "BtnState3"
+         Slot FrameWidgetSlot "{EA61F085047AA206}" {
+          Anchor 0 0 0 0
+          PositionX 150
+          OffsetLeft 150
+          PositionY 5
+          OffsetTop 5
+          SizeX 54
+          OffsetRight -204
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.3232 0.3093 0.2749 1
+         Text "0/1"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{9F9DBDC45B953689}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{59440FAF079DEADA}" {
+     Name "Btn4"
+     Slot FrameWidgetSlot "{1172EC2B15777957}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 168
+      OffsetTop 168
+      SizeX 210
+      OffsetRight -226
+      SizeY 34
+      OffsetBottom -202
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{F1E5D75DB508C163}" {
+       Name "Btn4Box"
+       Slot ButtonWidgetSlot "{9FF3C8B53D3B7A4C}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{E2E237584F12B18B}" {
+         Name "BtnBg4"
+         Slot FrameWidgetSlot "{956835FE84691360}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 210
+          OffsetRight -210
+          SizeY 34
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{7F0E55EE927BB4F4}" {
+         Name "BtnName4"
+         Slot FrameWidgetSlot "{08FE8C1DD982CB0B}" {
+          Anchor 0 0 0 0
+          PositionX 10
+          OffsetLeft 10
+          PositionY 5
+          OffsetTop 5
+          SizeX 140
+          OffsetRight -150
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "Gate"
+         "Font Size" 19
+         "Min Font Size" 19
+         FontProperties FontProperties "{071B7AD1440CA6DE}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{86559B0C1DFE8E1C}" {
+         Name "BtnState4"
+         Slot FrameWidgetSlot "{0AC957F225F18269}" {
+          Anchor 0 0 0 0
+          PositionX 150
+          OffsetLeft 150
+          PositionY 5
+          OffsetTop 5
+          SizeX 54
+          OffsetRight -204
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.3232 0.3093 0.2749 1
+         Text "0/1"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{36E19E0E27913F2B}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{E6FAEC9DFE7798C0}" {
+     Name "Btn5"
+     Slot FrameWidgetSlot "{EB9B3AD2A52862A2}" {
+      Anchor 0 0 0 0
+      PositionX 234
+      OffsetLeft 234
+      PositionY 168
+      OffsetTop 168
+      SizeX 210
+      OffsetRight -444
+      SizeY 34
+      OffsetBottom -202
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{AC0E1BBB0272041F}" {
+       Name "Btn5Box"
+       Slot ButtonWidgetSlot "{3B4F7596F04923AE}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{75A4B4E9CE2A14B8}" {
+         Name "BtnBg5"
+         Slot FrameWidgetSlot "{4DB013251C97E7B7}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 210
+          OffsetRight -210
+          SizeY 34
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{68510361FF8ED36D}" {
+         Name "BtnName5"
+         Slot FrameWidgetSlot "{F0BBCE2459A9DE5F}" {
+          Anchor 0 0 0 0
+          PositionX 10
+          OffsetLeft 10
+          PositionY 5
+          OffsetTop 5
+          SizeX 140
+          OffsetRight -150
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "Gate"
+         "Font Size" 19
+         "Min Font Size" 19
+         FontProperties FontProperties "{287E353A5B2B593B}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{A45F760727862584}" {
+         Name "BtnState5"
+         Slot FrameWidgetSlot "{384F3E95C8D52D61}" {
+          Anchor 0 0 0 0
+          PositionX 150
+          OffsetLeft 150
+          PositionY 5
+          OffsetTop 5
+          SizeX 54
+          OffsetRight -204
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.3232 0.3093 0.2749 1
+         Text "0/1"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{D9A5EE6EA7358151}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{BE71316B94965FAE}" {
+     Name "Btn6"
+     Slot FrameWidgetSlot "{4A6B2B837B663FEF}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 208
+      OffsetTop 208
+      SizeX 210
+      OffsetRight -226
+      SizeY 34
+      OffsetBottom -242
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{C256E18839CBCA05}" {
+       Name "Btn6Box"
+       Slot ButtonWidgetSlot "{DBC4240C25A37D00}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{94F0CAF61C1D26C3}" {
+         Name "BtnBg6"
+         Slot FrameWidgetSlot "{4B3CEAFDB8717225}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 210
+          OffsetRight -210
+          SizeY 34
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{45CE23E5173B9219}" {
+         Name "BtnName6"
+         Slot FrameWidgetSlot "{30BC57240B128AE2}" {
+          Anchor 0 0 0 0
+          PositionX 10
+          OffsetLeft 10
+          PositionY 5
+          OffsetTop 5
+          SizeX 140
+          OffsetRight -150
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "Gate"
+         "Font Size" 19
+         "Min Font Size" 19
+         FontProperties FontProperties "{6ABB3531D86C65B0}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{01CCAD39255FDA32}" {
+         Name "BtnState6"
+         Slot FrameWidgetSlot "{4862902F5D16DB0D}" {
+          Anchor 0 0 0 0
+          PositionX 150
+          OffsetLeft 150
+          PositionY 5
+          OffsetTop 5
+          SizeX 54
+          OffsetRight -204
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.3232 0.3093 0.2749 1
+         Text "0/1"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{35D3386DC09DC79D}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{F40A02B9F0576B9D}" {
+     Name "Btn7"
+     Slot FrameWidgetSlot "{8FA88AC71737C81B}" {
+      Anchor 0 0 0 0
+      PositionX 234
+      OffsetLeft 234
+      PositionY 208
+      OffsetTop 208
+      SizeX 210
+      OffsetRight -444
+      SizeY 34
+      OffsetBottom -242
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{CDBC3CCBE6DCBAD7}" {
+       Name "Btn7Box"
+       Slot ButtonWidgetSlot "{93434956B48ABA05}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{EB2A095C28B80CD3}" {
+         Name "BtnBg7"
+         Slot FrameWidgetSlot "{50C91FFFE3BB08F1}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 210
+          OffsetRight -210
+          SizeY 34
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{4621A13E9C18D985}" {
+         Name "BtnName7"
+         Slot FrameWidgetSlot "{2D98ECB33D060C4B}" {
+          Anchor 0 0 0 0
+          PositionX 10
+          OffsetLeft 10
+          PositionY 5
+          OffsetTop 5
+          SizeX 140
+          OffsetRight -150
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "Gate"
+         "Font Size" 19
+         "Min Font Size" 19
+         FontProperties FontProperties "{908A4ADE3DD7825E}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{3091813BCBD56D06}" {
+         Name "BtnState7"
+         Slot FrameWidgetSlot "{C59A215D7598E739}" {
+          Anchor 0 0 0 0
+          PositionX 150
+          OffsetLeft 150
+          PositionY 5
+          OffsetTop 5
+          SizeX 54
+          OffsetRight -204
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.3232 0.3093 0.2749 1
+         Text "0/1"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{6606E7729ECF345D}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    TextWidgetClass "{56C7C68A4AAFEBDA}" {
+     Name "BarHint"
+     Slot FrameWidgetSlot "{8BAC629619DE4320}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 252
+      OffsetTop 252
+      SizeX 428
+      OffsetRight -444
+      SizeY 22
+      OffsetBottom -274
+      Alignment 0 0
+     }
+     Color 0.8073 0.4451 0.0421 1
+     Text ""
+     "Font Size" 16
+     "Min Font Size" 16
+     FontProperties FontProperties "{D6444480D4464531}" {
+      Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+     }
+    }
+    ButtonWidgetClass "{9D04E56A7B0ED37C}" {
+     Name "BarUndo"
+     Slot FrameWidgetSlot "{7893C701DE21B560}" {
+      Anchor 0 0 0 0
+      PositionX 16
+      OffsetLeft 16
+      PositionY 282
+      OffsetTop 282
+      SizeX 80
+      OffsetRight -96
+      SizeY 34
+      OffsetBottom -316
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{ACA2A737C3B5FA6E}" {
+       Name "BarUndoBox"
+       Slot ButtonWidgetSlot "{C192FD9C91EA689F}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{BC84D2B0D47FA272}" {
+         Name "BarUndoBg"
+         Slot FrameWidgetSlot "{FCDD71E178336640}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 80
+          OffsetRight -80
+          SizeY 34
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{A89FFB9A0F259590}" {
+         Name "BarUndoText"
+         Slot FrameWidgetSlot "{BDD659C184B3A0DE}" {
+          Anchor 0 0 0 0
+          PositionX 10
+          OffsetLeft 10
+          PositionY 5
+          OffsetTop 5
+          SizeX 66
+          OffsetRight -76
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "Undo"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{E4EA89A7ED38470A}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{1F7239BA9026C168}" {
+     Name "BarReset"
+     Slot FrameWidgetSlot "{9B108F02FDD553E2}" {
+      Anchor 0 0 0 0
+      PositionX 102
+      OffsetLeft 102
+      PositionY 282
+      OffsetTop 282
+      SizeX 80
+      OffsetRight -182
+      SizeY 34
+      OffsetBottom -316
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{EF94F80D3584E291}" {
+       Name "BarResetBox"
+       Slot ButtonWidgetSlot "{723AC4554C225A22}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{FD149B7830D25073}" {
+         Name "BarResetBg"
+         Slot FrameWidgetSlot "{5D1BBAB49CBDEAFF}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 80
+          OffsetRight -80
+          SizeY 34
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{1B3B4D477C700C55}" {
+         Name "BarResetText"
+         Slot FrameWidgetSlot "{E40CB4E531898748}" {
+          Anchor 0 0 0 0
+          PositionX 10
+          OffsetLeft 10
+          PositionY 5
+          OffsetTop 5
+          SizeX 66
+          OffsetRight -76
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "Reset"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{778974C5F0A367C0}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{510486ECF2C6F8B6}" {
+     Name "BarClear"
+     Slot FrameWidgetSlot "{33A8BF82069C6110}" {
+      Anchor 0 0 0 0
+      PositionX 188
+      OffsetLeft 188
+      PositionY 282
+      OffsetTop 282
+      SizeX 80
+      OffsetRight -268
+      SizeY 34
+      OffsetBottom -316
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{5A4EAEA35030DD3C}" {
+       Name "BarClearBox"
+       Slot ButtonWidgetSlot "{CFD12138B305FD41}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{F0D597411E60A0F6}" {
+         Name "BarClearBg"
+         Slot FrameWidgetSlot "{4C2314DF3A433881}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 80
+          OffsetRight -80
+          SizeY 34
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{D48CF59CC51CE5E8}" {
+         Name "BarClearText"
+         Slot FrameWidgetSlot "{4AE94DDCC25F48DB}" {
+          Anchor 0 0 0 0
+          PositionX 10
+          OffsetLeft 10
+          PositionY 5
+          OffsetTop 5
+          SizeX 66
+          OffsetRight -76
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "Clear"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{8243D80D1E87B506}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{C922A32FB3C19255}" {
+     Name "BarSave"
+     Slot FrameWidgetSlot "{7D53C0682A426FA8}" {
+      Anchor 0 0 0 0
+      PositionX 274
+      OffsetLeft 274
+      PositionY 282
+      OffsetTop 282
+      SizeX 80
+      OffsetRight -354
+      SizeY 34
+      OffsetBottom -316
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{62CE245EFEB57310}" {
+       Name "BarSaveBox"
+       Slot ButtonWidgetSlot "{DADD809208CCF80E}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{1ACEA6F70882C2C4}" {
+         Name "BarSaveBg"
+         Slot FrameWidgetSlot "{B56FD7074431CAF7}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 80
+          OffsetRight -80
+          SizeY 34
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{30B451A66FD26F70}" {
+         Name "BarSaveText"
+         Slot FrameWidgetSlot "{284BF8FFFC88AB7C}" {
+          Anchor 0 0 0 0
+          PositionX 10
+          OffsetLeft 10
+          PositionY 5
+          OffsetTop 5
+          SizeX 66
+          OffsetRight -76
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "Save"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{945498AEDA786713}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{1A2AA52A12549C0E}" {
+     Name "BarStop"
+     Slot FrameWidgetSlot "{B815B177BF2F3C16}" {
+      Anchor 0 0 0 0
+      PositionX 360
+      OffsetLeft 360
+      PositionY 282
+      OffsetTop 282
+      SizeX 80
+      OffsetRight -440
+      SizeY 34
+      OffsetBottom -316
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{8C7696E074EF627E}" {
+       Name "BarStopBox"
+       Slot ButtonWidgetSlot "{3EC548A113AF1E0B}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{BFD73AC231DD62AE}" {
+         Name "BarStopBg"
+         Slot FrameWidgetSlot "{10D0B3666447E96C}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 80
+          OffsetRight -80
+          SizeY 34
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.0176 0.0213 0.0253 1
+         Size 1 1
+        }
+        TextWidgetClass "{1F9FF6DFD7D2D1FE}" {
+         Name "BarStopText"
+         Slot FrameWidgetSlot "{C9EB8FDE18C9EAD3}" {
+          Anchor 0 0 0 0
+          PositionX 10
+          OffsetLeft 10
+          PositionY 5
+          OffsetTop 5
+          SizeX 66
+          OffsetRight -76
+          SizeY 26
+          OffsetBottom -31
+          Alignment 0 0
+         }
+         Color 0.8378 0.8154 0.7523 1
+         Text "Stop"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{070D6AC2E2DA31E8}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    FrameWidgetClass "{28CAA48B1D7A54AC}" {
+     Name "BarConfirm"
+     Slot FrameWidgetSlot "{897BA5FF54163875}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 244
+      OffsetTop 244
+      SizeX 460
+      OffsetRight -460
+      SizeY 86
+      OffsetBottom -330
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     {
+      ImageWidgetClass "{9C775F96C781D510}" {
+       Name "BarConfirmBg"
+       Slot FrameWidgetSlot "{5E4EB5081F951ED1}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 460
+        OffsetRight -460
+        SizeY 86
+        OffsetBottom -86
+        Alignment 0 0
+       }
+       Color 0.0066 0.0072 0.0085 1
+       Size 1 1
+      }
+      ImageWidgetClass "{4866B9523D707F71}" {
+       Name "BarConfirmAccent"
+       Slot FrameWidgetSlot "{C7718AD62B3FD28E}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 460
+        OffsetRight -460
+        SizeY 2
+        OffsetBottom -2
+        Alignment 0 0
+       }
+       Color 0.8073 0.4451 0.0421 1
+       Size 1 1
+      }
+      TextWidgetClass "{2432BCF7CCE1AC66}" {
+       Name "BarConfirmText"
+       Slot FrameWidgetSlot "{A7A96A9A1178FCF1}" {
+        Anchor 0 0 0 0
+        PositionX 16
+        OffsetLeft 16
+        PositionY 6
+        OffsetTop 6
+        SizeX 428
+        OffsetRight -444
+        SizeY 28
+        OffsetBottom -34
+        Alignment 0 0
+       }
+       Color 0.8378 0.8154 0.7523 1
+       Text "Clear everything?"
+       "Font Size" 17
+       "Min Font Size" 17
+       Wrap 1
+       FontProperties FontProperties "{0BD2649AD03238C0}" {
+        Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+       }
+      }
+      ButtonWidgetClass "{E6B7E8D3E81F2073}" {
+       Name "BarConfirmYes"
+       Slot FrameWidgetSlot "{351C2006758CEF5D}" {
+        Anchor 0 0 0 0
+        PositionX 16
+        OffsetLeft 16
+        PositionY 38
+        OffsetTop 38
+        SizeX 210
+        OffsetRight -226
+        SizeY 34
+        OffsetBottom -72
+        Alignment 0 0
+       }
+       style blank
+       {
+        FrameWidgetClass "{31616206C313E037}" {
+         Name "BarConfirmYesBox"
+         Slot ButtonWidgetSlot "{5FBBCCB87497EEF2}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          ImageWidgetClass "{3A9BF9F597B7DCC7}" {
+           Name "BarConfirmYesBg"
+           Slot FrameWidgetSlot "{44F953D2DE9AA3A7}" {
+            Anchor 0 0 0 0
+            PositionX 0
+            OffsetLeft 0
+            PositionY 0
+            OffsetTop 0
+            SizeX 210
+            OffsetRight -210
+            SizeY 34
+            OffsetBottom -34
+            Alignment 0 0
+           }
+           Color 0.8073 0.4451 0.0421 1
+           Size 1 1
+          }
+          TextWidgetClass "{D5A0A2353366E86F}" {
+           Name "BarConfirmYesText"
+           Slot FrameWidgetSlot "{A8306BDE287265E9}" {
+            Anchor 0 0 0 0
+            PositionX 12
+            OffsetLeft 12
+            PositionY 5
+            OffsetTop 5
+            SizeX 190
+            OffsetRight -202
+            SizeY 26
+            OffsetBottom -31
+            Alignment 0 0
+           }
+           Color 0.0153 0.0116 0.0072 1
+           Text "Yes, clear it"
+           "Font Size" 18
+           "Min Font Size" 18
+           FontProperties FontProperties "{4B9014C1D8D53B71}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+      ButtonWidgetClass "{AC98091FCC0894D6}" {
+       Name "BarConfirmNo"
+       Slot FrameWidgetSlot "{CE195C0581EE556B}" {
+        Anchor 0 0 0 0
+        PositionX 234
+        OffsetLeft 234
+        PositionY 38
+        OffsetTop 38
+        SizeX 210
+        OffsetRight -444
+        SizeY 34
+        OffsetBottom -72
+        Alignment 0 0
+       }
+       style blank
+       {
+        FrameWidgetClass "{798FBD5EAD1E19D4}" {
+         Name "BarConfirmNoBox"
+         Slot ButtonWidgetSlot "{FA2747D3EF14AF0F}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          ImageWidgetClass "{A0EF2F4765FDEFC0}" {
+           Name "BarConfirmNoBg"
+           Slot FrameWidgetSlot "{55C67760C6890D6D}" {
+            Anchor 0 0 0 0
+            PositionX 0
+            OffsetLeft 0
+            PositionY 0
+            OffsetTop 0
+            SizeX 210
+            OffsetRight -210
+            SizeY 34
+            OffsetBottom -34
+            Alignment 0 0
+           }
+           Color 0.0176 0.0213 0.0253 1
+           Size 1 1
+          }
+          TextWidgetClass "{CFCFBC4AD563CCF6}" {
+           Name "BarConfirmNoText"
+           Slot FrameWidgetSlot "{3569444F8056AB56}" {
+            Anchor 0 0 0 0
+            PositionX 12
+            OffsetLeft 12
+            PositionY 5
+            OffsetTop 5
+            SizeX 190
+            OffsetRight -202
+            SizeY 26
+            OffsetBottom -31
+            Alignment 0 0
+           }
+           Color 0.8378 0.8154 0.7523 1
+           Text "No"
+           "Font Size" 18
+           "Min Font Size" 18
+           FontProperties FontProperties "{3FF7FD595A64CEF6}" {
+            Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

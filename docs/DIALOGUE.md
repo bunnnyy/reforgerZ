@@ -235,6 +235,14 @@ out is always last. A node's choices stay in the order they're written.
 A built reply's rank comes from its adapter, else from its label (`RZ_TalkNeeds.RankFor`); a topic's
 from its conversation's `prio`.
 
+**The tracked job first, and alone.** ✅ When someone has replies that move the job you track on the
+Quests tab, the hub shows only those, then **There was something else.**, which opens every reply for the rest
+of the conversation (`RZ_Dialogue.Focus`; each reply's `m_iFor`, the job's row id). Nothing to add:
+no such row Replies that know their job: the runner's case at Halcyon, Bastion or the Red
+Hand, a paper from the case's lid handed to its own people (not given to a rival), a mission
+person's choices and hand-overs, a giver's held errand, an opening's step and Ferda's visit. A
+node's choices and the [Admin] list are never narrowed.
+
 ### No filler greeting
 
 ✅ The author's rule from play-testing: nobody says a default hello. When you talk to someone, the

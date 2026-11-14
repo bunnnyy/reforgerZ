@@ -33,6 +33,7 @@ GenericEntity {
     }
    }
    coords -0.7 0 0.2
+   angles 0 0 0
   }
   GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
    ID "085AC25B11CCB0B1"
@@ -41,6 +42,7 @@ GenericEntity {
     }
    }
    coords 0.2 0 0.9
+   angles 0 0 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
    ID "093A5D9CE89C9D32"
@@ -49,6 +51,7 @@ GenericEntity {
     }
    }
    coords -0.3 0 -0.7
+   angles 0 0 0
   }
  }
 }

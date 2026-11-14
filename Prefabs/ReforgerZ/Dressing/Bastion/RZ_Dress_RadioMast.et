@@ -1,0 +1,72 @@
+GenericEntity {
+ ID "64DD43FC16A99610"
+ components {
+  RplComponent "{3310C607A1E2C3B9}" {
+  }
+  Hierarchy "{7D61AD35D403A2F3}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{A1697FD5012C105D}Prefabs/Props/Military/Antennas/Antenna_US_02/Antenna_US_02.et" {
+   ID "B435666EE8BB20A0"
+   components {
+    Hierarchy "{E3EEB066345AC506}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
+   ID "57DDB7D6BA0D14A4"
+   components {
+    Hierarchy "{D2C6788275278E10}" {
+    }
+   }
+   coords 1.6 0 0
+   angles 0 90 0
+  }
+  GenericEntity : "{4417ED07902CE47E}Prefabs/Props/Military/Radios/RadioStation_ANPRC77_01.et" {
+   ID "3F7F2A9E1AD9D465"
+   components {
+    Hierarchy "{7C5264E190565901}" {
+    }
+   }
+   coords 1.6 0.9 0.2
+   angles 0 0 0
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "E748922CAAB74505"
+   components {
+    Hierarchy "{142FE5DDA971F04F}" {
+    }
+   }
+   coords 2.304 0 0.001
+   angles 0 -90.0 0
+  }
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+   ID "8A5C47DE07A76519"
+   components {
+    Hierarchy "{B000B44FFB0E34A3}" {
+    }
+   }
+   coords 1.6 0.9 -0.5
+   angles 0 0 0
+  }
+  GenericEntity {
+   ID "843FDA470355B4DD"
+   components {
+    SCR_AISmartActionSentinelComponent "{8D3296777657C6AE}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 1.6 1.6 0.0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{2C5AB6C9A9C35541}" {
+    }
+   }
+   coords 2.304 0 0.001
+  }
+ }
+}

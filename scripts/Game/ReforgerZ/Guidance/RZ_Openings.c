@@ -322,6 +322,32 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Within `radius` of a running opening's places: the house you start in (its door), the
+	//! favour's thing, the task's building, the next person's spot. No lock there (RZ_Search.HasLock).
+	bool IsNearPlace(vector pos, float radius)
+	{
+		foreach (RZ_Opening o : m_aOpenings)
+		{
+			if (o.m_bEnded)
+				continue;
+
+			if (o.m_Place && RZ_Util.DistXZ(o.m_Place.m_vPos, pos) <= radius)
+				return true;
+
+			if (o.m_vFavour != vector.Zero && RZ_Util.DistXZ(o.m_vFavour, pos) <= radius)
+				return true;
+
+			if (o.m_vNext != vector.Zero && RZ_Util.DistXZ(o.m_vNext, pos) <= radius)
+				return true;
+
+			if (o.m_Target && RZ_Util.DistXZ(o.m_Target.GetOrigin(), pos) <= radius)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	RZ_Opening ById(int id)
 	{
 		foreach (RZ_Opening o : m_aOpenings)
@@ -2121,7 +2147,7 @@ class RZ_Openings
 			return false;
 
 		ReleaseWanderer(o, o.m_Contact.GetOrigin());
-		RZ_Util.DeleteUnit(o.m_Contact);
+		RZ_Leaving.Remove(o.m_Contact);
 		o.m_Contact = null;
 		return o.m_Left == null;
 	}

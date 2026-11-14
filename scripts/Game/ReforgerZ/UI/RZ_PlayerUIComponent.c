@@ -84,7 +84,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
-	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100};	// per CMD_*
+	protected ref array<float> m_aLastCommand = {};	// per CMD_*, sized in RpcAsk_Command (CMD_COUNT)
 	protected float m_fLastPick = -100;		// the last car job or purchase (PICK_GAP)
 	protected static const float PICK_GAP = 0.5;
 
@@ -103,6 +103,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	static const int CMD_TRACES = 11;	// /traces (admins): the door marks near you, to the server log (World/Traces)
 	static const int CMD_FOG = 13;		// /fog (admins): the map's fog read-out; "all" clears your map, "reset" fogs it again (World/RZ_MapFog.c)
 	static const int CMD_SITES = 12;	// /sites (admins, game masters): the site builder (World/HandBuilt/RZ_SiteBuilder.c)
+	static const int CMD_LEVEL = 14;	// /level [0-3] (admins): your guidance level, set from your next character (Guidance/RZ_Guidance.c)
+	static const int CMD_COUNT = 15;	// one more than the last CMD_*: the table of when each was last asked (a command past it was dropped unheard)
 
 	//------------------------------------------------------------------------------------------------
 	//! The local player's component (client), or null.
@@ -456,6 +458,18 @@ class RZ_PlayerUIComponent : ScriptComponent
 		else if (kind == RZ_UIFeed.PAYLOAD_POWER)
 		{
 			RZ_PowerMenu.OnPayload(this, payload);
+		}
+		else if (kind == RZ_UIFeed.PAYLOAD_SITES)
+		{
+			RZ_SiteBuilderMenu.OnPayload(this, payload);
+		}
+		else if (kind == RZ_UIFeed.PAYLOAD_SITEHUD)
+		{
+			RZ_SiteHud.OnPayload(payload);
+		}
+		else if (kind == RZ_UIFeed.PAYLOAD_HANDS)
+		{
+			RZ_HandsOnMenu.OnPayload(this, payload);
 		}
 		else if (kind == RZ_UIFeed.PAYLOAD_TRACKER)
 		{
@@ -923,6 +937,44 @@ class RZ_PlayerUIComponent : ScriptComponent
 	// ================================================================ Client: commands
 	//------------------------------------------------------------------------------------------------
 	//! A command for the server: CMD_NOTE with the note's text, the board clears (admins).
+	//! The site builder's screen: a button's action for a site (World/HandBuilt/RZ_SiteBuilderScreen.c).
+	void SendSiteAct(string act, string id)
+	{
+		if (Replication.IsServer())
+			RpcAsk_SiteAct(act, id);
+		else
+			Rpc(RpcAsk_SiteAct, act, id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_SiteAct(string act, string id)
+	{
+		int playerId = OwnerPlayerId();
+		if (playerId > 0)
+			RZ_SiteBuilder.ClientAct(playerId, act, id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The hands-on view: a look, a button, closed or can't show (Interactions/RZ_HandsOn.c).
+	void SendHandsAct(string act, string arg)
+	{
+		if (Replication.IsServer())
+			RpcAsk_HandsAct(act, arg);
+		else
+			Rpc(RpcAsk_HandsAct, act, arg);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_HandsAct(string act, string arg)
+	{
+		int playerId = OwnerPlayerId();
+		if (playerId > 0)
+			RZ_HandsOn.ClientAct(playerId, act, arg);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void SendCommand(int cmd, string text)
 	{
 		if (Replication.IsServer())
@@ -940,8 +992,16 @@ class RZ_PlayerUIComponent : ScriptComponent
 			return;
 
 		int playerId = OwnerPlayerId();
-		if (playerId <= 0 || cmd < 0 || cmd >= m_aLastCommand.Count())
+		while (m_aLastCommand.Count() < CMD_COUNT)
+		{
+			m_aLastCommand.Insert(-100);
+		}
+
+		if (playerId <= 0 || cmd < 0 || cmd >= CMD_COUNT)
+		{
+			RZ_Log.Warn(string.Format("UI: command %1 from player %2 dropped (unknown).", cmd, playerId));
 			return;
+		}
 
 		// Each command at most every 2 s, and the player hears why one was dropped
 		float now = RZ_UIW.Now();
@@ -1044,6 +1104,12 @@ class RZ_PlayerUIComponent : ScriptComponent
 			{
 				if (gm.GetMapFog())
 					gm.GetMapFog().Command(playerId, note);
+				break;
+			}
+			case CMD_LEVEL:
+			{
+				if (gm.GetGuidance())
+					gm.GetGuidance().Command(playerId, note);
 				break;
 			}
 			case CMD_MYDEAD:

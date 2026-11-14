@@ -281,6 +281,8 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_ObjectMenu` | `RZ_ObjectMenu` | `RZ_ObjectMenu.layout` (not in the conf yet: the PC adds it) |
 | `RZ_RadioMenu` | `RZ_RadioMenu` | `RZ_RadioMenu.layout` |
 | `RZ_PowerMenu` | `RZ_PowerMenu` | `RZ_PowerMenu.layout` |
+| `RZ_SiteBuilderMenu` | `RZ_SiteBuilderMenu` | `RZ_SiteBuilderMenu.layout` |
+| `RZ_HandsOnMenu` | `RZ_HandsOnMenu` | `RZ_HandsOnMenu.layout` |
 
 The cooking screen has no preset of its own: it's `RZ_CraftMenu` in its stove mode.
 
@@ -1006,6 +1008,20 @@ Button OptionRow (root, 4 below it)
 ```
 
 Five options show at once; more scroll (a keypad's twelve keys).
+
+## Hands-on view: `RZ_HandsOnMenu.layout`
+
+Written by `py tools/ui_gen/hands_on_layout.py` (behaviour in [docs/UI.md](../docs/UI.md#the-hands-on-view)).
+Absolute positions on 1920 x 1080; the script moves the places over the world each frame.
+
+| Widget | Kind | What |
+|---|---|---|
+| `Flash` | Image, full screen | tinted and faded by the script on a bad or odd find |
+| `Shade` | Image, full screen | a light dark wash so labels read on any ground |
+| `Spot0`-`Spot5` | Button | a place to look: `SpotRing#` (the icon set's `marker_disc`; its centre at 20, 28 is the place), `SpotKey#`, `SpotLabelBg#`, `SpotLabel#`, `SpotFill#` (the hold, 0-292 wide) |
+| `Seen` | Frame | what a look found, beside its place: `SeenBg`, `SeenBar` (its tone), `SeenText` |
+| `Panel` | Frame, right | `Title`, `CloseButton` (`CloseBg`), `Status`, `Text`, `FoundRule`, `FoundHead`, `LogDot0`-`9` and `Log0`-`9`, `Act0`-`Act2` (`ActBg#`, `ActKey#`, `ActText#`) |
+| `Prompts` / `PromptsText` | Horizontal layout / text | the pad prompts, else the plain line |
 
 ## Power panel: `RZ_PowerMenu.layout` and `RZ_PowerBreaker.layout`
 

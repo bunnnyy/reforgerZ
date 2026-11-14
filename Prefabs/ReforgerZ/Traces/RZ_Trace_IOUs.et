@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords -0.6 0 0
+   angles 0 0 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
    ID "195F1494E3583EE3"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0.6 0 0
+   angles 0 0 0
   }
   GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
    ID "B4B1EB57E3EE9F65"
@@ -31,18 +33,22 @@ GenericEntity {
     }
    }
    coords 0 1.3 0.06
+   angles 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
    ID "A28AC3F6528319CF"
    coords -0.3 1.35 0.1
+   angles 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
    ID "FCF8AD41301585F6"
    coords 0 1.38 0.11
+   angles 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
    ID "29EF960B36412DFA"
    coords 0.3 1.34 0.12
+   angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "59C676BDB1E0BE99"
@@ -51,10 +57,12 @@ GenericEntity {
     }
    }
    coords 0 0 0.8
+   angles 0 0 0
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "49ABCE3E001F7A1D"
    coords 0 0.62 0.8
+   angles 0 0 0
   }
  }
 }

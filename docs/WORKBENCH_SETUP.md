@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **402 prefab fields**: 46 on `RZ_GameModeComponent`, 339 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **375 entries**: 224 prefabs the plugin creates, 41 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 110 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 52 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **403 prefab fields**: 46 on `RZ_GameModeComponent`, 340 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **376 entries**: 224 prefabs the plugin creates, 42 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 110 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 52 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -886,7 +886,8 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | the SpawnRow layout (UI/LAYOUTS.md) | — | UI > Spawn row layout | optional | our spawn screen, the background picker, in place of vanilla's deploy menu (empty = vanilla's deploy menu). Needs the RZ_SpawnMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the MapLegend layout (UI/LAYOUTS.md) | — | UI > Map legend layout | optional | the map key in the full-screen map's bottom-left, shown zoomed out (empty = no legend; needs the map icon layout) |
 | `RZ_Notebook.et` | a gadget on vanilla's Item_Base with the notebook's mesh (Notebook_01_Single.xob, marble black); display name Notebook, weight 0.1 kg, slot type SLOT_GADGETS_STORAGE, held like the MX991 flashlight | `RZ_NotebookGadgetComponent`; `RZ_ReadNotebookAction`, `RZ_DeadNameAction`, 2 × `RZ_EpiNotebookAction` (Kind SEASON, ANONYMOUS) | UI > Notebook prefab | optional | given to every new life and put on a free quick slot; taken into the hand (N, the quick slot, the inventory's Equip) it opens the notebook, and goes back when it closes. Built as text in the repo. Its gadget component needs Gadget anim variable MX991 (without one the character can't take it into the hand); the item animation attributes the MX991 graph, AllowInspection on |
-| (existing prefab) | vanilla's compass ({7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et) | — | UI > Compass prefab | optional | every new life carries one (unless the loadout has a compass) |
+| (existing prefab) | vanilla's compass ({7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et) | — | UI > Compass prefab | optional | every spawn carries one (unless the character has a compass) |
+| (existing prefab) | vanilla's MRE ({EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et) | — | UI > Meal prefab | optional | every new character carries one meal; coming round gets none |
 | (existing prefab) | vanilla's folded paper map ({13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et) | — | UI > Map prefab | optional | every new life carries one (unless the loadout has a paper map) |
 | (existing prefab) | the Standing page layout (UI/LAYOUTS.md) | — | UI > Standing page | optional | the notebook's Standing tab (empty = Nothing here yet) |
 | (existing prefab) | the Journal page layout (UI/LAYOUTS.md) | — | UI > Journal page | optional | the Journal tab (empty = Nothing here yet) |
@@ -1206,9 +1207,9 @@ eleven kits, where a piece stands by a building (`AT`, written as each kit piece
 are Auto), each piece's tier, zone and rules (`RULES`, and a kit's own tier in `KIT_TIER`), each kind
 of site's doctrine (`DOCTRINE`: how much of the wire it closes, how hard its building is made, the
 wire's distance, its layers' pieces and what goes indoors; [SITES.md](SITES.md#building-in-layers))
-and the Traces compositions (section 4, *Traces*). Each kit is a **plan**: its pieces in order of
-importance with their spot and turn in the camp (metres from its middle, +Z toward the road in),
-the solver's preference. Every kit's plan is drawn, so no place is ever dressed by chance:
+and the Traces compositions (section 4, *Traces*). Each kit is a **list**: its pieces in order of
+importance, with no spot or turn (the solver places each by its rules on the site's ground:
+[SITES.md](SITES.md#the-solver)):
 
 | Kit | Pieces | Layers' pieces |
 |---|---|---|
@@ -1222,17 +1223,17 @@ The layers' pieces (on each kit's **Layers**, by **Layer**): the barrier's runs 
 `Fence_Halcyon_*`; each run along its own x, its front out), the boards (`BoardWindow`, a pallet over
 a window at its own height; `BoardDoor`, `BoardDoor_Bastion` sandbags, `BoardDoor_RedHand` the
 shutter down), the lookouts (the faction's nest, `Lookout_Haven`, `GuardPost_Halcyon`), Halcyon's
-`Floodlight` and the `StoresBoard`. The new plan pieces are `Gate_Bastion` (the checkpoint),
+`Floodlight` and the `StoresBoard`. The newer kit pieces are `Gate_Bastion` (the checkpoint),
 `Gate_Haven`, `Lookout_Haven`, `GuardPost_Halcyon` and `SmokingBench`.
 
 Each kit's first entry is its faction's **counter** (`Counter_Bastion`, `Counter_RedHand`,
 `Counter_Haven`, `Counter_Halcyon`, At **Counter**): a table the quartermaster stands behind,
-0.95 m back from its middle, facing its front. To change a piece or a plan, edit it there and run:
+0.95 m back from its middle, facing its front. To change a piece or a kit, edit it there and run:
 
 | Command | Does |
 |---|---|
-| `py tools/camp_kit/build.py` | Refuses a piece with no rules, an unknown zone or a doctrine naming a piece that isn't there, and a plan whose pieces overlap (with 0.3 m between them, at their real sizes). Writes `Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et` and `Prefabs/ReforgerZ/Traces/<Name>.et` (existing `.meta` files are kept, so GUIDs stay; a piece no longer in `pieces.py` has its files deleted), the kits and the smart-action waypoint on `RZ_GameMode.et` (**Camp life > Kits**: each entry's prefab, ring, use, seats, **At**, **Plan** spot and **Plan yaw**, the piece's real footprint, **Foot** (its props' measured boxes from `footprints.json`, up to 8, and a person round each seat: [SITES.md](SITES.md#real-footprints)), and the box round it, **Foot min** and **Foot max**, its **Tier**, **Zone**, **Rules** and **Indoors**; each kit's **Close**, **Harden**, **Ring**, **Yard** and **Layers**; **Smart action waypoint**), the composition slots of **World > Traces > Kit**, and the openings' compositions (`pieces.OPENINGS`, into `Prefabs/ReforgerZ/Guidance/Openings/`) with their slots, **Guidance > Opening scenes** |
-| `py tools/camp_kit/render.py` | Draws [tools/camp_kit/camp_plans.html](../tools/camp_kit/camp_plans.html): every kit's plan, a top-down plan of every piece (props at their measured size) and the faction bases' schematic plans (from `tools/camp_kit/bases.py`, drawings only) |
+| `py tools/camp_kit/build.py` | Refuses a piece with no rules, an unknown zone or a doctrine or kit naming a piece that isn't there, and a piece whose props collide, stand a sliver apart, sit off their table or hang off what holds them ([SITES.md](SITES.md#spacing)). Writes `Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et` and `Prefabs/ReforgerZ/Traces/<Name>.et` (existing `.meta` files are kept, so GUIDs stay; a piece no longer in `pieces.py` has its files deleted), the kits and the smart-action waypoint on `RZ_GameMode.et` (**Camp life > Kits**: each entry's prefab, ring, use, seats, **At**, **Plan** spot and **Plan yaw**, the piece's real footprint, **Foot** (its props' measured boxes from `footprints.json`, up to 8, and a person round each seat: [SITES.md](SITES.md#real-footprints)), and the box round it, **Foot min** and **Foot max**, its **Tier**, **Zone**, **Rules** and **Indoors**; each kit's **Close**, **Harden**, **Ring**, **Yard** and **Layers**; **Smart action waypoint**), the composition slots of **World > Traces > Kit**, and the openings' compositions (`pieces.OPENINGS`, into `Prefabs/ReforgerZ/Guidance/Openings/`) with their slots, **Guidance > Opening scenes** |
+| `py tools/camp_kit/render.py` | Draws [tools/camp_kit/camp_plans.html](../tools/camp_kit/camp_plans.html): every kit's pieces, a top-down plan of every piece (props at their measured size) and the faction bases' schematic plans (from `tools/camp_kit/bases.py`, drawings only) |
 | `py tools/camp_kit/render.py --placed <console.log>` | Draws `tools/camp_kit/sites_placed.html` from a site audit's log: the layouts the game actually laid out ([SITES.md](SITES.md#seeing-it)), and writes `tools/camp_kit/sites_list.txt` for **ReforgerZ: Fly to the next site** |
 | **ReforgerZ: Measure prop footprints** (Workbench plugin) | Measures every prop in `props.txt` and writes `tools/camp_kit/footprints.json`; run it after adding a prop, then `build.py` (the site audit measures them on the server too: [SITES.md](SITES.md#real-footprints)) |
 
@@ -2163,8 +2164,7 @@ FOOTPRINTS=1 ... tools/runtime_test/run.sh sites arland     # also write the mea
 Each map boots once (Arland about 1.5 minutes, Everon about 6, most of it the land grid), in its own
 network namespace where it can (Linux, as root: beside a full test). It prints each site's line,
 the summary, the props measured and the `render.py --placed` command for the log; it fails on a
-script exception, an audit that didn't finish, or a stronghold under **Audit threshold** (today
-every map's strongholds are: the plans are fixed drawings until the solver).
+script exception, an audit that didn't finish, or a stronghold under **Audit threshold** .
 
 **The task places.** Every task that names its place or a thing at it is checked against its need
 ([PLACES.md](PLACES.md)): live in play (`Place check: ...` warnings; the full test prints how many),
@@ -2385,7 +2385,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **217** lines with the tag, all but one in the game scripts (one is the comment in
+There are **225** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2518,10 +2518,11 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1475` | a quartermaster or the medic moved and turned with `SetWorldTransform` on the server stays at their hand-placed spot, facing its way, on every client | They stand where they spawned; the quartermaster turns to serve as before |
 | `World/HandBuilt/RZ_HandSpots.c:402` | a short flat trace through a spot inside a wall, a crate or a tent's side reports a hit (the spot turns red), and the excluded marker cone doesn't | A spot in a wall isn't flagged; the author sees it in play |
 
-### Low risk: contained or cosmetic (59)
+### Low risk: contained or cosmetic (60)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `Factions/RZ_SiteGrid.c:667` | a downward trace's `TraceMaterial` names the surface hit, with a word that tells paved ground from soft (on Everon: grass_01 to grass_03, dirt_01, cobblestone_01_wave) | Soft ground isn't told from paving: sites treat all ground alike |
 | `World/RZ_LongTableReach.c:698` | the farm building's world box (`GetWorldBounds`) tops out at its roof, so the chimney smoke (**Long Table > Reach > Chimney smoke**) stands over the house, not inside it or high above | The smoke is in the wrong place: empty the slot |
 | `World/RZ_LongTableReach.c:809` | the bowls, jars and lanterns at 0.82 m sit on TableLong_01's top, not sunk into it or floating | Adjust the 0.82 (`top` in `SetTable` and `Lanterns`) |
 | `Interactions/RZ_Traps.c:1011` | a generator kit moved from the ground straight into a vehicle's cargo storage has the vehicle as its root parent, so a running one runs on in a car's back | It stops as if picked up: set it down to run it, as before |
@@ -2582,7 +2583,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PowerLooks.c:102` | the power station's generator: `RZ_PowerGeneratorSound.et` (no mesh, vanilla's diesel generator sounds on a `StaticSoundComponent`), spawned by the server, plays on every client that streams it in and stops when the server deletes it, as vanilla's placed generators do | No sound at a running station: empty **World > Power grid > Generator sound prefab**; the panel and the notices still say it runs |
 | `UI/RZ_PowerLampsClient.c:185` | street lamps: `StreetLampComponent.SetBroken(true)` on a client puts that lamp out there (its light and its glow), and `SetBroken(false)` lets it light itself at night again | Lamps stay lit in dark towns, or stay out after the main switch: turn **World > Power grid > Street lamps** off, and every lamp is left as the map has it |
 
-### The UI (39)
+### The UI (46)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -2593,6 +2594,13 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
+| `UI/RZ_HandsOnMenu.c:460` | a character's bone in its model space, by vanilla's names (Head, Neck1, LeftForeArm), so the hands-on view's places to look sit on the body | The places to look sit at the body's middle |
+| `UI/RZ_HandsOnMenu.c:557` | `CameraBase.SetNearPlane` takes 0.05 m, so a close-up isn't clipped | The near side of the subject is cut off: frame it from further back |
+| `UI/RZ_SiteHud.c:163` | widgets made inside Game Master's menu root take its mouse clicks (the site builder's build bar) | The bar shows but doesn't click: use the site menu's buttons |
+| `UI/RZ_SiteHud.c:676` | the widget under the mouse in Game Master (null over the world) | Buttons don't light under the mouse |
+| `UI/RZ_SiteHud.c:682` | Game Master's cursor point on the ground, as its own context actions read it | Spots go down at the camera's point instead |
+| `World/HandBuilt/RZ_SiteBuilderEditor.c:222` | a preview made on a Game Master client shows see-through at the cursor, as vanilla's own | No ghost while placing: the spot still goes down |
+| `World/HandBuilt/RZ_SiteBuilderEditor.c:486` | `ProjWorldToScreen` gives reference-resolution units, z below 0 behind the camera (as the nametags read it) | The cones' labels sit in the wrong place |
 | `UI/RZ_UIData.c:1014` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
 | `UI/RZ_Notebook.c:207` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
@@ -2626,7 +2634,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_DeathBrief.c:425` | the death brief, opened with `OpenMenu` while the spawn screen (or vanilla's deploy menu) is open, goes on top and takes the input: the screen under it ignores A and B until the brief closes, and the press that closes it (A's release, or Space, a click or B with the 0.4 s wait) doesn't deploy or open the pause menu under it | A press that closes the brief also deploys or opens the pause menu: lengthen `LEAVE_DELAY` in `RZ_DeathBriefMenu`, or turn **UI > Death brief** off |
 | `UI/RZ_DeathBrief.c:174` | a server tick after a death, the dead character's damage manager still gives the instigator of the last blow: an AI's or an infected's entity (`GetInstigatorEntity`), a player's id, nothing for a fall | The brief says "Nobody saw how" (or "The infected" with one standing over the body) where it could have named a faction; nothing else depends on it |
 | `UI/RZ_MapIcons.c:659` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
-| `UI/RZ_MapFogDraw.c:187` | the map's fog: `PolygonDrawCommand` quads on a script-made `CanvasWidget` over the full-screen map draw in screen pixels, a few hundred without a hitch when the map pans or zooms, and at **How dark** 0.82 the map's roads and coast show faintly through | Turn **Map > Map fog > On** off: the map is as before (the places' pins come back too) |
+| `UI/RZ_MapFogDraw.c:193` | the map's fog: `PolygonDrawCommand` quads on a script-made `CanvasWidget` over the full-screen map draw in screen pixels, a few hundred without a hitch when the map pans or zooms, and at **How dark** 1 nothing of the map shows through | Turn **Map > Map fog > On** off: the map is as before (the places' pins come back too) |
 | `UI/RZ_UIData.c:1223` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
 | `UI/RZ_ObjectMenu.c:328` | `FrameSlot.SetSize` on the object menu's centred panel (anchor and alignment 0.5) keeps it centred as it grows for [the status strip](UI.md#the-status-strip-and-locked-rows) (940 tall) and shrinks without one (810) | The panel jumps off-centre or keeps one height: set its slot to 1,200 × 940 in `RZ_ObjectMenu.layout` and remove the `SetSize` line; things without a strip then have a gap above their text |
 | `UI/RZ_CraftMenu.c:384` | the same on the crafting screen's panel: 960 tall at a stove (the strip), 858 at a workbench | As above, with `RZ_CraftMenu.layout` at 1,600 × 960 |
@@ -2833,11 +2841,11 @@ Warnings worth acting on:
 | `Camp life: pre-reading <n> sites in the background, strongholds first.` | Once a run, when the land grid is read (Pre-read): every site is read and laid out as data before anyone comes near |
 | `Camp life: <Faction> <KIND> at <grid> moves into <the school> (<w> x <d> m, <prefab>), <n> road entries.` / `... no building fits, laid out on rings.` | Once per place a run, the first time a player comes near: the building camp life picked ([DESIGN.md](DESIGN.md#camp-life)). "Rings" means open ground: no building of 25 m² or more anywhere near; 0 road entries means the gate and barricades stand in front of the building (or off its first side facing land) |
 | `Quartermasters: <Faction>'s stronghold takes a building in <town> (suits it <n> of 3).` | A quartermaster placed by the game: the town and how well its building suits the faction ([SITES.md](SITES.md#where-a-place-stands)). 0 of 3 is any building big enough: worth a look at the photo |
-| `Quartermasters: <Faction>'s stronghold moves from <grid> to <grid> (no building to move into \| on an island).` / `... and no town has a building for it: it stays.` | Once, at the start of a saved season whose stronghold stood in the open or on an island. "It stays" on a real map is worth a report |
+| `Quartermasters: <Faction>'s stronghold moves from <grid> to <grid> (no building to move into \| on an island \| its building doesn't suit it \| no room for its yard).` or `Quartermasters: <faction>'s stronghold at <grid> stays (<why>, and no town has a building that suits it better with room for its yard).` / `... and no town has a building for it: it stays.` | Once, at the start of a saved season whose stronghold stood in the open or on an island. "It stays" on a real map is worth a report |
+| `Quartermasters: <town> has a building with room for <Faction>'s yard (suits it <n> of 3).` / `Quartermasters: <town> has no building with room for <Faction>'s yard.` | When a saved stronghold looks for a better building (its own had no room for its yard): what each town offered, to tell why it stays |
 | `Haven safehouses: the one at <grid> moves to <grid> in <town> (<why>).` / `... the one in <town> is on an island: given up, another is picked.` | The same for a saved safehouse: with the quartermaster, to a house in its own town, or given up |
 | `Territory: <holding> moves from <grid> to <grid> (no building where it stood).` / `Territory: <holding> is on an island: given up.` | The same for a saved outpost |
-| `Camp life: <Faction> <KIND> at <grid>: <n> of <m> planned pieces fit, laid out <where>; <c> counter(s), <s> left out facing water or a drop.` | The first time a run dresses a place, once its ground is read: how much of its plan fit and where. Few fitting everywhere: the footprint traces may be catching grass or bushes (the VERIFY); the `Sites:` line says why each was dropped |
-| `Camp life: <Faction> <KIND> at <grid>: solved, <n> pieces and <l> of its layers (the wire <p>% closed), <i> indoors, <d> dropped, laid out <where>; <c> counter(s).` | With **Solver** on, the first time a run dresses a place, once its ground is read and solved ([SITES.md](SITES.md#the-solver)); the `<n> of <m> planned pieces fit` line is the same with Solver off |
+| `Camp life: <Faction> <KIND> at <grid>: solved, <n> pieces and <l> of its layers (the wire <p>% closed), <i> indoors, <d> dropped, laid out <where>; <c> counter(s).` | The first time a run dresses a place, once its ground is read and solved ([SITES.md](SITES.md#the-solver)) |
 | `Camp life: <Faction> <KIND> at <grid>: laid out again as before (<n> pieces and <l> of its layers, <where>), <c> counter(s).` | Each later visit in the run: the kept layout, no reading |
 | `Spawn timing: <place> <n> pieces in <t> ms, player at <d> m (now <d2> m); <c> ms of server time in all, the longest tenth <l> ms.` / `Spawn timing: <place> left with <n> pieces up and <k> still to come, <t> ms after it came (...)` | Once per visit, when a place's last piece is up (or it went before): how long it took from the moment its people came, and what it cost ([SITES.md](SITES.md#how-fast-a-place-fills)). Over a few seconds when you arrive on foot means **Spawn ms** is too low or a site wasn't pre-read |
 | `Map fog: <w> x <h> squares of <m> m from <x>, <z> (on\|off)` | Once at start ([UI.md](UI.md#the-maps-fog)): the fog's grid over this map (Everon about 128 x 128) |
@@ -2863,6 +2871,10 @@ Warnings worth acting on:
 | `Sites audit people: <a> of <b> strongholds and <c> of <d> sites with a gate have a post that sees it (blind: ...); <r> routes, <x> of <y> points walkable.` and `Sites audit stories: <faction>: <story> picked at <n>, whole at <w> of <s>, ...` | With the summary. Any blind stronghold is a bug |
 | `Camp life: <place> is <state> (was <state>).` | A live place's alert changed (calm, wary, alert, recently hit): its jobs are handed out again |
 | `Camp life: <place> sends one on the road post run to <post> (<m> m, <n> points).` | Once a season day at a live Bastion or Red Hand holding with a road post within 1.5 km, when calm and the extras' cap has room |
+| `Camp life: <place> at <grid> gives its ground to <place>: one layout a spot, the greater place's.` | A stronghold (or an outpost) laid out where a lesser place of its faction was dressed first (the Haven's safehouse at its quartermaster): the lesser one's pieces go |
+| `Camp life yard: <place> at <grid>: <n> of its <m> extras that follow its state are up (<state>).` | With the story, when a site is laid out for a visit and at each season day's change: how many of its kit's extras marked Supplied, Thriving or Hit stand today ([SITES.md](SITES.md#what-the-state-changes-in-the-yard)). 0 of them at a faction that is short is right |
+| `Sites ground: <faction> at <grid>: <material> x<n>, ...` | Once a site is solved, if any of its pieces wanted soft ground: the surface materials read under them. A paved surface whose name has none of the words SITES.md lists ("Simplified") would pass as soft: add its word to `RZ_SiteSolver.PavedAt` |
+| `Photo tour pieces: <stop>: <piece> <east> <north> <turn>; ...` | Workbench only, the photo tour: each camp piece at a stop by name, metres east and north of the stop and its turn (12 a line), to tell which piece a photo shows |
 | `Camp life story: <place> at <grid>: <story> (<state>); up: <element>, <age>; ...; text only: <element>: <why>; ...` | When a site is laid out for a visit and at each season day's change: what its story shows. "no prefab or the cap": the Traces kit's slot is empty or Pieces max is reached |
 | `Camp life story: <headline>` | A holding hit or mourning: its quiet headline, once |
 | `Camp life jobs: <place> (phase <n>), <p> people: <job counts>; ... at a seat, ... walking the camp, ... standing at a spot, ... on the move, ... standing still (no AI or group); posts <kind> <a> of <b>, ...; <l> on the wire facing the threat; walked: <route> <n>, ...; alert <state>; hand-placed spots: <n> people at <m> spots (<type> <n>, ...).` (the last part at a hand-built site only) | At each phase (and when its alert changes) at a live place: who does what, the posts manned and the routes walked. Many standing still: those people have no AI (a prefab without an AI control component) or no group prefab |
@@ -3918,7 +3930,7 @@ when it happens)
   *"That came from the line. Somebody tried it."*, the runner found already down. Log lines as in
   [DESIGN.md](DESIGN.md#the-line): paste the `Openings: the line ...` ones.
 - [ ] **The fixer** ([DESIGN.md](DESIGN.md#the-fixer)), with a pad, as a brand-new character on Everon.
-  Take the runner's case and go back to the street you started from: 2 to 4 minutes later Ferda
+  Take the runner's case and go on your way: 3 minutes later, wherever you are, Ferda
   Kroupa and two men stand at the end of the street (are they Red Hand to look at? do they stand
   well, not in a wall?); he asks the contact first, then *Ferda Kroupa* is tracked on him. Talk to
   him: his greeting, then **[Trade] Hand it over**, the story about Bastion (locked unless you're
@@ -4111,6 +4123,9 @@ when it happens)
   A bitten wanderer, or one who's lost a town: that line shows first. A Haven house's resident you've
   never met, with Trees on and a `say? !met` intro written: the intro shows once, and the next talk
   opens on the replies. Pick a topic and come back to the hub with `hub`: no line, just the replies.
+- [ ] Track **The Case** on the Quests tab and talk to a Halcyon person carrying the papers too: only
+  *[Errand] Hand over the runner's case* and **There was something else.**; That shows every reply
+  for the rest of that talk. Track nothing: every reply, as before (DIALOGUE.md, "The order of the replies").
 - [ ] Talk to a Trader wanderer whose greeting has something to say: the talk screen opens with their name and sub-line at the top right
   in their colour and **only their line** in the band in the lower middle, **typing out**, the
   footer "A Skip" / "B Leave". It never moves on by itself: once it's typed a ▼ bounces at the
@@ -4364,13 +4379,12 @@ when it happens)
   other icons; turn round and it turns with you (an arrow pointing the wrong way, or turning about a
   corner, is the rotation VERIFY); it follows you in a car; dead, it's gone.
 - [ ] The map's fog ([UI.md](UI.md#the-maps-fog)), with a pad and on a TV: open the map on a fresh profile and
-  all but the ground round you is under a dark grey layer, with the roads and the coast still faintly
-  visible through it (too dark or too light: **Map > Map fog > How dark**). Pan and zoom: the fog moves
+  all but the ground round you is under a solid dark grey layer, nothing of the map showing through
+  it, the sea and the map's margins too (lighter: **Map > Map fog > How dark**). Pan and zoom: the fog moves
   with the map, without a stutter, its squares' edges on the grid (fog off its place, missing, or a
-  hitch is the drawing VERIFY `UI/RZ_MapFogDraw.c:187`). Walk 300 m and open it again: a trail
-  150 m wide is clear; climb a tower or a hill and more opens. A safehouse you haven't seen is a
-  yellow ring labelled "Safehouse, somewhere here", not on the house; walk to it and its marker
-  comes. Your tracked objective always shows. Pick up a paper map found in a town's loot (not the
+  hitch is the drawing VERIFY `UI/RZ_MapFogDraw.c:193`). Walk 300 m and open it again: a trail
+  150 m wide is clear; climb a tower or a hill and more opens. A safehouse you haven't seen isn't
+  on the map at all; walk to it and its marker comes. Your tracked objective always shows. Pick up a paper map found in a town's loot (not the
   one you start with): its town clears within 5 s with a notice. Read a safehouse's board: its
   town clears. Die and come back: the fog is as you left it. `/fog all` and `/fog reset` (or the
   talk screen's [Admin] row) clear and fog your map.
@@ -4859,7 +4873,7 @@ too)
   and no extra comes out.
 - [ ] Shoot near a camp (when Hunted): they fight as before, then go back to their jobs.
 - [ ] Do AI walk through the tents (the navmesh VERIFY)? Is one more person per camp and the server
-  frame time fine with 3 live places and a stronghold's 20 pieces?
+  frame time fine with 3 live places and a stronghold's 40 to 55 pieces?
 
 **Sites** ([SITES.md](SITES.md); the log's `Sites:` lines)
 - [ ] Run `tools/runtime_test/run.sh sites everon` (or take a play log), then `render.py --placed`

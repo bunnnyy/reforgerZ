@@ -165,7 +165,7 @@ class RZ_QM_TableBase : RZ_QuestMission
 			if (e)
 			{
 				m_aProps.RemoveItem(e);
-				RZ_Util.DeleteUnit(e);
+				RZ_Leaving.Remove(e);
 			}
 		}
 	}

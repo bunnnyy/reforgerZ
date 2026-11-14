@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
    ID "91D6DCF24FA55BCF"
@@ -23,10 +24,12 @@ GenericEntity {
     }
    }
    coords 0 1.4 0.06
+   angles 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
    ID "57962DFD11F83448"
    coords 0 1.45 0.1
+   angles 0 0 0
   }
  }
 }

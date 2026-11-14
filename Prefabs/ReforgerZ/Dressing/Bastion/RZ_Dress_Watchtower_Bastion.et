@@ -1,0 +1,37 @@
+GenericEntity {
+ ID "7DD80E4D0CDC259B"
+ components {
+  RplComponent "{445042F715D221C8}" {
+  }
+  Hierarchy "{83987351F84458D6}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{B8B54400DF249DD2}Prefabs/Props/CustomDestructible/new_WIP/GuardTower_destructible.et" {
+   ID "6A29C24F33C2FF75"
+   components {
+    Hierarchy "{4A2907C44932F86C}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity {
+   ID "3EAB1D630D1E24FB"
+   components {
+    SCR_AISmartActionSentinelComponent "{7EACC1FA3DA666EA}" {
+     Tags {
+      "RZ_Watch"
+     }
+     m_vLookPosition 2.9 1.6 14
+     m_fLookDirectionRange 120
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{C4712401F4236F18}" {
+    }
+   }
+   coords 2.9 0 2.9
+  }
+ }
+}

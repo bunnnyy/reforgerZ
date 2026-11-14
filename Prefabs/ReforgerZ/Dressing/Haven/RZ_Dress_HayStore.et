@@ -1,0 +1,26 @@
+GenericEntity {
+ ID "167A3EE08AAA0C15"
+ components {
+  RplComponent "{52683920A0BA972B}" {
+  }
+  Hierarchy "{CC7215F90B7179B6}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{96A3F39C918787E5}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big_bottom.et" {
+   ID "A7DC441DCF70EFE8"
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{F91183307A7928DA}Prefabs/Props/Dst/WheelBarrow_01.et" {
+   ID "C1099D0F91C8A7D1"
+   components {
+    Hierarchy "{E5F14AFE3DDCF6E7}" {
+    }
+   }
+   coords 1.701 0 -0.041
+   angles 0 0 0
+  }
+ }
+}

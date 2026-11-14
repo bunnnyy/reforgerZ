@@ -11,6 +11,7 @@ GenericEntity {
   SCR_DestructibleBuildingEntity : "{4A1E3B17DB672E35}Prefabs/Structures/Military/Camps/TentFIA_01/TentFIA_01.et" {
    ID "FBF04A83092F50DF"
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
    ID "7ECE187C33EAC60A"
@@ -19,6 +20,7 @@ GenericEntity {
     }
    }
    coords 0 0 3.4
+   angles 0 0 0
   }
   GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
    ID "7CB2859DF41944E9"
@@ -26,7 +28,8 @@ GenericEntity {
     Hierarchy "{7F16FC59ABBE14D1}" {
     }
    }
-   coords 0.5 0.78 3.4
+   coords 0.5 0.9 3.4
+   angles 0 0 0
   }
   GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
    ID "3894AD10D8339388"
@@ -34,7 +37,8 @@ GenericEntity {
     Hierarchy "{6B4DC837D8707FFB}" {
     }
    }
-   coords -0.6 0.78 3.45
+   coords -0.6 0.9 3.45
+   angles 0 0 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
    ID "569BE85275A6C233"

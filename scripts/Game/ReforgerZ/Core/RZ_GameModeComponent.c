@@ -1211,6 +1211,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_SupplyLines GetSupply() { return m_Supply; }
 	RZ_FactionLife GetFactionLife() { return m_FactionLife; }
 	RZ_CampLife GetCampLife() { return m_CampLife; }
+	//! Camp life's settings as set in Workbench (the client has them too: the build bar's cone at the cursor).
+	RZ_CampLifeSettings GetCampLifeSettings() { return m_CampLifeSettings; }
 	RZ_LongTable GetLongTable() { return m_LongTable; }
 	//! Traces (docs/TRACES.md): door marks, their reading, the player traces. Server only.
 	RZ_Traces GetTraces() { return m_Traces; }
@@ -1398,6 +1400,30 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 	//! The lab entity (placed or spawned), null without one.
 	IEntity GetLabEntity() { return m_Lab; }
+
+	//------------------------------------------------------------------------------------------------
+	//! The cure's lab moved to a hand-built site's lab spot (docs/SITES.md, "Role spots"): only a site
+	//! in the lab's own town (within 400 m of it), and only a lab this mode spawned (one placed in the
+	//! world by the map stays). Deliveries go to it where it now stands.
+	void MoveLab(vector pos, float yaw)
+	{
+		if (!m_bHasLab || m_sLabPrefab.IsEmpty())
+			return;
+
+		if (m_Lab && m_Lab.GetPrefabData() && m_Lab.GetPrefabData().GetPrefabName() != m_sLabPrefab)
+			return;
+
+		float d = RZ_Util.DistXZ(m_vLabPos, pos);
+		if (d < 0.5 || d > 400)
+			return;
+
+		if (m_Lab)
+			SCR_EntityHelper.DeleteEntityAndChildren(m_Lab);
+
+		m_vLabPos = RZ_Util.GroundPos(pos);
+		m_Lab = RZ_Util.SpawnPrefab(m_sLabPrefab, m_vLabPos, yaw);
+		RZ_Log.Info(string.Format("Lab: moved %1 m to its hand-built spot at %2.", RZ_Util.RoundToInt(d), RZ_SettlementScanner.GridReference(m_vLabPos)));
+	}
 
 	bool HasLab() { return m_bHasLab; }
 
@@ -1789,7 +1815,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_BiteDetector.Reset(playerId);
 		m_Stealth.Forget(playerId);
 		m_Infection.OnPlayerSpawned(playerId);
-		m_UIFeed.OnPlayerSpawned(playerId);
+		m_UIFeed.OnPlayerSpawned(playerId, false);
 		m_UIFeed.RecordGearSoon(playerId, GetPickedLoadoutName(playerId));
 		RegisterGunfire(controlledEntity);
 		m_Interactions.OnPlayerSpawned(playerId);
@@ -1869,7 +1895,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_BiteDetector.Reset(playerId);
 		m_Stealth.Forget(playerId);
 		m_Infection.OnPlayerSpawned(playerId);
-		m_UIFeed.OnPlayerSpawned(playerId);
+		m_UIFeed.OnPlayerSpawned(playerId, true);
 		m_UIFeed.RecordGearSoon(playerId, GetPickedLoadoutName(playerId));
 		RegisterGunfire(controlledEntity);
 		// Keys, timed actions and cracked channels belong to the last life

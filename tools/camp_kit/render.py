@@ -147,10 +147,13 @@ for name, (folder, use, role, intent, parts) in C.items():
 
 total = len(C)
 body = []
-body.append('<section class="camps"><h2>How a camp hangs together</h2><p class="lede">The plan of every kit, the game data itself (pieces.py, KITS). The game lays a plan down whole: on open ground turned to face the nearest road, by a building in its yard with the plan&#8217;s front against the wall (the approach pieces go to the road entries, the door pieces to the front door, no tents), at a road post beside the road. A piece that doesn&#8217;t fit is nudged a little or left out, never moved somewhere else. The counter stands wherever the quartermaster does.</p><div class="campgrid">')
+body.append('<section class="camps"><h2>What each kit brings</h2><p class="lede">Every kit is a list, the game data itself (pieces.py, KITS): what a faction brings to that kind of place, most important first. Nothing is drawn: the game finds each piece its spot by its zone and rules on the ground where the site is (docs/SITES.md, The solver). The pieces themselves are drawn below.</p><div class="campgrid">')
+from collections import Counter as _Counter
 for fac, place, intro, plan in KITS:
     title = "%s %s" % (FACTION[fac], PLACE[place])
-    body.append('<figure class="campfig"><figcaption><h3>%s</h3><p>%s</p></figcaption>%s</figure>' % (title, html.escape(intro), camp_svg(place, plan)))
+    counts = _Counter(plan)
+    items = "".join("<li>%s%s</li>" % (html.escape(n.replace("_", " ")), (" &#215;%d" % counts[n]) if counts[n] > 1 else "") for n in dict.fromkeys(plan))
+    body.append('<figure class="campfig"><figcaption><h3>%s</h3><p>%s</p></figcaption><ol class="kitlist">%s</ol></figure>' % (title, html.escape(intro), items))
 body.append("</div></section>")
 for folder, title in FOLDERS:
     body.append('<section><h2>%s <span class="count">%d pieces</span></h2><div class="cards">%s</div></section>' % (title, len(cards.get(folder, [])), "".join(cards.get(folder, []))))

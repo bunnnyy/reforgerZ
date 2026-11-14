@@ -1,8 +1,9 @@
 //! Player actions for puzzles. All of them only report to the server, which
 //! routes to the owning mission (RZ_PuzzleMission). Nothing is decided on the client.
-//! On a prop that wants it (RZ_PuzzleObjectComponent.WantsMenu) they're one object menu: the read
-//! opens it and its text is the description, the use, choice and keypad slots are the rows
-//! (Interactions/RZ_ObjectScreen.c).
+//! On any puzzle object (RZ_PuzzleObjectComponent.WantsMenu) they're one object menu when there's a
+//! read and something to do, or two things to do: the read opens it and its text is the
+//! description, the use, choice and keypad slots are the rows (Interactions/RZ_ObjectScreen.c).
+//! None of them show on a dead person.
 
 //------------------------------------------------------------------------------------------------
 //! "Read": on any entity with RZ_ClueComponent (note, plaque, dog tags, wreck, civilian).
@@ -27,6 +28,10 @@ class RZ_ReadClueAction : RZ_GroupedAction
 	//! on an object hidden until tagged that isn't (a vanilla house radio no spot uses now).
 	override bool Visible(IEntity user)
 	{
+		// A dead person (an opening's runner, a body by the line) is nothing to use or read
+		if (!RZ_Util.IsCharacterAlive(GetOwner()))
+			return false;
+
 		RZ_PuzzleObjectComponent obj = RZ_PuzzleObjectComponent.Cast(GetOwner().FindComponent(RZ_PuzzleObjectComponent));
 		if (obj && obj.IsDormant())
 			return false;
@@ -157,6 +162,10 @@ class RZ_PuzzleChoiceAction : RZ_GroupedAction
 	//------------------------------------------------------------------------------------------------
 	override bool Visible(IEntity user)
 	{
+		// A dead person (an opening's runner, a body by the line) is nothing to use or read
+		if (!RZ_Util.IsCharacterAlive(GetOwner()))
+			return false;
+
 		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(GetOwner().FindComponent(RZ_PuzzleObjectComponent));
 		if (comp && comp.IsSlotHidden(true, m_iOption))
 			return false;
@@ -232,6 +241,10 @@ class RZ_PuzzleUseAction : RZ_GroupedAction
 	//------------------------------------------------------------------------------------------------
 	override bool Visible(IEntity user)
 	{
+		// A dead person (an opening's runner, a body by the line) is nothing to use or read
+		if (!RZ_Util.IsCharacterAlive(GetOwner()))
+			return false;
+
 		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(GetOwner().FindComponent(RZ_PuzzleObjectComponent));
 		return !comp || !comp.IsSlotHidden(false, m_iValue);
 	}

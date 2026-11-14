@@ -33,6 +33,7 @@ GenericEntity {
     }
    }
    coords 0.8 0 0.3
+   angles 0 0 0
   }
   GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
    ID "E8983254D3AD7739"
@@ -41,6 +42,7 @@ GenericEntity {
     }
    }
    coords -0.6 0 0.2
+   angles 0 0 0
   }
  }
 }

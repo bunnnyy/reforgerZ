@@ -1,0 +1,72 @@
+GenericEntity {
+ ID "1C68FB09106F04D6"
+ components {
+  RplComponent "{3AF39544923DCF88}" {
+  }
+  Hierarchy "{92EFE7BFFEC1187B}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{E57E7B1355ECF7D3}Prefabs/Props/Dst/Workbench_02.et" {
+   ID "019EEB8891C205D0"
+   components {
+    Hierarchy "{DB9A4EB726DB9FE5}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et" {
+   ID "EC07B49A85E2533F"
+   components {
+    Hierarchy "{63B17946981250D6}" {
+    }
+   }
+   coords -0.8 0.99 0.25
+   angles 0 0 0
+  }
+  GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
+   ID "FF08216C018FB107"
+   components {
+    Hierarchy "{2F1CD9CE128C59D6}" {
+    }
+   }
+   coords 0.5 0.99 0.3
+   angles 0 10 0
+  }
+  GenericEntity : "{6C25F27EB994313F}Prefabs/Props/Dst/SawTable.et" {
+   ID "6884897C005415C7"
+   components {
+    Hierarchy "{127CDB6855D17996}" {
+    }
+   }
+   coords 2.213 0 0.246
+   angles 0 0 0
+  }
+  GenericEntity : "{5D31850B326BA246}Prefabs/Props/Industrial/AirCompressor_01/AirCompressor_01.et" {
+   ID "DFED98BC2F2E4C79"
+   components {
+    Hierarchy "{E6885D1B70E72702}" {
+    }
+   }
+   coords -1.984 0 0.135
+   angles 0 0 0
+  }
+  GenericEntity {
+   ID "18B2C48EED4C0EE0"
+   components {
+    SCR_AISmartActionSentinelComponent "{8AD4948C73F873A0}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 -1.41
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{802C71C73C963B4F}" {
+    }
+   }
+   coords 0 0 1.41
+  }
+ }
+}

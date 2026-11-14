@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "7EEFFB19106FD7F0"
+ components {
+  RplComponent "{37635F87E96D2797}" {
+  }
+  Hierarchy "{19C3938C3040AF8F}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
+   ID "847FC55DE07473F4"
+   components {
+    Hierarchy "{B8EC80B305F10EBD}" {
+    }
+   }
+   coords 0.036 0 -0.017
+   angles 0 0 0
+  }
+  GenericEntity : "{962A737E048E4B9E}Prefabs/Props/Civilian/Loudspeaker_01/Loudspeaker.et" {
+   ID "2CE81CFB66153261"
+   components {
+    Hierarchy "{9492C2DD5F0AC0E6}" {
+    }
+   }
+   coords 0.036 1.41 -0.017
+   angles 0 0 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "B77E4AE20974873D"
+   components {
+    Hierarchy "{C996A95376E3A679}" {
+    }
+   }
+   coords 0.7 0 0.2
+   angles 0 25 0
+  }
+ }
+}

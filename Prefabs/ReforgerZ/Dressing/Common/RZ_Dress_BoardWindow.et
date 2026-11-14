@@ -14,7 +14,7 @@ GenericEntity {
     Hierarchy "{3C28994AC7F9A60C}" {
     }
    }
-   coords 0 -0.6 0
+   coords 0 0 0
    angles 90 0 0
   }
  }

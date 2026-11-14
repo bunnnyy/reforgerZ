@@ -41,7 +41,7 @@ GenericEntity {
     Hierarchy "{2272FC347C75D495}" {
     }
    }
-   coords 1.2 0 0.1
+   coords 1.241 0 0.211
    angles 0 92 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
@@ -50,16 +50,18 @@ GenericEntity {
     Hierarchy "{140F543145CC9B06}" {
     }
    }
-   coords -1.4 0 -0.2
+   coords -1.363 0 -0.301
    angles 0 70 0
   }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
    ID "3FB92BDAC6833567"
-   coords 0.2 1.0 0.2
+   coords 0.2 1.01 0.2
+   angles 0 0 0
   }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
    ID "0E7693278AE469DC"
-   coords -0.25 1.0 -0.1
+   coords -0.25 1.01 -0.1
+   angles 0 0 0
   }
   GenericEntity {
    ID "AB71361657343038"
@@ -98,13 +100,13 @@ GenericEntity {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition -1.2 1.6 -0.1
+     m_vLookPosition -1.24 1.6 -0.21
      m_eLoiterAnimation SIT
     }
     Hierarchy "{1EA0774E847D363F}" {
     }
    }
-   coords 1.2 0 0.1
+   coords 1.241 0 0.211
   }
   GenericEntity {
    ID "742E40E54ECECE08"
@@ -113,13 +115,13 @@ GenericEntity {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition 1.4 1.6 0.2
+     m_vLookPosition 1.36 1.6 0.3
      m_eLoiterAnimation SIT
     }
     Hierarchy "{58843953BE32F988}" {
     }
    }
-   coords -1.4 0 -0.2
+   coords -1.363 0 -0.301
   }
  }
 }

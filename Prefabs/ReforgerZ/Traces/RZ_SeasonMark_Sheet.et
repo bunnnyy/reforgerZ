@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords -1.2 0 0
+   angles 0 0 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
    ID "C77EE69DEAA0FC22"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 1.2 0 0
+   angles 0 0 0
   }
   GenericEntity : "{6EB3EE4FE50E0319}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_red.et" {
    ID "D07A6E0B7DACB8DD"

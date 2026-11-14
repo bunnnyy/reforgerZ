@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "AACC4823E781F0D6"
+ components {
+  RplComponent "{4FF9EBED1A754BAF}" {
+  }
+  Hierarchy "{FF7BC0904E266A1E}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
+   ID "B6BEC03FD167B0F9"
+   components {
+    Hierarchy "{DB886321BDD4B49A}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
+   ID "DD25B603B98AE702"
+   components {
+    Hierarchy "{5BA6CD105776A7D9}" {
+    }
+   }
+   coords 1.1 0.42 0.3
+   angles 90 0 0
+  }
+  GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
+   ID "4B078418AAC20644"
+   components {
+    Hierarchy "{E3232A8AD0A450C5}" {
+    }
+   }
+   coords -0.2 0 1.1
+   angles 0 0 0
+  }
+ }
+}

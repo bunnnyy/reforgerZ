@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "4623737E11111330"
+ components {
+  RplComponent "{9E771EA85FD93807}" {
+  }
+  Hierarchy "{A329296EF2F582F6}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{07D5C7C755C719BE}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_pile_medium.et" {
+   ID "7C42926E18FF3484"
+   components {
+    Hierarchy "{F5478B01A3EFF167}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{342E852E9A1847EA}Prefabs/Props/Industrial/Repair/VehicleGarbage_01_pile_medium.et" {
+   ID "DBEF4A01133D6CE7"
+   components {
+    Hierarchy "{7B1B4AD94689886E}" {
+    }
+   }
+   coords 3.554 0 0.075
+   angles 0 0 0
+  }
+  GenericEntity : "{3F0D0593590519DA}Prefabs/Props/Garbage/Tires/TirePile_01_medium.et" {
+   ID "42901AFE76B6060F"
+   components {
+    Hierarchy "{A89F5291532EC7D4}" {
+    }
+   }
+   coords -0.32 0 -4.242
+   angles 0 0 0
+  }
+ }
+}

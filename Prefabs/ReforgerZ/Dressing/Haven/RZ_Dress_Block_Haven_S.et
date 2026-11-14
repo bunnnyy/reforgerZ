@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "E2A31D5C138D64EA"
+ components {
+  RplComponent "{2193CC41899DCB39}" {
+  }
+  Hierarchy "{B98A53351CD41260}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "CE39542476BFBD7C"
+   components {
+    Hierarchy "{407AFA651DEA8572}" {
+    }
+   }
+   coords -0.52 0 0
+   angles 0 4 0
+  }
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "6E20096992120481"
+   components {
+    Hierarchy "{7719820F8825FFC2}" {
+    }
+   }
+   coords 0.52 0 0
+   angles 0 -3 0
+  }
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "E47A04CF1BAE6BD3"
+   components {
+    Hierarchy "{A54B0708E70F55C8}" {
+    }
+   }
+   coords -0.52 1.01 0.0
+   angles 0 6 0
+  }
+ }
+}

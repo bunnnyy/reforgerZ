@@ -1,0 +1,48 @@
+GenericEntity {
+ ID "FD816CAAF52FF415"
+ components {
+  RplComponent "{41288DFF15A48426}" {
+  }
+  Hierarchy "{4E0B25877DF16357}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{6FD54E69CFDD6B07}Prefabs/Props/Industrial/BarrelFuel_01_closed_old.et" {
+   ID "B59D6BDB288AF8EF"
+   components {
+    Hierarchy "{755B9913055BB6B1}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{6F7FDE967EF44558}Prefabs/Props/Dst/Barrel_01.et" {
+   ID "766EB8FDED5693F8"
+   components {
+    Hierarchy "{C1D5069F9161EAB5}" {
+    }
+   }
+   coords 0.737 0 0.01
+   angles 0 0 0
+  }
+  GenericEntity : "{032BEA76C230CA76}Prefabs/Props/Dst/Barrel_02.et" {
+   ID "6E00CDB7A9168C40"
+   components {
+    Hierarchy "{A3AF4ADF04270B43}" {
+    }
+   }
+   coords -0.701 0 0.014
+   angles 0 0 0
+  }
+  GenericEntity : "{6FD54E69CFDD6B07}Prefabs/Props/Industrial/BarrelFuel_01_closed_old.et" {
+   ID "0A537B8C739AFF5C"
+   components {
+    Hierarchy "{E8652963C87A23FD}" {
+    }
+   }
+   coords 0.0 0 -0.672
+   angles 0 0 0
+  }
+ }
+}

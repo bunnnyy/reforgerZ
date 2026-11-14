@@ -160,6 +160,13 @@ class RZ_SiteGrid
 	int m_iN;					// cells a side
 	int m_iL;					// height samples a side (1 m apart)
 	ref array<int> m_aFlags = {};
+	// Two bits a cell beside the flags (docs/SITES.md, "Close it off"): LINE, a wall, a fence, a hedge or
+	// a ruin there (what closes a fence line: tall and solid); HARD, a wall or a ruin (all a fence may not
+	// run through, with the buildings). Trees, rocks, cars and props are solid but neither.
+	static const int LINE = 1;
+	static const int HARD = 2;
+	ref array<int> m_aLine = {};
+	protected int m_iPaintLine;		// what the solid being drawn is (LINE, HARD or 0)
 	ref array<float> m_aHeight = {};
 	ref array<int> m_aWet = {};		// per height sample: water there
 	int m_iReadMs;
@@ -199,6 +206,13 @@ class RZ_SiteGrid
 		for (int w = 0; w < words; w++)
 		{
 			m_aFlags[w] = 0;
+		}
+
+		int lineWords = (m_iN * m_iN + 15) / 16;
+		m_aLine.Resize(lineWords);
+		for (int lw = 0; lw < lineWords; lw++)
+		{
+			m_aLine[lw] = 0;
 		}
 
 		int samples = m_iL * m_iL;
@@ -393,6 +407,29 @@ class RZ_SiteGrid
 		int i = cz * m_iN + cx;
 		int shift = (i & 1) * 16;
 		m_aFlags[i >> 1] = m_aFlags[i >> 1] | (flag << shift);
+		if (m_iPaintLine != 0 && (flag & SOLID))
+		{
+			int bit = (i & 15) * 2;
+			m_aLine[i >> 4] = m_aLine[i >> 4] | (m_iPaintLine << bit);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A cell's line bits: LINE (a wall, a fence, a hedge or a ruin: it closes a fence line), HARD (a
+	//! wall or a ruin: a fence may not run through it). 0 off the grid.
+	int LineAt(int cx, int cz)
+	{
+		if (cx < 0 || cz < 0 || cx >= m_iN || cz >= m_iN)
+			return 0;
+
+		int i = cz * m_iN + cx;
+		return (m_aLine[i >> 4] >> ((i & 15) * 2)) & 3;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int LineAtPos(vector pos)
+	{
+		return LineAt(CellX(pos[0]), CellZ(pos[2]));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -456,13 +493,17 @@ class RZ_SiteGrid
 	//------------------------------------------------------------------------------------------------
 	//! As Blocks, but stops at the first rectangle that meets a flag in `mask` (the solver tries many
 	//! spots: most fail early). 0 = it may stand there, with the ground's range under it.
-	int FirstBlock(vector pos, float yaw, RZ_SiteFoot foot, int mask, out float lo, out float hi)
+	//! `growAlong` (over -50) grows it along the piece's length by that instead: a barrier run is
+	//! tested 0.2 m wider than its depth (a thin fence still meets the cells round it) but a little
+	//! short of its ends, so the next run may meet its end face.
+	//! `fence`: a fence run, which goes through anything solid but a wall or a ruin (docs/SITES.md).
+	int FirstBlock(vector pos, float yaw, RZ_SiteFoot foot, int mask, out float lo, out float hi, float growAlong = -100, bool fence = false)
 	{
 		lo = float.MAX;
 		hi = -float.MAX;
 		for (int r = 0; r < foot.Count(); r++)
 		{
-			int found = RectCells(pos, yaw, foot, r, 0.2, mask, 0, lo, hi);
+			int found = RectCells(pos, yaw, foot, r, 0.2, mask, 0, lo, hi, growAlong, fence);
 			if (found != 0)
 				return found;
 		}
@@ -485,29 +526,48 @@ class RZ_SiteGrid
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Marks a placed footprint's cells (grown by a cell, so pieces keep a gap) with `flag`.
-	void Paint(vector pos, float yaw, RZ_SiteFoot foot, int flag)
+	//! Marks a placed footprint's cells (grown by a cell, so pieces keep a gap) with `flag`. A barrier
+	//! run (`line`) is grown across its depth only, not past its end faces: the next run stands face
+	//! to face with it, and other pieces still keep their gap from it.
+	void Paint(vector pos, float yaw, RZ_SiteFoot foot, int flag, bool line = false)
 	{
 		float lo;
 		float hi;
+		float along = -100;
+		if (line)
+			along = 0;
+
 		for (int r = 0; r < foot.Count(); r++)
 		{
-			RectCells(pos, yaw, foot, r, CELL, 0, flag, lo, hi);
+			RectCells(pos, yaw, foot, r, CELL, 0, flag, lo, hi, along);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Walks the cells under rectangle r (grown by `grow`): ORs together their flags in `mask` and
 	//! sets `paint` on them; tracks the ground's height range there.
-	protected int RectCells(vector pos, float yaw, RZ_SiteFoot foot, int r, float grow, int mask, int paint, inout float lo, inout float hi)
+	//! `growAlong` (over -50) grows it along its length by that instead (a barrier run's ends).
+	protected int RectCells(vector pos, float yaw, RZ_SiteFoot foot, int r, float grow, int mask, int paint, inout float lo, inout float hi, float growAlong = -100, bool fence = false)
 	{
 		int i = r * 5;
 		vector c = Frame(pos, yaw, foot.m_aRects[i], foot.m_aRects[i + 1]);
 		float turn = (yaw + foot.m_aRects[i + 4]) * Math.DEG2RAD;
 		float sn = Math.Sin(turn);
 		float cs = Math.Cos(turn);
-		float hw = foot.m_aRects[i + 2] * 0.5 + grow;
-		float hd = foot.m_aRects[i + 3] * 0.5 + grow;
+		// The piece's length is its own x: a rectangle turned across it (a coil laid down its z) takes
+		// the run's end growth on its depth instead
+		float growX = grow;
+		float growZ = grow;
+		if (growAlong > -50)
+		{
+			if (Math.AbsFloat(Math.Sin(foot.m_aRects[i + 4] * Math.DEG2RAD)) > 0.7)
+				growZ = growAlong;
+			else
+				growX = growAlong;
+		}
+
+		float hw = foot.m_aRects[i + 2] * 0.5 + growX;
+		float hd = foot.m_aRects[i + 3] * 0.5 + growZ;
 		float ex = Math.AbsFloat(cs) * hw + Math.AbsFloat(sn) * hd;
 		float ez = Math.AbsFloat(sn) * hw + Math.AbsFloat(cs) * hd;
 		int x0 = CellX(c[0] - ex);
@@ -529,13 +589,16 @@ class RZ_SiteGrid
 				if (paint != 0)
 				{
 					// A piece's gap round it never closes a path kept clear
-					if (paint != TAKEN || (Flags(cx, cz) & CLEAR) == 0 || (Math.AbsFloat(lx) <= hw - grow && Math.AbsFloat(lz) <= hd - grow))
+					if (paint != TAKEN || (Flags(cx, cz) & CLEAR) == 0 || (Math.AbsFloat(lx) <= hw - growX && Math.AbsFloat(lz) <= hd - growZ))
 						SetFlag(cx, cz, paint);
 
 					continue;
 				}
 
 				int f = Flags(cx, cz);
+				if (fence && (f & SOLID) && (LineAt(cx, cz) & HARD) == 0)
+					f = f & ~SOLID;
+
 				found = found | (f & (mask | OUTSIDE));
 				if (f == OUTSIDE)
 					continue;
@@ -584,6 +647,43 @@ class RZ_SiteGrid
 			return "a path kept clear";
 
 		return "the ground";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A paved surface at a spot on the ground (a road's or a yard's cobbles, asphalt, concrete,
+	//! paving, tiles, brick, stone, metal): the material a downward trace hits, by its name. `seen`
+	//! counts the names read (the solver's "Sites ground" log line).
+	static bool PavedAt(vector at, map<string, int> seen = null)
+	{
+		TraceParam param = new TraceParam();
+		param.Start = Vector(at[0], at[1] + 1.2, at[2]);
+		param.End = Vector(at[0], at[1] - 1.5, at[2]);
+		param.LayerMask = EPhysicsLayerPresets.Projectile;
+		param.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+		float frac = GetGame().GetWorld().TraceMove(param, null);
+		if (frac >= 1)
+			return false;
+
+		string name = param.TraceMaterial; // VERIFY: a downward trace's TraceMaterial names the surface hit (the terrain's layer under a road or a yard, a paving mesh's material), with a word that tells paved ground from soft; seen on Everon: grass_01 to grass_03, dirt_01, cobblestone_01_wave (.emat)
+		if (name.IsEmpty())
+			return false;
+
+		name.ToLower();
+		int slash = name.LastIndexOf("/");
+		if (slash >= 0)
+			name = name.Substring(slash + 1, name.Length() - slash - 1);
+
+		if (seen)
+			seen.Set(name, seen.Get(name) + 1);
+
+		array<string> hard = {"asphalt", "concrete", "cobble", "pavement", "paving", "paved", "tile", "brick", "tarmac", "stone", "metal", "road"};
+		foreach (string word : hard)
+		{
+			if (name.Contains(word))
+				return true;
+		}
+
+		return false;
 	}
 
 	// ================================================================ Reading
@@ -727,12 +827,30 @@ class RZ_SiteGrid
 
 		float hw = (maxs[0] - mins[0]) * right.Length() * 0.5;
 		float hd = (maxs[2] - mins[2]) * fwd.Length() * 0.5;
+		m_iPaintLine = LineKind(e);
 		if (round)
 			Ellipse(c, yaw, hw * ROCK_SHARE, hd * ROCK_SHARE, flag);
 		else
 			Box(c, yaw, hw, hd, flag);
 
+		m_iPaintLine = 0;
 		m_iRasterised++;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a solid thing is to a fence line, by its prefab's name: a wall or a ruin (HARD | LINE), a
+	//! fence or a hedge (LINE), anything else (0: a fence runs through it).
+	protected static int LineKind(IEntity e)
+	{
+		string name = RZ_Util.GetPrefabName(e);
+		name.ToLower();
+		if (name.Contains("wall") || name.Contains("ruin"))
+			return HARD | LINE;
+
+		if (name.Contains("fence") || name.Contains("hedge"))
+			return LINE;
+
+		return 0;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "DE47B77F28AE2B81"
@@ -31,7 +32,7 @@ GenericEntity {
     Hierarchy "{0FC91AE0273D5C91}" {
     }
    }
-   coords 0.6 0 -0.2
+   coords 0.662 0 -0.196
    angles 0 -4 0
   }
   GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
@@ -40,7 +41,7 @@ GenericEntity {
     Hierarchy "{88B8E28A23405799}" {
     }
    }
-   coords 1.8 0 0.5
+   coords 1.9 0 0.9
    angles 0 20 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
@@ -49,7 +50,8 @@ GenericEntity {
     Hierarchy "{B8C33238BB30BF5A}" {
     }
    }
-   coords -1.5 0 0.3
+   coords -1.6 0 0.6
+   angles 0 0 0
   }
   GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
    ID "E863A63DFDC81E98"
@@ -57,8 +59,8 @@ GenericEntity {
     Hierarchy "{E02C60A1D06F5092}" {
     }
    }
-   coords 0.3 0 -1.1
-   angles 0 10 0
+   coords 0.254 0 -1.267
+   angles 0 0.0 0
   }
   GenericEntity {
    ID "CD72FECAB9B877E9"
@@ -67,13 +69,13 @@ GenericEntity {
      Tags {
       "RZ_Work"
      }
-     m_vLookPosition 0 1.6 1.0
+     m_vLookPosition 0.14 1.6 -0.07
      m_eLoiterAnimation LOITERING
     }
     Hierarchy "{0B89975FA8D63E04}" {
     }
    }
-   coords 0 0 -1.0
+   coords 0.254 0 -1.267
   }
  }
 }

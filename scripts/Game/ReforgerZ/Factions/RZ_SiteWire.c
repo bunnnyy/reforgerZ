@@ -18,6 +18,10 @@ class RZ_SiteWire
 	static const int ST_ROAD = 4;			// a road crossing (made a gate once the gates are chosen)
 
 	protected static const float MIN_OFF = 4;	// a side never comes closer to the building than this
+	protected static const float WALLED_SHARE = 0.6;	// a wall, fence or hedge closing this much of a side further out is the line
+	protected static const float YARD_WALL_SHARE = 0.75;	// on the yard's side a wall nearer than this share of the depth it needs isn't the line
+	protected static const int WALLED_REACH = 40;		// ...out to this far: a depot or a yard walled already is the perimeter, not a second ring inside it
+	protected static const float SHADOW = 6;			// a wall, a fence or a hedge this close outside a gap closes it
 	protected static const float BANK_REACH = 3;	// a bank this far out of the line...
 	protected static const float BANK_DROP = 1.5;	// ...this much lower closes it
 
@@ -177,14 +181,17 @@ class RZ_SiteWire
 	// ================================================================ Tracing
 	//------------------------------------------------------------------------------------------------
 	//! What closes the ground at a station (its cell and the cells 0.5 m either side of the line): a
-	//! building, something standing, water, or a bank falling 1.5 m away outside it.
+	//! building, a wall, a fence, a hedge or a ruin (solid and tall: a tree, a rock, a car or a prop
+	//! closes nothing, and a fence runs through them), water, or a bank falling 1.5 m away outside it.
 	static int GroundState(RZ_SiteGrid grid, vector at, vector across, out bool hard)
 	{
 		hard = false;
 		int f = 0;
+		bool line = false;
 		for (int k = -1; k <= 1; k++)
 		{
-			int g = grid.FlagsAt(at + across * (k * RZ_SiteGrid.CELL));
+			vector cell = at + across * (k * RZ_SiteGrid.CELL);
+			int g = grid.FlagsAt(cell);
 			if (g == RZ_SiteGrid.OUTSIDE)
 			{
 				hard = true;
@@ -192,9 +199,11 @@ class RZ_SiteWire
 			}
 
 			f = f | g;
+			if ((g & RZ_SiteGrid.SOLID) && (grid.LineAtPos(cell) & RZ_SiteGrid.LINE))
+				line = true;
 		}
 
-		if (f & (RZ_SiteGrid.WATER | RZ_SiteGrid.INSIDE | RZ_SiteGrid.SOLID | RZ_SiteGrid.TAKEN))
+		if (line || (f & (RZ_SiteGrid.WATER | RZ_SiteGrid.INSIDE | RZ_SiteGrid.TAKEN)))
 			return ST_GROUND;
 
 		// A bank falling away outside the line: 1.5 m down within 3 m out
@@ -251,9 +260,45 @@ class RZ_SiteWire
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The share (0 to 1) of side k's stations, at `off` from the building, that the site closes
+	//! already: a wall, a fence, a hedge, a building, water.
+	protected float ClosedShare(RZ_SiteGrid grid, int k, float off)
+	{
+		float keep = m_aOff[k];
+		m_aOff[k] = off;
+		Bounds();
+		float ax;
+		float az;
+		float bx;
+		float bz;
+		FaceEnds(k, ax, az, bx, bz);
+		m_aOff[k] = keep;
+		Bounds();
+
+		float len = Math.Sqrt((bx - ax) * (bx - ax) + (bz - az) * (bz - az));
+		int n = Math.Max(1, Math.Floor(len / 1.0));
+		float closed = 0;
+		vector across = RZ_Compass.PointAt(vector.Zero, FaceOut(k), 1);
+		for (int i = 0; i < n; i++)
+		{
+			float t = (i + 0.5) / n;
+			vector at = m_vCentre + m_vRight * (ax + (bx - ax) * t) + m_vFwd * (az + (bz - az) * t);
+			bool hard;
+			if (GroundState(grid, at, across, hard) == ST_GROUND && !hard)
+				closed += 1;
+		}
+
+		return closed / n;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Sets each side's distance (want[k], or within -3..+6 m of it where more of the side is closed
-	//! already or can be), then the stations along the sides in `closing` (a bit each).
-	void Trace(RZ_SiteGrid grid, array<float> want, int closing)
+	//! already or can be; or out at a wall, a fence or a hedge that closes most of the side already,
+	//! so no barrier is laid inside a yard that is walled), then the stations along the sides in
+	//! `closing` (a bit each).
+	//! `yardFace`: the side the yard is on (-1 none). A wall nearer than the yard needs there isn't the
+	//! line: a churchyard too small for the camp is inside it, not its edge.
+	void Trace(RZ_SiteGrid grid, array<float> want, int closing, int yardFace = -1)
 	{
 		m_iClosing = closing;
 		for (int k = 0; k < 4; k++)
@@ -277,6 +322,36 @@ class RZ_SiteWire
 				{
 					best = score;
 					bestOff = off;
+				}
+			}
+
+			// Walled already (a churchyard, a fenced garden): the wall is the line. A wall nearer the
+			// building than the line was wanted first (the yard is what the wall holds: the Haven's camp
+			// once spilled past its churchyard's wall onto the car park), then one further out
+			if (ClosedShare(grid, f, bestOff) < WALLED_SHARE)
+			{
+				bool walled = false;
+				float nearest = 4;
+				if (f == yardFace)
+					nearest = Math.Max(4, want[f] * YARD_WALL_SHARE);
+
+				for (float near = want[f] - 4; near >= nearest; near -= 1)
+				{
+					if (ClosedShare(grid, f, near) >= WALLED_SHARE)
+					{
+						bestOff = near;
+						walled = true;
+						break;
+					}
+				}
+
+				for (int far = 7; far <= WALLED_REACH && !walled; far++)
+				{
+					if (ClosedShare(grid, f, want[f] + far) >= WALLED_SHARE)
+					{
+						bestOff = want[f] + far;
+						break;
+					}
 				}
 			}
 
@@ -312,6 +387,55 @@ class RZ_SiteWire
 				m_aFace.Insert(face);
 				m_aHard.Insert(hard);
 			}
+		}
+
+		Shadows(grid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What stands just outside the line closes it too: a gap with a wall, a fence, a hedge or a
+	//! building within SHADOW m outside it, along most of a 3 m stretch, counts as closed by the
+	//! ground. So no barrier is laid a step inside a garden fence that already stands.
+	protected void Shadows(RZ_SiteGrid grid)
+	{
+		array<bool> shadow = {};
+		foreach (int i, vector at : m_aAt)
+		{
+			bool hit = false;
+			if (m_aState[i] == ST_GAP && !m_aHard[i])
+			{
+				vector across = RZ_Compass.PointAt(vector.Zero, FaceOut(m_aFace[i]), 1);
+				for (float d = 1; d <= SHADOW; d += RZ_SiteGrid.CELL)
+				{
+					int g = grid.FlagsAt(at + across * d);
+					if (g == RZ_SiteGrid.OUTSIDE)
+						break;
+
+					if ((g & RZ_SiteGrid.INSIDE) || ((g & RZ_SiteGrid.SOLID) && (grid.LineAtPos(at + across * d) & RZ_SiteGrid.LINE)))
+					{
+						hit = true;
+						break;
+					}
+				}
+			}
+
+			shadow.Insert(hit);
+		}
+
+		for (int k = 0; k < shadow.Count(); k++)
+		{
+			if (!shadow[k])
+				continue;
+
+			int near = 0;
+			for (int n = k - 3; n <= k + 3; n++)
+			{
+				if (n >= 0 && n < shadow.Count() && m_aFace[n] == m_aFace[k] && (shadow[n] || m_aState[n] == ST_GROUND))
+					near++;
+			}
+
+			if (near >= 5)
+				m_aState[k] = ST_GROUND;
 		}
 	}
 
@@ -422,6 +546,53 @@ class RZ_SiteWire
 		{
 			if (m_aFace[g] == m_iGateFace && m_aState[g] == ST_GAP && RZ_Util.DistXZ(pt, m_vGate) <= GATE_WIDTH * 0.5)
 				m_aState[g] = ST_GATE;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Something closes the way at a station already: a wall, a fence, a gate or a building within
+	//! SHADOW metres of it, out or in along the way through (a track that ends at a garden gate).
+	bool Shadowed(RZ_SiteGrid grid, int station)
+	{
+		vector across = RZ_Compass.PointAt(vector.Zero, FaceOut(m_aFace[station]), 1);
+		for (int side = -1; side <= 1; side += 2)
+		{
+			for (float d = 1; d <= SHADOW; d += RZ_SiteGrid.CELL)
+			{
+				vector seen = m_aAt[station] + across * (d * side);
+				int g = grid.FlagsAt(seen);
+				if (g == RZ_SiteGrid.OUTSIDE)
+					break;
+
+				if ((g & RZ_SiteGrid.INSIDE) || ((g & RZ_SiteGrid.SOLID) && (grid.LineAtPos(seen) & RZ_SiteGrid.LINE)))
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A road in that the faction closed (docs/SITES.md, "Checkpoints"): its stations `from` to `to`
+	//! are the barrier now.
+	void Seal(int from, int to)
+	{
+		for (int i = from; i <= to; i++)
+		{
+			if (m_aState[i] == ST_GATE || m_aState[i] == ST_ROAD)
+				m_aState[i] = ST_PIECE;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A closed road is no gate any more: the gate (never the main one) within `reach` of `mid` is
+	//! struck off.
+	void DropGate(vector mid, float reach)
+	{
+		for (int g = m_aGates.Count() - 1; g >= 1; g--)
+		{
+			if (RZ_Util.DistXZ(m_aGates[g], mid) <= reach)
+				m_aGates.Remove(g);
 		}
 	}
 

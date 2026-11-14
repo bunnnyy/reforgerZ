@@ -96,6 +96,9 @@ class RZ_UIFeed
 	static const int PAYLOAD_POWER = 21;	// the power panel: P, B, C, A records; F busy; X|reason closes (World/RZ_PowerPanel.c)
 	static const int PAYLOAD_HISTORY = 22;	// the Journal's past jobs, asked when it opens (Missions/RZ_JobHistory.c)
 	static const int PAYLOAD_SITECAM = 23;	// the site builder: x|y|z|radius, Game Master's camera to look at the site (World/HandBuilt/RZ_SiteBuilderEditor.c)
+	static const int PAYLOAD_SITES = 25;	// the site builder's screen: H, S and C records; X|reason closes (World/HandBuilt/RZ_SiteBuilderScreen.c)
+	static const int PAYLOAD_SITEHUD = 26;	// the site builder's HUD while a site is built: B and C records; "" hides it (UI/RZ_SiteHud.c)
+	static const int PAYLOAD_HANDS = 27;	// the hands-on view: H, T, P, L, A, E records; X|reason closes (Interactions/RZ_HandsOn.c)
 	static const int PAYLOAD_SITEMARKS = 24;	// the site builder: the site's edge and its role spots, drawn while it's built; "" clears (World/HandBuilt/RZ_SiteBuilderEditor.c)
 	static const int PAYLOAD_FOG = 25;		// the map's fog: F and R records, "" off; asked when the map opens, sent while it changes (World/RZ_MapFog.c)
 	static const int DETAIL_MAX = 1500;
@@ -146,8 +149,9 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A new life: forget what was sent, so everything is sent fresh.
-	void OnPlayerSpawned(int playerId)
+	//! A spawn: forget what was sent, so everything is sent fresh. newCharacter: a new character, not
+	//! one coming round after a death (only a new character gets the meal).
+	void OnPlayerSpawned(int playerId, bool newCharacter)
 	{
 		m_mStates.Remove(playerId);
 		m_mClues.Remove(playerId);
@@ -161,13 +165,14 @@ class RZ_UIFeed
 			GetGame().GetCallqueue().CallLater(GiveNotebook, 3000, false, playerId);
 
 		// A compass and a paper map (docs/DESIGN.md, "The wind-up radio and faction voices")
-		GetGame().GetCallqueue().CallLater(GiveMapAndCompass, 3500, false, playerId);
+		GetGame().GetCallqueue().CallLater(GiveMapAndCompass, 3500, false, playerId, newCharacter);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Every new life gets vanilla's compass and folded paper map (UI > Compass prefab, Map prefab),
-	//! unless its loadout already has one of each; one that doesn't fit lies at their feet.
-	protected void GiveMapAndCompass(int playerId)
+	//! Every spawn gets vanilla's compass and folded paper map (UI > Compass prefab, Map prefab),
+	//! unless it already has one of each, and a new character one meal (UI > Meal prefab); one that
+	//! doesn't fit lies at their feet.
+	protected void GiveMapAndCompass(int playerId, bool newCharacter)
 	{
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (!ent || !RZ_Util.IsCharacterAlive(ent))
@@ -179,6 +184,10 @@ class RZ_UIFeed
 
 		if (!settings.m_sMapPrefab.IsEmpty() && !CarriesWith(ent, SCR_MapGadgetComponent))
 			GiveLoose(ent, settings.m_sMapPrefab);
+
+		// One meal for a new character, in case food is slow to find (not at every death: no free loot)
+		if (newCharacter && !settings.m_sMealPrefab.IsEmpty())
+			GiveLoose(ent, settings.m_sMealPrefab);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1296,17 +1305,14 @@ class RZ_UIFeed
 
 	//------------------------------------------------------------------------------------------------
 	//! A place on the map: its pin once this player has seen its ground (the map's fog, World/RZ_MapFog.c),
-	//! else a rumour, a rough circle somewhere round it ("Safehouse, somewhere here"). With the fog
-	//! off, or its rumours off, the pin as before.
+	//! else nothing at all. With the fog off, the pin as before.
 	protected string PlaceEntry(int playerId, string icon, int faction, vector pos, string label)
 	{
 		RZ_MapFog fog = m_GM.GetMapFog();
-		if (!fog || !fog.RumoursOn() || fog.Seen(playerId, pos))
+		if (!fog || !fog.IsOn() || fog.Seen(playerId, pos))
 			return MapEntry(icon, faction, pos, label);
 
-		vector c = RZ_MapFog.RumourCentre(pos);
-		RZ_UILine ln = new RZ_UILine("P");
-		return ln.Add("marker_range").AddInt(-1).AddInt(RZ_Util.RoundToInt(c[0])).AddInt(RZ_Util.RoundToInt(c[2])).Add(label + ", somewhere here").AddInt(RZ_Util.RoundToInt(RZ_MapFog.RumourRadius())).End();
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------

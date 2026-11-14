@@ -16,7 +16,7 @@
 [BaseContainerProps()]
 class RZ_MapFogSettings
 {
-	[Attribute("1", desc: "Map fog: the map shows only what this character has seen; the mod's places show as rumours until their ground is seen (docs/UI.md, The map's fog). Off: the map as it was")]
+	[Attribute("1", desc: "Map fog: the map shows only what this character has seen; the mod's places show only once their ground is seen (docs/UI.md, The map's fog). Off: the map as it was")]
 	bool m_bOn;
 
 	[Attribute("150", UIWidgets.Slider, "Reveal radius (m): the ground revealed round you as you walk", "50 500 10")]
@@ -34,7 +34,7 @@ class RZ_MapFogSettings
 	[Attribute("100", UIWidgets.Slider, "Square (m): the fog's grain. Changing it clears every player's fog", "50 250 10")]
 	float m_fCell;
 
-	[Attribute("0.82", UIWidgets.Slider, "How dark the fog is (0 to 1); below about 0.9 the roads and coast show faintly through it", "0.3 1 0.01")]
+	[Attribute("1", UIWidgets.Slider, "How dark the fog is (0 to 1): at 1 nothing of the unseen map shows; below about 0.9 the roads and coast show faintly through it", "0.3 1 0.01")]
 	float m_fOpacity;
 
 	[Attribute("500", UIWidgets.Slider, "Town radius (m): what a found paper map or a town's notice board reveals round the town", "200 1500 25")]
@@ -45,9 +45,6 @@ class RZ_MapFogSettings
 
 	[Attribute("200", UIWidgets.Slider, "Road strip (m): how wide the way to your job is when you ask about the roads", "50 600 25")]
 	float m_fRoadWidth;
-
-	[Attribute("1", desc: "Places as rumours: the mod's places (camps, the lab, the stations, the checkpoints) show as a rough circle until their ground is seen; off, they show as pins as before")]
-	bool m_bRumours;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -69,7 +66,6 @@ class RZ_MapFog
 	protected static const float CAMP_GAP = 30;		// friends' camps shared
 	protected static const float MAP_GAP = 5;		// found maps looked for
 	protected static const int MAX_SIDE = 256;		// squares a side at most (a 25 km map at 100 m)
-	protected static const float RUMOUR_RADIUS = 350;
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_MapFogSettings m_Settings;
@@ -99,12 +95,6 @@ class RZ_MapFog
 	bool IsOn()
 	{
 		return m_Settings && m_Settings.m_bOn && m_iW > 0 && m_iH > 0;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	bool RumoursOn()
-	{
-		return IsOn() && m_Settings.m_bRumours;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -585,28 +575,6 @@ class RZ_MapFog
 
 		runs += run.ToString();
 		return head + "\n" + runs + "\n";
-	}
-
-	// ================================================================ Rumours
-	//------------------------------------------------------------------------------------------------
-	//! Where a place's rumour circle sits: somewhere round it, never on it, the same every time.
-	static vector RumourCentre(vector pos)
-	{
-		int seed = RZ_Util.RoundToInt(pos[0] * 7 + pos[2] * 13);
-		if (seed < 0)
-			seed = -seed;
-
-		int deg = seed % 360;
-		int part = seed % 37;
-		float a = deg * Math.DEG2RAD;
-		float d = RUMOUR_RADIUS * (0.35 + part / 100.0);
-		return Vector(pos[0] + Math.Cos(a) * d, pos[1], pos[2] + Math.Sin(a) * d);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static float RumourRadius()
-	{
-		return RUMOUR_RADIUS;
 	}
 
 	// ================================================================ Admin

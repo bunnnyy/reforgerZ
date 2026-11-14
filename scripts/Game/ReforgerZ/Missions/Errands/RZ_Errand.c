@@ -116,6 +116,7 @@ class RZ_ErrandWay
 	bool m_bCarryIn;			// from outside into the building (else out of it)
 	bool m_bCarryStack;			// put down one on another (else in a row)
 	string m_sNeed;				// the place need its words make (World/RZ_PlaceNeeds.c; empty: by its place kind, NeedKey)
+	bool m_bStove;				// its work is the stove, up close (Missions/Errands/RZ_StoveHandsOn.c): its press opens it
 	int m_iGame;				// a sorting duty (RZ_DutyGame.KIND_*): its row is laid out at the place, and its verdicts are the step
 	bool m_bSquad;				// a duty walked with the place's people (RZ_DutySquads): the step is coming back with them
 

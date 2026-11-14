@@ -95,6 +95,12 @@ class RZ_TalkOpening : RZ_TalkGeneric
 		if (!openings)
 			return;
 
+		// The opening's step under way: what its replies move (the tracked job's alone, RZ_Dialogue)
+		int step = -1;
+		RZ_Opening o = openings.ById(m_iOpening);
+		if (o && o.m_iPlayer == playerId)
+			step = o.m_iErrand;
+
 		// Beat 1: who you were (three answers, each a habit), first while the question waits
 		if (openings.HabitReplies(playerId, m_iOpening))
 		{
@@ -104,6 +110,7 @@ class RZ_TalkOpening : RZ_TalkGeneric
 				hr.m_bOwn = true;
 				hr.m_sTag = RZ_TalkJobs.Tag(RZ_Habits.Name(h));
 				hr.m_iRank = RZ_TalkReply.RANK_ON;
+				hr.m_iFor = RZ_Dialogue.ForErrand(step);
 				replies.InsertAt(hr, 0);
 			}
 		}
@@ -119,6 +126,7 @@ class RZ_TalkOpening : RZ_TalkGeneric
 			wr.m_bJob = true;
 			wr.m_sTag = wayTag;
 			wr.m_iRank = RZ_TalkReply.RANK_ON;
+			wr.m_iFor = RZ_Dialogue.ForErrand(step);
 			if (!wayNeed.IsEmpty())
 			{
 				wr.m_bEnabled = false;
@@ -139,6 +147,7 @@ class RZ_TalkOpening : RZ_TalkGeneric
 		r.m_bJob = true;
 		r.m_sTag = RZ_TalkJobs.Tag("Errand");
 		r.m_iRank = RZ_TalkReply.RANK_ON;
+		r.m_iFor = RZ_Dialogue.ForErrand(step);
 		if (!need.IsEmpty())
 		{
 			r.m_bEnabled = false;

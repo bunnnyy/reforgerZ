@@ -13,8 +13,8 @@
 # size   a prop: width x depth x height in metres (its measured box). A group: its box, or r<N>, its parts' reach from the middle.
 # notes  what the dedicated server logged when it spawned the piece, and what in it a player can use. "-" is nothing to say.
 #
-# Every line was spawned once on the dedicated server (game 1.9) with the mods loaded. Nothing here was seen in play:
-# look at a piece in Workbench before building on it.
+# Every line was spawned once on the dedicated server (game 1.9) with the mods loaded. Nothing here was seen in play
+# unless its notes say so: look at a piece in Workbench before building on it.
 
 # JTF Bronze Props: compositions of base-game props (111)
 {4CCEE9B75DD4FC08}Prefabs/Compositions/JTF/JTF_BarrelRow_01.et | composition | JTF Bronze Props | roads,bastion,redhand,checkpoints | r2 | six closed fuel drums in a row and four jerrycans | replicates
@@ -432,7 +432,23 @@
 {4417ED07902CE47E}Prefabs/Props/Military/Radios/RadioStation_ANPRC77_01.et | prop | base game | bastion,checkpoints | 0.4x0.4x0.2 | a US field radio set | -
 {A1697FD5012C105D}Prefabs/Props/Military/Antennas/Antenna_US_02/Antenna_US_02.et | prop | base game | bastion,checkpoints | 3.9x4.0x7.2 | a field antenna mast (US) | -
 
+# The camp kits' mod props (docs/SITES.md, "From the reference board"): seen standing in Workbench play (8)
+{BF962BA2DB86E25C}Prefabs/Structures/Walls/SecurityFence/SF_SecurityFence_6m.et | prop | SecurityFences | halcyon,checkpoints | 6.4x0.6x4.2 | a 6 m section of security mesh, a razor coil along its top; its origin at one end | seen in Workbench play, 2026-11-13: the lab's barrier and road block
+{564500E25445867F}Prefabs/Structures/Walls/SecurityFence/SF_SecurityFence_3m.et | prop | SecurityFences | halcyon,checkpoints | 3.4x0.6x4.2 | a 3 m section of the same mesh | seen in Workbench play, 2026-11-13
+{3C18BC59A0B01788}Prefabs/Structures/Military/RiotFence/RiotFence.et | prop | MoreGMProps | halcyon,checkpoints,bastion | 1.3x1.2x2.5 | one panel of riot fencing on its supports | seen in Workbench play, 2026-11-13; the prefab carries a quarter turn of its own (build.py writes every prop's turn)
+{B8B54400DF249DD2}Prefabs/Props/CustomDestructible/new_WIP/GuardTower_destructible.et | prop | IH_Better_GM_Props | bastion,checkpoints | 7.5x8.7x10.8 | a guard tower on four legs with a cabin (the base game's model as a plain prop: nobody climbs it); its box takes in the platform and the stair, its legs stand on 4.6 m square | seen in Workbench play, 2026-11-13
+{4FB60DA41FDDFAEE}Prefabs/Props/BIGProps/Container_openable.et | prop | IH_Better_GM_Props | bastion,redhand,halcyon,towns,coast | 2.5x7.3x2.8 | a blue 20 ft shipping container, rusting; its doors open | seen in Workbench play, 2026-11-13; its middle is 1.3 m behind its origin
+{0A395427C0D4725B}Prefabs/Props/BIGProps/Forklift_orange.et | prop | IH_Better_GM_Props | bastion,halcyon,towns | 3.4x1.2x2.2 | a yellow forklift, parked | seen in Workbench play, 2026-11-13
+{4A2EC75E9F3D6010}Prefabs/Props/CustomDestructible/EqBoxStack_destructible.et | prop | IH_Better_GM_Props | bastion,halcyon,indoors | 1.3x1.0x1.4 | equipment cases stacked | seen in Workbench play, 2026-11-13
+{CCE8A0B7AF404687}Prefabs/Props/CustomDestructible/new_WIP/US_fuelpump.et | prop | IH_Better_GM_Props | bastion,redhand,checkpoints | 2.0x1.1x1.3 | a fuel pump unit on the ground | seen in Workbench play, 2026-11-13
+
 # Left out, and why
+#   Diesel_generator_destructible (IH_Better_GM_Props): the size of a van and bright green: out of place in every yard (seen in Workbench play)
+#   T-Wall, Hesco_Wall_High_4m, Hesco_Wall_Low_4m, Hesco_01, Shoothouse_Cover_Jersey (MoreGMProps): blast walls, earth-filled barriers, a concrete barrier: the author prefers razor wire to concrete; each carries a quarter turn of its own
+#   T-Wall_5x, RiotFence_5x (MoreGMProps): five in one prefab, whose children the footprint measuring doesn't see
+#   BRDM_V1_prop, M997_Ambulance (SBBG - Wrecks): not seen standing where they were put in Workbench play
+#   Body_BurnPile (MoreGMProps): a 9 m pile of ash and remains: the dead zone holds only what a site's story shows (docs/SITES.md, "Zones")
+#   Barricade_L_FIA_01 to _05 (Timmmmmbs Garbage Composition): slot compositions with patrol points of their own
 #   JTF_NarcoBeach_01 (JTF Bronze Props): a drug-smuggling scene
 #   JTF_NarcoCount_01 (JTF Bronze Props): a drug-smuggling scene
 #   JTF_NarcoLab_01 (JTF Bronze Props): a drug-smuggling scene

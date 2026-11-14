@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords -1.0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
    ID "823FB26588F25443"
@@ -22,7 +23,8 @@ GenericEntity {
     Hierarchy "{593A8C20C8BFC046}" {
     }
    }
-   coords 1.1 0 0.1
+   coords 1.011 0 0.1
+   angles 0 0 0
   }
   SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
    ID "8BD7BBF0E94E4A5E"
@@ -30,17 +32,8 @@ GenericEntity {
     Hierarchy "{22CFA9DEF739BC2A}" {
     }
    }
-   coords 0 0.6 0.05
+   coords -2.455 0.51 0.007
    angles 0 2 0
-  }
-  GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
-   ID "FCAB09BBFB58092A"
-   components {
-    Hierarchy "{81A7F84B3A8896F3}" {
-    }
-   }
-   coords 0.2 0 -0.5
-   angles 0 25 0
   }
  }
 }

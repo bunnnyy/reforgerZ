@@ -254,6 +254,17 @@ class RZ_QuestText
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The tracker's distance at any range: the metres under a km (Metres), else "1.6 km".
+	static string Distance(float metres)
+	{
+		if (metres < 995)
+			return Metres(metres);
+
+		int tenths = RZ_Util.RoundToInt(metres / 100);
+		return string.Format("%1.%2 km", tenths / 10, tenths % 10);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The spawn card's line without a scenario: "You come to near Morton."
 	static string SpawnWhere(RZ_GameModeComponent gm, vector pos)
 	{

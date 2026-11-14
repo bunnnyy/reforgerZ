@@ -5,9 +5,10 @@
 //! It isn't a system of its own: it lists an entity's own actions. Every action that can sit in it
 //! derives from RZ_GroupedAction and splits its old code into Label, Visible and Run. On one entity:
 //! - the puzzle slots (RZ_ReadClueAction, RZ_PuzzleUseAction, RZ_PuzzleChoiceAction, RZ_KeypadAction)
-//!   form a menu when the puzzle object says so (RZ_PuzzleObjectComponent.WantsMenu: a prop with
-//!   labelled slots, never a person; world interaction spots set it by kind, RZ_Interactions.UsesMenu);
-//!   the read is the opener and its text is the menu's description;
+//!   form a menu when the puzzle object says so (RZ_PuzzleObjectComponent.WantsMenu: always, but
+//!   world interaction spots set it by kind, RZ_Interactions.UsesMenu) and there's a read and
+//!   something to do, or two things to do; the read is the opener and its text is the menu's
+//!   description; on a person with the talk screen, the talk screen holds them instead;
 //! - any other grouped actions (safehouse services, a quartermaster's asks, the lab, the notebook
 //!   item's name and season, a radio item's channels, hand-overs) form one when two or more show;
 //!   the first is the opener and is labelled with the group's title ("Ask the quartermaster").
@@ -178,6 +179,7 @@ class RZ_ActionMenus
 		s_aList.Clear();
 		actions.GetActionsList(s_aList);
 		int rows = 0;
+		bool read = false;
 		foreach (BaseUserAction a : s_aList)
 		{
 			RZ_GroupedAction ga = RZ_GroupedAction.Cast(a);
@@ -185,11 +187,15 @@ class RZ_ActionMenus
 				continue;
 
 			members.Insert(ga);
-			if (!ga.Describes())
+			if (ga.Describes())
+				read = true;
+			else
 				rows++;
 		}
 
-		if (slots)
+		// A puzzle object's slots: a menu for a read and something to do, or two or more things to do;
+		// a single slot alone stays its one prompt
+		if (slots && read)
 			return rows > 0;
 
 		return rows > 1;

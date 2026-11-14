@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
    ID "44781332E208FF10"
@@ -22,7 +23,7 @@ GenericEntity {
     Hierarchy "{910CD93D4D492C29}" {
     }
    }
-   coords 0.4 0.78 0
+   coords 0.4 0.9 0.0
    angles 0 10 0
   }
   GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
@@ -31,7 +32,7 @@ GenericEntity {
     Hierarchy "{D0A5DFA98156ACB7}" {
     }
    }
-   coords -0.5 0.78 0.1
+   coords -0.5 0.9 0.1
    angles 0 -5 0
   }
   GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
@@ -40,7 +41,8 @@ GenericEntity {
     Hierarchy "{90DD73BA2E7E43A5}" {
     }
    }
-   coords 0 0.78 -0.1
+   coords 0.0 0.9 -0.1
+   angles 0 0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "5686CAF9AF8480D0"
@@ -48,7 +50,8 @@ GenericEntity {
     Hierarchy "{8AEFD5738CB85E49}" {
     }
    }
-   coords 0.1 0 0.8
+   coords 0.099 0 0.704
+   angles 0 -180.0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "4C4CB15E688E9CDB"
@@ -56,7 +59,8 @@ GenericEntity {
     Hierarchy "{DD97717EBB19022C}" {
     }
    }
-   coords -0.2 0 -0.8
+   coords 0.182 0 -0.707
+   angles 0 0.0 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
    ID "31E1927B74393E59"
@@ -64,7 +68,7 @@ GenericEntity {
     Hierarchy "{C75EED8C9C84CED2}" {
     }
    }
-   coords 1.7 0 -0.1
+   coords 1.182 0 0.003
    angles 0 4 0
   }
   GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
@@ -73,7 +77,8 @@ GenericEntity {
     Hierarchy "{7477245B1CB57186}" {
     }
    }
-   coords 1.7 1.0 -0.1
+   coords 1.194 1.01 0.005
+   angles 0 0 0
   }
   GenericEntity {
    ID "53C1B6EE546458AF"
@@ -82,13 +87,13 @@ GenericEntity {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition 0 1.6 -0.8
+     m_vLookPosition -0.1 1.6 -0.7
      m_eLoiterAnimation SIT
     }
     Hierarchy "{53AB69A0E14FAA2E}" {
     }
    }
-   coords 0.1 0 0.8
+   coords 0.099 0 0.704
   }
   GenericEntity {
    ID "8431752D4E1B4409"
@@ -97,13 +102,13 @@ GenericEntity {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition 0 1.6 0.8
+     m_vLookPosition -0.18 1.6 0.71
      m_eLoiterAnimation SIT
     }
     Hierarchy "{4466C1F4500604A0}" {
     }
    }
-   coords -0.2 0 -0.8
+   coords 0.182 0 -0.707
   }
  }
 }

@@ -1,0 +1,48 @@
+GenericEntity {
+ ID "E3A9EFC2BEEE48CF"
+ components {
+  RplComponent "{A3591869C90A1FD6}" {
+  }
+  Hierarchy "{A8F116B084A95FCA}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{002B8C09F0E7E371}Prefabs/Props/Wrecks/S1203_wreck/S1203_wreck_static.et" {
+   ID "4960D9D942E630DA"
+   components {
+    Hierarchy "{5EC9313F887AE93F}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 78 0
+  }
+  GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
+   ID "9DD566CFAD9E2E87"
+   components {
+    Hierarchy "{4826AB306D8F615B}" {
+    }
+   }
+   coords 2.9 0 0.6
+   angles 0 0 0
+  }
+  GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
+   ID "AE819BC0E6FEC916"
+   components {
+    Hierarchy "{C06501F925B91A35}" {
+    }
+   }
+   coords -2.8 0 0.7
+   angles 0 0 0
+  }
+  GenericEntity : "{44277710A8E45F97}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_rusty_static.et" {
+   ID "011745D236173331"
+   components {
+    Hierarchy "{FBA97DB9227FE5E7}" {
+    }
+   }
+   coords 0.6 0 -3.2
+   angles 0 110 0
+  }
+ }
+}

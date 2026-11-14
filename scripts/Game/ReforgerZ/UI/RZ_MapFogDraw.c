@@ -19,6 +19,12 @@ class RZ_MapFogDraw
 	protected float m_fX0;
 	protected float m_fZ0;
 	protected float m_fCell;
+	protected int m_iW;			// the grid's size in squares
+	protected int m_iH;
+	protected static const float BEYOND = 30000;	// how far past the grid the fog reaches (m)
+	protected static const float GRID_MINOR = 100;	// the map's grid squares (m), drawn over the fog...
+	protected static const float GRID_MAJOR = 1000;	// ...and every kilometre, a little stronger
+	protected static const float GRID_MIN_PX = 24;	// a grid step closer than this on screen isn't drawn
 
 	//------------------------------------------------------------------------------------------------
 	//! The canvas, made first so the markers' canvas and icons draw above it.
@@ -114,6 +120,9 @@ class RZ_MapFogDraw
 		if (w <= 0 || h <= 0)
 			return;
 
+		m_iW = w;
+		m_iH = h;
+
 		array<string> parts = {};
 		RZ_UIText.Split(runText, ",", parts);
 
@@ -190,6 +199,7 @@ class RZ_MapFogDraw
 	protected void Draw(SCR_MapEntity mapEnt)
 	{
 		m_aDraw.Clear();
+		DrawBeyond(mapEnt);
 		int n = m_aRect.Count() / 4;
 		for (int i = 0; i < n; i++)
 		{
@@ -211,6 +221,102 @@ class RZ_MapFogDraw
 			m_aDraw.Insert(quad);
 		}
 
+		// The map's grid still reads through the fog: its lines drawn again on top
+		DrawGrid(mapEnt, GRID_MAJOR, Color.FromRGBA(200, 200, 200, 110).PackToInt());
+		DrawGrid(mapEnt, GRID_MINOR, Color.FromRGBA(200, 200, 200, 55).PackToInt());
 		RZ_UIW.Draw(m_wCanvas, m_aDraw);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Grid lines every `step` metres over the fog's grid, on world multiples of the step like the
+	//! map's own; none when they'd be closer than GRID_MIN_PX on screen. The minor lines skip the
+	//! major ones.
+	protected void DrawGrid(SCR_MapEntity mapEnt, float step, int color)
+	{
+		float ax, ay, bx, by;
+		if (!RZ_UIW.MapToScreen(mapEnt, 0, 0, ax, ay) || !RZ_UIW.MapToScreen(mapEnt, step, 0, bx, by))
+			return;
+
+		if (Math.AbsFloat(bx - ax) < GRID_MIN_PX)
+			return;
+
+		float gx0 = m_fX0;
+		float gz0 = m_fZ0;
+		float gx1 = m_fX0 + m_iW * m_fCell;
+		float gz1 = m_fZ0 + m_iH * m_fCell;
+		float width = RZ_UIW.Native(1);
+		int istep = RZ_Util.RoundToInt(step);
+		int major = RZ_Util.RoundToInt(GRID_MAJOR);
+		int first = RZ_Util.RoundToInt(Math.Ceil(gx0 / step));
+		int last = RZ_Util.RoundToInt(Math.Floor(gx1 / step));
+		for (int i = first; i <= last; i++)
+		{
+			float wx = i * step;
+			if (istep < major && (i * istep) % major == 0)
+				continue;
+
+			AddLine(mapEnt, wx, gz0, wx, gz1, color, width);
+		}
+
+		int firstZ = RZ_Util.RoundToInt(Math.Ceil(gz0 / step));
+		int lastZ = RZ_Util.RoundToInt(Math.Floor(gz1 / step));
+		for (int k = firstZ; k <= lastZ; k++)
+		{
+			float wz = k * step;
+			if (istep < major && (k * istep) % major == 0)
+				continue;
+
+			AddLine(mapEnt, gx0, wz, gx1, wz, color, width);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void AddLine(SCR_MapEntity mapEnt, float wx0, float wz0, float wx1, float wz1, int color, float width)
+	{
+		float sx0, sy0, sx1, sy1;
+		if (!RZ_UIW.MapToScreen(mapEnt, wx0, wz0, sx0, sy0) || !RZ_UIW.MapToScreen(mapEnt, wx1, wz1, sx1, sy1))
+			return;
+
+		LineDrawCommand line = new LineDrawCommand();
+		line.m_iColor = color;
+		line.m_fWidth = width;
+		line.m_Vertices = {RZ_UIW.Native(sx0), RZ_UIW.Native(sy0), RZ_UIW.Native(sx1), RZ_UIW.Native(sy1)};
+		m_aDraw.Insert(line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Everything past the fog's grid (the sea and the map's margins) is never seen: four bands
+	//! round the grid, BEYOND metres wide, so no edge of the map shows through.
+	protected void DrawBeyond(SCR_MapEntity mapEnt)
+	{
+		float gx0 = m_fX0;
+		float gz0 = m_fZ0;
+		float gx1 = m_fX0 + m_iW * m_fCell;
+		float gz1 = m_fZ0 + m_iH * m_fCell;
+		float ox0 = gx0 - BEYOND;
+		float oz0 = gz0 - BEYOND;
+		float ox1 = gx1 + BEYOND;
+		float oz1 = gz1 + BEYOND;
+		AddQuad(mapEnt, ox0, oz0, gx0, oz1);	// west
+		AddQuad(mapEnt, gx1, oz0, ox1, oz1);	// east
+		AddQuad(mapEnt, gx0, oz0, gx1, gz0);	// south
+		AddQuad(mapEnt, gx0, gz1, gx1, oz1);	// north
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void AddQuad(SCR_MapEntity mapEnt, float wx0, float wz0, float wx1, float wz1)
+	{
+		float sx0, sy0, sx1, sy1;
+		if (!RZ_UIW.MapToScreen(mapEnt, wx0, wz0, sx0, sy0) || !RZ_UIW.MapToScreen(mapEnt, wx1, wz1, sx1, sy1))
+			return;
+
+		float px0 = RZ_UIW.Native(sx0);
+		float py0 = RZ_UIW.Native(sy0);
+		float px1 = RZ_UIW.Native(sx1);
+		float py1 = RZ_UIW.Native(sy1);
+		PolygonDrawCommand quad = new PolygonDrawCommand();
+		quad.m_iColor = m_iColor;
+		quad.m_Vertices = {px0, py0, px1, py0, px1, py1, px0, py1};
+		m_aDraw.Insert(quad);
 	}
 }

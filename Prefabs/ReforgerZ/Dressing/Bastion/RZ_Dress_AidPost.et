@@ -1,0 +1,126 @@
+GenericEntity {
+ ID "8B67B4865D66A229"
+ components {
+  RplComponent "{0490A392436A0D29}" {
+  }
+  Hierarchy "{22A17ACA4FC20F84}" {
+  }
+ }
+ coords 0 0 0
+ {
+  StaticModelEntity : "{01AE5FD77A9A4C21}Prefabs/Structures/Military/Camps/TentSmallUS_01/TentSmallUS_01.et" {
+   ID "0E6985018F504696"
+   components {
+    Hierarchy "{25157F93BBCE08F0}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
+   ID "04CAFD7A4ECF28D9"
+   components {
+    Hierarchy "{753F3F667D8A62D2}" {
+    }
+   }
+   coords 2.3 0 0.6
+   angles 0 85 0
+  }
+  GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
+   ID "CC091C6EECEB2A76"
+   components {
+    Hierarchy "{5D8B1F5D55C482E8}" {
+    }
+   }
+   coords 2.3 0.9 0.9
+   angles 0 0 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "CC382DCBD74C390F"
+   components {
+    Hierarchy "{92334C7164E2A909}" {
+    }
+   }
+   coords -1.6 0 1.2
+   angles 0 12 0
+  }
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "4CF96C61436BF226"
+   components {
+    Hierarchy "{79939EBE26D8AB45}" {
+    }
+   }
+   coords -1.5 0 0.3
+   angles 0 0 0
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "96A431F76E3FCF4B"
+   components {
+    Hierarchy "{AC8628778ACF710A}" {
+    }
+   }
+   coords -1.6 0.83 1.2
+   angles 0 12 0
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "8798387D6ACC5785"
+   components {
+    Hierarchy "{AABF43AEE2AB3A46}" {
+    }
+   }
+   coords 1.479 0 1.626
+   angles 0 0 0
+  }
+  GenericEntity : "{C9CFDED29542A968}Prefabs/Props/Military/Furniture/CotMilitary_US_01.et" {
+   ID "A77038E0DC53C60B"
+   components {
+    Hierarchy "{03115B46CA8FF6FD}" {
+    }
+   }
+   coords 2.6 0 -1.9
+   angles 0 4 0
+  }
+  GenericEntity : "{2B6508FE121FCAC9}Prefabs/Props/Medical/InfusionStand_01/InfusionStand_01.et" {
+   ID "8916916C8ACFCBD7"
+   components {
+    Hierarchy "{DC33F4859E6D9BD3}" {
+    }
+   }
+   coords 4.0 0 -1.3
+   angles 0 0 0
+  }
+  GenericEntity : "{F06EAC6F2F97767F}Prefabs/Props/Medical/MedicalScreen_01.et" {
+   ID "03EF9FE97784BA0A"
+   components {
+    Hierarchy "{7D3716038E9D84D4}" {
+    }
+   }
+   coords 2.6 0 -2.9
+   angles 0 2 0
+  }
+  GenericEntity : "{27EA47994266D9DD}Prefabs/Props/Services/Healthcare/BinMedical_01.et" {
+   ID "96F4D4FF650858DF"
+   components {
+    Hierarchy "{8E620C8E5AFE1D14}" {
+    }
+   }
+   coords 3.6 0 0.9
+   angles 0 0 0
+  }
+  GenericEntity {
+   ID "6116B18729784759"
+   components {
+    SCR_AISmartActionSentinelComponent "{8E5223934816CA4A}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 2.3 1.6 0.7
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{25747A168BFC3A37}" {
+    }
+   }
+   coords 1.5 0 0.7
+  }
+ }
+}

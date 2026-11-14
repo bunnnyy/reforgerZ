@@ -1,0 +1,48 @@
+GenericEntity {
+ ID "2935F9428F846E5C"
+ components {
+  RplComponent "{8C198AC7C00703AA}" {
+  }
+  Hierarchy "{7990CB65C10A1390}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{C9CFDED29542A968}Prefabs/Props/Military/Furniture/CotMilitary_US_01.et" {
+   ID "E2C87036464C993C"
+   components {
+    Hierarchy "{314FCB3D4457C898}" {
+    }
+   }
+   coords 0 0 0.7
+   angles 0 0 0
+  }
+  GenericEntity : "{C9CFDED29542A968}Prefabs/Props/Military/Furniture/CotMilitary_US_01.et" {
+   ID "CFB97898F9B91F0E"
+   components {
+    Hierarchy "{3EF3228926E8E204}" {
+    }
+   }
+   coords 0 0 -0.7
+   angles 0 2 0
+  }
+  GenericEntity : "{2B6508FE121FCAC9}Prefabs/Props/Medical/InfusionStand_01/InfusionStand_01.et" {
+   ID "CCDD80663239866E"
+   components {
+    Hierarchy "{37249B273DDBE624}" {
+    }
+   }
+   coords 1.791 0 0.013
+   angles 0 0 0
+  }
+  GenericEntity : "{F06EAC6F2F97767F}Prefabs/Props/Medical/MedicalScreen_01.et" {
+   ID "9EB5F67666569745"
+   components {
+    Hierarchy "{1A051C147DE78564}" {
+    }
+   }
+   coords -1.8 0 0
+   angles 0 90 0
+  }
+ }
+}

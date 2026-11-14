@@ -1,0 +1,90 @@
+GenericEntity {
+ ID "1CFF41E836C040E9"
+ components {
+  RplComponent "{DCA68F3FFCA89CBF}" {
+  }
+  Hierarchy "{2A7934BBDB44A3A9}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{6204943E9EC70EC2}Prefabs/Structures/Military/Camps/Canvas_Covers/US/CanvasCover_Medium_US.et" {
+   ID "55FABF56AEBC64EA"
+   components {
+    Hierarchy "{CFBA7863C1A22880}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{9305F7BAF1317EE0}Prefabs/Props/Medical/TableSurgical_01/TableSurgical_01.et" {
+   ID "9E0DB70116AEC958"
+   components {
+    Hierarchy "{5C4F6E74B469C2C9}" {
+    }
+   }
+   coords -0.898 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{50801280D56B67A1}Prefabs/Props/Services/Healthcare/BedMedical_01.et" {
+   ID "1B26B56D7F4084CE"
+   components {
+    Hierarchy "{385DF4BEEE305446}" {
+    }
+   }
+   coords 0.984 0 0
+   angles 0 0 0
+  }
+  GameEntity : "{4CEE4FDF71E80099}Prefabs/Props/Medical/LampSurgical_01_on.et" {
+   ID "904E93D7898A031C"
+   components {
+    Hierarchy "{B490C173C93ECFE2}" {
+    }
+   }
+   coords -2.022 0 -0.335
+   angles 0 0 0
+  }
+  GenericEntity : "{D9CE934146B140A7}Prefabs/Props/Medical/TableMedical_01/TableMedical_01_small.et" {
+   ID "E86B314DB2DC9ABB"
+   components {
+    Hierarchy "{E7FA245EC8607500}" {
+    }
+   }
+   coords -0.86 0 1.721
+   angles 0 0 0
+  }
+  GenericEntity : "{89724FB4541A7633}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum_stand_V1.et" {
+   ID "0B741F726AC81F0D"
+   components {
+    Hierarchy "{85A9C024B6FE0DA2}" {
+    }
+   }
+   coords 0.984 0 1.808
+   angles 0 0 0
+  }
+  GenericEntity : "{E546356D4797342F}Prefabs/Props/Garbage/Medical/GarbageMedicalUS_01.et" {
+   ID "5A08A13698A910E4"
+   components {
+    Hierarchy "{9B9A878C63410CCE}" {
+    }
+   }
+   coords 0 0 -1.4
+   angles 0 30 0
+  }
+  GenericEntity {
+   ID "E02B7041FC8B1750"
+   components {
+    SCR_AISmartActionSentinelComponent "{936CF9C82238341B}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition -0.9 1.6 0
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{64919BBC04F9DE00}" {
+    }
+   }
+   coords -0.9 0 -1.46
+  }
+ }
+}

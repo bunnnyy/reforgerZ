@@ -130,7 +130,7 @@ class RZ_PuzzleObjectComponent : ScriptComponent
 	[RplProp()]
 	protected bool m_bMenu;			// its slots go into the object menu (Interactions/RZ_ObjectScreen.c)
 
-	protected bool m_bMenuSet;		// SetMenu decided it (else: a labelled prop that isn't a person)
+	protected bool m_bMenuSet;		// SetMenu decided it (else: always a menu)
 
 	[Attribute("0", desc: "Hidden until tagged: its read and its slots show only while a system has labelled it. For a map object that carries a spot's prompts itself (the repo's vanilla house radio, docs/WORKBENCH_SETUP.md), so an untagged one shows only its own vanilla prompts")]
 	protected bool m_bHiddenUntilTagged;
@@ -150,7 +150,7 @@ class RZ_PuzzleObjectComponent : ScriptComponent
 		m_sChoiceLabels = choiceLabels;
 		m_bLabelled = !useLabels.IsEmpty() || !choiceLabels.IsEmpty();
 		if (!m_bMenuSet)
-			m_bMenu = m_bLabelled && !ChimeraCharacter.Cast(GetOwner());
+			m_bMenu = true;
 
 		Replication.BumpMe();
 	}

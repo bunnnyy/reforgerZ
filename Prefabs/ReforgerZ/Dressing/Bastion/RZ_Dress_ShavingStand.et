@@ -14,7 +14,8 @@ GenericEntity {
     Hierarchy "{C5EDF0B655F876B2}" {
     }
    }
-   coords 0 0 0
+   coords -0.0 0 -0.037
+   angles 0 0 0
   }
   GenericEntity : "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et" {
    ID "0FDA55B6CF72DF63"
@@ -22,7 +23,8 @@ GenericEntity {
     Hierarchy "{6CA6448590F326B0}" {
     }
    }
-   coords 0 1.5 0.08
+   coords -0.0 1.41 0.043
+   angles 0 0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "D71547B0D86B39EF"
@@ -30,7 +32,8 @@ GenericEntity {
     Hierarchy "{46BA3723FA65A87A}" {
     }
    }
-   coords 0.1 0 0.5
+   coords -0.034 0 0.5
+   angles 0 0 0
   }
   GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
    ID "F53C86ACFEA9FDE9"
@@ -38,7 +41,8 @@ GenericEntity {
     Hierarchy "{520873D01D962608}" {
     }
    }
-   coords 0.1 0.45 0.5
+   coords -0.035 0.5 0.499
+   angles 0 0 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
    ID "02E8CCDF9E032972"
@@ -55,12 +59,13 @@ GenericEntity {
     Hierarchy "{B73D15A540EB5DFC}" {
     }
    }
-   coords 1.0 1.0 0.2
+   coords 1.0 1.01 0.2
    angles 0 -8 0
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "1AD043DF6AF83F8B"
    coords -0.4 0 0.4
+   angles 0 0 0
   }
   GenericEntity {
    ID "A22EDC76A6F9D1BC"

@@ -337,6 +337,10 @@ class RZ_CasePapers
 				r.m_sTag = RZ_TalkJobs.Tag("Trade");
 			}
 
+			// The hand-over at its own people moves the paper's job; giving it to a rival doesn't
+			if (speaker == Owner(p))
+				r.m_iFor = RZ_Dialogue.ForErrand(JobOf(s.m_iPlayer, p));
+
 			replies.Insert(r);
 		}
 	}

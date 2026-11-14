@@ -1,0 +1,63 @@
+GenericEntity {
+ ID "ABF3EE691F62CB56"
+ components {
+  RplComponent "{018F2FE1C23B770F}" {
+  }
+  Hierarchy "{6E4526265AE4D53D}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{4F6BB0502ED3EFBB}Prefabs/Props/Military/Generators/GeneratorPortable_US_01_Off.et" {
+   ID "75FC7F474704991B"
+   components {
+    Hierarchy "{3D6C6BBE1707882C}" {
+    }
+   }
+   coords -0.0 0 -0.064
+   angles 0 0 0
+  }
+  GenericEntity : "{CC5453CCC311603B}Prefabs/Props/Military/Sandbags/Sandbag_01_end_burlap.et" {
+   ID "94E9454B4FA4C6EE"
+   components {
+    Hierarchy "{951124435EBD340B}" {
+    }
+   }
+   coords 0 0 1.35
+   angles 0 0 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "A1351EF1DBF31A28"
+   components {
+    Hierarchy "{226D41FE8B821F5E}" {
+    }
+   }
+   coords 0.8 0 0.2
+   angles 0 30 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "9A6EEA2A90692AA6"
+   components {
+    Hierarchy "{EDD3800596C30298}" {
+    }
+   }
+   coords -1.3 0 -0.3
+   angles 0 10 0
+  }
+  GenericEntity {
+   ID "D827AD476B87097D"
+   components {
+    SCR_AISmartActionSentinelComponent "{9C8D2401E6B54FA3}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 0.9
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{816B74A217D19B0F}" {
+    }
+   }
+   coords 0 0 -0.9
+  }
+ }
+}

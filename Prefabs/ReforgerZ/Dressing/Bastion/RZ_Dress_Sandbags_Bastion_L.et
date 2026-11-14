@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords -3.4 0 0
+   angles 0 0 0
   }
   GenericEntity : "{BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et" {
    ID "67E2E61D044AD41D"

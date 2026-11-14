@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 1.1
+   angles 0 0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "D96CA056478B2E4B"
@@ -22,7 +23,8 @@ GenericEntity {
     Hierarchy "{D27B45A624B350EB}" {
     }
    }
-   coords -0.5 0 0.1
+   coords -0.5 0 0.033
+   angles 0 0 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
    ID "11516E7A8A5812AD"
@@ -30,7 +32,8 @@ GenericEntity {
     Hierarchy "{356FB8005C702408}" {
     }
    }
-   coords 0.6 0 0.0
+   coords 0.676 0 0.013
+   angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "6E8BCADD0A73080E"
@@ -47,7 +50,8 @@ GenericEntity {
     Hierarchy "{1B004EC0C4C077E4}" {
     }
    }
-   coords 1.6 0.62 0.3
+   coords 1.6 0.83 0.3
+   angles 0 0 0
   }
   GenericEntity {
    ID "5B4B155983A757EF"
@@ -63,7 +67,7 @@ GenericEntity {
     Hierarchy "{17F17BACF91AC89F}" {
     }
    }
-   coords -0.5 0 0.1
+   coords -0.5 0 0.033
   }
   GenericEntity {
    ID "EA665455C125E786"
@@ -79,7 +83,7 @@ GenericEntity {
     Hierarchy "{2A21C655C4EB4AAA}" {
     }
    }
-   coords 0.6 0 0.0
+   coords 0.676 0 0.013
   }
  }
 }

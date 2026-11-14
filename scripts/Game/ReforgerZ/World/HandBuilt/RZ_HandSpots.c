@@ -55,6 +55,7 @@ class RZ_HandSpots
 		result.Insert("latrine");
 		result.Insert("qm");
 		result.Insert("leader");
+		result.Insert("lab");
 		result.Insert("route");
 	}
 
@@ -88,10 +89,40 @@ class RZ_HandSpots
 			case "latrine": return "Latrine";
 			case "qm": return "Quartermaster's place";
 			case "leader": return "Leader's place";
+			case "lab": return "The cure's lab";
 			case "route": return "Walk point";
 		}
 
 		return type;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One sentence on what the spot is for (the build bar says it when the mouse is on its button).
+	static string Help(string type)
+	{
+		switch (type)
+		{
+			case "sit": return "Where someone sits to rest, smoke or talk.";
+			case "meal": return "The canteen table: eight people eat here at mealtimes.";
+			case "lean": return "Where someone leans on a wall and passes the time.";
+			case "work": return "Where someone works with their hands: mending, sorting, cleaning kit.";
+			case "water": return "Where people fill canteens and drink.";
+			case "watch": return "A lookout who watches outward, toward the threats.";
+			case "gate": return "The guard who stands at the way in and stops people.";
+			case "cook": return "Where the cook works the stove or the pot.";
+			case "wash": return "Where people wash hands, faces and clothes.";
+			case "chop": return "Where someone splits wood for the fires.";
+			case "sleep": return "Where someone sleeps off-shift.";
+			case "medic": return "The medic's tent: the hurt and the sick go here.";
+			case "stores": return "The food tent or stores door, where supplies go in and out.";
+			case "latrine": return "Where people go to relieve themselves.";
+			case "qm": return "Where the quartermaster stands to trade with you.";
+			case "leader": return "Where the camp's leader spends the day.";
+			case "lab": return "Where the cure's lab tent stands, in its own town: it moves here when the site is saved or used.";
+			case "route": return "A point on a patrol: the guards walk the points in order.";
+		}
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------

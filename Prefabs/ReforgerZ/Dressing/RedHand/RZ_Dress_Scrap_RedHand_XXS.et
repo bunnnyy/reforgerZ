@@ -1,0 +1,21 @@
+GenericEntity {
+ ID "157965A9F725A50C"
+ components {
+  RplComponent "{DE1CDA39746E850D}" {
+  }
+  Hierarchy "{A88C4C726AC4DAD0}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "6D1EFCF541A95873"
+   components {
+    Hierarchy "{6690B18377C31BEA}" {
+    }
+   }
+   coords 0 0.41 0
+   angles 0 90 85
+  }
+ }
+}

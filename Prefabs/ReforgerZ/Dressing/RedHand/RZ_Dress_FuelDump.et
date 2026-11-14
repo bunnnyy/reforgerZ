@@ -1,0 +1,99 @@
+GenericEntity {
+ ID "A6BA40724A3CC2B7"
+ components {
+  RplComponent "{8A9B7B60699EAE09}" {
+  }
+  Hierarchy "{6FCB04623B08A898}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "9FE61C639E232123"
+   components {
+    Hierarchy "{13A3857D23DF028F}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 5 0
+  }
+  GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
+   ID "275FC1797873DB0F"
+   components {
+    Hierarchy "{DD8AC9E3B79E1623}" {
+    }
+   }
+   coords -0.3 0.14 0.1
+   angles 0 0 0
+  }
+  GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+   ID "F45722E18FE9710D"
+   components {
+    Hierarchy "{695B4D94E75F06CA}" {
+    }
+   }
+   coords 0.35 0.14 -0.1
+   angles 0 0 0
+  }
+  GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
+   ID "0B37F56A8644E462"
+   components {
+    Hierarchy "{4F73143F2DDFED12}" {
+    }
+   }
+   coords 1.104 0 0.5
+   angles 0 0 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "A9C306A7D2F91B23"
+   components {
+    Hierarchy "{822D2C34C5C80CB5}" {
+    }
+   }
+   coords -1.1 0 0.6
+   angles 0 20 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "D51476D54D6B1F5B"
+   components {
+    Hierarchy "{D08E521D405C2155}" {
+    }
+   }
+   coords -1.1 0 0.2
+   angles 0 8 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "7858957B02ECEB83"
+   components {
+    Hierarchy "{947065892D821972}" {
+    }
+   }
+   coords -1.2 0 -0.2
+   angles 0 -15 0
+  }
+  GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
+   ID "E9775FAAF1B6FD48"
+   components {
+    Hierarchy "{F3494B0D43FBE45E}" {
+    }
+   }
+   coords 0.9 0 -1.1
+   angles 0 0 0
+  }
+  GenericEntity {
+   ID "F9957B14C8A7B1F6"
+   components {
+    SCR_AISmartActionSentinelComponent "{9EB51496DE28A0C7}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition -0.9 1.6 1.1
+     m_eLoiterAnimation SMOKING
+    }
+    Hierarchy "{2111DE56C7F3B91C}" {
+    }
+   }
+   coords 0.9 0 -1.1
+  }
+ }
+}

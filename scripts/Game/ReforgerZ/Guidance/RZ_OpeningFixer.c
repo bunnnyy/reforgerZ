@@ -1,7 +1,6 @@
 //! The fixer (docs/DESIGN.md, "The fixer"): beat 5 of the opening, after the runner's case.
 //!
-//! Two to four minutes after you're back in the street you started from with the case (or on the
-//! way, if you don't go back), Ferda Kroupa comes, who collects for the Red Hand's book, with two of
+//! Three minutes after you take the case, wherever you are, Ferda Kroupa comes, who collects for the Red Hand's book, with two of
 //! the crews. Polite, patient. He asks the contact first, then you, and you pick a side, each way in
 //! the world: hand it over (a reply: he pays; the street thinks less of you; Proof opens as Get It
 //! Back), talk him off (a reply with a check: your background or the good liar's habit), rally the
@@ -80,8 +79,7 @@ class RZ_FixerVisit
 	int m_iLevel;
 	int m_iPhase;
 	bool m_bShort;				// a familiar player: one scene where you are, no street to rally
-	float m_fDue;				// he comes this soon after you're back in the street...
-	float m_fLatest;			// ...and meets you on the way at the latest
+	float m_fDue;				// he comes this soon after the case, wherever you are
 	float m_fPhaseAt;
 	float m_fAway;				// how long you've been out of reach of him (slipping away)
 	vector m_vTown;				// the street you started from
@@ -137,11 +135,8 @@ class RZ_OpeningFixer
 	static const int AFTER_TOLL = 4;
 	static const int AFTER_CHANNEL = 8;
 
-	protected static const float DUE_MIN = 120;		// he comes 2-4 minutes after you're back in the street
-	protected static const float DUE_MAX = 240;
+	protected static const float DUE = 180;			// he comes 3 minutes after the case, wherever you are
 	protected static const float SHORT_DUE = 30;		// a familiar player: half a minute after the case
-	protected static const float LATEST = 420;		// and meets you on the way at the latest
-	protected static const float IN_STREET = 250;		// "back in the street": this close to where you started
 	protected static const float SPOT_MIN = 18;		// he stands this far from you when he comes...
 	protected static const float SPOT_MAX = 30;
 	protected static const float CONTACT_NEAR = 60;	// he asks the contact first when he's this close to you
@@ -306,6 +301,7 @@ class RZ_OpeningFixer
 		v.m_iId = m_iNextId;
 		m_iNextId++;
 		v.m_iPlayer = playerId;
+		v.m_Me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		v.m_iLevel = level;
 		v.m_bShort = level >= 2;
 		v.m_vTown = town;
@@ -313,12 +309,11 @@ class RZ_OpeningFixer
 		v.m_Contact = contact;
 		v.m_sContact = contactName;
 		v.m_sContactTitle = contactTitle;
-		v.m_fDue = Math.RandomFloat(DUE_MIN, DUE_MAX);
+		v.m_fDue = DUE;
 		if (v.m_bShort)
 			v.m_fDue = SHORT_DUE;
 
 		v.m_fPhaseAt = m_fClock;
-		v.m_fLatest = m_fClock + LATEST;
 		RZ_Rng rng = new RZ_Rng(playerId * 7919 + v.m_iId);
 		for (int i = 0; i < 3; i++)
 		{
@@ -327,7 +322,7 @@ class RZ_OpeningFixer
 
 		v.m_sNeighbour = RZ_NoteText.ManName(rng) + " " + RZ_NoteText.Surname(rng);
 		m_aVisits.Insert(v);
-		RZ_Log.Info(string.Format("Openings: Ferda Kroupa is coming for %1 (%2, %3 s after they're back in %4)", RZ_Util.PlayerName(playerId), LevelText(v), RZ_Util.RoundToInt(v.m_fDue), townName));
+		RZ_Log.Info(string.Format("Openings: Ferda Kroupa is coming for %1 (%2, in %3 s, wherever they are)", RZ_Util.PlayerName(playerId), LevelText(v), RZ_Util.RoundToInt(v.m_fDue)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -689,14 +684,14 @@ class RZ_OpeningFixer
 		if (code % 10 == ROLE_NEIGHBOUR)
 		{
 			if (v.m_iPhase == PHASE_WARN)
-				replies.InsertAt(Job(REPLY_WARN, "He'll be back for more. Bolt your doors.", "Errand", ""), 0);
+				replies.InsertAt(Job(REPLY_WARN, "He'll be back for more. Bolt your doors.", "Errand", "", v.m_iErrand), 0);
 
 			return;
 		}
 
 		if (v.m_iPhase == PHASE_STAND)
 		{
-			replies.InsertAt(Job(REPLY_STAND, "The street's with me.", "Street", ""), 0);
+			replies.InsertAt(Job(REPLY_STAND, "The street's with me.", "Street", "", v.m_iErrand), 0);
 			return;
 		}
 
@@ -704,24 +699,25 @@ class RZ_OpeningFixer
 			return;
 
 		if (!v.m_bShort)
-			replies.InsertAt(Job(REPLY_RALLY, "Wait here. I'll talk to the street first.", "Street", ""), 0);
+			replies.InsertAt(Job(REPLY_RALLY, "Wait here. I'll talk to the street first.", "Street", "", v.m_iErrand), 0);
 
 		string tag;
 		string need = BluffNeed(playerId, tag);
-		replies.InsertAt(Job(REPLY_BLUFF, "Bastion's patrol is two streets away. You'd better go.", tag, need), 0);
+		replies.InsertAt(Job(REPLY_BLUFF, "Bastion's patrol is two streets away. You'd better go.", tag, need, v.m_iErrand), 0);
 
 		string missing = "";
 		if (!RZ_OpeningCase.Carries(user))
 			missing = "You don't have it on you";
 
-		replies.InsertAt(Job(REPLY_HAND, "Hand it over", "Trade", missing), 0);
+		replies.InsertAt(Job(REPLY_HAND, "Hand it over", "Trade", missing, v.m_iErrand), 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static RZ_TalkReply Job(int id, string label, string tag, string need)
+	protected static RZ_TalkReply Job(int id, string label, string tag, string need, int errand)
 	{
 		RZ_TalkReply r = new RZ_TalkReply();
 		r.m_iId = id;
+		r.m_iFor = RZ_Dialogue.ForErrand(errand);
 		r.m_sLabel = label;
 		r.m_bOwn = true;
 		r.m_bJob = true;
@@ -994,14 +990,30 @@ class RZ_OpeningFixer
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected static bool Connected(int playerId)
+	{
+		array<int> all = {};
+		GetGame().GetPlayerManager().GetPlayers(all);
+		return all.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void TickVisit(RZ_FixerVisit v, float dt, array<int> ids, array<IEntity> players)
 	{
 		int idx = ids.Find(v.m_iPlayer);
 		if (idx < 0)
 		{
+			// Not in the world but the same character still alive (Game Master, a vehicle's seat
+			// switch, a load): he waits, and comes once you're back
+			if (Connected(v.m_iPlayer) && (!v.m_Me || RZ_Util.IsCharacterAlive(v.m_Me)))
+				return;
+
 			// Gone (a death, a new character, left): the visit goes quietly
 			if (v.m_iPhase < PHASE_LEAVING)
 				DropStep(v);
+
+			if (v.m_iPhase == PHASE_WAIT)
+				RZ_Log.Info("Openings: Ferda won't come for " + RZ_Util.PlayerName(v.m_iPlayer) + ": that character is gone");
 
 			v.m_iPhase = PHASE_DONE;
 			return;
@@ -1011,11 +1023,8 @@ class RZ_OpeningFixer
 		v.m_Me = me;
 		if (v.m_iPhase == PHASE_WAIT)
 		{
-			// The clock runs while you're back in the street; on the way, he meets you at the latest
-			if (RZ_Util.DistXZ(me.GetOrigin(), v.m_vTown) > IN_STREET && !v.m_bShort)
-				v.m_fPhaseAt += dt;
-
-			if (m_fClock - v.m_fPhaseAt >= v.m_fDue || m_fClock >= v.m_fLatest)
+			// He finds you wherever you are: the street you started from isn't where the case goes
+			if (m_fClock - v.m_fPhaseAt >= v.m_fDue)
 				Come(v, me);
 
 			return;

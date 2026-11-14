@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 1.2
+   angles 0 0 0
   }
   GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
    ID "898270E92FE9CC08"
@@ -50,10 +51,12 @@ GenericEntity {
     }
    }
    coords 0 0 -0.6
+   angles 0 0 0
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "73CDF02727F84D9B"
    coords 0.5 0 -0.9
+   angles 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
    ID "815486A2E66CAF03"
@@ -62,6 +65,7 @@ GenericEntity {
     }
    }
    coords -0.8 0 -0.6
+   angles 0 0 0
   }
   GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
    ID "4C08181E88FF8997"
@@ -70,6 +74,7 @@ GenericEntity {
     }
    }
    coords -0.8 0.62 -0.6
+   angles 0 0 0
   }
  }
 }

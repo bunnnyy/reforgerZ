@@ -29,6 +29,7 @@ GenericEntity {
   GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
    ID "83148ACFE3A98C4E"
    coords -0.9 0 0.3
+   angles 0 0 0
   }
   GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
    ID "A83CE88E7F1B9153"
@@ -37,6 +38,7 @@ GenericEntity {
     }
    }
    coords -1.2 0 -0.6
+   angles 0 0 0
   }
  }
 }

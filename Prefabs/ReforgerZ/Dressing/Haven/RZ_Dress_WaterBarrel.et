@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
    ID "BFC78CDA89376BE3"
@@ -23,6 +24,7 @@ GenericEntity {
     }
    }
    coords 0.7 0 0.2
+   angles 0 0 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
    ID "3162FD49EFB2DEB7"
@@ -30,7 +32,8 @@ GenericEntity {
     Hierarchy "{4567B83EA6B6C8E3}" {
     }
    }
-   coords -0.6 0 0.6
+   coords -0.595 0 -0.002
+   angles 0 0 0
   }
   GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
    ID "99412ABBEDB6F596"
@@ -38,11 +41,13 @@ GenericEntity {
     Hierarchy "{6DDAFDD4F484CC38}" {
     }
    }
-   coords 0.4 0 0.8
+   coords 0.716 0 0.817
+   angles 0 0 0
   }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
    ID "5FC625281950B4E7"
-   coords 0 0.9 0
+   coords 0.0 1.09 0.0
+   angles 0 0 0
   }
   GenericEntity {
    ID "A71A3067532C0E37"

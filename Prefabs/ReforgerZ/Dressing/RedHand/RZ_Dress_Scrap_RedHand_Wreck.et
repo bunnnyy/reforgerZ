@@ -1,0 +1,30 @@
+GenericEntity {
+ ID "45310999C2B275ED"
+ components {
+  RplComponent "{DE287B09A4A992E8}" {
+  }
+  Hierarchy "{D873D4627A20BBE7}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{1A1CE09F7BCA6650}Prefabs/Props/Wrecks/S105_wreck/S105_wreck_static.et" {
+   ID "381F4E1BE8B8D9E7"
+   components {
+    Hierarchy "{8634A6D30077E873}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 90 0
+  }
+  GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
+   ID "58B39F6085D1A4E9"
+   components {
+    Hierarchy "{61D8264A7816EFEC}" {
+    }
+   }
+   coords 1.2 0.42 0.9
+   angles 90 0 0
+  }
+ }
+}

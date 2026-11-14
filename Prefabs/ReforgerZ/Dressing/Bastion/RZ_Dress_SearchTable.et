@@ -1,0 +1,63 @@
+GenericEntity {
+ ID "D116CA23196695B3"
+ components {
+  RplComponent "{94006343A599AF18}" {
+  }
+  Hierarchy "{353082C7F8C94705}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
+   ID "1EB4500B1CDC8F9E"
+   components {
+    Hierarchy "{370E6E0664BD3E09}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "263D951908259A4B"
+   components {
+    Hierarchy "{70197D56727DA161}" {
+    }
+   }
+   coords 1.5 0 0.1
+   angles 0 85 0
+  }
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+   ID "B69F1641F29A0815"
+   components {
+    Hierarchy "{B0D7CC1BB8D1DC74}" {
+    }
+   }
+   coords -0.4 0.9 0.05
+   angles 0 0 0
+  }
+  GenericEntity : "{EA8D922E189837C2}Prefabs/Props/Civilian/Suitcase_04_open.et" {
+   ID "B2F4F1F1539FFFC3"
+   components {
+    Hierarchy "{5AFD22A9648DB51B}" {
+    }
+   }
+   coords 0.3 0.9 0.0
+   angles 0 10 0
+  }
+  GenericEntity {
+   ID "3F890F99395BDF0D"
+   components {
+    SCR_AISmartActionSentinelComponent "{EF1AD8D9AC836B96}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 0.9
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{778708CD6A96CBFC}" {
+    }
+   }
+   coords 0 0 -0.9
+  }
+ }
+}

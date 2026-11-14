@@ -1,0 +1,30 @@
+GenericEntity {
+ ID "B238AFBADB2DDC53"
+ components {
+  RplComponent "{5422AB9463C2B003}" {
+  }
+  Hierarchy "{4889E16446D00F3D}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{D9075EE24A5FA2BA}Prefabs/Props/Dst/PileOfWood_01.et" {
+   ID "9078D5BB50306F9F"
+   components {
+    Hierarchy "{5E9A2607ABC65428}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{56E05D014BD48942}Prefabs/Props/Industrial/CartSawmill_01_transport.et" {
+   ID "F16D86AE6862599B"
+   components {
+    Hierarchy "{82DE1724A9F13DE8}" {
+    }
+   }
+   coords 1.351 0 -0.033
+   angles 0 0 0
+  }
+ }
+}

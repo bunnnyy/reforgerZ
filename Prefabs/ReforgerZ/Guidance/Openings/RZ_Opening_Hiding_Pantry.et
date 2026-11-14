@@ -20,10 +20,12 @@ GenericEntity {
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
    ID "B0C6848720AF3580"
    coords -0.2 0.62 0
+   angles 0 0 0
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
    ID "B0E8279652AFB85E"
    coords 0.15 0.62 0.1
+   angles 0 0 0
   }
   GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
    ID "AAB363D4D64C908F"
@@ -32,6 +34,7 @@ GenericEntity {
     }
    }
    coords 0.3 0.62 -0.1
+   angles 0 0 0
   }
   GenericEntity : "{A8D8015D0E2B600A}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_mattress.et" {
    ID "7743C6D3192A9CAD"

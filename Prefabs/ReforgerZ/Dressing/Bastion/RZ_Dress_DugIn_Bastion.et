@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "A14099D8089046C6"
+ components {
+  RplComponent "{12FC0A7931FB0B3D}" {
+  }
+  Hierarchy "{161F5FCBEA923749}" {
+  }
+ }
+ coords 0 0 0
+ {
+  StaticModelEntity : "{C1576E5555582214}Prefabs/Structures/Military/Fortifications/DirtCover_01/DirtCover_01_short.et" {
+   ID "9F5613798298D7BD"
+   components {
+    Hierarchy "{1C55B87EA009EBA0}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{0011A3CBD1B1212A}Prefabs/Props/Garbage/Military/Ammo/GarbageAmmunition_US_01.et" {
+   ID "20E7DEEC606280F3"
+   components {
+    Hierarchy "{24172575E355E9DC}" {
+    }
+   }
+   coords -0.6 0 -2.51
+   angles 0 15 0
+  }
+  GenericEntity : "{20759E1CA7F808BE}Prefabs/Props/Garbage/Military/Food/GarbageFoodMilitaryUS_01.et" {
+   ID "A582B7D459285220"
+   components {
+    Hierarchy "{3B82685827CFB6E5}" {
+    }
+   }
+   coords 0.9 0 -2.81
+   angles 0 40 0
+  }
+ }
+}

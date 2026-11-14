@@ -28,8 +28,9 @@ import glob, hashlib, math, os, re, sys, random
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
 sys.path.insert(0, HERE)
-from pieces import AT, C, DOCTRINE, FP, KIT_TIER, KITS, OPENINGS, RULES, TRACES  # noqa: E402
+from pieces import AT, C, DENSE, DOCTRINE, FP, KIT_TIER, KITS, OPENINGS, RULES, TRACES  # noqa: E402
 import footprints  # noqa: E402
+import pieces  # noqa: E402
 
 PROPS = os.path.join(HERE, "props.txt")
 GM = os.path.join(REPO, "Prefabs/ReforgerZ/Core/RZ_GameMode.et")
@@ -41,8 +42,9 @@ ROLE = {"c": "CENTRE", "i": "INNER", "a": "APPROACH", "e": "EDGE"}
 ZONES = ["yard", "wire", "gate", "kill", "court", "stores", "work", "kitchen", "sleep", "sick", "dump", "dead"]
 CLOSE = {"none": "NONE", "road": "ROAD", "two": "TWO", "all": "ALL"}
 HARDEN = {"none": "NONE", "doors": "DOORS", "threat": "THREAT", "all": "ALL"}
+WHEN = {"supplied": "SUPPLIED", "thriving": "THRIVING", "hit": "HIT"}
 # A doctrine's layer pieces: (its key, RZ_ESiteLayer)
-LAYERS = (("wire", "WIRE"), ("window", "WINDOW"), ("door", "DOOR"), ("lookout", "LOOKOUT"), ("light", "LIGHT"), ("stores", "STORES"))
+LAYERS = (("wire", "WIRE"), ("block", "BLOCK"), ("window", "WINDOW"), ("door", "DOOR"), ("lookout", "LOOKOUT"), ("light", "LIGHT"), ("stores", "STORES"))
 CR, LF = chr(13), chr(10)
 SEAT_PAD = 0.45      # a seated or standing person round a seat's spot, inside the footprint (a lean's 0.6)
 PLAN_GAP = 0.3       # pieces in a plan stand at least this far apart
@@ -115,8 +117,9 @@ def piece_text(parts, props, index):
         if not hier:  # a prefab with its own Hierarchy can't take a second one
             L += ["   components {", '    Hierarchy "{%s}" {' % gid(), "    }", "   }"]
         L.append("   coords %s %s %s" % (x, y, z))
-        if yaw or pitch or roll:
-            L.append("   angles %s %s %s" % (pitch, yaw, roll))
+        # Always written: some prefabs (the mods' walls and barriers) carry a turn of their own, which a
+        # prop placed with none would keep, standing side-on to its run
+        L.append("   angles %s %s %s" % (pitch, yaw, roll))
         L.append("  }")
     for s in parts:
         if s[0] != "s":
@@ -200,22 +203,196 @@ def check_rules():
         sys.exit("Rules refused:" + LF + LF.join(bad))
 
 
+# Props other props may stand in or under: tents, nets, a mast's guy wires, a stall, a shower, a tower
+HOLLOW = ("CamoNet", "Tent", "Antenna", "MarketStand", "ShowerBeach", "GuardTower", "CanvasCover", "LifeGuardTower")
+
+
+def _quad(prop, x, z, yaw):
+    b = footprints.MEASURED.get(prop)
+    if not b:
+        return None
+    a = math.radians(yaw)
+    cs, sn = math.cos(a), math.sin(a)
+    cx = x + b["ox"] * cs + b["oz"] * sn
+    cz = z - b["ox"] * sn + b["oz"] * cs
+    hw, hd = b["w"] / 2, b["d"] / 2
+    return [(cx + lx * cs + lz * sn, cz - lx * sn + lz * cs) for lx, lz in ((-hw, -hd), (hw, -hd), (hw, hd), (-hw, hd))]
+
+
+def _area(poly):
+    return abs(sum(poly[i][0] * poly[(i + 1) % len(poly)][1] - poly[(i + 1) % len(poly)][0] * poly[i][1] for i in range(len(poly)))) / 2
+
+
+def _clip(subject, clipper):
+    n = len(clipper)
+    if sum(clipper[i][0] * clipper[(i + 1) % n][1] - clipper[(i + 1) % n][0] * clipper[i][1] for i in range(n)) < 0:
+        clipper = clipper[::-1]
+    out = subject
+    for i in range(n):
+        a, b = clipper[i], clipper[(i + 1) % n]
+        inp, out = out, []
+        if not inp:
+            break
+
+        def inside(q):
+            return (b[0] - a[0]) * (q[1] - a[1]) - (b[1] - a[1]) * (q[0] - a[0]) >= 0
+
+        def cross(q, r):
+            d = (a[0] - b[0]) * (q[1] - r[1]) - (a[1] - b[1]) * (q[0] - r[0])
+            if abs(d) < 1e-9:
+                return r
+            t = ((a[0] - q[0]) * (q[1] - r[1]) - (a[1] - q[1]) * (q[0] - r[0])) / d
+            return (a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1]))
+
+        prev = inp[-1]
+        for cur in inp:
+            if inside(cur):
+                if not inside(prev):
+                    out.append(cross(prev, cur))
+                out.append(cur)
+            elif inside(prev):
+                out.append(cross(prev, cur))
+            prev = cur
+    return out
+
+
+def check_pieces():
+    """No two props of one piece stand in each other (their measured boxes, both on the ground, both a
+    knee high or more): the garden's two beds once overlapped by a metre, a chopping block stood inside
+    the woodpile. A prop others stand in or under (HOLLOW) isn't asked."""
+    bad = []
+    for name, (folder, use, role, intent, parts) in C.items():
+        ground = []
+        for part in parts:
+            if part[0] != "p":
+                continue
+            _, prop, x, z, yaw, y, pitch, roll = part
+            b = footprints.MEASURED.get(prop)
+            if not b or y >= 0.3 or abs(pitch) > 20 or abs(roll) > 20 or b["h"] < 0.4 or any(w in prop for w in HOLLOW):
+                continue
+            ground.append((prop, _quad(prop, x, z, yaw)))
+        for i in range(len(ground)):
+            for j in range(i + 1, len(ground)):
+                both = _clip(ground[i][1], ground[j][1])
+                if len(both) < 3:
+                    continue
+                share = _area(both) / min(_area(ground[i][1]), _area(ground[j][1]))
+                if share > 0.3:
+                    bad.append("%s: %s stands in %s (%d%% of the smaller)" % (name, ground[i][0], ground[j][0], round(share * 100)))
+    if bad:
+        sys.exit("Pieces refused (props collide):" + LF + LF.join(bad))
+
+
+# What people sit on, and what they sit at (docs/SITES.md, "Spacing")
+SEAT_PROPS = ("ChairOld_01.et", "ChairOld_02.et", "Chair_01_white.et", "Stool_01.et", "Armchair_01.et", "BenchWooden_01.et", "DeckChair_01_ochre.et")
+TABLE_PROPS = ("TableOld_01.et", "TableOld_01_white.et", "TableLong_01.et", "TableMilitary_US_01.et")
+
+
+def _seg_dist(p, a, b):
+    ax, az = b[0] - a[0], b[1] - a[1]
+    t = max(0.0, min(1.0, ((p[0] - a[0]) * ax + (p[1] - a[1]) * az) / (ax * ax + az * az or 1)))
+    return math.hypot(p[0] - a[0] - t * ax, p[1] - a[1] - t * az)
+
+
+def _inside(p, quad):
+    sign = 0
+    for i in range(4):
+        a, b = quad[i], quad[(i + 1) % 4]
+        c = (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0])
+        if c != 0:
+            if sign and (c > 0) != (sign > 0):
+                return False
+            sign = c
+    return True
+
+
+def _quad_gap(qa, qb):
+    """The gap between two measured boxes on the ground; 0 if they overlap."""
+    if any(_inside(p, qb) for p in qa) or any(_inside(p, qa) for p in qb) or len(_clip(qa, qb)) >= 3:
+        return 0.0
+    return min(min(_seg_dist(p, qb[i], qb[(i + 1) % 4]) for p in qa for i in range(4)),
+               min(_seg_dist(p, qa[i], qa[(i + 1) % 4]) for p in qb for i in range(4)))
+
+
+def check_spacing():
+    """A seat by a table is pulled up to it: its measured front within pieces.SEAT_LEFT (plus a hand's width) of the
+    table's edge, not in it, and facing it. A chair a metre off its table, or turned to the wall, is refused."""
+    bad = []
+    for name, (folder, use, role, intent, parts) in list(C.items()) + [(k, (None, None, None, None, v[1])) for k, v in list(TRACES.items()) + list(OPENINGS.items())]:
+        props = [q for q in parts if q[0] == "p" and footprints.MEASURED.get(q[1])]
+        tables = [q for q in props if q[1] in TABLE_PROPS and q[5] < 0.3]
+        for q in props:
+            if q[1] not in SEAT_PROPS or q[5] >= 0.3 or not tables:
+                continue
+            sq = _quad(q[1], q[2], q[3], q[4])
+            near = min(tables, key=lambda t: _quad_gap(sq, _quad(t[1], t[2], t[3], t[4])))
+            gap = _quad_gap(sq, _quad(near[1], near[2], near[3], near[4]))
+            if gap > 1.0:
+                continue   # not at that table
+            if gap <= 0:
+                bad.append("%s: %s stands in %s" % (name, q[1], near[1]))
+                continue
+            (fx, fz), fd, across = pieces.FRONT(q[1])
+            nx, nz = pieces._rot(q[4], fx, fz)
+            b = footprints.MEASURED[q[1]]
+            cx, cz = pieces._rot(q[4], b["ox"], b["oz"])
+            tb = footprints.MEASURED[near[1]]
+            tx, tz = pieces._rot(near[4], tb["ox"], tb["oz"])
+            to_x, to_z = near[2] + tx - (q[2] + cx), near[3] + tz - (q[3] + cz)
+            ln = math.hypot(to_x, to_z) or 1
+            facing = (nx * to_x + nz * to_z) / ln
+            seat_back = b["h"] > 0.7
+            if gap > pieces.SEAT_LEFT + 0.1:
+                bad.append("%s: %s stands %.2f m off %s (a seat in use is %.2f, one pushed back %.2f)" % (name, q[1], gap, near[1], pieces.SEAT_GAP, pieces.SEAT_LEFT))
+            elif seat_back and facing < 0.6:
+                bad.append("%s: %s by %s faces away from it" % (name, q[1], near[1]))
+    if bad:
+        sys.exit("Pieces refused (seats not at their table):" + LF + LF.join(bad))
+
+
+def check_fit():
+    """Every prop of every piece is placed by its measured faces (docs/SITES.md, "Spacing"; pieces.piece settles
+    them): two props on the ground either touch (faces within pieces.TOUCH) or stand pieces.APART or more apart,
+    never a sliver between; a seat pulled up to a table keeps its stated gap. A prop stood on another stands over
+    it (no more than a quarter hanging off); one hung on a wall or a post isn't asked."""
+    bad = []
+    for name, (folder, use, role, intent, parts) in C.items():
+        ground = [q for q in parts if pieces._ground(q)]
+        for i in range(len(ground)):
+            qi = pieces.QUAD(ground[i][1], ground[i][2], ground[i][3], ground[i][4])
+            for j in range(i + 1, len(ground)):
+                qj = pieces.QUAD(ground[j][1], ground[j][2], ground[j][3], ground[j][4])
+                gap = pieces.GAP(qi, qj)
+                if pieces.TOUCH < gap < pieces.APART and not pieces._seated(ground[i], ground[j], gap):
+                    bad.append("%s: %s and %s %.2f m apart (touch them, or set them %.2f m or more apart)" % (name, ground[i][1], ground[j][1], gap, pieces.APART))
+        for part in parts:
+            if part[0] != "p" or part[5] < 0.3 or abs(part[6]) > 20 or abs(part[7]) > 20 or not footprints.MEASURED.get(part[1]):
+                continue
+            _, prop, x, z, yaw, y, pitch, roll = part
+            under = [g for g in parts if g[0] == "p" and g is not part and g[5] < y and footprints.MEASURED.get(g[1]) and pieces._holds(g[1], g[2], g[3], g[4], x, z)]
+            if not under:
+                continue
+            g = max(under, key=lambda q: q[5])
+            gb = footprints.MEASURED[g[1]]
+            if y < g[5] + pieces.TOP(g[1]) - 0.02 or (gb["w"] <= 0.2 and gb["d"] <= 0.2):
+                continue   # hung on it, or set on a post's top
+            qa = pieces.QUAD(prop, x, z, yaw)
+            both = _clip(qa, pieces.QUAD(g[1], g[2], g[3], g[4]))
+            if (len(both) < 3 or _area(both) < 0.75 * _area(qa)) and _area(qa) < _area(pieces.QUAD(g[1], g[2], g[3], g[4])):
+                bad.append("%s: %s hangs off the %s it stands on" % (name, prop, g[1]))
+    if bad:
+        sys.exit("Pieces refused (not placed by their measured faces):" + LF + LF.join(bad))
+
+
 def check_plans():
-    """Every kit's plan: known pieces, and no two footprints closer than PLAN_GAP."""
+    """Every kit names known pieces (a kit is a list: no spots, docs/SITES.md, "The solver")."""
     bad = []
     for fac, place, _, plan in KITS:
-        quads = []
-        for name, x, z, yaw in plan:
+        for name in plan:
             if name not in C:
                 bad.append("%s %s: no piece named %s" % (fac, place, name))
-                continue
-            q = plan_quad(name, x, z, yaw, PLAN_GAP / 2)
-            for label, oq in quads:
-                if not separated(q, oq) and not separated(oq, q):
-                    bad.append("%s %s: %s at (%s, %s) overlaps %s" % (fac, place, name, num(x), num(z), label))
-            quads.append(("%s at (%s, %s)" % (name, num(x), num(z)), q))
     if bad:
-        sys.exit("Plans refused:" + LF + LF.join(bad))
+        sys.exit("Kits refused:" + LF + LF.join(bad))
 
 
 def remove_stale():
@@ -238,8 +415,8 @@ def write_gm(s):
     open(GM, "w", encoding="utf-8", newline="").write(s)
 
 
-def piece_lines(name, fac, place, rel, layer=None, x=0.0, z=0.0, yaw=0.0, indoors=False, plan=True):
-    """One kit entry: the piece, its ring, use, seats, where it stands by a building, its plan spot,
+def piece_lines(name, fac, place, rel, layer=None, indoors=False, plan=True, extra=False, when=""):
+    """One kit entry: the piece, its ring, use, seats, where it stands by a building,
     footprint, tier, zone, rules, layer and whether it goes indoors."""
     folder, use, role, intent, parts = C[name]
     seats = max(1, sum(1 for p in parts if p[0] == "s"))
@@ -250,10 +427,10 @@ def piece_lines(name, fac, place, rel, layer=None, x=0.0, z=0.0, yaw=0.0, indoor
          "        m_eUse %s" % USE[use], "        m_iSeats %d" % seats]
     if plan and name in AT and place != "ROAD_POST":
         L.append("        m_eAt %s" % AT[name].upper())
-    if plan:
-        L.append("        m_vPlan %s 0 %s" % (num(x), num(z)))
-        if yaw:
-            L.append("        m_fPlanYaw %s" % num(yaw))
+    if extra:
+        L.append("        m_bExtra 1")
+        if when:
+            L.append("        m_eWhen %s" % WHEN[when])
     L += ["        m_vFootMin %s 0 %s" % (num(x0), num(z0)), "        m_vFootMax %s 0 %s" % (num(x1), num(z1)),
           '        m_sFoot "%s"' % footprints.foot_text(parts, FP), "        m_iTier %d" % tier]
     if zone != "yard":
@@ -277,8 +454,15 @@ def write_kits():
         d = DOCTRINE.get((fac, place), {})
         indoors = set(d.get("indoors", []))
         L += ['     RZ_DressingKit "{%s}" {' % gid(), "      m_eFaction %s" % fac, "      m_ePlace %s" % place, "      m_aPieces {"]
-        for name, x, z, yaw in plan:
-            L += piece_lines(name, fac, place, rel, None, x, z, yaw, name in indoors)
+        for name in plan:
+            L += piece_lines(name, fac, place, rel, None, indoors=name in indoors)
+        # A dense kit's extras: after the plan's own pieces, with no spot in the plan
+        for entry in DENSE.get((fac, place), []):
+            name, count, when = entry[0], entry[1], (entry[3] if len(entry) > 3 else "")
+            if name not in C or (when and when not in WHEN):
+                sys.exit("%s %s: no piece named %s, or no such state as '%s' (pieces.DENSE)" % (fac, place, name, when))
+            for _ in range(count):
+                L += piece_lines(name, fac, place, rel, None, extra=True, when=when)
         L.append("      }")
         L += ["      m_eClose %s" % CLOSE[d.get("close", "none")], "      m_eHarden %s" % HARDEN[d.get("harden", "none")]]
         if "ring" in d:
@@ -349,6 +533,9 @@ def write_opening_scenes(slots):
 
 def main():
     check_rules()
+    check_pieces()
+    check_spacing()
+    check_fit()
     check_plans()
     index = []
     if "--index" in sys.argv:

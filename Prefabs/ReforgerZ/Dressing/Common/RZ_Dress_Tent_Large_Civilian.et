@@ -23,7 +23,7 @@ GenericEntity {
     Hierarchy "{7F5FCB134BF65ED3}" {
     }
    }
-   coords 1.0 0 2.6
+   coords 1.0 0 2.7
    angles 0 200 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
@@ -32,7 +32,7 @@ GenericEntity {
     Hierarchy "{B4741556C437A182}" {
     }
    }
-   coords 1.0 0.45 2.6
+   coords 0.989 0.5 2.699
    angles 0 200 0
   }
   GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
@@ -41,7 +41,7 @@ GenericEntity {
     Hierarchy "{5B19F635524F4E93}" {
     }
    }
-   coords 2.4 0 -1.4
+   coords 4.1 0 -1.2
    angles 0 30 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
@@ -50,7 +50,8 @@ GenericEntity {
     Hierarchy "{A8A670E218AE1BD3}" {
     }
    }
-   coords -1.9 0 -1.8
+   coords -2.0 0 -2.6
+   angles 0 0 0
   }
  }
 }

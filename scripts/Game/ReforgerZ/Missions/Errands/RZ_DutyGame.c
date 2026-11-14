@@ -29,6 +29,9 @@ class RZ_DutySubject
 	bool m_bSigns;					// its looking places are open (the player is beside it)
 	bool m_bTaken;					// in the player's hands, or carried off already
 	ResourceName m_sProp;			// what stands for it: a person in their own clothes
+	ref array<string> m_aLog = {};	// what's been said about it, oldest first (the hands-on view's "What you found")
+	ref array<int> m_aTones = {};	// each line's RZ_HandsOn.TONE_*
+	ref RZ_DutyHandsOn m_Hands;		// it up close (Missions/Errands/RZ_DutyHandsOn.c)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -1271,6 +1274,115 @@ class RZ_DutyGames
 
 		keys.Insert(Key(g, string.Format("s%1.take", i)));
 		sites.Gather(ChoiceKey(g, i), s.m_sTitle, keys, s.m_vPos, g.SubjectText(s), s.m_fYaw);
+		// Its prompt opens it up close, for a client that can show that
+		if (!s.m_Hands)
+			s.m_Hands = new RZ_DutyHandsOn(this, g, i);
+
+		sites.SetHandsOn(ChoiceKey(g, i), s.m_Hands);
+		RZ_HandsOn.Refresh(s.m_Hands);
+	}
+
+	// ================================================================ Up close (RZ_DutyHandsOn)
+	//------------------------------------------------------------------------------------------------
+	//! What stands for subject `i` in the world (its take site's prop), or null.
+	IEntity SubjectEntity(RZ_DutyGame g, int i)
+	{
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (!sites)
+			return null;
+
+		return sites.PropOf(Key(g, string.Format("s%1.take", i)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A look in the hands-on view at sign `sign` of subject `i`: the same as its prompt's hold, said
+	//! in the view's log instead of a notice. Seen already: nothing more (it shows again for free).
+	void HandsLook(RZ_DutyGame g, int i, int sign)
+	{
+		if (g.m_bJudged || i < 0 || i >= g.m_aSubjects.Count() || sign < 0 || sign > 2)
+			return;
+
+		RZ_DutySubject s = g.m_aSubjects[i];
+		if (s.m_aLooked[sign] || s.m_bTaken || g.m_iLooks <= 0)
+			return;
+
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (sites)
+			sites.Close(Key(g, string.Format("s%1.g%2", i, sign)));
+
+		Looked(g, i, sign, false);
+		// Its list again without the place seen (the prompt, for when the view is closed)
+		if (s.m_bSigns && g.m_iLooks > 0)
+			OpenSigns(g, i, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Take them up" in the view: its prompt waits for the hold, as if picked from its list.
+	void HandsTake(RZ_DutyGame g, int i, int playerId)
+	{
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (!sites || g.m_bJudged || i < 0 || i >= g.m_aSubjects.Count() || g.m_aSubjects[i].m_bTaken)
+			return;
+
+		if (g.m_iCarried >= 0)
+		{
+			Said(g, i, "Your hands are full. Put down the one you have first.", RZ_HandsOn.TONE_PLAIN, true);
+			return;
+		}
+
+		sites.ArmChoice(ChoiceKey(g, i), Key(g, string.Format("s%1.take", i)), playerId);
+		m_GM.NotifyPlayer(g.m_iPlayer, g.m_aSubjects[i].m_sTitle, string.Format("%1: hold the prompt on them.", RZ_DutyGame.TakePrompt(g.m_iKind)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A place on subject `i` turned over for good: one look gone, what it showed said (a notice
+	//! too when `notice`, the prompt's way) and kept in its log.
+	protected void Looked(RZ_DutyGame g, int i, int sign, bool notice)
+	{
+		RZ_DutySubject s = g.m_aSubjects[i];
+		s.m_aLooked[sign] = true;
+		g.m_iLooks = g.m_iLooks - 1;
+		int look = g.SignLook(s, sign);
+		string seen = RZ_DutyGame.SignSeen(g.m_iKind, sign, look);
+		int tone = RZ_HandsOn.TONE_CLEAN;
+		if (look == RZ_DutyGame.SIGN_BAD)
+			tone = RZ_HandsOn.TONE_BAD;
+		else if (look == RZ_DutyGame.SIGN_ODD)
+			tone = RZ_HandsOn.TONE_ODD;
+
+		Said(g, i, seen + ".", tone, false);
+		if (notice)
+			m_GM.NotifyPlayer(g.m_iPlayer, s.m_sTitle, string.Format("%1. %2 looks left.", seen, g.m_iLooks));
+
+		if (g.m_iLooks <= 0)
+			OutOfLooks(g);
+
+		RefreshHands(g);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line about subject `i` into its log (and a notice when `notice`).
+	protected void Said(RZ_DutyGame g, int i, string line, int tone, bool notice)
+	{
+		RZ_DutySubject s = g.m_aSubjects[i];
+		s.m_aLog.Insert(line);
+		s.m_aTones.Insert(tone);
+		if (notice)
+			m_GM.NotifyPlayer(g.m_iPlayer, s.m_sTitle, line);
+
+		if (s.m_Hands)
+			RZ_HandsOn.Refresh(s.m_Hands);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every subject's view sent again (the looks left are shared).
+	protected void RefreshHands(RZ_DutyGame g)
+	{
+		foreach (RZ_DutySubject s : g.m_aSubjects)
+		{
+			if (s.m_Hands)
+				RZ_HandsOn.Refresh(s.m_Hands);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1333,7 +1445,7 @@ class RZ_DutyGames
 			if (d <= TELL_RANGE && !s.m_bTold)
 			{
 				s.m_bTold = true;
-				m_GM.NotifyPlayer(g.m_iPlayer, s.m_sTitle, s.m_sTell + ".");
+				Said(g, i, s.m_sTell + ".", RZ_HandsOn.TONE_PLAIN, true);
 			}
 
 			// With the object menu its looks are always in its list; else they stand while you're beside it
@@ -1353,12 +1465,7 @@ class RZ_DutyGames
 					continue;
 
 				sites.Close(signKey);
-				s.m_aLooked[sign] = true;
-				g.m_iLooks = g.m_iLooks - 1;
-				string seen = RZ_DutyGame.SignSeen(g.m_iKind, sign, g.SignLook(s, sign));
-				m_GM.NotifyPlayer(g.m_iPlayer, s.m_sTitle, string.Format("%1. %2 looks left.", seen, g.m_iLooks));
-				if (g.m_iLooks <= 0)
-					OutOfLooks(g);
+				Looked(g, i, sign, true);
 			}
 
 			// Taken up: one at a time
@@ -1476,6 +1583,14 @@ class RZ_DutyGames
 		}
 
 		m_GM.NotifyPlayer(g.m_iPlayer, g.m_sTitle, "That's all the looking there's time for. Sort the rest on what you know. If you aren't sure, the careful spot costs you half.");
+		foreach (RZ_DutySubject left : g.m_aSubjects)
+		{
+			if (!left.m_bTaken)
+			{
+				left.m_aLog.Insert("No more looking: sort on what you know.");
+				left.m_aTones.Insert(RZ_HandsOn.TONE_PLAIN);
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

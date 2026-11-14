@@ -15,6 +15,7 @@ GenericEntity {
     }
    }
    coords 0 0 0
+   angles 0 0 0
   }
   GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
    ID "3896C48CB6549BFB"
@@ -22,7 +23,7 @@ GenericEntity {
     Hierarchy "{EE3B0541D30CA033}" {
     }
    }
-   coords -0.45 0.78 0.05
+   coords -0.45 0.9 0.05
    angles 0 8 0
   }
   GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
@@ -31,7 +32,8 @@ GenericEntity {
     Hierarchy "{0D123CCDE5766F3B}" {
     }
    }
-   coords 0.4 0.78 0
+   coords 0.4 0.9 0.0
+   angles 0 0 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
    ID "65B00210B9842793"

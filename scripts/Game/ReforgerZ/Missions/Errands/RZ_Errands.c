@@ -1269,10 +1269,18 @@ class RZ_Errands
 		if (hold <= 0)
 			hold = RZ_WorkSites.HoldFor(w.m_fSeconds);
 
+		// The stove: a short press opens it up close, where the cooking is the work
+		if (w.m_bStove)
+			hold = 1.5;
+
 		if (sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, at, e.m_iAsker, before, "", yaw, inside) < 0)
 			return false;
 
 		sites.SetLooks(key, w.m_aLookChain);
+
+		// Things handed over at the place (a battery to fit): the hold is locked without them on you
+		if (w.m_bGiveThere && w.m_iItems > 0)
+			sites.SetNeeds(key, w.m_eItem, w.m_iItems);
 
 		// Kitchen work at the place's own kitchen: a camp's cook pot (a kit's, or the cook spot of a
 		// hand-built site) near the place; else its own look, the table with the pot on it
@@ -1281,6 +1289,10 @@ class RZ_Errands
 
 		if (w.m_bPerson)
 			sites.SetPerson(key, PersonPrefab(), w.m_bPersonLies);
+
+		// The stove: its press opens the pot up close, and the cooking is the work
+		if (w.m_bStove)
+			sites.SetGame(key, new RZ_StoveHandsOn(key, e.m_iAsker));
 
 		if (w.m_bUnseen)
 			sites.SetUnseen(key);
@@ -1980,7 +1992,8 @@ class RZ_Errands
 					return string.Format("Needs %1 with %2", RZ_Reputation.GetTierName(w.m_iMinTier), RZ_Factions.GetShortName(tf));
 			}
 
-			if (w.m_iItems > 0 && !w.m_bGiveThere && user && CountItems(user, w.m_eItem) < w.m_iItems)
+			// Also things handed over at the place (a battery to fit there): you take the way with them on you
+			if (w.m_iItems > 0 && user && CountItems(user, w.m_eItem) < w.m_iItems)
 				return "Needs " + ItemNeed(w.m_eItem, w.m_iItems);
 
 			if (w.m_iFavorCost > 0 && RZ_Factions.IsValid(f) && m_GM.GetProfile(playerId).GetFavor(f) < w.m_iFavorCost)
@@ -2075,6 +2088,41 @@ class RZ_Errands
 		}
 
 		return "Not today.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Within `radius` of an errand's places while it's on offer or held: its place, its first
+	//! place, what it's about, where its giver waits. No lock there (RZ_Search.HasLock).
+	bool IsNearPlace(vector pos, float radius)
+	{
+		foreach (RZ_Errand e : m_aErrands)
+		{
+			if (e.m_eState != RZ_EErrandState.HELD && e.m_eState != RZ_EErrandState.OFFERED)
+				continue;
+
+			if (Near(e.m_vPlace, pos, radius) || Near(e.m_vFirst, pos, radius) || Near(e.m_vSubject, pos, radius)
+				|| Near(e.m_vSubject2, pos, radius) || Near(e.m_vGiver, pos, radius))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool Near(vector spot, vector pos, float radius)
+	{
+		return spot != vector.Zero && RZ_Util.DistXZ(spot, pos) <= radius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errand this player holds from this giver, -1 none (the talk screen's tracked-job replies).
+	int HeldIdFor(int playerId, string giverKey)
+	{
+		RZ_Errand e = FindFor(playerId, giverKey);
+		if (!e || e.m_eState != RZ_EErrandState.HELD)
+			return -1;
+
+		return e.m_iId;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2447,7 +2495,7 @@ class RZ_Errands
 				return "Not from you. Maybe from someone the house knows.";
 		}
 
-		if (w.m_iItems > 0 && !w.m_bGiveThere && CountItems(user, w.m_eItem) < w.m_iItems)
+		if (w.m_iItems > 0 && CountItems(user, w.m_eItem) < w.m_iItems)
 			return "You've nothing on you I can use for that. " + RZ_Util.Capitalize(ItemNeed(w.m_eItem, w.m_iItems)) + ", it needs.";
 
 		if (w.m_iFavorCost > 0 && !m_GM.SpendFavor(playerId, f, w.m_iFavorCost))
