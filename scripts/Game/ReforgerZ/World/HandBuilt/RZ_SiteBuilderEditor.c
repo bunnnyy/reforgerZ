@@ -149,6 +149,7 @@ class RZ_SiteBuilderMarks
 	protected static string s_sPreviewLetter;
 	protected static string s_sPreviewName;
 	protected static ref array<int> s_aLabelLoop = {};		// a patrol point's loop (1-3), 0 any other spot
+	protected static string s_sGhostType;					// the spot type the see-through thing is for (the lab shows its tent)
 	protected static SCR_BasePreviewEntity s_Ghost;			// the cone about to be put down, see-through, at the cursor
 	protected static const ResourceName GHOST_LOOK = "{58F07022C12D0CF5}Assets/Editor/PlacingPreview/Preview.emat";	// Game Master's own placing look
 	protected static const ResourceName CONE = "{D08B33729A0C2743}PrefabsEditable/Auto/Props/Infrastructure/ConeTraffic/E_ConeTraffic_01_red.et";
@@ -164,6 +165,11 @@ class RZ_SiteBuilderMarks
 			s_sPreviewLetter = "+";
 
 		s_sPreviewName = name;
+		// Another type picked: its own see-through thing
+		if (on && type != s_sGhostType)
+			Ghost(false, pos);
+
+		s_sGhostType = type;
 		Ghost(on, pos);
 		if (on)
 			StartLabels();
@@ -198,6 +204,10 @@ class RZ_SiteBuilderMarks
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		if (gm && gm.GetCampLifeSettings() && !gm.GetCampLifeSettings().m_sSpotMarker.IsEmpty())
 			prefab = gm.GetCampLifeSettings().m_sSpotMarker;
+
+		// The cure's lab: its tent, as it will stand
+		if (s_sGhostType == "lab" && gm && !gm.GetLabPrefab().IsEmpty())
+			prefab = gm.GetLabPrefab();
 
 		Resource res = Resource.Load(prefab);
 		if (!res || !res.IsValid())

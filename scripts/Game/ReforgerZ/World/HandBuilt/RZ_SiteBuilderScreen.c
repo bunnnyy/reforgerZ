@@ -352,6 +352,10 @@ modded class RZ_SiteBuilder
 			if (f[0] == "watch" || f[0] == "gate")
 				yaw = RZ_Compass.Bearing(site.m_vPos, pos);
 
+			// The lab's tent stands as its see-through preview showed it (turn its cone to turn it)
+			if (f[0] == "lab")
+				yaw = 0;
+
 			int seats = 1;
 			if (f[0] == "route")
 				seats = Math.Clamp(f[4].ToInt(), 1, LOOPS);

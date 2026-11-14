@@ -477,7 +477,7 @@ camp life's tags; the canteen's **Hand spot meal**, eight seats round a point, f
 | Latrine | a point found by name | the short walk to the latrine and back |
 | Quartermaster's place | a position | the quartermaster is stood there, facing its way, to serve |
 | Leader's place | a position | where an outpost's leader sits and its people come out (else the canteen) |
-| The cure's lab | a position | where the cure's lab tent stands, when the site is in the lab's own town (within 400 m of it): saving the site or laying it moves the lab there (`RZ_GameModeComponent.MoveLab`, deliveries go to it there, the place is kept in the world's save); a lab placed in the world by the map stays put. Never asked for |
+| The cure's lab | a position | where the cure's lab tent stands, when the site is in the lab's own town (within 400 m of it): saving the site or laying it moves the lab there (`RZ_GameModeComponent.MoveLab`, deliveries go to it there, the place is kept in the world's save); a lab placed in the world by the map stays put. While it's being placed the lab's tent shows see-through at the cursor (not the cone), standing as it will; turn its cone in Game Master to turn the tent. Never asked for |
 | Walk point | a point of a **patrol loop** (up to three, put down on the build bar's Patrols page in order; three points or more close back to the first) | loop 1 is the patrol along the wire (and the stroll and Halcyon's courier), loop 2 the walk out the approach, loop 3 the threat side's; drawn as numbered badges joined by a dashed line in the loop's colour |
 
 The quartermaster and the medic are moved to their spots when the place's people come out
