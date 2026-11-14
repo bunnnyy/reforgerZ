@@ -206,8 +206,9 @@ class RZ_DutyFinds
 
 				case "cache":
 				{
+					// A step at any building's outside door (a shed, a shop), not only a house's
 					vector cacheStep;
-					if (!DoorStep(at, true, cacheStep))
+					if (!DoorStep(at, false, cacheStep))
 						break;
 
 					spot = cacheStep;

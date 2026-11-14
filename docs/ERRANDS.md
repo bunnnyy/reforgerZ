@@ -831,7 +831,7 @@ drawn from those true there:
 | A radio still talking | A rumour is going round | a small radio set on a house's ground floor | Listen and write it down (a real rumour, reported) · switch it off |
 | A house with a trodden path | Always | a real house's doorstep | Knock, and then a voice behind the door (said from the door): **report them** · **say nothing** (shady: a local who remembers) · **leave a tin** (1 food: a local). Or mark the house (reported; the strangers may meet whoever hides there) |
 | Remains in the grass | Always | **Duty body**, else the base game's remains in clothes, in the open | Take the papers (reported; someone knew the name) · take the watch (shady) |
-| A box under a loose step | Always | a red tool box on a real house's doorstep | Hand it in unopened (reported) · open it and take what's in it (shady) |
+| A box under a loose step | Always | a red tool box on the doorstep of a real building's outside door | Hand it in unopened (reported) · open it and take what's in it (shady) |
 
 *Taken out:* tracks, a dog, an infected in a pit, a truck, smoke from a chimney, another patrol and a
 child's drawing: none had a thing that could stand there, so a stop for them was empty ground.
