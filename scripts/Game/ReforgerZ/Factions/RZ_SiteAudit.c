@@ -49,6 +49,7 @@ class RZ_SiteMarks
 class RZ_SiteAudit
 {
 	static const float OVERLAP_AREA = 0.1;		// m2: less than this between two footprints isn't an overlap
+	static const float RUN_END = 0.15;		// m: a run on the line may touch what it meets this far into its ends
 	static const float FLOAT_SPREAD = 0.3;		// ground under one prop varying more than this: one edge floats or is buried
 	static const float THREAT_WATCH = 3;		// a side this threatened wants a watch facing it
 	static const int PERIMETER_STRONGHOLD = 80;	// a stronghold's wire closed this much at least (percent)
@@ -80,6 +81,18 @@ class RZ_SiteAudit
 			{
 				array<vector> quad = {};
 				foot.Corners(r, placed.m_vPos, placed.m_fYaw, 0, quad);
+				// A run on the line meets the next one, a road block or what closes the line at its ends,
+				// as the solver lays it: a fence's last 0.6 m may reach into it, any other run's touching
+				// end a little (docs/SITES.md, "Close it off")
+				if (placed.m_iLayer == RZ_ESiteLayer.WIRE || placed.m_iLayer == RZ_ESiteLayer.BLOCK)
+				{
+					float trim = RUN_END;
+					if (placed.m_Entry.Rules().m_bFence)
+						trim = RZ_SiteSolver.FENCE_OVERHANG;
+
+					TrimEnds(quad, trim);
+				}
+
 				rects.Insert(quad);
 				owner.Insert(pi);
 				seat.Insert(foot.IsSeat(r));
@@ -125,13 +138,23 @@ class RZ_SiteAudit
 
 		// Floating or buried: the ground under one prop varies over 0.3 m
 		int floating = 0;
+		string floaters = "";
 		if (grid)
 		{
 			foreach (int f, array<vector> under : rects)
 			{
 				RZ_SitePlaced on = result.m_aPlaced[owner[f]];
 				if (!seat[f] && !on.m_bWall && Spread(grid, under, on.m_vPos, on.m_fYaw, on.m_fSlope) > FLOAT_SPREAD)
+				{
 					floating++;
+					if (floating <= 6)
+					{
+						if (!floaters.IsEmpty())
+							floaters += ", ";
+
+						floaters += PieceName(on.m_Entry);
+					}
+				}
 			}
 		}
 
@@ -478,7 +501,7 @@ class RZ_SiteAudit
 			layersText += ", over water: " + wet;
 
 		RZ_Log.Info(string.Format("Sites: %1: score %2; %3 of %4 pieces; %5; %6; %7dropped: %8; %9", what, scored, result.m_aPlaced.Count(), planned, perimeterText, layersText, front, dropped, overlapText)
-			+ string.Format("; %1 floating or buried; posts: %2", floating, PostText(gateText, posts.Count(), blindPosts, watchedSides, threatSides))
+			+ string.Format("; %1 floating or buried%2; posts: %3", floating, Listed(floaters), PostText(gateText, posts.Count(), blindPosts, watchedSides, threatSides))
 			+ string.Format("; paths: %1; routes %2 of %3 points walkable (%4); read %5 ms in %6 steps (most %7 ms, the longest part %8 ms)", paths, routePoints - badRoute, routePoints, routeText, grid.m_iReadMs, grid.m_iSteps, grid.m_iMaxStepMs, grid.m_iMaxUnitMs)
 			+ string.Format(", laid out in %1 ms in %2 steps (most %3 ms, the longest part %4 ms).", result.m_iSolveMs, solveSteps, solveMost, solvePart));
 
@@ -780,6 +803,55 @@ class RZ_SiteAudit
 			quad.Insert(RZ_DoorGeometry.ToWorld(b, Vector(maxs[0], 0, maxs[2])));
 			quad.Insert(RZ_DoorGeometry.ToWorld(b, Vector(mins[0], 0, maxs[2])));
 			boxes.Insert(quad);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! " (a, b)" for a non-empty list, else "".
+	protected static string Listed(string names)
+	{
+		if (names.IsEmpty())
+			return "";
+
+		return " (" + names + ")";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Shortens a quad along its longer side by `trim` at each end (never under 0.2 m long).
+	protected static void TrimEnds(notnull array<vector> quad, float trim)
+	{
+		if (quad.Count() != 4)
+			return;
+
+		vector a = quad[1] - quad[0];
+		vector b = quad[3] - quad[0];
+		bool alongA = a.Length() >= b.Length();
+		vector side = b;
+		if (alongA)
+			side = a;
+
+		float len = side.Length();
+		if (len < 0.01)
+			return;
+
+		float cut = Math.Min(trim, (len - 0.2) * 0.5);
+		if (cut <= 0)
+			return;
+
+		vector step = side * (cut / len);
+		if (alongA)
+		{
+			quad[0] = quad[0] + step;
+			quad[3] = quad[3] + step;
+			quad[1] = quad[1] - step;
+			quad[2] = quad[2] - step;
+		}
+		else
+		{
+			quad[0] = quad[0] + step;
+			quad[1] = quad[1] + step;
+			quad[3] = quad[3] - step;
+			quad[2] = quad[2] - step;
 		}
 	}
 

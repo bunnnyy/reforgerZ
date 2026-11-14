@@ -954,7 +954,7 @@ RULES = {
     "CrateSeats": (3, "yard", "near FirePit 6; flat 6"),
     "DutyBoard": (2, "court", "wall 2; near RosterBoard 5; faces wall"),
     "Gate_Bastion": (1, "gate", "faces road; flat 8"),
-    "GateLeaf_Bastion": (4, "gate", "by gate 4; faces road; flat 10"), "GateLeaf_Halcyon": (4, "gate", "by gate 4; faces road; flat 10"),
+    "GateLeaf_Bastion": (4, "gate", "faces road"), "GateLeaf_Halcyon": (4, "gate", "faces road"),
     # The Red Hand
     "SentryNest_RedHand": (1, "yard", "covers gate; covers road; faces road; away gate 3; bank"),
     "CardTable": (3, "yard", "by FireBarrel|Sofa 7; flat 6"),

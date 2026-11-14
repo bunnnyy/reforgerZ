@@ -317,7 +317,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-0.02 0.01 1.88 0.1 90"
         m_iTier 4
         m_eZone GATE
-        m_sRules "by gate 4; faces road; flat 10"
+        m_sRules "faces road"
        }
        RZ_DressingPiece "{72A272AA2A948650}" {
         m_sPrefab "{B20C01C3D2D15752}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_GateLeaf_Bastion.et"
@@ -329,7 +329,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-0.02 0.01 1.88 0.1 90"
         m_iTier 4
         m_eZone GATE
-        m_sRules "by gate 4; faces road; flat 10"
+        m_sRules "faces road"
        }
        RZ_DressingPiece "{63E4D51F95016EF5}" {
         m_sPrefab "{094833442B93FB33}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_RosterBoard.et"
@@ -4334,7 +4334,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-0.02 0.01 1.88 0.1 90"
         m_iTier 4
         m_eZone GATE
-        m_sRules "by gate 4; faces road; flat 10"
+        m_sRules "faces road"
        }
        RZ_DressingPiece "{8218293E444F5622}" {
         m_sPrefab "{5C5BEF83DD90FD88}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_GateLeaf_Halcyon.et"
@@ -4346,7 +4346,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-0.02 0.01 1.88 0.1 90"
         m_iTier 4
         m_eZone GATE
-        m_sRules "by gate 4; faces road; flat 10"
+        m_sRules "faces road"
        }
        RZ_DressingPiece "{575CBF3DDA20E45F}" {
         m_sPrefab "{D6418426EDC4960F}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_PlagueBoard.et"
@@ -5037,7 +5037,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-0.02 0.01 1.88 0.1 90"
         m_iTier 4
         m_eZone GATE
-        m_sRules "by gate 4; faces road; flat 10"
+        m_sRules "faces road"
        }
        RZ_DressingPiece "{BD417D7D302B3EF1}" {
         m_sPrefab "{5C5BEF83DD90FD88}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_GateLeaf_Halcyon.et"
@@ -5049,7 +5049,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_sFoot "-0.02 0.01 1.88 0.1 90"
         m_iTier 4
         m_eZone GATE
-        m_sRules "by gate 4; faces road; flat 10"
+        m_sRules "faces road"
        }
        RZ_DressingPiece "{5EE42E799CB54D3C}" {
         m_sPrefab "{EF394A2223CB1A74}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_WarningSigns.et"

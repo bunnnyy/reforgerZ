@@ -1055,6 +1055,24 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether one side of building b has free ground for STRONGHOLD_NEED of the place's kit
+	//! (BestSideRoom on a probe of the building's box and transform).
+	protected bool SideHoldsKit(RZ_CampPlace p, IEntity b, vector mins, vector maxs, vector mid, RZ_CampGround ground, notnull array<vector> boxes)
+	{
+		vector mat[4];
+		b.GetWorldTransform(mat);
+		RZ_CampSite probe = new RZ_CampSite();
+		probe.m_vMins = mins;
+		probe.m_vMaxs = maxs;
+		probe.m_vRight = mat[0];
+		probe.m_vUp = mat[1];
+		probe.m_vFwd = mat[2];
+		probe.m_vOrigin = mat[3];
+		probe.m_vCentre = RZ_Util.GroundPos(mid);
+		return BestSideRoom(probe, ground, boxes) >= NeedOfKit(p.m_eFaction, p.m_eKind) * STRONGHOLD_NEED;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The yard's area a kit needs (as the solver counts it: RZ_SiteSolver.NeedOf): each yard piece's
 	//! measured footprint with its half-metre gap all round, at least 12 m2 a piece; the counter, the
 	//! pieces by the door, the front wall or the road entries and the ones kept indoors don't count.
@@ -3573,6 +3591,11 @@ class RZ_CampLife
 
 				room = YardRoomOf(mid, 0.5 * Math.Sqrt(w * w + d * d), ground, boxes);
 				if (room < RoomNeeded(p.m_eKind))
+					continue;
+
+				// A stronghold's yard is on one side: that side must hold what its kit brings (a village
+				// house hemmed in by its neighbours doesn't, however free the ring round it)
+				if (stronghold && !SideHoldsKit(p, b, mins, maxs, mid, ground, boxes))
 					continue;
 			}
 

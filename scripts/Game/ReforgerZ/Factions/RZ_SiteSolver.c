@@ -25,6 +25,7 @@ class RZ_SiteSolver
 	protected static const int T_STORY = 10;	// the story's spots (docs/SITES.md, "The story of each site")
 	protected static const int T_PEOPLE = 11;	// the posts and the routes (docs/SITES.md, "The people")
 	protected static const int T_SEAL = 12;		// every road in but the checkpoints closed (docs/SITES.md, "Checkpoints")
+	protected static const int T_LEAF = 13;		// a chain-link gate's leaf, swung open at an end of a gate (docs/SITES.md, "Close it off")
 
 	protected static const float THREAT_WATCH = 3;		// a side this threatened wants a watch (as the audit)
 	protected static const float PLAN_WEIGHT = 0.6;		// score lost per metre from the plan's spot
@@ -68,6 +69,7 @@ class RZ_SiteSolver
 	protected int m_iNext;
 	protected int m_iCap;
 	protected int m_iLaid;
+	protected int m_iLeaf;			// gate leaves hung so far (each takes the next end of a gate)
 	protected int m_iLayerCap;
 	protected int m_iLayerLaid;
 	protected int m_iLife;				// work and life's pieces laid in the yard
@@ -178,6 +180,7 @@ class RZ_SiteSolver
 			case T_STORY: StorySpots(); break;
 			case T_PEOPLE: People(); break;
 			case T_SEAL: SealRoads(); break;
+			case T_LEAF: GateLeaf(e); break;
 		}
 	}
 
@@ -304,7 +307,7 @@ class RZ_SiteSolver
 
 		foreach (RZ_DressingPiece g : plan)
 		{
-			if (g.m_eZone == RZ_ESiteZone.GATE)
+			if (g.m_eZone == RZ_ESiteZone.GATE && !g.m_sPrefab.Contains("GateLeaf"))
 				AddTask(T_PLAN, g, 0);
 		}
 
@@ -320,6 +323,13 @@ class RZ_SiteSolver
 			{
 				if (m_Wire.m_iClosing & (1 << k))
 					AddTask(T_FILL, null, k);
+			}
+
+			// The gate's leaves once the line is laid, so their room doesn't cut it short
+			foreach (RZ_DressingPiece leaf : plan)
+			{
+				if (leaf.m_eZone == RZ_ESiteZone.GATE && leaf.m_sPrefab.Contains("GateLeaf"))
+					AddTask(T_LEAF, leaf, 0);
 			}
 		}
 
@@ -629,6 +639,42 @@ class RZ_SiteSolver
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A chain-link gate standing open (docs/SITES.md, "Close it off"): each leaf hangs at the next end
+	//! of a gate, the main gate's two ends first, hinged where the line starts again and swung out
+	//! along the road's edge, so the way through stays clear. Not on a road, a building, water or
+	//! another piece; with no end to hang on it isn't counted as dropped.
+	protected void GateLeaf(RZ_DressingPiece e)
+	{
+		vector size = e.m_vFootMax - e.m_vFootMin;
+		float half = Math.Max(size[0], size[2]) * 0.5;
+		int mask = RZ_SiteGrid.INSIDE | RZ_SiteGrid.WATER | RZ_SiteGrid.ROAD | RZ_SiteGrid.KEPT | RZ_SiteGrid.TAKEN;
+		int end = 0;
+		foreach (vector gate : m_Wire.m_aGates)
+		{
+			array<vector> spots = {};
+			array<int> faces = {};
+			LineSpotsBeside(gate, 0, spots, faces);
+			foreach (int s, vector at : spots)
+			{
+				if (end++ < m_iLeaf)
+					continue;
+
+				m_iLeaf++;
+				float outB = m_Wire.FaceOut(faces[s]);
+				vector pos = RZ_Util.GroundPos(RZ_Compass.PointAt(at, outB, half + 0.15));
+				float lo;
+				float hi;
+				if (m_Grid.FirstBlock(pos, outB, e.Foot(), mask, lo, hi) != 0)
+					continue;
+
+				Take(e, pos, outB, RZ_ESiteLayer.PLAN, false);
+				m_iLaid++;
+				return;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Points on the line just beside a gate (both sides), for a piece half as long as `half`.
 	protected void LineSpotsBeside(vector gate, float half, notnull array<vector> spots, notnull array<int> faces)
 	{
@@ -812,6 +858,11 @@ class RZ_SiteSolver
 		int blocks = m_Grid.FirstBlock(pos, yaw, e.Foot(), wireMask, lo, hi, -RUN_TOUCH - overhang, e.Rules().m_bFence);
 		if (blocks != 0)
 			return RZ_SiteGrid.FlagName(blocks);
+
+		// Anything but a fence keeps off what stands there to its very ends: the shortfall above lets
+		// it meet the next run, not reach into a car or a rock (the audit counts that as an overlap)
+		if (!e.Rules().m_bFence && m_Grid.FirstBlock(pos, yaw, e.Foot(), RZ_SiteGrid.SOLID, lo, hi, RZ_SiteGrid.CELL * 0.5) != 0)
+			return RZ_SiteGrid.FlagName(RZ_SiteGrid.SOLID);
 
 		float x0 = e.m_vFootMin[0];
 		float x1 = e.m_vFootMax[0];
