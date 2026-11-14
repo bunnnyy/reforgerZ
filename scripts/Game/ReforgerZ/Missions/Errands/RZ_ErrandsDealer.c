@@ -216,7 +216,7 @@ class RZ_ErrandsDealer
 	{
 		RZ_Reason r = MajorReason(e);
 		if (r)
-			m_Dealer.GetGM().NotifyPlayerAs(e.m_iAsker, e.m_sGiverTitle, r.text, RZ_ENoticeTag.MISSION);
+			m_Dealer.GetGM().Say(e.m_iAsker, e.m_sGiverTitle, e.m_iFaction, r.text);
 	}
 
 	// ================================================================ "The last one who said that lied"
@@ -251,7 +251,7 @@ class RZ_ErrandsDealer
 			return;
 
 		ledger.liedSaid = true;
-		m_Dealer.GetGM().NotifyPlayerAs(e.m_iAsker, e.m_sGiverTitle, "The last one who said that lied. You've the same look. Go on, then.", RZ_ENoticeTag.MISSION);
+		m_Dealer.GetGM().Say(e.m_iAsker, e.m_sGiverTitle, e.m_iFaction, "The last one who said that lied. You've the same look. We'll see.");
 	}
 
 	// ================================================================ Locals

@@ -165,6 +165,7 @@ class RZ_Strangers
 	protected static const float WAIT = 300;
 	protected static const float LEAVE = 150;
 	protected static const float CALL_RANGE = 40;
+	protected static const float EARSHOT = 60;		// a stranger is heard this far; further, a card
 	//! Strangers out at once: the setting, never over the body budget's strangers.
 	protected static int MaxLive()
 	{
@@ -1141,7 +1142,7 @@ class RZ_Strangers
 			{
 				v.m_bCalled = true;
 				v.m_fAge = 0;
-				m_GM.NotifyPlayer(v.m_iAsker, "A stranger", v.Fill(v.m_Kind.CallOut(this, v)));
+				Speak(v, v.m_iAsker, v.Fill(v.m_Kind.CallOut(this, v)));
 			}
 
 			if (!v.m_bDone && !v.m_Kind.Still(this, v))
@@ -1332,7 +1333,7 @@ class RZ_Strangers
 		if (me && RZ_Util.DistXZ(me.GetOrigin(), at) > 30)
 			where = " " + RZ_Util.Capitalize(RZ_Util.DirectionText(me.GetOrigin(), at)) + ".";
 
-		m_GM.NotifyPlayerAs(v.m_iAsker, "A stranger", v.Fill(line) + where, RZ_ENoticeTag.MISSION);
+		Speak(v, v.m_iAsker, v.Fill(line) + where);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1391,7 +1392,7 @@ class RZ_Strangers
 
 		if (v.m_iStep >= 0)
 		{
-			m_GM.NotifyPlayer(playerId, "A stranger", "Go on, then. I'll be here.");
+			Speak(v, playerId, "Go on, then. I'll be here.");
 			return;
 		}
 
@@ -1406,7 +1407,7 @@ class RZ_Strangers
 	{
 		v.m_bDone = true;
 		if (!line.IsEmpty())
-			m_GM.NotifyPlayer(playerId, "A stranger", v.Fill(line));
+			Speak(v, playerId, v.Fill(line));
 
 		if (!helped)
 			return;
@@ -1424,10 +1425,28 @@ class RZ_Strangers
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A line to the player, the stranger staying.
+	//! A line to the player, the stranger staying: said by them (docs/MISSION_RULES.md, rule 29).
 	void Say(RZ_StrangerVisit v, int playerId, string line)
 	{
-		m_GM.NotifyPlayer(playerId, "A stranger", v.Fill(line));
+		Speak(v, playerId, v.Fill(line));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stranger says it, from his body when it's out and the player is within earshot (a voice,
+	//! with its arrow); a card only when he's gone or out of earshot.
+	protected void Speak(RZ_StrangerVisit v, int playerId, string text)
+	{
+		if (text.IsEmpty())
+			return;
+
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (v.m_Body && me && v.m_fDeadAt < 0 && RZ_Util.DistXZ(me.GetOrigin(), v.m_Body.GetOrigin()) <= EARSHOT)
+		{
+			m_GM.Say(playerId, "A stranger", -1, text, v.m_Body);
+			return;
+		}
+
+		m_GM.NotifyPlayer(playerId, "A stranger", text);
 	}
 
 	//------------------------------------------------------------------------------------------------

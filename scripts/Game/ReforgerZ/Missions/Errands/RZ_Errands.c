@@ -310,6 +310,7 @@ class RZ_Errands
 	protected static const float OFFER_MINUTES = 10;
 	protected static const float CALL_RANGE = 30;
 	protected static const float RETURN_RANGE = 15;		// back at the giver: widened to the Arrive radius (RZ_Arrive)
+	protected static const float EARSHOT = 60;			// a giver is heard this far; further, a card
 	protected static const float MAX_DISTANCE = 1500;
 	protected static const float PLACE_COOL = 1200;		// per place per routine, server-wide
 	protected static const int COOL_ANYWHERE = 10800;	// per player per routine, anywhere: 3 real hours
@@ -422,7 +423,7 @@ class RZ_Errands
 				if (RZ_Factions.IsValid(e.m_iFaction))
 					m_GM.AddInfamy(playerId, e.m_iFaction, 3, "sold a dead man's things you'd made dead");
 
-				m_GM.NotifyPlayer(playerId, "The fence", "No. Not this jacket, not from you. You'd know whose it was. You were there when it happened.");
+				m_GM.Say(playerId, "The fence", RZ_EFaction.BANDITS, "No. Not this jacket, not from you. You'd know whose it was. You were there when it happened.");
 				End(e, "refused at the fence");
 				return true;
 			}
@@ -432,7 +433,7 @@ class RZ_Errands
 			if (RZ_Factions.IsValid(e.m_iFaction) && e.m_iFaction != RZ_EFaction.BANDITS && RZ_Witness.Seen(m_GM, playerId, user.GetOrigin(), e.m_iFaction))
 				m_GM.AddInfamy(playerId, e.m_iFaction, 5, "sold a dead man's things");
 
-			m_GM.NotifyPlayer(playerId, "The fence", "Jacket on the hook, frame under the counter, face down. People like a frame. Nobody wants the photo. Here's your Favor.");
+			m_GM.Say(playerId, "The fence", RZ_EFaction.BANDITS, "Jacket on the hook, frame under the counter, face down. People like a frame. Nobody wants the photo. Here's your Favor.");
 			array<int> seller = {playerId};
 			RZ_WorldFacts.Get().Memory().Record("errand.his_effects", e.m_sSubject, "sold", RZ_WorldMemory.SOURCE_ERRAND, true, seller);
 			ConsumeCarried(e);
@@ -1601,7 +1602,7 @@ class RZ_Errands
 
 		text = text.Trim();
 		if (!text.IsEmpty())
-			m_GM.NotifyPlayer(playerId, p.m_sTitle, text);
+			m_GM.Say(playerId, p.m_sTitle, RZ_EFaction.SURVIVORS, text);
 		RZ_CampLife camp = m_GM.GetCampLife();
 		if (camp)
 			camp.HoldPersonNear(playerId);
@@ -4048,12 +4049,26 @@ class RZ_Errands
 	//------------------------------------------------------------------------------------------------
 	//! The giver says a line to the asker (owner-only; the talk screen catches it under their title).
 	//! asNotice: a card, for when the asker may be far away (overtaken, late).
+	//! The giver says it (docs/MISSION_RULES.md, rule 29): from their body when it's out and the
+	//! asker is within earshot; else, `asNotice`, a card (they're far off, and nobody else can say
+	//! it), or their voice from the nearest person.
 	protected void Say(RZ_Errand e, string line, bool asNotice)
 	{
 		if (line.IsEmpty())
 			return;
 
 		string text = e.Fill(line);
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(e.m_iAsker);
+		IEntity body;
+		if (m_People)
+			body = m_People.BodyOf(e.m_sGiver);
+
+		if (body && me && RZ_Util.DistXZ(me.GetOrigin(), body.GetOrigin()) <= EARSHOT)
+		{
+			m_GM.Say(e.m_iAsker, e.m_sGiverTitle, e.m_iFaction, text, body);
+			return;
+		}
+
 		if (asNotice)
 			m_GM.NotifyPlayer(e.m_iAsker, e.m_sGiverTitle, text);
 		else

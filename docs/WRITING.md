@@ -13,6 +13,7 @@ built from parts here (below).
 - [Everyone is right about something](#everyone-is-right-about-something)
 - [The voices](#the-voices)
 - [By channel](#by-channel)
+- [Spoken lines and notices](#spoken-lines-and-notices)
 - [Talk](#talk)
 - [The government broadcast](#the-government-broadcast)
 - [Information comes first](#information-comes-first)
@@ -149,6 +150,18 @@ while, about food. The boss always jokes. The director never jokes on purpose.
 | Outcomes | What happened, then one reaction | Three beats ([below](#phrasing-choices-and-outcomes)) | Only in the reaction | A verdict. Numbers inside the voiced beats |
 | Guidance | A voiced speaker, or nobody | Voiced tips: the speaker's register. Plain hints: plain | Voiced tips: the speaker's. Plain hints, veterans' short lines, standing and pay notices: none | Burying a critical instruction: it comes first and can't be misread |
 | The Long Table | The family | Homely | None, ever | Describing anything |
+
+### Spoken lines and notices
+
+**People say it; a notice is the last resort** ([MISSION_RULES.md](MISSION_RULES.md), rule 29). A
+line a person present would say is written as that person's words and said by them: the subtitle
+over them, with their name and arrow, or the talk screen when there's a choice. A patrol's lead
+calls the stop ("Grave at the field edge. Fresh. Read me the name."), and answers what you chose
+("Fair. Some marks aren't meant for patrols."). What you see when you get there (the grave, the
+mark, the box under the step) is the spot's menu text, read when you press its prompt, in the
+plain present tense of what's there. A notice card carries only what nobody present can say: a
+system line (what you carry, where to go next, a trust milestone), someone out of earshot or dead,
+or what happened while you were away.
 
 **Shared text is the same for everyone who hears it.** The broadcast, the open and secure channels,
 headlines, rumours on the roads, notices and boards never depend on one listener: not their

@@ -248,7 +248,7 @@ you know only the area, never the hidden spot); "Get to *place*." points where g
 | A step chain | Its current step's spot, within the step's radius (the town is named, so the spot is no secret) |
 | A hold | The ground to hold, within its radius |
 | A target to destroy | The target |
-| An escort (`RZ_Escort.ObjPlace`) | Where they wait until they set off; then the route's end, or, following you, where the job takes them |
+| An escort (`RZ_Escort.ObjPlace`) | Where they wait until they set off; walking a route, on the lead himself as he walks (`NowAt`: his body, else where the data walks); following you, where the job takes them |
 | A vehicle job (`RZ_VehicleZone.ObjPlace`) | The vehicle until you sit in it, then the zone |
 | A live capture (`RZ_LiveCapture.ObjPlace`) | The cage, where it's held while the sedative takes, the case, then (carried) the drop |
 | A carried story item (`RZ_QuestCarry.ObjPlace`; the Haven's and Halcyon's data carries) | Where it lies, then where it's taken (the Census's ration crates: the nearest storekeeper still waiting) |

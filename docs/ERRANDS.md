@@ -788,8 +788,9 @@ checks of three on each: about ten minutes.
 
 The author's rule: *"something interesting should happen or see something or whatever. Doesn't
 just have to be shooting."* A duty has things on the way to see, find and decide, in person
-(`RZ_DutyScenes`, the beats in `RZ_DutyFinds`). A **beat** is a moment at a spot: one line said as
-you come within 9 m, and one to three things you can do about it, each a [work site](#work-sites),
+(`RZ_DutyScenes`, the beats in `RZ_DutyFinds`). A **beat** is a moment at a spot: one line for what you see as
+you come within 9 m (the spot's menu text when its things are one prompt; a card only when there's
+no menu and nobody to say it), and one to three things you can do about it, each a [work site](#work-sites),
 a hold with your hands. **Several at the one spot are one prompt** (the rule:
 [UI.md](UI.md#default-first-then-menus), "One spot, one prompt"): its name (*The far door*, a
 patient's name), opening the object menu with each thing to do as a row; the row picked is then
@@ -809,28 +810,37 @@ applied at once and remembered by whoever it concerns.
 | A shady choice | Pocketing, or keeping something from the people you work for, costs only **if it's seen**: their people within 20 m of you, or the place itself within 25 m. Seen: it's undone, 1 or 2 Infamy with the faction, the giver's regard down, and they say so when you report. Unseen: it's yours, and nobody knows |
 | The pay | The choices' Favor is added to the way's before the ledger's caps, 3 at most. A scored scene (each beat has a right call) pays by the share right, with Fame only when every call was |
 | Where a beat stands | Beside the giver's place, at its gate, out on the road, or near the last beat, in the open. A beat whose words name a door stands on the doorstep of a real house's outside door (the door finder the locks use): the Cold Chain's far door 180–350 m off, a debt's door 12–60 m from the last; with no house's door near, any building's real outside door (up to 900 m and 300 m); with none at all, in the open, logged (`Duties: no real door within reach for beat ...`). No door is ever spawned for a beat. A thing to take (the Cold Chain's box) always stands at its prompt: Props > Duty tray, else Crate, else the base game's cardboard box |
-| Finding the next beat | The errand's place moves to each beat as it opens, so the journal and the tracker point at it, and a beat more than 15 m off is said with its direction (*About 120 m north-east.*). A patrol's finds are said by the patrol, and leave the errand's place at the gate |
+| Finding the next beat | The errand's place moves to each beat as it opens, so the journal and the tracker point at it (no card saying which way: the marker does). A patrol's finds are called by its lead, and the squad's own steps point at them |
 | No work sites | The first thing you could do at a beat is what's done, by standing there |
 
-**A patrol's finds.** At two points in three (and always at one), the patrol stops: *"There's
-something off the path here: go and look. They'll wait, and they can see you within 20 m."* The find
-is 12 to 30 m off the point, so sometimes in their sight and sometimes not. They wait until you've
-seen to it, or for 150 s. One find a stop, drawn from those that are true at that spot:
+**A patrol's finds.** The patrol has a lead with a name (*Lance Corporal Petr Novak* in Bastion;
+a man's name for the others), and **he says it all**: what's at a stop, what he wants you to look
+at, his answer to what you chose, "Right. On we go." (a spoken line over him, with his name and
+arrow: [WRITING.md](WRITING.md#spoken-lines-and-notices)). Out of earshot (60 m) or dead, it's a
+card. At two points in three (and always at one), the patrol stops for a find **whose thing really
+stands there** (the rule: [MISSION_RULES.md](MISSION_RULES.md), rules 2 and 3): at most 120 m from
+the stop, its one prompt on the thing. A find further than 35 m off, they walk over and wait 15 m
+short of it, in sight, then go on round from there. They wait until you've seen to it, or 150 s. A
+stop where no find's thing can stand is left alone (`Duty finds: no ... left out`). One find a stop,
+drawn from those true there:
 
-| Find | True when | What you can do |
-|---|---|---|
-| A door with a mark | A door mark near, in [Traces](TRACES.md#errands-old-mark)' grammar (its line read at your level), twice as likely | Copy it into the patrol book (reported, recorded) · leave it |
-| A fresh grave | The town 40+ infected, or a Traces kill-site scene within 400 m | Read the name for the report · set the cross straight (the family asks who, later) |
-| A radio still talking | A rumour is going round | Listen and write it down (a real rumour, reported) · switch it off |
-| A child's drawing | Always | Take it back for the board (they stand at it, later) · leave it pinned |
-| Tracks, many, barefoot | Rain, or the Collapse on | Count them and mark the way (reported: the night post is moved) · scuff them out |
-| Smoke from a cold chimney | Dusk or night, or a town nobody lives in | Go to the door, and then: **report them** · **say nothing** (shady: a local who remembers) · **leave a tin** (1 food: a local). Or mark the house (reported; the strangers may meet whoever hides there) |
-| An infected in a pit | The town 40+ infected | Finish it with the knife (the town 2 less infected) · mark the pit |
-| A body with papers | Always | Take the papers (reported; someone knew the name) · take the watch (shady) |
-| A truck with its load | The Collapse on | Mark it for the quartermaster (reported, morale +1) · take a share (shady, 2 Infamy if seen) |
-| A dog | Always | Give it something (1 food: it follows the patrol in, morale +1) · send it off |
-| A tin box under a step | Always | Hand it in unopened (reported) · open it and take what's in it (shady) |
-| Another patrol, not ours | Always | Raise an open hand (recorded, morale +1) · stand until they go |
+| Find | True when | Its thing, where | What you can do |
+|---|---|---|---|
+| A door with a mark | A door mark near, in [Traces](TRACES.md#errands-old-mark)' grammar (its line read at your level), twice as likely | the mark's own real door, on its doorstep | Copy it into the patrol book (reported, recorded) · leave it |
+| A fresh grave | The town 40+ infected, or a Traces kill-site scene within 400 m | a grave mound (`Grave_USSR_02`) in the open, 10–45 m from the stop | Read the name for the report · set the cross straight (the family asks who, later) |
+| A radio still talking | A rumour is going round | a small radio set on a house's ground floor | Listen and write it down (a real rumour, reported) · switch it off |
+| A house with a trodden path | Always | a real house's doorstep | Knock, and then a voice behind the door (said from the door): **report them** · **say nothing** (shady: a local who remembers) · **leave a tin** (1 food: a local). Or mark the house (reported; the strangers may meet whoever hides there) |
+| Remains in the grass | Always | **Duty body**, else the base game's remains in clothes, in the open | Take the papers (reported; someone knew the name) · take the watch (shady) |
+| A box under a loose step | Always | a red tool box on the doorstep of a real building's outside door | Hand it in unopened (reported) · open it and take what's in it (shady) |
+
+*Taken out:* tracks, a dog, an infected in a pit, a truck, smoke from a chimney, another patrol and a
+child's drawing: none had a thing that could stand there, so a stop for them was empty ground.
+
+**The tracker on a patrol.** While you walk the round, the step is *"Walk the round with Lance
+Corporal Petr Novak: point 2 of 3"* and the marker rides on him as he walks; stopped for a find, it's
+the find's own step (*"Read the name on the fresh grave"*) with the marker on the thing, then *"Walk
+on with ..."*; at the end, *"Come back in with ..."*, then back to the giver. Any escort that walks
+a route has its marker on its lead the same way (`RZ_Escort.NowAt`).
 
 **A hunt's finds**, at the snare line before you check the snares: a cat in a snare (cut it loose,
 and it comes to the kitchen door after; or it's meat), a deer path crossing the line (set a snare

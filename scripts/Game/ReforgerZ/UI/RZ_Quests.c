@@ -676,9 +676,18 @@ class RZ_QuestTracker
 			return;
 		}
 
+		// A duty walked with their people (a patrol's round): the marker rides on their lead, and
+		// moves to what they stop for (docs/MISSION_RULES.md, rule 9); then the way back
+		RZ_DutyScenes scenes = errands.GetScenes();
+		RZ_DutySquads squads = errands.GetSquads();
+		if (squads && !e.m_bStepDone && squads.Objectives(e, list, scenes))
+		{
+			list.Add(back, RZ_EObjState.NEXT, backAt);
+			return;
+		}
+
 		// A duty's scene names its own steps (take the box, carry it, hand it over, sign): each
 		// is one objective, then the way back
-		RZ_DutyScenes scenes = errands.GetScenes();
 		if (scenes && scenes.Objectives(e, list, wayR, e.m_bStepDone))
 		{
 			if (e.m_bStepDone || list.First(RZ_EObjState.CURRENT).IsEmpty())

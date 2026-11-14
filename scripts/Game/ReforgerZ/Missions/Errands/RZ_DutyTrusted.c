@@ -152,7 +152,7 @@ class RZ_DutyTrusted
 			RZ_DutyScript.O(labels[i], charts[i] + " They asked for it.", "care hold:3");
 		}
 
-		RZ_DutyBeat b = RZ_DutyScript.T("dose", "The case, on the table by the door. One dose in it, and a card for a name.", RZ_DutyBeat.AT_HERE);
+		RZ_DutyBeat b = RZ_DutyScript.T("dose", "The case, on the table. One dose in it, and a card for a name.", RZ_DutyBeat.AT_HERE);
 		b.m_bAlone = true;
 		for (int n = 0; n < 3; n++)
 		{
@@ -221,7 +221,7 @@ class RZ_DutyTrusted
 			b.m_bAlone = true;
 		}
 
-		RZ_DutyBeat log = RZ_DutyScript.T("log", "The animal house log, on its hook by the door.", RZ_DutyBeat.AT_HERE);
+		RZ_DutyBeat log = RZ_DutyScript.T("log", "The animal house log, on its hook.", RZ_DutyBeat.AT_HERE);
 		log.m_bAlone = true;
 		RZ_DutyScript.O("Sign the log", "Three lines, and the time. The animal house is quiet again.", "write hold:4 record");
 	}
