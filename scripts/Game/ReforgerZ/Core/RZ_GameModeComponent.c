@@ -606,6 +606,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		{
 			GetGame().GetCallqueue().Remove(ServerTick);
 			GetGame().GetCallqueue().Remove(SecondTick);
+			GetGame().GetCallqueue().Remove(FastTick);
 			SaveState();
 		}
 
@@ -938,6 +939,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// Bites need a faster check than the main tick to catch individual hits, and stealth a
 		// faster update for the infected near players
 		GetGame().GetCallqueue().CallLater(SecondTick, 1000, true);
+		// What appears near players (camp life's pieces, a site read for a visit) goes on every
+		// tenth of a second, a few ms at a time, so a place is full by the time you get there
+		GetGame().GetCallqueue().CallLater(FastTick, 100, true);
 
 		RZ_Log.Info(string.Format("Started. %1 settlements, stage %2, cure %3 percent, state %4.",
 			m_aSettlements.Count(), RZ_StageSettings.GetStageName(m_Director.GetStage()),
@@ -1937,6 +1941,15 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		// Retaliation: who fired, and when (a hit on a faction's AI is matched to it)
 		m_Hostility.OnPlayerShot(playerID, shooter.GetOrigin());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every tenth of a second: camp life's spawning and the read of a site a player came near
+	//! (docs/SITES.md, How fast a place fills).
+	protected void FastTick()
+	{
+		if (m_CampLife)
+			m_CampLife.FastTick();
 	}
 
 	//------------------------------------------------------------------------------------------------

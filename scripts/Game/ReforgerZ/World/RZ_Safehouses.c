@@ -55,7 +55,7 @@ class RZ_SafehouseSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Medic (optional, Settlement and up): a civilian with RZ_SafehouseAction set to HEAL and DECLARE_BITE", "et")]
 	ResourceName m_sMedicPrefab;
 
-	[Attribute("300", desc: "Occupants, guards, medic and the safehouse quartermaster exist only while a player is this close (m)")]
+	[Attribute("400", desc: "Occupants, guards, medic and the safehouse quartermaster exist only while a player is this close (m); its camp is laid out and put up from here, so it is full by the time you arrive")]
 	float m_fVisibleRadius;
 
 	[Attribute("180", desc: "Real minutes between upkeep (food eaten). Only counts while players are online")]

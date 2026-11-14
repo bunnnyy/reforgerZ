@@ -753,7 +753,7 @@ Code: `Factions/RZ_Territory.c`.
   delivered, −2 per truck lost; +3 / −5 when a town changes hands. It drifts 2 points an hour
   back toward 50.
 - **Headlines only.** Every change is a headline, never a server-wide alert.
-- **Bodies only near players.** Within 300 m of a holding: its guards (one fewer while its relief
+- **Bodies only near players.** Within 400 m of a holding: its guards (one fewer while its relief
   is missing, [the faults table](ERRANDS.md#the-faults-table)), two of its three **named people**
   (the cook, the sentry, the toll man...) and, at an outpost, the faction's quartermaster. Named
   people are saved and come back on every visit; they answer **Anything need doing?**
@@ -991,12 +991,13 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   shape, an antenna isn't a mission's landmark. The quartermaster and
   a safehouse's own services stay what they are and are never scenery.
 - **Only near players.** Pieces spawn and go with the place's bodies (a player within the
-  owner's visible radius: 300 m for holdings). Every site's ground is read on the grid and solved in
+  owner's visible radius: 400 m for holdings and safehouses). Every site's ground is read on the grid and solved in
   the background from the start (**Pre-read**, strongholds and the lab first), a little each second
-  ([SITES.md](SITES.md#the-site-grid)), and a place a player comes near first goes before the rest;
-  the layout is kept, so a visit lays it out at once. The pieces spawn **4 per server tick**
-  for all places together (a stronghold's 20 pieces and its layers' 30 to 50 are up in about a
-  minute and a half at the 5 s tick); when a place's last piece is up, its people are given their jobs again.
+  ([SITES.md](SITES.md#the-site-grid)), and a place a player comes near first goes before the rest,
+  on a larger budget of its own; the layout is kept, so a visit lays it out at once. The pieces
+  spawn every tenth of a second on a few ms of server time, nearest place first and what people use
+  first ([SITES.md](SITES.md#how-fast-a-place-fills)); when a place's last piece is up, its people
+  are given their jobs again.
   A site's layers (the wire's runs, the boards, the lookouts, the lights) count up to **Layer
   pieces** (60) on top of its piece count, and at most **200** of camp life's own pieces stand or
   wait to spawn on the server (Traces' props, boards and sound looks are scenery too but don't
@@ -1249,9 +1250,9 @@ isn't kept as an AI body: they become **+1 population** at the nearest safehouse
   least 1): the first at the Haven quartermaster, the rest in quiet, low-infection villages at
   least 1.2 km apart, away from the lab and the quarantine line. Saved. Placing any
   `RZ_SafehouseMarkerEntity` turns the picking off.
-- **Few bodies.** While a player is within 300 m, a safehouse shows 3–6 occupants (never
+- **Few bodies.** While a player is within 400 m, a safehouse shows 3–6 occupants (never
   more than its population), its guards, its medic and its own quartermaster. A new tier's
-  people (more guards, the medic) come once nobody is within 300 m, so nobody sees the house
+  people (more guards, the medic) come once nobody is within 400 m, so nobody sees the house
   empty and fill again.
 - **Population tiers** (cap 30; past it, new arrivals go to the next safehouse):
 
