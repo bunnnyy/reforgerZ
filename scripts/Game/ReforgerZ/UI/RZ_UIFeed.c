@@ -1128,7 +1128,7 @@ class RZ_UIFeed
 			if (m_GM.GetMissions())
 				stageJob = m_GM.GetMissions().FindById(run.m_iMissionId);
 
-			if (run.PlayerTookPart(m_GM, playerId) || (stageJob && stageJob.m_aParticipants.Contains(playerId)))
+			if (run.PlayerTookPartThisLife(m_GM, playerId) || (stageJob && stageJob.m_aParticipants.Contains(playerId)))
 				part = "1";
 
 			RZ_UILine lnQ = new RZ_UILine("M");

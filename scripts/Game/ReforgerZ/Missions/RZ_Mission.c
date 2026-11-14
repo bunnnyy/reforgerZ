@@ -483,7 +483,7 @@ class RZ_Mission
 		if (m_iQuestRun >= 0 && gm.GetQuestlines())
 		{
 			RZ_QuestRun run = gm.GetQuestlines().FindRun(m_iQuestRun);
-			if (run && run.PlayerTookPart(gm, playerId))
+			if (run && run.PlayerTookPartThisLife(gm, playerId))
 				return true;
 
 			// A finale route's stage: the players locked to that route (their desk was the asking)
@@ -728,6 +728,14 @@ class RZ_Mission
 			return "about " + RZ_Util.DirectionText(from, GetRoughCenter(gm));
 
 		return RZ_Util.DirectionText(from, m_vPos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The place need its spot is checked against as it starts (docs/PLACES.md, "The live check"):
+	//! "mission" (dry, mainland, off the line, near its town); the perimeter's own jobs "mission.line".
+	string PlaceNeedKey()
+	{
+		return "mission";
 	}
 
 	// ================================================================ Objectives

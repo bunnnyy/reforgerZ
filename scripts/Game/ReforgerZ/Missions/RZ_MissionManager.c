@@ -317,7 +317,7 @@ class RZ_MissionManager
 		mission.m_sBrief = RZ_Util.Capitalize(mission.m_sBrief);
 		// The live place check (docs/PLACES.md): dry, off the line, near the town its brief names
 		if (!mission.m_bGlobal)
-			RZ_PlaceNeeds.Verify("mission", mission.m_vPos, mission.m_sTitle, mission.m_iSettlement);
+			RZ_PlaceNeeds.Verify(mission.PlaceNeedKey(), mission.m_vPos, mission.m_sTitle, mission.m_iSettlement);
 		// The Tier 0 audit: a job that ended here before says how it went
 		RZ_MissionReasons.Tier0Read(mission);
 		// A work job: whose mark is on the wall here (the town tally)
@@ -427,6 +427,27 @@ class RZ_MissionManager
 	float GetClock()
 	{
 		return m_fClock;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A new life is a new character (docs/UI.md, "What's tracked"): the jobs the last one was on or
+	//! was offered aren't this one's. The player id stays the same across lives in a session, so
+	//! it's taken off every running job's participants and offers; the new character takes part
+	//! again by doing it (a questline's own memory stays by identity, RZ_QuestRun.IdentDid).
+	void OnNewLife(int playerId)
+	{
+		int dropped = 0;
+		foreach (RZ_Mission m : m_aActive)
+		{
+			if (m.m_aParticipants.Contains(playerId) || m.m_aOfferedTo.Contains(playerId))
+				dropped++;
+
+			m.m_aParticipants.RemoveItem(playerId);
+			m.m_aOfferedTo.RemoveItem(playerId);
+		}
+
+		if (dropped > 0)
+			RZ_Log.Info(string.Format("Missions: %1 began a new life, off %2 job(s) the last one held", RZ_Util.PlayerName(playerId), dropped));
 	}
 
 	//------------------------------------------------------------------------------------------------

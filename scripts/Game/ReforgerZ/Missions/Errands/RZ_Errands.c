@@ -861,9 +861,11 @@ class RZ_Errands
 			}
 
 			// Done: back to the giver (a wanderer: where they stand now). With the talk screen the hand-in
-			// is a reply in their talk ("[Errand] It's done: ...", Ask: HandIn); without it, or for a
-			// handed errand (an opening's step, its owner's), being back with them is enough
-			bool byTalk = RZ_Dialogue.IsOn() && !e.m_Def.m_bHanded;
+			// is a reply in their talk ("[Errand] It's done: ...", Ask: HandIn), never being near them;
+			// only without it is being back with them enough. A handed errand (an opening's step) never
+			// waits here: its ways end where they're done (Hand makes sure), and its hand-overs are
+			// replies on its owner's talk (RZ_Openings.HandOver)
+			bool byTalk = RZ_Dialogue.IsOn();
 			vector giverAt = GiverAt(e);
 
 			// A carried item: only the asker or a helper hands it in; anyone else has spoiled it
@@ -4079,6 +4081,15 @@ class RZ_Errands
 
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		RZ_ErrandWay w = d.m_aWays[0];
+
+		// A handed step is done where it's done: nobody to walk back to, so nothing can finish it for
+		// being near its giver (docs/MISSION_RULES.md, rule 19)
+		if (!w.m_bEndsThere)
+		{
+			RZ_Log.Warn(string.Format("Errands: handed %1 didn't end where it's done; it does now (no walking back to hand it in)", d.m_sKey));
+			w.m_bEndsThere = true;
+		}
+
 		RZ_Errand e = new RZ_Errand();
 		e.m_Def = d;
 		e.m_iAsker = playerId;

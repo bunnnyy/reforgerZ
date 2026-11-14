@@ -1155,6 +1155,13 @@ class RZ_QM_PilotWreck : RZ_QuestMission
 	protected ref RZ_QuestCarry m_Box = new RZ_QuestCarry();
 
 	//------------------------------------------------------------------------------------------------
+	//! Short of the line, in the warning zone, by design (docs/MISSION_RULES.md, rule 8).
+	override string PlaceNeedKey()
+	{
+		return "mission.line";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Handing the black box to the pilot: locked without it on you.
 	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
 	{

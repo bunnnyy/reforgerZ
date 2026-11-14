@@ -139,7 +139,6 @@ class RZ_Openings
 	protected static const float SEARCH_OUT = 3;		// the spot: this far out of the building's side facing the contact
 	protected static const float STRANGER_CHANCE = 0.25;	// a stranger instead of someone from before
 	protected static const float EARLIER_CHANCE = 0.35;	// an earlier life's wanderer, when one remembers you
-	protected static const float VETERAN_CONTACT = 0.34;	// a veteran meets someone one time in three
 	protected static const int HOLD_BASE = 800000;		// RZ_Wanderers.Hold's id for an opening (+ its id)
 
 	protected RZ_GameModeComponent m_GM;
@@ -206,6 +205,29 @@ class RZ_Openings
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This player's running opening, if any: its contact (null when nobody stands) and its first
+	//! stage (RZ_EOpeningStage; -1 without one). For the runtime test's fresh-spawn check.
+	IEntity ContactOf(int playerId, out int firstStage)
+	{
+		firstStage = -1;
+		RZ_Opening o = Running(playerId);
+		if (!o)
+			return null;
+
+		if (!o.m_aPlan.IsEmpty())
+			firstStage = o.m_aPlan[0];
+
+		return o.m_Contact;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ends this player's running opening (the runtime test's fresh-spawn check, after it's read).
+	void Close(int playerId, string why)
+	{
+		EndFor(playerId, why);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -308,8 +330,22 @@ class RZ_Openings
 		m_mPending.Find(playerId, place);
 		m_mPending.Remove(playerId);
 		m_mMoved.Remove(playerId);
-		if (!IsOn() || !ent || !place)
+		Begin(playerId, ent, profile, bg, place);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The opening at `place` for this spawn (OnSpawned's work; the runtime test calls it with a
+	//! place of its own). Every life gets its contact at the door and step 1 (docs/DESIGN.md).
+	void Begin(int playerId, IEntity ent, RZ_PlayerProfile profile, RZ_Background bg, RZ_OpeningPlace place)
+	{
+		if (!IsOn() || !ent)
 			return;
+
+		if (!place)
+		{
+			RZ_Log.Info(string.Format("Openings: %1 %2: NO OPENING (no place was rolled for this spawn)", RZ_Util.PlayerName(playerId), bg.m_sId));
+			return;
+		}
 
 		RZ_OpeningRoll.NoteStart(profile, ent.GetOrigin());
 		RZ_WorldFacts facts = m_GM.GetFacts();
@@ -339,14 +375,12 @@ class RZ_Openings
 		o.m_iEnd = EndFactionFor(playerId, bg.m_sId);
 		FindEnd(o, ent.GetOrigin());
 
-		// Who's outside: a veteran meets someone one time in three. Nobody can stand (no body prefab,
-		// the story budget full): the scene's read points at the nearest work instead
-		bool wanted = o.m_iLevel < RZ_Guidance.LEVEL_VETERAN || rng.Chance(VETERAN_CONTACT);
-		if (wanted)
-		{
-			PickWho(o, profile, rng);
-			SpawnContact(o, ent.GetOrigin());
-		}
+		// Who's outside: someone from before, every life, whatever the player's level (the author:
+		// "just spawned in, can't see anyone"). Only no body prefab at all, or a spawn the engine
+		// refuses, leaves nobody: then the scene's read, said loudly in the log
+		bool wanted = true;
+		PickWho(o, profile, rng);
+		string why = SpawnContact(o, ent.GetOrigin());
 
 		if (o.m_bHadContact && o.m_Contact)
 		{
@@ -363,7 +397,11 @@ class RZ_Openings
 			o.m_sSpeaker = o.m_sName;
 			NoContact(o);
 			if (wanted)
-				RZ_Log.Info(string.Format("Openings: no contact could stand for %1 at %2, the scene's read instead", RZ_Util.PlayerName(playerId), RZ_SettlementScanner.GridReference(ent.GetOrigin())));
+				RZ_Log.Info(string.Format("Openings: %1 %2 at %3: NO CONTACT (%4), the scene's read instead", RZ_Util.PlayerName(playerId), bg.m_sId, RZ_SettlementScanner.GridReference(ent.GetOrigin()), why));
+		}
+		else if (o.m_Contact)
+		{
+			RZ_Log.Info(string.Format("Openings: %1 %2 at %3: contact %4 spawned at %5 m", RZ_Util.PlayerName(playerId), bg.m_sId, RZ_SettlementScanner.GridReference(ent.GetOrigin()), o.m_sName, RZ_Util.DistXZ(o.m_Contact.GetOrigin(), ent.GetOrigin()).ToString(4, 1)));
 		}
 
 		int day = 1;
@@ -429,9 +467,10 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The chain's plan by guidance level, with errands on: 0-1 all three steps (level 1's step 1
-	//! shorter); 2 your background's step, then the nearest place with work; 3 that place only. Step
-	//! 2's tasks to try: the background's own, or the Drifter's asks.
+	//! The chain's plan by guidance level, with errands on: every life starts with step 1 (Down the
+	//! Road), shorter from level 1; then 0-1 the background's step and the walk; 2 the background's
+	//! step, then the nearest place with work; 3 that place. Step 2's tasks to try: the
+	//! background's own, or the Drifter's asks.
 	protected void Plan(RZ_Opening o, RZ_Rng rng)
 	{
 		RZ_Errands errands = m_GM.GetErrands();
@@ -445,11 +484,13 @@ class RZ_Openings
 			}
 			else if (o.m_iLevel == 2)
 			{
+				o.m_aPlan.Insert(RZ_EOpeningStage.SEARCH);
 				o.m_aPlan.Insert(RZ_EOpeningStage.TASK);
 				o.m_aPlan.Insert(RZ_EOpeningStage.LEAD);
 			}
 			else
 			{
+				o.m_aPlan.Insert(RZ_EOpeningStage.SEARCH);
 				o.m_aPlan.Insert(RZ_EOpeningStage.LEAD);
 			}
 		}
@@ -586,15 +627,21 @@ class RZ_Openings
 	//------------------------------------------------------------------------------------------------
 	//! Whoever's outside, a few metres out of the door, facing you (Guidance > Contact; empty: the
 	//! puzzle civilian). Counted as a story body, so the budget never refuses them.
-	protected void SpawnContact(RZ_Opening o, vector player)
+	//! Returns "" when they stand, else why not (logged by the caller). The opening's contact is the
+	//! one body every new life needs: counted in the story budget, but a full budget doesn't keep
+	//! them away (one body, once a life, beside the player).
+	protected string SpawnContact(RZ_Opening o, vector player)
 	{
 		ResourceName prefab = m_Settings.m_sContactPrefab;
 		if (prefab.IsEmpty())
 			prefab = m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
 
 		RZ_Shared shared = m_GM.GetShared();
-		if (prefab.IsEmpty() || !shared || !shared.CanSpawnBody(RZ_BodyBudget.STORY, player))
-			return;
+		if (prefab.IsEmpty())
+			return "no body prefab: Guidance > Contact prefab and Puzzles > Civilian are empty";
+
+		if (shared && !shared.CanSpawnBody(RZ_BodyBudget.STORY, player))
+			RZ_Log.Info(string.Format("Openings: the story budget is full near %1; the contact stands all the same", RZ_SettlementScanner.GridReference(player)));
 
 		vector at = RZ_Mission.LandPointNear(player, 4, 7);
 		if (o.m_Place.m_bScene)
@@ -606,13 +653,16 @@ class RZ_Openings
 
 		IEntity body = RZ_Util.SpawnPrefab(prefab, at, RZ_Compass.Bearing(at, player));
 		if (!body)
-			return;
+			return "the engine refused to spawn " + prefab;
 
-		shared.AddBody(RZ_BodyBudget.STORY, body);
+		if (shared)
+			shared.AddBody(RZ_BodyBudget.STORY, body);
+
 		o.m_Contact = body;
 		o.m_bHadContact = true;
 		RZ_PuzzleObjectComponent.Tag(body, TAG, o.m_iId, "", "What was it you needed?");
 		RZ_ClueComponent.Tag(body, TAG, o.m_iId, "Talk to " + o.m_sShort);
+		return "";
 	}
 
 	// ================================================================ Where the chain ends
@@ -1409,7 +1459,7 @@ class RZ_Openings
 		if (stage == RZ_EOpeningStage.SEARCH)
 		{
 			d = m_Chain.m_Search;
-			if (o.m_iLevel == 1)
+			if (o.m_iLevel >= 1)
 				d = m_Chain.m_SearchShort;
 
 			if (!SearchPlace(o, giverAt, place, placeText))
@@ -1703,7 +1753,15 @@ class RZ_Openings
 	bool StepCounts(RZ_Errands dealer, RZ_Errand e, IEntity me)
 	{
 		RZ_Opening o = ByErrand(e.m_iId);
-		if (!o || Stage(o) != RZ_EOpeningStage.TASK || o.m_iTask == RZ_EOpeningTask.NONE)
+		if (!o)
+		{
+			// A hand-over is finished only by its reply (RZ_Errands.FinishNow), never for standing
+			// by the giver with the thing on you, even with no opening behind it (docs/MISSION_RULES.md, rule 19)
+			RZ_OpeningStepDef sd = RZ_OpeningStepDef.Cast(e.m_Def);
+			return !sd || !RZ_OpeningTasks.HandsOver(sd.m_iTask);
+		}
+
+		if (Stage(o) != RZ_EOpeningStage.TASK || o.m_iTask == RZ_EOpeningTask.NONE)
 			return true;
 
 		return m_Tasks.Counts(dealer, o, e, me);

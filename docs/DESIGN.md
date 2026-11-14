@@ -3149,7 +3149,7 @@ any map fireplace with vanilla's fireplace component. Its fire is read through v
 
 | Kit | Per player | Lasts | What it does |
 |---|---|---|---|
-| Planks (barricade) | 3 | 60 min | Boards up a doorway. Infected against it make noise; 8 hits break it. The town counts as Barricaded |
+| Planks (barricade) | 3 | 60 min | Boards up a real doorway: set within 3 m of a building's outside door, the boards go up in it, facing out (nowhere else: *"There's no door here to board up."*). Infected against it make noise; 8 hits break it. The town counts as Barricaded |
 | Tin-can tripwire | 3 | 60 min | Rattles (20 heat) when something walks through; the owner hears it within 400 m |
 | Spike trap | 2 | 60 min | Kills an infected that walks onto it, three times. Players aren't hurt |
 | Generator | 1 running | 30 min per fuel item | 6 heat a minute; lights hook within 40 m; a radio within 30 m hears every open channel; standing near it charges your radio and torch |
@@ -3338,7 +3338,10 @@ is near). The 22 compositions are **Guidance > Opening scenes** (keys `hiding.1`
 the camp pieces ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); a key with none has nothing there.
 
 **Who's outside.** A few metres out of the door, facing you (**Guidance > Contact**, empty:
-**Puzzles > Civilian**; counted as a story body, so the budget doesn't refuse them). They never say
+**Puzzles > Civilian**; counted as a story body, and a full budget doesn't keep them away). **Every
+life has one**, whatever the player's level: only no body prefab at all, or a spawn the engine
+refuses, leaves the door empty, and the log says so (`Openings: <player> <background> at <grid>:
+NO CONTACT (<why>)`; a contact that stands logs `... contact <name> spawned at <n> m`). They never say
 "you're new". They talk only to you; anyone else is told they're waiting for someone.
 
 | Who | How often | Who they are, by why today |
@@ -3349,7 +3352,7 @@ the camp pieces ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); a key with none has 
 
 An earlier life's wanderer is held off the road while they stand here (`RZ_Wanderers.Hold`) and goes
 back on it from where they stood once they leave; killed, they're gone from the roads. With nobody
-outside (no body at all, the story budget full, or a veteran's two times in three), the scene's read
+outside (no body prefab at all, or the engine refused the spawn), the scene's read
 carries the one step there is: under the calendar, in your own handwriting, "Work at *place*. Ask
 for it." (below), and a brand-new player's wanderer still comes looking.
 
@@ -3402,8 +3405,12 @@ a talk objective comes before the first step, and before a next person's step (a
 |---|---|
 | 0, brand new | All three steps (about 15 minutes); the reasons lean to the hiding place |
 | 1, learning | All three; step 1's search is 10 s, not 20 |
-| 2, familiar | The scene and whoever's outside; your background's step 2 (step 1 when yours can't run here), then **Where the Work Is** |
-| 3, veteran | The scene as a one-line read, and Where the Work Is, tracked; someone outside one time in three |
+| 2, familiar | The scene and whoever's outside; step 1 (shorter), your background's step 2, then **Where the Work Is** |
+| 3, veteran | The scene as a one-line read and whoever's outside; step 1 (shorter), then Where the Work Is |
+
+Every life starts with step 1 from the person at the door: an experienced player's chain is shorter
+after it, never without it (the author's play-test as a veteran: nobody there and the lead tracked
+at once read as "the first mission is already skipped").
 
 **Where the Work Is** (`opening.lead`) walks you to the nearest place with work: a Haven safehouse, or
 an outpost or stronghold of a faction that doesn't hunt you; done within 40 m of it, an hour to get
@@ -3411,7 +3418,7 @@ there, one line on arrival ("Someone with a list looks up."), and no Fame. All t
 
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
-| 1. Down the Road | Search a building 150–450 m from them: a work site's **Search it, quietly** (8 s; 6 s for a learning player, level 1; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot inside it, on its ground floor; done there. One of your background's kinds when one is there (below), else a house, named for what it really is ([PLACES.md](PLACES.md#a-place-is-what-its-words-say)); no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
+| 1. Down the Road | Search a building 150–450 m from them: a work site's **Search it, quietly** (8 s; 6 s from level 1 up; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot inside it, on its ground floor; done there. One of your background's kinds when one is there (below), else a house, named for what it really is ([PLACES.md](PLACES.md#a-place-is-what-its-words-say)); no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
 | 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold), else The Cut (dress their hand with anything medical you carry: the hand-over reply on their talk screen, done there and then) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
 | 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
@@ -3479,7 +3486,8 @@ nobody is within 150 m after the walk starts, or 45 minutes on with nobody withi
 the chain and where it ends), `... called ... over before step N`, `... talked to by ... before step N`,
 `... went on talking with ... into step N`, `... step N (key) for
 ...`, `... step N done by ... in N s`, `... died`, `Openings: ended for ...: why (step, minutes)`,
-the fallbacks' `no ... place fits`, `no place`, `no contact could stand`, `no step 2 can run`,
+every life's `<player> <background> at <grid>: contact <name> spawned at <n> m`, the fallbacks' `no ...
+place fits`, `no place`, `NO CONTACT (<why>)`, `NO OPENING`, `no step 2 can run`,
 `...'s bitten friend was lost`, and `ended for ...: found work at ...`.
 
 *Simplified:* the earlier-life contact is a wanderer only (never a safehouse occupant), and says
@@ -3499,8 +3507,8 @@ never disappears.
 |---|---|---|
 | 0, brand new | 0 | Everything: every tip in full, the gentle start, an opening with all three steps leaning to the hiding place (a wanderer comes looking when nobody's outside), the radio every 12 min |
 | 1, learning | 1–2 | Every tip in full, an opening with all three steps (a shorter first), wanderer gossip every time |
-| 2, familiar | 3–7 | Most tips; an opening with one step and the nearest work; gossip now and then |
-| 3, veteran | 8+ | The floor: an opening's one-line read and the nearest work, the open channels (every 42 min), and critical tips as one short line |
+| 2, familiar | 3–7 | Most tips; an opening with step 1, one step of your background's and the nearest work; gossip now and then |
+| 3, veteran | 8+ | The floor: an opening's one-line read, step 1 and the nearest work (always with someone at the door), the open channels (every 42 min), and critical tips as one short line |
 
 A player who comes back after 30+ real days gets two levels more guidance for two lives.
 The [opening](#openings-how-every-life-starts) sets its chain by level; the wanderer who comes

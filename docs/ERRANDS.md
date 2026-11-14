@@ -244,9 +244,11 @@ fence (its Favor comes with the hand-in), and The Boy's ways talk him round wher
 **Done** is coming back and handing it in, in their talk: the giver's *[Errand] It's done: <title>.*
 reply, first on their list ([DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies)); something you
 carried back has to be on you, or on a helper beside you (*"Where is it, then? Bring it here with
-you."*), and is taken off whoever has it (`RZ_Errands.HandIn`). Without the talk screen, and for a
-handed errand (an opening's step), arriving back (as above; a wanderer: where they stand now) is enough,
-as before. The tracker, the map and the Quests tab point at the step's place (within the
+you."*), and is taken off whoever has it (`RZ_Errands.HandIn`). Only without the talk screen is
+arriving back (as above; a wanderer: where they stand now) enough. A handed errand (an opening's step)
+never waits to be handed in: each of its steps ends where it's done (`RZ_Errands.Hand` makes sure,
+logging `Errands: handed <key> didn't end where it's done; it does now`), and its one hand-over (The
+Cut) counts only by its reply ([below](#handed-errands-the-openings-chain)). The tracker, the map and the Quests tab point at the step's place (within the
 way's radius) until it's done, then at the giver where they stand now (15 m), the same spot the
 errand counts you at (`RZ_Errands.GiverAt`; [MISSIONS.md](MISSIONS.md#where-each-objective-points)). **Helpers** are the asker's vanilla group within 50 m for 2 minutes or when the
 step was done, three at most.
@@ -927,7 +929,7 @@ and the refusals in [Being asked](#being-asked)):
 | **Weather, Write It Down** (margin: Await Relief) | the radio operator at a Bastion post | the major waits for Effective Strength; not 18:00–22:00 (the call's hours) | Take the reading on the ridge 200–400 m out (15 s): 4 Favor. Or tell him to write "weather" and skip it: no pay |
 | **Clean Rifles** (margin: Await Relief) | a Bastion named person | the major waits for the muster; not 18:00–22:00 | Fetch the cleaning kits from the next town's police station (20 s): 4 Favor. [Soldier] show the new lads how it's done (a minute): 3 Favor, 1 Fame |
 | **Clean Paper** (margin: Proof) | a Halcyon named person | the major waits for the reading; not around a change of shift (04:30–06:30, 16:30–18:30) | Fetch a ream from the next town's school (20 s): 4 Favor. [Lab Tech] rule the margins (30 s): 3 Favor, 1 Fame |
-| **Chairs for the Reading** (margin: Proof) | Halcyon's technician or lab assistant | as Clean Paper | Carry the chairs from an empty village's hall (30 s): 4 Favor. Or tell his they can stand: no pay |
+| **Chairs for the Reading** (margin: Proof) | Halcyon's technician or lab assistant | as Clean Paper | Carry three chairs out of an empty village's hall and set them by its door, one by one (carried for real): 4 Favor. Or tell him they can stand: no pay |
 | **The Kid's Inspection** (champions: Bastion) | a Bastion named person; Champion with Bastion | always | Look over his post at the gate (20 s): a rumour, no pay. Or say you're nobody's sergeant |
 | **A Story at the Fire** (champions: the Red Hand) | a Red Hand named person; Champion with the Red Hand | always | Tell it straight, or tell it bigger (a minute at the fire): a rumour either way, no pay. Or say there's nothing to tell |
 | **The Visitors' Log** (champions: Halcyon) | a Halcyon named person; Champion with Halcyon | always | Sign the log (hold, 5 s): a world record with an epilogue line, no pay. Or be put down as anonymous |

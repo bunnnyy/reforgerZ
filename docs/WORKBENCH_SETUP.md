@@ -1880,10 +1880,21 @@ before the missions, the openings' play-test faults are checked at the route's f
 the test world leaves them off): the Fever's son is a body on a care work site and the tracker's place
 is on him; 24 s by his father with nothing done doesn't finish it; the hold with a field dressing in
 the pack does, and takes it; the Cut's hand-over (`RZ_Errands.FinishNow`) is refused without a
-dressing and done in the same second with one; a real outside door is found near the town, a boarded
+dressing, 15 s by the giver with one doesn't finish it, and the reply does in the same second; every
+handed step of every opening (all backgrounds) ends where it's done, so none waits to be handed in by
+walking back (`N opening steps checked; 0 wait ...`); the rules check's own errand (a named person's
+ask, `RZT_RulesDef` in `RZT_Rules.c`) is done at a work site near them: its crate stands there 10 s
+after arriving, 15 s back with the giver doesn't hand it in while the talk screen is on, and the
+hand-in reply does, so `RZT rules:` counts at least one thing and one hand-in "by reply"; a real outside door is found near the town, a boarded
 doorway fits in it and is refused in the open; and the contacts' names and the Nurse's words are
 printed (`RZT openings OK|FAIL <what>`, then `RZT openings: N checks, N failed`; the run fails on
-FAIL). From then
+FAIL). Just before, **a fresh spawn** (`RZT_Fresh.c`), as a veteran (level 3, where the author's
+play-test went wrong): every running job drops the new life; its opening has its contact standing
+within 15 m and step 1 first, not the lead to work; the Quests tab lists no taken job; and later,
+once a questline runs, a part from the last life doesn't put it in the new life's journal while the
+story still remembers the player (`RZT fresh OK|FAIL <what>`, `RZT fresh: N checks, N failed`; the run
+fails on FAIL). The fake player logs `Openings: Tester <background>: NO OPENING` at boot: it isn't
+spawned through the spawn screen, so no place is rolled for it. From then
 on the fake player can't hold a prompt, so while it stands at a mission the open work sites within 25 m of
 it are done for it (the others wait until the tracker sends it there) (`RZT work sites: N done for '<title>'`), and a job finished that way ends by itself. An objection
 to a hold, a truth kept after a restart, a reason starting a contract and a locked player refused need
@@ -2287,7 +2298,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
 | `Guidance/RZ_OpeningSteps.c:516` | A Sample's remains: a special spawned and killed at once on the server (`RZ_Util.KillCharacter`) falls and lies where it was spawned, for every client | The body stands, or isn't seen: the place check still passes (it's dead there). Spawn it a frame later, or use a body prop |
-| `Guidance/RZ_Openings.c:1099` | an opening's contact who walks with you: a one-man civilian AI group (**Guidance > Companion**, `RZ_OpeningCompanion.et`) follows the player on `RZ_Escort`'s move orders, and its leader (the `RZ_Civilian` body) carries the talk tags | They stand still where they were swapped in, or "Talk to" is missing on them: the log's `Openings: <name> walks with <player>` is there. The steps still start on their cards after a minute; report it, and set **Companion** empty (they hand you on instead) |
+| `Guidance/RZ_Openings.c:1149` | an opening's contact who walks with you: a one-man civilian AI group (**Guidance > Companion**, `RZ_OpeningCompanion.et`) follows the player on `RZ_Escort`'s move orders, and its leader (the `RZ_Civilian` body) carries the talk tags | They stand still where they were swapped in, or "Talk to" is missing on them: the log's `Openings: <name> walks with <player>` is there. The steps still start on their cards after a minute; report it, and set **Companion** empty (they hand you on instead) |
 | `Guidance/RZ_OpeningSteps.c:532` | the remains withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stay until the opening ends, then go with the engine's cleanup once inserted again (as the vigil's body) | The body goes with the engine's usual cleanup during the step; the sample still lies there |
 | `Guidance/RZ_Guidance.c:480` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
@@ -2746,17 +2757,20 @@ records.` and `Shared: N callbacks waiting, N season records.`
 
 Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one life each: `Openings: started
 for <player>: <background>, <kind> in <town> (<grid>), level N, <hiding|group|fever>, <before|stranger|earlier|nobody>:
-<who>, chain <search, task, walk> to <place>` (levels 2-3: `chain task, lead` or `chain lead`), `Openings: <name> called <player> over before step N`, `Openings: step 1 for <background> is <words> (<prefab>, <kind>), the spot N m from its middle` (the building step 1 sends you into, and the words its kind gave), `Openings: <name> talked to by <player> before
+<who>, chain <search, task, walk> to <place>` (levels 2-3: `chain search, task, lead` or `chain search, lead`), `Openings: <name> called <player> over before step N`, `Openings: step 1 for <background> is <words> (<prefab>, <kind>), the spot N m from its middle` (the building step 1 sends you into, and the words its kind gave), `Openings: <name> talked to by <player> before
 step N`, `Openings: <name> went on talking with <player> into step N`,
-`Errands: opening.<step> handed to <player> (<name>)`, the pattern at the end of `started` (`, they walk with you` or `, handed on`), `Openings: <name> walks with <player>` (or `can't walk with <player> (no escort room), the steps start where you are`), `Openings: <first> sent <player> on to <next> at <place>, <direction>` (or `Openings: no house for the next person for <player> at <grid>, back to <name> instead`), `Openings: <player> handed over to <name> (step 2, task N), done there and then`, `Openings: the scratched door is a real door at <grid>, N m from the opening` (or `Openings: no real door within 80 m of <grid> for the scratched door, no clue`), `Openings: <name> step N (<key>) for <player>,
+`Errands: opening.<step> handed to <player> (<name>)` (a step that didn't end where it's done is made to, with `Errands: handed <key> didn't end where it's done; it does now (no walking back to hand it in)`), the pattern at the end of `started` (`, they walk with you` or `, handed on`), `Openings: <name> walks with <player>` (or `can't walk with <player> (no escort room), the steps start where you are`), `Openings: <first> sent <player> on to <next> at <place>, <direction>` (or `Openings: no house for the next person for <player> at <grid>, back to <name> instead`), `Openings: <player> handed over to <name> (step 2, task N), done there and then`, `Openings: the scratched door is a real door at <grid>, N m from the opening` (or `Openings: no real door within 80 m of <grid> for the scratched door, no clue`), `Openings: <name> step N (<key>) for <player>,
 <direction>`, `Openings: <name> step N done by <player> in N s`, `Openings: <name> died (step N for
 <player>)`, `Openings: <name>'s bitten friend was lost (the clock ran out for <player>)` and `Openings: ended
 for <player>: <why> (step N, N min)`; the fallbacks' `Openings: no step 2 can run for <player> here
 (<background>)`, `Openings: no
 <background> place fits for <player>, a house instead`, `Openings: no place for <player> (<background>),
 the spawn point instead: <why doors were refused, e.g. a pack's lair x22>`, `Openings: no house down
-the road for <player> at <grid>, step 1 skipped` and `Openings: no contact could stand for <player> at <grid>, the scene's
-read instead`; a lead's end is `Openings: ended for <player>: found work at <place> (step 3, N min)`.
+the road for <player> at <grid>, step 1 skipped`, `Openings: <player> <background> at <grid>: contact <name> spawned at <n> m`
+(every life), `Openings: <player> <background> at <grid>: NO CONTACT (<why: no body prefab, or the engine
+refused the spawn>), the scene's read instead`, `Openings: the story budget is full near <grid>; the contact
+stands all the same`, `Openings: <player> <background>: NO OPENING (no place was rolled for this spawn)` and
+`Missions: <player> began a new life, off N job(s) the last one held`; a lead's end is `Openings: ended for <player>: found work at <place> (step 3, N min)`.
 
 Task places ([PLACES.md](PLACES.md#the-live-check)): nothing while every place is true to its words;
 `Place check: <need> at <grid> ("<text>") fails: <why>` (a warning) when a placed task's place, or a
@@ -3547,6 +3561,12 @@ when it happens)
   hall) and *Radio*. For the next five minutes, cards come at most one every 45 s; a card that
   waited 45 s is gone (into the notebook). Get bitten in the first seconds: the bite card shows at
   once. Owed errand pay at a join is one *While you were away* entry, no card.
+- [ ] **A fresh life, as a veteran** (the author has played many lives, so this is the usual case on the
+  PC). Die and respawn: someone stands at the door every time (log: `Openings: <you> <background> at
+  <grid>: contact <name> spawned at <n> m`; never `NO CONTACT` or `NO OPENING`: paste those lines if
+  seen), and his first ask is step 1, *Down the Road*, never *Where the Work Is* straight away. The
+  Quests tab lists only that step: none of the last life's questlines, majors or jobs, and no "Quest
+  started" card for them (log: `Missions: <you> began a new life, off N job(s) the last one held`).
 - [ ] **Openings** ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), with a pad. The spawn
   screen has no place picker: under Start, only the kind of place the picked background starts at
   ("A clinic, or a house near one"); left and right do nothing. Deploy as a Nurse: you stand 2 m out
@@ -3623,7 +3643,11 @@ when it happens)
   step is done in that talk (log: `Openings: <you> handed over to <name> (step 2, task N), done there
   and then`) and the next step is said into the same talk a moment later; walking away and back never
   finishes anything. An errand done elsewhere is handed in only with *[Errand] It's done: ...*, never
-  by opening the talk.
+  by opening the talk. Then do every opening step once more without ever opening the talk until it's
+  done: no step, of any background, finishes or moves on because you walked back to whoever gave it.
+- [ ] **A trap's planks go up only in a real doorway**: set them in the open (*"There's no door here to
+  board up."*), then within 3 m of a house's outside door: the boards stand in that doorway, facing out,
+  not where you dropped them.
 - [ ] **No door is ever spawned** (the author: "use real doors in the game, rather than spawning a
   door"). In the hiding place, the scratched door (*NOBODY GETS OUT*) is a real door of a building
   6–80 m from yours, read at its leaf (log: `Openings: the scratched door is a real door at ...`); no

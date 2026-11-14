@@ -124,6 +124,13 @@ class RZ_PerimeterMissionHelper
 //! warning shot, then the fatal one. Night only.
 class RZ_Mission_BlindSpot : RZ_Mission_Delivery
 {
+	//------------------------------------------------------------------------------------------------
+	//! At the line by design (docs/MISSION_RULES.md, rule 8).
+	override string PlaceNeedKey()
+	{
+		return "mission.line";
+	}
+
 	protected vector m_vEdge;
 	protected vector m_vMeet;
 	protected vector m_vDrop;
@@ -370,6 +377,13 @@ class RZ_Mission_BlindSpot : RZ_Mission_Delivery
 //! Hand Favor, +4 Haven Infamy) or burn them (80%).
 class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 {
+	//------------------------------------------------------------------------------------------------
+	//! At the line by design (docs/MISSION_RULES.md, rule 8).
+	override string PlaceNeedKey()
+	{
+		return "mission.line";
+	}
+
 	protected float m_fLockSeconds = LOCK_SECONDS;
 	protected static const int WAY_GAP = 0;
 	protected static const int OPT_HOUSE = 0;
@@ -698,6 +712,13 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 //! starts (inside the warning zone where the coast comes that close).
 class RZ_Mission_ShotAtTheLine : RZ_PuzzleMission
 {
+	//------------------------------------------------------------------------------------------------
+	//! At the line by design (docs/MISSION_RULES.md, rule 8).
+	override string PlaceNeedKey()
+	{
+		return "mission.line";
+	}
+
 	protected vector m_vBody;
 	protected vector m_vStash;
 	protected bool m_bRead;

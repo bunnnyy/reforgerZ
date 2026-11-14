@@ -364,6 +364,7 @@ class RZ_Burn
 class RZ_Traps
 {
 	protected static const float HIT_RADIUS = 2.5;
+	protected static const float BARRICADE_DOOR_REACH = 3;	// boards are put up in a real doorway this close to where the planks were set
 	protected static const float SPIKE_RADIUS = 1.8;
 	protected static const float TRIP_COOLDOWN = 30;
 	protected static const int TRIP_USES = 6;
@@ -612,6 +613,9 @@ class RZ_Traps
 		int cap = m_Settings.m_iTripwiresPerPlayer;
 		float minutes = m_Settings.m_fTripwireMinutes;
 		ResourceName setPrefab = m_Settings.m_sTripwireSetPrefab;
+		vector barricadeAt;
+		float barricadeYaw;
+		bool barricadeInDoor;
 		string text = "You string the wire ankle-high and hang the cans. Anyone who walks through it will know, and so will everything else.";
 		if (kind == RZ_EPlaceable.BARRICADE)
 		{
@@ -619,11 +623,20 @@ class RZ_Traps
 			minutes = m_Settings.m_fBarricadeMinutes;
 			setPrefab = BarricadePrefab();
 			text = "You hammer the planks across the frame. It won't stop a crowd, but it'll hold the odd one, and you'll hear them try. For an hour, more or less.";
-			if (!NearBuilding(kit.GetOrigin()))
+			// The boards go across a real doorway of the map's (docs/MISSION_RULES.md, rule 3): within
+			// BARRICADE_DOOR_REACH of one, they're put up in it, facing out; nowhere else
+			IEntity door;
+			vector doorway;
+			vector outward;
+			if (!RZ_DoorGeometry.NearestOuterDoor(kit.GetOrigin(), 0, BARRICADE_DOOR_REACH, false, door, doorway, outward))
 			{
-				m_GM.NotifyPlayer(playerId, "Barricade", "There's no door or window here to board up. Put the planks down in a doorway.");
+				m_GM.NotifyPlayer(playerId, "Barricade", "There's no door here to board up. Put the planks down in a doorway.");
 				return;
 			}
+
+			barricadeAt = RZ_Util.GroundPos(doorway + outward * 0.1);
+			barricadeYaw = Math.Atan2(outward[0], outward[2]) * Math.RAD2DEG;
+			barricadeInDoor = true;
 		}
 		else if (kind == RZ_EPlaceable.SPIKES)
 		{
@@ -651,7 +664,15 @@ class RZ_Traps
 		if (!setPrefab.IsEmpty())
 		{
 			vector angles = user.GetAngles(); // rotation around X, Y, Z in degrees: [1] is the yaw
-			IEntity deployed = RZ_Util.SpawnPrefab(setPrefab, RZ_Util.GroundPos(kit.GetOrigin()), angles[1]);
+			vector setAt = RZ_Util.GroundPos(kit.GetOrigin());
+			float setYaw = angles[1];
+			if (barricadeInDoor)
+			{
+				setAt = barricadeAt;
+				setYaw = barricadeYaw;
+			}
+
+			IEntity deployed = RZ_Util.SpawnPrefab(setPrefab, setAt, setYaw);
 			if (deployed)
 			{
 				SCR_EntityHelper.DeleteEntityAndChildren(kit);
@@ -691,37 +712,6 @@ class RZ_Traps
 		}
 
 		return null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected bool m_bFoundBuilding;
-
-	//------------------------------------------------------------------------------------------------
-	//! A building within 12 m (a doorway or window to board up).
-	protected bool NearBuilding(vector pos)
-	{
-		m_bFoundBuilding = false;
-		GetGame().GetWorld().QueryEntitiesBySphere(pos, 12, OnBuildingEntity, null, EQueryEntitiesFlags.STATIC);
-		return m_bFoundBuilding;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected bool OnBuildingEntity(IEntity e)
-	{
-		if (SCR_DestructibleBuildingEntity.Cast(e))
-		{
-			m_bFoundBuilding = true;
-			return false; // returning false stops the query early
-		}
-
-		string name = RZ_ItemHelper.LowerName(e);
-		if (name.Contains("/buildings/") || name.Contains("house"))
-		{
-			m_bFoundBuilding = true;
-			return false;
-		}
-
-		return true;
 	}
 
 	// ================================================================ Generators

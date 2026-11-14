@@ -105,3 +105,84 @@ modded class RZ_Errands
 		super.Resolve(e, w);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! The rules check's own errand (test-only): a named person's ask done at a work site near them,
+//! then handed in on their talk, so the check counts a thing and a hand-in every run.
+class RZT_RulesDef : RZ_ErrandDef
+{
+	//------------------------------------------------------------------------------------------------
+	void RZT_RulesDef()
+	{
+		m_sKey = "rzt.rules";
+		m_sTitle = "Tins for the Shelf";
+		m_sFamily = "rzt";
+		Over("Never mind.");
+		RZ_ErrandWay w = Way("do");
+		w.m_ePlace = RZ_EErrandPlace.HERE;
+		w.m_fSeconds = 8;
+		w.m_fRadius = 6;
+		w.m_sStep = "Sort the tins in the crate at {place}, then tell {giver}.";
+		w.Work(RZ_EWork.HANDS, "Sort the tins", 8);
+		w.m_eProp = RZ_EErrandProp.CRATE;
+		w.Take("The tins are in a heap. Sort them for me.", "Sort the tins, would you?");
+		w.Done("Sorted. Thank you.", "Good. That's the shelf done.");
+	}
+}
+
+modded class RZ_Errands
+{
+	//------------------------------------------------------------------------------------------------
+	//! A taken errand from a real named person (key), its step at `place`, as Hand does for a handed
+	//! one: the work site and its prop put out, the giver's take line, the tracker.
+	RZ_Errand RZT_Give(RZ_ErrandDef d, int playerId, string giverKey, vector place)
+	{
+		RZ_NamedPerson giver = m_People.Get(giverKey);
+		if (!giver || d.m_aWays.IsEmpty())
+			return null;
+
+		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+		RZ_ErrandWay w = d.m_aWays[0];
+		RZ_Errand e = new RZ_Errand();
+		e.m_Def = d;
+		e.m_iAsker = playerId;
+		e.m_sIdent = profile.m_sIdentity;
+		e.m_iLife = profile.m_iLives;
+		e.m_sGiver = giverKey;
+		e.m_sGiverName = giver.m_sName;
+		e.m_sGiverTitle = giver.m_sTitle;
+		e.m_iFaction = giver.m_iFaction;
+		if (!RZ_Factions.IsValid(e.m_iFaction))
+			e.m_iFaction = RZ_EFaction.SURVIVORS;
+
+		e.m_vGiver = giver.m_vPos;
+		e.m_vOffer = giver.m_vPos;
+		e.m_iSettlement = m_GM.FindNearestSettlement(giver.m_vPos);
+		e.SetText("giver", giver.m_sName);
+		RZ_Settlement town = m_GM.GetSettlement(e.m_iSettlement);
+		if (town)
+			e.SetText("here", town.m_sName);
+
+		e.SetText("place", "the step");
+		e.m_iId = m_iNextId;
+		m_iNextId++;
+		e.m_fOfferedAt = m_fClock;
+		e.m_iWay = 0;
+		e.m_fTakenAt = m_fClock;
+		e.m_bStepDone = false;
+		e.m_eState = RZ_EErrandState.HELD;
+		e.m_vPlace = place;
+		m_aErrands.Insert(e);
+		PlaceProp(e, w);
+		return e;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The talk's hand-in reply ("[Errand] It's done: ...", Ask: HandIn), as the talk screen calls it.
+	void RZT_ReplyHandIn(RZ_Errand e, int playerId)
+	{
+		RZ_ErrandWay w = e.GetWay();
+		if (w)
+			HandIn(e, w, playerId);
+	}
+}
