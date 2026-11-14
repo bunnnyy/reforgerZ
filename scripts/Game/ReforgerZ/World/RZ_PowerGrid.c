@@ -218,6 +218,43 @@ class RZ_PowerGrid
 	//------------------------------------------------------------------------------------------------
 	//! For the substations: may the map's cabinets carry a control, and what stands where none does.
 	bool CanUseCabinetsPublic() { return CanUseCabinets(); }
+
+	//------------------------------------------------------------------------------------------------
+	//! Test only: the station's region set to `radius` m (and its towns with it); returns the old one.
+	float TestRegion(float radius)
+	{
+		float old = m_Settings.m_fRegionRadius;
+		if (m_bActive)
+			ApplyPower(false);
+
+		m_Settings.m_fRegionRadius = radius;
+		BuildRegion();
+		if (m_bActive)
+			ApplyPower(IsPowered());
+
+		return old;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test only: the station running (or dark) at once, its towns and lamps with it.
+	void TestPower(bool on)
+	{
+		if (!m_bActive)
+			return;
+
+		if (on)
+		{
+			SetStep(STEP_POWERED);
+			m_fCondition = 1;
+		}
+		else
+		{
+			SetStep(STEP_OPEN);
+		}
+
+		ApplyPower(on);
+		PushLamps();
+	}
 	ResourceName GetControlPrefab() { return ControlPrefab(); }
 
 	//------------------------------------------------------------------------------------------------

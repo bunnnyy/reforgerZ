@@ -601,6 +601,67 @@ heard, not seen (the map's own sets at a power plant don't move); windows don't 
 **UI > Power breaker layout** empty the control keeps its old world prompts and the breakers are
 done in one go with the generator ([fallbacks](UI.md#the-power-panel)).
 
+### The grid, region by region
+
+Code: `World/RZ_Substations.c` (owned by the power grid); settings: **World > Power grid >
+Substations**. The station lights its own region (above); past it, the map's own power
+infrastructure carries it further, one region at a time.
+
+- **The substations.** Near each town outside the station's region (the bigger towns first), the
+  map's own substation building, transformer yard or lone transformer (the station's own finder,
+  `RZ_PowerSite`), on dry mainland, off the line, 2 km apart, at most **6**. Each powers the towns
+  within **1.5 km** of it that aren't the station's. A map with none (no transformer anywhere past
+  the region) has no substations, and the station alone, as before. Named by what it is: "the
+  substation in Levie", "the transformer yard outside Tyrone".
+- **Switching one on.** Its control is the map's own electrical cabinet in the yard (an invisible
+  spot on its face) when there is one within 45 m, else the station's control prefab beside it.
+  **Look at the substation** opens its object menu: **Fit a fuse and close the breaker** (a 12 s
+  hold at the cabinet; it takes a coil of wire, the crafting's wire or the masts' words). Its towns
+  have power while it's switched on, its line to them is whole and the station runs: the lights
+  hook, the street lamps, town memory's power flag, as the station's own region. The station stopping
+  darkens them all; a substation stays switched on through it.
+- **Lines that break.** While the station runs and players are online, a live substation's lines
+  break now and then (**Breaks an hour**, 0.25; twice that in a storm, half again where the infected
+  are stirred round the yard). One of its towns goes dark. The break is at one of the map's own
+  power poles near the middle of the line (by prefab name: `PowerLine_*_pole*`), else at the yard's
+  own cabinet. Who says so: the open channel, to players with a radio round the town (*"Lights are
+  out in Levie. Line's down somewhere between us and the substation..."*). **Look at the line** at
+  the pole: **Splice the line** (a 15 s hold; a length of wire). The kind of break is in the menu's
+  text: wear, the storm, the infected.
+- **The Red Hand's toll.** With a Red Hand holding within 3 km of the yard, three breaks in ten are
+  the crews cutting the line (**Toll share**, 0.3). A crewman sits under the pole; the Red Hand's
+  channel tells the town's radios: *"The lights in Levie are on the book now. Two tins and our man
+  at the line puts them back."* At the line: **Pay him two tins to put it back**, or splice it
+  yourself (+3 Red Hand Infamy, and the channel notices).
+- **What the factions get from it** (small, capped, gone with the power):
+
+| Faction | While its place has power |
+|---|---|
+| Halcyon | The lab works ×1.2 faster while its town is lit (**Lab multiplier**, capped at 1.5) |
+| The Haven | +1 morale an hour while a town it holds is lit, at most +6 a real day (the cold room, the kitchens) |
+| Bastion | The same (its radios reach its posts) |
+| The Red Hand | The tolls on a town's line (above), and its pay for sabotage (below) |
+
+- **Lit towns at night.** In a lit town at night the infected are 15% fewer (**Lit spawn**, 0.85: lit
+  streets keep them off a little), but every lit town makes 1 heat a minute at its middle, so packs
+  come from further.
+- **Sabotage.** At a switched-on substation, **Cut the breaker** (an 8 s hold, loud: 8 heat): its towns
+  go dark until someone fits a new fuse. At an up mast that's somebody's ([The masts](#the-masts)),
+  **Cut its cable**: it's down again with a new part missing, and whoever held it asks on its channel
+  for someone to put it back; whoever does gets 5 Fame with them (Favor with the Red Hand) and the mast
+  is theirs again. Either cut costs **8 Infamy** with each faction whose town or mast it darkens, and
+  the Red Hand pay **10 Favor** for a rival's (once a real day a player; their channel says so).
+- **Generators you carry** are the placed kit's ([Barricades, traps and
+  generators](#barricades-traps-and-generators)): a portable or found generator lights where it
+  stands for 30 minutes a fuel item, and hums (6 heat a minute).
+- **Saved:** each substation's switch and its broken line (where, what kind, the crewman), and today's
+  Red Hand pay.
+
+*Simplified:* a substation is switched in one hold, not a fuse and a breaker as two things; the break's
+pole has no sagging wire of its own (the pole is the map's, the spot on it ours); a substation lights
+whole towns, not streets; the Haven's cold room and Bastion's radios are morale, not their own systems;
+sabotage is open to anyone at the place (the Red Hand pay afterwards), not a contract taken from a giver.
+
 ### The radio station
 
 One broadcast point per map: a placed `RZ_RadioStationMarkerEntity`, else a real radio mast
@@ -669,6 +730,8 @@ Every line is a voice on the radio (**Radio: the mast above ...**, **Radio: over
 past the line**), never a card. *Simplified:* the prop at the foot is always ours (the map's own
 cabinet isn't used yet); a cut mast and its job to put it back and all masts up opening the
 loop's relay wait in the design.
+
+- **A cut cable** ([sabotage](#the-grid-region-by-region)): an up mast's **Cut its cable** takes it down with a new part missing; its old holder asks for it back, and whoever puts it back up gives it back to them (5 Fame; Favor with the Red Hand).
 
 ### The government broadcast
 

@@ -201,6 +201,8 @@ class RZ_Substations
 	protected static const string SPLICE = "grid.splice.";
 	protected static const string CUT = "grid.cut.";
 
+	static bool s_bTestNoParts;			// the runtime test only: a fuse or a splice needs no wire (its items don't go into a pack there)
+
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_PowerGrid m_Grid;
 	protected RZ_SubstationSettings m_Settings;
@@ -345,7 +347,7 @@ class RZ_Substations
 
 		subs.m_aPaid.Insert(key);
 		gm.AddFavor(playerId, RZ_EFaction.BANDITS, subs.m_Settings.m_iCutFavor);
-		gm.Say(playerId, "Radio: the Red Hand's channel", RZ_EFaction.BANDITS, string.Format("A crew voice, pleased with itself: \"Saw %1 go. The book's paid you. Don't spend it all on candles.\"", what));
+		gm.Say(playerId, "Radio: the Red Hand's channel", RZ_EFaction.BANDITS, string.Format("Saw %1 go. The book's paid you. Don't spend it all on candles.", what));
 	}
 
 	// ================================================================ Save / load
@@ -833,7 +835,10 @@ class RZ_Substations
 		if (!ent)
 			ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 
-		if (s.m_bOn || !ent || RZ_Masts.TakePart(ent, RZ_EMastPart.WIRE, 1) < 1)
+		if (s.m_bOn || !ent)
+			return false;
+
+		if (!s_bTestNoParts && RZ_Masts.TakePart(ent, RZ_EMastPart.WIRE, 1) < 1)
 			return false;
 
 		s.m_bOn = true;
@@ -859,7 +864,10 @@ class RZ_Substations
 		if (!ent)
 			ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 
-		if (s.m_iBroken < 0 || !ent || RZ_Masts.TakePart(ent, RZ_EMastPart.WIRE, 1) < 1)
+		if (s.m_iBroken < 0 || !ent)
+			return false;
+
+		if (!s_bTestNoParts && RZ_Masts.TakePart(ent, RZ_EMastPart.WIRE, 1) < 1)
 			return false;
 
 		string town = TownName(s.m_iBroken);
@@ -870,7 +878,7 @@ class RZ_Substations
 		{
 			// Spliced past the toll: the crews notice
 			m_GM.AddInfamy(playerId, RZ_EFaction.BANDITS, 3, "spliced past a Red Hand toll");
-			m_GM.Say(playerId, "Radio: the Red Hand's channel", RZ_EFaction.BANDITS, string.Format("\"Somebody's spliced the line to %1 without paying. The book's got a page for people like that.\"", town));
+			m_GM.Say(playerId, "Radio: the Red Hand's channel", RZ_EFaction.BANDITS, string.Format("Somebody's spliced the line to %1 without paying. The book's got a page for people like that.", town));
 			return true;
 		}
 
@@ -891,7 +899,7 @@ class RZ_Substations
 		string keeper = s.m_sKeeper;
 		ClearBreak(s);
 		RZ_Log.Info(string.Format("Substations: %1 paid the Red Hand's toll on the line to %2.", RZ_Names.Public(playerId), town));
-		m_GM.Say(playerId, keeper + ", Red Hand crewman", RZ_EFaction.BANDITS, string.Format("\"Pleasure doing business.\" He has the ends twisted back together before you've let go of the tins. \"Lights in %1. Tell them who to thank.\"", town), s.m_Crew);
+		m_GM.Say(playerId, keeper + ", Red Hand crewman", RZ_EFaction.BANDITS, string.Format("Pleasure doing business. Lights in %1, soon as I've twisted these back. Tell them who to thank.", town), s.m_Crew);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1031,9 +1039,9 @@ class RZ_Substations
 				continue;
 
 			if (s.m_iKind == BREAK_TOLL)
-				m_GM.Say(id, "Radio: the Red Hand's channel", RZ_EFaction.BANDITS, string.Format("\"The lights in %1 are on the book now. Two tins and our man at the line puts them back. Or sit in the dark. Your choice.\"", town.m_sName));
+				m_GM.Say(id, "Radio: the Red Hand's channel", RZ_EFaction.BANDITS, string.Format("The lights in %1 are on the book now. Two tins and our man at the line puts them back. Or sit in the dark. Your choice.", town.m_sName));
 			else
-				m_GM.Say(id, "Radio: the open channel", -1, string.Format("\"Lights are out in %1. Line's down somewhere between us and %2. Anyone with a bit of wire...\"", town.m_sName, s.m_sName));
+				m_GM.Say(id, "Radio: the open channel", -1, string.Format("Lights are out in %1. Line's down somewhere between us and %2. Anyone with a bit of wire, go and have a look.", town.m_sName, s.m_sName));
 		}
 	}
 
@@ -1277,6 +1285,47 @@ class RZ_Substations
 	}
 
 	// ================================================================ The test's hand
+	//------------------------------------------------------------------------------------------------
+	//! Test only: find the substations again as if the station's region were `region` m (a small map's
+	//! station covers every town, so the test shrinks it to have some). Returns how many.
+	int TestFind(vector station, float region)
+	{
+		foreach (RZ_Substation old : m_aSubs)
+		{
+			if (old.m_Body)
+				RZ_Util.DeleteUnit(old.m_Body);
+
+			if (old.m_BreakBody)
+				RZ_Util.DeleteUnit(old.m_BreakBody);
+
+			if (old.m_Crew)
+				RZ_Util.DeleteUnit(old.m_Crew);
+		}
+
+		m_aSubs.Clear();
+		Find(station, region);
+		m_bOn = !m_aSubs.IsEmpty();
+		ApplyTowns();
+		return m_aSubs.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test only: morale given to a faction today by the power.
+	float TestMoraleToday(int f)
+	{
+		if (!m_mMoraleToday.Contains(f))
+			return 0;
+
+		return m_mMoraleToday.Get(f);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test only: run the morale for `seconds` of play at once.
+	void TestMorale(float seconds, array<int> ids)
+	{
+		TickMorale(seconds, ids);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Test only: the first town a substation would light, or -1.
 	int TestFirstTown(int index)

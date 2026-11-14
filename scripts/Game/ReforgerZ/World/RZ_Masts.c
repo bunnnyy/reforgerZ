@@ -1135,9 +1135,9 @@ class RZ_Masts
 				continue;
 
 			if (f >= 0)
-				m_GM.Say(id, RZ_FactionVoice.ChannelTitle(f), f, string.Format("\"Somebody's cut %1. It wants %2 and a climb. Whoever puts it back up, we'll remember.\"", m.m_sShort, PartWord(m.m_ePart)));
+				m_GM.Say(id, RZ_FactionVoice.ChannelTitle(f), f, string.Format("Somebody's cut %1. It wants %2 and a climb. Whoever puts it back up, we'll remember.", m.m_sShort, PartWord(m.m_ePart)));
 			else
-				m_GM.Say(id, "Radio: the open channel", -1, string.Format("\"%1's gone quiet. Somebody cut it. It wants %2.\"", Capitalize(m.m_sShort), PartWord(m.m_ePart)));
+				m_GM.Say(id, "Radio: the open channel", -1, string.Format("%1's gone quiet. Somebody cut it. It wants %2.", Capitalize(m.m_sShort), PartWord(m.m_ePart)));
 		}
 	}
 
@@ -1157,7 +1157,7 @@ class RZ_Masts
 
 		RZ_Log.Info(string.Format("Masts: %1 put %2 back up; it's %3 again.", RZ_Names.Public(playerId), m.m_sName, OwnerWord(owner)));
 		if (f >= 0)
-			m_GM.Say(playerId, RZ_FactionVoice.ChannelTitle(f), f, string.Format("\"That's %1 back. Good work. We said we'd remember.\"", m.m_sShort));
+			m_GM.Say(playerId, RZ_FactionVoice.ChannelTitle(f), f, string.Format("That's %1 back. Good work. We said we'd remember.", m.m_sShort));
 		else
 			m_GM.Say(playerId, Speaker(m), -1, "The hiss comes back clean. Everyone's again.");
 
