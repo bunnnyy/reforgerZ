@@ -1189,8 +1189,11 @@ the patterns are in [DESIGN.md](DESIGN.md#openings-how-every-life-starts).
 | ✅ Hold the Gate | `opening.gate` | do | 60 s within 15 m of the gate |
 | ✅ The Debt | `opening.debt` | press | 10 s at a house's door (the crate prop) |
 | ✅ Two Families | `opening.settle` | talk | once the conversation has settled it |
-| ✅ Where the Work Is | `opening.lead`, `opening.lead.note` | do | within 40 m of the nearest place with work, done there; 60 minutes before it lapses (levels 2-3, or nobody outside: the scene's read gives it) |
-| ✅ To the Haven, To Bastion, To the Red Hand, To Halcyon | `opening.walk.<faction>` | do | within 40 m of the place, done there (`m_bEndsThere`: nobody to go back to); 90 minutes before it lapses (`m_fLapseMinutes`) |
+| ✅ The Runner | `opening.case` | do | take Halcyon's cold case from a runner who fell 200–600 m off (by a road, else a yard on the edge of town): done when it's in your pack, there; 90 minutes before it lapses. Then the case's lead ([DESIGN.md](DESIGN.md#the-case)) |
+| ✅ The Case | `opening.case.lead` | do | take the case to Halcyon's field station (the nearest Halcyon holding, else the lab): done only by the hand-over reply at Halcyon's people (selling it to the Red Hand or handing it to Bastion drops it); 10 hours before it lapses, handed again to whoever carries a case |
+| ✅ The Date on the Tag, Get It Back, The Case at the Post | `opening.case.date`, `.back`, `.post` | search, sneak | the stages the case opens: a work site inside the clinic (else the doctor's house) in Proof's clinic town, or inside the Red Hand's or Bastion's holding where it went; done there; 10 hours before each lapses |
+| ✅ Where the Work Is | `opening.lead`, `opening.lead.note` | do | within 40 m of the nearest place with work, done there; 60 minutes before it lapses (no case here, or nobody outside: the scene's read gives it) |
+| ✅ To the Haven, To Bastion, To the Red Hand, To Halcyon | `opening.walk.<faction>` | do | within 40 m of the place, done there (`m_bEndsThere`: nobody to go back to); 90 minutes before it lapses (`m_fLapseMinutes`); only when there's no case to find (levels 0-1) |
 
 How a handed errand differs (`m_bHanded`): the dealer never deals it; its giver is the contact, not a
 named person, so the "giver gone" guard doesn't apply; it pays nothing through the ledger (no Favor,

@@ -318,6 +318,11 @@ each kind at a time across all routes):
 | Else one of a pack's guard or young, or a special (Live Capture's rules) | +2 after 12 real hours of the lab's work |
 | Nothing to hunt with on this server (no prefabs) | +2 after a real day: the lab grows it from its own samples |
 
+**The runner's case.** The season's first live case brought to Halcyon from an opening
+([DESIGN.md](DESIGN.md#the-case)) is banked (the season flag `case.tissue`): once Halcyon's route's
+Act I is done and its tissue isn't in, it counts **+2 at once** ("live tissue, the runner's case"),
+before any hunt is offered for it.
+
 Whoever hands the case in credits their own route if they're locked to one that still needs tissue,
 else the route the hunt was offered for, and is paid as an open step. A route whose tissue is in gets
 no more hunts. Each route's words: Who It Was, Contact Captured, Fresh Stock, The Index, Nobody's

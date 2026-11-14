@@ -627,6 +627,10 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 12 && !RZT_Openings.Tick(this, m_aRZTRoute[0]))
 			return;
 
+		// The runner's case (RZT_Case.c): found, carried, kept over a death, handed to Halcyon by reply
+		if (m_iRZTSec >= 12 && !RZT_Case.Tick(this, m_aRZTRoute[0]))
+			return;
+
 		if (m_iRZTSec > 5 && m_iRZTSec % 3 == 0 && !m_bRZTMissionsDone)
 		{
 			if (!GetMissions().RZT_Step())

@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **369 prefab fields**: 46 on `RZ_GameModeComponent`, 306 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **346 entries**: 201 prefabs the plugin creates, 38 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **370 prefab fields**: 46 on `RZ_GameModeComponent`, 307 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **347 entries**: 202 prefabs the plugin creates, 38 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -767,6 +767,12 @@ and the UI files) need none, and eight have no base:
 | `RZ_Barricade.et` | sandbags and a car on its side | — | Guidance > Barricade prefab | optional | barricade scenery |
 | (existing prefab) | the RZ_Opening_* compositions in Prefabs/ReforgerZ/Guidance/Openings/, built by tools/camp_kit/build.py from pieces.py's OPENINGS, which also fills the slots | — | Guidance > Opening scenes (each key's prefab) | optional | the openings' props by the door you come out of: three scenes per reason and each background's own things (docs/DESIGN.md, Openings); a key with none = nothing there |
 | (existing prefab) | a person with the puzzle components, as Puzzles > Civilian is (a plainer civilian for variety) | — | Guidance > Contact | optional | whoever's outside an opening's door (someone from before, a stranger, an earlier life's wanderer); empty = Puzzles > Civilian (no body at all: nobody outside, and the scene's read points at the nearest work) |
+
+#### Guidance
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_ColdCase.et` | an inventory item with the medical kit's case mesh (no medical or arsenal parts) | `RZ_ColdCaseComponent`; `RZ_ReadCaseTagAction` | Guidance > Cold case | optional | the runner's case at the opening's end: picked up by the runner, taken to Halcyon's field station (empty = no case, the chain ends as before). The repo's is vanilla Item_Base with MedicalKit_01's mesh, 4 kg, 2x2. It must show vanilla's pick-up prompt on the ground; check its collision, since ModelGeometry reads the kit's own colliders |
 
 #### Power grid and radio station
 
@@ -1900,7 +1906,16 @@ play-test went wrong): every running job drops the new life; its opening has its
 within 15 m and step 1 first, not the lead to work; the Quests tab lists no taken job; and later,
 once a questline runs, a part from the last life doesn't put it in the new life's journal while the
 story still remembers the player (`RZT fresh OK|FAIL <what>`, `RZT fresh: N checks, N failed`; the run
-fails on FAIL). The fake player logs `Openings: Tester <background>: NO OPENING` at boot: it isn't
+fails on FAIL). Then **the runner's case** (`RZT_Case.c`): a place for the runner by the first town,
+him dead there and the case by him with its tag; the case carried counts as the step done and the
+lead is handed; 15 s with it leaves the lead waiting; an hour out of the cold reads warm; a death
+keeps it as data, off the body, and it's given back as warm as it was; a Halcyon speaker lists the
+hand-over first and picking it takes the case, ends the lead, sets the state and banks the season's
+tissue (`case.tissue` 1), with Proof's part checked when Proof runs; a second case that season banks
+nothing; a Red Hand speaker lists the sale, and selling sets Get It Back going. The test server
+can't put a text-written prefab in a pack (no registered resource id), so the tester holds the case
+through the case's test stand-in (`RZ_ColdCaseComponent.s_TestCarried`) and says so (`RZT case OK|FAIL
+<what>`, `RZT case: N checks, N failed`; the run fails on FAIL). The fake player logs `Openings: Tester <background>: NO OPENING` at boot: it isn't
 spawned through the spawn screen, so no place is rolled for it. From then
 on the fake player can't hold a prompt, so while it stands at a mission the open work sites within 25 m of
 it are done for it (the others wait until the tracker sends it there) (`RZT work sites: N done for '<title>'`), and a job finished that way ends by itself. An objection
@@ -2169,7 +2184,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **198** lines with the tag, all but one in the game scripts (one is the comment in
+There are **201** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2296,7 +2311,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1475` | a quartermaster or the medic moved and turned with `SetWorldTransform` on the server stays at their hand-placed spot, facing its way, on every client | They stand where they spawned; the quartermaster turns to serve as before |
 | `World/HandBuilt/RZ_HandSpots.c:402` | a short flat trace through a spot inside a wall, a crate or a tent's side reports a hit (the spot turns red), and the excluded marker cone doesn't | A spot in a wall isn't flagged; the author sees it in play |
 
-### Low risk: contained or cosmetic (47)
+### Low risk: contained or cosmetic (50)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2305,6 +2320,9 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_Interactions.c:187` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
+| `Guidance/RZ_OpeningCase.c:255` | the runner (Puzzles > Civilian) killed the moment he's spawned falls and lies where he was put, for every client, as A Sample's remains | He stands, dead to the server: the case still lies by him |
+| `Guidance/RZ_ColdCase.c:75` | `GetItems()` finds the cold case in a bag inside another bag, as for keys | A case carried that deep isn't seen: the hand-over reply doesn't show until it's in a pocket or the pack itself |
+| `Guidance/RZ_OpeningCase.c:811` | deleting the case while it's still in a dead body's storage (when `TryDeleteItem` refuses) leaves the body's storage sound | The body's inventory shows an empty slot or an error; the case still comes back on respawn |
 | `Guidance/RZ_OpeningSteps.c:516` | A Sample's remains: a special spawned and killed at once on the server (`RZ_Util.KillCharacter`) falls and lies where it was spawned, for every client | The body stands, or isn't seen: the place check still passes (it's dead there). Spawn it a frame later, or use a body prop |
 | `Guidance/RZ_Openings.c:1149` | an opening's contact who walks with you: a one-man civilian AI group (**Guidance > Companion**, `RZ_OpeningCompanion.et`) follows the player on `RZ_Escort`'s move orders, and its leader (the `RZ_Civilian` body) carries the talk tags | They stand still where they were swapped in, or "Talk to" is missing on them: the log's `Openings: <name> walks with <player>` is there. The steps still start on their cards after a minute; report it, and set **Companion** empty (they hand you on instead) |
 | `Guidance/RZ_OpeningSteps.c:532` | the remains withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stay until the opening ends, then go with the engine's cleanup once inserted again (as the vigil's body) | The body goes with the engine's usual cleanup during the step; the sample still lies there |
@@ -2775,6 +2793,14 @@ the road for <player> at <grid>, step 1 skipped`, `Openings: <player> <backgroun
 refused the spawn>), the scene's read instead`, `Openings: the story budget is full near <grid>; the contact
 stands all the same`, `Openings: <player> <background>: NO OPENING (no place was rolled for this spawn)` and
 `Missions: <player> began a new life, off N job(s) the last one held`; a lead's end is `Openings: ended for <player>: found work at <place> (step 3, N min)`.
+The case ([DESIGN.md](DESIGN.md#the-case)): `Openings: no runner's case for <player> at <grid>, the old end
+instead`, `Openings: the runner and his case put out for <player> at <grid>`, `Openings: ended for <player>:
+took the runner's case`, `Openings: the case's lead for <player>: <place> (<direction>)`, `Openings: <player>
+handed the case over (to Halcyon|sold to the Red Hand|to Bastion, cold|warm)`, `Openings: the season's first
+live case is in: live tissue for Halcyon's route, banked`, `Openings: <stage> for <player> at <place>`,
+`Openings: <player> died with the case; it's kept for the next spawn`, `Openings: the kept case given back
+to <player>`, and a warning `Openings: the cold case prefab has no RZ_ColdCaseComponent` when the slot is
+wrong.
 
 Task places ([PLACES.md](PLACES.md#the-live-check)): nothing while every place is true to its words;
 `Place check: <need> at <grid> ("<text>") fails: <why>` (a warning) when a placed task's place, or a
@@ -3571,6 +3597,22 @@ when it happens)
   seen), and his first ask is step 1, *Down the Road*, never *Where the Work Is* straight away. The
   Quests tab lists only that step: none of the last life's questlines, majors or jobs, and no "Quest
   started" card for them (log: `Missions: <you> began a new life, off N job(s) the last one held`).
+- [ ] **The case** ([DESIGN.md](DESIGN.md#the-case)), with a pad. Open `Prefabs/ReforgerZ/Guidance/RZ_ColdCase.et`
+  once so its id registers (on the cloud's test server it can't go into a pack until it is: the
+  test used a stand-in), and check **Guidance > Cold case** came through. At the end of any opening:
+  a dead man lies by a road or in a yard 200–600 m off, never in a field, the water or at the line,
+  and a case with Halcyon's look lies by him (it uses the medical kit's mesh: say if it looks wrong
+  or floats). **Read the tag** on the ground: the tag, its date and "cold to the touch". Pick it up
+  with vanilla's prompt: it fits in your pack (2x2, 4 kg: say if a civilian's pockets refuse it), the
+  step ends and *The Case* is tracked to Halcyon's field station by name. Stand at the station 30 s:
+  nothing happens. Talk to anyone of Halcyon's: **[Errand] Hand over the runner's case** is first;
+  pick it: the director (or whoever) speaks of the date on the tag, the case leaves your pack, +10
+  Halcyon Fame, and before 25% cure *The Date on the Tag* is tracked to the clinic (its file inside,
+  a 10 s search). Another life: sell it at a Red Hand person (**[Trade] Sell the runner's case**,
+  +15 Favor): *Get It Back* at their holding, an 8 s unseen take, and it's back in your pack, warm.
+  Again at Bastion: *The Case at the Post*. Die carrying it: it isn't on the body, and the respawned
+  character has it in the pack ("You still have the runner's case."). Keep it a game day: Halcyon's
+  channel asks after it once. Log lines as in [DESIGN.md](DESIGN.md#the-case).
 - [ ] **Openings** ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), with a pad. The spawn
   screen has no place picker: under Start, only the kind of place the picked background starts at
   ("A clinic, or a house near one"); left and right do nothing. Deploy as a Nurse: you stand 2 m out
@@ -3587,24 +3629,24 @@ when it happens)
   for word, then "Then on to Emil, at Emil's house in Morton." Search the house for 20 s: it's done
   there, nobody calls you back, and *Find Emil* is tracked at a house 200–600 m further on (its
   diamond on him). Within 25 m he calls (*"You're the one Pavel sent? Over here."*); talk to him: the
-  broadcast, nobody coming, and *The Fever*, his son's (below). Then *To Halcyon*
-  starts where you stand, with the Perimeter and the cure, the tracker pointing at Halcyon's nearest
-  holding or the lab; ask Emil again and he says that step word for word. Go back to Pavel on the
+  broadcast, nobody coming, and *The Fever*, his son's (below). Then *The Runner*
+  starts where you stand, with the shot out by the line, the tracker on the runner 200–600 m off (the
+  case, below); ask Emil again and he says that step word for word. Go back to Pavel on the
   way: *"Go on. Emil's waiting for you, not me."*; leave him 150 m behind and he's gone. As a
   **Mechanic** (they walk with you): after the first ask, close the talk screen and the regular from
   the garage comes with you (*"I'm coming with you. ... You lead."*), 4 m behind; search the garage
   down the road with them beside you, and *The Pump* starts there, said by them (no Back to); walk
-  off fast and the next step waits up to a minute for them to catch up. Fill a can at the pump: *To
-  the Haven* starts there, and they walk you to the safehouse (*"This is it. I'll find a corner."*).
-  Let infected near them: they stop and can be killed (the walk then goes to the nearest safehouse).
+  off fast and the next step waits up to a minute for them to catch up. Fill a can at the pump: *The
+  Runner* starts there, and they walk you to him. Let infected near them: they stop and can be killed
+  (the chain then goes on to the runner by itself).
   With **Contracts > Max escorts** full or **Companion** empty, they stay and each next step starts
   where you are, on its card. Do the same pass once each for a Hunter, Lab Technician, Unemployed,
   Raider, Ex-Con and Radio Operator (they walk with you) and a Doctor, Elder, Soldier, Police Officer
   and Drifter (sent on: the man whose friend was bitten, the man between two families, the one
   keeping the gate, the shopkeeper who kept your station's keys, someone who heard you help); every
   step is a new place, none sends you back. With the talk screen off (**UI > Talk reply
-  layout** empty), **Talk to** says the same lines as subtitles, in order. Arrive: one line there and
-  +10 Halcyon Fame. Time the whole chain (about 15 minutes) and note the log's minutes. Respawn: the
+  layout** empty), **Talk to** says the same lines as subtitles, in order. Take the case: the chain ends and
+  *The Case* is tracked. Time the whole chain (about 15 minutes) and note the log's minutes. Respawn: the
   next start is a different town (2 km from the last two). A Soldier ends at Bastion, a
   Mechanic at the Haven. Shoot the contact during step 1: a line from "Someone in a doorway" and the
   walk to the nearest safehouse. Nobody waves you over for an errand while it runs. By the open door:

@@ -25,6 +25,7 @@ class RZ_ColdCaseComponent : ScriptComponent
 	{
 		m_sTag = tag;
 		m_iFinder = finder;
+		s_LastMade = GetOwner();
 		Replication.BumpMe(); // needs the item's RplComponent
 	}
 
@@ -34,7 +35,7 @@ class RZ_ColdCaseComponent : ScriptComponent
 	bool IsWarm() { return m_fWarm >= 1; }
 
 	//------------------------------------------------------------------------------------------------
-	//! Server only: dt seconds at `rate` (1 a cold case warms in Warm minutes; half at night).
+	//! Server only: warmer by `amount` (1 is cold to warm), never past warm.
 	void Warm(float amount)
 	{
 		m_fWarm = Math.Clamp(m_fWarm + amount, 0, 1);
@@ -49,12 +50,22 @@ class RZ_ColdCaseComponent : ScriptComponent
 		return RZ_ColdCaseComponent.Cast(e.FindComponent(RZ_ColdCaseComponent));
 	}
 
+	// The runtime test's stand-in (tools/runtime_test, RZT_Case.c): on the Linux test server a prefab
+	// written as text has no registered resource id, so the case can't go into a pack there; the test
+	// says which case its tester holds instead. Never set in play.
+	static IEntity s_TestCarried;	// weak
+	static IEntity s_TestHolder;	// weak
+	static IEntity s_LastMade;		// weak: the last case tagged (SetTag), for the test
+
 	//------------------------------------------------------------------------------------------------
 	//! The case this character carries (in any of their storage), null if none.
 	static IEntity CarriedBy(IEntity character)
 	{
 		if (!character)
 			return null;
+
+		if (s_TestCarried && s_TestHolder == character)
+			return s_TestCarried;
 
 		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
 		if (!inv)

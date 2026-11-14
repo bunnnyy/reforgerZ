@@ -264,7 +264,7 @@ class RZ_OpeningChain
 		cw.m_bEndsThere = true;
 		cw.m_sStep = "Take the case from the runner, {place}.";
 		cw.Take("He fell {place}. He was carrying something, and nobody's been out to look. Go and see before somebody else does.",
-			"Whoever he was, he's {place} now. He had a case with him. Bring it back here, or don't, but look.");
+			"Whoever he was, he's {place} now. He had a case with him. See what it is before somebody else does.");
 		cw.Done("Halcyon. The lab people. If that's alive, it's the only thing in the Zone that matters.",
 			"That's a Halcyon tag. Don't open it. Whatever's in there, it's theirs, and they'll want it cold.");
 

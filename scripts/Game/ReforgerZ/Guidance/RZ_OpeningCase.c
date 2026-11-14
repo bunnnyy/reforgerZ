@@ -763,11 +763,18 @@ class RZ_OpeningCase
 	//------------------------------------------------------------------------------------------------
 	protected bool TakeCase(IEntity user, IEntity item)
 	{
+		m_aCases.RemoveItem(item);
+		if (item == RZ_ColdCaseComponent.s_TestCarried)
+		{
+			RZ_ColdCaseComponent.s_TestCarried = null;
+			SCR_EntityHelper.DeleteEntityAndChildren(item);
+			return true;
+		}
+
 		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(user.FindComponent(SCR_InventoryStorageManagerComponent));
 		if (!inv)
 			return false;
 
-		m_aCases.RemoveItem(item);
 		return inv.TryDeleteItem(item);
 	}
 
@@ -796,6 +803,9 @@ class RZ_OpeningCase
 		profile.m_bCaseHeld = true;
 		profile.m_fCaseWarm = c.GetWarm();
 		m_aCases.RemoveItem(item);
+		if (item == RZ_ColdCaseComponent.s_TestCarried)
+			RZ_ColdCaseComponent.s_TestCarried = null;
+
 		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(body.FindComponent(SCR_InventoryStorageManagerComponent));
 		if (!inv || !inv.TryDeleteItem(item))
 			SCR_EntityHelper.DeleteEntityAndChildren(item); // VERIFY: deleting an item still in a dead body's storage leaves the storage sound
@@ -806,7 +816,7 @@ class RZ_OpeningCase
 
 	//------------------------------------------------------------------------------------------------
 	//! A kept case back in the respawned character's pack (from the tick, once they stand).
-	protected void GiveBack(int playerId, IEntity me)
+	void GiveBack(int playerId, IEntity me)
 	{
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		if (!profile.m_bCaseHeld || !me)
@@ -869,6 +879,17 @@ class RZ_OpeningCase
 
 		if (kept)
 			AskAfter();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lead's errand id for this player, -1 none (the runtime test reads it).
+	int LeadOf(int playerId)
+	{
+		int id;
+		if (m_mLead.Find(playerId, id))
+			return id;
+
+		return -1;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -3270,7 +3270,9 @@ and for the first five minutes cards come at most one every 45 s; the rules and 
 
 ### Openings: how every life starts
 
-Planned: the opening rebuilt around the Halcyon case, leading into Proof ([designs/OPENING.md](../designs/OPENING.md)).
+Built so far of the new opening ([designs/OPENING.md](../designs/OPENING.md)): its end, [the case](#the-case),
+which leads into Proof. Planned there: the door's questions and habits, the favours by background,
+the line and the runner's last run, and the Red Hand fixer.
 
 Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningScenes.c`, `RZ_OpeningChain.c`,
 `RZ_OpeningSteps.c`, `RZ_OpeningText.c`, `Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
@@ -3421,26 +3423,31 @@ a talk objective comes before the first step, and before a next person's step (a
 
 | Level | The chain |
 |---|---|
-| 0, brand new | All three steps (about 15 minutes); the reasons lean to the hiding place |
+| 0, brand new | All three steps (about 15 minutes, then the case's walk to the station); the reasons lean to the hiding place |
 | 1, learning | All three; step 1's search is 10 s, not 20 |
-| 2, familiar | The scene and whoever's outside; step 1 (shorter), your background's step 2, then **Where the Work Is** |
-| 3, veteran | The scene as a one-line read and whoever's outside; step 1 (shorter), then Where the Work Is |
+| 2, familiar | The scene and whoever's outside; step 1 (shorter), your background's step 2, then **The Runner** |
+| 3, veteran | The scene as a one-line read and whoever's outside; step 1 (shorter), then The Runner |
 
 Every life starts with step 1 from the person at the door: an experienced player's chain is shorter
 after it, never without it (the author's play-test as a veteran: nobody there and the lead tracked
 at once read as "the first mission is already skipped").
 
-**Where the Work Is** (`opening.lead`) walks you to the nearest place with work: a Haven safehouse, or
-an outpost or stronghold of a faction that doesn't hunt you; done within 40 m of it, an hour to get
-there, one line on arrival ("Someone with a list looks up."), and no Fame. All three steps:
+Step 3 is **The Runner** ([the case](#the-case)) whenever the case can be found here. When it can't
+(Guidance > Cold case empty, the cure out, Halcyon with nowhere to take it, or nowhere a runner could
+have fallen), the chain ends as it did: a learning player's walk to where they belong (below), else
+**Where the Work Is** (`opening.lead`), the walk to the nearest place with work: a Haven safehouse,
+or an outpost or stronghold of a faction that doesn't hunt you; done within 40 m of it, an hour to
+get there, one line on arrival ("Someone with a list looks up."), and no Fame. With nobody outside,
+the chain is Where the Work Is alone. All three steps:
 
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
 | 1. Down the Road | Search a building 150–450 m from them: a work site's **Search it, quietly** (8 s; 6 s from level 1 up; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot inside it, on its ground floor; done there. One of your background's kinds when one is there (below), else a house, named for what it really is ([PLACES.md](PLACES.md#a-place-is-what-its-words-say)); no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
 | 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold), else The Cut (dress their hand with anything medical you carry: the hand-over reply on their talk screen, done there and then) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
-| 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
+| 3. The Runner | Take the case from a runner who fell 200–600 m off, by a road or in a yard on the edge of town ([the case](#the-case)); done when it's in your pack, there. Then the lead to Halcyon's field station | the main story: the cure, Halcyon, the factions by name | The line ("That was a shot. Out by the line. Somebody ran for it again.") and Halcyon's case |
+| (else) To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
-No step 2 (yours can't run here, no well near and nothing medical on you): straight to the walk.
+No step 2 (yours can't run here, no well near and nothing medical on you): straight to The Runner.
 With **Dialogue > Trees** on, the conversations `for opening` add their greeting (by who they are,
 your background and why today) and things to ask on the way
 ([DIALOGUE.md](DIALOGUE.md#the-conversations)); without it, a plain greeting by who they are and why
@@ -3472,7 +3479,7 @@ meets its need ([PLACES.md](PLACES.md#the-needs)) or the step can't run here.
 | Elder | — | **Two Families**: hear them out with the contact, persuade 1 (factionless, [Elder] +1: `opening.settle`) | Dialogue > Trees on | the talk settled it (a Short settles it by half, said) |
 | Drifter | — | **Three asks**: up to three in a row of the gate, downwind, the swap, the debt, the two families, water and the cut, shuffled, each that can run here | — | each as above; the second and third come "from" the street's other people |
 
-**Where the chain ends** fits who you were:
+**Where the walk ends** (only when there's no case) fits who you were:
 
 | Who | Backgrounds | Ends at |
 |---|---|---|
@@ -3492,9 +3499,9 @@ end of step 2), no infected spawn within 150 m of them, and any that wander with
 your sight they're removed, in sight (or a tribe's or hunting one) they're sent back home. Your own
 shot still kills them.
 
-**When it ends early.** The contact killed during steps 1–2: whoever finds you says so, the step
-ends, and the chain goes straight to the walk to the nearest safehouse (or, without the walk, to
-Where the Work Is). The Clock lapsing loses the
+**When it ends early.** The contact killed during steps 1–2: the step ends and the chain goes
+straight on to The Runner by itself; without the case, whoever finds you says so and the chain goes
+to the walk to the nearest safehouse (or, without the walk, to Where the Work Is). The Clock lapsing loses the
 bitten friend (they say so) and the chain goes on; any other step that lapses, death or leaving ends
 it. Nobody waves you over for errands while it runs. One opening per life, runtime only
 (a restart ends it). None in the epilogue week (the place is still rolled). The contact leaves once
@@ -3506,7 +3513,9 @@ the chain and where it ends), `... called ... over before step N`, `... talked t
 ...`, `... step N done by ... in N s`, `... died`, `Openings: ended for ...: why (step, minutes)`,
 every life's `<player> <background> at <grid>: contact <name> spawned at <n> m`, the fallbacks' `no ...
 place fits`, `no place`, `NO CONTACT (<why>)`, `NO OPENING`, `no step 2 can run`,
-`...'s bitten friend was lost`, and `ended for ...: found work at ...`.
+`...'s bitten friend was lost`, `no runner's case for ... at <grid>, the old end instead`, and
+`ended for ...: found work at ...` or `... took the runner's case`; the case's own lines are under
+[the case](#the-case).
 
 *Simplified:* the earlier-life contact is a wanderer only (never a safehouse occupant), and says
 what they remember, not your old name; "the nearest job" for levels 2–3 is the nearest place that
@@ -3515,6 +3524,69 @@ only (no car to start); the Nurse's water is fetched, not boiled; the Lab Techni
 errands' prop and a sample, not a special's body; the Ex-Con's toll is passed by talking near it
 without a fight, not by a disguise check; the Elder's two families speak through the one contact;
 the Drifter's three people are one contact passing on the street's asks.
+
+### The case
+
+Code: `Guidance/RZ_OpeningCase.c`, `Guidance/RZ_ColdCase.c`. The opening's last step and the main
+story's door: the first part of [designs/OPENING.md](../designs/OPENING.md) that's built.
+
+**The runner.** Step 3 (`opening.case`, **The Runner**) puts a dead man where he fell, 200–600 m
+from whoever gives it (as far as 1 km when nothing nearer fits): by a road, else in a yard on the edge
+of town, never in a field, the water or at the line (the needs `opening.runner` and
+`opening.runner.yard`, [PLACES.md](PLACES.md#the-needs)). He's **Puzzles > Civilian**, killed
+where he stands and kept from the corpse cleanup until the opening ends. By him lies **Halcyon's cold
+case** (**Guidance > Cold case**): a real item, picked up with vanilla's prompt. Its tag (**Read the
+tag** on the ground, the reader) says *"HALCYON. FIELD STATION. LIVE. KEEP COLD. Packed <day>.<month>.
+Not for transport by road."*: the date is the season's canon (`origin.told`), the day the clinic told
+the Institute, three weeks before Day 1 ([QUESTLINES.md](QUESTLINES.md#proof)). Nobody remarks on it
+yet. The step is done when the case is in your pack.
+
+**The lead.** Then one job, tracked at once, handed by whoever gave the step: **The Case**, *"Take
+the case to Halcyon's field station at <town>. Hand it to Halcyon's people there."*, to Halcyon's
+nearest holding, else the lab. It's done only by the hand-over reply, never by standing there
+([MISSION_RULES.md](MISSION_RULES.md), rule 19); ten real hours before it lapses, and whoever carries
+a case without the lead is handed it again within a minute (a lapse, a restart, a case picked up off
+a body).
+
+**It warms.** Over an hour out of the cold (half as fast by night). Read, it says cold, cool or warm.
+Warm, it still counts; the station says so.
+
+**Handing it over** is a reply at anyone of three factions while you carry it, first in the list:
+
+| At | The reply | What happens |
+|---|---|---|
+| Halcyon's people | **[Errand] Hand over the runner's case** | The director (else whoever stands for him): where you got it, and that the date on the tag is a filing error you'd do well to forget. +10 Halcyon Fame (small). You take part in **Proof** for this character (`RZ_QuestRun.Did`). The season's first live case is banked as live tissue for Halcyon's route ([FINALE.md](FINALE.md#live-tissue)); a later one is an ordinary sample; a player's second this season counts for nothing. Before 25% cure, **The Date on the Tag** |
+| The Red Hand's | **[Trade] Sell the runner's case** | +15 Red Hand Favor, +5 Halcyon Infamy. Halcyon's field lead hands you **Get It Back** |
+| Bastion's | **[Errand] Hand the runner's case in** | "Then it's evidence." +5 Bastion Fame (small). Halcyon's field lead hands you **The Case at the Post** |
+
+Kept: the lead stays, and while anyone keeps a case, Halcyon asks after it on its channel once a
+season day.
+
+**The stages it opens**, each a handed errand, tracked at once, ten real hours each:
+
+| Stage | Where | Done when |
+|---|---|---|
+| **The Date on the Tag** | the clinic in Proof's clinic town (the canon's `origin.clinic`), inside on its ground floor; with no clinic there, the doctor's house | **Find the first case's file** (a 10 s search, quietly): the file's date is the tag's. Counts as taking part in Proof |
+| **Get It Back** | the Red Hand's holding nearest where you sold it, inside | **Take the case back, quietly** (8 s, unseen): it's in your pack again, warm, and the lead is back |
+| **The Case at the Post** | Bastion's holding nearest where you handed it in, inside | **Take the case from the stores, quietly** (8 s, unseen): the same |
+
+**A quest item stays yours.** A carrier who dies loses it from the body: it's kept as data with how
+warm it was (`RZ_PlayerProfile.m_bCaseHeld`), and the respawned character has it in their pack again.
+Whether a record is "this character's" asks one helper (`RZ_OpeningCase.CharacterStamp`), so a
+character that outlives a death changes it in one place.
+
+**Log lines:** `Openings: the runner and his case put out for <player> at <grid>`, `the case's lead
+for <player>: <place>`, `<player> handed the case over (to Halcyon|sold to the Red Hand|to Bastion,
+cold|warm)`, `the season's first live case is in: live tissue for Halcyon's route, banked`,
+`<player>'s second case this season counts for nothing`, `<stage> for <player> at <place>`,
+`<player> read the clinic's first file (The Date on the Tag)`, `<player> took the case back (...)`,
+`<player> died with the case; it's kept for the next spawn`, `the kept case given back to <player>`,
+and the finale's `live tissue, the runner's case`.
+
+*Simplified:* the runner was already dead when you came (the line's own run and the shot are
+planned); the case's tag is read in the reader, and in the pack only its fixed description shows;
+Get It Back and The Case at the Post take it from a spot inside the holding, not from a real lock-up
+or shelf; Ferda Kroupa, the Red Hand's fixer, isn't built (a Red Hand person buys it).
 
 ### Experience levels
 
@@ -3525,8 +3597,8 @@ never disappears.
 |---|---|---|
 | 0, brand new | 0 | Everything: every tip in full, the gentle start, an opening with all three steps leaning to the hiding place (a wanderer comes looking when nobody's outside), the radio every 12 min |
 | 1, learning | 1–2 | Every tip in full, an opening with all three steps (a shorter first), wanderer gossip every time |
-| 2, familiar | 3–7 | Most tips; an opening with step 1, one step of your background's and the nearest work; gossip now and then |
-| 3, veteran | 8+ | The floor: an opening's one-line read, step 1 and the nearest work (always with someone at the door), the open channels (every 42 min), and critical tips as one short line |
+| 2, familiar | 3–7 | Most tips; an opening with step 1, one step of your background's and The Runner; gossip now and then |
+| 3, veteran | 8+ | The floor: an opening's one-line read, step 1 and The Runner (always with someone at the door), the open channels (every 42 min), and critical tips as one short line |
 
 A player who comes back after 30+ real days gets two levels more guidance for two lives.
 The [opening](#openings-how-every-life-starts) sets its chain by level; the wanderer who comes
