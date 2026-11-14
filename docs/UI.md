@@ -1095,7 +1095,7 @@ several things to do there (a duty beat, a sorting duty's subject: its rows are 
 sites, given as data, `RZ_ObjectRows`; a row picked closes the menu and becomes the spot's hold,
 and one needing something you haven't got is locked with why). The admins' **site builder** is the same menu fed rows on your own character
 ([SITES.md](SITES.md#hand-built-sites)): its sites with their states in capitals, its second-press
-confirmations and its unsaved-changes question are all rows, so it needs no layout of its own; its **Go there** sends the client payload kind 23 (`PAYLOAD_SITECAM`, `x|y|z|radius`), which points Game Master's camera at the site. The author's pick of the mockups
+confirmations and its unsaved-changes question are all rows, so it needs no layout of its own; its **Go there** sends the client payload kind 23 (`PAYLOAD_SITECAM`, `x|y|z|radius`), which points Game Master's camera at the site; while a site is built each refresh sends kind 24 (`PAYLOAD_SITEMARKS`: `R|x|y|z|radius` and `S|type|x|y|z|state` records, "" clears), which the builder's client draws as the site's edge and its role spots in green, red and yellow debug shapes ([SITES.md](SITES.md#what-a-site-needs)); the same is said in the menu's words, so nothing rests on colour alone. The author's pick of the mockups
 ("B with A's tag and the lock"). A panel 1,200 × 940 in the middle of the screen (810 for a thing
 without a status strip), the world dimmed: the name ("Radio", "Ask the quartermaster") and the
 town; under them the thing's [status strip](#the-status-strip-and-locked-rows) (a house radio's POWER

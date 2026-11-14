@@ -12,7 +12,9 @@
 //!
 //! A save's lines (one per line, by their first word; any other first word is skipped, so later
 //! kinds of lines can be added): site <id>, title <text>, kind <hold|out|safe|post>, centre x y z,
-//! radius <m>, use <1|0>, saved <text>, deleted <1|0>, obj <prefab> x y z yaw pitch roll scale.
+//! radius <m>, use <1|0>, saved <text>, deleted <1|0>, obj <prefab> x y z yaw pitch roll scale,
+//! faction <n> (RZ_EFaction), pin <1|0> (kept here every season), spot <type> x y z yaw [seats]
+//! (a role spot, RZ_HandSpots).
 //!
 //! A site's id is its kind and its place rounded to the metre ("out_4810_6620"): the same site gets
 //! the same id every session, whatever order it's listed in. A place matches a save with its id, or
@@ -41,7 +43,10 @@ class RZ_HandBuiltSite
 	string m_sSaved;			// when it was saved, as text
 	bool m_bDeleted;			// a save on this machine that hides a shipped one
 	bool m_bShipped;			// from the mod, not this machine
+	int m_iFaction = -1;		// whose site it is (RZ_EFaction; -1 unknown): the checklist and pinning
+	bool m_bPinned;				// the site stands here every season (RZ_Territory, RZ_Safehouses)
 	ref array<ref RZ_HandBuiltObject> m_aObjects = {};
+	ref array<ref RZ_HandSpot> m_aSpots = {};	// its role spots (RZ_HandSpots)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -283,6 +288,43 @@ class RZ_HandBuilt
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! From RZ_HandBuiltPack: whose the shipped site begun last is, and whether it's pinned.
+	void Owner(int faction, bool pinned)
+	{
+		if (!m_Filling)
+			return;
+
+		m_Filling.m_iFaction = faction;
+		m_Filling.m_bPinned = pinned;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! From RZ_HandBuiltPack: one role spot of the shipped site begun last.
+	void Spot(string type, float x, float y, float z, float yaw, int seats)
+	{
+		if (!m_Filling || !RZ_HandSpots.IsKnown(type))
+			return;
+
+		RZ_HandSpot sp = new RZ_HandSpot();
+		sp.m_sType = type;
+		sp.m_vPos = Vector(x, y, z);
+		sp.m_fYaw = yaw;
+		sp.m_iSeats = seats;
+		m_Filling.m_aSpots.Insert(sp);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The pinned saves of a kind ("hold", "out", "safe") in use, for the season's roll.
+	void Pinned(string kindWord, notnull array<RZ_HandBuiltSite> result)
+	{
+		foreach (string id, RZ_HandBuiltSite s : m_mSites)
+		{
+			if (s && !s.m_bDeleted && s.m_bUse && s.m_bPinned && s.m_sKind == kindWord)
+				result.Insert(s);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One save read from a file; null if it isn't one.
 	static RZ_HandBuiltSite ReadFile(string path)
 	{
@@ -338,6 +380,21 @@ class RZ_HandBuilt
 			s.m_bDeleted = rest == "1";
 		else if (word == "radius")
 			s.m_fRadius = rest.ToFloat();
+		else if (word == "faction")
+			s.m_iFaction = rest.ToInt();
+		else if (word == "pin")
+			s.m_bPinned = rest == "1";
+		else if (word == "spot" && parts.Count() >= 5 && RZ_HandSpots.IsKnown(parts[0]))
+		{
+			RZ_HandSpot sp = new RZ_HandSpot();
+			sp.m_sType = parts[0];
+			sp.m_vPos = Vector(parts[1].ToFloat(), parts[2].ToFloat(), parts[3].ToFloat());
+			sp.m_fYaw = parts[4].ToFloat();
+			if (parts.Count() >= 6)
+				sp.m_iSeats = parts[5].ToInt();
+
+			s.m_aSpots.Insert(sp);
+		}
 		else if (word == "centre" && parts.Count() >= 3)
 			s.m_vCentre = Vector(parts[0].ToFloat(), parts[1].ToFloat(), parts[2].ToFloat());
 		else if (word == "obj" && parts.Count() >= 8)
@@ -481,6 +538,27 @@ class RZ_HandBuilt
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pins the save's site here every season, or lets the season place it again (the save stays).
+	//! False: no save.
+	bool SetPinned(string id, bool pinned, int faction)
+	{
+		RZ_HandBuiltSite s = Find(id);
+		if (!s)
+			return false;
+
+		s.m_bPinned = pinned;
+		if (faction >= 0)
+			s.m_iFaction = faction;
+
+		FileIO.MakeDirectory("$profile:ReforgerZ");
+		FileIO.MakeDirectory(DIR);
+		FileIO.MakeDirectory(DIR + "/" + m_sWorld);
+		WriteFile(PathOf(id), s);
+		s.m_bShipped = false;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void Rotate(string id)
 	{
 		FileIO.DeleteFile(BackupOf(id, BACKUPS));
@@ -527,6 +605,17 @@ class RZ_HandBuilt
 
 		file.WriteLine("use " + use.ToString());
 		file.WriteLine("saved " + s.m_sSaved);
+		file.WriteLine("faction " + s.m_iFaction.ToString());
+		int pin = 0;
+		if (s.m_bPinned)
+			pin = 1;
+
+		file.WriteLine("pin " + pin.ToString());
+		foreach (RZ_HandSpot sp : s.m_aSpots)
+		{
+			file.WriteLine(string.Format("spot %1 %2 %3 %4 %5 %6", sp.m_sType, Num(sp.m_vPos[0]), Num(sp.m_vPos[1]), Num(sp.m_vPos[2]), Num(sp.m_fYaw), sp.m_iSeats));
+		}
+
 		foreach (RZ_HandBuiltObject o : s.m_aObjects)
 		{
 			file.WriteLine(string.Format("obj %1 %2 %3 %4 %5 %6 %7 %8", o.m_sPrefab, Num(o.m_vPos[0]), Num(o.m_vPos[1]), Num(o.m_vPos[2]), Num(o.m_vAngles[0]), Num(o.m_vAngles[1]), Num(o.m_vAngles[2]), Num(o.m_fScale)));

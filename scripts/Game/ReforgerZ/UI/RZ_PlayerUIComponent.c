@@ -440,6 +440,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 		{
 			RZ_SiteBuilderCamera.OnPayload(payload);
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_SITEMARKS)
+		{
+			RZ_SiteBuilderMarks.OnPayload(payload);
+		}
 		else if (kind == RZ_UIFeed.PAYLOAD_POWER)
 		{
 			RZ_PowerMenu.OnPayload(this, payload);

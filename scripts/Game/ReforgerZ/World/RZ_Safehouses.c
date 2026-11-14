@@ -557,9 +557,11 @@ class RZ_Safehouses
 			}
 
 			SettleRestored();
+			AddPinned();
 		}
 		else
 		{
+			AddPinned();
 			PickSafehouses();
 		}
 
@@ -690,6 +692,23 @@ class RZ_Safehouses
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pinned hand-built safehouses (docs/SITES.md, "Pinning a site") stand where they were built,
+	//! first; the picks fill the rest. One already standing within 100 m (a saved one) is kept.
+	protected void AddPinned()
+	{
+		array<RZ_HandBuiltSite> pinned = {};
+		RZ_HandBuilt.Get().Pinned("safe", pinned);
+		foreach (RZ_HandBuiltSite pin : pinned)
+		{
+			if (IsNearSafehouse(pin.m_vCentre, 100))
+				continue;
+
+			RZ_Safehouse h = NewSafehouse(m_GM.FindNearestSettlement(pin.m_vCentre), pin.m_vCentre);
+			RZ_Log.Info(string.Format("Haven safehouses: pinned hand-built safehouse %1 (%2).", h.m_sName, pin.m_sId));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The first safehouse sits at the Haven quartermaster (if there is one). The rest
 	//! go to quiet villages: small, low infection, away from the lab, the line and each other.
 	protected void PickSafehouses()
@@ -702,7 +721,7 @@ class RZ_Safehouses
 			wanted = Math.Min(wanted + bonus, Math.Max(wanted, m_GM.GetSettlements().Count() / 5));
 
 		vector qm;
-		if (m_GM.GetPerks().GetQuartermasterPos(RZ_EFaction.SURVIVORS, qm))
+		if (m_GM.GetPerks().GetQuartermasterPos(RZ_EFaction.SURVIVORS, qm) && !IsNearSafehouse(qm, 100))
 		{
 			RZ_Safehouse first = NewSafehouse(m_GM.FindNearestSettlement(qm), qm);
 			first.m_bAnchored = true;
