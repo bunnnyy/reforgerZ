@@ -1,7 +1,7 @@
 // Test-only (not part of the mod): a fresh spawn (the author's play-test: "just spawned in, can't
 // see anyone and first mission is already skipped; I can still see 2 other quests I didn't start").
 // Once, early, on the fake player, as a veteran (guidance level 3, where the faults showed):
-// - The last life's jobs aren't this one's: a questline part from the last life doesn't make the
+// - The last character's jobs aren't this one's: a questline part from the last character doesn't make the
 //   questline visible to the new one, and no running job keeps the player as participant or offer.
 // - The opening: its contact stands within 15 m of where the player comes out, and its first
 //   stage is the door's favour (a veteran's skips it once talked to: RZT_OpeningChain), not the lead
@@ -30,7 +30,7 @@ class RZT_Fresh
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Later, once a questline runs: the last life's part in it isn't the new life's (no questline
+	//! Later, once a questline runs: the last character's part in it isn't the new character's (no questline
 	//! runs at the spawn check's second). Tried each call until one is found; the part it adds and
 	//! the life it bumps are put back.
 	static bool s_bPartDone;
@@ -61,12 +61,12 @@ class RZT_Fresh
 		RZ_PlayerProfile profile = gm.GetProfile(id);
 		int lives = profile.m_iCharacter;
 		int partsBefore = run.m_aParts.Count();
-		run.Did(gm, id, RZ_EQuestApproach.NONE, "the last life was there");
-		Check(run.PlayerTookPartThisCharacter(gm, id), "a part this life counts as this life's (" + run.m_Line.m_sTitle + ")");
+		run.Did(gm, id, RZ_EQuestApproach.NONE, "the last character was there");
+		Check(run.PlayerTookPartThisCharacter(gm, id), "a part this character counts as this character's (" + run.m_Line.m_sTitle + ")");
 		Check(q.IsVisibleTo(run, id), "the questline is in the journal of the life that took part");
 		profile.m_iCharacter = lives + 1;
-		Check(!run.PlayerTookPartThisCharacter(gm, id), "a new life doesn't inherit the last one's part");
-		Check(!q.IsVisibleTo(run, id), "the questline isn't in the new life's journal");
+		Check(!run.PlayerTookPartThisCharacter(gm, id), "a new character doesn't inherit the last one's part");
+		Check(!q.IsVisibleTo(run, id), "the questline isn't in the new character's journal");
 		Check(run.PlayerTookPart(gm, id), "the story still remembers the player by identity");
 		profile.m_iCharacter = lives;
 		if (run.m_aParts.Count() > partsBefore)
@@ -96,7 +96,7 @@ class RZT_Fresh
 		int lives = profile.m_iCharacter;
 		profile.m_iGuideLives = 20;
 
-		// 1. The last life took part in a questline; the new life doesn't see it
+		// 1. The last character took part in a questline; the new character doesn't see it
 		RZ_Questlines q = gm.GetQuestlines();
 		RZ_QuestRun run = null;
 		if (q && q.IsEnabled())
@@ -115,23 +115,23 @@ class RZT_Fresh
 		if (run)
 		{
 			partsBefore = run.m_aParts.Count();
-			run.Did(gm, id, RZ_EQuestApproach.NONE, "the last life was there");
-			Check(run.PlayerTookPartThisCharacter(gm, id), "a part this life counts as this life's");
+			run.Did(gm, id, RZ_EQuestApproach.NONE, "the last character was there");
+			Check(run.PlayerTookPartThisCharacter(gm, id), "a part this character counts as this character's");
 			profile.m_iCharacter = lives + 1;
-			Check(!run.PlayerTookPartThisCharacter(gm, id), "a new life doesn't inherit the last one's part in " + run.m_Line.m_sTitle);
+			Check(!run.PlayerTookPartThisCharacter(gm, id), "a new character doesn't inherit the last one's part in " + run.m_Line.m_sTitle);
 		}
 		else
 		{
 			Print("RZT fresh: no questline running yet, the part check skipped");
 		}
 
-		// 2. Running jobs drop the player at a new life
+		// 2. Running jobs drop the player at a new character
 		RZ_MissionManager mm = gm.GetMissions();
 		if (mm)
 		{
 			mm.OnNewLife(id);
 			if (run)
-				Check(!q.IsVisibleTo(run, id), "the questline isn't in the new life's journal: " + run.m_Line.m_sTitle);
+				Check(!q.IsVisibleTo(run, id), "the questline isn't in the new character's journal: " + run.m_Line.m_sTitle);
 
 			array<RZ_Mission> list = {};
 			mm.ListFor(id, list);
@@ -142,7 +142,7 @@ class RZT_Fresh
 					kept++;
 			}
 
-			Check(kept == 0, string.Format("no running job keeps the new life as participant or offer (%1)", kept));
+			Check(kept == 0, string.Format("no running job keeps the new character as participant or offer (%1)", kept));
 		}
 
 		// 3. The opening: a contact at the door and step 1 first
