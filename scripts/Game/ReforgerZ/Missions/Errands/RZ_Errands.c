@@ -301,6 +301,7 @@ class RZ_Fallout
 class RZ_Errands
 {
 	protected static const float SLOW_TICK = 30;
+	protected static const float BOARD_DOOR_REACH = 40;	// boarding up: the place's real door this close (m)
 	protected static const float INSIDE_RADIUS = 60;	// an indoor work site: the nearest fitting building this far from the place
 	protected static const float TALK_SECONDS = 90;
 	protected static const float TALK_RANGE = 20;
@@ -1200,6 +1201,23 @@ class RZ_Errands
 		if (!inside && at[1] > RZ_Util.GroundPos(at)[1] + 0.3)
 			inside = true;
 
+		// Boarding up is done at a real door of the place (the boards go in its doorway): never a
+		// door of our own in the open. No real door near: the boards are left out (DoorPropFits)
+		float yaw = -1;
+		if (w.m_eWork == RZ_EWork.BOARDS)
+		{
+			IEntity door;
+			vector centre;
+			vector normal;
+			if (RZ_DoorGeometry.NearestOuterDoor(e.m_vPlace, 0, BOARD_DOOR_REACH, false, door, centre, normal))
+			{
+				at = RZ_Util.GroundPos(centre + normal * 0.1);
+				yaw = Math.Atan2(normal[0], normal[2]) * Math.RAD2DEG;
+				if (yaw < 0)
+					yaw += 360;
+			}
+		}
+
 		ResourceName before = w.m_sLook;
 		if (before.IsEmpty() && w.m_eProp != RZ_EErrandProp.NONE)
 			before = m_Settings.Props().For(w.m_eProp);
@@ -1214,11 +1232,11 @@ class RZ_Errands
 		if (hold <= 0)
 			hold = RZ_WorkSites.HoldFor(w.m_fSeconds);
 
-		if (sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, at, e.m_iAsker, before, "", -1, inside) < 0)
+		if (sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, at, e.m_iAsker, before, "", yaw, inside) < 0)
 			return false;
 
 		if (w.m_bPerson)
-			sites.SetPerson(key, PersonPrefab());
+			sites.SetPerson(key, PersonPrefab(), w.m_bPersonLies);
 
 		if (w.m_bUnseen)
 			sites.SetUnseen(key);
@@ -3923,7 +3941,7 @@ class RZ_Errands
 			case RZ_EErrandItem.FUEL: result.Insert("jerrycan"); result.Insert("canister"); result.Insert("fuelcan"); break;
 			case RZ_EErrandItem.BATTERY: result.Insert("battery"); break;
 			case RZ_EErrandItem.MEAT: result.Insert("meatleg"); break;
-			case RZ_EErrandItem.MEDICAL: result.Insert("bandage"); result.Insert("medkit"); result.Insert("morphine"); result.Insert("tourniquet"); result.Insert("salin"); result.Insert("pill"); result.Insert("antibiotic"); break;
+			case RZ_EErrandItem.MEDICAL: result.Insert("bandage"); result.Insert("dressing"); result.Insert("gauze"); result.Insert("aspirin"); result.Insert("medkit"); result.Insert("morphine"); result.Insert("tourniquet"); result.Insert("salin"); result.Insert("pill"); result.Insert("antibiotic"); break;
 			case RZ_EErrandItem.ANTIDOTE:
 			{
 				if (gm && !gm.GetAntidotePrefab().IsEmpty())
@@ -4100,6 +4118,34 @@ class RZ_Errands
 
 		RZ_Log.Info(string.Format("Errands: %1 handed to %2 (%3)", d.m_sKey, RZ_Util.PlayerName(playerId), giverName));
 		return e;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A handed step finished there and then by a reply the player picked (an opening's hand-over):
+	//! its thing taken from them and the errand resolved now, inside that conversation, never later
+	//! for being near. False: it isn't held, or the thing isn't on them (nothing changes).
+	bool FinishNow(RZ_Errand e, IEntity me)
+	{
+		if (!e || !me || e.m_eState != RZ_EErrandState.HELD)
+			return false;
+
+		RZ_ErrandWay w = e.GetWay();
+		if (!w)
+			return false;
+
+		if (w.m_bGiveThere && w.m_iItems > 0)
+		{
+			if (CountItems(me, w.m_eItem) < w.m_iItems)
+				return false;
+
+			TakeItems(me, w.m_eItem, w.m_iItems);
+		}
+
+		e.m_bStepDone = true;
+		e.m_bTold = false;
+		RemoveProp(e);
+		Resolve(e, w);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

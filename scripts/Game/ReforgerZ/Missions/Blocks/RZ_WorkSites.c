@@ -152,6 +152,7 @@ class RZ_WorkSite
 	int m_iFit;					// the before look's spot: 0 not checked yet, 1 its box fits, -1 nowhere (left out)
 	ResourceName m_sPerson;		// who the work is for (a patient, the newcomer), standing by it while it's open
 	vector m_vPerson;
+	bool m_bPersonLies;			// they lie on the work's spot (its bed) instead, and the prompt is at their side
 
 	// Props (null while nobody is near)
 	IEntity m_Box;
@@ -265,6 +266,9 @@ class RZ_WorkSites
 	protected static const float SLACK = 1.5;			// seconds the server forgives (its 1 s poll, the hold's network trip)
 	protected static const float LIFT = 0.6;			// the prompt stands this high over the ground
 	protected static const float PERSON_OFF = 1.2;		// the person stands this far behind the site
+	protected static const float LIE_LIFT = 0.12;		// someone lying on the work's bed lies this far above its spot (a mattress)
+	protected static const float LIE_SIDE = 0.8;		// and its prompt is this far to their side
+	protected static const float LIE_DELAY = 600;		// ms after spawning before they're laid down (as The Round's)
 	protected static const float PERSON_HALF = 0.3;
 	protected static const ResourceName TAKE_FALLBACK = "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et";	// the base game's cardboard box (world_kit.txt; footprints.json 0.4 x 0.7 m)		// a person's box: a 0.6 m square (RZ_SiteFoot.SEAT)
 
@@ -501,6 +505,14 @@ class RZ_WorkSites
 		if (kind == RZ_EWork.TAKE && s.m_sBefore.IsEmpty())
 			s.m_sBefore = TAKE_FALLBACK;
 
+		// A door is never spawned in the open: a look that is a door (a boarded doorway) stands only
+		// in a real doorway (RZ_DoorGeometry.DoorPropFits), else it's left out
+		if (!RZ_DoorGeometry.DoorPropFits(s.m_sBefore, s.m_vPos, key))
+			s.m_sBefore = "";
+
+		if (!RZ_DoorGeometry.DoorPropFits(s.m_sAfter, s.m_vPos, key))
+			s.m_sAfter = "";
+
 		s.m_fOpenedAt = m_fClock;
 		m_aSites.Insert(s);
 		RZ_PlaceNeeds.Verify("work.site", s.m_vPos, s.m_sLabel);
@@ -526,13 +538,14 @@ class RZ_WorkSites
 	//! Someone the work is for stands beside the site while it's open and a player is near (the
 	//! newcomer to check over, the bitten man to sit with): a body in the errands' budget, gone with
 	//! the site's props. Empty prefab or no room in the budget: nobody, the work is done all the same.
-	void SetPerson(string key, ResourceName prefab)
+	void SetPerson(string key, ResourceName prefab, bool lies = false)
 	{
 		RZ_WorkSite s = Find(key);
 		if (!s || prefab.IsEmpty())
 			return;
 
 		s.m_sPerson = prefab;
+		s.m_bPersonLies = lies;
 		float rad = s.m_fYaw * Math.DEG2RAD;
 		s.m_vPerson = s.m_vPos + Vector(Math.Sin(rad), 0, Math.Cos(rad)) * PERSON_OFF;
 	}
@@ -1317,6 +1330,13 @@ class RZ_WorkSites
 		SpawnPerson(s);
 
 		vector at = s.m_vPos;
+		// Someone lying on the spot: the prompt at their side, where you'd kneel to them
+		if (s.m_bPersonLies && s.m_Person)
+		{
+			float side = (s.m_fYaw + 90) * Math.DEG2RAD;
+			at = at + Vector(Math.Sin(side), 0, Math.Cos(side)) * LIE_SIDE;
+		}
+
 		at[1] = at[1] + LIFT;
 		s.m_Box = RZ_Util.SpawnPrefab(Settings().m_sSitePrefab, at, s.m_fYaw);
 		Push(s);
@@ -1493,6 +1513,23 @@ class RZ_WorkSites
 
 		if (shared && !shared.CanSpawnBody(RZ_BodyBudget.ERRAND, s.m_vPerson))
 			return;
+
+		// Lying on the work's own spot (its bed: the mattress the care look puts there), laid down as
+		// The Round's sick are; the prompt stands at their side (SpawnBefore)
+		if (s.m_bPersonLies)
+		{
+			s.m_vPerson = s.m_vPos + Vector(0, LIE_LIFT, 0);
+			s.m_Person = RZ_Util.SpawnPrefab(s.m_sPerson, s.m_vPerson, s.m_fYaw);
+			if (!s.m_Person)
+				return;
+
+			if (shared)
+				shared.AddBody(RZ_BodyBudget.ERRAND, s.m_Person);
+
+			// VERIFY: laid down on the mattress (The Round's LieDown), he stays on it, not through it, and the hold prompt 0.8 m to his side stays reachable over his body
+			GetGame().GetCallqueue().CallLater(RZ_DutyRound.LieDown, LIE_DELAY, false, s.m_Person);
+			return;
+		}
 
 		// Behind the work, else to either side or in front: wherever a person's box fits
 		vector half = Vector(PERSON_HALF, 0, PERSON_HALF);

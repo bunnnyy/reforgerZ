@@ -3181,7 +3181,6 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
    m_GuidanceSettings RZ_GuidanceSettings "{6AD67DC2B8040E09}" {
     m_sRadioPrefab "{6F4EF5D0232D4827}Prefabs/ReforgerZ/Guidance/RZ_WindupRadio.et"
     m_sCarWreckPrefab "{02AC434CE3C3B56A}Prefabs/ReforgerZ/Guidance/RZ_CarWreck.et"
-    m_sDoorPrefab "{7453331C8D0ADA91}Prefabs/ReforgerZ/Guidance/RZ_ScratchedDoor.et"
     m_sFlyerPrefab "{AD423D9FD53336F3}Prefabs/ReforgerZ/Guidance/RZ_Flyer.et"
     m_sTableRadioPrefab "{E44F912178202A8A}Prefabs/ReforgerZ/Guidance/RZ_TableRadio.et"
     m_sRaiderBodyPrefab "{86F6F05F0155A3EB}Prefabs/ReforgerZ/Guidance/RZ_DeadRaider.et"

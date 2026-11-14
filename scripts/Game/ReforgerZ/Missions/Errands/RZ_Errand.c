@@ -104,6 +104,7 @@ class RZ_ErrandWay
 	string m_sWorkLabel;		// its prompt ("Dig the latrine")
 	string m_sInside;			// its work site is inside a building of this kind ("any", "house", "shop", "police", "school", "public", "clinic"), on the ground floor; empty: in the open
 	bool m_bPerson;				// someone the work is for stands at its work site (the newcomer, the bitten man): Props > Duty person
+	bool m_bPersonLies;			// and lies there, on the work's bed, instead of standing by it (a sick son, a bitten friend)
 	float m_fWorkSeconds;		// its hold (0: from m_fSeconds, RZ_WorkSites.HoldFor)
 	ResourceName m_sLook;		// what stands at its work site while it's to do (the cook pot, the woodpile), over the kind's look (Look())
 	int m_iCarry;				// carried for real (Carry()): how many things, 0 not a carry

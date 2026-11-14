@@ -13,7 +13,7 @@ enum RZ_EOpeningTask
 	NONE,
 	WATER,		// anyone: fill what you can carry at the nearest well
 	CUT,		// anyone with something medical: dress the contact's hand
-	FEVER,		// Nurse: treat the contact's boy
+	FEVER,		// Nurse: treat the contact's son, lying in the house
 	BOILED,		// Nurse with nothing medical: water for the fever, to boil
 	PUMP,		// Mechanic: fuel from the nearest petrol station's pump
 	DOWNWIND,	// Hunter: watch a pack's ground, unseen
@@ -23,8 +23,8 @@ enum RZ_EOpeningTask
 	CHANNEL,	// Radio Operator: answer someone on the open channel
 	SWAP,		// Unemployed: a swap with a wanderer on the road
 	GATE,		// Soldier: hold the gate for a minute
-	CLOCK,		// Doctor: the antidote for someone bitten, against the clock
-	CLOCK_MED,	// Doctor without an antidote: keep them going with a dressing
+	CLOCK,		// Doctor: the antidote for the contact's bitten friend, lying there, against the clock
+	CLOCK_MED,	// Doctor without an antidote: keep him going with a dressing
 	DEBT,		// Raider: collect what a house owes
 	SETTLE		// Elder: settle two families' argument (talk, a check)
 }
@@ -681,11 +681,9 @@ class RZ_OpeningTasks
 
 			case RZ_EOpeningTask.SETTLE: return Flag(o, FLAG_SETTLED) > 0;
 
-			// Handed over in person: never just for standing next to them with a bandage in the pack
+			// Handed over in person, the reply on their talk screen: never just for standing next to
+			// them with a bandage in the pack (RZ_Openings.HandOver finishes it there and then)
 			case RZ_EOpeningTask.CUT:
-			case RZ_EOpeningTask.FEVER:
-			case RZ_EOpeningTask.CLOCK:
-			case RZ_EOpeningTask.CLOCK_MED:
 			{
 				if (Tended(o))
 					return true;
@@ -774,10 +772,12 @@ class RZ_OpeningTasks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A step done by handing something over to the giver in person (a reply on the talk screen).
+	//! A step done by handing something over to the giver in person (a reply on the talk screen):
+	//! the cut on their own hand. The fever and the clock are someone else, lying there: seen to with
+	//! your hands at them (RZ_OpeningChain.Patient), never through the giver.
 	static bool HandsOver(int task)
 	{
-		return task == RZ_EOpeningTask.CUT || task == RZ_EOpeningTask.FEVER || task == RZ_EOpeningTask.CLOCK || task == RZ_EOpeningTask.CLOCK_MED;
+		return task == RZ_EOpeningTask.CUT;
 	}
 
 	//------------------------------------------------------------------------------------------------

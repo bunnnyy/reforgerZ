@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **370 prefab fields**: 46 on `RZ_GameModeComponent`, 307 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **347 entries**: 202 prefabs the plugin creates, 38 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **369 prefab fields**: 46 on `RZ_GameModeComponent`, 306 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **346 entries**: 201 prefabs the plugin creates, 38 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -760,7 +760,6 @@ and the UI files) need none, and eight have no base:
 | `RZ_WindupRadio.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction`, `RZ_RadioCallAction`, `RZ_ViewRadioAction`; `RZ_ViewRadioAction` (In hand on) | Guidance > Radio prefab | optional | given to every new life. The two View radio actions: one in the "default" context, one in "knob_toggle" with In hand on (beside vanilla's Turn on/off) |
 | `RZ_OpeningCompanion.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction`, `RZ_RadioCallAction`, `RZ_ViewRadioAction`; `RZ_ViewRadioAction` (In hand on) | Guidance > Companion | optional | the opening's contact who walks with you (a one-man civilian AI group with the puzzle components; written as text: open it once in Workbench). Empty: they hand you on to the next person instead |
 | `RZ_CarWreck.et` | a wrecked car prop | — | Guidance > Car wreck prefab | optional | an opening's clue when your group is gone: their car in the ditch |
-| `RZ_ScratchedDoor.et` | a door or wall panel prop | the clue set | Guidance > Door prefab | optional | an opening's clue in the hiding place: the scratched door |
 | `RZ_Flyer.et` | a poster prop | the clue set | Guidance > Flyer prefab | optional | an opening's clue when your group is gone (the flyer they went after), safehouse flyers |
 | `RZ_TableRadio.et` | a radio prop | `RZ_ClueComponent`; `RZ_ReadClueAction` (Label Listen) | Guidance > Table radio prefab | optional | an opening's clue in the hiding place: the radio still talking; beside the operators in No Reply and Await Relief, and The Census's nightly call |
 | `RZ_DeadRaider.et` | a body prop with a red hand on the jacket | the clue set | Guidance > Raider body prefab | optional | an opening's clue when the fever broke: the dead raider |
@@ -1591,13 +1590,13 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Missions | Contracts | `m_ContractSettings` | **Rough areas** (500 m circle; 0 = exact) and reveal distance (500 m); Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
 | Puzzles | (top level) |  | The puzzle prefabs, **Scale counts items** (off), landmark name |
 | Perimeter | Perimeter | `m_PerimeterSettings` | **Enabled**, warn (300 m) and kill (100 m) distance, grace (8 s), fit to land and sea margin (200 m), **Override** rectangle, drone height, **Checkpoints**, guards (2), max (6, at most 8), inset, spacing, warn (150 m) and kill (60 m) radius, mission prefabs |
-| Haven | Safehouses | `m_SafehouseSettings` | **Enabled**, count (3), start population (4) and food (12), visible radius (400 m), upkeep (180 min), people per food (5), **Food keywords**, Favor per food (2), heal cost (15), house-rule radii and Infamy, caught chance (0.3 a minute in Final), declare multipliers by tier (1.15/1.25/1.4/1.5), meds cost (5), stragglers (4 h), leak chance (0.25), **notice boards** (on, 8 notes, 160 characters, one every 10 min, 3 days, **note filter**), body prefabs |
+| Haven | Safehouses | `m_SafehouseSettings` | **Enabled**, count (3), start population (4) and food (12), visible radius (300 m), upkeep (180 min), people per food (5), **Food keywords**, Favor per food (2), heal cost (15), house-rule radii and Infamy, caught chance (0.3 a minute in Final), declare multipliers by tier (1.15/1.25/1.4/1.5), meds cost (5), stragglers (4 h), leak chance (0.25), **notice boards** (on, 8 notes, 160 characters, one every 10 min, 3 days, **note filter**), body prefabs |
 | Wanderers | Wanderers | `m_WandererSettings` | **Enabled**, min and max count (6, 10), prices, spawn radius (400 m), walk speed, replace minutes (1440), bite chance, Infamy, body prefabs, Trader goods |
 | Leaders | Leaders | `m_LeaderSettings` | **Enabled**, quartermaster is leader (on), interim posts (1, territory off only), body radius (200 m), replace minutes (120), job minutes (30), danger scale, discovery, kill Infamy, body prefabs |
-| Territory | Territory | `m_TerritorySettings` | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (400 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs, **Haven guard** (on: a Haven group at the lab gate in the stand after The Whole of It) |
+| Territory | Territory | `m_TerritorySettings` | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs, **Haven guard** (on: a Haven group at the lab gate in the stand after The Whole of It) |
 | Territory | Supply | `m_SupplySettings` | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
 | Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
-| Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (200), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)), **Site grid** (on), **Site read ms** (2), **Spawn ms** (6), **Site read ms near** (8), **Pre-read** (on), **Audit threshold** (70), **Solver** (on), **Candidates a piece** (24), **Layers** (on), **Board windows** (on), **Layer pieces** (60) ([SITES.md](SITES.md#settings)) |
+| Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (200, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)), **Site grid** (on), **Site read ms** (2), **Pre-read** (on), **Audit threshold** (70), **Solver** (on), **Candidates a piece** (24), **Layers** (on), **Board windows** (on), **Layer pieces** (60) ([SITES.md](SITES.md#settings)) |
 | Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), clue minutes (20), flyers, shout minutes (30), wanderer finds, the clue prefabs (car wreck, door, flyer, table radio, the two bodies, barricade); **Openings** (on), **Group gone weight** (18) and **Fever weight** (12), **Opening scenes** (the reasons' scenes and each background's props, filled by `tools/camp_kit/build.py`; a key with none: nothing there), **Contact** (empty: Puzzles > Civilian), **Opening Fame** (10) |
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, **door spot prefab** (on the door leaf), scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
 | Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, **Extra finds** (items added to one building type's table), **Food weight** (2), **Not buildings** (name keywords of things with no loot: piers, bollards, rubble), chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
@@ -1616,7 +1615,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
 | UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 4–12 s, 11 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout**, the **object row layout** (the object menu; empty = world prompts) ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
 | Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit)) |
-| Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits), **Work sites** (on, reach 3 m, time scale 1, 40 sites at once; while holding: **Lock movement** on, **Hands animation** on, **Dig with the tool** on; carrying ([DESIGN.md](DESIGN.md#carrying)): **Carry for real** on, **Carrying speed** 0.45, **Carried box** `RZ_Carried_Box.et`, **Carried chair** `RZ_Carried_Chair.et`) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
+| Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits), **Work sites** (on, reach 3 m, time scale 1, 40 sites at once; while holding: **Lock movement** on, **Hands animation** on, **Dig with the tool** on) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
 | Debug | (top level) |  | Status log every few minutes (on) |
 <!-- /manifest:settings -->
@@ -1875,7 +1874,16 @@ done for it, its after look up, a held step's line without its time)
 the power station's looks run once (`RZT_Power.c`; the test world names the mod's own two prefabs, which
 come along): the dressing up beside the control with someone near, the generator's sound up only while
 it turns, everything down with nobody near, and the lamps' list dark (`L`) and powered (the station and
-each town in its region) (`RZT Power test: ...: OK|FAILED (...)`; the run fails on FAILED). From then
+each town in its region) (`RZT Power test: ...: OK|FAILED (...)`; the run fails on FAILED). 12 s in,
+before the missions, the openings' play-test faults are checked at the route's first town
+(`RZT_Openings.c`; it turns work sites on with the game mode's Site prefab, which comes along, when
+the test world leaves them off): the Fever's son is a body on a care work site and the tracker's place
+is on him; 24 s by his father with nothing done doesn't finish it; the hold with a field dressing in
+the pack does, and takes it; the Cut's hand-over (`RZ_Errands.FinishNow`) is refused without a
+dressing and done in the same second with one; a real outside door is found near the town, a boarded
+doorway fits in it and is refused in the open; and the contacts' names and the Nurse's words are
+printed (`RZT openings OK|FAIL <what>`, then `RZT openings: N checks, N failed`; the run fails on
+FAIL). From then
 on the fake player can't hold a prompt, so while it stands at a mission the open work sites within 25 m of
 it are done for it (the others wait until the tracker sends it there) (`RZT work sites: N done for '<title>'`), and a job finished that way ends by itself. An objection
 to a hold, a truth kept after a restart, a reason starting a contract and a locked player refused need
@@ -2143,7 +2151,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **197** lines with the tag, all but one in the game scripts (one is the comment in
+There are **198** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2166,7 +2174,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (94)
+### Medium risk: big features, with a fallback (95)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2235,6 +2243,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Missions/Errands/RZ_ErrandsDealer.c:260` | a local's labels set and cleared on its body as a knower comes and goes reach clients (the same labels for everyone near: per-player labels need an engine check) | A local shows to anyone near while a knower is there, as before |
 | `Missions/Errands/RZ_DutyRound.c:464` | `CharacterControllerComponent.SetUnconscious(true)` on a freshly spawned civilian with no AI, on the server, lays The Round's sick down for every client, they stay down, and the talk prompt on them still shows | They stand (or the prompt is gone): the beds are still seen to with your hands at their work sites; set **Props > Duty person** to a prop figure lying down, or lie them down another way |
 | `Missions/Errands/RZ_DutyRound.c:326` | a body laid down at a cot's top (0.45 m: its measured 0.51 less the sag) settles on it, not through it or floating over it | Lying in or over the cot: change `COT_TOP` in `RZ_DutyRound.c` |
+| `Missions/Blocks/RZ_WorkSites.c:1496` | a work site's person who lies (an opening's sick son, a bitten friend) is laid on the care look's mattress (0.12 m up) and stays on it, and the hold prompt 0.8 m to his side stays reachable over his body | He floats or sinks: change `LIE_LIFT`; the prompt can't be reached: change `LIE_SIDE` in `RZ_WorkSites.c` |
 | `Missions/RZ_MissionGoods.c:6` | an item tagged as someone's goods keeps its entity through inventory moves, a body and a car's boot (the list holds entities, like the fence's bought list) | A tagged ration or carried item may count as ordinary food after a move; pay in kind can be left empty (**Props > Pay ration**) |
 | `Zombies/RZ_TribeProps.c:68`, `:354` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
 | `Zombies/RZ_TribeRest.c:987` | a dead leader's body withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stays where it fell through the vigil, and goes when it's inserted again at dawn | The body goes with the engine's usual cleanup; the vigil, its samples and its lines are unchanged |
@@ -2736,7 +2745,7 @@ Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one life each:
 for <player>: <background>, <kind> in <town> (<grid>), level N, <hiding|group|fever>, <before|stranger|earlier|nobody>:
 <who>, chain <search, task, walk> to <place>` (levels 2-3: `chain task, lead` or `chain lead`), `Openings: <name> called <player> over before step N`, `Openings: step 1 for <background> is <words> (<prefab>, <kind>), the spot N m from its middle` (the building step 1 sends you into, and the words its kind gave), `Openings: <name> talked to by <player> before
 step N`, `Openings: <name> went on talking with <player> into step N`,
-`Errands: opening.<step> handed to <player> (<name>)`, the pattern at the end of `started` (`, they walk with you` or `, handed on`), `Openings: <name> walks with <player>` (or `can't walk with <player> (no escort room), the steps start where you are`), `Openings: <first> sent <player> on to <next> at <place>, <direction>` (or `Openings: no house for the next person for <player> at <grid>, back to <name> instead`), `Openings: <player> handed over to <name> (step 2, task N)`, `Openings: <name> step N (<key>) for <player>,
+`Errands: opening.<step> handed to <player> (<name>)`, the pattern at the end of `started` (`, they walk with you` or `, handed on`), `Openings: <name> walks with <player>` (or `can't walk with <player> (no escort room), the steps start where you are`), `Openings: <first> sent <player> on to <next> at <place>, <direction>` (or `Openings: no house for the next person for <player> at <grid>, back to <name> instead`), `Openings: <player> handed over to <name> (step 2, task N), done there and then`, `Openings: the scratched door is a real door at <grid>, N m from the opening` (or `Openings: no real door within 80 m of <grid> for the scratched door, no clue`), `Openings: <name> step N (<key>) for <player>,
 <direction>`, `Openings: <name> step N done by <player> in N s`, `Openings: <name> died (step N for
 <player>)`, `Openings: <name>'s bitten friend was lost (the clock ran out for <player>)` and `Openings: ended
 for <player>: <why> (step N, N min)`; the fallbacks' `Openings: no step 2 can run for <player> here
@@ -2776,7 +2785,7 @@ dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by
 `Work sites: <key> "<label>" done by <player>` (a mission's are `mission.<id>.point.N`, `.truck`,
 `.tissue`, `.well`, `.sample`, `.chain`, `.charge.N`; the Red Hand van's `cargovan.N`; a stranger's `stranger.N`), `Work sites: measured <look>: W x D m`
 once per look, `Work sites: <key> look <look> fits at <grid> (N m off, heading N)` or `... doesn't fit at <grid>, a box instead` (then the box's own line), `Work sites: <key> has nothing standing at it at <grid> (not even a box fits): only its prompt`, `Errands: <errand> '<prompt>' has nothing standing at its work site (no look, no person)` (a fault: the words name a thing nothing stands for), carrying for real ([DESIGN.md](DESIGN.md#carrying)): `Carry: errand.N, 3 crates from <grid> (outside) to <grid> (indoors, on the ground floor)`, `Carry: errand.N, N of 3 crates put down indoors, on the ground floor`, `Carry: errand.N, a crate put down at <grid>, not at the stack`, `Errands: <errand> carries <things>, but no building within 60 m of <grid>: carried to its door`, `Carry: the thing in the arms didn't attach to the character; ...` (once),
-`Work sites: <key> after look <look> doesn't fit ...`, `Work sites: <key> has no room for its person at <grid>, left out`, `Work sites: the Site prefab has no
+`Work sites: <key> after look <look> doesn't fit ...`, `Work sites: <key> has no room for its person at <grid>, left out`, `Doors: <prop> left out at <grid> (<key>): no real doorway within 1.2 m, and no door is ever spawned in the open`, `Duties: no real door within reach for beat <key> at <grid>: it stands in the open (no door is spawned)`, `Work sites: the Site prefab has no
 RZ_WorkSiteComponent, so it shows no prompt` once if the prefab is wrong, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
 <place> fixed`, every 30 minutes `Errands | live N | asked N, called out N | <family>: dealt N,
 declined N, lapsed N, overtaken N, done N, Favor N, Fame N (amends N), ways ...`, and `Errands admin
@@ -3540,21 +3549,21 @@ when it happens)
   ("A clinic, or a house near one"); left and right do nothing. Deploy as a Nurse: you stand 2 m out
   of an open door of a clinic or a house in a town nobody holds, facing out, the world already
   loaded; the card says where you hid, the town and the day. A calendar lies by the door. About 4 s
-  in, someone ("..., a patient's mother") a few metres off calls you over, a subtitle with her name
-  (*"Hey. Over here. It's me."*); **no screen opens**, however long you look at her. The tracker shows
-  *Outside the Door*, "Talk to *her name*.", and the map's diamond is on her. Wait two minutes
-  nearby without talking: she calls once more. Talk to her: the talk screen opens with "Look at you.
+  in, someone ("..., a patient's father": a man's name, a man's body) a few metres off calls you over, a subtitle with his name
+  (*"Hey. Over here. It's me."*); **no screen opens**, however long you look at him. The tracker shows
+  *Outside the Door*, "Talk to *his name*.", and the map's diamond is on him. Wait two minutes
+  nearby without talking: he calls once more. Talk to him: the talk screen opens with "Look at you.
   Alive." (with **Dialogue > Trees** on, the greeting about your stitches), the day and the roads,
-  then the ask, and *"When you're done there, don't come back for me. Go on to Ruth, the mother
-  with the sick boy, at Ruth's house in Morton."*; the tracker now shows *Down the Road*, 150–450 m
+  then the ask, and *"When you're done there, don't come back for me. Go on to Emil, the father
+  with the sick son, at Emil's house in Morton."*; the tracker now shows *Down the Road*, 150–450 m
   off, and the Quests tab has it under ERRANDS, tracked. Ask "What was it you needed?": the step word
-  for word, then "Then on to Ruth, at Ruth's house in Morton." Search the house for 20 s: it's done
-  there, nobody calls you back, and *Find Ruth* is tracked at a house 200–600 m further on (its
-  diamond on her). Within 25 m she calls (*"You're the one Vera sent? Over here."*); talk to her: the
-  broadcast, nobody coming, and *The Fever*, hers (the hand-over reply, below). Then *To Halcyon*
+  for word, then "Then on to Emil, at Emil's house in Morton." Search the house for 20 s: it's done
+  there, nobody calls you back, and *Find Emil* is tracked at a house 200–600 m further on (its
+  diamond on him). Within 25 m he calls (*"You're the one Pavel sent? Over here."*); talk to him: the
+  broadcast, nobody coming, and *The Fever*, his son's (below). Then *To Halcyon*
   starts where you stand, with the Perimeter and the cure, the tracker pointing at Halcyon's nearest
-  holding or the lab; ask Ruth again and she says that step word for word. Go back to Vera on the
-  way: *"Go on. Ruth's waiting for you, not me."*; leave her 150 m behind and she's gone. As a
+  holding or the lab; ask Emil again and he says that step word for word. Go back to Pavel on the
+  way: *"Go on. Emil's waiting for you, not me."*; leave him 150 m behind and he's gone. As a
   **Mechanic** (they walk with you): after the first ask, close the talk screen and the regular from
   the garage comes with you (*"I'm coming with you. ... You lead."*), 4 m behind; search the garage
   down the road with them beside you, and *The Pump* starts there, said by them (no Back to); walk
@@ -3564,7 +3573,7 @@ when it happens)
   With **Contracts > Max escorts** full or **Companion** empty, they stay and each next step starts
   where you are, on its card. Do the same pass once each for a Hunter, Lab Technician, Unemployed,
   Raider, Ex-Con and Radio Operator (they walk with you) and a Doctor, Elder, Soldier, Police Officer
-  and Drifter (sent on: the man whose friend was bitten, the woman between two families, the one
+  and Drifter (sent on: the man whose friend was bitten, the man between two families, the one
   keeping the gate, the shopkeeper who kept your station's keys, someone who heard you help); every
   step is a new place, none sends you back. With the talk screen off (**UI > Talk reply
   layout** empty), **Talk to** says the same lines as subtitles, in order. Arrive: one line there and
@@ -3573,7 +3582,7 @@ when it happens)
   Mechanic at the Haven. Shoot the contact during step 1: a line from "Someone in a doorway" and the
   walk to the nearest safehouse. Nobody waves you over for an errand while it runs. By the open door:
   your background's own things (the nurse's blanket and drum, the soldier's sandbags and lantern).
-  Step 2 is your background's own: the Nurse treats the boy with something from her bag (*The
+  Step 2 is your background's own: the Nurse treats the sick son, lying there, with something from the bag (*The
   Fever*); a Soldier holds the gate a minute while the infected come to the noise; a Mechanic fills a
   can at a petrol station's pump (empty can: the card says fill it first); a Police Officer is given a
   key and goes into a locked building; a Hunter watches a pack's ground hidden for 30 s (seen, the
@@ -3592,13 +3601,32 @@ when it happens)
   one-line read, no clue, and someone outside only one time in three (without: the read's own line
   hands you *Where the Work Is*). Turn **Puzzles > Civilian** and **Contact** empty: nobody outside,
   the read hands you the work, and a brand-new player's wanderer comes looking.
-- [ ] **Hand-overs are a reply you pick**, with a pad. As a Nurse on *The Fever*, walk up to the
-  contact with a field dressing and open the talk: nothing is taken and the step isn't done; the
-  first reply is *[Errand] Show me the boy. I've got something.* Drop the dressing and open it again:
-  the reply is dim, "Needs a dressing, or anything medical". Pick it with the dressing on you: her line,
-  and a few seconds on the step completes and the dressing is gone. The same for a Doctor's antidote
-  (*[Errand] Here's the antidote. ...*, "Needs the antidote"). An errand done elsewhere is handed in
-  only with *[Errand] It's done: ...*, never by opening the talk.
+- [ ] **The Fever and The Clock: the one in need is there**, with a pad (the author's play-test: no
+  boy, the marker on the father, and walking away and back finished it with no talk). As a Nurse on
+  *The Fever*: the son lies on a mattress (a blanket and a bucket by it) on the ground floor of the
+  nearest house, else beside his father; the tracker's diamond is on the son. Stand by the father
+  with a dressing for a minute, walk off and come back: nothing happens. Hold **Treat his fever** at
+  the son's side (8 s): done, the dressing is gone, his father's line, and the next step is said.
+  Without a dressing the hold ends with "You haven't got what this needs on you". The son lies flat
+  on the mattress, not through it or above it, and the prompt is reachable at his side (VERIFY
+  `Missions/Blocks/RZ_WorkSites.c:1496`). The same for a Doctor's bitten friend (**Give him the
+  antidote**, or **Clean and bind the bite** without one). The log: `Work sites: errand.N "Treat his
+  fever" (CARE, ...)`.
+- [ ] **Hand-overs are a reply you pick, done there and then**, with a pad. On *The Cut* (anyone
+  with something medical, or a Drifter's ask), walk up to the contact with a field dressing and open
+  the talk: nothing is taken and the step isn't done; the first reply is *[Errand] Hold still. Let me
+  dress that hand.* Drop the dressing and open it again: the reply is dim, "Needs a dressing, or
+  anything medical". Pick it with the dressing on you: his line, the dressing is gone at once, the
+  step is done in that talk (log: `Openings: <you> handed over to <name> (step 2, task N), done there
+  and then`) and the next step is said into the same talk a moment later; walking away and back never
+  finishes anything. An errand done elsewhere is handed in only with *[Errand] It's done: ...*, never
+  by opening the talk.
+- [ ] **No door is ever spawned** (the author: "use real doors in the game, rather than spawning a
+  door"). In the hiding place, the scratched door (*NOBODY GETS OUT*) is a real door of a building
+  6–80 m from yours, read at its leaf (log: `Openings: the scratched door is a real door at ...`); no
+  wooden door stands on its own anywhere. *Not Past the Chapel*'s boards go into the farmhouse's real
+  doorway. The Cold Chain's far door and a debt's door are real doors. The log's `Doors: ... left out
+  at ...` and `Duties: no real door within reach for beat ...` lines say where none was found.
 - [ ] **Task places** ([PLACES.md](PLACES.md)). Over the openings above, every place is what its
   words say: *Down the Road* sends you to a real house (or the chemist's, the garage...) 150–450 m
   off, never into woods, and its crate stands inside that building on the ground floor; as a Nurse

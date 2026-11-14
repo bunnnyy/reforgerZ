@@ -215,7 +215,7 @@ Don't answer that."* Every other card keeps the rule: never to whoever made its 
 
 | Way | What it is |
 |---|---|
-| Give | Hand items over, on the spot or at the step's place: food, a fuel can, a battery, something medical, an antidote (by the prefab's name; mission items never count) |
+| Give | Hand items over, on the spot or at the step's place: food, a fuel can, a battery, something medical (a bandage, field dressing, gauze, aspirin, medkit, morphine, tourniquet, saline, pills, antibiotics), an antidote (by the prefab's name; mission items never count) |
 | Do | Go to a place and stay there long enough: stand the gate, watch, sit with someone, look around. Work with your hands there (dig, search, fill, fix, paint, board up) is a hold at a thing you can see: [Work sites](#work-sites) |
 | Sneak | The same, only while hidden (built [stealth](DESIGN.md#stealth)): seen, and the clock stops |
 | Talk | A reply that resolves on the spot, sometimes with a Trust check ([RZ_Checks](DESIGN.md#checks-and-ways)), fixed, no roll |
@@ -326,7 +326,7 @@ tables below).
 | The Last Apples | **Pick what's left** | 9 s | a crate of odds and ends → rummaged clutter |
 | You're the One | **Write the name in the book** | 6 s | a table with a lamp → the same (it stays) (indoors) |
 | The Visitors' Log | **Sign the log** | 5 s | a table with a lamp → the same (it stays) (indoors) |
-| Not Past the Chapel | **Board up the doors** | 15 s | planks and a bucket of nails → the boarded doorway |
+| Not Past the Chapel | **Board up the doors** | 15 s | planks and a bucket of nails → the boarded doorway, in the farmhouse's real outside door within 40 m (no real door: the boards are left out; no door is ever spawned in the open) |
 | False Hope at the Line | **Buy a set of papers** | 8 s | the forger himself, at the gate (Props > Duty person) → nothing |
 | False Hope at the Line | **Send him on his way** | 8 s | the forger himself, at the gate → nothing |
 | His Effects | **Gather their things** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
@@ -335,6 +335,7 @@ tables below).
 | The Name on the Tag | **Raise the cairn** | 12 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
 | The Name on the Tag | **Take the ID** | 6 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The openings: Water, Water for the Fever | **Fill what you can carry** | 8 s | empty cans and buckets → nothing |
+| The openings: The Fever, The Clock | **Treat his fever**, **Give him the antidote**, **Clean and bind the bite** | 8 s | a mattress, a blanket, a bucket, with the son or the bitten friend lying on it (the prompt at his side) → the same |
 | The openings: Down the Road | **Search it, quietly** | 6–8 s | a crate of odds and ends → rummaged clutter (inside the building its words name) |
 | Strangers: The Funeral for the Car, Two in the Back (push-start) | **Push the car** | 10 s | the car itself |
 | Strangers: Two in the Back ([Mechanic]) | **Fix the car** | 15 s | a toolbox and parts → nothing |
@@ -789,7 +790,7 @@ applied at once and remembered by whoever it concerns.
 | A find reported | Each find put in the report is the giver's regard up, and 1 more Favor for the job (twice at most). What you reported can come back as what the giver says when you hand in (*"They brought that truck's load in this morning. That was yours."*) |
 | A shady choice | Pocketing, or keeping something from the people you work for, costs only **if it's seen**: their people within 20 m of you, or the place itself within 25 m. Seen: it's undone, 1 or 2 Infamy with the faction, the giver's regard down, and they say so when you report. Unseen: it's yours, and nobody knows |
 | The pay | The choices' Favor is added to the way's before the ledger's caps, 3 at most. A scored scene (each beat has a right call) pays by the share right, with Fame only when every call was |
-| Where a beat stands | Beside the giver's place, at its gate, out on the road, or near the last beat, in the open. A beat whose words name a door stands on the doorstep of a real house's outside door (the door finder the locks use): the Cold Chain's far door 180–350 m off, a debt's door 12–60 m from the last; with no such door anywhere near, in the open as before. A thing to take (the Cold Chain's box) always stands at its prompt: Props > Duty tray, else Crate, else the base game's cardboard box |
+| Where a beat stands | Beside the giver's place, at its gate, out on the road, or near the last beat, in the open. A beat whose words name a door stands on the doorstep of a real house's outside door (the door finder the locks use): the Cold Chain's far door 180–350 m off, a debt's door 12–60 m from the last; with no house's door near, any building's real outside door (up to 900 m and 300 m); with none at all, in the open, logged (`Duties: no real door within reach for beat ...`). No door is ever spawned for a beat. A thing to take (the Cold Chain's box) always stands at its prompt: Props > Duty tray, else Crate, else the base game's cardboard box |
 | Finding the next beat | The errand's place moves to each beat as it opens, so the journal and the tracker point at it, and a beat more than 15 m off is said with its direction (*About 120 m north-east.*). A patrol's finds are said by the patrol, and leave the errand's place at the gate |
 | No work sites | The first thing you could do at a beat is what's done, by standing there |
 
@@ -1154,12 +1155,12 @@ the patterns are in [DESIGN.md](DESIGN.md#openings-how-every-life-starts).
 
 | Step | Key | Way | The step |
 |---|---|---|---|
-| ✅ Outside the Door, Find *the next person*, Back to *the contact* (the talk objectives) | `opening.talk`, `opening.talk.find`, `opening.talk.next` | talk | "Talk to *the contact*." (Find: "Find *Ruth* at *Ruth's house in Morton*. Talk to them."; Back to only when no next person could stand): never done by being there (`StepCounts` false), only by opening talk with them, when it ends quietly (no past job); 45 minutes before it lapses, which ends the opening |
+| ✅ Outside the Door, Find *the next person*, Back to *the contact* (the talk objectives) | `opening.talk`, `opening.talk.find`, `opening.talk.next` | talk | "Talk to *the contact*." (Find: "Find *Emil* at *Emil's house in Morton*. Talk to them."; Back to only when no next person could stand): never done by being there (`StepCounts` false), only by opening talk with them, when it ends quietly (no past job); 45 minutes before it lapses, which ends the opening |
 | ✅ Down the Road | `opening.search`, `opening.search.short` | sneak | a building 150–450 m from the contact (quiet), named for what it is (the chemist's, the old aid post, the vet's farm, the doctor's house...: [PLACES.md](PLACES.md#a-place-is-what-its-words-say)): hold **Search it, quietly** at the crate inside it (8 s; 6 s), done there (off: 20 s, 10 s there) |
 | ✅ Water | `opening.water` | do | the nearest well or water tower: hold **Fill what you can carry** at the cans by it (8 s; off: 15 s there), done there |
-| ✅ The Cut | `opening.hand` | give | one medical item handed over at the giver, when you pick the hand-over reply (*[Errand] Hold still. Let me dress that hand.*) |
-| ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | give, do | a medical item at the giver when you pick the hand-over reply; **Fill what you can carry** at the well (8 s) |
-| ✅ The Clock | `opening.clock`, `opening.clock_med` | give | an antidote (or a medical item) at the giver when you pick the hand-over reply; 10 minutes before it lapses |
+| ✅ The Cut | `opening.hand` | give | one medical item handed over at the giver when you pick the hand-over reply (*[Errand] Hold still. Let me dress that hand.*): done there and then, in that talk (`RZ_Errands.FinishNow`), and the next step is said into the same talk; never later for walking back |
+| ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | do | their son lies there (a body laid on the care work site's mattress, on the nearest house's ground floor, else beside his father), the tracker on him: hold **Treat his fever** at him (8 s), one medical item taken; **Fill what you can carry** at the well (8 s) |
+| ✅ The Clock | `opening.clock`, `opening.clock_med` | do | their bitten friend lies there as the Fever's son does: hold **Give him the antidote** (or **Clean and bind the bite**) at him (8 s), the antidote (or a medical item) taken; 10 minutes before it lapses |
 | ✅ The Pump | `opening.pump` | do | 5 s at a petrol station's pump with fuel in a can |
 | ✅ Downwind | `opening.downwind` | sneak | 30 s within 25 m, only while hidden (`m_bUnseen`), quiet |
 | ✅ The Station Keys | `opening.keys` | do | inside the locked building whose key the giver gave you |

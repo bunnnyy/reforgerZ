@@ -37,6 +37,7 @@ class RZ_DoorGeometry
 	static const int CHILD_DEPTH = 3;
 	static const float BOX_INSIDE = 0.5;	// in the building means at least this far (m) inside its box
 	static const float HANDLE_HEIGHT = 1.05;	// a door's prompts this high (m) above the bottom of its leaf
+	static const float DOOR_PROP_REACH = 1.2;	// a door-like prop stands no further (m) from a real doorway
 	static const float FACE_GAP = 0.08;		// and this far (m) out from its outside face
 
 	//------------------------------------------------------------------------------------------------
@@ -315,6 +316,75 @@ class RZ_DoorGeometry
 			return vector.Zero;
 
 		return n * (1 / len);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A real outside door of a map building (never a spawned one): the nearest whose doorway is
+	//! `lo` to `hi` m from pos (houses only when `houses`), its doorway's middle and the way out of its
+	//! wall. Anything said to happen "at a door" stands on its doorstep (centre + normal * a step);
+	//! nothing ever spawns a door of its own. False: no such door.
+	static bool NearestOuterDoor(vector pos, float lo, float hi, bool houses, out IEntity door, out vector centre, out vector normal)
+	{
+		door = null;
+		centre = vector.Zero;
+		normal = vector.Zero;
+		array<IEntity> buildings = {};
+		RZ_BuildingQuery.FindBuildings(pos, hi + 15, buildings, 200);
+		float best = float.MAX;
+		foreach (IEntity b : buildings)
+		{
+			if (!b || (houses && !RZ_PlaceCheck.IsHouse(b)))
+				continue;
+
+			array<IEntity> doors = {};
+			FindDoors(b, 0, doors);
+			foreach (IEntity d : doors)
+			{
+				if (!IsOuterDoor(b, d))
+					continue;
+
+				vector n = WallNormal(b, d);
+				if (n == vector.Zero)
+					continue;
+
+				vector c = DoorwayCentre(d);
+				float dist = RZ_Util.DistXZ(pos, c);
+				if (dist < lo || dist > hi || dist >= best)
+					continue;
+
+				best = dist;
+				door = d;
+				centre = c;
+				normal = n;
+			}
+		}
+
+		return door != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A prop that is a door or a doorway (its name says Door, as a boarded doorway's does; not our
+	//! invisible door spots and blockers) may stand only within DOOR_PROP_REACH of a real outside
+	//! door's doorway. True when the prefab isn't one, or it fits; false, with a log line, when it
+	//! would stand in the open.
+	static bool DoorPropFits(ResourceName prefab, vector pos, string who)
+	{
+		if (prefab.IsEmpty())
+			return true;
+
+		string name = prefab;
+		name.ToLower();
+		if (!name.Contains("door") || name.Contains("doorspot") || name.Contains("doorblocker"))
+			return true;
+
+		IEntity door;
+		vector centre;
+		vector normal;
+		if (NearestOuterDoor(pos, 0, DOOR_PROP_REACH, false, door, centre, normal))
+			return true;
+
+		RZ_Log.Info(string.Format("Doors: %1 left out at %2 (%3): no real doorway within %4 m, and no door is ever spawned in the open", RZ_Util.PrettyPrefabName(prefab), RZ_SettlementScanner.GridReference(pos), who, DOOR_PROP_REACH));
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -616,6 +616,10 @@ modded class RZ_GameModeComponent
 		// The voice: Voice > Force mood cycles the five moods (a mood check every 5 minutes), and each
 		// one's picks are printed before the next, so the in-game picker can be read against voice_sim
 		RZT_VoiceCycle();
+		// The openings' play-test faults (RZT_Openings.c), before the missions move the tester about
+		if (m_iRZTSec >= 12 && !RZT_Openings.Tick(this, m_aRZTRoute[0]))
+			return;
+
 		if (m_iRZTSec > 5 && m_iRZTSec % 3 == 0 && !m_bRZTMissionsDone)
 		{
 			if (!GetMissions().RZT_Step())

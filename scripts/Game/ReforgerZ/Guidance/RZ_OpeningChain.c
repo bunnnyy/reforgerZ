@@ -138,11 +138,13 @@ class RZ_OpeningChain
 		w.Done("That's better already. Or I'm telling myself it is. Either way.",
 			"Neat. You've done that before. Thank you.");
 
-		w = Task(RZ_EOpeningTask.FEVER, "opening.fever", "The Fever", "give", RZ_EErrandPlace.HERE, 6, 6,
-			"Treat the fever of {giver}'s boy: a dressing, pills, anything medical.");
-		Give(w, RZ_EErrandItem.MEDICAL);
-		w.Take("My boy's burning. Since last night. Whatever's in your bag, he needs it more than the bag does.",
-			"He's inside, on the kitchen floor where it's cool. Do what you used to do. I'll hold his hand.");
+		// Someone else is the one in need: they lie there (a mattress on a house's ground floor near the
+		// giver, else beside them), the tracker points at them, and you see to them with your hands
+		w = Task(RZ_EOpeningTask.FEVER, "opening.fever", "The Fever", "do", RZ_EErrandPlace.HERE, 8, 6,
+			"Treat {giver}'s son, lying sick nearby: something medical from your bag.");
+		Patient(w, "Treat his fever", RZ_EErrandItem.MEDICAL, "house");
+		w.Take("My son's burning. Since last night. Whatever's in your bag, he needs it more than the bag does.",
+			"He's lying down where it's cool. Do what you used to do. I'll hold his hand.");
 		w.Done("He's asleep. Properly asleep, not the other thing. You don't know what that sounds like.",
 			"His forehead's wet. That's good, isn't it? Tell me that's good.");
 
@@ -212,17 +214,17 @@ class RZ_OpeningChain
 		w.Done("Still standing. You and the gate both.",
 			"That's the back wedged. Thank you. I couldn't have done both.");
 
-		w = Task(RZ_EOpeningTask.CLOCK, "opening.clock", "The Clock", "give", RZ_EErrandPlace.HERE, 6, 6,
-			"Give {giver}'s friend the antidote before the bite takes.");
-		Give(w, RZ_EErrandItem.ANTIDOTE);
+		w = Task(RZ_EOpeningTask.CLOCK, "opening.clock", "The Clock", "do", RZ_EErrandPlace.HERE, 8, 6,
+			"Give the antidote to {giver}'s bitten friend, lying nearby, before the bite takes.");
+		Patient(w, "Give him the antidote", RZ_EErrandItem.ANTIDOTE, "any");
 		w.Take("He's bitten. Forearm, an hour ago. You found an antidote, didn't you? Then we've got minutes, not hours.",
 			"It's a bite, and it's going grey round the edge. You know what that means better than I do.");
 		w.Done("His colour's coming back. Is that it? Is that all it takes?",
 			"You did it at a run and your hands didn't shake. I'll remember that.");
 
-		w = Task(RZ_EOpeningTask.CLOCK_MED, "opening.clock_med", "The Clock", "give", RZ_EErrandPlace.HERE, 6, 6,
-			"Keep {giver}'s bitten friend going: a dressing, anything medical you carry.");
-		Give(w, RZ_EErrandItem.MEDICAL);
+		w = Task(RZ_EOpeningTask.CLOCK_MED, "opening.clock_med", "The Clock", "do", RZ_EErrandPlace.HERE, 8, 6,
+			"Clean and bind the bite of {giver}'s friend, lying nearby: a dressing, anything medical you carry.");
+		Patient(w, "Clean and bind the bite", RZ_EErrandItem.MEDICAL, "any");
 		w.Take("He's bitten. No antidote anywhere. Can you keep him going till someone has one?",
 			"A bite on the forearm. I know there's no fixing it with what we've got. Buy him time.");
 		w.Done("Clean and bound. He's asking for water. That's a good sign, isn't it?",
@@ -319,6 +321,21 @@ class RZ_OpeningChain
 		// Done where it's done: nobody to go back to (the next step starts there)
 		w.m_bEndsThere = true;
 		return w;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seen to with your hands, someone lying there (the giver's son, their bitten friend): a care
+	//! work site (Shared > Work sites: the mattress) inside a building of `inside` near the giver
+	//! (else beside them), the person lying on it (Props > Duty person, else Puzzles > Civilian), its
+	//! hold `label`, and one `item` from your pack taken when it's done (without one, you're told what
+	//! it needs). The tracker's diamond is on them, not on the giver.
+	protected void Patient(RZ_ErrandWay w, string label, RZ_EErrandItem item, string inside)
+	{
+		w.Work(RZ_EWork.CARE, label, 8);
+		w.m_sInside = inside;
+		w.m_bPerson = true;
+		w.m_bPersonLies = true;
+		Give(w, item);
 	}
 
 	//------------------------------------------------------------------------------------------------

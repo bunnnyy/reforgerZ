@@ -23,6 +23,8 @@ class RZ_OpeningScenes
 
 	protected static const float CLUE_MIN = 3;		// the clue stands this far from the door's point...
 	protected static const float CLUE_MAX = 6;		// ...and no further
+	protected static const float DOOR_MIN = 6;		// the scratched door: a real door this far from yours...
+	protected static const float DOOR_MAX = 80;		// ...and no further
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Guidance m_Guide;
@@ -183,7 +185,7 @@ class RZ_OpeningScenes
 		int kind = kinds[rng.Int(0, kinds.Count())];
 		switch (kind)
 		{
-			case 1: Door(at, day, rng); break;
+			case 1: Door(o.m_Place.m_vPos, day, rng); break;
 			case 2: Radio(at, rng); break;
 			case 3: Car(at, rng); break;
 			case 4: Flyer(at); break;
@@ -193,9 +195,31 @@ class RZ_OpeningScenes
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The scratched door: the roads out end in concrete, nobody gets out.
-	protected void Door(vector at, int day, RZ_Rng rng)
+	//! The scratched door: the roads out end in concrete, nobody gets out. Scratched into a real
+	//! door of a building down the street (DOOR_MIN to DOOR_MAX m from yours): the words go on an
+	//! invisible readable spot on its leaf (Interactions > Door spot); no door is ever spawned. No
+	//! real door near, or no door spot: no clue.
+	protected void Door(vector from, int day, RZ_Rng rng)
 	{
+		IEntity door;
+		vector centre;
+		vector normal;
+		RZ_Interactions inter = m_GM.GetInteractions();
+		ResourceName spot;
+		if (inter)
+			spot = inter.GetDoorSpotPrefab();
+
+		if (spot.IsEmpty() || !RZ_DoorGeometry.NearestOuterDoor(from, DOOR_MIN, DOOR_MAX, false, door, centre, normal))
+		{
+			RZ_Log.Info(string.Format("Openings: no real door within %1 m of %2 for the scratched door, no clue", DOOR_MAX, RZ_SettlementScanner.GridReference(from)));
+			return;
+		}
+
+		IEntity building = RZ_DoorGeometry.BuildingOf(door);
+		vector at = centre + normal * 0.15;
+		if (building)
+			at = RZ_DoorGeometry.HandlePoint(building, door);
+
 		RZ_Perimeter perimeter = m_GM.GetPerimeter();
 		string roadDir = "";
 		string edgeDir = "";
@@ -213,7 +237,8 @@ class RZ_OpeningScenes
 		}
 
 		string text = RZ_GuidanceText.DoorText(rng, day, roadDir, edgeDir);
-		m_Guide.GetWorld().PlaceSceneClue(m_Settings.m_sDoorPrefab, RZ_EPuzzleProp.CLUE, true, at, "Look at the door", "Scratched into the door", text);
+		m_Guide.GetWorld().PlaceSceneClue(spot, RZ_EPuzzleProp.CLUE, false, at, "Look at the door", "Scratched into the door", text);
+		RZ_Log.Info(string.Format("Openings: the scratched door is a real door at %1, %2 m from the opening", RZ_SettlementScanner.GridReference(at), RZ_Util.RoundToInt(RZ_Util.DistXZ(from, at))));
 	}
 
 	//------------------------------------------------------------------------------------------------

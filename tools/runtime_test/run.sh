@@ -41,6 +41,11 @@
 #     ("RZT Talk test: ..."), and walks it through reputation's cells, the credit rule and the
 #     forgiveness budget ("RZT Reputation test: ..."); from minute 2 it cycles Voice > Force mood
 #     through the five moods, 5 minutes each, and prints each one's picks ("RZT voice <mood> ...");
+#   - 12 s in, before the missions, checks the openings' play-test faults at the first town
+#     (RZT_Openings.c): the Fever's son lies there on a care work site with the tracker on him, 24 s
+#     by the giver doesn't finish it and the hold with a dressing does; a hand-over (the Cut) is done
+#     there and then and only with the thing; a real outside door is found near the town and a
+#     door-like prop is refused in the open ("RZT openings OK|FAIL ...", "RZT openings: N checks");
 #   - starts every registered mission type one at a time, moves the player where the quest tracker
 #     points, then ends it (alternately won and failed) so Setup, Update, rewards and cleanup all run;
 #   - checks every objective's place on the way (RZT_ObjPlace.c): for each mission and questline
@@ -223,6 +228,10 @@ cp -r "$HERE/files/." "$ADDON/"
 # so the power test spawns the real ones
 mkdir -p "$ADDON/Prefabs/ReforgerZ/World"
 cp "$ROOT"/Prefabs/ReforgerZ/World/RZ_PowerDressing.et* "$ROOT"/Prefabs/ReforgerZ/World/RZ_PowerGeneratorSound.et* "$ADDON/Prefabs/ReforgerZ/World/"
+# The work site box (Shared > Work sites > Site prefab) for the openings' check (RZT_Openings.c),
+# which turns work sites on with it when the test world leaves them off
+mkdir -p "$ADDON/Prefabs/ReforgerZ/Work"
+cp "$ROOT"/Prefabs/ReforgerZ/Work/RZ_WorkSite.et* "$ADDON/Prefabs/ReforgerZ/Work/"
 # The hand-built sites' role spots (docs/SITES.md, "Role spots"): a shipped save's spots spawn them
 mkdir -p "$ADDON/Prefabs/ReforgerZ/World/HandBuilt"
 cp "$ROOT"/Prefabs/ReforgerZ/World/HandBuilt/RZ_HandSpot*.et* "$ADDON/Prefabs/ReforgerZ/World/HandBuilt/"
@@ -256,6 +265,7 @@ grep -E 'RZT objective places \(' "$LOG" | tail -1 | sed 's/.*RZT /  /'
 grep -E 'RZT objplace FAIL' "$LOG" | sed 's/.*RZT objplace FAIL /  objective place wrong: /' | head -40
 grep -E 'RZT Power test: ' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT carry(: done| FAIL|: off|: no building)' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT openings' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (epilogue check: .*FAILED|epilogue done|epilogue: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E '\[ReforgerZ\] Sites audit: [0-9]+ sites,' "$LOG" | sed 's/.*\[ReforgerZ\] /  /'
@@ -264,5 +274,6 @@ grep '\[ReforgerZ\] Place check: ' "$LOG" | sed 's/.*\[ReforgerZ\] /  /' | head 
 grep -q 'Virtual Machine Exception' "$LOG" && exit 1
 grep -q 'RZT objplace FAIL' "$LOG" && { echo "FAILED: an objective points somewhere else than where its step is done"; exit 1; }
 grep -q 'RZT carry FAIL' "$LOG" && { echo "FAILED: carrying for real (the pile, the put-down indoors, the stack)"; exit 1; }
+grep -q 'RZT openings FAIL' "$LOG" && { echo "FAILED: an opening's step (the son, a hand-over, a door: RZT_Openings.c)"; exit 1; }
 grep -q 'RZT Power test: .*FAILED' "$LOG" && { echo "FAILED: the power station's looks (the dressing, the generator's sound or the lamps' list)"; exit 1; }
 exit 0
