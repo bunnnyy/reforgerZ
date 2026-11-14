@@ -70,15 +70,15 @@ teddy bear on its doors so that nobody would shoot through them. Every safehouse
 in it has the bear on its door now, and the Haven uses it as its mark. It has been touched up so
 often that it has a patch on its belly and one eye stitched shut.
 
-**The lodger.** On Day 2 a woman was on the bus Sedlak turned round at the north road. On Day 4 she
+**The lodger.** On Day 2 a man was on the bus Sedlak turned round at the north road. On Day 4 he
 was bitten in the church doorway, the morning the priest opened it, and declared it, as every house
-asks. The priest sat up with her all night, and in the morning she asked for tea. On Day 6 she was
-meant to walk up the hill with the volunteers; her council head kept her back, and the lab's ledger
-says *"did not present"*. Then her house crossed her off the List with the pencil it uses for the
-dead, so the lab wouldn't come for her and Bastion couldn't count her: the one name on the List
-crossed out as a kindness. Since then she's moved from house to house at dusk, a mouth on half
-portions in a network whose rule is that everyone works. Her son runs with a Red Hand crew. Nobody
-says why she didn't turn. *"They crossed me off to keep me safe. Nobody asked me either."*
+asks. The priest sat up with him all night, and in the morning he asked for tea. On Day 6 he was
+meant to walk up the hill with the volunteers; his council head kept him back, and the lab's ledger
+says *"did not present"*. Then his house crossed him off the List with the pencil it uses for the
+dead, so the lab wouldn't come for him and Bastion couldn't count him: the one name on the List
+crossed out as a kindness. Since then he's moved from house to house at dusk, a mouth on half
+portions in a network whose rule is that everyone works. His son runs with a Red Hand crew. Nobody
+says why he didn't turn. *"They crossed me off to keep me safe. Nobody asked me either."*
 
 **The hard edges.** The Haven is kind, and it is also frightened and hungry. It has a
 little dark side that nobody talks about:
@@ -115,8 +115,8 @@ It started with orders that made sense. On Day 1 the cordon detail put roadblock
 the order came to walk civilians to the road checkpoints at the edge, to be processed out.
 Lieutenant Hana Sedlak took a bus, forty cars and a line of people on foot to the checkpoint
 on the north road. At two in the afternoon the barrier was still down. A loudspeaker told them
-to turn back. The soldiers behind the concrete wore the same badge she did. When she walked
-up to talk to them, a warning shot went through the bus's mirror. She turned the column round.
+to turn back. The soldiers behind the concrete wore the same badge he did. When he walked
+up to talk to them, a warning shot went through the bus's mirror. He turned the column round.
 The bus driver's route ended there, and he went looking for somewhere to put his passengers.
 
 That evening the last clear message came over the net: *"Hold the line. Await relief."*
@@ -142,7 +142,7 @@ post, and the operators wrote it down word for word:
 > bring our own home, one way or the other. Nobody walks out on the rest. The roster stands. The
 > call stands. Bastion out."*
 
-That evening Sedlak, who keeps the roster at the stronghold, wrote onto it the families from her
+That evening Sedlak, who keeps the roster at the stronghold, wrote onto it the families from his
 Day 2 column who had stayed with the soldiers: *"Civilians, attached."* They stand no watch, and
 when one of them doesn't come back, the stronghold goes looking, the same as for a soldier.
 
@@ -166,7 +166,7 @@ say which way it leans ([REPUTATION.md](REPUTATION.md#traits)).
 
 **Held for collection.** The order on Day 2 said to screen the civilians first, *"with the samples to
 go along with them"*. At a tent short of the north road barrier the battalion's medical officer took
-a tube from everyone in Sedlak's column, three hundred people or so; Sedlak rolled up her sleeve first
+a tube from everyone in Sedlak's column, three hundred people or so; Sedlak rolled up his sleeve first
 so the column would. Every tube got a number, and every person a slip with the number and their name,
 stapled to the bus driver's clipboard for the barrier. The captain's log has two lines that afternoon:
 *"13:10. Results to Command by radio: 4 R / {count}. Ack."* and *"14:00. Barrier not lifted. Column
@@ -297,14 +297,14 @@ was in charge. The boss read each of them their own line, quietly: what they'd p
 it had been. The arguing stopped. The younger Janda runs the pit now, and doesn't drink with
 anyone.
 
-**The cook.** She cooks the dusk meal at the stronghold, and ran the school kitchen in town until
-Day 2; the crews call her Doc because she isn't one. On Day 2 she queued at Rudi's forecourt all day,
-and that night he sold her forty litres round the back and let her pay later, because he knew her.
-Her line is on Rudi's first page, under the boss's ten litres. On Day 7 she took Rudi his supper the
+**The cook.** He cooks the dusk meal at the stronghold, and ran the school kitchen in town until
+Day 2; the crews call him Doc because he isn't one. On Day 2 he queued at Rudi's forecourt all day,
+and that night he sold him forty litres round the back and let him pay later, because he knew him.
+His line is on Rudi's first page, under the boss's ten litres. On Day 7 he took Rudi his supper the
 evening the boss told the brothers he'd been bitten: *"He let people pay later. That's what he died
-of."* Rudi's tally became the boss's book, every "pay later" in it became owed to the boss, and she's
-paid hers off in the kitchen ever since. After supper she cooks the other thing, on an old farm still
-in a barn nobody lives near: the cut dose. Beside the book she keeps her own pages, which pan each
+of."* Rudi's tally became the boss's book, every "pay later" in it became owed to the boss, and he's
+paid his off in the kitchen ever since. After supper he cooks the other thing, on an old farm still
+in a barn nobody lives near: the cut dose. Beside the book he keeps his own pages, which pan each
 line's dose came from. The Red Hand ran the biggest trial in the Zone and wrote the misses up as
 debts. The crews take their own cut only when a man's worth less than a real dose, and every man
 knows it.
@@ -390,7 +390,7 @@ On Day 1, whatever got out, got out. The team loaded two vans with the freezers,
 centrifuge and every notebook they could find, and drove down into town. On Day 2 the
 Institute's last call reached them: nobody leaves until the Zone is proven clean, and proof
 opens the gates. Then the line went dead. On Day 3 the team lead, Dr Greta Wolff, went back up
-to the site for the rest of the samples. Her driver came back alone and wouldn't say what he'd
+to the site for the rest of the samples. His driver came back alone and wouldn't say what he'd
 seen. On Day 4 a Bastion platoon arrived with Command's order, two days old, to secure the
 lab. The researchers wouldn't open the doors, and the soldiers wouldn't leave, and they stood
 there all night. In the morning
@@ -402,7 +402,7 @@ number has been eight in ten ever since, which the lab says is a coincidence.
 pasted an order on it: *"By order: lower store to be secured and not opened. Day 1, 04:10. Lt H.
 Sedlak."* Two keys were cut, and both were signed for. On Day 2 the detail went down to walk the
 column and never came back up. On Day 3 Dr Wolff went up for the rest of the samples, found the chain,
-sent her driver down and stayed with three of her team. Her clipboard still hangs by the lower
+sent his driver down and stayed with three of his team. His clipboard still hangs by the lower
 store's door: *"Day 3. Chained. Soldiers gone. Four of us staying."* Behind the chain is a dewar with
 the first isolate in it, labelled with the clinic patient's surname and the date the Institute was
 told. The director has known where it is since Day 3, and has never asked Bastion for the key.
@@ -450,7 +450,7 @@ matter more than people, and it apologises for that, quietly:
 | What they don't say out loud | What it means | Where it shows in play |
 |---|---|---|
 | **The three weeks** | The first case was three weeks before the gates closed, and the Institute was told. Nobody at the lab says what anyone did with those three weeks. | Patient Zero (the clinic records); the questline The Three Weeks (the driver who came back alone, the closed site, Dr Wolff's notebook and the Institute's one-word reply, "Continue."); the rumour that Halcyon made this |
-| **"The other two"** | The two in ten who don't walk out of the trial dose leave with half the time they came in with, and a page in someone's notebook. Someone sits with them with a clipboard instead of a hand. | The trial dose; Serum Trial; Unsanctioned Trial; the questline The Other Two (a back room at a field station, a Haven woman's brother, and names for the numbers) |
+| **"The other two"** | The two in ten who don't walk out of the trial dose leave with half the time they came in with, and a page in someone's notebook. Someone sits with them with a clipboard instead of a hand. | The trial dose; Serum Trial; Unsanctioned Trial; the questline The Other Two (a back room at a field station, a Haven man's brother, and names for the numbers) |
 | **"Samples first, people second"** | When a van can't take both, the cold boxes go. It's an order, and they say sorry for it on the secure channel. | Secure channels |
 | **"At the moment of turning"** | The protocol wants tissue taken as a person turns, so someone has to be there, waiting, with the kit. | Patients Not Samples; The Other Two (the sample kit by the bed) |
 | **Live ones** | Specials caught alive, for the lab, and sometimes for a field lead's own notebook. People say Halcyon pays the Red Hand for live ones. | Live Capture; Private Collection; The Three Weeks (Dr Wolff, brought down alive); rumours |
@@ -479,32 +479,32 @@ Not a faction. A family of four to seven people in one farmhouse, in one of the 
 nobody goes. They're kind to strangers. There's always an extra place set at supper. And they
 eat people.
 
-It started with the Haven's mouths. On Day 3 Ada Moravec opened her farmhouse past the last
-village to anyone the other houses couldn't feed. She had two grown sons, a daughter-in-law and a
-kitchen table long enough for twenty. The council sent her its mouths: the old, the sick, a man in
+It started with the Haven's mouths. On Day 3 Adam Moravec opened his farmhouse past the last
+village to anyone the other houses couldn't feed. He had two grown sons, a daughter-in-law and a
+kitchen table long enough for twenty. The council sent him its mouths: the old, the sick, a man in
 a wheelchair, two men who couldn't stop coughing, and a boy of ten whose mother never made it to
 the gym. On Day 6 the Haven truck to the farm didn't come. On Day 7 the council's radio said there
 would be nothing for the farm that week: houses with workers came first. On Day 8 old Mr Halas
-died in the night. In the morning there was soup. Ada said grace and read his name out, the way
+died in the night. In the morning there was soup. Adam said grace and read his name out, the way
 every Haven house reads its dead at supper. Nobody asked. The ones who would have asked weren't
 strong enough to.
 
 On Day 9 one of the coughing men turned out to have a bite he hadn't declared, and by the next
-night Ada's daughter-in-law was sick. Her husband walked her out at dusk and came back alone. The
+night Adam's daughter-in-law was sick. Her husband walked her out at dusk and came back alone. The
 family has asked every guest about bites ever since. By Day 10 the farm had stopped answering the
 radio. The council crossed the whole house off the List and said a prayer for it, and everyone
 agreed the infected must have got there first.
 
 The mouths are gone now. The family is still there, and the boy.
 
-**How the house runs.** Ada runs the kitchen, and the kitchen is the house:
+**How the house runs.** Adam runs the kitchen, and the kitchen is the house:
 
 - **There's always a place set.** An extra bowl at the long table, for whoever comes.
-- **Everyone is welcome.** Her elder son, the host, meets travellers on the road with a flask of
+- **Everyone is welcome.** His elder son, the host, meets travellers on the road with a flask of
   something hot. He knows the roads, the trucks and who's short, and everything he says is true.
 - **Declare your bite.** They ask every guest, kindly, the way a Haven house does. A bitten guest
   is fed, blessed and sent on their way.
-- **Grace.** Before supper Ada reads a name.
+- **Grace.** Before supper Adam reads a name.
 - **Nothing is wasted.** That's the whole of the reason, and they say it often.
 
 They tell themselves they only took the ones who were going anyway. That was true for a week.
@@ -513,7 +513,7 @@ They tell themselves they only took the ones who were going anyway. That was tru
 
 | What they don't say out loud | What it means | Where it shows in play |
 |---|---|---|
-| **Grace** | At a Haven house, the name read at supper is the dead. At Ada's, it's the meal | Every meal at the long table (the name is the last one who never arrived); A Place at the Table |
+| **Grace** | At a Haven house, the name read at supper is the dead. At Adam's, it's the meal | Every meal at the long table (the name is the last one who never arrived); A Place at the Table |
 | **"Nothing is wasted"** | It started with the dead. Then the dying. Then the ones nobody would come looking for | Wanderers who never arrive; rumours |
 | **"Declare your bite"** | Asked kindly, like a Haven house. A bitten guest is safe: they learned on Day 10 what the bitten do to a family | A bitten player is never set on; Halcyon's interest |
 | **The guestbook** | Every guest signs. Some names have a date and a small cross beside them, the way the List does | Proof in The House That Went Quiet |
@@ -607,8 +607,8 @@ A pack keeps a little of whoever leads it, and nobody explains it.
 ### The site's own
 
 The oldest pack in the Zone ranges round the closed site in the hills. Who its leader was is a canon
-key the lab never says (`tribe.site.who`). Dr Wolff stays exactly as The Three Weeks has her: one
-turned researcher, alone in the store. The driver's *"she stayed because she wanted to"* still reads
+key the lab never says (`tribe.site.who`). Dr Wolff stays exactly as The Three Weeks has him: one
+turned researcher, alone in the store. The driver's *"he stayed because he wanted to"* still reads
 either way.
 
 ### Ordinary people, small stories
@@ -676,7 +676,7 @@ ever. There are no papers, bribes or deals.
 There's no escape. Your character's story ends inside the Zone. Nothing crosses the line, and
 nothing comes over it, but the line itself has its own small stories, rare and dangerous: a gap
 in the drones' rotation that the Red Hand uses to reach the cache it hides in the kill zone, a
-Haven runner's medicine dropped at the waterline when a drone found her, a body at the line
+Haven runner's medicine dropped at the waterline when a drone found him, a body at the line
 with papers on it. How the line works is in [DESIGN.md](DESIGN.md), "The Perimeter"; the three
 missions are in [MISSIONS.md](MISSIONS.md), "Perimeter missions". Once the cure is out the line
 stands down ([Endings](#endings)).
@@ -711,7 +711,7 @@ back, and nothing past the barrier is ever shown or said. The outside never answ
 changes its words because of what anyone did. Every other barrier stays shut, and the gates open
 with the wipe.
 
-At 90% the lab's batch is missing one thing, and every faction thinks it knows what: the woman who
+At 90% the lab's batch is missing one thing, and every faction thinks it knows what: the man who
 didn't turn, the captain's tubes, the cook's still, the lower store, or the eight who walked out.
 Players race to finish it and fight for the lab's **clean room** during the stand. **The cure goes to
 whoever holds the clean room when the stand is won**, and their people decide how it reaches people

@@ -887,7 +887,7 @@ drawn: which job is missing shows on the markers, not the picture.
 ### The shop screen
 
 As approved (`shop.html`): **Trade** at a quartermaster opens a panel 1,600 × 880 in the middle of the screen, the
-world dimmed. The header says whose stores they are ("Haven stores", "Ada Reyes, quartermaster in
+world dimmed. The header says whose stores they are ("Haven stores", "Adam Reyes, quartermaster in
 Morton") and, on the right, your standing with them and your Favor ("You're Trusted", "64 Favor" in
 the faction's colour), over a 2 px line in that colour. Under it the categories as tabs: **Food
 and water, Medical, Gear and tools, Weapons and ammo, Services** (a tab with nothing on it is

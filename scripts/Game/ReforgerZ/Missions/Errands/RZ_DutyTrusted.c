@@ -120,7 +120,7 @@ class RZ_DutyTrusted
 		{
 			charts.Insert(string.Format("Corporal %1. Bitten on the wire yesterday, holding a section together since. They need him.", who[0]));
 			charts.Insert(string.Format("Private %1. Eighteen, bitten three days ago, and the youngest on the post.", who[1]));
-			charts.Insert(string.Format("%1, the cook's girl, not on the strength. Bitten carrying water to the wire.", who[2]));
+			charts.Insert(string.Format("%1, the cook's boy, not on the strength. Bitten carrying water to the wire.", who[2]));
 			back = "Send it back to the lab";
 		}
 		else if (e.m_iFaction == RZ_EFaction.BANDITS)
@@ -135,7 +135,7 @@ class RZ_DutyTrusted
 		else
 		{
 			charts.Insert(string.Format("%1, who keeps the house's well and the night roof. Bitten on the roof, yesterday.", who[0]));
-			charts.Insert(string.Format("%1. A mother of three, bitten four days ago and hiding it until this morning.", who[1]));
+			charts.Insert(string.Format("%1. A father of three, bitten four days ago and hiding it until this morning.", who[1]));
 			charts.Insert(string.Format("%1. Seventy, bitten at the gate holding it shut, and asking only that it be given to someone else.", who[2]));
 		}
 

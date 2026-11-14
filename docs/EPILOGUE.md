@@ -197,9 +197,9 @@ the tags back on the nail and *AT THE BARRIER* chalked over them (*Ask the opera
 the case on a trestle by the lab gate (*Read the notice*, by `proof.first_page`); the lorry at the
 crossroads with the book nailed open and a lad on a kitchen chair (*Ask the lad to read your line*).
 **Last Rounds' route lines**, once each after its coda ran, on that coda's faction channel: the
-Haven's *"If you can hear this: her name is ..."*, Bastion's four R numbers read for the record, the
+Haven's *"If you can hear this: his name is ..."*, Bastion's four R numbers read for the record, the
 readout's *"Reference stock: wanted."* (*logged* under Halcyon), the cook's *"Soup. It keeps."*
-(at the lorry with her line paid). **How many evenings**: at the commit the week works out how many
+(at the lorry with his line paid). **How many evenings**: at the commit the week works out how many
 game evenings phase B holds (its played hours over a game day's length); with fewer than four, the
 second airings may share an evening.
 
@@ -212,10 +212,10 @@ left. Come back in about 20 minutes."* Outlets read standing, never clothes.
 
 | Route | Terms | Where | Price | Stock | Refused |
 |---|---|---|---|---|---|
-| The Haven | her house, and her boy | every safehouse of Community size or more: *Ask for the dose* | free at the chair's house; else 5 Haven Favor | 2, 1 an hour | exiles, unless the chair chose *All of them* |
+| The Haven | his house, and his boy | every safehouse of Community size or more: *Ask for the dose* | free at the chair's house; else 5 Haven Favor | 2, 1 an hour | exiles, unless the chair chose *All of them* |
 | | the far house first | the same | free at the house farthest from the chair's | 2, 1 an hour | as above |
 | | by the bite book | the same | 5 Haven Favor, or free with less | 2, 1 an hour | nobody |
-| | the crossed-out first | the same | 5 Haven Favor | 2, 1 every 90 min | as her house |
+| | the crossed-out first | the same | 5 Haven Favor | 2, 1 every 90 min | as his house |
 | Bastion | the roster / the census | the queue's table and each Bastion holding: *Sign for treatment* | one firearm from your weapon slots, or 15 Bastion Favor | 3, 1 every 30 min | Hunted by Bastion |
 | | the column | the same | as the roster | 3, 1 every 45 min | as above |
 | | by need | the same | free | 3, 1 every 30 min | nobody |
@@ -231,10 +231,10 @@ left. Come back in about 20 minutes."* Outlets read standing, never clothes.
 | | kept back | none | | | |
 | Nobody | handed over, the slow cure | the Fame leader's faction's row, under its stronghold leader's terms (the chair: the bite book if Merciful or Idealist) | | | |
 
-**Her house** is free too (the woman's house, any size, under her terms); Bastion's **census** reads
+**His house** is free too (the man's house, any size, under his terms); Bastion's **census** reads
 your name and background back with the dose (*"Next."*); at Bastion's and the crews' tables a player
 below Known is **searched** (armed: *"Weapons on the table first."*); the **first pan** is at the cook's
-sister's house while she lives; the **open crate** shows the names of whoever reached it first,
+brother's house while he lives; the **open crate** shows the names of whoever reached it first,
 chalked on the lid; errand card 41, What the Cure Costs Here, offers the way this table allows
 ([ERRANDS.md](ERRANDS.md#the-epilogue-deck)). *Simplified:* the column has no Day 2 slips served first.
 
@@ -271,7 +271,7 @@ Bastion group by stencilled crates, two of the crew, a researcher behind a table
 car within 8 m of a scene slides it 30 m along the verge (VERIFY: the car query finds parked
 vehicles). **Scenes with bodies**: at most **Epilogue > Scenes that last** (2) and **Evening scenes**
 (1, the supper reading) at once; the rest stand as boards. **The Long Table in the queue** (gone to the
-queue): three more at the back with a covered basket and the mother's grace over a bowl she doesn't
+queue): three more at the back with a covered basket and the father's grace over a bowl he doesn't
 share; *Talk the boy out of the queue* (the Kid on the roads, else a child at the nearest house);
 *Tell the corporal* or *Tell the chair* (`table.told` 1 or 2). **Holdouts**: Carry the Dose's holdout
 stands in the doorway while the box is on its way. **More places**: the ridges below each pack still

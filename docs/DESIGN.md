@@ -785,11 +785,12 @@ look and the next one along wears another. An empty list keeps the slot's own pr
 | A supply truck's crew, a hunter squad, a stronghold quartermaster, a mission's faction group (the finale's stand, Authors, the Red Hand vans, Bastion's gate squad, the crash site's recovery team, the squad sent to arrest a post's commander) | the spot it spawns at |
 | A stronghold leader, council head or outpost leader | the seat and the generation: a successor wears another look |
 
-**Names fit the body.** The base game's people are all men (its identity list has no women), so
-anyone who stands in the world gets a man's first name (`RZ_NoteText.ManName`: holding people, road
-crews, wanderers, a mystery's priest) and a man's words; `RZ_NoteText.FirstName` is for people nobody
-meets (a note's writer, a name on a list). The written women who still stand in the world wait for
-the author ([MISSION_RULES.md](MISSION_RULES.md#the-audit)).
+**Names fit the body.** The base game's people and our mod stack's are all men (no female body,
+[MISSION_RULES.md](MISSION_RULES.md#the-people), rule 10), so everyone who stands in the world is a
+man: a man's first name (`RZ_NoteText.ManName`; `FirstName` is the same list, since a note's name may
+be met later) and a man's words. Women may be mentioned (a dead wife, a mother back home), never met.
+An older save's women's names are mapped to men's as they load (`RZ_NoteText.ManFromOld`: the named
+people, wanderers, the finale's people, the Long Table and questlines' texts).
 
 **Nobody of a faction wears a vanilla soldier's kit.** Three rules make sure of it:
 
@@ -1180,12 +1181,12 @@ questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table) and [MISSIONS.md
   name), else the building farthest out, else a point on the edge. Saved. Territory never founds or
   takes an outpost within 1.5 km of it, and world events that want a town nobody lives in leave
   its town alone.
-- **Data.** One record: 4–7 people by role (the mother, the host, the quiet son, the boy, and up to
+- **Data.** One record: 4–7 people by role (the father, the host, the quiet son, the boy, and up to
   three others; names seeded), **hunger** (0–100, starts at 45, +6 an hour of play × season speed)
   and **suspicion** (0–100, starts at 10). Ticked every 10 minutes of play. Saved with what it took
   last, its tells on the road and what it remembers of each character.
 - **Bodies only near players.** Within 300 m (Puzzles > Civilian): the host and one or two others
-  outside, the mother at the door, the boy half the time. While a questline's stage mission is at
+  outside, the father at the door, the boy half the time. While a questline's stage mission is at
   the farm, it has the farm: the house's own people stand aside. A body that's a character and is
   killed is one of them gone.
 - **The host on the road.** Every 30 s, a player within 1.5 km of the farm (not at it, not in a
@@ -1226,9 +1227,9 @@ questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table) and [MISSIONS.md
 - **The fight** (the guest rule's, or a questline's): the family's men as one AI group (Missions >
   Events > Rival group, else Missions > Survivor group) hostile only to the players it's set on, by
   the Haven's bit as Rival Survivors are. Each death is one of them, the host last. All of them
-  down: the mother is gone by morning. The players gone for a minute: the group goes, the dead stay
+  down: the father is gone by morning. The players gone for a minute: the group goes, the dead stay
   dead. Without the prefab there's no fight (the guest rule is a narrow escape).
-- **Broken up**: without the mother, or with fewer than two grown-ups, or by a questline's ending,
+- **Broken up**: without the father, or with fewer than two grown-ups, or by a questline's ending,
   it's gone for the season. Burnt: its town counts as Burned (town memory) and loses 15 infection.
   The boy, if he got out, becomes the Kid wanderer (or one more at the nearest safehouse if a Kid is
   already on the roads); the host may become a Scavenger wanderer.
@@ -1657,7 +1658,7 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
 - **Lies in a job** go to the one lie store ([Lies and witnesses](#lies-and-witnesses)): covering a
   collection (found at the next collection there), saying a colleague turned or walking a deserter to
   the Haven (found by a visit), selling a distress call to the crew (found when Tied Down frees a
-  truck), a Nurse hiding a bite at a house's door (found within a season day; the life record "hid a bite" names the house, and that house's people make her checks one step harder for the rest of the life: its errands' talk and Protection Racket's persuade, `RZ_StoryKit.HouseHarder`), the commander's stove
+  truck), a Nurse hiding a bite at a house's door (found within a season day; the life record "hid a bite" names the house, and that house's people make his checks one step harder for the rest of the life: its errands' talk and Protection Racket's persuade, `RZ_StoryKit.HouseHarder`), the commander's stove
   (found by the rumour round).
 - **Season counts the story jobs keep** (season flags): Bastion's civilians sheltered
   (`bastion.sheltered`, read on the call to those who brought them), and Struck Off's men walked home
@@ -1681,7 +1682,7 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
   No prefab, or no room: the job goes on in words.
 - **Choices on a plain mission's people**: a non-puzzle mission can tag a person with choice and use
   slots (`RZ_PuzzleObjectComponent`) and get them through `HandleObjectChoice` and `HandleObjectUse`
-  (Survivors Trapped's mother, the one-choice stand-in's Leave).
+  (Survivors Trapped's father, the one-choice stand-in's Leave).
 - **One real choice** (`Missions/Blocks/RZ_OneChoice.c`, `m_Choice`): when a one-choice job's work
   is done (its state turns to succeeded), it stays open and a stand-in person (the civilian puzzle
   prefab) appears beside it with the options as choice slots (object index 90). Picking one goes

@@ -529,7 +529,7 @@ class RZ_Mission_FortifySafehouse : RZ_Mission_Hold
 //! A story job (key `informant`, kept per town): the names, as they said; bait (he knows what you are
 //! and sells you the wrong names); or he sells to Bastion too (a Bastion holding on the map). The
 //! seller is the talk scene: buy (the old way: spotted 20%, +30% armed), pay in tins (no standing:
-//! never spotted), or [Red Hand kit] "Mira sent me" (a trick: the full list, never spotted). At the
+//! never spotted), or [Red Hand kit] "Mirek sent me" (a trick: the full list, never spotted). At the
 //! house the council asks: the names to the Haven; bait: burn the list (half pay, a record); Bastion:
 //! sell Bastion a copy (10 Bastion Favor, a lie a Haven-Known visitor to the house finds out).
 class RZ_Mission_TheInformant : RZ_PuzzleMission
@@ -663,7 +663,7 @@ class RZ_Mission_TheInformant : RZ_PuzzleMission
 		sc.Way(n0, "Buy what he's selling", RZ_TalkScene.WAY, -1, 0, WAY_BUY, "He counts your money and talks while he counts.");
 		sc.Ask(n0, "How do you pay, then?", n1, "Money, tins, a name. Names are the dearest. Don't ask who's buying yours.");
 		sc.Way(n1, "Pay in tins", RZ_TalkScene.FOOD, -1, 2, WAY_TINS, "He likes tins. Tins don't ask questions either.");
-		sc.Way(n1, "Mira sent me.", RZ_TalkScene.TRICK, RZ_EFaction.BANDITS, 1, WAY_KIT, "\"Why didn't you say?\" He gives you the long list, the one for friends.", "\"Mira's been dead a month.\" He walks off fast.");
+		sc.Way(n1, "Mirek sent me.", RZ_TalkScene.TRICK, RZ_EFaction.BANDITS, 1, WAY_KIT, "\"Why didn't you say?\" He gives you the long list, the one for friends.", "\"Mira's been dead a month.\" He walks off fast.");
 
 		string labels = "Give the Haven the names";
 		if (truth == "bait")

@@ -2659,7 +2659,7 @@ class RZ_LongTable
 		RZ_Questline.SpreadRumour(m_GM, string.Format("Bastion has it down as an infected cluster past %1. Containment, they call it. They'll burn it if nobody else ends it.", town), 12);
 
 		// Halcyon: interested, and ashamed of being interested
-		RZ_Questline.SpreadRumour(m_GM, "A Halcyon researcher asked whether they ever ate the bitten. Then she wouldn't look at anyone.", 8);
+		RZ_Questline.SpreadRumour(m_GM, "A Halcyon researcher asked whether they ever ate the bitten. Then he wouldn't look at anyone.", 8);
 
 		// The Red Hand: the crew that bought the jars is purged (on the next round, not in the middle
 		// of someone's talk with a crew boss), and the open channel laughs

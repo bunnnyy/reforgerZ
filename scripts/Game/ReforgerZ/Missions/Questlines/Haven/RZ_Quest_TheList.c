@@ -131,7 +131,7 @@ class RZ_Quest_TheList : RZ_Questline
 				asker = head;
 		}
 
-		// The farm the mouths went to: the Long Table's, in a season with one (it was Ada's farm)
+		// The farm the mouths went to: the Long Table's, in a season with one (it was Adam's farm)
 		RZ_Safehouse h = houses.Get(asker.m_iSafehouse);
 		int farm = PickFarm(gm, h.m_vPos);
 		int mouthsFarm = -1;

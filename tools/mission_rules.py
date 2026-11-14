@@ -21,7 +21,8 @@ doesn't fail --strict, and it's listed every run so it isn't forgotten.
 Rules checked here (their numbers are MISSION_RULES.md's):
     3  a door spawned: a prefab built on a base-game door (BuildingParts/Doors), or such a door named in code
     9  a person's marker on a stored spot: RZ_ObjPlace.Spot(...) given a giver's or a person's position
-   10  a woman's word on someone who stands in the world ("a patient's mother"): the base game's people are men
+   10  a woman's name or word in a line the game shows (everyone met is a man: the stack has no female
+       body); the allowlist names each woman who is only mentioned, never met (a dead wife, a voice)
    14  carrying done as a hold: a hold's words say carry, move, stack, load, haul or bring in
    19  a hand-over done by walking up: a distance check to a person that completes a step or a job
    23  two actions or places in one objective line ("Find the ring, give it to the mother at ...")
@@ -47,7 +48,7 @@ RULES = {
     1: "words name a building kind the file never asks for",
     3: "a door spawned instead of a real one",
     9: "a person's marker on a stored spot",
-    10: "a woman's word on someone in the world",
+    10: "a woman's name or word in a shown line",
     14: "carrying done as a hold",
     19: "a hand-over or completion by walking up to a person",
     23: "two actions or places in one objective line",
@@ -249,16 +250,57 @@ SEXED = re.compile(r"^(an? |the )?[\w' ]{0,30}\b(mother|wife|widow|daughter|sist
                    r"lady|her son)\b[\w' ]{0,20}$", re.I)
 
 
+# Everyone met is a man (the author's call; no female body in the stack): a woman's first name or word
+# in a line the game shows is a hit, unless the allowlist says who it is and that they're never met
+# (a dead wife, a mother back home, a voice on the radio)
+WOMEN_NAMES = ("Marta", "Jana", "Lucie", "Ruth", "Irena", "Elise", "Nadia", "Vera", "Sabine", "Ilse", "Dana", "Agata",
+               "Ada", "Hana", "Olga", "Edith", "Agnes", "Zofia", "Greta", "Mila", "Mira", "Ines", "Mara", "Anna", "Eva",
+               "Maria", "Marie", "Elena", "Helena", "Katarina", "Petra", "Monika", "Zuzana", "Ludmila", "Alena")
+WOMEN = re.compile(r"\b(she|her|hers|herself|woman|women|mother|mothers|daughter|daughters|wife|wives|sister|"
+                   r"sisters|girl|girls|widow|Mrs|Ms|gran|granny|grandmother|aunt|lady|ladies|niece|mum|mama|"
+                   + "|".join(WOMEN_NAMES) + r")\b", re.I)
+KEY = re.compile(r"[a-z_.:]+")
+
+
+def women_in(text):
+    text = re.sub(r"\{[a-z_]+\}", "", text)
+    for m in WOMEN.finditer(text):
+        word = m.group(0)
+        if word.lower() == "ms" and word != "Ms":
+            continue
+        if word.lower() in [n.lower() for n in WOMEN_NAMES] and word not in WOMEN_NAMES:
+            continue
+        return True
+    return False
+
+
 def check_roles(hits):
     for path in script_files():
-        if not is_task_file(path):
+        if "/Dialogue/Pack/" in path.replace(os.sep, "/"):
             continue
         for i, raw in enumerate(read(path)):
             line = strip_comment(raw)
-            for lit in re.findall(r'"([^"]{3,60})"', line):
-                if SEXED.match(lit) and ("return" in line or "m_sWho" in line or "Add(" in line or "Spawn" in line):
+            for lit in re.findall(r'"((?:[^"\\]|\\.){3,})"', line):
+                if KEY.fullmatch(lit):
+                    continue
+                if (is_task_file(path) and SEXED.match(lit)
+                        and ("return" in line or "m_sWho" in line or "Add(" in line or "Spawn" in line)) or women_in(lit):
                     hits.append(Hit(10, path, i + 1, raw))
                     break
+    for root, _, files in os.walk(os.path.join(ROOT, "dialogue")):
+        for name in files:
+            if not name.endswith(".rzd"):
+                continue
+            path = os.path.join(root, name)
+            for i, raw in enumerate(read(path)):
+                line = raw.strip()
+                if not (line.startswith("say") or line.startswith(">") or line.startswith("topic")):
+                    continue
+                text = re.sub(r"->.*$", "", line)
+                text = re.sub(r"@\w+", "", text)
+                text = re.sub(r"^say\??\s*([^:]*::)?", "", text)
+                if women_in(text):
+                    hits.append(Hit(10, os.path.relpath(path, ROOT), i + 1, raw))
 
 
 # ---------------------------------------------------------------- 24: tracked when taken

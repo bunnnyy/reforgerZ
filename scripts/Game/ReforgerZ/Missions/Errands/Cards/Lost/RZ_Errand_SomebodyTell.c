@@ -30,7 +30,7 @@ class RZ_Errand_SomebodyTell : RZ_ErrandCard
 		w = Way("talk");
 		w.m_sLabel = "Tell them what you know of that lot";
 		w.m_sBackground = "hunter";
-		w.Done("You'd know. You've tracked them. I'll tell his it's them.");
+		w.Done("You'd know. You've tracked them. I'll tell him it's them.");
 
 		w = Way("do");
 		w.m_sLabel = "Check the house's book of names";
