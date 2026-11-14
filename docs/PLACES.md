@@ -142,6 +142,8 @@ or way isn't offered here.
 | `opening.keys` | the locked building near the giver, and its key | BUILDING(any/6) | SLOT the key (not offered) | The Station Keys |
 | `opening.sample` | what's left of a big one by the road, and the sample by it | ROAD(12) NOT_STEEP(25) NOT_LOCKED | REMAINS within 4 m, ITEM the sample within 4 m (either slot empty: not offered) | A Sample |
 | `opening.sample.yard` | what's left of a big one in a yard down the road, and the sample by it | HOUSES(1/20) NOT_STEEP(25) NOT_LOCKED | the same | A Sample, with no road near |
+| `opening.runner` | the runner, fallen by the road, and the case he carried | ROAD(15) NOT_STEEP(25) NOT_LOCKED | REMAINS the runner within 4 m [Puzzles > Civilian], ITEM the case within 4 m [Guidance > Cold case] (either empty: not offered) | The Runner (the opening's step 3, [DESIGN.md](DESIGN.md#the-case)) |
+| `opening.runner.yard` | the runner, fallen in a yard on the edge of town, and the case he carried | HOUSES(1/25) NOT_STEEP(25) NOT_LOCKED | the same | The Runner, with no road near |
 | `opening.gate` | the gate | NOT_STEEP(30) | | Hold the Gate |
 | `opening.debt` | the house with the owing in it | HOUSES(1/15) | | The Debt |
 | `opening.toll` | the Red Hand's toll or gate | NEAR_FACTION(Red Hand/120) | | The Toll |

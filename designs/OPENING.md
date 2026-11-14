@@ -1,10 +1,12 @@
 # The opening: the Case
 
-**Designed, not built.** Approved by the author on 2026-11-14 (hook B, the case; the fixer is Red
-Hand). It replaces what the openings' steps do today (step 1's search, the backgrounds' step 2 and
-*Where the Work Is*: [DESIGN.md](../docs/DESIGN.md#openings-how-every-life-starts)). It keeps how
-a start is rolled, the backgrounds and the spawn screen, the contact at the door, the walking
-contact, the guidance levels and the opening's place in the tracker.
+**Designed, not built** (the rest of it). Approved by the author on 2026-11-14 (hook B, the case;
+the fixer is Red Hand). **Built:** beat 4's case and the main story's door: the runner, the case,
+its lead and its hand-overs, Proof's door ([DESIGN.md](../docs/DESIGN.md#the-case)). What follows is
+what waits: it replaces the rest of the openings' steps today (step 1's search and the backgrounds'
+step 2: [DESIGN.md](../docs/DESIGN.md#openings-how-every-life-starts)), and keeps how a start is
+rolled, the backgrounds and the spawn screen, the contact at the door, the walking contact, the
+guidance levels and the opening's place in the tracker.
 
 The author's ask: the start should guide you into what's happening, one reason after another, and
 end by putting you on the main story. It takes the structure of a good RPG opening (a personal hook,
@@ -22,11 +24,10 @@ hand-overs by reply, one objective per step, the next step said in words.
 | 1 | **The door** | The contact talks first, and his first lines ask who you were ("You're steady with that bag. Nurse?"). Your answers settle a small habit (below) and his problem, which fits your background | the talk screen, the tracker, replies |
 | 2 | **The favour** | Fetch one named thing, for him, from a place that makes sense. Your background opens a second way through. He walks with you and talks as things come up | searching, stealth, door marks, the infected, your background's own skill |
 | 3 | **The line** | Favour done, he wants out. You go with him toward the line. The loudspeakers, then a drone. Ahead, a man with a pack runs for it and is shot by snipers nobody sees, at a distance. Then quiet | the perimeter, the season's premise: nobody gets out |
-| 4 | **The case** | The runner dropped a cold case. Its tag: *"HALCYON. FIELD STATION. LIVE. KEEP COLD."* The contact can't keep it, and tells you who Halcyon are | the main story's thing, the factions by name |
+| 4 | **The case** | Built ([DESIGN.md](../docs/DESIGN.md#the-case)): today the runner is already down when you get there; once beat 3 is built he falls in front of you | the main story's thing, the factions by name |
 | 5 | **The fixer comes to town** | Back in town, a Red Hand crew is asking who picked it up. You pick a side, several ways (below) | sides, standing, grey choices, the town's people |
 
-Then the lead: the station, past the river, by name. Delivering the case starts the main story
-([The main story](#the-main-story)).
+Then the lead to the station and the main story: built ([DESIGN.md](../docs/DESIGN.md#the-case)).
 
 ## Beat 1: who you were
 
@@ -80,16 +81,6 @@ infected ("They hear you first. Keep low"), a locked door, the broadcast from a 
 - **Short form** (no viewpoint, a veteran, or a crowded server): the shot is heard, the runner is
   found already down at the edge of town, and the broadcast says the rest.
 
-## Beat 4: the case
-
-- The runner's pack holds a **Halcyon cold case**: a carried item, its tag readable on its object
-  menu. The tag's second line is the main story's first clue: its date is **three weeks before
-  Day 1** (Proof's secret, [QUESTLINES.md](../docs/QUESTLINES.md#proof)). Nobody remarks on it yet.
-- **Cold:** it warms over 60 real minutes in the open, slower in a cold box or by night. Warm, it's
-  still worth taking (the station's line changes), so it can't be lost by being slow.
-- The contact: *"Halcyon. The lab people. Their station's past the river. If that's alive, it's the
-  only thing in the Zone that matters."* He won't keep it: he has a boy, a car, a neighbour.
-
 ## Beat 5: the fixer
 
 A Red Hand crew of three comes into the start town 2 to 4 minutes after you return, led by
@@ -107,23 +98,11 @@ was carrying something, and that someone from this street picked it up. He asks 
 Every way is a reply, a work site or a fight in the world, never a menu choice. The radio mentions
 what you did once, that evening.
 
+**Selling to him.** "Hand it over" is the built sale (a Red Hand person buys it today, [DESIGN.md](../docs/DESIGN.md#the-case)) moved to Ferda: Get It Back then takes it from his lock-up.
+
 **Ferda afterwards.** He's the opening's thread into the season: a note on your door, his men at a
 toll asking after you, his voice once on the crews' channel. He wants the case, or what it was worth.
 He never hunts a player (no spawned squad follows you); he turns up where the Red Hand already is.
-
-## The main story
-
-The lead is one place by name: **the field station**. The tracker points there and nowhere else.
-
-- **Delivered to Halcyon:** the director takes it, reads the tag, and asks you to forget the date.
-  That's **Proof**'s door: you are a participant this life, and Proof's next act open to you is
-  offered at once (before 25% cure, a personal stage, *The Date on the Tag*, leads you to the clinic's
-  file: Act I's scene, early). The first live case delivered in a season counts **+2 live tissue** for
-  Halcyon's route ([FINALE.md](../docs/FINALE.md#live-tissue)); later ones count as an ordinary sample.
-- **Sold to Ferda:** the Red Hand has it. Proof opens for you as *Get It Back*: the case is in the
-  book's lock-up, and Halcyon wants it more than it wants to know how.
-- **Given to Bastion** (any post): it's locked in their stores. Proof opens as *The Case at the Post*.
-- **Kept:** Halcyon asks for it on its channel once a day. The lead stays.
 
 ## Shorter for those who know it
 
@@ -141,16 +120,16 @@ Cases are capped like every sample (one live case per player per season counts a
 
 ## What it uses
 
-The openings' engine, the walking contact, work sites and carrying, the dialogue engine's checks and
+The openings' engine and the case as built, the walking contact, work sites and carrying, the dialogue engine's checks and
 tags, the perimeter as built, the Red Hand's crews and the book, reputation's caps, the majors' Proof
 and its participation by life, the finale's live tissue, the tracker.
 
 ## Order of work
 
-1. The case and the lead: the item, its tag, the station's reply, Proof's door (*The Date on the
-   Tag*). The rest of today's chain stays until step 2 replaces it.
+1. Built: the case and the lead, the item and its tag, the station's reply, Proof's door (The Date
+   on the Tag, Get It Back, The Case at the Post).
 2. Beats 1 and 2: the questions, the habits, the favours by background with their ways through.
 3. Beat 3: the viewpoint in the start's rules, the runner, the short form.
 4. Beat 5: Ferda's visit and its five ways; his later turns.
 5. The shorter forms and the server checks (a fresh life reaches the case; each favour's thing is
-   there; each way through Ferda ends; the case delivered starts Proof).
+   there; each way through Ferda ends). The case's own check is built (`RZT_Case.c`).

@@ -4622,6 +4622,24 @@
    "notes": ""
   },
   {
+   "id": "ColdCase",
+   "kind": "create",
+   "system": "Guidance",
+   "path": "Prefabs/ReforgerZ/Guidance/RZ_ColdCase.et",
+   "basePrefab": "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et",
+   "baseFind": "",
+   "baseHint": "an inventory item with the medical kit's case mesh (no medical or arsenal parts)",
+   "components": [{"cls": "RZ_ColdCaseComponent", "values": [], "name": ""}],
+   "actions": [{"cls": "RZ_ReadCaseTagAction", "values": [], "name": "Read the tag"}],
+   "slots": ["m_GuidanceSettings.m_sColdCasePrefab"],
+   "listSlot": false,
+   "slotLabel": "Guidance > Cold case",
+   "required": false,
+   "minimum": false,
+   "use": "the runner's case at the opening's end: picked up by the runner, taken to Halcyon's field station (empty = no case, the chain ends as before)",
+   "notes": "The repo's is vanilla Item_Base with MedicalKit_01's mesh, 4 kg, 2x2. It must show vanilla's pick-up prompt on the ground; check its collision, since ModelGeometry reads the kit's own colliders."
+  },
+  {
    "id": "CarWreck",
    "kind": "create",
    "system": "New-player guidance",

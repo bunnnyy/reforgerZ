@@ -7,9 +7,11 @@
 //!    one is near), done there;
 //! 2. your background's own system (RZ_OpeningSteps.c), else water from the nearest well, or
 //!    something medical for the contact's hand;
-//! 3. walk to where your background belongs (it ends there; nobody to go back to).
-//! Levels 2-3, and an opening with nobody outside, end at the nearest place with work instead (the
-//! lead), with no Fame.
+//! 3. the runner: the case he was carrying, by the road on the edge of town (RZ_OpeningCase), done
+//!    when it's in your pack; then the lead to Halcyon's field station, and the main story.
+//! With no case to find here (no prefab, the cure is out, nowhere a runner could have fallen) the
+//! chain ends as it did: the walk to where your background belongs (levels 0-1), else the nearest
+//! place with work (the lead), with no Fame; an opening with nobody outside, at the lead.
 //! The steps pay nothing through the errand ledger: the chain pays its own Fame at the end
 //! (RZ_Openings), and two step 2s their own small effect (RZ_OpeningTasks.Resolved). Server only.
 
@@ -109,6 +111,7 @@ class RZ_OpeningChain
 	ref RZ_OpeningStepDef m_SearchShort;		// a learning player's step 1 (level 1)
 	ref RZ_OpeningStepDef m_Lead;				// levels 2-3: the nearest place with work, from whoever's outside
 	ref RZ_OpeningStepDef m_LeadNote;			// the same with nobody outside: the scene's read says it
+	ref RZ_OpeningStepDef m_Case;				// the chain's end: the runner and his case
 	ref array<ref RZ_OpeningStepDef> m_aWalk = {};	// by the ending faction (RZ_EFaction)
 	protected ref map<int, ref RZ_OpeningStepDef> m_mTasks = new map<int, ref RZ_OpeningStepDef>();
 
@@ -251,6 +254,19 @@ class RZ_OpeningChain
 		m_LeadNote = Lead(KEY_LEAD + ".note",
 			"Lower down, in your own handwriting: \"Work at {place}. Ask for it.\"",
 			"Under it, in your own handwriting, a reminder you don't remember writing: \"{place}. They had work.\"");
+
+		m_Case = new RZ_OpeningStepDef("opening.case", "The Runner", 3);
+		m_Case.m_fLapseMinutes = 90;
+		RZ_ErrandWay cw = m_Case.Way("do");
+		cw.m_ePlace = RZ_EErrandPlace.SUBJECT;
+		cw.m_fSeconds = 1;
+		cw.m_fRadius = 12;
+		cw.m_bEndsThere = true;
+		cw.m_sStep = "Take the case from the runner, {place}.";
+		cw.Take("He fell {place}. He was carrying something, and nobody's been out to look. Go and see before somebody else does.",
+			"Whoever he was, he's {place} now. He had a case with him. See what it is before somebody else does.");
+		cw.Done("Halcyon. The lab people. If that's alive, it's the only thing in the Zone that matters.",
+			"That's a Halcyon tag. Don't open it. Whatever's in there, it's theirs, and they'll want it cold.");
 
 		for (int f = 0; f < RZ_Factions.COUNT; f++)
 		{

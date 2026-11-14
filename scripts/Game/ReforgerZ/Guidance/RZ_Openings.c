@@ -28,7 +28,8 @@ enum RZ_EOpeningStage
 	SEARCH,		// step 1: a building close by, quietly
 	TASK,		// step 2: your background's own system (the Drifter: up to three asks)
 	WALK,		// step 3: to where your background belongs
-	LEAD		// the last step for levels 2-3 and a contact-less opening: to the nearest place with work
+	LEAD,		// the last step with nobody outside (or no case): to the nearest place with work
+	CASE		// the chain's end: the runner and Halcyon's cold case (RZ_OpeningCase), then the lead to the station
 }
 
 //------------------------------------------------------------------------------------------------
@@ -148,6 +149,7 @@ class RZ_Openings
 	protected ref RZ_OpeningChain m_Chain;
 	protected ref RZ_OpeningTasks m_Tasks;
 	protected ref RZ_OpeningScenes m_Scenes;
+	protected ref RZ_OpeningCase m_Case;
 	protected ref array<ref RZ_Opening> m_aOpenings = {};
 	protected ref map<int, ref RZ_OpeningPlace> m_mPending = new map<int, ref RZ_OpeningPlace>();
 	protected ref map<int, bool> m_mMoved = new map<int, bool>();
@@ -167,6 +169,14 @@ class RZ_Openings
 		m_Chain = new RZ_OpeningChain();
 		m_Tasks = new RZ_OpeningTasks(gm);
 		m_Scenes = new RZ_OpeningScenes(gm, guide, settings);
+		m_Case = new RZ_OpeningCase(gm);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The case (the chain's end and the main story's door): its replies, its leads, its tick.
+	RZ_OpeningCase GetCase()
+	{
+		return m_Case;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -476,26 +486,16 @@ class RZ_Openings
 		RZ_Errands errands = m_GM.GetErrands();
 		if (errands && errands.IsOn())
 		{
-			if (o.m_iLevel <= 1)
-			{
-				o.m_aPlan.Insert(RZ_EOpeningStage.SEARCH);
+			// The chain ends at the runner and his case (it becomes the walk, or the nearest work,
+			// when the case can't be found here: StartStage)
+			o.m_aPlan.Insert(RZ_EOpeningStage.SEARCH);
+			if (o.m_iLevel <= 2)
 				o.m_aPlan.Insert(RZ_EOpeningStage.TASK);
-				o.m_aPlan.Insert(RZ_EOpeningStage.WALK);
-			}
-			else if (o.m_iLevel == 2)
-			{
-				o.m_aPlan.Insert(RZ_EOpeningStage.SEARCH);
-				o.m_aPlan.Insert(RZ_EOpeningStage.TASK);
-				o.m_aPlan.Insert(RZ_EOpeningStage.LEAD);
-			}
-			else
-			{
-				o.m_aPlan.Insert(RZ_EOpeningStage.SEARCH);
-				o.m_aPlan.Insert(RZ_EOpeningStage.LEAD);
-			}
+
+			o.m_aPlan.Insert(RZ_EOpeningStage.CASE);
 		}
 
-		o.m_bFull = o.m_aPlan.Contains(RZ_EOpeningStage.WALK);
+		o.m_bFull = o.m_iLevel <= 1 && o.m_aPlan.Contains(RZ_EOpeningStage.CASE);
 		if (o.m_sBackground == "drifter")
 			RZ_OpeningTasks.DrifterPool(rng, o.m_aTasks);
 		else
@@ -834,12 +834,13 @@ class RZ_Openings
 
 		m_fPoll = 0;
 		KeepContactsQuiet();
-		if (m_aOpenings.IsEmpty())
-			return;
-
 		m_aIds.Clear();
 		m_aPlayers.Clear();
 		RZ_Util.GetAlivePlayers(m_aIds, m_aPlayers);
+		m_Case.Tick(POLL, m_aIds, m_aPlayers);
+		if (m_aOpenings.IsEmpty())
+			return;
+
 		for (int i = m_aOpenings.Count() - 1; i >= 0; i--)
 		{
 			RZ_Opening o = m_aOpenings[i];
@@ -1350,6 +1351,12 @@ class RZ_Openings
 			return;
 		}
 
+		if (Stage(o) == RZ_EOpeningStage.CASE)
+		{
+			RZ_OpeningText.CaseBeat(lines);
+			return;
+		}
+
 		RZ_OpeningText.Beat(Math.Max(1, o.m_iStep), day, lines);
 	}
 
@@ -1456,7 +1463,27 @@ class RZ_Openings
 		string placeText;
 		int faction = RZ_EFaction.SURVIVORS;
 		int step = 1;
-		if (stage == RZ_EOpeningStage.SEARCH)
+		if (stage == RZ_EOpeningStage.CASE)
+		{
+			if (!m_Case.CanRun(giverAt) || !m_Case.RunnerPlace(giverAt, place, placeText))
+			{
+				// No case here (no prefab, the cure is out, nowhere for a runner to have fallen):
+				// the old end, the walk for a learning player, else the nearest work
+				RZ_Log.Info(string.Format("Openings: no runner's case for %1 at %2, the old end instead", RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(giverAt)));
+				if (o.m_iLevel <= 1 && o.m_vEnd != vector.Zero)
+					o.m_aPlan[o.m_iStage] = RZ_EOpeningStage.WALK;
+				else
+					o.m_aPlan[o.m_iStage] = RZ_EOpeningStage.LEAD;
+
+				StartStage(o, me, tree, beat, sayNow);
+				return;
+			}
+
+			step = 3;
+			d = m_Chain.m_Case;
+			faction = RZ_EFaction.INSTITUTE;
+		}
+		else if (stage == RZ_EOpeningStage.SEARCH)
 		{
 			d = m_Chain.m_Search;
 			if (o.m_iLevel >= 1)
@@ -1571,6 +1598,8 @@ class RZ_Openings
 		o.m_iErrand = e.m_iId;
 		if (stage == RZ_EOpeningStage.TASK)
 			m_Tasks.Start(o, me, e);
+		else if (stage == RZ_EOpeningStage.CASE)
+			o.m_Remains = m_Case.SpawnRunner(e.m_vPlace, o.m_iPlayer);
 
 		RZ_UIFeed feed = m_GM.GetUIFeed();
 		if (feed && feed.GetTracker())
@@ -1761,6 +1790,10 @@ class RZ_Openings
 			return !sd || !RZ_OpeningTasks.HandsOver(sd.m_iTask);
 		}
 
+		// The runner's step: done once the case is in your pack
+		if (Stage(o) == RZ_EOpeningStage.CASE)
+			return RZ_OpeningCase.Carries(me);
+
 		if (Stage(o) != RZ_EOpeningStage.TASK || o.m_iTask == RZ_EOpeningTask.NONE)
 			return true;
 
@@ -1795,6 +1828,19 @@ class RZ_Openings
 		if (stage == RZ_EOpeningStage.WALK)
 		{
 			Arrive(o);
+			return;
+		}
+
+		if (stage == RZ_EOpeningStage.CASE)
+		{
+			// The case in your pack: whoever gave the step hands you the lead to the station
+			IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(o.m_iPlayer);
+			vector giverAt = e.m_vPlace;
+			if (o.m_Contact)
+				giverAt = o.m_Contact.GetOrigin();
+
+			m_Case.Begin(o.m_iPlayer, me, o.m_sName, o.m_sSpeaker, giverAt);
+			Finish(o, "took the runner's case");
 			return;
 		}
 
@@ -1933,6 +1979,17 @@ class RZ_Openings
 		}
 
 		o.m_sSpeaker = "Someone in a doorway";
+		// The runner's case is still out there: the chain goes on to it by itself
+		int caseAt = o.m_aPlan.Find(RZ_EOpeningStage.CASE);
+		if (caseAt > o.m_iStage)
+		{
+			o.m_bSpoke = true;
+			o.m_iStage = caseAt;
+			o.m_bNext = true;
+			o.m_fNextAt = m_fClock + NEXT_STEP_DELAY;
+			return;
+		}
+
 		m_GM.NotifyPlayer(o.m_iPlayer, o.m_sSpeaker, RZ_OpeningText.ContactDied(h.m_sName));
 		int walk = o.m_aPlan.Find(RZ_EOpeningStage.WALK);
 		if (walk < 0)
