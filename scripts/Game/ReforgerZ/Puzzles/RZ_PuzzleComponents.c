@@ -438,6 +438,15 @@ class RZ_PuzzleActionHelper
 			return true;
 		}
 
+		// A substation's control or a broken line (World/RZ_Substations.c)
+		if (comp.GetMissionId() == RZ_Substations.TAG || comp.GetMissionId() == RZ_Substations.TAG_BREAK)
+		{
+			if (RZ_Substations.Get())
+				RZ_Substations.Get().HandleChoice(playerId, option, owner, user, comp.GetMissionId() == RZ_Substations.TAG_BREAK);
+
+			return true;
+		}
+
 		// World interactions: search spots, wrecks, workbenches, wells, bells, radios, cars
 		if (comp.GetMissionId() == RZ_Interactions.TAG)
 		{
@@ -591,6 +600,15 @@ class RZ_PuzzleActionHelper
 		{
 			if (RZ_Masts.Get())
 				RZ_Masts.Get().HandleRead(playerId, owner);
+
+			return true;
+		}
+
+		// A substation's control or a broken line (World/RZ_Substations.c): its menu
+		if (comp.GetMissionId() == RZ_Substations.TAG || comp.GetMissionId() == RZ_Substations.TAG_BREAK)
+		{
+			if (RZ_Substations.Get())
+				RZ_Substations.Get().HandleRead(playerId, owner, comp.GetMissionId() == RZ_Substations.TAG_BREAK);
 
 			return true;
 		}

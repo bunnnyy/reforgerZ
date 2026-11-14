@@ -107,6 +107,7 @@ class RZ_MastSave
 	string keeper;			// the man's or the crewman's name
 	int want;				// what the man wants (RZ_EErrandItem)
 	string putUpBy;			// the identity of who put it up
+	int cutFrom;			// cut from this owner (RZ_EMastOwner + 1; 0 = never cut): who wants it back up
 	ref array<string> paid = {};	// "<identity>" paid for this mast (Fame or Favor), once a season
 }
 
@@ -133,6 +134,7 @@ class RZ_Mast
 	string m_sKeeper;
 	RZ_EErrandItem m_eWant;
 	string m_sPutUpBy;
+	int m_iCutFrom;				// cut from this owner (RZ_EMastOwner + 1; 0 = not cut): it goes back to them when put up
 	int m_iPutUpPlayer = -1;	// this session's player who put it up (the first to choose)
 	vector m_vLair;				// a tribe's lair below (PACK)
 	bool m_bNearLine;
@@ -229,6 +231,8 @@ class RZ_Masts
 	protected static const float PACK_NEAR = 1000;
 	protected static const string CLIMB = "mast.climb.";
 	protected static const string BEARING = "mast.bearing.";
+	protected static const string CUTTING = "mast.cut.";
+	protected static const float CUT_HEAT = 8;
 
 	protected static RZ_Masts s_Instance;
 
@@ -329,6 +333,7 @@ class RZ_Masts
 			s.keeper = m.m_sKeeper;
 			s.want = m.m_eWant;
 			s.putUpBy = m.m_sPutUpBy;
+			s.cutFrom = m.m_iCutFrom;
 			s.paid.Copy(m.m_aPaid);
 			data.masts.Insert(s);
 		}
@@ -365,6 +370,7 @@ class RZ_Masts
 				m.m_sKeeper = s.keeper;
 				m.m_eWant = s.want;
 				m.m_sPutUpBy = s.putUpBy;
+				m.m_iCutFrom = s.cutFrom;
 				if (s.paid)
 					m.m_aPaid.Copy(s.paid);
 
@@ -624,7 +630,7 @@ class RZ_Masts
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static int TakePart(IEntity character, RZ_EMastPart part, int count)
+	static int TakePart(IEntity character, RZ_EMastPart part, int count)
 	{
 		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
 		if (!inv)
@@ -723,6 +729,9 @@ class RZ_Masts
 			if (m.m_bPromised)
 				text = text + " You promised it to the Red Hand.";
 
+			if (m.m_iCutFrom > 0)
+				text = text + string.Format(" Its cable's been cut clean through. It was %1, and they want it back up.", OwnerWord(m.m_iCutFrom - 1));
+
 			return text;
 		}
 
@@ -790,6 +799,18 @@ class RZ_Masts
 			locks.Insert(wait);
 		}
 
+		// Anyone may cut an up mast's cable (World/RZ_Substations.c, sabotage): its holder takes it badly
+		if (m.m_eOwner != RZ_EMastOwner.NOBODY)
+		{
+			string cutWhy = "";
+			if (m.m_iClimber > 0 && m.m_iClimber != playerId)
+				cutWhy = "Someone's up it.";
+
+			acts.Insert("cut");
+			labels.Insert("Cut its cable");
+			locks.Insert(cutWhy);
+		}
+
 		if (m_bVoice)
 		{
 			string bearingWhy = "";
@@ -823,6 +844,12 @@ class RZ_Masts
 		if (act == "bearing")
 		{
 			OpenBearing(m, playerId);
+			return;
+		}
+
+		if (act == "cut")
+		{
+			OpenCut(m, playerId);
 			return;
 		}
 
@@ -996,6 +1023,12 @@ class RZ_Masts
 			return;
 		}
 
+		if (m.m_iCutFrom > 0)
+		{
+			PutBack(m, playerId);
+			return;
+		}
+
 		UpdateLabels(m);
 	}
 
@@ -1015,6 +1048,131 @@ class RZ_Masts
 				return;
 			}
 		}
+	}
+
+	// ================================================================ A cut cable
+	//------------------------------------------------------------------------------------------------
+	protected void OpenCut(RZ_Mast m, int playerId)
+	{
+		if (!m.m_bUp || m.m_eOwner == RZ_EMastOwner.NOBODY)
+			return;
+
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (!sites || !RZ_WorkSites.Available())
+		{
+			Cut(m, playerId);
+			return;
+		}
+
+		float hold = 8;
+		RZ_SubstationSettings grid = GridSettings();
+		if (grid)
+			hold = grid.m_fCutSeconds;
+
+		string key = CUTTING + m.m_iId.ToString();
+		sites.Close(key);
+		sites.Open(key, RZ_EWork.HANDS, "Cut its cable", hold, CabinetAt(m), playerId);
+		sites.SetAtPiece(key, CabinetAt(m), 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_SubstationSettings GridSettings()
+	{
+		RZ_Substations subs = RZ_Substations.Get();
+		if (!subs)
+			return null;
+
+		return subs.GetSettings();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sabotage (World/RZ_Substations.c): the mast's cable cut. It's down again with a new part
+	//! missing, whoever held it takes it badly (Infamy) and wants it back up; the Red Hand pay for a
+	//! rival's. False if it wasn't up and held.
+	bool Cut(RZ_Mast m, int playerId)
+	{
+		if (!m.m_bUp || m.m_eOwner == RZ_EMastOwner.NOBODY)
+			return false;
+
+		RZ_EMastOwner was = m.m_eOwner;
+		m.m_bUp = false;
+		m.m_eOwner = RZ_EMastOwner.NOBODY;
+		m.m_bPromised = false;
+		m.m_iCutFrom = was + 1;
+		m.m_iPutUpPlayer = -1;
+		m.m_ePart = (m.m_ePart + 1 + Math.RandomInt(0, 4)) % 5;
+		if (m_GM.GetHeat())
+			m_GM.GetHeat().AddHeat(m.m_vPos, CUT_HEAT);
+
+		int f = FactionOf(was);
+		RZ_SubstationSettings grid = GridSettings();
+		if (f >= 0 && grid && grid.m_iCutInfamy > 0)
+			m_GM.AddInfamy(playerId, f, grid.m_iCutInfamy, "cut " + m.m_sShort);
+
+		if (f >= 0 && f != RZ_EFaction.BANDITS)
+			RZ_Substations.PayCutter(m_GM, playerId, m.m_sShort);
+
+		RZ_Log.Info(string.Format("Masts: %1 cut %2 (it was %3); it now needs %4.", RZ_Names.Public(playerId), m.m_sName, OwnerWord(was), PartWord(m.m_ePart)));
+		CallForRepair(m, f);
+		UpdateLabels(m);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whoever held a cut mast asks on their own channel for someone to put it back (the region's
+	//! players with a radio).
+	protected void CallForRepair(RZ_Mast m, int f)
+	{
+		array<int> ids = {};
+		GetGame().GetPlayerManager().GetPlayers(ids);
+		foreach (int id : ids)
+		{
+			IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(id);
+			if (!ent || RZ_Util.DistXZ(ent.GetOrigin(), m.m_vPos) > m_Settings.m_fRegion)
+				continue;
+
+			if (!RZ_Radio.HasRadio(m_GM, id, ent))
+				continue;
+
+			if (f >= 0)
+				m_GM.Say(id, RZ_FactionVoice.ChannelTitle(f), f, string.Format("\"Somebody's cut %1. It wants %2 and a climb. Whoever puts it back up, we'll remember.\"", m.m_sShort, PartWord(m.m_ePart)));
+			else
+				m_GM.Say(id, "Radio: the open channel", -1, string.Format("\"%1's gone quiet. Somebody cut it. It wants %2.\"", Capitalize(m.m_sShort), PartWord(m.m_ePart)));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A cut mast put back up: it's its old holder's again, and they pay for it (the job they asked for).
+	protected void PutBack(RZ_Mast m, int playerId)
+	{
+		RZ_EMastOwner owner = m.m_iCutFrom - 1;
+		m.m_iCutFrom = 0;
+		m.m_eOwner = owner;
+		int f = FactionOf(owner);
+		if (f >= 0 && f != RZ_EFaction.BANDITS)
+			m_GM.AddFame(playerId, f, m_Settings.m_iHandFame, false, 0, string.Format("put %1 back up for us", m.m_sShort));
+
+		if (f == RZ_EFaction.BANDITS)
+			m_GM.AddFavor(playerId, RZ_EFaction.BANDITS, m_Settings.m_iHandFame);
+
+		RZ_Log.Info(string.Format("Masts: %1 put %2 back up; it's %3 again.", RZ_Names.Public(playerId), m.m_sName, OwnerWord(owner)));
+		if (f >= 0)
+			m_GM.Say(playerId, RZ_FactionVoice.ChannelTitle(f), f, string.Format("\"That's %1 back. Good work. We said we'd remember.\"", m.m_sShort));
+		else
+			m_GM.Say(playerId, Speaker(m), -1, "The hiss comes back clean. Everyone's again.");
+
+		UpdateLabels(m);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test only: cut a mast for a player.
+	bool TestCut(int index, int playerId)
+	{
+		RZ_Mast m = GetMast(index);
+		if (!m)
+			return false;
+
+		return Cut(m, playerId);
 	}
 
 	// ================================================================ Whose it is
@@ -1382,6 +1540,15 @@ class RZ_Masts
 			sites.Close(climb);
 			if (!m.m_bUp && by > 0)
 				PutUp(m, by);
+		}
+
+		string cutting = CUTTING + m.m_iId.ToString();
+		if (sites.IsDone(cutting))
+		{
+			int cutter = sites.DoneBy(cutting);
+			sites.Close(cutting);
+			if (cutter > 0)
+				Cut(m, cutter);
 		}
 
 		string bearing = BEARING + m.m_iId.ToString();

@@ -74,6 +74,9 @@ class RZ_PowerSettings
 
 	[Attribute("0.6", desc: "Faction radio chatter interval multiplier while the power is on (working radios)")]
 	float m_fChatterMult;
+
+	[Attribute(desc: "Substations: the map's transformer yards past the station's region, switched on in person; lines that break; the Red Hand's tolls; sabotage (docs/DESIGN.md, The grid, region by region)")]
+	ref RZ_SubstationSettings m_Substations;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -84,6 +87,7 @@ class RZ_PowerSave
 	string name;
 	int step;
 	float condition;
+	ref RZ_SubstationsSave substations;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -189,13 +193,32 @@ class RZ_PowerGrid
 	protected int m_iSurgeTown = -1;			// the Power Surge event's town, -1 = none
 	protected vector m_vSurgePos;
 	protected float m_fSurgeRadius;
+	protected ref RZ_Substations m_Subs;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_PowerGrid(RZ_GameModeComponent gm, RZ_PowerSettings settings)
 	{
 		m_GM = gm;
 		m_Settings = settings;
+		if (m_Settings && !m_Settings.m_Substations)
+			m_Settings.m_Substations = RZ_SubstationSettings.Cast(RZ_Util.NewWithDefaults("RZ_SubstationSettings"));
+
+		if (m_Settings)
+			m_Subs = new RZ_Substations(gm, this, m_Settings.m_Substations);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The substations past the station's region (World/RZ_Substations.c).
+	RZ_Substations GetSubstations() { return m_Subs; }
+
+	//------------------------------------------------------------------------------------------------
+	//! The station's lamps again, after a substation's towns changed.
+	void RefreshLamps() { PushLamps(); }
+
+	//------------------------------------------------------------------------------------------------
+	//! For the substations: may the map's cabinets carry a control, and what stands where none does.
+	bool CanUseCabinetsPublic() { return CanUseCabinets(); }
+	ResourceName GetControlPrefab() { return ControlPrefab(); }
 
 	//------------------------------------------------------------------------------------------------
 	bool IsActive() { return m_bActive; }
@@ -246,6 +269,10 @@ class RZ_PowerGrid
 
 		if (!grid.IsPowered())
 			return false;
+
+		// Past the region: a town on a switched-on substation whose line is whole
+		if (grid.m_Subs && grid.m_Subs.LitAt(pos))
+			return true;
 
 		return RZ_Util.DistXZ(pos, grid.m_vPos) <= grid.m_Settings.m_fRegionRadius;
 	}
@@ -314,6 +341,8 @@ class RZ_PowerGrid
 	void Restore(RZ_PowerSave saved)
 	{
 		m_Restored = saved;
+		if (saved && m_Subs)
+			m_Subs.Restore(saved.substations);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -328,6 +357,9 @@ class RZ_PowerGrid
 			data.step = STEP_OPEN; // a restart stops the generator mid spin-up
 
 		data.condition = m_fCondition;
+		if (m_Subs && m_Subs.IsOn())
+			data.substations = m_Subs.Save();
+
 		return data;
 	}
 
@@ -407,6 +439,9 @@ class RZ_PowerGrid
 		m_Restored = null;
 		m_bActive = true;
 		BuildRegion();
+		if (m_Subs)
+			m_Subs.Setup(m_vPos, m_Settings.m_fRegionRadius);
+
 		ApplyPower(m_iStep == STEP_POWERED);
 		PushLamps();
 		RZ_Log.Info(string.Format("Power grid: %1 at grid %2 (%3), %4 towns in its region, %5. Control %6; %7.",
@@ -658,6 +693,9 @@ class RZ_PowerGrid
 			return;
 
 		m_fClock += dt;
+		if (m_Subs)
+			m_Subs.Tick(dt, ids, players);
+
 		UpdateBody(players);
 		float reach = RZ_Util.NearestDistance(m_vPos, players);
 		m_Looks.Sync(reach <= VISIBLE_RADIUS, reach > VISIBLE_RADIUS + DESPAWN_MARGIN, m_iStep >= STEP_SPINNING);
@@ -734,6 +772,10 @@ class RZ_PowerGrid
 		{
 			mem.SetPowered(idx, on);
 		}
+
+		// The substations' towns follow the station
+		if (m_Subs && m_Subs.IsOn())
+			m_Subs.ApplyTowns();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -758,6 +800,9 @@ class RZ_PowerGrid
 				if (s)
 					list += LampCircle(s.m_vCenter, s.m_fRadius + LAMP_MARGIN);
 			}
+
+			if (m_Subs)
+				list += m_Subs.LampCircles();
 		}
 
 		if (m_iSurgeTown >= 0)

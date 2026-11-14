@@ -442,7 +442,7 @@ class RZ_CureResearch
 		if (!HasCapacity())
 			WorkBacklog(m_fBacklog);
 		else if (elapsed > 0)
-			WorkBacklog(LabPerDay() * elapsed / DAY_SECONDS);
+			WorkBacklog(LabPerDay() * RZ_Substations.LabMult(m_GM) * elapsed / DAY_SECONDS); // grid power: faster, capped (World/RZ_Substations.c)
 
 		if (elapsed > 0 && IsAtFinaleGate())
 			Fallback(before, elapsed);
