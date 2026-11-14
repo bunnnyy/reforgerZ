@@ -39,7 +39,7 @@ class RZ_TerritorySettings
 	[Attribute("25", desc: "Real minutes a stronghold stays Under Pressure (no supply trucks, top shop tier locked)")]
 	float m_fPressureMinutes;
 
-	[Attribute("300", desc: "Guards, named occupants and the outpost quartermaster exist only while a player is this close (m)")]
+	[Attribute("400", desc: "Guards, named occupants and the outpost quartermaster exist only while a player is this close (m); its camp is laid out and put up from here, so it is full by the time you arrive")]
 	float m_fVisibleRadius;
 
 	[Attribute("1", UIWidgets.Slider, "Guard bodies (the guard prefab, a character or a group) at each holding while a player is near", "0 4 1")]

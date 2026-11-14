@@ -68,7 +68,7 @@ class RZ_EpiSpots
 	protected static const float SAFE_RADIUS = 80;
 	protected static const float SHOT_NEAR = 40;
 	protected static const int MAX_UP = 30;
-	protected static const int SPAWNS_PER_TICK = 2;
+	protected static const int SPAWNS_PER_TICK = 8;
 	protected static const float REFRESH_SECONDS = 30;
 
 	protected RZ_GameModeComponent m_GM;

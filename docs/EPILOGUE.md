@@ -243,7 +243,7 @@ chalked on the lid; errand card 41, What the Cure Costs Here, offers the way thi
 Each place is data; when a player is within 150 m (a scene 300 m) a person (Puzzles > Civilian, in
 the body budget's epilogue share) or a table (**Epilogue > Table prefab**, else Puzzles > Object)
 stands there, tagged so its choices come to the epilogue; it's removed past 220 m (400 m), and never
-saved. At most 30 up at once, 2 a tick.
+saved. At most 30 up at once, 8 a tick.
 
 | Place | Where | Its choices |
 |---|---|---|

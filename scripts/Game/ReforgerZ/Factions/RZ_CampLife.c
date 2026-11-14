@@ -253,6 +253,12 @@ class RZ_CampLifeSettings
 	[Attribute("2", UIWidgets.Slider, "Milliseconds of server time a second for reading a site's grid (one site at a time; its pieces spawn once it's read and laid out)", "1 20 1")]
 	int m_iSiteReadMs;
 
+	[Attribute("6", UIWidgets.Slider, "Milliseconds of server time each tenth of a second for putting a place's pieces out near players (nearest place first, what its people use first, scenery and the layers last; docs/SITES.md, How fast a place fills). 0: the old way, 4 pieces a main tick", "0 20 1")]
+	int m_iSpawnMs;
+
+	[Attribute("8", UIWidgets.Slider, "Milliseconds of server time each tenth of a second for reading and laying out a site a player has come near before its pre-read was done (the background pre-read keeps Site read ms a second)", "1 30 1")]
+	int m_iSiteReadNearMs;
+
 	[Attribute("70", UIWidgets.Slider, "The audit's pass mark (docs/SITES.md, The audit): a site scoring under it is listed in the log's summary, and the runtime test's site audit fails if a stronghold is under it", "0 100 1")]
 	int m_iAuditThreshold;
 
@@ -380,6 +386,12 @@ class RZ_CampPlace
 	int m_iStoryDay = -1;		// the season day the story was worked out
 	int m_iRunDay = -1;			// the season day of its last road post run
 	ref set<string> m_aGreeted = new set<string>();	// "player|day": the line when you come in
+	float m_fEnterMs;			// when it came (System.GetTickCount), for the "Spawn timing" line
+	float m_fEnterDist;			// how far the nearest player was then
+	int m_iSpawnedCount;		// pieces put out since it came
+	float m_fSpawnCost;			// server ms spent putting them out
+	float m_fSpawnLongest;		// the longest tenth of a second spent on it (ms)
+	bool m_bTimed;				// its "Spawn timing" line is written
 	bool m_bHand;				// laid out from a hand-built save, or being built by hand: no automated pieces (World/HandBuilt)
 }
 
@@ -707,7 +719,7 @@ class RZ_CampLife
 	static const int ARG_WATER = 52;		// work at the water (the barrel)
 	protected static const int POTTER_STOPS = 3;		// pieces someone with nothing free walks between
 
-	protected static const int SPAWN_PER_TICK = 4;			// pieces spawned per server tick, all places together
+	protected static const int SPAWN_PER_TICK = 4;			// with Spawn ms 0: pieces spawned per main tick, all places together
 	protected static const float CHECK_INTERVAL = 10;
 	protected static const float CONTACT_SECONDS = 180;		// one of its people died this recently: alert
 	protected static const float HEAT_WARY = 40;			// heat in its square this high: wary (half a horde's)
@@ -940,6 +952,8 @@ class RZ_CampLife
 
 		m_aPlaces.Insert(p);
 		m_bLiveDirty = true;
+		p.m_fEnterMs = System.GetTickCount();
+		p.m_fEnterDist = NearestPlayer(p.m_vPos);
 
 		RZ_CampGround ground = new RZ_CampGround();
 		ReadGround(p, ground);
@@ -1176,6 +1190,10 @@ class RZ_CampLife
 			RZ_CampPlace p = m_aPlaces[i];
 			if (p.m_sKey != key)
 				continue;
+
+			int waitingLeft = PendingCount(p);
+			if (!p.m_bTimed && waitingLeft > 0)
+				RZ_Log.Info(string.Format("Spawn timing: %1 left with %2 pieces up and %3 still to come, %4 ms after it came (the nearest player %5 m off then).", p.m_sTitle, p.m_iSpawnedCount, waitingLeft, RZ_Util.RoundToInt(System.GetTickCount() - p.m_fEnterMs), RZ_Util.RoundToInt(p.m_fEnterDist)));
 
 			foreach (RZ_CampWorker w : p.m_aWorkers)
 			{
@@ -2136,11 +2154,43 @@ class RZ_CampLife
 		if (m_aJobs.IsEmpty())
 			return;
 
+		// A site a player has come near reads on in FastTick instead
+		if (!m_aJobs[0].m_bAudit && m_Settings.m_iSpawnMs > 0)
+			return;
+
 		RZ_SiteJob job = m_aJobs[0];
 		int budget = Math.Max(1, m_Settings.m_iSiteReadMs);
 		if (job.m_bAudit && s_iAuditReadMs > 0)
 			budget = s_iAuditReadMs;
 
+		StepJob(job, budget);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every tenth of a second (the game mode's fast tick), with Spawn ms on: a site a player has come
+	//! near reads and is laid out on its own larger budget (Site read ms near), then pieces waiting
+	//! near players spawn (Spawn ms).
+	void FastTick()
+	{
+		if (m_Settings.m_iSpawnMs <= 0)
+			return;
+
+		if (!m_aJobs.IsEmpty() && !m_aJobs[0].m_bAudit)
+			StepJob(m_aJobs[0], Math.Max(1, m_Settings.m_iSiteReadNearMs));
+
+		if (m_aPlaces.IsEmpty())
+			return;
+
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		SpawnPending(1000, m_Settings.m_iSpawnMs, players);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first job reads, then solves, on budget ms; done, it's laid out and freed.
+	protected void StepJob(RZ_SiteJob job, int budget)
+	{
 		if (!job.m_Grid.IsRead())
 		{
 			if (job.m_Grid.Step(budget))
@@ -3520,60 +3570,156 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A few laid-out pieces spawn each tick, places in the order they came. A place whose last piece is up
-	//! hands out its jobs again, so people use the pieces that weren't there yet.
-	protected void SpawnPending()
+	//! Laid-out pieces spawn: at most maxPieces, and (budgetMs over 0) while this call has spent under
+	//! budgetMs of server time. The place nearest a player goes first; within a place, what its people
+	//! use (seats, work, watch, cook...) and a hand-built site's objects and role spots, then the rest
+	//! of its scenery, then the layers, the slopes' barrier runs and its story. A place whose last
+	//! piece is up hands out its jobs again, so people use the pieces that weren't there yet.
+	protected void SpawnPending(int maxPieces, float budgetMs, array<IEntity> players)
 	{
-		int budget = SPAWN_PER_TICK;
-		foreach (RZ_CampPlace p : m_aPlaces)
+		array<int> order = {};
+		array<float> dists = {};
+		foreach (int i, RZ_CampPlace p : m_aPlaces)
 		{
-			if (budget <= 0)
-				return;
+			if (PendingCount(p) == 0)
+				continue;
 
-			bool spawned = false;
-			bool waiting = false;
-			foreach (RZ_CampPiece cp : p.m_aPieces)
+			float d = RZ_Util.NearestDistance(p.m_vPos, players);
+			int at = 0;
+			while (at < dists.Count() && dists[at] <= d)
 			{
-				if (cp.m_sPending.IsEmpty())
-					continue;
-
-				if (budget <= 0)
-				{
-					waiting = true;
-					break;
-				}
-
-				ResourceName prefab = cp.m_sPending;
-				cp.m_sPending = "";
-				budget--;
-				spawned = true;
-				if (cp.m_bHandObj)
-				{
-					RZ_HandBuiltObject ho = new RZ_HandBuiltObject();
-					ho.m_sPrefab = prefab;
-					ho.m_vPos = cp.m_vPos;
-					ho.m_vAngles = cp.m_vAngles;
-					ho.m_fScale = cp.m_fScale;
-					IEntity built = RZ_HandBuilt.Spawn(ho);
-					if (!built || !RZ_DressingGuard.Strip(built, prefab))
-						continue;
-
-					cp.m_Entity = built;
-					s_aPieces.Insert(built);
-					continue;
-				}
-
-				IEntity e = SpawnTilted(prefab, cp.m_vPos, cp.m_fYaw, cp.m_fSlope); // VERIFY: a spawned composition (root with an RplComponent) shows on clients, and props spawned at run time block AI paths (else AI walk through tents)
-				if (!e || !RZ_DressingGuard.Strip(e, prefab))
-					continue;
-
-				cp.m_Entity = e;
-				s_aPieces.Insert(e);
+				at++;
 			}
 
-			if (spawned && !waiting && p.m_bLive)
-				p.m_iPhase = -2;
+			dists.InsertAt(d, at);
+			order.InsertAt(i, at);
 		}
+
+		if (order.IsEmpty())
+			return;
+
+		float start = System.GetTickCount();
+		int left = maxPieces;
+		foreach (int idx : order)
+		{
+			RZ_CampPlace q = m_aPlaces[idx];
+			float placeStart = System.GetTickCount();
+			bool spawned = false;
+			bool waiting = false;
+			for (int rank = 0; rank < 3 && !waiting; rank++)
+			{
+				foreach (RZ_CampPiece cp : q.m_aPieces)
+				{
+					if (cp.m_sPending.IsEmpty() || SpawnRank(cp) != rank)
+						continue;
+
+					if (left <= 0 || (budgetMs > 0 && System.GetTickCount() - start >= budgetMs))
+					{
+						waiting = true;
+						break;
+					}
+
+					left--;
+					spawned = true;
+					q.m_iSpawnedCount++;
+					SpawnPiece(cp);
+				}
+			}
+
+			float cost = System.GetTickCount() - placeStart;
+			q.m_fSpawnCost += cost;
+			q.m_fSpawnLongest = Math.Max(q.m_fSpawnLongest, cost);
+			if (waiting)
+				return;
+
+			if (!spawned)
+				continue;
+
+			if (q.m_bLive)
+				q.m_iPhase = -2;
+
+			LogTiming(q, players);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The order a place's pieces come in: 0 what people use and a hand-built site, 1 the rest of the
+	//! scenery, 2 the layers (the slopes' barrier runs, the approach and the far side) and the story.
+	protected static int SpawnRank(RZ_CampPiece cp)
+	{
+		if (cp.m_bHandObj || cp.m_eUse != RZ_EDressUse.NONE)
+			return 0;
+
+		if (cp.m_bStory || cp.m_fSlope != 0 || cp.m_eRole == RZ_EDressRole.APPROACH || cp.m_eRole == RZ_EDressRole.EDGE)
+			return 2;
+
+		return 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static int PendingCount(RZ_CampPlace p)
+	{
+		int n = 0;
+		foreach (RZ_CampPiece cp : p.m_aPieces)
+		{
+			if (!cp.m_sPending.IsEmpty())
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One piece out (it's tried once: a failed spawn isn't tried again).
+	protected void SpawnPiece(RZ_CampPiece cp)
+	{
+		ResourceName prefab = cp.m_sPending;
+		cp.m_sPending = "";
+		if (cp.m_bHandObj)
+		{
+			RZ_HandBuiltObject ho = new RZ_HandBuiltObject();
+			ho.m_sPrefab = prefab;
+			ho.m_vPos = cp.m_vPos;
+			ho.m_vAngles = cp.m_vAngles;
+			ho.m_fScale = cp.m_fScale;
+			IEntity built = RZ_HandBuilt.Spawn(ho);
+			if (!built || !RZ_DressingGuard.Strip(built, prefab))
+				return;
+
+			cp.m_Entity = built;
+			s_aPieces.Insert(built);
+			return;
+		}
+
+		IEntity e = SpawnTilted(prefab, cp.m_vPos, cp.m_fYaw, cp.m_fSlope); // VERIFY: a spawned composition (root with an RplComponent) shows on clients, and props spawned at run time block AI paths (else AI walk through tents)
+		if (!e || !RZ_DressingGuard.Strip(e, prefab))
+			return;
+
+		cp.m_Entity = e;
+		s_aPieces.Insert(e);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Once a place's last piece is up: how long it took from the moment it came (docs/SITES.md, How
+	//! fast a place fills).
+	protected void LogTiming(RZ_CampPlace q, array<IEntity> players)
+	{
+		if (q.m_bTimed)
+			return;
+
+		q.m_bTimed = true;
+		RZ_Log.Info(string.Format("Spawn timing: %1 %2 pieces in %3 ms, player at %4 m (now %5 m); %6 ms of server time in all, the longest tenth %7 ms.",
+			q.m_sTitle, q.m_iSpawnedCount, RZ_Util.RoundToInt(System.GetTickCount() - q.m_fEnterMs), RZ_Util.RoundToInt(q.m_fEnterDist),
+			RZ_Util.RoundToInt(RZ_Util.NearestDistance(q.m_vPos, players)), RZ_Util.RoundToInt(q.m_fSpawnCost), RZ_Util.RoundToInt(q.m_fSpawnLongest)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static float NearestPlayer(vector pos)
+	{
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		return RZ_Util.NearestDistance(pos, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -4489,7 +4635,9 @@ class RZ_CampLife
 		if (m_aPlaces.IsEmpty())
 			return;
 
-		SpawnPending();
+		if (m_Settings.m_iSpawnMs <= 0)
+			SpawnPending(SPAWN_PER_TICK, 0, players);
+
 		m_fStoryTimer += dt;
 		if (m_fStoryTimer >= CHECK_INTERVAL)
 		{

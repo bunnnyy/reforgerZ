@@ -33,6 +33,7 @@ Workbench plugins.
 - [The audit](#the-audit)
 - [Seeing it](#seeing-it)
 - [Settings](#settings)
+- [How fast a place fills](#how-fast-a-place-fills)
 - [What it costs](#what-it-costs)
 - [Simplified](#simplified)
 
@@ -966,6 +967,8 @@ On **Territory > Camp life** (`RZ_CampLifeSettings`):
 |---|---|---|
 | **Site grid** | on | read each site's ground on the grid, its surroundings and its audit; off = the older point checks, nothing read, solved or audited |
 | **Site read ms** | 2 | milliseconds of server time a second for reading a site's grid and then solving it (one site at a time); its pieces spawn once it's laid out |
+| **Site read ms near** | 8 | milliseconds every tenth of a second for a site a player came near before it was read ([How fast a place fills](#how-fast-a-place-fills)) |
+| **Spawn ms** | 6 | milliseconds every tenth of a second for putting pieces out near players, nearest place and what people use first; 0 = the old way, 4 pieces a main tick |
 | **Pre-read** | on | read and lay out every site in the background from the start, strongholds first; off = a site is read the first time a player comes near |
 | **Audit threshold** | 70 | the audit's pass mark |
 | **Solver** | on | lay sites out by their pieces' rules ([The solver](#the-solver)); off = the plans laid down whole |
@@ -981,14 +984,41 @@ Each kit's doctrine is on the kit itself (**Close**, **Harden**, **Ring**, **Yar
 written by `build.py`); **Pieces max** (200) caps camp life's pieces on the server, the layers'
 with them. The cell (0.5 m) is fixed: the grid's bands and checks are measured in it.
 
+## How fast a place fills
+
+A place's pieces come with its people: when a player is within its owner's visible radius (400 m
+for holdings and safehouses, 600 m for road posts). From then:
+
+- **Laid out already** (pre-read, or visited before this run): its pieces spawn at once.
+- **Not read yet** (the first minutes of a run, before Pre-read reached it): it goes to the front
+  of the queue and reads and solves on **Site read ms near** (8 ms) every tenth of a second,
+  instead of the background's **Site read ms** (2 ms) a second; then its pieces spawn.
+- **Spawning** runs every tenth of a second (the game mode's fast tick) on **Spawn ms** (6 ms) of
+  server time: the place nearest a player first; within a place what its people use (seats, work,
+  watch, the cook pot...) and a hand-built site's objects and role spots, then the rest of its
+  scenery, then its layers (the wire's runs, the slopes' barriers, the approach and the far side)
+  and its story. **Spawn ms** 0 brings back the old way (4 pieces a main tick).
+- Each visit logs `Spawn timing: ...` once its last piece is up (or that it went before).
+
+| Measured on the dedicated server (full runtime test, Arland, 2026-11-14) | Before | Now |
+|---|---|---|
+| A place laid out already (9 to 50 pieces) | 4 pieces a 5 s tick: 10 to 60 s | 5 to 116 ms (median 22 ms over 47 visits) |
+| A place not read yet (a stronghold, an outpost, a safehouse) | read and solved at 2 ms a second (1 to 4 minutes), then 30 to 60 s of spawning | 1.3 to 2.6 s |
+| Server time spent spawning | the same per piece | 0 to 4 ms a place in all, the longest tenth 4 ms; 0 script errors in 23 minutes |
+| Distance a place starts from | 300 m | 400 m |
+
+What limits it now is the read and solve of a site nobody laid out yet (their longest single parts,
+14 to 110 ms, can't be split) and, on a player's machine, the game loading the props' meshes and
+textures once the server has made them: that is the engine's streaming and isn't ours to speed up.
+
 ## What it costs
 
 | Cost | Measured (dedicated server, 2026-11-12) |
 |---|---|
-| Reading a site's grid | 15–160 ms in all (a stronghold's 50–160 ms), read in small parts (a row of heights, a 24 m square's entity query, 16 entities, a building, a row of water or shore), the longest part 1–17 ms; at **Site read ms** 2 a stronghold's first pieces spawn about a minute after a player comes within 300 m (in the full runtime test a field station took 15 steps, 19 s) |
+| Reading a site's grid | 15–160 ms in all (a stronghold's 50–160 ms), read in small parts (a row of heights, a 24 m square's entity query, 16 entities, a building, a row of water or shore), the longest part 1–17 ms; a site a player came near before its pre-read was done reads on **Site read ms near** every tenth of a second ([How fast a place fills](#how-fast-a-place-fills)) |
 | Solving it | 40–300 ms in all (a stronghold's 140–300 ms), in parts: the start (the counters, the plan's frame, tracing the wire, where the entrance can walk), each piece, each side of the wire; the longest part 14–110 ms (the lab's start, or a tier 1 piece's three passes), the rest a few ms. At **Site read ms** 2 a site is read and solved in about 1–4 minutes of the background, once a run (pre-read: all of Everon's 16 in about half an hour after the land grid) |
 | Memory | a 72 m grid is 288 × 288 cells, two to an int (about 170 KB), with its heights and water marks every metre (about 170 KB), freed once laid out; the kept layout a few hundred bytes a piece (a stronghold with its layers about 60 pieces) |
-| Spawning | 4 pieces a tick for all places together, as before; a stronghold's 20 pieces and its layers' 30 to 50 are up in about a minute and a half |
+| Spawning | about 0.05 ms of server time a piece (2026-11-14: 45 to 48 pieces in 1 to 3 ms); [How fast a place fills](#how-fast-a-place-fills) |
 | People | unchanged in number: Live places (3), extras (6, the road post run counting as one); posts and routes worked out once with the layout (the routes' walkable squares a few ms, the grid's BFS only for the nearest square within 2 m), a few KB kept; the alert a heat lookup and a few comparisons every 10 s at a live place |
 | The story | its state read from data (the town's history, a scene lookup) when a site is laid out for a visit and once a season day; up to 11 spots kept a site (a few hundred bytes); its elements spawn with the place's pieces, after them (the first left out at **Pieces max**) |
 
