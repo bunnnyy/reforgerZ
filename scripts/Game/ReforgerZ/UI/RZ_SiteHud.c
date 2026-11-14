@@ -22,6 +22,7 @@ class RZ_SiteHud
 	protected static bool s_bListening;
 	protected static string s_sProgress;
 	protected static bool s_bPreviewing;		// the preview follows the cursor while a type is picked
+	protected static string s_sConfirm;			// Reset or Clear pressed: the bar asks first ("reset", "clear", "" none)
 	protected static Widget s_wLit;				// the bar's button under the mouse, lit, its line in the hint
 
 	protected static ref array<ref array<string>> s_aTypes = {};	// T|type|have|want|required
@@ -159,7 +160,7 @@ class RZ_SiteHud
 		GetGame().GetCallqueue().CallLater(HoverTick, 0, true);
 
 		s_Click = new RZ_SiteBarClick();
-		array<string> names = {"PagePrev", "PageNext", "BarUndo", "BarSave", "BarStop"};
+		array<string> names = {"PagePrev", "PageNext", "BarUndo", "BarReset", "BarClear", "BarSave", "BarStop", "BarConfirmYes", "BarConfirmNo"};
 		foreach (string n : names)
 		{
 			RZ_UIW.OnClick(s_wRoot, n, s_Click);
@@ -188,6 +189,7 @@ class RZ_SiteHud
 		Preview(false);
 		GetGame().GetCallqueue().Remove(HoverTick);
 		s_wLit = null;
+		s_sConfirm = "";
 		if (s_wRoot)
 			s_wRoot.RemoveFromHierarchy();
 
@@ -310,7 +312,25 @@ class RZ_SiteHud
 		else if (!s_sArmed.IsEmpty())
 			hint = "Click the ground to put it there";
 
-		array<string> fixed = {"PagePrev", "PageNext", "BarUndo", "BarSave", "BarStop"};
+		array<string> fixed = {"PagePrev", "PageNext", "BarUndo", "BarReset", "BarClear", "BarSave", "BarStop", "BarConfirmNo"};
+		RZ_UIW.Tint(s_wRoot, "BarConfirmYesBg", picked);
+		RZ_UIW.Show(s_wRoot, "BarConfirm", !s_sConfirm.IsEmpty());
+		if (s_sConfirm == "reset")
+		{
+			RZ_UIW.SetText(s_wRoot, "BarConfirmText", "Reset to the last save? Changes since are lost.");
+			RZ_UIW.SetText(s_wRoot, "BarConfirmYesText", "Yes, reset");
+		}
+		else if (s_sConfirm == "markers")
+		{
+			RZ_UIW.SetText(s_wRoot, "BarConfirmText", "Delete every marker: all spots and patrol points? Objects stay.");
+			RZ_UIW.SetText(s_wRoot, "BarConfirmYesText", "Yes, delete them");
+		}
+		else if (s_sConfirm == "clear")
+		{
+			RZ_UIW.SetText(s_wRoot, "BarConfirmText", "Clear everything here, every object and spot?");
+			RZ_UIW.SetText(s_wRoot, "BarConfirmYesText", "Yes, clear it");
+		}
+
 		foreach (string f : fixed)
 		{
 			RZ_UIW.Tint(s_wRoot, f + "Bg", RZ_SiteBuilderMenu.Lin(36, 40, 44));
@@ -326,6 +346,9 @@ class RZ_SiteHud
 				litBg = "BtnBg" + litName.Substring(3, litName.Length() - 3);
 
 			Color lit = RZ_SiteBuilderMenu.Lin(70, 78, 86);
+			if (litName == "BarConfirmYes")
+				lit = RZ_SiteBuilderMenu.Lin(250, 208, 120);
+
 			if (litName.StartsWith("Btn") && s_iPage < 2 && LitArmed(RZ_UIW.GetTag(s_wLit)))
 				lit = RZ_SiteBuilderMenu.Lin(250, 208, 120);
 
@@ -367,7 +390,7 @@ class RZ_SiteHud
 			while (p && p != s_wRoot && !lit)
 			{
 				string n = p.GetName();
-				if ((n.StartsWith("Btn") && n.Length() == 4) || n == "PagePrev" || n == "PageNext" || n == "BarUndo" || n == "BarSave" || n == "BarStop")
+				if ((n.StartsWith("Btn") && n.Length() == 4) || n == "PagePrev" || n == "PageNext" || n == "BarUndo" || n == "BarReset" || n == "BarClear" || n == "BarSave" || n == "BarStop" || n == "BarConfirmYes" || n == "BarConfirmNo")
 					lit = p;
 
 				p = p.GetParent();
@@ -394,6 +417,10 @@ class RZ_SiteHud
 			case "PageNext": return "The next page of spots.";
 			case "BarUndo": return "Takes up the last spot you put down.";
 			case "BarSave": return "Saves the site as it is now.";
+			case "BarReset": return "Puts the site back to its last save (asks first).";
+			case "BarClear": return "Takes away every object and spot here, to bare ground (asks first).";
+			case "BarConfirmYes": return "";
+			case "BarConfirmNo": return "Keeps everything as it is.";
 			case "BarStop": return "Stops building; you're asked about anything unsaved.";
 		}
 
@@ -427,6 +454,9 @@ class RZ_SiteHud
 
 		if (tag == 5)
 			return "Deletes every point of the picked patrol.";
+
+		if (tag == 6)
+			return "Deletes every spot and patrol point here; objects stay (asks first).";
 
 		return "";
 	}
@@ -511,6 +541,10 @@ class RZ_SiteHud
 		{
 			name = "Delete patrol";
 		}
+		else if (i == 6)
+		{
+			name = "Delete all markers";
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -532,6 +566,22 @@ class RZ_SiteHud
 		else if (name == "BarUndo" && ui)
 		{
 			ui.SendSiteAct("bar_spot_undo", "");
+		}
+		else if (name == "BarReset" || name == "BarClear")
+		{
+			s_sArmed = "";
+			s_sConfirm = "clear";
+			if (name == "BarReset")
+				s_sConfirm = "reset";
+		}
+		else if (name == "BarConfirmYes" && ui && !s_sConfirm.IsEmpty())
+		{
+			ui.SendSiteAct("bar_" + s_sConfirm, "");
+			s_sConfirm = "";
+		}
+		else if (name == "BarConfirmNo")
+		{
+			s_sConfirm = "";
 		}
 		else if (name == "BarSave" && ui)
 		{
@@ -590,6 +640,12 @@ class RZ_SiteHud
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (i == 5 && ui)
 			ui.SendSiteAct("bar_loop_delete", s_iLoop.ToString());
+
+		if (i == 6)
+		{
+			s_sArmed = "";
+			s_sConfirm = "markers";
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

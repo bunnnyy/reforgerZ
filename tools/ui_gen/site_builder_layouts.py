@@ -247,7 +247,8 @@ def menu():
 # ------------------------------------------------------------------------------------ the HUD
 def hud():
     """The build bar (UI/RZ_SiteHud.c): a compact panel top right while a site is built, clicked with
-    Game Master's cursor. Three pages of eight buttons (people, places, patrols), Undo, Save, Stop."""
+    Game Master's cursor. Three pages of eight buttons (people, places, patrols), Undo, Reset, Clear, Save, Stop; Reset and
+    Clear ask first."""
     g = G("RZ_SiteHud")
     W = 460
     bw = (W - 40) // 2
@@ -268,11 +269,21 @@ def hud():
             text(g, "BtnName%d" % i, 10, 5, bw - 70, 26, TEXT, "Gate", 19),
             text(g, "BtnState%d" % i, bw - 60, 5, 54, 26, DIM, "0/1", 18)]))
     k.append(text(g, "BarHint", 16, 252, W - 32, 22, AMBER, "", 16))
-    fw = (W - 32 - 16) // 3
-    for i, n in enumerate(["Undo", "Save", "Stop"]):
-        k.append(button(g, "Bar" + n, 16 + i * (fw + 8), 282, fw, 34, [
+    fw = (W - 32 - 4 * 6) // 5
+    for i, n in enumerate(["Undo", "Reset", "Clear", "Save", "Stop"]):
+        k.append(button(g, "Bar" + n, 16 + i * (fw + 6), 282, fw, 34, [
             image(g, "Bar%sBg" % n, 0, 0, fw, 34, (0.141, 0.157, 0.173, 1)),
-            text(g, "Bar%sText" % n, 12, 5, fw - 20, 26, TEXT, n, 19)]))
+            text(g, "Bar%sText" % n, 10, 5, fw - 14, 26, TEXT, n, 18)]))
+    # Reset and Clear ask first, over the hint and the buttons
+    cw = (W - 32 - 8) // 2
+    k.append(frame(g, "BarConfirm", 0, 244, W, H - 244, [
+        image(g, "BarConfirmBg", 0, 0, W, H - 244, (0.075, 0.08, 0.09, 1)),
+        image(g, "BarConfirmAccent", 0, 0, W, 2, AMBER),
+        text(g, "BarConfirmText", 16, 6, W - 32, 28, TEXT, "Clear everything?", 17, wrap=True),
+        button(g, "BarConfirmYes", 16, 38, cw, 34, [image(g, "BarConfirmYesBg", 0, 0, cw, 34, AMBER),
+            text(g, "BarConfirmYesText", 12, 5, cw - 20, 26, (0.13, 0.11, 0.08, 1), "Yes, clear it", 18, BOLD)]),
+        button(g, "BarConfirmNo", 16 + cw + 8, 38, cw, 34, [image(g, "BarConfirmNoBg", 0, 0, cw, 34, (0.141, 0.157, 0.173, 1)),
+            text(g, "BarConfirmNoText", 12, 5, cw - 20, 26, TEXT, "No", 18)])], visible=False))
     panel = frame(g, "SiteHudPanel", -W - 24, 96, W, H, k, anchor="1 0 1 0")
     root = frame(g, "SiteHud", 0, 0, 0, 0, [panel], anchor="0 0 1 1")
     write("RZ_SiteHud.layout", root)

@@ -377,7 +377,10 @@ nice to have): pick one, then click the ground (Game Master's own left click) an
 where the cursor points, facing in (the gate and the watch facing out). While a type is picked, a
 see-through cone (Game Master's own placing look) and its label follow the cursor; right click (Game
 Master's own) puts the type away. And **Patrols** ([Role
-spots](#role-spots)). Undo takes up the last spot; Save and Stop are the screen's.
+spots](#role-spots)), whose **Delete all markers** takes up every spot and patrol point (the
+objects stay). Undo takes up the last spot; **Reset** puts the site back to its last save (or to
+how this build started, with none); **Clear** takes away every object and spot, to bare ground;
+Save and Stop are the screen's. Reset, Clear and Delete all markers ask first, in the bar (Yes / No).
 
 **The cones' labels** (`RZ_SiteBuilderMarks`, layout `RZ_SiteMarks.layout`): over each spot's cone a
 round badge with a letter (G gate, W watch, S seat, K work, Z sleep, L lean, Q quartermaster, Ld

@@ -379,6 +379,42 @@ modded class RZ_SiteBuilder
 			return true;
 		}
 
+		// Reset: back to its last save (or to how this build started, with none). Clear: bare ground,
+		// everything put there and every spot gone. The bar asks first.
+		if (act == "reset" || act == "clear")
+		{
+			string how = "empty";
+			if (act == "reset")
+			{
+				how = s.m_sHow;
+				if (RZ_HandBuilt.Get().ForPlace(site.m_eKind, site.m_vPos))
+					how = "saved";
+			}
+
+			Stop(s);
+			Start(s, site, how);
+			if (act == "clear")
+				Say(s, "Cleared: nothing stands here now and every spot is gone. Nothing is saved until you save.");
+			else if (how == "saved")
+				Say(s, "Reset to its last save.");
+			else
+				Say(s, "Reset to how this build started.");
+
+			return true;
+		}
+
+		if (act == "markers")
+		{
+			int count = s.m_aSpots.Count();
+			for (int m = count - 1; m >= 0; m--)
+			{
+				RemoveSpot(s, m);
+			}
+
+			Say(s, string.Format("Every marker deleted (%1 spots and patrol points).", count));
+			return true;
+		}
+
 		if (act == "loop_delete")
 		{
 			int loop = id.ToInt();

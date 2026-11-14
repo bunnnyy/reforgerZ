@@ -38,6 +38,7 @@ class RZ_SiteBuilderSession
 	ref array<ref RZ_HandSpot> m_aSuggest = {};		// where the automated layout had each kind of spot
 	int m_iSpotType;								// the type the place row puts down (RZ_HandSpots.Types)
 	string m_sSaid;									// the last thing the builder was told (the screen's confirmation line)
+	string m_sHow;									// how this build started: "saved", "auto" or "empty" (the bar's Reset)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -993,6 +994,7 @@ class RZ_SiteBuilder
 		}
 
 		s.m_Building = site;
+		s.m_sHow = how;
 		s.m_aPut.Clear();
 		array<IEntity> keep;
 		if (how == "auto")
