@@ -5317,6 +5317,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sRaiderBodyPrefab "{86F6F05F0155A3EB}Prefabs/ReforgerZ/Guidance/RZ_DeadRaider.et"
     m_sSoldierBodyPrefab "{F0865CA0C2974FEA}Prefabs/ReforgerZ/Guidance/RZ_DeadSoldier.et"
     m_sBarricadePrefab "{D9F5EA3173D1A207}Prefabs/ReforgerZ/Guidance/RZ_Barricade.et"
+    m_sCompanionPrefab "{9C3E5A71D2B84F06}Prefabs/ReforgerZ/Guidance/RZ_OpeningCompanion.et"
+    m_sColdCasePrefab "{5B7C2E91A4D63F08}Prefabs/ReforgerZ/Guidance/RZ_ColdCase.et"
     m_aOpeningScenes {
      RZ_OpeningSceneSlot "{0512EC2287D8A8E1}" {
       m_sKey "hiding.1"
