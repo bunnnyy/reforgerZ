@@ -1141,9 +1141,10 @@ stay close (the timed action's own rule). The screen guard closes it in danger, 
 
 **How it works.** It lists the thing's own actions (`Interactions/RZ_ObjectScreen.c`). Every action
 that can be a row derives from `RZ_GroupedAction`; on one entity the puzzle slots (read, use,
-choice, keypad) form a menu when the puzzle object asks for one (a labelled prop that isn't a
-person; a world interaction spot by its kind, `RZ_Interactions.UsesMenu`), and any other grouped
-actions when two or more show. While this machine uses the menu, one prompt stays: the read
+choice, keypad) form a menu whenever there's a read and something to do, or two or more things to
+do (a single slot alone stays its one prompt; a world interaction spot decides by its kind,
+`RZ_Interactions.UsesMenu`; on a person with the talk screen, the talk screen holds them), and any
+other grouped actions when two or more show. No puzzle prompt shows on a dead person. While this machine uses the menu, one prompt stays: the read
 ("Look at the stove") or, without one, the first action under the group's title ("Ask the
 quartermaster"). Using it reaches the server, which runs the read with what it says caught
 (`RZ_ScreenCapture`; a paper goes into the text, not the reader), opens a screen-guard entry and

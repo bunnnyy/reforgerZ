@@ -1,8 +1,9 @@
 //! Player actions for puzzles. All of them only report to the server, which
 //! routes to the owning mission (RZ_PuzzleMission). Nothing is decided on the client.
-//! On a prop that wants it (RZ_PuzzleObjectComponent.WantsMenu) they're one object menu: the read
-//! opens it and its text is the description, the use, choice and keypad slots are the rows
-//! (Interactions/RZ_ObjectScreen.c).
+//! On any puzzle object (RZ_PuzzleObjectComponent.WantsMenu) they're one object menu when there's a
+//! read and something to do, or two things to do: the read opens it and its text is the
+//! description, the use, choice and keypad slots are the rows (Interactions/RZ_ObjectScreen.c).
+//! None of them show on a dead person.
 
 //------------------------------------------------------------------------------------------------
 //! "Read": on any entity with RZ_ClueComponent (note, plaque, dog tags, wreck, civilian).
