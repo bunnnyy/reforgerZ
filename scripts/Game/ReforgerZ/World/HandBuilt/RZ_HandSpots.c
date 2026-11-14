@@ -95,6 +95,34 @@ class RZ_HandSpots
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One sentence on what the spot is for (the build bar says it when the mouse is on its button).
+	static string Help(string type)
+	{
+		switch (type)
+		{
+			case "sit": return "Where someone sits to rest, smoke or talk.";
+			case "meal": return "The canteen table: eight people eat here at mealtimes.";
+			case "lean": return "Where someone leans on a wall and passes the time.";
+			case "work": return "Where someone works with their hands: mending, sorting, cleaning kit.";
+			case "water": return "Where people fill canteens and drink.";
+			case "watch": return "A lookout who watches outward, toward the threats.";
+			case "gate": return "The guard who stands at the way in and stops people.";
+			case "cook": return "Where the cook works the stove or the pot.";
+			case "wash": return "Where people wash hands, faces and clothes.";
+			case "chop": return "Where someone splits wood for the fires.";
+			case "sleep": return "Where someone sleeps off-shift.";
+			case "medic": return "The medic's tent: the hurt and the sick go here.";
+			case "stores": return "The food tent or stores door, where supplies go in and out.";
+			case "latrine": return "Where people go to relieve themselves.";
+			case "qm": return "Where the quartermaster stands to trade with you.";
+			case "leader": return "Where the camp's leader spends the day.";
+			case "route": return "A point on a patrol: the guards walk the points in order.";
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! What camp life's routine does there (RZ_EDressUse): the use its piece takes.
 	static RZ_EDressUse UseOf(string type)
 	{

@@ -22,6 +22,7 @@ class RZ_SiteHud
 	protected static bool s_bListening;
 	protected static string s_sProgress;
 	protected static bool s_bPreviewing;		// the preview follows the cursor while a type is picked
+	protected static Widget s_wLit;				// the bar's button under the mouse, lit, its line in the hint
 
 	protected static ref array<ref array<string>> s_aTypes = {};	// T|type|have|want|required
 	protected static ref array<ref array<string>> s_aLoops = {};	// L|loop|points|length
@@ -154,6 +155,8 @@ class RZ_SiteHud
 			return false;
 
 		s_wRoot.SetZOrder(1000);
+		GetGame().GetCallqueue().Remove(HoverTick);
+		GetGame().GetCallqueue().CallLater(HoverTick, 0, true);
 
 		s_Click = new RZ_SiteBarClick();
 		array<string> names = {"PagePrev", "PageNext", "BarUndo", "BarSave", "BarStop"};
@@ -172,6 +175,8 @@ class RZ_SiteHud
 		{
 			s_bListening = true;
 			GetGame().GetInputManager().AddActionListener("EditorSetSelection", EActionTrigger.DOWN, OnGroundClick);
+			GetGame().GetInputManager().AddActionListener("EditorActionsMenu", EActionTrigger.DOWN, OnCancel);
+			GetGame().GetInputManager().AddActionListener("EditorCancelPlacing", EActionTrigger.DOWN, OnCancel);
 		}
 
 		return true;
@@ -181,6 +186,8 @@ class RZ_SiteHud
 	protected static void Close()
 	{
 		Preview(false);
+		GetGame().GetCallqueue().Remove(HoverTick);
+		s_wLit = null;
 		if (s_wRoot)
 			s_wRoot.RemoveFromHierarchy();
 
@@ -190,7 +197,21 @@ class RZ_SiteHud
 		{
 			s_bListening = false;
 			GetGame().GetInputManager().RemoveActionListener("EditorSetSelection", EActionTrigger.DOWN, OnGroundClick);
+			GetGame().GetInputManager().RemoveActionListener("EditorActionsMenu", EActionTrigger.DOWN, OnCancel);
+			GetGame().GetInputManager().RemoveActionListener("EditorCancelPlacing", EActionTrigger.DOWN, OnCancel);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Right click (Game Master's own, its action menu on a pad) with a spot type picked: put it
+	//! away, as Game Master cancels placing a thing.
+	protected static void OnCancel(float value = 0, EActionTrigger reason = 0)
+	{
+		if (!s_wRoot || s_bHidden || s_sArmed.IsEmpty())
+			return;
+
+		s_sArmed = "";
+		Draw();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -289,8 +310,125 @@ class RZ_SiteHud
 		else if (!s_sArmed.IsEmpty())
 			hint = "Click the ground to put it there";
 
+		array<string> fixed = {"PagePrev", "PageNext", "BarUndo", "BarSave", "BarStop"};
+		foreach (string f : fixed)
+		{
+			RZ_UIW.Tint(s_wRoot, f + "Bg", RZ_SiteBuilderMenu.Lin(36, 40, 44));
+		}
+
+		RZ_UIW.Tint(s_wRoot, "BarHint", picked);
+		// The button under the mouse: lighter, and what it does in the hint line
+		if (s_wLit)
+		{
+			string litName = s_wLit.GetName();
+			string litBg = litName + "Bg";
+			if (litName.StartsWith("Btn"))
+				litBg = "BtnBg" + litName.Substring(3, litName.Length() - 3);
+
+			Color lit = RZ_SiteBuilderMenu.Lin(70, 78, 86);
+			if (litName.StartsWith("Btn") && s_iPage < 2 && LitArmed(RZ_UIW.GetTag(s_wLit)))
+				lit = RZ_SiteBuilderMenu.Lin(250, 208, 120);
+
+			RZ_UIW.Tint(s_wRoot, litBg, lit);
+			string help = Describe(litName, RZ_UIW.GetTag(s_wLit));
+			if (!help.IsEmpty())
+			{
+				hint = help;
+				RZ_UIW.Tint(s_wRoot, "BarHint", ink);
+			}
+		}
+
 		RZ_UIW.SetText(s_wRoot, "BarHint", hint);
 		Preview(!s_sArmed.IsEmpty());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Button `i` of a spots page is the type picked now.
+	protected static bool LitArmed(int i)
+	{
+		array<string> types = {};
+		array<string> names = {};
+		PageTypes(s_iPage, types, names);
+		return i >= 0 && i < types.Count() && types[i] == s_sArmed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every frame while the bar shows: the button under the mouse (the enter and leave events don't
+	//! come through a button's own picture and text, so it's polled).
+	protected static void HoverTick()
+	{
+		if (!s_wRoot)
+			return;
+
+		Widget lit = null;
+		if (!s_bHidden && RZ_UIW.ByMouse())
+		{
+			Widget p = WidgetManager.GetWidgetUnderCursor();
+			while (p && p != s_wRoot && !lit)
+			{
+				string n = p.GetName();
+				if ((n.StartsWith("Btn") && n.Length() == 4) || n == "PagePrev" || n == "PageNext" || n == "BarUndo" || n == "BarSave" || n == "BarStop")
+					lit = p;
+
+				p = p.GetParent();
+			}
+
+			if (lit && !lit.IsVisible())
+				lit = null;
+		}
+
+		if (lit == s_wLit)
+			return;
+
+		s_wLit = lit;
+		Draw();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One sentence on what a bar button does.
+	protected static string Describe(string name, int tag)
+	{
+		switch (name)
+		{
+			case "PagePrev": return "The previous page of spots.";
+			case "PageNext": return "The next page of spots.";
+			case "BarUndo": return "Takes up the last spot you put down.";
+			case "BarSave": return "Saves the site as it is now.";
+			case "BarStop": return "Stops building; you're asked about anything unsaved.";
+		}
+
+		if (!name.StartsWith("Btn"))
+			return "";
+
+		if (s_iPage < 2)
+		{
+			array<string> types = {};
+			array<string> names = {};
+			PageTypes(s_iPage, types, names);
+			if (tag < 0 || tag >= types.Count())
+				return "";
+
+			return RZ_HandSpots.Help(types[tag]);
+		}
+
+		if (tag < LOOPS)
+		{
+			string what = "the guards' patrol";
+			if (tag == 1)
+				what = "the daytime stroll";
+			else if (tag == 2)
+				what = "the walk taken only under attack";
+
+			return string.Format("Picks patrol %1, %2: new points go to it.", tag + 1, what);
+		}
+
+		if (tag == 4)
+			return "Click the ground to add the next point to the picked patrol.";
+
+		if (tag == 5)
+			return "Deletes every point of the picked patrol.";
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------

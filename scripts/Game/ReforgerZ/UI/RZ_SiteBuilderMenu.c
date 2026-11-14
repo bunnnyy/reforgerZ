@@ -27,6 +27,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	protected int m_iParsed = -1;
 	protected bool m_bDone;
 	protected bool m_bMore;						// Menu pressed: the bar shows restore and delete
+	protected Widget m_wLit;					// the button under the mouse, lit (OnMenuUpdate)
 	protected bool m_bChoose;					// Edit on a site never built: from its layout, or empty?
 	protected int m_iFirst;						// the list's first row shown
 	protected ref array<string> m_aHead = {};
@@ -629,19 +630,145 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The mouse over a button lights it (a lighter fill); leaving it, the screen draws it again.
+	//! The base's hover look stays off this screen's buttons: OnMenuUpdate lights them itself.
 	override protected bool OnHoverRow(Widget w, string name, int tag, bool on)
 	{
+		return !BgOf(name).IsEmpty() || name.StartsWith("Tab");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every frame: the button under the mouse is lit and says in one line what it does (the
+	//! enter/leave events don't reach a button through its own picture and text, so it's polled).
+	override void OnMenuUpdate(float tDelta)
+	{
+		super.OnMenuUpdate(tDelta);
+		Widget lit = null;
+		if (RZ_UIW.ByMouse())
+			lit = ButtonAt(WidgetManager.GetWidgetUnderCursor());
+
+		if (lit == m_wLit)
+			return;
+
+		m_wLit = lit;
+		Redraw();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The button `w` is, or is inside ("" none).
+	protected Widget ButtonAt(Widget w)
+	{
+		Widget p = w;
+		while (p && p != m_wRoot)
+		{
+			string name = p.GetName();
+			if (!BgOf(name).IsEmpty() || (name.StartsWith("Tab") && name.Length() == 4))
+			{
+				if (p.IsVisible())
+					return p;
+
+				return null;
+			}
+
+			p = p.GetParent();
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After a draw: the lit button's lighter fill, and its line in the note under the site.
+	protected void DrawLit()
+	{
+		if (!m_wLit)
+			return;
+
+		string name = m_wLit.GetName();
+		int tag = RZ_UIW.GetTag(m_wLit);
+		if (name.StartsWith("Row"))
+		{
+			if (tag < 0)
+				return;
+
+			RZ_UIW.Show(m_wRoot, "RowBg" + name.Substring(3, name.Length() - 3), true);
+		}
+
 		string bg = BgOf(name);
-		if (bg.IsEmpty())
-			return false;
+		if (!bg.IsEmpty())
+		{
+			Color fill = Lin(70, 78, 86);
+			if (name == "Tile0" || (name.StartsWith("Filter") && tag == s_iFilter))
+				fill = Lin(250, 208, 120);
 
-		if (on)
-			RZ_UIW.Tint(m_wRoot, bg, Lin(58, 64, 71));
+			RZ_UIW.Tint(m_wRoot, bg, fill);
+		}
 		else
-			m_iSeen = -1;
+		{
+			RZ_UIW.Tint(m_wRoot, "TabText" + name.Substring(3, 1), Lin(255, 255, 255));
+		}
 
-		return true;
+		string line = Describe(name, tag);
+		if (!line.IsEmpty())
+		{
+			RZ_UIW.SetText(m_wRoot, "DetailNote", line);
+			RZ_UIW.Tint(m_wRoot, "DetailNote", Lin(236, 233, 225));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One sentence on what a button does, as things stand.
+	protected string Describe(string name, int tag)
+	{
+		if (name.StartsWith("Tile"))
+		{
+			array<string> pads = {"A", "X", "Y", "R3"};
+			string label;
+			string act = ButtonOf(pads[Math.Clamp(tag, 0, 3)], label);
+			switch (act)
+			{
+				case "go": return "Takes you to this site, ready to look it over.";
+				case "build_saved": return "Opens the saved build so you can change it in Game Master.";
+				case "choose": return "Starts building here, from its usual layout or from nothing.";
+				case "use": return "Switches whether camp life uses your hand-built site or lays it out by itself.";
+				case "pin": return "Keeps the camp on this site every season instead of letting it move.";
+				case "spot_place": return "Puts the picked spot where you stand.";
+				case "save": return "Saves the build as it is now (press twice).";
+				case "stop": return "Stops building; you're asked about anything unsaved.";
+				case "spot_remove": return "Takes up the spot nearest to you.";
+				case "restore": return "Brings back the last backup of this site (press twice).";
+				case "delete": return "Deletes the saved build for good (press twice).";
+				case "leave_save": return "Saves your changes, then does what you asked.";
+				case "leave_discard": return "Throws away your changes, then does what you asked.";
+			}
+
+			return "";
+		}
+
+		if (name.StartsWith("Tab"))
+			return "Shows only this faction's sites (LB and RB too).";
+
+		if (name.StartsWith("Filter"))
+		{
+			array<string> filters = {"Shows every site.", "Shows the sites nobody has built by hand yet.", "Shows the sites with a hand-built save.", "Shows the sites pinned for every season."};
+			return filters[Math.Clamp(tag, 0, 3)];
+		}
+
+		if (name.StartsWith("Row"))
+			return "Picks this site and shows its details.";
+
+		switch (name)
+		{
+			case "AskSave": return "Saves your changes, then goes on.";
+			case "AskDiscard": return "Throws away your changes, then goes on.";
+			case "AskStay": return "Goes back to building; nothing is lost.";
+			case "ChooseLayout": return "Puts out the site's usual layout first, for you to change.";
+			case "ChooseEmpty": return "Starts with nothing placed, so you build it all by hand.";
+			case "ChooseCancel": return "Goes back without building.";
+			case "CloseButton": return "Closes this screen.";
+			case "SpotPrev": return "The previous kind of spot to put down.";
+			case "SpotNext": return "The next kind of spot to put down.";
+		}
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -745,6 +872,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		DrawDetail();
 		DrawBar();
 		DrawAsk();
+		DrawLit();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -908,6 +1036,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			RZ_UIW.Tint(m_wRoot, "RowStateBg" + idx, bg);
 			RZ_UIW.Tint(m_wRoot, "RowState" + idx, fg);
 			RZ_UIW.Show(m_wRoot, "RowBg" + idx, on);
+			RZ_UIW.Tint(m_wRoot, "RowBg" + idx, Lin(27, 30, 33));
 			RZ_UIW.Show(m_wRoot, "RowMark" + idx, on);
 			if (on && row)
 				RZ_UIW.FocusWidget(row);
@@ -1027,6 +1156,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		RZ_UIW.SetText(m_wRoot, "SpotPickerType", RZ_UIText.Str(m_aHead, 9));
 
 		RZ_UIW.SetText(m_wRoot, "DetailNote", note);
+		RZ_UIW.Tint(m_wRoot, "DetailNote", Lin(232, 178, 58));
 	}
 
 	//------------------------------------------------------------------------------------------------

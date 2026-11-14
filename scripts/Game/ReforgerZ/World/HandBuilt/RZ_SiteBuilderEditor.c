@@ -148,6 +148,10 @@ class RZ_SiteBuilderMarks
 	protected static vector s_vPreview;
 	protected static string s_sPreviewLetter;
 	protected static string s_sPreviewName;
+	protected static ref array<int> s_aLabelLoop = {};		// a patrol point's loop (1-3), 0 any other spot
+	protected static SCR_BasePreviewEntity s_Ghost;			// the cone about to be put down, see-through, at the cursor
+	protected static const ResourceName GHOST_LOOK = "{58F07022C12D0CF5}Assets/Editor/PlacingPreview/Preview.emat";	// Game Master's own placing look
+	protected static const ResourceName CONE = "{D08B33729A0C2743}PrefabsEditable/Auto/Props/Infrastructure/ConeTraffic/E_ConeTraffic_01_red.et";
 
 	//------------------------------------------------------------------------------------------------
 	//! The spot about to be put down, at Game Master's cursor (UI/RZ_SiteHud.c); off with an empty type.
@@ -160,8 +164,55 @@ class RZ_SiteBuilderMarks
 			s_sPreviewLetter = "+";
 
 		s_sPreviewName = name;
+		Ghost(on, pos);
 		if (on)
 			StartLabels();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The see-through cone at the cursor, as Game Master shows a thing being placed (vanilla's
+	//! preview entity, made the way its building layouts make theirs); off removes it.
+	protected static void Ghost(bool on, vector pos)
+	{
+		if (!on)
+		{
+			if (s_Ghost)
+				SCR_EntityHelper.DeleteEntityAndChildren(s_Ghost);
+
+			s_Ghost = null;
+			return;
+		}
+
+		vector at = RZ_Util.GroundPos(pos);
+		if (s_Ghost)
+		{
+			vector m[4];
+			s_Ghost.GetWorldTransform(m);
+			m[3] = at;
+			s_Ghost.SetWorldTransform(m);
+			s_Ghost.Update();
+			return;
+		}
+
+		ResourceName prefab = CONE;
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm && gm.GetCampLifeSettings() && !gm.GetCampLifeSettings().m_sSpotMarker.IsEmpty())
+			prefab = gm.GetCampLifeSettings().m_sSpotMarker;
+
+		Resource res = Resource.Load(prefab);
+		if (!res || !res.IsValid())
+			return;
+
+		EntitySpawnParams params = new EntitySpawnParams();
+		params.TransformMode = ETransformMode.WORLD;
+		params.Transform[0] = "1 0 0";
+		params.Transform[1] = "0 1 0";
+		params.Transform[2] = "0 0 1";
+		params.Transform[3] = at;
+		s_Ghost = SCR_PrefabPreviewEntity.SpawnPreviewFromPrefab(res, "SCR_PrefabPreviewEntity", GetGame().GetWorld(), params, GHOST_LOOK); // VERIFY: a preview made on a Game Master client shows see-through at the cursor, as vanilla's own
+		// Not hit by the cursor's own ray, or it would climb up itself
+		if (s_Ghost)
+			s_Ghost.ClearFlags(EntityFlags.TRACEABLE, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -176,6 +227,7 @@ class RZ_SiteBuilderMarks
 		s_aLabelLetter.Clear();
 		s_aLabelState.Clear();
 		s_aLabelId.Clear();
+		s_aLabelLoop.Clear();
 		if (payload.IsEmpty())
 		{
 			StopLabels();
@@ -220,8 +272,10 @@ class RZ_SiteBuilderMarks
 
 			string name = RZ_HandSpots.Label(type);
 			string letter = Letter(type);
+			int inLoop = 0;
 			if (type == "route")
 			{
+				inLoop = loop;
 				loops[loop - 1].Insert(at);
 				name = string.Format("Patrol %1, point %2", loop, loops[loop - 1].Count());
 				letter = loops[loop - 1].Count().ToString();
@@ -241,6 +295,7 @@ class RZ_SiteBuilderMarks
 				id = f[8].ToInt();
 
 			s_aLabelId.Insert(id);
+			s_aLabelLoop.Insert(inLoop);
 		}
 
 		foreach (int li, array<vector> pts : loops)
@@ -276,6 +331,19 @@ class RZ_SiteBuilderMarks
 		}
 
 		return "?";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Loop 1 amber, 2 teal, 3 blue: the badges' colour, the same as the dashed lines.
+	protected static Color LoopColour(int loop)
+	{
+		if (loop == 2)
+			return RZ_SiteBuilderMenu.Lin(93, 202, 165);
+
+		if (loop == 3)
+			return RZ_SiteBuilderMenu.Lin(133, 183, 235);
+
+		return RZ_SiteBuilderMenu.Lin(232, 178, 58);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -378,6 +446,7 @@ class RZ_SiteBuilderMarks
 			string letter;
 			string name;
 			int state;
+			int loopOf = 0;
 			if (preview)
 			{
 				spot = s_vPreview;
@@ -391,6 +460,7 @@ class RZ_SiteBuilderMarks
 				letter = s_aLabelLetter[i];
 				name = s_aLabelName[i];
 				state = s_aLabelState[i];
+				loopOf = s_aLabelLoop[i];
 				// The cone itself where it's streamed in: dragging it in Game Master moves the label
 				if (s_aLabelId[i] != 0)
 				{
@@ -415,6 +485,10 @@ class RZ_SiteBuilderMarks
 				badge = RZ_SiteBuilderMenu.Lin(240, 149, 149);
 			else if (state == 2)
 				badge = RZ_SiteBuilderMenu.Lin(232, 178, 58);
+
+			// A patrol point is its loop's colour, as its dashed line
+			if (loopOf > 0 && state != 1)
+				badge = LoopColour(loopOf);
 
 			RZ_UIW.Tint(s_wLabels, "MarkBadge" + idx, badge);
 			RZ_UIW.SetText(s_wLabels, "MarkLetter" + idx, letter);

@@ -357,6 +357,10 @@ each also clicked; the first in amber):
 | Menu | **More**: Restore (the save before this one, a second press) and Delete (the save and its backups, a second press: the site is automated again) |
 | B | Close |
 
+With the mouse, the button under the cursor lights up and the line under the picked site says in one
+sentence what it does (the build bar's hint line does the same for its buttons, and for a spot type
+says what the spot is for).
+
 While you build the picked site: **A** puts a spot at your feet, **LT / RT** (or the wheel, or the
 picker's arrows) change the spot type shown as `< Gate >`, **X** saves (replacing a save asks for a
 second press), **Y** stops building, **R3** takes up the nearest spot. Going to another site or
@@ -370,13 +374,15 @@ its spots done (`7/11 · unsaved`). Three pages, turned with its `<` `>` buttons
 watch, seat, work, sleep, lean, quartermaster, leader) and **Places** (cook, canteen, water, wash,
 medic, stores, chop, latrine), each a button with what's there (`done`, `0/2` in red, `+` when only
 nice to have): pick one, then click the ground (Game Master's own left click) and the spot is put
-where the cursor points, facing in (the gate and the watch facing out); and **Patrols** ([Role
+where the cursor points, facing in (the gate and the watch facing out). While a type is picked, a
+see-through cone (Game Master's own placing look) and its label follow the cursor; right click (Game
+Master's own) puts the type away. And **Patrols** ([Role
 spots](#role-spots)). Undo takes up the last spot; Save and Stop are the screen's.
 
 **The cones' labels** (`RZ_SiteBuilderMarks`, layout `RZ_SiteMarks.layout`): over each spot's cone a
 round badge with a letter (G gate, W watch, S seat, K work, Z sleep, L lean, Q quartermaster, Ld
 leader, C cook, T canteen, Wa water, Ws wash, M medic, St stores, Ch chop, La latrine; a patrol point
-its number), green when right, red when something's wrong, amber when suggested; within 25 m of the
+its number, in its loop's colour like its dashed line), green when right, red when something's wrong, amber when suggested; within 25 m of the
 camera the spot's name too, with what's wrong.
 
 **What a save holds:** every object standing within the site's radius of its centre (72 m for a

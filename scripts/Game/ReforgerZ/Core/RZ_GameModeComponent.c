@@ -1178,6 +1178,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_SupplyLines GetSupply() { return m_Supply; }
 	RZ_FactionLife GetFactionLife() { return m_FactionLife; }
 	RZ_CampLife GetCampLife() { return m_CampLife; }
+	//! Camp life's settings as set in Workbench (the client has them too: the build bar's cone at the cursor).
+	RZ_CampLifeSettings GetCampLifeSettings() { return m_CampLifeSettings; }
 	RZ_LongTable GetLongTable() { return m_LongTable; }
 	//! Traces (docs/TRACES.md): door marks, their reading, the player traces. Server only.
 	RZ_Traces GetTraces() { return m_Traces; }
