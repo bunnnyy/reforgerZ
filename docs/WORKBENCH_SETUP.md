@@ -1969,7 +1969,7 @@ doorway fits in it and is refused in the open; and the contacts' names and the N
 printed (`RZT openings OK|FAIL <what>`, then `RZT openings: N checks, N failed`; the run fails on
 FAIL). Just before, **a fresh spawn** (`RZT_Fresh.c`), as a veteran (level 3, where the author's
 play-test went wrong): every running job drops the new life; its opening has its contact standing
-within 15 m and the door's favour first, not the lead to work; the Quests tab lists no taken job; and later,
+within 15 m and the chain starting at the door (its favour, which a veteran's skips once talked to: the opening by level, below), not the lead to work; the Quests tab lists no taken job; and later,
 once a questline runs, a part from the last life doesn't put it in the new life's journal while the
 story still remembers the player (`RZT fresh OK|FAIL <what>`, `RZT fresh: N checks, N failed`; the run
 fails on FAIL). Then **the door and the favour** (`RZT_Favour.c`), for every background, each opening
@@ -2016,6 +2016,16 @@ neighbour warned (WARNED); the good liar's story (TALKED, no standing changed); 
 (SLIPPED, Haven Infamy up); Ferda killed (FOUGHT, Red Hand Infamy up); his note on a real door's
 step; a veteran's note only (`RZT ferda OK|FAIL <what>`, `RZT ferda: N checks, N failed`; the run
 fails on FAIL).
+Then **the opening by level** (`RZT_OpeningChain.c`): a fresh Nurse at levels 1, 2 and 3 runs the
+whole chain from the town's middle: at level 1 the door asks who you were, the favour's fetch and
+hand-over, then the line (moved past here: `RZT_Line.c` checks it) or its short form; at level 2,
+with a habit to carry, the door asks nothing and the line is its short form, straight to the
+runner; at level 3 the door asks nothing and there's no favour, the runner first. Each level's
+runner's step is done with the case in hand, the lead to the station is handed (the fake tester
+isn't a player's character, so the check hands it as the case check does), Ferda comes by level (a
+visit, one scene, his note), and the case is delivered to Halcyon by the reply (Proof's part is
+checked when Proof runs). Lines `RZT chain OK|FAIL <what>`, `RZT chain: N checks, N failed` (the
+run fails on FAIL).
 
 **The epilogue week.** Then, from the finale's cure, **Epilogue > Test scale** goes to 0.02 and the
 week runs scripted (`RZT_Epilogue.c`): the commit (its record holding the release's terms), the hall's freeze, beats and phase A; phase B;
@@ -2886,7 +2896,7 @@ records.` and `Shared: N callbacks waiting, N season records.`
 
 Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one life each: `Openings: started
 for <player>: <background>, <kind> in <town> (<grid>), level N, <hiding|group|fever>, <before|stranger|earlier|nobody>:
-<who>, chain favour, give, case to <place>`, `Openings: <name> called <player> over before step N`, `Openings: the favour (<FAVOUR>) is at <words> (<prefab>, <kind>), N m from the contact` (the building the favour sends you into, and the words its kind gave) or `Openings: no place for the favour (<FAVOUR>) for <player> at <grid>, on to the runner`, `Openings: no place for <player>'s favour (<FAVOUR>) here, <TIN|SACK> instead`, `Openings: <player> is <habit> (the habit, <effect>)` or `Openings: <player> keeps the habit <habit> (a veteran's door asks nothing)`, `Openings: <player> took their background's way (<background>, <key>) at <grid>` or `Openings: <player> settled the favour by their background's way (<background>), there and then`, `Openings: the neighbour's door at <grid> opened (<background>)`, `Openings: <player> handed over to <name> (step N, task N, favour N), done there and then`, `Openings: <name> talked to by <player> before
+<who>, chain favour, give, case to <place>`, `Openings: <name> called <player> over before step N`, `Openings: the favour (<FAVOUR>) is at <words> (<prefab>, <kind>), N m from the contact` (the building the favour sends you into, and the words its kind gave) or `Openings: no place for the favour (<FAVOUR>) for <player> at <grid>, on to the runner`, `Openings: no place for <player>'s favour (<FAVOUR>) here, <TIN|SACK> instead`, `Openings: <player> is <habit> (the habit, <effect>)` or `Openings: <player> keeps the habit <habit> (a familiar or veteran door asks nothing)`, `<player> is a veteran: no favour, the door then the runner`, `Openings: <player> took their background's way (<background>, <key>) at <grid>` or `Openings: <player> settled the favour by their background's way (<background>), there and then`, `Openings: the neighbour's door at <grid> opened (<background>)`, `Openings: <player> handed over to <name> (step N, task N, favour N), done there and then`, `Openings: <name> talked to by <player> before
 step N`, `Openings: <name> went on talking with <player> into step N`,
 `Errands: opening.<step> handed to <player> (<name>)` (a step that didn't end where it's done is made to, with `Errands: handed <key> didn't end where it's done; it does now (no walking back to hand it in)`), the pattern at the end of `started` (`, they walk with you` or `, handed on`), `Openings: <name> walks with <player>` (or `can't walk with <player> (no escort room), the steps start where you are`), `Openings: <first> sent <player> on to <next> at <place>, <direction>` (or `Openings: no house for the next person for <player> at <grid>, back to <name> instead`), `Openings: <player> handed over to <name> (step 2, task N), done there and then`, `Openings: the scratched door is a real door at <grid>, N m from the opening` (or `Openings: no real door within 80 m of <grid> for the scratched door, no clue`), `Openings: <name> step N (<key>) for <player>,
 <direction>`, `Openings: <name> step N done by <player> in N s`, `Openings: <name> died (step N for
@@ -3723,9 +3733,13 @@ when it happens)
   waited 45 s is gone (into the notebook). Get bitten in the first seconds: the bite card shows at
   once. Owed errand pay at a join is one *While you were away* entry, no card.
 - [ ] **A fresh life, as a veteran** (the author has played many lives, so this is the usual case on the
-  PC). Die and respawn: someone stands at the door every time (log: `Openings: <you> <background> at
+  PC). Die and respawn: someone stands at the door every time, the door asks nothing (your last
+  habit carries), there's no favour, the runner is found already down and Ferda leaves a note: about
+  five minutes in all (log: `Openings: <you> <background> at
   <grid>: contact <name> spawned at <n> m`; never `NO CONTACT` or `NO OPENING`: paste those lines if
-  seen), and his first ask is the door's favour, never *Where the Work Is* straight away. The
+  seen), and his first ask is the runner's case, never *Where the Work Is* straight away. As a
+  familiar player (3–7 counted lives) the door asks nothing, the favour runs, the line is its short
+  form and Ferda comes as one scene. The
   Quests tab lists only that step: none of the last life's questlines, majors or jobs, and no "Quest
   started" card for them (log: `Missions: <you> began a new life, off N job(s) the last one held`).
 - [ ] **The case** ([DESIGN.md](DESIGN.md#the-case)), with a pad. Open `Prefabs/ReforgerZ/Guidance/RZ_ColdCase.et`
@@ -3860,10 +3874,10 @@ when it happens)
   doorway. The Cold Chain's far door and a debt's door are real doors. The log's `Doors: ... left out
   at ...` and `Duties: no real door within reach for beat ...` lines say where none was found.
 - [ ] **Task places** ([PLACES.md](PLACES.md)). Over the openings above, every place is what its
-  words say: *Down the Road* sends you to a real house (or the chemist's, the garage...) 150–450 m
-  off, never into woods, and its crate stands inside that building on the ground floor; as a Nurse
-  on Arland it's never "the chemist's" at a shed or a wooden barracks (there it's the old aid post, a
-  vet's farm or the doctor's house), and `run.sh tasks` shows no `Places words:` line; a Lab Technician's *A Sample* lies by a road's verge (or in a yard) and you
+  words say: the favour sends you to a real building of its kind (the chemist's, the garage, the
+  school...), never into woods, and its thing stands inside that building on the ground floor; as a
+  Nurse on Arland it's never "the chemist's" at a shed or a wooden barracks (there it's the old aid
+  post or the doctor's house), and `run.sh tasks` shows no `Places words:` line; a Lab Technician's *A Sample* lies by a road's verge (or in a yard) and you
   find a dead infected there with the sample beside it; *Downwind*'s tree line has trees; the well
   has a well. On Everon and Arland take a few errands that name a place (*Water for* a house: the
   well in the town it names; *Filter Parts*: a pump house; *Shift Change*: a car by a road; *Not Past

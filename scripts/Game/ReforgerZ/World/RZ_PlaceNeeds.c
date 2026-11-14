@@ -70,7 +70,7 @@ class RZ_PlaceThing
 //! One kind of task's need. Made in RZ_PlaceNeeds.Build; read-only after.
 class RZ_PlaceNeed
 {
-	string m_sKey;				// "opening.search"
+	string m_sKey;				// "opening.favour"
 	string m_sWords;			// what the player reads about the place
 	int m_iFlags = RZ_EPlaceFlag.DRY | RZ_EPlaceFlag.NOT_AT_LINE | RZ_EPlaceFlag.MAINLAND;
 	float m_fMaxSlope = 30;
@@ -1230,10 +1230,6 @@ class RZ_PlaceNeeds
 		n.Steep(30);
 		n.Thing(RZ_EThingKind.NPC, "the contact", "contact", 15, "nobody stands there: the scene's note points at the nearest work");
 
-		n = Add("opening.search", "the house (the chemist's, the garage...) down the road");
-		n.Building("house", 15);
-		n.Steep(30);
-
 		n = Add("opening.favour", "where the contact's favour sends you: the chemist's, the garage, his shed, the school, the shop, the church, the house next door");
 		n.Building("house", 15);
 		n.Steep(30);
@@ -1477,7 +1473,7 @@ class RZ_PlaceNeeds
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "opening.search 12/12, mission 3/4": the live checks so far (passed / checked, by need).
+	//! "opening.favour 12/12, mission 3/4": the live checks so far (passed / checked, by need).
 	static string LiveText()
 	{
 		if (!s_mChecked || s_mChecked.IsEmpty())

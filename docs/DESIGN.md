@@ -3374,10 +3374,9 @@ and for the first five minutes cards come at most one every 45 s; the rules and 
 
 ### Openings: how every life starts
 
-Built of the new opening ([designs/OPENING.md](../designs/OPENING.md)): the door's question and
-[habits](#habits), the favours by background, [the line](#the-line) and [the case](#the-case), which
-leads into Proof, and [the fixer](#the-fixer) who comes for the case. Planned there: the shorter
-forms by level of the first beats.
+The opening is five beats in the world: the door's question and [habits](#habits), the favours by
+background, [the line](#the-line), [the case](#the-case), which leads into Proof, and [the
+fixer](#the-fixer) who comes for the case; shorter for those who know it (the chain by level, below).
 
 Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningScenes.c`, `RZ_OpeningChain.c`,
 `RZ_OpeningSteps.c`, `RZ_OpeningText.c`, `RZ_OpeningLine.c`, `RZ_OpeningFixer.c`, `Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
@@ -3534,10 +3533,10 @@ a talk objective comes before the first step, and before a next person's step (a
 
 | Level | The chain |
 |---|---|
-| 0, brand new | The door (who you were), the favour, the line, the runner (about 30 minutes, then the case's walk to the station); the reasons lean to the hiding place |
+| 0, brand new | The door (who you were), the favour, the line, the runner (about 30 minutes, then the case's walk to the station), then Ferda; the reasons lean to the hiding place |
 | 1, learning | The same |
-| 2, familiar | The same, but the line is its short form (the runner is found already down); the other shorter forms are planned ([designs/OPENING.md](../designs/OPENING.md)) |
-| 3, veteran | As familiar, and the door asks nothing: the last character's habit carries |
+| 2, familiar | The door asks nothing when there's a last character's habit to carry (else it asks), the favour, the line's short form (the runner is found already down), the runner, Ferda as one scene where you are |
+| 3, veteran | The door (as familiar), no favour, the line's short form, the runner, Ferda's note on a door: about five minutes |
 
 Every life starts with the door's favour from the person at the door (the author's play-test as a
 veteran: nobody there and the lead tracked at once read as "the first mission is already skipped").
@@ -3626,7 +3625,7 @@ place fits`, `no place`, `NO CONTACT (<why>)`, `NO OPENING`, the favour's `the f
 <place> (<prefab>, <kind>), <n> m from the contact` or `no place for the favour (<FAVOUR>) for ... at
 <grid>, on to the runner` (a plain one standing in: `no place for <player>'s favour (<FAVOUR>) here, <TIN|SACK>
 instead`), `<player> is <habit> (the habit, <effect>)` or `... keeps the habit <habit>
-(a veteran's door asks nothing)`, `<player> took their background's way (<background>, <key>) at <grid>`
+(a familiar or veteran door asks nothing)`, `<player> is a veteran: no favour, the door then the runner`, `<player> took their background's way (<background>, <key>) at <grid>`
 or `... settled the favour by their background's way (<background>), there and then`, `the neighbour's
 door at <grid> opened (<background>)`, `... handed over to <name> (step N, task N, favour N), done there
 and then`, `...'s bitten friend was lost`, `no runner's case for ... at <grid>, the old end instead`, and
@@ -3639,14 +3638,14 @@ gives work, walked to, not a job already picked for you (jobs start from people)
 fetched thing is held for you as data until the hand-over (it isn't an item in your pack); the
 Mechanic's car is the openings' car prop, not a car you could drive; the Hunter's tracks, the
 neighbour's mat and key are words at the place, nothing stands for them; there's no dog in the stack,
-so the Unemployed's and the Drifter's favour is a sack, with no way of their own; the shorter forms by
-level wait ([designs/OPENING.md](../designs/OPENING.md)). The old step 1 (Down the Road) and step 2s
-(`RZ_OpeningSteps.c`) are out of the chain; The Fever's care step is the Nurse's and the Doctor's way.
+so the Unemployed's and the Drifter's favour is a sack, with no way of their own. The old step 1
+(Down the Road) is gone; the old step 2s (`RZ_OpeningSteps.c`) stay as step definitions no chain
+hands, and The Fever's care step is the Nurse's and the Doctor's way.
 
 ### The line
 
 Code: `Guidance/RZ_OpeningLine.c` (the scene), `Guidance/RZ_Openings.c` (the stage). The opening's
-beat 3 ([designs/OPENING.md](../designs/OPENING.md)): favour done, the contact wants out.
+beat 3: favour done, the contact wants out.
 
 **Where.** When the stage starts, a viewpoint is looked for from where the contact stands: a point on
 a road (the need `opening.line`, [PLACES.md](PLACES.md#the-needs)) 150–250 m outside the
@@ -3695,7 +3694,7 @@ road points out when none fitted.
 ### The case
 
 Code: `Guidance/RZ_OpeningCase.c`, `Guidance/RZ_ColdCase.c`. The opening's last step and the main
-story's door: the first part of [designs/OPENING.md](../designs/OPENING.md) that's built.
+story's door.
 
 **The runner.** After the line ([above](#the-line)), the runner's step (`opening.case.seen`, **The
 Runner**) is at the man you saw shot: the case lies by his body. In the line's short form (and on any
@@ -3759,7 +3758,7 @@ or shelf.
 ### The fixer
 
 Code: `Guidance/RZ_OpeningFixer.c` (the visit, its replies, what follows), `Dialogue/RZ_TalkOpenings.c`
-(`RZ_TalkFixer`). Beat 5 of the new opening ([designs/OPENING.md](../designs/OPENING.md)): the
+(`RZ_TalkFixer`). Beat 5 of the opening: the
 Red Hand wants the runner's case back, and you pick a side in the street you started from.
 
 **He comes.** Once the case is in your pack, **Ferda Kroupa**, who collects for the Red Hand's book
@@ -3829,9 +3828,9 @@ never disappears.
 | Level | Counted lives | What they get |
 |---|---|---|
 | 0, brand new | 0 | Everything: every tip in full, the gentle start, an opening with all three steps leaning to the hiding place (a wanderer comes looking when nobody's outside), the radio every 12 min |
-| 1, learning | 1–2 | Every tip in full, an opening with all three steps (a shorter first), wanderer gossip every time |
-| 2, familiar | 3–7 | Most tips; an opening with step 1, one step of your background's and The Runner; gossip now and then |
-| 3, veteran | 8+ | The floor: an opening's one-line read, step 1 and The Runner (always with someone at the door), the open channels (every 42 min), and critical tips as one short line |
+| 1, learning | 1–2 | Every tip in full, the whole opening (the door's question, the favour, the line, the runner, Ferda's visit), wanderer gossip every time |
+| 2, familiar | 3–7 | Most tips; the opening without the door's question (the last habit carries), the line's short form and Ferda as one scene; gossip now and then |
+| 3, veteran | 8+ | The floor: an opening's one-line read, the door, the line's short form, the runner and Ferda's note (always with someone at the door; about five minutes), the open channels (every 42 min), and critical tips as one short line |
 
 A player who comes back after 30+ real days gets two levels more guidance for two lives.
 The [opening](#openings-how-every-life-starts) sets its chain by level; the wanderer who comes

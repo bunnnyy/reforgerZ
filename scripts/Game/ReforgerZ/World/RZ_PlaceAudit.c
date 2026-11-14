@@ -257,22 +257,12 @@ class RZ_PlaceAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! From one start's contact: step 1's place and every step 2 that can run there.
+	//! From one start's contact: every old step 2 that can run there (their needs stay audited).
 	protected void AskSteps(RZ_PlaceAuditStart s)
 	{
 		RZ_Openings openings = RZ_Openings.Get();
 		if (!openings)
 			return;
-
-		vector place;
-		string text;
-		string kind;
-		bool found = openings.PickSearch(s.m_sBackground, s.m_vContact, place, text, kind);
-		string building = kind;
-		if (building.IsEmpty())
-			building = "house";
-
-		Record("opening.search", s.m_vContact, place, found, s.m_sBackground + ": " + text, -1, building);
 
 		RZ_OpeningTasks tasks = openings.GetTasks();
 		array<int> list = {RZ_EOpeningTask.WATER, RZ_EOpeningTask.PUMP, RZ_EOpeningTask.DOWNWIND, RZ_EOpeningTask.KEYS, RZ_EOpeningTask.SAMPLE, RZ_EOpeningTask.GATE, RZ_EOpeningTask.DEBT, RZ_EOpeningTask.SWAP, RZ_EOpeningTask.TOLL};

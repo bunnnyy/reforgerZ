@@ -43,7 +43,7 @@ Every owner is a man or a place; women are only mentioned.
 | The captain's log page | Bastion's captain | a burnt office; the roll call | Bastion: reads the Day 3 orders aloud (Await Relief, a reply) | the stockade's board |
 | Lieutenant Laurent's compass | the Last Pilot | the wreck (The Last Pilot) | your map shows the tracked objective's bearing without a map item | his crew, if any live; else the wreck |
 | The roster's spare pencil | Bastion's roll | the duty roster | the roll call: you can add a name once a season | the sergeant |
-| The lab's first sample tag | Halcyon | the case's runner (OPENING.md) | Halcyon: **[The tag]** the director won't lie to you once | the director |
+| The lab's first sample tag | Halcyon | the case's runner ([DESIGN.md](../docs/DESIGN.md#the-case)) | Halcyon: **[The tag]** the director won't lie to you once | the director |
 | The site log's binder clip | the director's site log | Proof's pages | holds a page of the site log you find without it counting as carried | the lab's records room |
 | The courier's armband | Halcyon's first courier | the courier's route; a dead courier | Halcyon checkpoints let you pass as a courier once a day | the lab gate |
 | The vet's bag | the vet at the farm | a farm's door mark "vet, gone" | treating animals and the bitten 10% quicker | the vet's farm |
