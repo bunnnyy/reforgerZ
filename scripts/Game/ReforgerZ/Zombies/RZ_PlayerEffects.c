@@ -32,6 +32,8 @@ class RZ_PlayerEffectsComponent : ScriptComponent
 	protected float m_fStaggerCap = 1;
 	protected float m_fDownUntil = -1;
 	protected float m_fCapSet = 1;
+	protected bool m_bCarry;				// something in the arms (Missions/Blocks/RZ_Carry.c)
+	protected float m_fCarryCap = 1;
 	protected bool m_bMovementOff;
 	protected bool m_bListening;
 	protected bool m_bTicking;
@@ -99,6 +101,17 @@ class RZ_PlayerEffectsComponent : ScriptComponent
 			RpcDo_Knockdown(seconds);
 		else
 			Rpc(RpcDo_Knockdown, seconds);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Carrying something (Missions/Blocks/RZ_Carry.c): the speed capped at fraction until it's put
+	//! down (on false), with a hint saying what's carried and how to put it down.
+	void SendCarry(bool on, float fraction, string what)
+	{
+		if (IsLocalOwner())
+			RpcDo_Carry(on, fraction, what);
+		else
+			Rpc(RpcDo_Carry, on, fraction, what);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -178,6 +191,21 @@ class RZ_PlayerEffectsComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_Carry(bool on, float fraction, string what)
+	{
+		if (on && !Bind())
+			return;
+
+		m_bCarry = on;
+		m_fCarryCap = Math.Clamp(fraction, 0.1, 1);
+		if (on && !what.IsEmpty())
+			SCR_HintManagerComponent.ShowCustomHint("Walk it where it goes and put it down there. Raise your weapon and you put it down where you stand.", what, 8, false, EFieldManualEntryId.NONE, true);
+
+		Apply();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_Clear()
 	{
 		EndHold();
@@ -224,6 +252,9 @@ class RZ_PlayerEffectsComponent : ScriptComponent
 
 		if (m_fStaggerUntil > now)
 			cap = Math.Min(cap, m_fStaggerCap);
+
+		if (m_bCarry)
+			cap = Math.Min(cap, m_fCarryCap);
 
 		SetCap(cap);
 		if (m_bMovementOff && now >= m_fDownUntil)
@@ -336,6 +367,7 @@ class RZ_PlayerEffectsComponent : ScriptComponent
 		EndHold();
 		m_fStaggerUntil = -1;
 		m_fDownUntil = -1;
+		m_bCarry = false;
 		if (m_bMovementOff)
 		{
 			CharacterControllerComponent ctrl = Controller();

@@ -23,6 +23,7 @@ class RZ_Errand_FalseHope : RZ_ErrandCard
 		w.m_fRadius = 15;
 		w.m_sStep = "Buy a set of the forger's papers at the gate of {here} (8 s there), then carry them to {giver} yourself, so the house can see what they're paying for.";
 		w.Work(RZ_EWork.HANDS, "Buy a set of papers");
+		w.m_bPerson = true;
 		w.m_bCarry = true;
 		w.m_iFavor = 5;
 		w.Done("Look at the stamp. It's a potato. It's a cut potato, and they were going to sell their blankets for it. I'll pass these round the stove tonight.");
@@ -34,6 +35,7 @@ class RZ_Errand_FalseHope : RZ_ErrandCard
 		w.m_fRadius = 15;
 		w.m_sStep = "See the forger off the line at the gate of {here} (8 s there), then tell {giver}.";
 		w.Work(RZ_EWork.HANDS, "Send him on his way");
+		w.m_bPerson = true;
 		w.m_iFavor = 3;
 		w.Done("He's gone, and he took his hope with him. Some of them are angry with you. They'll be less angry in a week.");
 

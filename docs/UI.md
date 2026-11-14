@@ -342,7 +342,10 @@ under the secure-radio panel while that shows), for the one job you follow. The 
   out, moving with them, and their usual spot only while they're put away (`RZ_Errands.GiverAt`,
   `RZ_ObjPlace.Person`). **One objective is one thing at one place:** a duty played as a scene shows
   each step as its own line (The Cold Chain: take the box, carry it to the far door, hand it over,
-  sign the manifest, then go back), each at its beat's place (`RZ_DutyGoals.c`), and an errand's
+  sign the manifest, then go back), each at its beat's place (`RZ_DutyGoals.c`); a task carried for
+  real ([DESIGN.md](DESIGN.md#carrying)) shows *Pick up a crate outside (1 of 3 carried).* at the
+  pile (or the nearest one put down elsewhere) and *Put the crate down indoors, on the ground
+  floor.* at the stack, the one you're on first; and an errand's
   step drops its last "then tell {giver}" clause, since going back is the next line. The area line, the arrow and metres, the map's mark and the Quests
   tab's row all follow the current objective's place, and move on when it does. The job's own place
   (where it was given, or its town) is only the fallback for an objective without one.

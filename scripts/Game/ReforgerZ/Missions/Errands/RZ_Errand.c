@@ -102,6 +102,13 @@ class RZ_ErrandWay
 	string m_sInside;			// its work site is inside a building of this kind ("any", "house", "shop", "police", "school", "public", "clinic"), on the ground floor; empty: in the open
 	bool m_bPerson;				// someone the work is for stands at its work site (the newcomer, the bitten man): Props > Duty person
 	float m_fWorkSeconds;		// its hold (0: from m_fSeconds, RZ_WorkSites.HoldFor)
+	ResourceName m_sLook;		// what stands at its work site while it's to do (the cook pot, the woodpile), over the kind's look (Look())
+	int m_iCarry;				// carried for real (Carry()): how many things, 0 not a carry
+	ResourceName m_sCarryProp;	// one of them, as it stands (a base-game prop)
+	string m_sCarryThing;		// "crate"
+	string m_sCarryThings;		// "crates"
+	bool m_bCarryIn;			// from outside into the building (else out of it)
+	bool m_bCarryStack;			// put down one on another (else in a row)
 	string m_sNeed;				// the place need its words make (World/RZ_PlaceNeeds.c; empty: by its place kind, NeedKey)
 	int m_iGame;				// a sorting duty (RZ_DutyGame.KIND_*): its row is laid out at the place, and its verdicts are the step
 	bool m_bSquad;				// a duty walked with the place's people (RZ_DutySquads): the step is coming back with them
@@ -142,6 +149,29 @@ class RZ_ErrandWay
 		m_eWork = kind;
 		m_sWorkLabel = label;
 		m_fWorkSeconds = hold;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What stands at its work site while it's to do, when the words name a thing the kind's look
+	//! isn't (a cook pot at "Stir the pot", the woodpile at "Split the wood").
+	void Look(ResourceName prefab)
+	{
+		m_sLook = prefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Carried for real (Missions/Blocks/RZ_Carry.c): `count` of `prop` picked up one by one and put
+	//! down where the words say: into the place's building on its ground floor (`into`), else out of
+	//! it to the open beside it; one on another when `stack`. The work site from Work() is the old
+	//! rule when carrying is off.
+	void Carry(string thing, string things, ResourceName prop, int count, bool into, bool stack)
+	{
+		m_iCarry = count;
+		m_sCarryThing = thing;
+		m_sCarryThings = things;
+		m_sCarryProp = prop;
+		m_bCarryIn = into;
+		m_bCarryStack = stack;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -57,6 +57,8 @@
 #   - 10 s in, runs the power station's looks once (RZT_Power.c): the dressing up beside the control,
 #     the generator's sound up while it turns and down when it stops, everything down with nobody
 #     near, and the street lamps' list dark and powered ("RZT Power test: ...");
+#   - 4 minutes in, carries three crates into the nearest building (RZT_Carry.c): the pile, the
+#     put-down indoors under a roof, the stack ("RZT carry: ...");
 #   - walks the player through every settlement, the safehouses, the lab, then into the
 #     Perimeter's warning and kill zones (until then the line leaves the fake player alone);
 #     kills them if the Perimeter didn't; respawns them;
@@ -224,12 +226,21 @@ cp "$ROOT"/Prefabs/ReforgerZ/World/RZ_PowerDressing.et* "$ROOT"/Prefabs/Reforger
 # The hand-built sites' role spots (docs/SITES.md, "Role spots"): a shipped save's spots spawn them
 mkdir -p "$ADDON/Prefabs/ReforgerZ/World/HandBuilt"
 cp "$ROOT"/Prefabs/ReforgerZ/World/HandBuilt/RZ_HandSpot*.et* "$ADDON/Prefabs/ReforgerZ/World/HandBuilt/"
+# What shows in the arms while carrying (docs/DESIGN.md, "Carrying"): the carry check reads it
+mkdir -p "$ADDON/Prefabs/ReforgerZ/Work"
+cp "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Carried_*.et* "$ADDON/Prefabs/ReforgerZ/Work/"
 "$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
 "$PY" "$HERE/sites.py" prepare "$ADDON" Worlds/RZTest/RZTest.ent || exit 2
 
 cd "$SERVER"
+# On Linux in its own network namespace when it can be (as the audits): two runs side by side don't
+# fight over the port
+WRAP=""
+if command -v unshare > /dev/null 2>&1 && unshare -n true > /dev/null 2>&1; then
+	WRAP="unshare -n"
+fi
 # Workshop dependencies come from EXTRA_ADDONS_DIR (comma-separated list, Windows form on Windows).
-timeout "${1:-5400}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$PROFILE" \
+$WRAP timeout "${1:-5400}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$PROFILE" \
 	-server "{7A1C2E3F4B5D6E71}Missions/RZTest.conf" -bindPort 2001 -logStats 0 -maxFPS 30 -noBackend > /dev/null 2>&1
 LOG="$(ls -td "$PROFILE"/logs/logs_* | head -1)/console.log"
 
@@ -244,6 +255,7 @@ grep -E 'RZT (questlines:|all questlines tried|quest .* (ENDED|STUCK|fizzled|did
 grep -E 'RZT objective places \(' "$LOG" | tail -1 | sed 's/.*RZT /  /'
 grep -E 'RZT objplace FAIL' "$LOG" | sed 's/.*RZT objplace FAIL /  objective place wrong: /' | head -40
 grep -E 'RZT Power test: ' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT carry(: done| FAIL|: off|: no building)' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (epilogue check: .*FAILED|epilogue done|epilogue: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E '\[ReforgerZ\] Sites audit: [0-9]+ sites,' "$LOG" | sed 's/.*\[ReforgerZ\] /  /'
@@ -251,5 +263,6 @@ echo "Place checks failed (live, docs/PLACES.md): $(grep -c '\[ReforgerZ\] Place
 grep '\[ReforgerZ\] Place check: ' "$LOG" | sed 's/.*\[ReforgerZ\] /  /' | head -20
 grep -q 'Virtual Machine Exception' "$LOG" && exit 1
 grep -q 'RZT objplace FAIL' "$LOG" && { echo "FAILED: an objective points somewhere else than where its step is done"; exit 1; }
+grep -q 'RZT carry FAIL' "$LOG" && { echo "FAILED: carrying for real (the pile, the put-down indoors, the stack)"; exit 1; }
 grep -q 'RZT Power test: .*FAILED' "$LOG" && { echo "FAILED: the power station's looks (the dressing, the generator's sound or the lamps' list)"; exit 1; }
 exit 0

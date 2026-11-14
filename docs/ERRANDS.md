@@ -24,7 +24,7 @@ Server only, except the journal row.
 - [The dealer](#the-dealer)
 - [Keeping them true](#keeping-them-true)
 - [Ways and steps](#ways-and-steps)
-- [Work sites](#work-sites)
+- [Work sites](#work-sites) ([carried for real](#carried-for-real))
 - [Pay: nothing for free](#pay-nothing-for-free)
 - [The faults table](#the-faults-table)
 - [The routines](#the-routines)
@@ -292,7 +292,7 @@ tables below).
 | Clean Rifles | **Strip and clean the rifle** | 15 s | a table with a lamp → the same (it stays) (indoors) |
 | Clean Paper | **Search for clean paper** | 8 s | a crate of odds and ends → rummaged clutter (in the school) |
 | Clean Paper | **Rule the margins** | 9 s | a table with a lamp → the same (it stays) (indoors) |
-| Chairs for the Reading | **Stack the chairs** | 9 s | a table with a lamp → the same (it stays) (in the hall) |
+| Chairs for the Reading | **Pick up a chair** · **Put the chair down** | 2 s each | [carried for real](#carried-for-real): three old chairs inside the hall → a row of them by its door |
 | What the Cure Costs Here | **Put the name on the roster** | 8 s | a board on a post → the notice wall |
 | Into the Record | **Take the notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Take a Name to the Board | **Write the name up** | 8 s | a board on a post → the notice wall |
@@ -318,6 +318,8 @@ tables below).
 | You're the One | **Write the name in the book** | 6 s | a table with a lamp → the same (it stays) (indoors) |
 | The Visitors' Log | **Sign the log** | 5 s | a table with a lamp → the same (it stays) (indoors) |
 | Not Past the Chapel | **Board up the doors** | 15 s | planks and a bucket of nails → the boarded doorway |
+| False Hope at the Line | **Buy a set of papers** | 8 s | the forger himself, at the gate (Props > Duty person) → nothing |
+| False Hope at the Line | **Send him on his way** | 8 s | the forger himself, at the gate → nothing |
 | His Effects | **Gather their things** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | His Effects | **Take their things** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Last Orders | **Take the order book** | 6 s | the effects (a kit bag, a jacket) → nothing (taken) |
@@ -334,6 +336,38 @@ tables below).
 The rest stay as they are: standing a post or the wire, watching, counting from cover, sitting with
 someone, talking, walking someone somewhere, handing something over, and leaving something at a
 door (a moment's work, not a job of work).
+
+**The thing its words name stands there.** A hands task names a thing hands work has no look for,
+so each gives its own (`RZ_ErrandWay.Look`): the duties' **Stir the pot** and **Ladle supper out**
+the cook pot on its fire, **Split the wood** the woodpile and chopping block, **Wash and hang the
+bedding** the washing line, **Sluice the yard** a bucket. The forger's two prompts have the forger
+standing there. A hands task that opens with neither a look nor a person is logged as a fault
+(`Errands: <errand> '<prompt>' has nothing standing at its work site`). Before this, *Carry and stack
+the crates* at Morton's hall was a prompt on bare grass: hands work had no look, and the task gave
+none.
+
+### Carried for real
+
+A task whose words say carry, stack or bring in is carried for real ([DESIGN.md](DESIGN.md#carrying)):
+the things stand in a pile, you pick each up (2 s), walk it where the words say, slowed, and put it
+down there (2 s), stacked; the tracker counts them. Raise your weapon and you put it down where you
+stand.
+
+| Task | The things | From → to |
+|---|---|---|
+| ✅ Wood and water (every faction's): **Carry the crates in** | 3 small wooden crates (the base game's `BoxWooden_01`) | outside, 6–12 m from the place → indoors on the nearest building's ground floor, three high |
+| ✅ Chairs for the Reading | 3 old chairs (`ChairOld_01`) | inside the village hall, ground floor → outside by its door, in a row |
+
+Left as one hold, with why:
+
+| Task | Why it stays a hold |
+|---|---|
+| Sandbags: **Fill and stack the sandbags** | built where it stands: the sacks are filled and laid in place, nothing is carried away |
+| Wood and water: **Fill the water cans**; the openings' **Fill what you can carry** | filled at the water, then carried off in the pack, not a load to set down anywhere |
+| The duties' scene options: Haven's **Carry the sack to the kitchen**, **Carry them back in**, **Carry it in to the storekeeper**, **Carry it from the stream instead**; Halcyon's **Carry water up from the yard tank**; the Red Hand's **Load the handcart**, **Load the mash**; Bastion's **Move the nest to the hedge** | a choice at a scene's beat ([Things that happen](#things-that-happen)): the option is what you decide there, its line says what was done; a carry between two beats' places is not built yet |
+| The Cold Chain's **Take the cold box** / **Carry it back** | already carried by its own rules (no running, no drops, the clock: the scene's carry), one box in the arms |
+| The couriers' errands (*Carry it to ...*, *Carry the list to the house*, *Carry the tins to {house}* ...) | a letter, a list or a parcel in your pack, walked there: an item, not a load |
+| The Last Pilot's **Load ...** (a questline's choice of cargo) | one choice at the helicopter, not a carry |
 
 ## Pay: nothing for free
 
@@ -546,9 +580,9 @@ hands at a [work site](#work-sites) at the place (or behind it), then back to th
 
 | Duty | Rung | Their own work (roles) | Haven | Bastion | Red Hand | Halcyon | Tasks (one a run) and ways | Pay | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| Kitchen | 1 | cook, storekeeper, farmer | Kitchen Duty | Mess Duty | Feeding the Crew | Canteen | Peel and chop (18 s) · Stir the pot (20 s) · Ladle supper out (16 s). Or **put two tins in the pot**, or **a leg of raw meat** (a deer's, [DESIGN.md](DESIGN.md#wildlife)) | 3 Favor; the tins 4 Favor and +1 food at a house, the meat 4 Favor and +2 (a house is fed by duties twice a season day at most) | ✅ |
-| Wood and water | 1 | storekeeper, farmer, mechanic, technician | Wood and Water | Fatigues | Earn Your Keep | The Boiler | Split the wood (18 s) · Fill the water cans (15 s) · Carry and stack the crates (16 s) | 3 Favor | ✅ |
-| Washing down | 1 | nurse, medic, lab assistant, clerk | Washing Down | Hygiene Detail | The Scrub | Decontamination, Minor | Scrub the tables (18 s) · Wash and hang the bedding (16 s) · Sluice the yard (18 s) | 3 Favor | ✅ |
+| Kitchen | 1 | cook, storekeeper, farmer | Kitchen Duty | Mess Duty | Feeding the Crew | Canteen | Peel and chop (18 s) · Stir the pot (20 s) · Ladle supper out (16 s), both at the cook pot. Or **put two tins in the pot**, or **a leg of raw meat** (a deer's, [DESIGN.md](DESIGN.md#wildlife)) | 3 Favor; the tins 4 Favor and +1 food at a house, the meat 4 Favor and +2 (a house is fed by duties twice a season day at most) | ✅ |
+| Wood and water | 1 | storekeeper, farmer, mechanic, technician | Wood and Water | Fatigues | Earn Your Keep | The Boiler | Split the wood (18 s, at the woodpile) · Fill the water cans (15 s) · **Carry the crates in**: three crates from outside, one by one, stacked indoors ([carried for real](#carried-for-real)) | 3 Favor | ✅ |
+| Washing down | 1 | nurse, medic, lab assistant, clerk | Washing Down | Hygiene Detail | The Scrub | Decontamination, Minor | Scrub the tables (18 s) · Wash and hang the bedding (16 s, at the washing line) · Sluice the yard (18 s, a bucket) | 3 Favor | ✅ |
 | The line | 2 | nurse, medic, lookout, sentry, guard, toll man | The Line at the Door | The Wash-Down | The Look-Over | Intake | [A sorting duty](#the-sorting-duties): the people waiting at the gate. Take each by the arm to **the holding room** (a bite, clouded eyes), **the wash** (a fever) or **through the gate** | Up to 6 Favor by how many you got right; 1 Fame if every one | ✅ |
 | The dead | 2 | nurse, medic, clerk, cook, lab assistant | Laying Out | Burial Detail | The Pit's Leavings | The Cold Room | A sorting duty: the dead laid out. Carry each to **the pyre** (bitten), **the holding table** (papers that don't match the tag) or **a grave you dig** | Up to 6 Favor; 1 Fame if every one | ✅ |
 | A patrol | 2; the long round 3 (*Needs Known with ...* on its reply) | lookout, sentry, guard, toll man | The Walk Round | Patrol Leg | The Round | The Sample Walk | **The short leg**: three points 70–140 m out and back, [with their people](#with-their-people). **The long round, armed**: four points 180–300 m out | 5 Favor, 1 Fame; the long round 8 Favor, 1 Fame | ✅ |

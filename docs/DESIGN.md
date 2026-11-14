@@ -1414,6 +1414,7 @@ Contracts** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 | **Health cost** (`RZ_HealthCost`) | Takes a share of a player's health (the bite detector's health accessor against the hit zone's maximum), refuses below a floor, once per life per giver. The bite detector forgets its last reading afterwards, so the drop never counts as a bite | Blood Drive |
 | **Arriving** (`RZ_Arrive`) | The one rule for a step done by getting somewhere, so nobody has to find the exact metre. A spot (a job's points, an errand's or an opening's place, a chain's step, a puzzle's "go here", a meeting, the walk back to an errand's giver) counts within the **Arrive radius** (15 m), or within the step's own radius if that's wider. A place with a size counts inside it or within the **Arrive margin** (25 m) of its edge: a town by its radius, a building known only by its centre within the margin of it. In a vehicle, where the vehicle is counts. Checked on the server on each caller's own tick; the radius is kept to 5–40 m and the margin to 0–50 m, so nothing finishes from across a river. Steps done by an interaction (talk, use, pick up, hand over, read) keep it: getting there may finish at the radius, the interaction doesn't. Steps that stand for working at a thing you can see keep their own short reach: a corpse pile to burn (5 m), a charge to wire (3 m), a body's tags or a nest's tissue (4 m), a lock to cut, a well, a truck to repair, a wreck's box, a grave or a clue prop to stand at, a stranger's car to push (those that are work, with work sites on, are a hold at the thing instead: [Work site](#work-site)). Holding an area (the hold base, a questline's hold) is not arriving and keeps its own radius | every "go to" step: visit points, the step chain, the vehicle zone, errands and the openings' chain, puzzles, personal goals, the steps named in [MISSIONS.md](MISSIONS.md#who-gets-offered-what) |
 | **Work site** (`RZ_WorkSites`) | A step done with your hands at a visible thing: its before look and one hold prompt (5–20 s, vanilla's bar), checked on the server; done, the after look stands there ([below](#work-site)) | errands, the openings and strangers ([ERRANDS.md](ERRANDS.md#work-sites)); Install Sensors, Water Survey, Burn the Bodies (and The Authors' burning), Convoy Escort's engine, Specimen from the Nest, The Armory's well, Blow the Bridge's charges, Bust Out's chain, the Red Hand van's padlock (Tied Down, Cargo); The Well Story's sample |
+| **Carrying** (`RZ_Carries`) | A task whose words say carry, stack or bring in: the things stand in a pile, you pick each up (slowed, in your arms), walk it where the words say and put it down there, stacked ([below](#carrying)) | the duty Wood and water's crates, Chairs for the Reading ([ERRANDS.md](ERRANDS.md#work-sites)) |
 | **Step chain** (`RZ_StepChain`) | Ordered steps across towns. Only the current step is live: its infected and its clue appear within 250 m of it. A step is done when someone has stood there long enough and read its clue. A clue that disappears before it's read is put back (a few times) | Patient Zero, Struck Off (his pack), The Three Weeks, Tied Down; The Book (questline) |
 | **Borrowed kit** (`Factions/RZ_Disguise.c`, `RZ_Ways.PassAs`) | A claim in a faction's kit, judged by the fixed look (`RZ_Checks.LookScore`); a mission sets the difficulty, may give its paper as the cover detail and registers its people as watchers (`AddWatcher`). Caught: the one cost ([REPUTATION.md](REPUTATION.md#borrowed-kit)) plus the stage's own outcome. Approach `TRICK` | Bust Out (the claim at the stockade and the second look); road posts and gates |
 
@@ -1483,10 +1484,19 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
   (`RZ_CampLife.BoxFits`, [SITES.md](SITES.md)): outdoors nothing in it at knee or chest height,
   nothing overhead and its corners within 0.4 m of level, on the ground; indoors a floor under every
   corner and nothing in the way. Its own spot and heading first, then the other three headings, then
-  spots around it (1 and 2 m off outdoors, 0.75 m indoors), and the prompt moves with it. Nowhere:
-  the look is left out and only the prompt stands there (drop, don't squeeze). The after look gets
-  the same check where the work was. Anything in a look a player could use is stripped, as camp
+  spots around it (1, 2 and 3 m off outdoors, 0.75 m indoors), and the prompt moves with it. Nowhere:
+  a small box stands there instead (the base game's cardboard box, tried the same way: a prompt never
+  floats on bare ground; `Work sites: <key> look <look> doesn't fit at <grid>, a box instead`), and
+  only when not even that fits does the prompt stand alone (`... has nothing standing at it ...`).
+  The after look gets the same check where the work was (no fallback: the thing was taken). Anything in a look a player could use is stripped, as camp
   dressing is.
+- **The thing its words name.** Every kind has its look, except **hands** work (labour at something
+  already there: a car to push, a chain to cut). A way whose hands work names a thing of its own
+  gives its look (`RZ_ErrandWay.Look`): the cook pot at *Stir the pot* and *Ladle supper out*, the
+  woodpile and chopping block at *Split the wood*, the washing line at *Wash and hang the bedding*,
+  a bucket at *Sluice the yard*. One with no look and nobody standing at it is logged when it opens
+  (`Errands: <errand> '<prompt>' has nothing standing at its work site (no look, no person)`): a
+  fault for the audit ([ERRANDS.md](ERRANDS.md#work-sites)).
 - **Someone it's for.** Where the words name a person (the newcomer, the bitten man), that person
   stands by the site facing it while a player is near (Props > Duty person, else Puzzles >
   Civilian; a body in the errands' budget), wherever a person's 0.6 m box fits on one of its four
@@ -1522,7 +1532,7 @@ item on the ground; at our invisible box it's a guess (the VERIFY list says what
 | Care | a patient's bed (`RZ_Work_Patient`) | the same |
 | Bench | a table (`RZ_Dress_Table`) | the same |
 | Dig | a stake and a sack (`RZ_Work_DigMark`) | turned earth (`DirtPile_Cluttered_01`) |
-| Hands | what's already there (a car, a hive, a well) | nothing |
+| Hands | what's already there (a car, a hive, a well), or the way's own look (`RZ_ErrandWay.Look`: a cook pot, the woodpile, a washing line, a bucket) | nothing |
 
 Owners open a site by key and read `IsDone(key)` on their own tick: errands and the openings
 (`RZ_ErrandWay.Work`), strangers (`RZ_Strangers.StartWork`), a visit-points job's points
@@ -1532,6 +1542,45 @@ Owners open a site by key and read `IsDone(key)` on their own tick: errands and 
 
 *Simplified:* the props stand on the ground at the place (a search inside a house is a crate there,
 not the house's own rooms); a hold isn't an animation of the work, only vanilla's bar.
+
+#### Carrying
+
+Code: `Missions/Blocks/RZ_Carry.c` (on the work sites, `RZ_WorkSites.Carries()`); settings
+**Shared > Work sites** (*Carry for real*, *Carrying speed*, *Carried box*, *Carried chair*). A
+task whose words say **carry**, **stack** or **bring in** is done by really moving the things, one
+at a time, not by holding a prompt where they are.
+
+- **The pile.** The things stand at the pick-up: a row of them (three crates, three chairs), each a
+  base-game prop. Its prompt is **Pick up a crate** (2 s, the work sites' hold, animation and lock);
+  the crate it stands on goes as you take it.
+- **Where it goes.** Where the words say: carried **in**, the pile is in the open 6–12 m from the
+  place and the stack inside the nearest building's ground floor (the work sites' indoor spot);
+  carried **out**, the pile is inside and the stack in the open by the place. With no building
+  within 60 m, the stack (or the pile) stands by the place's door instead, the tracker says so, and
+  the server logs it.
+- **In your arms.** While you carry one you're slowed to **Carrying speed** (0.45 of full: no
+  running, on your own machine, as the infected's hold slows you, `RZ_PlayerEffectsComponent`), a
+  hint says so, and the thing shows against your chest (**Carried box** or **Carried chair**: a
+  model with no physics, attached to you). One at a time: the pile's prompt waits.
+- **Putting it down.** At the stack: **Put the crate down** (2 s). It stays there, each on the last
+  (three high, then a new stack beside it; chairs in a row), measured off the first one put down.
+  Anywhere else, it's put down where you stand when you **raise your weapon**, get into a vehicle,
+  go down or leave: it lies there with its own **Pick up a crate** prompt.
+- **The tracker.** Two lines, each with its own place: *Pick up a crate outside (1 of 3 carried).*
+  and *Put the crate down indoors, on the ground floor.*, the current one first, then the way back
+  to the giver ([UI.md](UI.md#the-quest-tracker)).
+- **Done** when the last is put down; the stack stands until the errand is over and nobody is near.
+  Near players only, like the work sites. Logged: `Carry: <key>, N <things> from <grid> (<where>)
+  to <grid> (<where>)`, each put-down, and each put down elsewhere.
+- **Off.** With **Carry for real** off (or work sites off), the task is the one hold where the
+  things are, as before.
+
+The tasks carried, and those left as one hold with why: [ERRANDS.md](ERRANDS.md#work-sites).
+
+*Simplified:* the thing in your arms is a model held in front of your chest, not in your hands:
+there's no carrying animation (your arms swing as they do empty), and whether other players see
+it rests on the engine sending a child entity to every machine, as with the Perimeter's drone. A
+dropped thing isn't the vanilla inventory's: it's our own prop with its own prompt.
 
 ### Story blocks
 
