@@ -190,6 +190,13 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	protected static const ResourceName LOOK_WOOD = "{0AA08FC6D5A6FF79}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Firewood.et";	// the woodpile and the chopping block
 	protected static const ResourceName LOOK_LINE = "{136E35552D91BCE4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_DryingLine.et";	// the washing line
 	protected static const ResourceName LOOK_BUCKET = "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et";	// the base game's bucket (footprints.json 0.43 x 0.42 m)
+	// The kitchen's own looks (tools/camp_kit/work_looks.py), where the place has no cook pot of its own
+	protected static const ResourceName LOOK_STOVE = "{0DFBDF240FC11A1A}Prefabs/ReforgerZ/Work/RZ_Work_Stove.et";		// the pot on a canteen stove
+	protected static const ResourceName LOOK_KITCHEN_TABLE = "{87F5BB277D49A412}Prefabs/ReforgerZ/Work/RZ_Work_KitchenTable.et";	// the kitchen table: the pot, bowls, a sack of potatoes
+	protected static const ResourceName LOOK_SERVE_TABLE = "{E7365B2986211B5C}Prefabs/ReforgerZ/Work/RZ_Work_ServeTable.et";	// the pot on a table, bowls set out
+	// Plainer things of the same kind, where the look above doesn't fit (docs/ERRANDS.md, "Work sites")
+	protected static const ResourceName PLAIN_CHOP = "{6105032F794BA64B}Prefabs/Props/Civilian/LogChopping_01.et";	// the chopping block on its own (0.48 x 0.49 m)
+	protected static const ResourceName PLAIN_LINE = "{5444982FED78FECE}Prefabs/Props/Furniture/BasketLaundry_01.et";	// a laundry basket
 	// One crate to carry: the base game's small wooden box (a hand's load, 3 kg)
 	protected static const ResourceName CARRY_CRATE = "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et";
 
@@ -234,11 +241,13 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		m_sRoles = "cook,storekeeper,farmer";
 		m_iNeed = RZ_ENeed.FOOD;
 		m_sThread = "took a turn in the kitchen";
-		Task("Peel and chop for the pot", RZ_EWork.BENCH, "Peel and chop", 18, false, "Peel and chop at the kitchen table at {here}, then tell {giver}.", 3);
-		RZ_ErrandWay pot = Task("Mind the pot", RZ_EWork.HANDS, "Stir the pot", 20, false, "Stir the pot on the stove at {here}, then tell {giver}.", 3);
-		pot.Look(LOOK_POT);
+		// At the camp's own cook pot when it has one; else at a kitchen table (or a stove) with the pot on
+		// it, and where none fits, the pot itself (docs/ERRANDS.md, "Work sites")
+		Task("Peel and chop for the pot", RZ_EWork.BENCH, "Peel and chop", 18, false, "Peel and chop at the kitchen table at {here}, then tell {giver}.", 3).Look(LOOK_KITCHEN_TABLE).AtKitchen();
+		// Minding the pot is played up close (Missions/Errands/RZ_StoveHandsOn.c)
+		RZ_ErrandWay pot = Task("Mind the pot", RZ_EWork.HANDS, "Stir the pot", 20, false, "Stir the pot in the kitchen at {here}, then tell {giver}.", 3).Look(LOOK_STOVE).Fallback(LOOK_KITCHEN_TABLE).AtKitchen();
 		pot.m_bStove = true;
-		Task("Serve the line", RZ_EWork.HANDS, "Ladle supper out", 16, false, "Ladle supper out to the line at {here}, then tell {giver}.", 3).Look(LOOK_POT);
+		Task("Serve the line", RZ_EWork.HANDS, "Ladle supper out", 16, false, "Ladle supper out to the line at {here}, then tell {giver}.", 3).Look(LOOK_SERVE_TABLE).AtKitchen();
 		RZ_ErrandWay give = Way("give");
 		give.m_sLabel = "Put two tins in the pot";
 		give.m_eItem = RZ_EErrandItem.FOOD;
@@ -301,7 +310,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		m_iRung = RZ_Duties.RUNG_CHORES;
 		m_sRoles = "storekeeper,farmer,mechanic,technician";
 		m_sThread = "kept the stove in wood and water";
-		Task("Split the wood", RZ_EWork.HANDS, "Split the wood", 18, true, "Split the wood stacked behind {here}, then tell {giver}.", 3).Look(LOOK_WOOD);
+		Task("Split the wood", RZ_EWork.HANDS, "Split the wood", 18, true, "Split the wood stacked behind {here}, then tell {giver}.", 3).Look(LOOK_WOOD).Fallback(PLAIN_CHOP);
 		Task("Fill the water cans", RZ_EWork.FILL, "Fill the cans", 15, true, "Fill the water cans at the butt behind {here}, then tell {giver}.", 3);
 		// Carried for real: three crates from the road, one by one, stacked indoors (Missions/Blocks/RZ_Carry.c)
 		RZ_ErrandWay crates = Task("Carry the crates in", RZ_EWork.HANDS, "Carry and stack the crates", 16, false, "Carry the three crates in from outside and stack them indoors at {here}, then tell {giver}.", 3);
@@ -358,7 +367,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		m_sRoles = "nurse,medic,lab assistant,clerk";
 		m_sThread = "scrubbed the place down";
 		Task("Scrub the tables down", RZ_EWork.BENCH, "Scrub the tables", 18, false, "Scrub the tables and boil the cloths at {here}, then tell {giver}.", 3);
-		Task("Wash the bedding", RZ_EWork.HANDS, "Wash and hang the bedding", 16, true, "Wash the bedding and hang it on the line behind {here}, then tell {giver}.", 3).Look(LOOK_LINE);
+		Task("Wash the bedding", RZ_EWork.HANDS, "Wash and hang the bedding", 16, true, "Wash the bedding and hang it on the line behind {here}, then tell {giver}.", 3).Look(LOOK_LINE).Fallback(PLAIN_LINE);
 		Task("Sluice the yard", RZ_EWork.HANDS, "Sluice the yard", 18, true, "Sluice the yard and the step at {here} with lime water, then tell {giver}.", 3).Look(LOOK_BUCKET);
 		switch (m_iFaction)
 		{

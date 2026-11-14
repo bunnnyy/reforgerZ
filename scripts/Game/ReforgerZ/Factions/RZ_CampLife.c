@@ -313,6 +313,7 @@ class RZ_CampPiece
 	bool m_bStory;				// a story element (RZ_SiteStory): it goes when the story is worked out again
 	string m_sName;				// its kit name ("WaterBarrel", "Latrine"): the water and the latrine walks
 	bool m_bHandObj;			// a hand-built site's object (World/HandBuilt): spawned as saved, tilted and scaled
+	bool m_bHandSpot;			// a hand-built site's role spot (RZ_HandSpots): where the author said the work is
 	vector m_vAngles;			// its yaw, pitch and roll
 	float m_fScale = 1;
 }
@@ -1711,6 +1712,7 @@ class RZ_CampLife
 				cp.m_iSeats = 1;
 
 			cp.m_sName = RZ_HandSpots.NameOf(sp.m_sType);
+			cp.m_bHandSpot = true;
 			p.m_aPieces.Insert(cp);
 			n++;
 		}
@@ -2759,6 +2761,48 @@ class RZ_CampLife
 
 		gate = RZ_SiteAudit.GatePoint(best);
 		inside = best.m_vHome;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest laid-out piece of this use within range of `at` (a kit's cook pot, a hand-built
+	//! site's cook spot: docs/ERRANDS.md, "Work sites"), and where someone stands to use it: in front
+	//! of it, `standOff` m along its heading. False: no such piece is laid out there (yet).
+	bool UseSpotNear(vector at, float range, RZ_EDressUse use, float standOff, out vector spot, out float yaw, out bool handBuilt)
+	{
+		RZ_CampPiece best;
+		float bestDist = range;
+		foreach (RZ_CampPlace p : m_aPlaces)
+		{
+			if (RZ_Util.DistXZ(at, p.m_vPos) > range + 150)
+				continue;
+
+			foreach (RZ_CampPiece cp : p.m_aPieces)
+			{
+				if (cp.m_eUse != use)
+					continue;
+
+				float d = RZ_Util.DistXZ(at, cp.m_vPos);
+				if (d < bestDist)
+				{
+					bestDist = d;
+					best = cp;
+				}
+			}
+		}
+
+		if (!best)
+			return false;
+
+		// A hand-placed spot is where the work is; a kit's piece is used from in front of it
+		handBuilt = best.m_bHandSpot;
+		float off = standOff;
+		if (handBuilt)
+			off = 0;
+
+		float rad = best.m_fYaw * Math.DEG2RAD;
+		spot = RZ_Util.GroundPos(best.m_vPos + Vector(Math.Sin(rad), 0, Math.Cos(rad)) * off);
+		yaw = best.m_fYaw;
 		return true;
 	}
 

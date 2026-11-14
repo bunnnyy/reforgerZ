@@ -107,6 +107,8 @@ class RZ_ErrandWay
 	bool m_bPersonLies;			// and lies there, on the work's bed, instead of standing by it (a sick son, a bitten friend)
 	float m_fWorkSeconds;		// its hold (0: from m_fSeconds, RZ_WorkSites.HoldFor)
 	ResourceName m_sLook;		// what stands at its work site while it's to do (the cook pot, the woodpile), over the kind's look (Look())
+	ref array<ResourceName> m_aLookChain;	// plainer looks of the same kind where m_sLook doesn't fit (Fallback())
+	bool m_bKitchen;			// kitchen work: at the place's own cook pot or cook spot when it has one (AtKitchen())
 	int m_iCarry;				// carried for real (Carry()): how many things, 0 not a carry
 	ResourceName m_sCarryProp;	// one of them, as it stands (a base-game prop)
 	string m_sCarryThing;		// "crate"
@@ -176,9 +178,32 @@ class RZ_ErrandWay
 	//------------------------------------------------------------------------------------------------
 	//! What stands at its work site while it's to do, when the words name a thing the kind's look
 	//! isn't (a cook pot at "Stir the pot", the woodpile at "Split the wood").
-	void Look(ResourceName prefab)
+	RZ_ErrandWay Look(ResourceName prefab)
 	{
 		m_sLook = prefab;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A plainer look of the same kind, tried where the ones before don't fit (a kitchen table after
+	//! the stove, then just the pot): never a thing of another kind (docs/ERRANDS.md, "Work sites").
+	RZ_ErrandWay Fallback(ResourceName prefab)
+	{
+		if (!m_aLookChain)
+			m_aLookChain = {};
+
+		m_aLookChain.Insert(prefab);
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Kitchen work (stir, peel, serve): done at the place's own kitchen when it has one, a camp's cook
+	//! pot or a hand-built site's cook spot (RZ_CampLife.UseSpotNear); else at its own look, a
+	//! table with the pot on it.
+	RZ_ErrandWay AtKitchen()
+	{
+		m_bKitchen = true;
+		return this;
 	}
 
 	//------------------------------------------------------------------------------------------------
