@@ -18,5 +18,6 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 | 8 | [ALPHA_HUNT.md](ALPHA_HUNT.md) | Hunting a tribe's named leader for one of four factions' reasons; his tag an heirloom | approved 2026-11-14 |
 | 9 | [COMPANION.md](COMPANION.md) | One companion per character, from the world, with approval, a limit and a death | approved 2026-11-14 |
 | 10 | [MAP_FOG.md](MAP_FOG.md) | The map's fog: its later parts (selling a survey, sharing maps, a notebook page on a first visit, the real roads); the fog itself is built ([UI.md](../docs/UI.md#the-maps-fog)) | approved 2026-11-14 |
+| 11 | [LONG_TABLE_REACH.md](LONG_TABLE_REACH.md) | The Long Table far more present: signs, the bell, the voice at supper, the jars, the dead taken, the boy, the injured man, the harvest supper | approved 2026-11-14, being built |
 
 A new approved design goes here with its place in the order.
