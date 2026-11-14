@@ -51,6 +51,7 @@ one. Designs are not docs:
 When you restructure, update the **Doc map** below and the README's doc list in the same commit.
 
 ### Before committing, check
+- [ ] A new or changed task meets `docs/MISSION_RULES.md` (its checklist); a rule's status there is current.
 - [ ] Every doc statement you touched matches the code. Docs say "planned" for anything not built.
 - [ ] No doc mentions a dropped idea except the roadmap's "Dropped" list.
 - [ ] No broken relative links (`grep -o '([^)]*\.md)' -r README.md docs/ designs/`).
@@ -75,6 +76,7 @@ The Doc map covers `docs/` only. Approved but unbuilt designs are in `designs/` 
 | `docs/SITES.md` | Camp sites: the site grid, real footprints (`footprints.json`, the measuring plugin), drop don't squeeze, the surroundings and the threat sectors, the site audit (its checks, score and log lines, `run.sh sites`), `render.py --placed` and the fly-to plugin, the world-building kit (`world_kit.txt`), hand-built sites (the site builder, the saves, role spots and the checklist, pinning, `tools/hand_built.py`) |
 | `docs/ROADMAP.md` | Built, next, play-test priorities, and the Dropped list |
 | `docs/REPUTATION.md` | Factions, Fame/Infamy/Favor, tiers, shops, perks, leaders, AI hostility, morale/needs/truces |
+| `docs/MISSION_RULES.md` | The rules every task follows (place, people, doing it, talk and hand-overs, objectives and the tracker), each with the doc that owns it, how it's kept and its status; the checklist for a new task |
 | `docs/MISSIONS.md` | Every contract, world event, puzzle, leader and arc mission, with requirements and ✅ status |
 | `docs/ERRANDS.md` | Errands: the givers (named people, the wanderers' asks), the dealer, keeping them true, ways and steps, pay, the faults table, every routine and card with ✅, the duties (always there to be asked for), the trust ladder, the sorting duties played at their place and the duties' people, telemetry |
 | `docs/QUESTLINES.md` | The four majors (acts, defaults, endings) and the long questlines (three per faction, two for the Long Table): stages, approaches, endings, crossings |
