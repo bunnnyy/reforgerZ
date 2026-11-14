@@ -182,14 +182,14 @@ class RZ_Wanderer
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Old Marta"
+	//! "Old Marek"
 	string GetShortName()
 	{
 		return m_sEpithet + m_sName;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Old Marta the trader"
+	//! "Old Marek the trader"
 	string GetTitle()
 	{
 		return GetShortName() + " the " + GetRoleName();
@@ -706,7 +706,7 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Old Marta the trader", "" if unknown.
+	//! "Old Marek the trader", "" if unknown.
 	string GetTitle(int id)
 	{
 		RZ_Wanderer w = Find(id);
@@ -780,7 +780,7 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Old Marta" for a living wanderer of a role in roleMask, "" if none. A brief can name them.
+	//! "Old Marek" for a living wanderer of a role in roleMask, "" if none. A brief can name them.
 	string AnyName(int roleMask)
 	{
 		array<int> ids = {};
@@ -1068,7 +1068,7 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Old Marta the trader, 1.2 km NE" for the nearest living wanderer with a role in
+	//! "Old Marek the trader, 1.2 km NE" for the nearest living wanderer with a role in
 	//! roleMask, "" if none. For guidance hints.
 	string DescribeNearest(vector pos, int roleMask)
 	{

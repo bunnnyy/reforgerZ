@@ -225,7 +225,7 @@ class RZ_DialogueWorld
 
 	//------------------------------------------------------------------------------------------------
 	//! {lean}: the speaker's lean at the sitting a conversation names in its key ("every_name.first"),
-	//! as the vote's own line ("Mara Novak leans to the shared pot."), "" when they don't vote.
+	//! as the vote's own line ("Marek Novak leans to the shared pot."), "" when they don't vote.
 	static string LeanLine(RZ_DCtx ctx, string key)
 	{
 		array<string> parts = {};

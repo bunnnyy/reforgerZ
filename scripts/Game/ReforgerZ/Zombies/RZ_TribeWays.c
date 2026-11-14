@@ -90,7 +90,7 @@ class RZ_TribeWays
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A name, not a description ("Marta the runner", not "someone who'd been a hunter").
+	//! A name, not a description ("Marek the runner", not "someone who'd been a hunter").
 	static bool IsAName(string who)
 	{
 		if (who.IsEmpty())
@@ -121,7 +121,7 @@ class RZ_TribeWays
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The alpha's last events for the admin dump: "took Marta the runner; won the bridge off ...".
+	//! The alpha's last events for the admin dump: "took Marek the runner; won the bridge off ...".
 	static string HistoryText(RZ_Tribe t)
 	{
 		string text = "";

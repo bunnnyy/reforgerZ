@@ -22,7 +22,7 @@ enum RZ_ENamedPlace
 class RZ_NamedPerson
 {
 	string m_sKey;			// "named:12:1", "house:3:0", "wanderer:5"
-	string m_sName;			// "Mara Kovac"
+	string m_sName;			// "Marek Kovac"
 	string m_sRole;			// "cook"
 	int m_iFaction = -1;	// RZ_EFaction, -1 for a wanderer
 	RZ_ENamedPlace m_eKind;

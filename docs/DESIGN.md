@@ -2510,7 +2510,7 @@ ending). Reputation's voice says them back ([REPUTATION.md](REPUTATION.md#what-p
 a person, a house or a leader. **Heavy** (3): a questline's or major's ending (its words), a one-choice
 job about a person's life or freedom (*"decided whether he lives near Morton"*). **Medium** (2): the
 other one-choice jobs (*"decided which house gets the food near Levie"*). **Light** (1): an errand
-done (*"did Mara Kovac a favour"*). The same key again keeps the heavier weight. Full: the lightest,
+done (*"did Marek Kovac a favour"*). The same key again keeps the heavier weight. Full: the lightest,
 oldest goes; light deeds hold at most four slots, and a new deed never pushes out a heavier one, so a
 day of small kindnesses can't wash the record clean. A leader brings one up plainly, one time in
 three after the openers that come first, at most once a visit (a real day per seat): *"You're the one
@@ -3349,7 +3349,7 @@ the camp pieces ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); a key with none has 
 |---|---|---|
 | Someone from before | about three in four | who they were to you, by your background (below); the hiding place: "Look at you. Alive. I'd stopped knocking on that door."; your group gone: the one who came back; the fever: who wrote on the door |
 | A stranger | about one in four | a stranger who heard the door; someone who saw them go; the stranger who wrote on the door |
-| An earlier life's | 35%, when a wanderer remembers an earlier life of yours and hasn't met this one ([life-stamped memory](REPUTATION.md#face-and-name)) | that wanderer, by name and role ("Old Marta, a trader who thinks they know you"): "You look like someone I knew." Their greeting reads what they remember: a kindness, a wrong, or only the face |
+| An earlier life's | 35%, when a wanderer remembers an earlier life of yours and hasn't met this one ([life-stamped memory](REPUTATION.md#face-and-name)) | that wanderer, by name and role ("Old Marek, a trader who thinks they know you"): "You look like someone I knew." Their greeting reads what they remember: a kindness, a wrong, or only the face |
 
 An earlier life's wanderer is held off the road while they stand here (`RZ_Wanderers.Hold`) and goes
 back on it from where they stood once they leave; killed, they're gone from the roads. With nobody

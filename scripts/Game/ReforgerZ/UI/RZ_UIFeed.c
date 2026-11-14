@@ -1063,7 +1063,7 @@ class RZ_UIFeed
 
 		m_Tracker.Objectives(playerId, id, from, list);
 		// O|id|state|line|place: an open objective's place in words when it differs from the one
-		// before it ("Go back to Mara" after a step elsewhere: "Morton")
+		// before it ("Go back to Marek" after a step elsewhere: "Morton")
 		string lastPlace = "";
 		foreach (int oi, string objLine : list.m_aLines)
 		{

@@ -58,7 +58,7 @@ class RZ_Headlines
 
 	// ================================================================ Hooks
 	//------------------------------------------------------------------------------------------------
-	//! A named wanderer died (RZ_Wanderers.Die): "Old Marta the trader was killed near Morton."
+	//! A named wanderer died (RZ_Wanderers.Die): "Old Marek the trader was killed near Morton."
 	void OnWandererLost(string text)
 	{
 		m_sWandererLost = text;

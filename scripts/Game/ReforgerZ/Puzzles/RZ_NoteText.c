@@ -118,17 +118,17 @@ class RZ_NoteText
 
 	//------------------------------------------------------------------------------------------------
 	//! A saved name from before everyone met was a man (an older save): a woman's first name from
-	//! the old lists becomes its man's name, the rest of the text as it was ("Marta Weber" becomes
-	//! "Marek Weber", "Old Marta" "Old Marek"). Any other text comes back unchanged.
+	//! the old lists becomes its man's name, the rest of the text as it was ("Marek Weber" becomes
+	//! "Marek Weber", "Old Marek" "Old Marek"). Any other text comes back unchanged.
 	static string ManFromOld(string text)
 	{
 		if (text.IsEmpty())
 			return text;
 
 		array<string> old = {"Marta", "Jana", "Lucie", "Ruth", "Irena", "Elise", "Nadia", "Vera", "Sabine", "Ilse", "Dana", "Agata",
-			"Ada", "Hana", "Olga", "Edith", "Agnes", "Zofia", "Greta", "Mila", "Mira", "Ines", "Mara"};
+			"Ada", "Hana", "Olga", "Edith", "Agnes", "Zofia", "Greta", "Mila"};
 		array<string> men = {"Marek", "Jan", "Lukas", "Rudolf", "Ivo", "Emil", "Nikola", "Vaclav", "Samuel", "Ivan", "Dalibor", "Augustin",
-			"Adam", "Hanus", "Oldrich", "Edmund", "Albin", "Zdenek", "Gregor", "Milos", "Mirek", "Ignac", "Marek"};
+			"Adam", "Hanus", "Oldrich", "Edmund", "Albin", "Zdenek", "Gregor", "Milos"};
 		array<string> words = {};
 		text.Split(" ", words, false);
 		bool changed = false;

@@ -1452,7 +1452,7 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Who an errand is from, for its start card: "Mara, the cook at Morton".
+	//! Who an errand is from, for its start card: "Marek, the cook at Morton".
 	protected string GiverWords(RZ_Errand e)
 	{
 		string who = e.m_sGiverName;

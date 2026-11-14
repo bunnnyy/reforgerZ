@@ -473,7 +473,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 
 	//------------------------------------------------------------------------------------------------
 	//! The known next objective's line (O|state|line|place): its place after it when that's somewhere
-	//! else than the current one's ("Go back to Mara · Morton").
+	//! else than the current one's ("Go back to Marek · Morton").
 	protected static string NextLine(array<string> f)
 	{
 		string line = RZ_UIText.Str(f, 2);

@@ -987,7 +987,7 @@ class RZ_QuestTracker
 		s += lnNow.AddInt(RZ_EObjState.CURRENT).Add(now).Add(place).End();
 		if (!next.IsEmpty())
 		{
-			// The next one's place in words when it's somewhere else ("Go back to Mara" · Morton)
+			// The next one's place in words when it's somewhere else ("Go back to Marek" · Morton)
 			string nextPlace = OtherPlace(list.PlaceOf(RZ_EObjState.NEXT), place);
 			RZ_UILine lnNext = new RZ_UILine("O");
 			s += lnNext.AddInt(RZ_EObjState.NEXT).Add(next).Add(nextPlace).End();

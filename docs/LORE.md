@@ -348,7 +348,7 @@ never says is who paid:
 |---|---|---|
 | **"He was bitten"** | What the Red Hand says about Rudi, and about anyone else it needed gone. Everyone inside knows Rudi wasn't; outside, it's only a rumour. The only debt ever marked paid that nobody paid is the boss's. | Every painted hand and red armband; the book (The Book); purges where nobody says what for (Coup Talk; Cargo's Purged); rumours that Rudi wasn't bitten (planned) |
 | **Owing** | Nobody is ever out of the book, and that's on purpose: a man who owes nothing can walk away. Crew bosses lend at rates nobody can pay, and debts are sold between crews and handed down. | Debt Collection; The Book (the thief who wanted one house in the Zone to owe nobody); The Price of the Door (a debt is a debt, but it can be yours) |
-| **Family** | Half the crews have a mother or a kid sister in a safehouse. Some crew bosses quietly send medicine there. The boss knows which house. | The Soft Touch (a crew boss's secret medicine to a safehouse); The Book (the thief's sister's house is on the page) |
+| **Family** | Half the crews have a father or a kid brother in a safehouse. Some crew bosses quietly send medicine there. The boss knows which house. | The Soft Touch (a crew boss's secret medicine to a safehouse); The Book (the thief's sister's house is on the page) |
 | **The cut dose** | Antidote stretched with whatever was in the bag. They know it works half the time. They sell it to outsiders, and to their own once a man is worth less than a real dose. | The cut dose on the black market; The Edge of Town (the cut dose for every house) |
 | **"The well story"** | What happens to a place that doesn't pay is never said. Somebody tells the story about the well instead, and lets you finish it yourself. | Protection Racket; The Well Story questline; the poisoned-well rumours, Fever Town's among them |
 | **Strays** | Crews keep track of the people the Haven turned out, and where they sleep. Nobody comes looking for a stray, so a stray is stock. A hungry safehouse will sometimes sell one. | A hungry house selling an exile's location; A Quiet Arrangement; the crews' list of strays in The List |
@@ -389,7 +389,7 @@ wrote *"notify the Institute"* in the margin and underlined it twice.
 On Day 1, whatever got out, got out. The team loaded two vans with the freezers, the
 centrifuge and every notebook they could find, and drove down into town. On Day 2 the
 Institute's last call reached them: nobody leaves until the Zone is proven clean, and proof
-opens the gates. Then the line went dead. On Day 3 the team lead, Dr Greta Wolff, went back up
+opens the gates. Then the line went dead. On Day 3 the team lead, Dr Gregor Wolff, went back up
 to the site for the rest of the samples. His driver came back alone and wouldn't say what he'd
 seen. On Day 4 a Bastion platoon arrived with Command's order, two days old, to secure the
 lab. The researchers wouldn't open the doors, and the soldiers wouldn't leave, and they stood

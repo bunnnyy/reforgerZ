@@ -2120,7 +2120,7 @@ class RZ_LongTable
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Old Marta" out of "Old Marta the trader" (the name as grace reads it).
+	//! "Old Marek" out of "Old Marek the trader" (the name as grace reads it).
 	string ShortLost()
 	{
 		string name = m_sLostName;
