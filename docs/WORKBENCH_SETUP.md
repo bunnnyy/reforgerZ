@@ -2010,7 +2010,7 @@ tissue (`case.tissue` 1), with Proof's part checked when Proof runs; a second ca
 nothing; a Red Hand speaker lists the sale, and selling sets Get It Back going. The test server
 can't put a text-written prefab in a pack (no registered resource id), so the tester holds the case
 through the case's test stand-in (`RZ_ColdCaseComponent.s_TestCarried`) and says so (`RZT case OK|FAIL
-<what>`, `RZT case: N checks, N failed`; the run fails on FAIL). Then **the line** (`RZT_Line.c`): a
+<what>`, `RZT case: N checks, N failed`; the run fails on FAIL). Then **the papers in the lid** (`RZT_Papers.c`): the three papers gained once a character, named in the case's read, a word on each at the hand-over, each offered as a job at Halcyon's people, the orders handed to Bastion by reply (a participant of Await Relief, or waiting for it), the page's job given to the Haven instead (the page in the open, once), the list handed to the Haven (`RZT papers OK|FAIL <what>`, `RZT papers: N checks, N failed`; the run fails on FAIL). Then **the line** (`RZT_Line.c`): a
 road above the line near some town (150–250 m outside the warning zone, 600 m to 2 km off; the
 test world has no road network, so open ground stands in, as in play on such a map), where he'd fall
 in the warning zone and not the kill zone; the scene played with the tester held at the viewpoint:
@@ -2944,6 +2944,10 @@ live case is in: live tissue for Halcyon's route, banked`, `Openings: <stage> fo
 `Openings: <player> died with the case; it's kept for the next spawn`, `Openings: the kept case given back
 to <player>`, and a warning `Openings: the cold case prefab has no RZ_ColdCaseComponent` when the slot is
 wrong.
+The papers in its lid ([DESIGN.md](DESIGN.md#the-papers-in-the-lid)): `Papers: <player> has the three papers from
+the case's lid`, `Papers: <player> took the job of carrying <paper> to <owner> at <place>`, `Papers: <player>
+handed <paper> to <owner>`, `Papers: <player> gave <paper> to <faction> instead` (with the majors' `Majors: a
+page in the open: ...`), and `Papers: <player> joins <major> now it's begun (they handed in <paper> earlier)`.
 
 Task places ([PLACES.md](PLACES.md#the-live-check)): nothing while every place is true to its words;
 `Place check: <need> at <grid> ("<text>") fails: <why>` (a warning) when a placed task's place, or a
@@ -3786,6 +3790,16 @@ when it happens)
   Again at Bastion: *The Case at the Post*. Die carrying it: it isn't on the body, and the respawned
   character has it in the pack ("You still have the runner's case."). Keep it a game day: Halcyon's
   channel asks after it once. Log lines as in [DESIGN.md](DESIGN.md#the-case).
+- [ ] **The papers in the lid** ([DESIGN.md](DESIGN.md#the-papers-in-the-lid)), with a pad and on a
+  TV. **Read the tag** on a case on the ground: three papers folded in the lid are named. Hand the
+  case to Halcyon: the director has a word about each paper. Still at Halcyon's people, three more
+  replies: **[Errand] I'll take the Day 3 orders to Bastion** (and the page, the list). Take one: it's
+  tracked to the owner's stronghold. Stand there 30 s: nothing. At their people **[Errand] Hand over
+  the Day 3 orders**: they take it, say the major's act by name (or that it hasn't begun), and the
+  major shows under THE SEASON'S STORY in the Quests tab once it runs. Another paper, with its job
+  held: at a third faction's people **[Trade] Give them the page from the book instead**: their line,
+  and the log's `Majors: a page in the open`. Die carrying papers: they're still yours. Say whether
+  six replies at once (the case's and the papers') crowd the talk screen.
 - [ ] **The line** ([DESIGN.md](DESIGN.md#the-line)), with a pad, as a brand-new character (level 0
   or 1), on Everon. After the favour the contact says he's going to try the line: *The Line* is
   tracked, the marker on him, and he leads you to a road above the line (600 m to 2 km off). There:

@@ -3829,7 +3829,7 @@ Warm, it still counts; the station says so.
 | Bastion's | **[Errand] Hand the runner's case in** | "Then it's evidence." +5 Bastion Fame (small). Halcyon's field lead hands you **The Case at the Post** |
 
 Kept: the lead stays, and while anyone keeps a case, Halcyon asks after it on its channel once a
-season day.
+season day. The papers folded in its lid lead to the other three majors ([below](#the-papers-in-the-lid)).
 
 **The stages it opens**, each a handed errand, tracked at once, ten real hours each:
 
@@ -3850,11 +3850,52 @@ cold|warm)`, `the season's first live case is in: live tissue for Halcyon's rout
 `<player>'s second case this season counts for nothing`, `<stage> for <player> at <place>`,
 `<player> read the clinic's first file (The Date on the Tag)`, `<player> took the case back (...)`,
 `<player> died with the case; it's kept for the next spawn`, `the kept case given back to <player>`,
-and the finale's `live tissue, the runner's case`.
+the papers' ([below](#the-papers-in-the-lid)) and the finale's `live tissue, the runner's case`.
 
 *Simplified:* in the line's short form the runner is already dead when you come; the case's tag is read in the reader, and in the pack only its fixed description shows;
 Get It Back and The Case at the Post take it from a spot inside the holding, not from a real lock-up
 or shelf.
+
+### The papers in the lid
+
+Code: `Guidance/RZ_CasePapers.c`. How the case starts the other three majors, concretely, from the
+opening.
+
+The runner was a courier trying to get proof out past the line, and the case wasn't all he carried.
+Folded into its lid are **three papers that aren't Halcyon's**, each the page a stronghold would
+rather burn ([QUESTLINES.md](QUESTLINES.md#the-majors)):
+
+| Paper | What it looks like | Its owner | Its major |
+|---|---|---|---|
+| **The Day 3 orders** | an order sheet with Command's stamp, dated Day 3 | Bastion | [Await Relief](QUESTLINES.md#await-relief) |
+| **The page from the book** | a page torn from a ledger: names, amounts, a red thumbprint | the Red Hand | [The Book Has to Balance](QUESTLINES.md#the-book-has-to-balance) |
+| **The list of names** | a list of names in pencil, some crossed out | the Haven | [Every Name](QUESTLINES.md#every-name) |
+
+- **Taken with the case**, once a character (`RZ_OpeningCase.CharacterStamp`): reading the case on
+  the ground names them. They're quest items kept as data on the profile (`m_aPapers`), so a death
+  never loses them.
+- **At the case's hand-over** (to Halcyon, sold to the Red Hand or Ferda, handed in to Bastion) the
+  papers stay with you, and whoever took the case has a pointed word about each (Halcyon: *"And that's
+  not ours. That's Bastion's: Command's stamp, Day 3. I'd keep it away from the adjutant, or take it
+  straight to him."*).
+- **Then each paper is a reply at any faction's people**, one per paper (the case's own reply stays first):
+
+| Where | The reply | What happens |
+|---|---|---|
+| Its owner's people | **[Errand] Hand over <the paper>** | They take it (+3 Fame with them, small). You're a participant of their major this character (`RZ_QuestRun.Did`), and they say where it stands: its act by name, and its place when it has one. A major that isn't running yet: *"When the houses sit, you'll be at the table."*, and you join it when it starts |
+| Anyone else's | **[Errand] I'll take <the paper> to <its owner>** | A job you took, tracked at once: **The Day 3 Orders**, **A Page of the Book** or **The List**, to the owner's stronghold (else their nearest holding). Only the hand-over reply ends it ([MISSION_RULES.md](MISSION_RULES.md), rule 19); a real day before it lapses |
+| Anyone else's, with that job held | **[Trade] Give them <the paper> instead** | Their line (the Haven reads it at supper, Bastion files it as evidence, the Red Hand writes it in the book, Halcyon keeps it with the things nobody's supposed to know); +3 Fame with them, +3 Infamy with its owner. **The page is in the open**: `majors.pages_open` goes up by one ([QUESTLINES.md](QUESTLINES.md#the-majors)), once a season for each of the three papers however many characters give one away (`papers.<major>.open`), so the same page never counts twice |
+
+Kept, a paper just stays with you; nothing nags.
+
+**Log lines:** `Papers: <player> has the three papers from the case's lid`, `Papers: <player> took the
+job of carrying <paper> to <owner> at <place>`, `Papers: <player> handed <paper> to <owner>`,
+`Papers: <player> gave <paper> to <faction> instead`, `Papers: <player> joins <major> now it's begun
+(they handed in <paper> earlier)`, and the majors' own `Majors: a page in the open: <paper> from the
+runner's case, given to <faction>`.
+
+*Simplified:* the papers are data, not items you can drop or hand to another player; a paper given
+to its owner before its major runs joins you to it when it starts, without a word then.
 
 ### The fixer
 

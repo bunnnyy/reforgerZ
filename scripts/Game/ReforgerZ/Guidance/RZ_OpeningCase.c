@@ -23,6 +23,7 @@
 class RZ_CaseStepDef : RZ_ErrandDef
 {
 	int m_iKind;		// RZ_OpeningCase.KIND_*
+	int m_iPaper = -1;	// KIND_PAPER: which paper (RZ_CasePapers)
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_CaseStepDef(string key, string title, int kind)
@@ -66,6 +67,7 @@ class RZ_OpeningCase
 	static const int KIND_DATE = 2;		// The Date on the Tag: the clinic's first file
 	static const int KIND_BACK = 3;		// Get It Back: from the Red Hand's lock-up
 	static const int KIND_POST = 4;		// The Case at the Post: from Bastion's stores
+	static const int KIND_PAPER = 5;	// a paper from the lid to its owner: done only by the hand-over reply (RZ_CasePapers)
 
 	static const int STATE_NONE = 0;
 	static const int STATE_CARRIED = 1;	// the lead is on: take it to the station
@@ -93,6 +95,7 @@ class RZ_OpeningCase
 	protected ref RZ_CaseStepDef m_Date;
 	protected ref RZ_CaseStepDef m_Back;
 	protected ref RZ_CaseStepDef m_Post;
+	protected ref RZ_CasePapers m_Papers;
 	protected ref array<IEntity> m_aCases = {};			// weak: cases out in the world (to warm)
 	protected ref map<int, int> m_mLead = new map<int, int>();	// player -> the lead's errand id
 	protected ref map<int, float> m_mTried = new map<int, float>();	// player -> when the lead was last handed
@@ -103,6 +106,7 @@ class RZ_OpeningCase
 	void RZ_OpeningCase(RZ_GameModeComponent gm)
 	{
 		m_GM = gm;
+		m_Papers = new RZ_CasePapers(gm);
 
 		m_Lead = new RZ_CaseStepDef(KEY_LEAD, "The Case", KIND_LEAD);
 		m_Lead.m_fLapseMinutes = 600;
@@ -160,6 +164,13 @@ class RZ_OpeningCase
 		w.Take("Bastion signed our case into its stores at {place}. Evidence, they call it. It's warming on a shelf.",
 			"Our case is on a shelf at {place}, with a Bastion label over ours. Bring it here.");
 		w.Done("You have it. Now take it where it was going.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The papers in the lid (RZ_CasePapers).
+	RZ_CasePapers GetPapers()
+	{
+		return m_Papers;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -322,6 +333,7 @@ class RZ_OpeningCase
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		profile.m_iCaseState = STATE_CARRIED;
 		profile.m_iCaseLife = CharacterStamp(profile);
+		m_Papers.Gain(playerId);
 		HandLead(playerId, me, giverName, giverTitle, giverAt);
 	}
 
@@ -404,7 +416,7 @@ class RZ_OpeningCase
 	//! case: docs/MISSION_RULES.md, rule 19); the others' clocks run as any work site's.
 	bool StepCounts(RZ_CaseStepDef d, RZ_Errand e, IEntity me)
 	{
-		return d.m_iKind != KIND_LEAD;
+		return d.m_iKind != KIND_LEAD && d.m_iKind != KIND_PAPER;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -452,12 +464,12 @@ class RZ_OpeningCase
 	//------------------------------------------------------------------------------------------------
 	static bool IsOurs(int replyId)
 	{
-		return replyId == REPLY_HALCYON || replyId == REPLY_SELL || replyId == REPLY_BASTION;
+		return replyId == REPLY_HALCYON || replyId == REPLY_SELL || replyId == REPLY_BASTION || RZ_CasePapers.IsOurs(replyId);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The speaker's faction for the hand-over: what the talk screen knows, else what they describe.
-	protected int SpeakerFaction(RZ_TalkSession s)
+	int SpeakerFaction(RZ_TalkSession s)
 	{
 		if (s.m_iFaction >= 0)
 			return s.m_iFaction;
@@ -477,14 +489,17 @@ class RZ_OpeningCase
 	//! the list; nothing is handed until it's picked.
 	void AddReplies(RZ_TalkSession s, IEntity user, notnull array<ref RZ_TalkReply> replies)
 	{
-		if (!user || !Carries(user))
-			return;
-
 		// Ferda Kroupa's talk has its own hand-over (RZ_OpeningFixer)
-		if (RZ_TalkFixer.Cast(s.m_Adapter))
+		if (!user || RZ_TalkFixer.Cast(s.m_Adapter))
 			return;
 
 		int f = SpeakerFaction(s);
+
+		// The papers from the lid, carried with or without the case (the case's reply goes first)
+		m_Papers.AddReplies(s, f, replies);
+		if (!Carries(user))
+			return;
+
 		RZ_TalkReply r;
 		if (f == RZ_EFaction.INSTITUTE)
 		{
@@ -530,6 +545,12 @@ class RZ_OpeningCase
 	//! what it opens next.
 	void Pick(RZ_TalkSession s, int replyId, IEntity user)
 	{
+		if (RZ_CasePapers.IsOurs(replyId))
+		{
+			m_Papers.Pick(s, SpeakerFaction(s), replyId, user);
+			return;
+		}
+
 		int playerId = s.m_iPlayer;
 		IEntity item = RZ_ColdCaseComponent.CarriedBy(user);
 		RZ_ColdCaseComponent c = RZ_ColdCaseComponent.Of(item);
@@ -568,6 +589,14 @@ class RZ_OpeningCase
 			OpenStage(playerId, user, m_Post, RZ_EFaction.MILITARY);
 		}
 
+		// The papers stay with you: whoever took the case has a word about each
+		int taker = RZ_EFaction.MILITARY;
+		if (replyId == REPLY_HALCYON)
+			taker = RZ_EFaction.INSTITUTE;
+		else if (replyId == REPLY_SELL)
+			taker = RZ_EFaction.BANDITS;
+
+		m_Papers.Remark(playerId, taker, s.m_aNew);
 		EndLead(playerId, user, replyId == REPLY_HALCYON);
 		RZ_Log.Info(string.Format("Openings: %1 handed the case over (%2, %3)", RZ_Util.PlayerName(playerId), ReplyName(replyId), WarmText(warm)));
 	}
@@ -607,6 +636,7 @@ class RZ_OpeningCase
 		}
 
 		said.Insert(line);
+		m_Papers.Remark(playerId, RZ_EFaction.BANDITS, said);
 		Sold(playerId, user, at);
 		EndLead(playerId, user, false);
 		RZ_Log.Info(string.Format("Openings: %1 handed the case over (sold to Ferda Kroupa, %2)", RZ_Util.PlayerName(playerId), WarmText(warm)));
@@ -911,6 +941,7 @@ class RZ_OpeningCase
 	{
 		m_fClock += dt;
 		Warm(dt, ids, players);
+		m_Papers.Tick(dt, ids);
 		bool kept = false;
 		foreach (int i, IEntity me : players)
 		{
@@ -934,6 +965,7 @@ class RZ_OpeningCase
 			RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 			profile.m_iCaseState = STATE_CARRIED;
 			profile.m_iCaseLife = CharacterStamp(profile);
+			m_Papers.Gain(playerId);
 			HandLead(playerId, me, "The tag on the case", "The tag on the case", me.GetOrigin());
 		}
 
