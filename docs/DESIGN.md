@@ -831,7 +831,7 @@ people says how you got back (a Haven man, a Bastion medic, a Red Hand crewman, 
 **The kit.** What you wear stays (clothes, vest, helmet, pack). Of what the loadout carried, one
 bandage, one water bottle and the background's own tool (the Mechanic's wrench, the Radio
 Operator's radio, the Nurse's and Doctor's dressing) stay; every weapon, magazine, round and
-anything else goes. No other cost: no debuff, no Favor owed, no longer timer than vanilla's.
+anything else goes; the new character's compass, paper map and wind-up radio aren't given again. No other cost: no debuff, no Favor owed, no longer timer than vanilla's.
 
 **Reset character.** On the notebook's Standing page, **Y** (T or Space): the first press asks
 (*"This person is gone. Their name stays on the wall."*), a second within 10 seconds resets. One a
@@ -3975,7 +3975,7 @@ never disappears.
 
 A player who comes back after 30+ real days gets two levels more guidance for two characters.
 The [opening](#openings-how-every-life-starts) sets its chain by level; the wanderer who comes
-looking is for a brand-new life with nobody outside.
+looking is for a brand-new character with nobody outside.
 
 ### Contextual tips
 
@@ -4021,10 +4021,10 @@ chain (its last step is the walk to where they belong).
 
 ### The wind-up radio and faction voices
 
-- Every new life gets a **compass** (vanilla's Adrianov, **UI > Compass prefab**) and a **paper map**
+- Every new character gets a **compass** (vanilla's Adrianov, **UI > Compass prefab**) and a **paper map**
   (vanilla's folded map, **UI > Map prefab**) a few seconds after spawn, unless its loadout already
   has one; one that doesn't fit lies at your feet.
-- Every new life gets a **wind-up radio** (unless they carry one). It picks up the **open
+- Every new character gets a **wind-up radio** (unless they carry one). It picks up the **open
   channels**: the Haven ("If you can hear this, *town* is open. Bring water if you can. Bring
   yourself either way."), Bastion's net and the Red Hand's taunts. About every 12 minutes for a
   brand-new player, up to 42 for a veteran.
