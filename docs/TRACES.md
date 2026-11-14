@@ -119,6 +119,7 @@ marks are written live, saved, and written only by the server from data.
 | **Smears** | The infected | The slow ones lay against it | Age |
 | **The thumbprint** | The Red Hand | Someone the Haven put out sleeps here | Day |
 | **Residents' words** | Residents | Whatever they needed to say | The line |
+| **A plate and a fork** | Residents (the Long Table) | Someone lone here was asked to supper, and the door's been shut since: scratched small by the bell push. An Elder, a Police Officer or a Hunter reads that much; the rest see a neat scratch | Day ([DESIGN.md](DESIGN.md#its-reach)) |
 
 **SEAL is true.** The X's hazard reads *"SEAL"* exactly on buildings the lock system locked, so a Police
 Officer reading the code knows the door before trying it. It never says what's inside.
@@ -461,7 +462,9 @@ reader's level, when one is there.
 No marks within 2 km of the Long Table's farm, but residents' words from Days 1–3. Bastion's sweep never
 came within 1.5 km. No graves or candles for deaths within 2 km of it, and no scenes, vignettes or live
 traces (decision 5: absence only). A player who walks every village notices one stretch of country with
-no writing on any door. Nothing says why.
+no writing on any door. Nothing says why. The house's own reach stays outside that ring or off the
+doors: its plate and fork are scratched 2-5 km off, and the drag marks where the dead were taken are
+its tells on the road, not marks ([DESIGN.md](DESIGN.md#its-reach)).
 
 ## Caps
 

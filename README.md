@@ -151,9 +151,10 @@ and one way to end it: **research the cure.**
   after the cure and two stories don't use the same safehouse at once. Contracts pick their towns
   by who holds them, the origin story, the last orders and the Red Hand's pit are the same all
   season, and a contract waits while the questline that tells its story runs.
-- **The Long Table**: some seasons, a small family in a farmhouse past the emptiest village. They
+- **The Long Table**: every season, a small family in a farmhouse past the emptiest village. They
   set a place for whoever comes, the host on the road is the friendliest man in the Zone, and
-  people who take that road don't always arrive. Eat with them, trade, find out, tell someone or
+  people who take that road don't always arrive. Their bell rings at dusk, their signs say SUPPER.
+  ALL WELCOME., their jars turn up in the loot, and the dead near the farm are gone by morning. Eat with them, trade, find out, tell someone or
   end it yourself ([LORE.md](docs/LORE.md#the-long-table)).
 - **People who talk back** ([DIALOGUE.md](docs/DIALOGUE.md)): with **Dialogue > Trees** on (off
   by default until it's play-tested), the people you talk to have topics in their own voices, with

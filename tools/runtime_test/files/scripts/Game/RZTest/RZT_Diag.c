@@ -666,6 +666,11 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 12)
 			RZT_OpeningChain.Tick(this);
 
+		// The Long Table and its reach (RZT_LongTable.c, stepped from the house's own tick): nothing
+		// else moves the tester until it's done
+		if (m_iRZTSec >= 12 && !RZT_Table.s_bDone)
+			return;
+
 		if (m_iRZTSec > 5 && m_iRZTSec % 3 == 0 && !m_bRZTMissionsDone)
 		{
 			if (!GetMissions().RZT_Step())

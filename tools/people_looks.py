@@ -215,6 +215,9 @@ PARENTS = {
     # the survivor group's two civilians
     "civ_turtleneck": ("{1FFE2B88BEF51840}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_Turtleneck_2.et",
                        "520EC961A090B1EE", {"Pants": ["{60DCBCECAC6C6E65}"]}),
+    # the Long Table's family: the puzzle civilian (its clue and choice components come with it)
+    "puzzle_civ": ("{D5006C19E40CE491}Prefabs/ReforgerZ/Puzzles/RZ_Civilian.et", "520EC961A090B1EE",
+                   {"Pants": ["{60DCBCECAC6C6E65}"]}),
     "civ_cottonshirt": ("{408B8BD5E3F09FF3}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_3.et",
                         "520EC961A090B1EE", {"Pants": ["{60DCBCECAC6C6E65}"]}),
     # the stronghold leaders
@@ -305,6 +308,11 @@ CHARS = [
     # The survivors' two civilians (the survivor group): the Haven's people, unarmed
     ("Haven", "RZ_Civ_Haven_Knit", "civ_turtleneck", {"Hat": "knit_blue", "Jacket": "turtle_beige", "Pants": "trousers_darkbrown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_wool"}, {}),
     ("Haven", "RZ_Civ_Haven_Denim", "civ_cottonshirt", {"Hat": "flatcap_lightgrey", "Jacket": "denim_brown", "Pants": "trousers_lightbrown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    # The Long Table's family (World > Long Table > Reach > Family looks): Sunday clothes, all men
+    ("LongTable", "RZ_Table_SundayBrown", "puzzle_civ", {"Hat": "flatcap_darkgrey", "Jacket": "suit_brown", "Pants": "suitpants_brown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("LongTable", "RZ_Table_SundayGrey", "puzzle_civ", {"Hat": "", "Jacket": "suit_grey", "Pants": "suitpants_grey", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("LongTable", "RZ_Table_SundayBlack", "puzzle_civ", {"Hat": "", "Jacket": "suit_black", "Pants": "suitpants_black", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("LongTable", "RZ_Table_Collar", "puzzle_civ", {"Hat": "flatcap_lightgrey", "Jacket": "turtle_beige", "Pants": "trousers_darkbrown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
     # The Haven's watch (guards, safehouse guards): green oilskins and fisherman's trousers, the hat varies
     ("Haven", "RZ_Armed_Haven_Hunter", "fia_ac", {"Hat": "knit_black", "Jacket": "raincoat_green", "Pants": "fisher_green", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
     ("Haven", "RZ_Armed_Haven_Watch", "fia_ac", {"Hat": "trucker_everon", "Jacket": "raincoat_green", "Pants": "fisher_green", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_leather"}, {}),

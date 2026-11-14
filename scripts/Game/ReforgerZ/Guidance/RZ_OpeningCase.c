@@ -459,13 +459,20 @@ class RZ_OpeningCase
 	//! The speaker's faction for the hand-over: what the talk screen knows, else what they describe.
 	protected int SpeakerFaction(RZ_TalkSession s)
 	{
+		return FactionOf(m_GM, s);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The speaker's faction (shared with the Long Table's jar test, World/RZ_LongTableReach.c).
+	static int FactionOf(RZ_GameModeComponent gm, RZ_TalkSession s)
+	{
 		if (s.m_iFaction >= 0)
 			return s.m_iFaction;
 
 		RZ_DCtx ctx = new RZ_DCtx();
-		ctx.m_GM = m_GM;
+		ctx.m_GM = gm;
 		ctx.m_iPlayer = s.m_iPlayer;
-		if (s.m_Adapter && s.m_Adapter.Describe(m_GM, s, ctx))
+		if (s.m_Adapter && s.m_Adapter.Describe(gm, s, ctx))
 			return ctx.m_iFaction;
 
 		return -1;

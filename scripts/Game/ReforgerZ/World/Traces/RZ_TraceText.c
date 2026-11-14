@@ -374,6 +374,7 @@ class RZ_TraceText
 			case RZ_EDoorSymbol.SMEARS: return "Low grey smears along the sill.";
 			case RZ_EDoorSymbol.THUMB: return "A small red print, low on the frame.";
 			case RZ_EDoorSymbol.WORDS: return Words(m);
+			case RZ_EDoorSymbol.PLATE: return "A plate and a fork, scratched small by the bell push. Neatly. Someone took their time.";
 		}
 
 		return "";
@@ -567,6 +568,13 @@ class RZ_TraceText
 			}
 			case RZ_EDoorSymbol.SMEARS: return "The slow ones lay against it for a long time. " + ScratchAge(ageDays);
 			case RZ_EDoorSymbol.WORDS: return WordsFit(m, d);
+			case RZ_EDoorSymbol.PLATE:
+			{
+				if (r.Is("elder") || r.Is("police") || r.Is("hunter"))
+					return "Not a child's scratch. Whoever lived here alone was asked to supper, and the door's been shut since.";
+
+				return "";
+			}
 		}
 
 		return "";
@@ -740,6 +748,7 @@ class RZ_TraceText
 				case RZ_EDoorSymbol.ARROW: chalk++; break;
 				case RZ_EDoorSymbol.DROP: chalk++; break;
 				case RZ_EDoorSymbol.THUMB: break;	// too small to see from the street
+				case RZ_EDoorSymbol.PLATE: break;	// the same
 				default: stencils++; break;
 			}
 		}

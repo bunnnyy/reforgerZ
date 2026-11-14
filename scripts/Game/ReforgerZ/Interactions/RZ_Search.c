@@ -1084,6 +1084,9 @@ class RZ_Search
 			if (!pick.IsEmpty())
 				picks.Insert(pick);
 		}
+
+		// Near the Long Table's farm: sometimes one of their jars (World/RZ_LongTableReach.c)
+		RZ_LongTableReach.AddLoot(pos, picks);
 	}
 
 	//------------------------------------------------------------------------------------------------

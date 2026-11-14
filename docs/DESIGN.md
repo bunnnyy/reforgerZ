@@ -1340,13 +1340,13 @@ Capped, background and cheap. Needs, morale, truces and feuds are in
 ### The Long Table
 
 Code: `World/RZ_LongTable.c`; settings: **World > Long Table**. One small cannibal family in one
-farmhouse, some seasons. Who they are is in [LORE.md](LORE.md#the-long-table); how players deal
+farmhouse, every season ([its reach](#its-reach)). Who they are is in [LORE.md](LORE.md#the-long-table); how players deal
 with them (no reputation tree, the dealings, the guest rule, shooting them, what each faction does
 when they're found out) is in [REPUTATION.md](REPUTATION.md#the-long-table); their two
 questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table) and [MISSIONS.md](MISSIONS.md#questlines).
 
 - **Not a faction.** No territory, strength, morale, truck, leader seat or stronghold, and never a
-  stronghold. One house a season at most: **Chance** (0.75) is rolled once, at the season's first
+  stronghold. One house a season at most: **Chance** (1: every season) is rolled once, at the season's first
   start (a wipe rolls again). Off, there's no house, nothing is taken and its questlines never start.
 - **Where.** The small settlement (size 1) with the fewest towns within 1.6 km, infection under 40,
   at least 2 km from every holding, leader seat, quartermaster, safehouse and the lab, off the
@@ -1417,9 +1417,45 @@ questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table) and [MISSIONS.md
   (`MouthsFarm`, `LivesAt`): it was the farm the mouths were sent to.
 - **Next season** is wiped like everything else, and rolls again.
 
+#### Its reach
+
+Code: `World/RZ_LongTableReach.c`; settings: **World > Long Table > Reach** (on). How far the house
+is felt, while it stays four to seven people: everything below is a line, data, or a prop or a
+body near players only, and nothing in it takes anyone (the takings above are unchanged). There's
+a house **every season** now (**Chance** 1), unless the map has nowhere for one. The **hungrier**
+they are (0 fed, 1 starving) the more of everything, as each row says.
+
+| What | When and where | What you get |
+|---|---|---|
+| **Supper signs** | At road junctions 150 m to 2 km from the farm (where a road's end meets another road), nearest first, at most six; 2 shown, up to 6 when starving. A board while a player is within 160 m; found again when the house moves | **Read the board**: "SUPPER. ALL WELCOME." and the way to the farm |
+| **The dinner bell** | 18:30 every evening (19:15 when hunger is 70 or more); heard within 2.5 km (+1 km when starving, 4 km at the harvest) | A line ("A handbell, far off..."); the kit's bell sound at the farm (**World > Traces > Kit > Bell**) when someone's in reach |
+| **A voice at supper** | 18:45 every evening, on the open channel, to everyone with a radio | Grace, and the name of the last one who never arrived; at the harvest, the invitation |
+| **The farm laid out** | While the family's bodies are up and a player is within 300 m | The long table 6-13 m out from the farm's door, along it, where its measured box fits; eight chairs, a bowl at each, jars down the middle, a name card at the end chair (**Read the name card**: the last one who never arrived); a shoe cabinet by the door (**Look at the boots**: too many sizes, a little suspicion once a life); a cupboard and jars on the farm's ground floor; two lanterns on the table from 19:00 to 05:30 (the kit's lit lantern first); chimney smoke 16:00-22:00 |
+| **Their own looks** | Every body of theirs | Sunday clothes (four looks on Puzzles > Civilian, written by `tools/people_looks.py`: brown, grey and black suits, a collar and cap); **Family looks** overrides them |
+| **The host at the market** | Each 10 minutes of play, a 4-16% chance (by hunger) he goes for an hour to the nearest Haven safehouse or Red Hand holding within 5 km. A body there while a player is within 150 m | **Buy a jar of preserves** (one piece of ammunition or medicine, as at the farm) or **Ask where they're from** ("We keep pigs. Kept.") |
+| **The boy at the well** | In a town 0.8-2.5 km from the farm (3.5 km when starving), a lone player on foot, a 15% chance each half minute, once a session each | He asks if you're hungry; **Say you'll come to supper** (the table knows you're coming: "You came. I said you would.") or **Send him home** |
+| **The injured man at dusk** | 19:00-21:30, a lone player on foot within 40 m of a road, 0.4-2 km from the farm and out of town, a 20-40% chance each half minute, once a session each. The son (else another of them) lies 30 m ahead | **Help him up and walk him home** (he's better at once, and asks you to supper) or **Leave him** (he isn't limping; a little suspicion) |
+| **The jars** | Loot within 3 km of the farm: a house has their jar 6-14% of the time (by hunger); the host's market and the farm's own trade sell it | **A jar of preserves** (Reach > Jar: Metabolism's food, a day on the lid). Halcyon's people test it (**[Errand] Have a jar of preserves tested**, on the talk screen to whoever carries one): "Not pork." +15 suspicion, the rumour heard, and The House That Went Quiet may start |
+| **The dead go missing** | Someone who died to the infected within 2.5 km of the farm (4 km when starving), at most six a night | At 05:30, a tell where they lay: drag marks toward the farm |
+| **Their door mark** | Each 10 minutes of play when hunger is 50 or more, once a real day: a house door in the nearest town 2-5 km off (never within 2 km: the farm leaves no marks near it, [TRACES.md](TRACES.md#the-long-table-absence)) | A plate and a fork, scratched small ([TRACES.md](TRACES.md#the-symbols)) |
+| **Wanderers talk** | Before anyone suspects, 30% of a wanderer's road news | "The farm out past ... feeds anyone. Supper at half six, a bell for it." |
+| **The harvest supper** | Once a season, on broadcast day **Harvest day** (30), from 17:00 to 23:00 | A headline, smoke seen from 4 km, the bell rung long and the voice asking everyone. At the table that night, a Doctor, Nurse, Hunter or Lab Technician knows the bone: +15 suspicion, the rumour heard, and the questline may start |
+
+Log lines: `Long Table: the bell rang (heard by N, reach N m)`, `grace on the open channel (N heard
+it)`, `N junctions for supper signs within 2000 m of the farm`, `the farm laid out for supper (N
+things)` (or `no room for the long table...`), `the host goes to market at ...`, `the boy asks a
+traveller to supper`, `a man lies hurt on the road at dusk`, `N of the dead taken in the night`, `a
+plate and a fork on a door in ...`, `Halcyon tested a jar`, `the harvest supper begins` / `is over`.
+
 *Simplified:* the takings and the family are data; a taken wanderer just isn't on the roads any
-more, and routes are straight lines. The family's people stand where they're spawned. The jar is
-any food item in the loot pool.
+more, and routes are straight lines. The family's people stand where they're spawned, and the boy,
+the host and the injured man vanish when they go home. The jar looks like an MRE (Metabolism's
+mesh). The supper sign is the base game's chalkboard (its words are its prompt). The dead taken at
+dawn are the deaths the house hears of (the infected's, a wanderer's), not any body on the map.
+Nobody new is taken because of the reach, so the wanderers' good word doesn't take more of them
+than the takings above. Not built: their jars in the Haven kitchens' stock, and laying the farm out
+by hand with the site builder (it's laid out by code, near players only). The injured man needs a
+road (a map without a road network never shows him).
 
 ## Haven safehouses
 

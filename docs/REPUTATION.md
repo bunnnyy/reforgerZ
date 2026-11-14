@@ -766,7 +766,7 @@ They're headlines, never alerts.
 
 ## The Long Table
 
-A tiny cannibal family in one farmhouse ([LORE.md](LORE.md#the-long-table)), some seasons. Where
+A tiny cannibal family in one farmhouse ([LORE.md](LORE.md#the-long-table)), every season. Where
 the house is and what it does in the world is in [DESIGN.md](DESIGN.md#the-long-table); its
 questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table). ✅ all (`World/RZ_LongTable.c`).
 
@@ -780,7 +780,8 @@ them, or took proof to someone). The crossed get nothing at the farm but a shut 
 | Dealing | What happens |
 |---|---|
 | **Eat with them** ("Sit down and eat", on any of the grown-ups) | A bowl at the long table, grace (the name read is the last one who never arrived) and true road news (a truck on the road or about to leave, a hungry safehouse, where the infected are stirred up). Once a visit; the first meal of a life shows the boots by the door. Family also take a jar away: one food item from the loot pool, once a real day. Safe, except under the guest rule |
-| **Trade** ("Trade for a jar") | One piece of ammunition or medicine (Long Table > Trade keywords) for a jar: a food item from the loot pool, a day written on the lid. Once a visit |
+| **Trade** ("Trade for a jar") | One piece of ammunition or medicine (Long Table > Trade keywords) for a jar: their jar of preserves (Reach > Jar; else a food item from the loot pool), a day written on the lid. Once a visit. The host sells the same at a market some days ([DESIGN.md](DESIGN.md#its-reach)) |
+| **Have a jar tested** (at Halcyon's people, whoever carries one) | The jar goes; "Not pork." +15 suspicion, and the questline may start ([DESIGN.md](DESIGN.md#its-reach)) |
 | **Declare your bite** | Infected: a blessing, and they'll never set on you while you're infected. Not: "Good. Then sit." |
 | **Expose them** | Proof to a faction's leader ([C1](QUESTLINES.md#c1-the-house-that-went-quiet), stage 4): +10 Fame with that faction (the Red Hand +4; +5 more for [C2](QUESTLINES.md#c2-a-place-at-the-table)'s undercover guest) |
 | **Break them up** | One of C1's endings, C2's fight at the table, or any fight they lose |

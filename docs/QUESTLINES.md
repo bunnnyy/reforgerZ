@@ -960,7 +960,8 @@ Zone. Nobody gives this job. Somebody just has to notice.
 
 **Needs:** Any. ★ Hunter, ★ Police, ★ Nurse, ★ Elder.
 **Starts:** when the house's suspicion reaches 30 and a player hears a *"never arrived"*
-rumour; or from H1 (at stage 2), R2 (at stage 4) or C2 (at stage 4).
+rumour, has one of their jars tested at Halcyon, or knows the bone at the harvest supper
+([DESIGN.md](DESIGN.md#its-reach)); or from H1 (at stage 2), R2 (at stage 4) or C2 (at stage 4).
 
 | # | Stage | Approaches | Uses |
 |---|---|---|---|

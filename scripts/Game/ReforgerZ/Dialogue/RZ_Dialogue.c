@@ -797,6 +797,11 @@ class RZ_Dialogue
 				return;
 			}
 		}
+		else if (RZ_LongTableReach.IsOurs(replyId) && RZ_LongTableReach.Get())
+		{
+			// One of the Long Table's jars tested at Halcyon (World/RZ_LongTableReach.c)
+			RZ_LongTableReach.Get().Pick(s, replyId, user);
+		}
 		else if (RZ_OpeningCase.IsOurs(replyId) && RZ_OpeningCase.Get())
 		{
 			// The runner's case handed over (Guidance/RZ_OpeningCase.c), whoever they are
@@ -905,6 +910,10 @@ class RZ_Dialogue
 			// Whoever carries the runner's case: its hand-over, at any Halcyon, Red Hand or Bastion person
 			if (RZ_OpeningCase.Get())
 				RZ_OpeningCase.Get().AddReplies(s, user, all);
+
+			// Whoever carries one of the Long Table's jars: Halcyon's people will test it
+			if (RZ_LongTableReach.Get())
+				RZ_LongTableReach.Get().AddReplies(s, user, all, RZ_OpeningCase.FactionOf(m_GM, s));
 
 			if (s.m_Tree)
 				m_Trees.HubReplies(s, all);
