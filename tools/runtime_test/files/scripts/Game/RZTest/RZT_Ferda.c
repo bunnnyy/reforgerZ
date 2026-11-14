@@ -81,11 +81,20 @@ class RZT_Ferda
 		if (cc)
 			cc.SetTag(c.Tag(), RZT_Fake.ID);
 
-		if (RZ_Util.InsertIntoInventory(me, item) || !item)
+		if (!item)
+		{
+			Print("RZT ferda: the case prefab didn't spawn");
+			return;
+		}
+
+		bool inPack = RZ_Util.InsertIntoInventory(me, item);
+		if (inPack && RZ_OpeningCase.Carries(me))
 			return;
 
+		// Not in the pack (an unregistered text prefab on this server), or not seen there: the stand-in
 		RZ_ColdCaseComponent.s_TestHolder = me;
 		RZ_ColdCaseComponent.s_TestCarried = item;
+		Print(string.Format("RZT ferda: the case held through the test stand-in (in the pack: %1, carried now: %2)", inPack, RZ_OpeningCase.Carries(me)));
 	}
 
 	//------------------------------------------------------------------------------------------------
