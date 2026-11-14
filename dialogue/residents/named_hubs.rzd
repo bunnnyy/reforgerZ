@@ -42,7 +42,7 @@ node start
   > @no I'll let you get on. -> hub
 
 node worried
-  say The quiet one by the window. She hasn't eaten in two days. Says she isn't hungry. Nobody in the Zone is not hungry. She's giving her bowl away, and I can't prove it.
+  say The quiet one by the window. He hasn't eaten in two days. Says he isn't hungry. Nobody in the Zone is not hungry. He's giving his bowl away, and I can't prove it.
   > @help Is there anything I can do? -> ask
   > @back1 Let me ask you something else. -> hub
 

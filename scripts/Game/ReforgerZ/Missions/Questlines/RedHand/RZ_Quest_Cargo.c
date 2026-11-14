@@ -300,7 +300,7 @@ class RZ_Quest_Cargo : RZ_Questline
 	static string BuyerLine(RZ_QuestRun run)
 	{
 		if (IsFarm(run))
-			return run.Fill("{crew_short} sells the loads to a farm past the last village, at grid {farm_grid}. A woman there pays in jars.");
+			return run.Fill("{crew_short} sells the loads to a farm past the last village, at grid {farm_grid}. A man there pays in jars.");
 
 		return run.Fill("{crew_short} sells the loads to the crew's own pit: strays who owe nothing go in with the debtors, and the crew boss keeps the bets.");
 	}
@@ -427,7 +427,7 @@ class RZ_Quest_Cargo : RZ_Questline
 		PickDrop(gm, run);
 		string text = "He's carried strays the Haven turned out, debtors from the book, a deserter or two. Most went to the pit, or to the line to learn the drones.";
 		if (IsFarm(run))
-			text += " Lately {crew_short} sends a load somewhere else: a farm past the last village, where a woman pays in jars. The driver has stopped eating meat.";
+			text += " Lately {crew_short} sends a load somewhere else: a farm past the last village, where a man pays in jars. The driver has stopped eating meat.";
 		else
 			text += " Lately {crew_short} sends the ones who owe nothing to the crew's own pit as well, and keeps the bets.";
 
@@ -1116,7 +1116,7 @@ class RZ_QM_CargoLoad : RZ_QuestMission
 		m_iCutter = m_Load.m_iCutter;
 		m_Escort.Follow(m_iCutter);
 		m_Escort.Go();
-		RZ_ContractHelp.NotifyNear(gm, m_vVan, 80, m_sTitle, string.Format("The padlock gives. A man, a woman and a girl climb down, blinking, holding on to each other. Walk them to %1. They'll keep up.", m_sRefuge));
+		RZ_ContractHelp.NotifyNear(gm, m_vVan, 80, m_sTitle, string.Format("The padlock gives. Two men and a boy climb down, blinking, holding on to each other. Walk them to %1. They'll keep up.", m_sRefuge));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1150,7 +1150,7 @@ class RZ_QM_CargoLoad : RZ_QuestMission
 		RZ_Questline.ChangePopulation(gm, RZ_RedHandQuest.HouseAt(gm, m_vRefuge), PEOPLE);
 		RZ_RedHandQuest.SetWorld(gm, "cargo.freed", 1);
 		RZ_QuestApproach.SideWith(gm, playerId, -1, RZ_EFaction.BANDITS, 0, FREE_INFAMY);
-		NotifyParticipants(gm, m_sTitle, string.Format("The Haven's people come out with blankets. The girl won't let go of the man's coat. (+%1 Red Hand Infamy for whoever brought them)", FREE_INFAMY));
+		NotifyParticipants(gm, m_sTitle, string.Format("The Haven's people come out with blankets. The boy won't let go of his father's coat. (+%1 Red Hand Infamy for whoever brought them)", FREE_INFAMY));
 		RZ_QuestRun run = Run(gm);
 		bool haven = RZ_Quest_Cargo.IsHaven(run);
 		if (!haven && run)
@@ -1400,7 +1400,7 @@ class RZ_QM_CargoBuys : RZ_RedHandQuestMission
 			if (!TryBribe(gm, playerId, RZ_EFaction.BANDITS, DRIVER_FAVOR))
 				return;
 
-			string named = QFill(gm, "\"{crew_short}. It's always {crew_short}. They go to a farm past the last village, and the woman there pays in jars.\" {driver_short} wipes his mouth like he's tasted something.");
+			string named = QFill(gm, "\"{crew_short}. It's always {crew_short}. They go to a farm past the last village, and the man there pays in jars.\" {driver_short} wipes his mouth like he's tasted something.");
 			if (!farm)
 				named = QFill(gm, "{crew_short}. The ones who owe nothing go in the crew's own pit, and the bets go in {crew_short}'s tin.");
 
@@ -1586,9 +1586,9 @@ class RZ_QM_CargoTell : RZ_RedHandQuestMission
 		{
 			RZ_RedHandQuest.SetWorld(gm, "cargo.told_haven", 1);
 			RZ_QuestApproach.SideWith(gm, playerId, RZ_EFaction.SURVIVORS, RZ_EFaction.BANDITS, HAVEN_FAME, HAVEN_INFAMY);
-			string told = "She stops writing and listens to all of it. Then she writes one more line, at the top.";
+			string told = "He stops writing and listens to all of it. Then he writes one more line, at the top.";
 			if (farm)
-				told = "She stops writing when you say the farm's grid. \"That was one of ours. On Day 3 we sent it our mouths.\" She puts the pen down.";
+				told = "He stops writing when you say the farm's grid. \"That was one of ours. On Day 3 we sent it our mouths.\" He puts the pen down.";
 
 			gm.NotifyPlayer(playerId, m_sTitle, told + string.Format(" (+%1 Red Hand Infamy)", HAVEN_INFAMY));
 			Resolve(gm, playerId, RZ_EQuestApproach.SIDE, RZ_Quest_Cargo.OUT_HAVEN, "told the Haven", haven);

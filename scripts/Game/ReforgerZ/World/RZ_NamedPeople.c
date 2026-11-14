@@ -336,8 +336,16 @@ class RZ_NamedPeople
 
 		foreach (RZ_NamedHouseSave h : saved)
 		{
-			if (h && h.names && h.roles && h.names.Count() == h.roles.Count())
-				m_mHouses.Set(h.house, h);
+			if (!h || !h.names || !h.roles || h.names.Count() != h.roles.Count())
+				continue;
+
+			// An older save's women's names (everyone met is a man now)
+			for (int i = 0; i < h.names.Count(); i++)
+			{
+				h.names[i] = RZ_NoteText.ManFromOld(h.names[i]);
+			}
+
+			m_mHouses.Set(h.house, h);
 		}
 	}
 }

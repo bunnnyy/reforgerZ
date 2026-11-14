@@ -365,7 +365,7 @@ class RZ_Mission_BlindSpot : RZ_Mission_Delivery
 //! Bastion holding on the map); or the runner's drawings of the drones' turns. A woodcutter (or a
 //! fisherman, at the waterline) inland of the package (the talk scene): [Known - Haven] or two tins and
 //! he tells you when the drone turns (twice as long before it locks on). At the house the runner asks:
-//! the house (default); medicine: let her take it home (nobody pays, an Independent asset); passes: to
+//! the house (default); medicine: let him take it home (nobody pays, an Independent asset); passes: to
 //! Bastion's post (8 Bastion Favor, the Haven pays nothing); the turns: sell them to the crew (10 Red
 //! Hand Favor, +4 Haven Infamy) or burn them (80%).
 class RZ_Mission_TheCrossing : RZ_Mission_Delivery
@@ -491,7 +491,7 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 		if (!m_bUnderDrones)
 			under = "just short of where the drones fly";
 
-		m_sBrief = string.Format("One of our runners was carrying medicine along the line tonight, the only road the Red Hand doesn't toll. A drone found her. She dropped the package at the %1 at grid %2, %3, and ran. She made it. The medicine didn't. Take it and get out of the warning zone quickly: if you carry it too long under a drone, it locks on. Please bring it to %4. And be careful.",
+		m_sBrief = string.Format("One of our runners was carrying medicine along the line tonight, the only road the Red Hand doesn't toll. A drone found him. He dropped the package at the %1 at grid %2, %3, and ran. He made it. The medicine didn't. Take it and get out of the warning zone quickly: if you carry it too long under a drone, it locks on. Please bring it to %4. And be careful.",
 			m_sSpotKind, RZ_SettlementScanner.GridReference(spot), under, destination);
 		m_sObjective = string.Format("Take the medicine from the %1 at grid %2 to %3.", m_sSpotKind, RZ_SettlementScanner.GridReference(spot), destination);
 		Truth(gm, spot, dropAt);
@@ -510,7 +510,7 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 		m_Job.m_vReadAt = spot;
 		m_Job.m_fReadRange = 15;
 		m_Job.Read("passes", "soldier", "Through the torn wrapping: Bastion line passes, stamped, unsigned. Forged, and well.");
-		m_Job.Read("turns", "radioop", "Pencil drawings in the wrapping: the drones' turns, timed to the second. She was mapping the line.");
+		m_Job.Read("turns", "radioop", "Pencil drawings in the wrapping: the drones' turns, timed to the second. He was mapping the line.");
 		m_Job.Read("medicine", "nurse,doctor", "Real antidote, by the vials' colour, packed by someone who'd done it before.");
 
 		// The woodcutter stands inland of the package, clear of the drones
@@ -535,7 +535,7 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 		string labels = "Give it to the house";
 		if (truth == "medicine")
 		{
-			labels += "|Let her take it home";
+			labels += "|Let him take it home";
 			m_Choice.Asset(OPT_SECOND, RZ_CureFinale.INDEP);
 		}
 		else if (truth == "passes")
@@ -575,7 +575,7 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 		{
 			m_bHasGiver = false;
 			RZ_StoryKit.Record(this, "package", subject, "runner", who);
-			RZ_StoryKit.LaterWith(gm, this, "The runner", "The runner, out of her sling, nods to you across a road. \"Mum's walking again. Don't tell the house.\"", GetDropPos(0), true);
+			RZ_StoryKit.LaterWith(gm, this, "The runner", "The runner, out of his sling, nods to you across a road. \"Dad's walking again. Don't tell the house.\"", GetDropPos(0), true);
 			return;
 		}
 

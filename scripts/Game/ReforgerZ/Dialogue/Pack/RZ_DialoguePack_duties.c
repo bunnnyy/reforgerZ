@@ -287,7 +287,7 @@ class RZ_DialoguePack_duties
 		db.Choice("who", "Who's it for?", "more", "", "", "", "", "", "call:slot:2", "", "");
 		db.Choice("terms", "Let's settle it.", "terms", "", "", "", "", "", "", "", "");
 		db.Node("more");
-		db.Say("", "She holds the little knife the way you hold a thing you've held for a long time, without looking at it.");
+		db.Say("", "He holds the little knife the way you hold a thing you've held for a long time, without looking at it.");
 		db.Choice("ask", "Tell me one more thing.", "start", "", "", "", "", "", "", "", "");
 		db.Choice("settle", "Let's settle it.", "terms", "", "", "", "", "", "", "", "");
 		db.Node("terms");
@@ -339,7 +339,7 @@ class RZ_DialoguePack_duties
 		db.Choice("who", "Is he here?", "more", "", "", "", "", "", "call:slot:2", "", "");
 		db.Choice("terms", "Let's talk about the list.", "terms", "", "", "", "", "", "", "", "");
 		db.Node("more");
-		db.Say("", "She doesn't touch the pearls. She looks at the door, where a boy is pretending not to wait.");
+		db.Say("", "He doesn't touch the pearls. He looks at the door, where a boy is pretending not to wait.");
 		db.Choice("ask", "I need to ask you something.", "start", "", "", "", "", "", "", "", "");
 		db.Choice("settle", "Let's talk about the list.", "terms", "", "", "", "", "", "", "", "");
 		db.Node("terms");
@@ -349,19 +349,19 @@ class RZ_DialoguePack_duties
 		db.Choice("third", "Keep them. Come and see the clerk.", "end", "", "", "", "", "", "call:slot:5", "", "");
 		db.Conv("duty.swap.proxy", "duty:swap:proxy", "", "Let me read the list.", 0, 0, "haven");
 		db.Node("start");
-		db.Say("", "Lamp oil, salt, and a needle, a proper one, for wool. Gran says the eggs are worth more than that. Gran says to say so.");
+		db.Say("", "Lamp oil, salt, and a needle, a proper one, for wool. Grandad says the eggs are worth more than that. Grandad says to say so.");
 		db.Say("", "I'm only fetching. It's not my list.");
-		db.Choice("where", "Why didn't your gran come?", "more", "", "", "", "", "", "call:slot:1", "", "");
+		db.Choice("where", "Why didn't your grandad come?", "more", "", "", "", "", "", "call:slot:1", "", "");
 		db.Choice("who", "Is any of it for you?", "more", "", "", "", "", "", "call:slot:2", "", "");
 		db.Choice("terms", "Let's see what we've got.", "terms", "", "", "", "", "", "", "", "");
 		db.Node("more");
-		db.Say("", "Her eyes go to the jar of boiled sweets at the end of the table, and away, and back.");
+		db.Say("", "His eyes go to the jar of boiled sweets at the end of the table, and away, and back.");
 		db.Choice("ask", "Wait, I've a question.", "start", "", "", "", "", "", "", "", "");
 		db.Choice("settle", "Let's see what we've got.", "terms", "", "", "", "", "", "", "", "");
 		db.Node("terms");
 		db.Say("", "Can I have them? The things on the list?");
 		db.Choice("take", "The list, for the eggs.", "end", "", "", "", "", "", "call:slot:3", "", "");
-		db.Choice("no", "Your gran has to come herself.", "end", "", "", "", "", "", "call:slot:4", "", "");
+		db.Choice("no", "Your grandad has to come himself.", "end", "", "", "", "", "", "call:slot:4", "", "");
 		db.Choice("third", "The list for four eggs. Keep two.", "end", "", "", "", "", "", "call:slot:5", "", "");
 		db.Conv("duty.swap.ring", "duty:swap:ring", "", "About the ring.", 0, 0, "haven");
 		db.Node("start");
@@ -371,7 +371,7 @@ class RZ_DialoguePack_duties
 		db.Choice("who", "Who are the tins for?", "more", "", "", "", "", "", "call:slot:2", "", "");
 		db.Choice("terms", "Let's settle it.", "terms", "", "", "", "", "", "", "", "");
 		db.Node("more");
-		db.Say("", "She turns the empty finger with her thumb, round and round, where the ring used to sit.");
+		db.Say("", "He turns the empty finger with his thumb, round and round, where the ring used to sit.");
 		db.Choice("ask", "I've another question.", "start", "", "", "", "", "", "", "", "");
 		db.Choice("settle", "Let's settle it.", "terms", "", "", "", "", "", "", "", "");
 		db.Node("terms");
@@ -386,7 +386,7 @@ class RZ_DialoguePack_duties
 		db.Choice("who", "Who's the flour for?", "more", "", "", "", "", "", "call:slot:2", "", "");
 		db.Choice("terms", "Let's settle it.", "terms", "", "", "", "", "", "", "", "");
 		db.Node("more");
-		db.Say("", "She keeps the sack tied at the bottom with her hand on the knot.");
+		db.Say("", "He keeps the sack tied at the bottom with his hand on the knot.");
 		db.Choice("ask", "Hold on.", "start", "", "", "", "", "", "", "", "");
 		db.Choice("settle", "Let's settle it.", "terms", "", "", "", "", "", "", "", "");
 		db.Node("terms");
@@ -402,14 +402,14 @@ class RZ_DialoguePack_duties
 		db.Choice("who", "Who's the tin for?", "more", "", "", "", "", "", "call:slot:2", "", "");
 		db.Choice("terms", "Let's settle it.", "terms", "", "", "", "", "", "", "", "");
 		db.Node("more");
-		db.Say("", "Across the room the old woman has her hand flat on her brooch, as if it might go next.");
+		db.Say("", "Across the room the old man has his hand over his signet ring, as if it might go next.");
 		db.Choice("ask", "Hang on.", "start", "", "", "", "", "", "", "", "");
 		db.Choice("settle", "Let's settle it.", "terms", "", "", "", "", "", "", "", "");
 		db.Node("terms");
 		db.Say("", "One tin. Quick, before I change my mind.");
 		db.Choice("take", "A tin for the spoon.", "end", "", "", "", "", "", "call:slot:3", "", "");
 		db.Choice("no", "Put it away.", "end", "", "", "", "", "", "call:slot:4", "", "");
-		db.Choice("third", "Let's ask the lady whose spoon it is.", "end", "", "", "", "", "", "call:slot:5", "", "");
+		db.Choice("third", "Let's ask the man whose spoon it is.", "end", "", "", "", "", "", "call:slot:5", "", "");
 		db.Conv("duty.swap.tools", "duty:swap:tools", "", "Those are good chisels.", 0, 0, "haven");
 		db.Node("start");
 		db.Say("", "The best in the valley. My father's, then mine. I'm not selling them. I'm leaving them with you while my hands mend.");
@@ -506,7 +506,7 @@ class RZ_DialoguePack_duties
 		db.Choice("back3", "Right.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("duty.toll.widow", "duty:toll:widow", "", "Who are you in black for?", 4, 1, "haven");
 		db.Node("start");
-		db.Say("", "My husband. He was on this road with the cart, the first week. I've come to see the place. That's all. I won't stay long. I just want to see the place.");
+		db.Say("", "My wife. She was on this road with the cart, the first week. I've come to see the place. That's all. I won't stay long. I just want to see the place.");
 		db.Choice("back9", "Right.", "hub", "", "", "", "", "", "", "", "");
 	}
 }

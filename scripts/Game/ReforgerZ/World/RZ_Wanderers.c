@@ -347,7 +347,7 @@ class RZ_Wanderer
 		RZ_Wanderer w = new RZ_Wanderer();
 		w.m_iId = s.id;
 		w.m_iGeneration = s.generation;
-		w.m_sName = s.name;
+		w.m_sName = RZ_NoteText.ManFromOld(s.name);	// an older save's women's names
 		w.m_sEpithet = s.epithet;
 		w.m_eRole = s.role;
 		w.m_bAlive = s.alive;

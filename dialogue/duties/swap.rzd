@@ -122,7 +122,7 @@ node terms
   say One tin. Quick, before I change my mind.
   > @take A tin for the spoon. -> end   do call:slot:3
   > @no Put it away. -> end   do call:slot:4
-  > @third Let's ask the gentleman whose spoon it is. -> end   do call:slot:5
+  > @third Let's ask the man whose spoon it is. -> end   do call:slot:5
 
 conv duty.swap.hoard
 for duty:swap:hoard

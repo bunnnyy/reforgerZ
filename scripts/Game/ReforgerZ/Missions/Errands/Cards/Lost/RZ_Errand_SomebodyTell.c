@@ -14,9 +14,9 @@ class RZ_Errand_SomebodyTell : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("There's a woman here who lost her husband on the road last week. People say he's one of them now, walking with {lot}. Somebody should find out for sure, and tell her properly.",
-			"There's a woman here whose husband turned on the road. She keeps asking which of the infected he walks with now. Nobody will answer her. Somebody should.");
-		Over("Never mind. She knows now. Someone told her. Badly, but they told her.");
+		Offer("There's a man here who lost his brother on the road last week. People say he's one of them now, walking with {lot}. Somebody should find out for sure, and tell his properly.",
+			"There's a man here whose brother turned on the road. He keeps asking which of the infected he walks with now. Nobody will answer him. Somebody should.");
+		Over("Never mind. He knows now. Someone told him. Badly, but they told him.");
 
 		RZ_ErrandWay w = Way("sneak");
 		w.m_sLabel = "Read the marks at their ground's edge";
@@ -25,12 +25,12 @@ class RZ_Errand_SomebodyTell : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_bUnseen = true;
 		w.m_sStep = "Read the marks where the road enters the ground of {lot}, {subject_place}, without being seen (15 s there), then tell {giver}.";
-		w.Done("So it's them. Thank you. I'll tell her. No. You tell her. She'll want to hear it from whoever looked.");
+		w.Done("So it's them. Thank you. I'll tell him. No. You tell him. He'll want to hear it from whoever looked.");
 
 		w = Way("talk");
 		w.m_sLabel = "Tell them what you know of that lot";
 		w.m_sBackground = "hunter";
-		w.Done("You'd know. You've tracked them. I'll tell her it's them.");
+		w.Done("You'd know. You've tracked them. I'll tell his it's them.");
 
 		w = Way("do");
 		w.m_sLabel = "Check the house's book of names";
@@ -38,7 +38,7 @@ class RZ_Errand_SomebodyTell : RZ_ErrandCard
 		w.m_fSeconds = 20;
 		w.m_fRadius = 15;
 		w.m_sStep = "Go through the house's book of names at {here} with the clerk (20 s there), then tell {giver}.";
-		w.Done("His name, the day, and a note in the margin about which way he walked. That's enough to tell her.");
+		w.Done("His name, the day, and a note in the margin about which way he walked. That's enough to tell him.");
 	}
 
 	//------------------------------------------------------------------------------------------------

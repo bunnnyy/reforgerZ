@@ -623,7 +623,7 @@ class RZ_QuestRun
 		{
 			for (int j = 0; j < s.textKeys.Count() && j < s.textValues.Count(); j++)
 			{
-				m_mTexts.Set(s.textKeys[j], s.textValues[j]);
+				m_mTexts.Set(s.textKeys[j], RZ_NoteText.ManFromOld(s.textValues[j]));	// an older save's women's names
 			}
 		}
 

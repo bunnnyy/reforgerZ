@@ -483,7 +483,7 @@ class RZ_DialogueWorld
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A safehouse's seeded resident surname (never a name from LORE), for "Mrs {resident}".
+	//! A safehouse's seeded resident surname (never a name from LORE), for "Mr {resident}".
 	static string Resident(RZ_DCtx ctx)
 	{
 		int seed = 17;

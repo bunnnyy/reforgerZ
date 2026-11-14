@@ -286,7 +286,7 @@ class RZ_Mission_TheWitness : RZ_PuzzleMission
 		int body = AddClue("The courier", string.Format("A Haven courier, %1. The satchel has been cut open and emptied. Someone tied a red rag around the strap, like a joke.", courier));
 		SpawnClue(gm, RZ_EPuzzleProp.BODY, m_vSpot, body, "Look at the body");
 
-		m_sTestimony = string.Format("He keeps his eyes on the dark road while he talks. \"Three of them. Red rags on their arms. She gave them the bag and they shot her anyway. They went off toward %1, laughing. I followed them as far as the last fence. I'm not going any closer, and neither should you.\"", m_sCampName);
+		m_sTestimony = string.Format("He keeps his eyes on the dark road while he talks. \"Three of them. Red rags on their arms. He gave them the bag and they shot his anyway. They went off toward %1, laughing. I followed them as far as the last fence. I'm not going any closer, and neither should you.\"", m_sCampName);
 		m_iWitness = AddClue("The wanderer", "");
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, RZ_Util.RandomPointInRing(m_vSpot, 5, 8), 0, "", "", m_iWitness, "Talk to the wanderer");
 
@@ -298,7 +298,7 @@ class RZ_Mission_TheWitness : RZ_PuzzleMission
 
 		m_fTimeLeft = NightDuration(2400, 10800, 4800);
 		m_sTitle = "The Witness";
-		m_sBrief = string.Format("A Haven courier was killed on the road outside %1. A wanderer saw it happen, they say, but he only talks after dark, and only where she died. Find out who did it.", s.m_sName);
+		m_sBrief = string.Format("A Haven courier was killed on the road outside %1. A wanderer saw it happen, they say, but he only talks after dark, and only where he died. Find out who did it.", s.m_sName);
 		m_sObjective = string.Format("Find out who killed the Haven courier outside %1.", s.m_sName);
 		return true;
 	}
@@ -351,7 +351,7 @@ class RZ_Mission_TheWitness : RZ_PuzzleMission
 			if (!m_sGroupPrefab.IsEmpty())
 				SetRival(RZ_EFaction.BANDITS, 10);
 
-			gm.NotifyPlayer(playerId, m_sTitle, "You read out the grid on the Haven channel. A long pause, then: \"Thank you. We'll come for the letters, and for her.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "You read out the grid on the Haven channel. A long pause, then: \"Thank you. We'll come for the letters, and for him.\"");
 			m_eState = RZ_EMissionState.SUCCEEDED;
 			return;
 		}

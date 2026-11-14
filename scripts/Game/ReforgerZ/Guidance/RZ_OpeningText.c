@@ -624,7 +624,7 @@ class RZ_OpeningText
 		{
 			case RZ_EFaction.MILITARY: return "A corporal runs a finger down a clipboard. \"Work detail at dawn. Be on time, or be somewhere else.\"";
 			case RZ_EFaction.BANDITS: return "Someone counting tins nods at you without stopping. \"Work? Always. It pays in tins.\"";
-			case RZ_EFaction.INSTITUTE: return "A woman in a mask points you at a board of chores. \"Pick one. Wash first.\"";
+			case RZ_EFaction.INSTITUTE: return "A man in a mask points you at a board of chores. \"Pick one. Wash first.\"";
 		}
 
 		return "Someone with a list looks up. \"Hands? Good. There's always something that needs carrying.\"";
@@ -638,7 +638,7 @@ class RZ_OpeningText
 		{
 			case RZ_EFaction.MILITARY: return "A soldier at the wire takes your name and writes it down, slowly, in capitals. \"Next.\"";
 			case RZ_EFaction.BANDITS: return "Someone on a crate looks you up and down. \"New face. The book likes a new face.\"";
-			case RZ_EFaction.INSTITUTE: return "A woman in a mask looks in your eyes with a torch, then nods you through. \"Wash your hands.\"";
+			case RZ_EFaction.INSTITUTE: return "A man in a mask looks in your eyes with a torch, then nods you through. \"Wash your hands.\"";
 		}
 
 		return "Someone at the gate looks you over and steps aside. \"You'll want soup. Everyone wants soup.\"";

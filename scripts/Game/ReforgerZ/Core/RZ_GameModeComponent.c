@@ -2532,7 +2532,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 					return "The Haven holds the cure. The houses read the bite book, not the List.";
 				if (t == 4)
 					return "The Haven holds the cure. They went down the List from the bottom.";
-				return "The Haven holds the cure. It goes hand to hand, and the first box went to her house.";
+				return "The Haven holds the cure. It goes hand to hand, and the first box went to his house.";
 			}
 			case RZ_CureFinale.BASTION:
 			{

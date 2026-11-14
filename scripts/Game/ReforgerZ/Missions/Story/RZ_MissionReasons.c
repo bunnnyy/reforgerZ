@@ -270,7 +270,7 @@ class RZ_MissionReasons
 			return "The village stays silent. Nobody goes there twice.";
 
 		if (t == RZ_Mission_TheWitness)
-			return "What she saw goes with her.";
+			return "What he saw goes with him.";
 
 		// The leader jobs and Rein In (the rest of the Tier 0 audit)
 		if (t == RZ_Job_ShutTheDoor)
@@ -390,7 +390,7 @@ class RZ_MissionReasons
 			return "The vials went warm on the road. The house's nurse waits at the door until dark anyway.";
 
 		if (t == RZ_Mission_EscortTheScientist)
-			return "Her readings stop halfway. The lab files them under 'incomplete', with her name.";
+			return "His readings stop halfway. The lab files them under 'incomplete', with his name.";
 
 		if (t == RZ_Event_WanderingTrader)
 			return "The trader's wagon is gone by morning, and so is whatever he knew.";

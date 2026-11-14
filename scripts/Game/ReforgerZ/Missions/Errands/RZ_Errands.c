@@ -175,7 +175,7 @@ class RZ_ErrandSettings
 	[Attribute("0.2", UIWidgets.Slider, "Found hook chance: after a job ends at a site, this share of sites holds a stranger (someone hiding, someone who got there first, a bite) or an old mark, for 2 hours", "0 1 0.05")]
 	float m_fHookChance;
 
-	[Attribute("1", desc: "Dark cards: the strangers and cards where you can sell someone (Wrong Side of the Toll, She Waves at the Line, My Sister at Morton's knowing way)")]
+	[Attribute("1", desc: "Dark cards: the strangers and cards where you can sell someone (Wrong Side of the Toll, He Waves at the Line, My Brother at Morton's knowing way)")]
 	bool m_bDarkCards;
 
 	[Attribute("0.2", UIWidgets.Slider, "Twist chance: a card that can have a twist (the giver lies or hides something) has it this often, at most one errand in three a player and never two in a row", "0 1 0.05")]

@@ -179,7 +179,7 @@ class RZ_DialoguePack_leaders
 		db.Node("start");
 		db.Say("", "That's the roster. Every name at this post and every duty, in grease pencil. Shifts change at oh-five-thirty and seventeen-thirty.");
 		db.Say("", "A name on that board eats, stands a watch if it can, and gets looked for if it doesn't come back. The dead stay on it. We read them all at the roll.");
-		db.Say("stronghold", "Lieutenant Sedlak keeps it. On Day 6 she wrote the families from her Day 2 column onto it, under civilians attached. They've been ours since.");
+		db.Say("stronghold", "Lieutenant Sedlak keeps it. On Day 6 he wrote the families from his Day 2 column onto it, under civilians attached. They've been ours since.");
 		db.Choice("rubout", "Do you ever rub a name off it?", "rubout", "", "", "", "", "", "", "", "");
 		db.Choice("roll", "What happens at the roll?", "roll", "", "", "", "", "", "", "", "");
 		db.Choice("soldier", "Regs say the dead come off the board.", "soldier", "", "", "", "", "bg:soldier,police", "", "", "");

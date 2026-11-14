@@ -1,19 +1,19 @@
-//! Is She Gone? (docs/ERRANDS.md, the infected): a pack within 1.5 km lost its leader lately (it stands
-//! its vigil), and the house knew who she'd been. "Ilse ran the bakery. Is it true?" Go to the lair's
+//! Is He Gone? (docs/ERRANDS.md, the infected): a pack within 1.5 km lost its leader lately (it stands
+//! its vigil), and the house knew who he'd been. "Ivo ran the bakery. Is it true?" Go to the lair's
 //! edge and see whether they still gather there (15 s unseen), or, an Elder, sit at supper while the house
-//! says her name. No keepsake: that's Bring Them Home's.
+//! says his name. No keepsake: that's Bring Them Home's.
 class RZ_Errand_IsSheGone : RZ_ErrandCard
 {
 	//------------------------------------------------------------------------------------------------
 	override void Define()
 	{
 		m_sKey = "is_she_gone";
-		m_sTitle = "Is She Gone?";
+		m_sTitle = "Is He Gone?";
 		m_sFamily = "tribes";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("{alpha} ran the bakery here, before. After she turned, she led the ones at {lair}, and we heard the calling every night. They're saying the calling's stopped. Is it true? Go and look. From a long way off.",
-			"The calling stopped at {lair} two nights ago. If that means {alpha}'s gone at last, I want to know. I'd like to stop listening for her.");
+		Offer("{alpha} ran the bakery here, before. After he turned, he led the ones at {lair}, and we heard the calling every night. They're saying the calling's stopped. Is it true? Go and look. From a long way off.",
+			"The calling stopped at {lair} two nights ago. If that means {alpha}'s gone at last, I want to know. I'd like to stop listening for him.");
 		Over("Never mind. Somebody went. It's true.");
 
 		RZ_ErrandWay w = Way("sneak");
@@ -24,10 +24,10 @@ class RZ_Errand_IsSheGone : RZ_ErrandCard
 		w.m_bUnseen = true;
 		w.m_sStep = "Watch {lair} from its edge {subject_place} without being seen (15 s hidden there), then tell {giver}.";
 		w.m_iFavor = 4;
-		w.Done("They're standing round where she lay? Just standing? Then it's true.");
+		w.Done("They're standing round where he lay? Just standing? Then it's true.");
 
 		w = Way("talk");
-		w.m_sLabel = "Sit at supper while they say her name";
+		w.m_sLabel = "Sit at supper while they say his name";
 		w.m_sBackground = "elder";
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 60;

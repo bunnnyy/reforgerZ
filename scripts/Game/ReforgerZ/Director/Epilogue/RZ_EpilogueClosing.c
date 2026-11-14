@@ -462,7 +462,7 @@ class RZ_EpiClosing
 				stage = "The Last Walk";
 				labels.Insert("Get them to a dose"); endings.Insert(RZ_Quest_EdgeOfTown.E_LAB_ROAD); lines.Insert("The lab road. The last one who declared a bite went to a dose, and came back.");
 				labels.Insert("Let the walker walk them"); endings.Insert(RZ_Quest_EdgeOfTown.E_WALKS); lines.Insert("The walks stay. One more, at the edge of town, the week the cure came.");
-				labels.Insert("Sit with them, let the nurse decide"); endings.Insert(RZ_Quest_EdgeOfTown.E_LAB_ROAD); lines.Insert("The lab road. The nurse decided, and somebody sat with them while she did.");
+				labels.Insert("Sit with them, let the nurse decide"); endings.Insert(RZ_Quest_EdgeOfTown.E_LAB_ROAD); lines.Insert("The lab road. The nurse decided, and somebody sat with them while he did.");
 				defEnding = RZ_Quest_EdgeOfTown.E_WALKS;
 				defLine = "The walker walked one more and read twelve names at supper. The nearest dose was four kilometres away.";
 				return true;
@@ -520,8 +520,8 @@ class RZ_EpiClosing
 			case "other_two":
 			{
 				stage = "His Coat";
-				labels.Insert("Carry the coat to his sister"); endings.Insert(RZ_Quest_OtherTwo.E_HOME); lines.Insert("Brought home. His sister has the coat.");
-				labels.Insert("Take his number to her board"); endings.Insert(RZ_Quest_OtherTwo.E_NAMED); lines.Insert("Named. His number went up on her house's board, with his name over it.");
+				labels.Insert("Carry the coat to his brother"); endings.Insert(RZ_Quest_OtherTwo.E_HOME); lines.Insert("Brought home. His brother has the coat.");
+				labels.Insert("Take his number to his board"); endings.Insert(RZ_Quest_OtherTwo.E_NAMED); lines.Insert("Named. His number went up on his house's board, with his name over it.");
 				labels.Insert("Leave it on the hook"); endings.Insert(RZ_Quest_OtherTwo.E_NUMBERS); lines.Insert("The work goes on. The coat stays on the hook at the lab.");
 				defEnding = RZ_Quest_OtherTwo.E_NUMBERS;
 				defLine = "The coat stays on the hook. Nobody came for it. The lab labelled it.";

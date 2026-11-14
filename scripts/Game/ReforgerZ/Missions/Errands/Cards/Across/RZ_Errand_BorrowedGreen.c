@@ -15,8 +15,8 @@ class RZ_Errand_BorrowedGreen : RZ_ErrandCard
 		m_sFamily = "across";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("There's a woman in our back room with a bite on her arm. She declared it at supper, the way the house asks. The lab gives the bitten one trial dose for nothing, and eight in ten walk out, but Bastion's post on the lab road turns the bitten back. Get her and her family past it. I don't much mind how.",
-			"We've a family here with a bite among them, and a day or two before it decides for them. The lab's trial dose is her chance. Between us and the lab there's a green post that sends the bitten home. Walk them through it, or round it, or anything.");
+		Offer("There's a man in our back room with a bite on his arm. He declared it at supper, the way the house asks. The lab gives the bitten one trial dose for nothing, and eight in ten walk out, but Bastion's post on the lab road turns the bitten back. Get him and his family past it. I don't much mind how.",
+			"We've a family here with a bite among them, and a day or two before it decides for them. The lab's trial dose is his chance. Between us and the lab there's a green post that sends the bitten home. Walk them through it, or round it, or anything.");
 		Over("It's too late for the lab now. Or it isn't needed any more. Don't make me say which.");
 
 		RZ_ErrandWay w = Way("sneak");
@@ -25,7 +25,7 @@ class RZ_Errand_BorrowedGreen : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
 		w.m_sStep = "Walk the family round the Bastion post {subject_place}, well off the road and more than 150 m from the barrier (10 s there), then come back to {giver}.";
-		w.Done("They're past the post and on the lab road. Thank you. Her husband is carrying her bag and she's telling him off for it, which is a good sign.");
+		w.Done("They're past the post and on the lab road. Thank you. His brother is carrying his bag and he's telling him off for it, which is a good sign.");
 
 		w = Way("talk");
 		w.m_sLabel = "Ask the sergeant straight";
@@ -43,7 +43,7 @@ class RZ_Errand_BorrowedGreen : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 20;
 		w.m_sStep = "Walk the family up to the barrier in Bastion kit and tell the sentry it's a casualty for the lab, on the sergeant's orders. Pass their look (10 s at the barrier), then come back to {giver}.";
-		w.Done("Sergeant's orders, you told them. Which sergeant? You. She laughed when the family told her that, the first time since the bite.");
+		w.Done("Sergeant's orders, you told them. Which sergeant? You. He laughed when the family told him that, the first time since the bite.");
 
 		w = Way("pay");
 		w.m_sLabel = "Pay their way through";
@@ -138,14 +138,14 @@ class RZ_Errand_BorrowedGreen : RZ_ErrandCard
 			if (gm.GetSafehouses())
 				gm.GetSafehouses().AddPopulationAt(e.m_iHouse, 1);
 
-			said.Insert("Word came back from the lab: the dose took. She'll be home at {house} by the end of the week, thin and furious and alive.");
+			said.Insert("Word came back from the lab: the dose took. He'll be home at {house} by the end of the week, thin and furious and alive.");
 		}
 		else
 		{
-			said.Insert("Word came back from the lab: the dose didn't take. They let the family sit with her at the end. That's something the lab does now.");
+			said.Insert("Word came back from the lab: the dose didn't take. They let the family sit with him at the end. That's something the lab does now.");
 		}
 
 		RZ_WorldFacts.Get().Memory().Record("errand.borrowed_green", e.m_sSubject, took, RZ_WorldMemory.SOURCE_ERRAND, false, who,
-			"A family walked a bitten woman past a green post to the lab. The house still argues about how.", "voice");
+			"A family walked a bitten man past a green post to the lab. The house still argues about how.", "voice");
 	}
 }

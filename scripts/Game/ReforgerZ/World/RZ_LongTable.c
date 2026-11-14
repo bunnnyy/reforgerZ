@@ -761,7 +761,7 @@ class RZ_LongTable
 
 				RZ_TableMember m = new RZ_TableMember();
 				m.m_eRole = ms.role;
-				m.m_sName = ms.name;
+				m.m_sName = RZ_NoteText.ManFromOld(ms.name);	// an older save's women's names
 				m.m_bAlive = ms.alive;
 				m_aMembers.Insert(m);
 			}

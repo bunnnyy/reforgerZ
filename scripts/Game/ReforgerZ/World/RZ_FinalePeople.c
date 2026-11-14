@@ -56,8 +56,16 @@ class RZ_FinalePeople
 	//------------------------------------------------------------------------------------------------
 	void Restore(RZ_FinalePeopleSave data)
 	{
-		if (data)
-			m_S = data;
+		if (!data)
+			return;
+
+		m_S = data;
+		// An older save's women's names (everyone met is a man now)
+		foreach (RZ_FinalePersonSave p : m_S.people)
+		{
+			if (p)
+				p.name = RZ_NoteText.ManFromOld(p.name);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -254,7 +262,7 @@ class RZ_FinalePeople
 		// The man, in a Haven house; his son with the Red Hand crew nearest it
 		int house = WomanHouse(rng);
 		vector womanAt = HousePos(house);
-		string woman = facts.CanonText("unturned.name");
+		string woman = RZ_NoteText.ManFromOld(facts.CanonText("unturned.name"));
 		if (woman.IsEmpty())
 		{
 			woman = RZ_NoteText.FirstName(rng) + " " + RZ_NoteText.Surname(rng);

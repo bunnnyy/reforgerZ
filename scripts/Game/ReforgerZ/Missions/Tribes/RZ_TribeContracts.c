@@ -525,7 +525,7 @@ class RZ_Mission_BringThemHome : RZ_TribeContract
 				array<string> values = {"named", "other"};
 				array<float> weights = {0.7, 0.3};
 				m_Job.Draw(this, "named:" + who, values, weights);
-				m_Choice.Set("The house's clerk turns the card over in her hands. \"Family first, or does somebody want paying?\"", "The card to the family|Sell the keepsake to the fence", "decide where the keepsake goes", OPT_FAMILY);
+				m_Choice.Set("The house's clerk turns the card over in his hands. \"Family first, or does somebody want paying?\"", "The card to the family|Sell the keepsake to the fence", "decide where the keepsake goes", OPT_FAMILY);
 				m_Choice.Asset(OPT_FENCE, RZ_EFaction.BANDITS);
 				return true;
 			}
@@ -654,7 +654,7 @@ class RZ_Mission_BringThemHome : RZ_TribeContract
 		}
 
 		RZ_StoryKit.Record(this, "fate", m_Job.m_sSubject, "family", who);
-		RZ_StoryKit.LaterWith(gm, this, "At the house", "A woman at the house's door holds the card against her chest and doesn't say anything. Then she says thank you, twice.", m_vPos, true);
+		RZ_StoryKit.LaterWith(gm, this, "At the house", "A man at the house's door holds the card against his chest and doesn't say anything. Then he says thank you, twice.", m_vPos, true);
 	}
 
 	//------------------------------------------------------------------------------------------------

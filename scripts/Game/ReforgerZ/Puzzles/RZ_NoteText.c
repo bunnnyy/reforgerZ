@@ -117,6 +117,44 @@ class RZ_NoteText
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A saved name from before everyone met was a man (an older save): a woman's first name from
+	//! the old lists becomes its man's name, the rest of the text as it was ("Marta Weber" becomes
+	//! "Marek Weber", "Old Marta" "Old Marek"). Any other text comes back unchanged.
+	static string ManFromOld(string text)
+	{
+		if (text.IsEmpty())
+			return text;
+
+		array<string> old = {"Marta", "Jana", "Lucie", "Ruth", "Irena", "Elise", "Nadia", "Vera", "Sabine", "Ilse", "Dana", "Agata",
+			"Ada", "Hana", "Olga", "Edith", "Agnes", "Zofia", "Greta", "Mila", "Mira", "Ines", "Mara"};
+		array<string> men = {"Marek", "Jan", "Lukas", "Rudolf", "Ivo", "Emil", "Nikola", "Vaclav", "Samuel", "Ivan", "Dalibor", "Augustin",
+			"Adam", "Hanus", "Oldrich", "Edmund", "Albin", "Zdenek", "Gregor", "Milos", "Mirek", "Ignac", "Marek"};
+		array<string> words = {};
+		text.Split(" ", words, false);
+		bool changed = false;
+		for (int i = 0; i < words.Count(); i++)
+		{
+			int at = old.Find(words[i]);
+			if (at < 0)
+				continue;
+
+			words[i] = men[at];
+			changed = true;
+		}
+
+		if (!changed)
+			return text;
+
+		string joined = words[0];
+		for (int k = 1; k < words.Count(); k++)
+		{
+			joined += " " + words[k];
+		}
+
+		return joined;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string Surname(RZ_Rng rng)
 	{
 		array<string> names = {"Novak", "Laurent", "Brandt", "Kowal", "Duval", "Mercer", "Horak", "Petit", "Vogel", "Sorel",

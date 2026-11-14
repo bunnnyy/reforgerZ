@@ -481,15 +481,15 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		}
 		else if (m_sTruth == "sold")
 		{
-			// His camp says nothing; his sister at the nearest house does, and the notes are on the fence's table
+			// His camp says nothing; his brother at the nearest house does, and the notes are on the fence's table
 			m_iNote = AddClue("An empty camp", "His bedroll, cut open. His sample case, empty. A crew's toll chit, folded small, in the ash of the fire.");
 			if (!SpawnClue(gm, RZ_EPuzzleProp.CLUE, m_vPos, m_iNote, "Look around the camp"))
 				return false;
 
 			if (h)
 			{
-				m_iSister = AddClue("His sister", string.Format("\"He got them from the crew. The doses. For me.\" She holds her arm like it still hurts. \"Don't tell anyone. They'd say he sold %1.\"", "the lab"));
-				SpawnClue(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(m_vHouse, 6, 14), m_iSister, "Talk to the woman at the door");
+				m_iSister = AddClue("His brother", string.Format("\"He got them from the crew. The doses. For me.\" He holds his arm like it still hurts. \"Don't tell anyone. They'd say he sold %1.\"", "the lab"));
+				SpawnClue(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(m_vHouse, 6, 14), m_iSister, "Talk to the man at the door");
 			}
 
 			int notes = AddClue("His notes", string.Format("%1's notes, in a crew's ledger box, priced in doses. Three pages already torn out and gone somewhere else.", m_sName));
@@ -569,7 +569,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		if (t && RZ_WorldFacts.Get().IsLivedIn(town))
 		{
 			m_vTrader = LandPointNear(t.m_vCenter, 0, t.m_fRadius * 0.4);
-			m_iTrader = AddClue("A Haven trader", sighting + string.Format(" She points: grid %1.", RZ_SettlementScanner.GridReference(m_vHim)));
+			m_iTrader = AddClue("A Haven trader", sighting + string.Format(" He points: grid %1.", RZ_SettlementScanner.GridReference(m_vHim)));
 		}
 
 		m_vPos = box;
@@ -669,7 +669,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		if (m_iWalkOption == 0)
 			Finish(gm, walker, 2, 1, "lab", string.Format("\"Thank you.\" At the gate %1 tells them he got turned round on his rounds. Nobody asks you.", m_sName));
 		else
-			Finish(gm, walker, 2, 1, "told", string.Format("You tell the field lead the rest. She reads your face, then his. %1 won't hold a field post again.", m_sName));
+			Finish(gm, walker, 2, 1, "told", string.Format("You tell the field lead the rest. He reads your face, then his. %1 won't hold a field post again.", m_sName));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -730,7 +730,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		}
 
 		if (idx == m_iSister)
-			m_Story.Reveal(gm, this, m_sName, playerId, "sister", string.Format("%1 sold his notes to a crew for doses for his sister. They're on the fence's table.", m_sName));
+			m_Story.Reveal(gm, this, m_sName, playerId, "sister", string.Format("%1 sold his notes to a crew for doses for his brother. They're on the fence's table.", m_sName));
 
 		if (idx == m_iHim)
 			RZ_StoryKit.Read(gm, this, playerId, "nurse,doctor", "A clean break, splinted badly. He'll walk on it in a week if nobody lets him try sooner.");
@@ -856,7 +856,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 
 		m_iFameReward = 0;
 		m_bNoLeaderCredit = true;
-		Finish(gm, playerId, 0, 0, "medic", "The Haven's medic reads it by the stove all night. In the morning she knows how it goes in, and how fast. Halcyon never sees it.");
+		Finish(gm, playerId, 0, 0, "medic", "The Haven's medic reads it by the stove all night. In the morning he knows how it goes in, and how fast. Halcyon never sees it.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -868,7 +868,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 			if (!m_Ways.TryBribe(gm, playerId, RZ_EFaction.BANDITS, BRIBE_FAVOR))
 				return;
 
-			Finish(gm, playerId, 1, 1, "bought", "The fence counts the favour twice and slides the box over. \"Pleasure. Tell the doctor his sister's fine.\"");
+			Finish(gm, playerId, 1, 1, "bought", "The fence counts the favour twice and slides the box over. \"Pleasure. Tell the doctor his brother's fine.\"");
 			return;
 		}
 
@@ -915,7 +915,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		RZ_RouteAssets.Add(gm, playerId, RZ_EFaction.BANDITS, m_sTitle, RZ_FinaleAssets.PROOF);
 		array<int> who = {playerId};
 		RZ_StoryKit.Record(this, "fate", m_sName, "sold", who);
-		gm.NotifyPlayer(playerId, m_sTitle, "You leave them on the table. His sister keeps her doses. The crews keep his sums.");
+		gm.NotifyPlayer(playerId, m_sTitle, "You leave them on the table. His brother keeps his doses. The crews keep his sums.");
 		m_eState = RZ_EMissionState.FAILED;
 	}
 

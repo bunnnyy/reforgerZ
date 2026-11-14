@@ -1622,7 +1622,7 @@ class RZ_QM_CensusContrib : RZ_QuestMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SpawnScene(RZ_GameModeComponent gm)
 	{
-		int clue = AddClue("The storekeeper", QFill(gm, "The storekeeper in {town_c} has the census card in her hand already. \"Four. It says four. For our protection.\" She doesn't move toward the shelves."));
+		int clue = AddClue("The storekeeper", QFill(gm, "The storekeeper in {town_c} has the census card in his hand already. \"Four. It says four. For our protection.\" He doesn't move toward the shelves."));
 		string labels = string.Format("Collect four food for Bastion|Pay it yourself (%1 Bastion Favor)|Falsify the ledger (Trusted, or a Police officer)", PAY_FAVOR);
 		return SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vKeeper, OBJ_KEEPER, "", labels, clue, "Talk to the storekeeper") != null;
 	}
@@ -1687,7 +1687,7 @@ class RZ_QM_CensusContrib : RZ_QuestMission
 
 		if (!IsEligible(gm, playerId))
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "She looks at you a long time. \"You're not here for Bastion. Go home.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "He looks at you a long time. \"You're not here for Bastion. Go home.\"");
 			return;
 		}
 
@@ -1700,7 +1700,7 @@ class RZ_QM_CensusContrib : RZ_QuestMission
 			m_bCollected = true;
 			m_vPos = m_vClerk;
 			Remember(gm, playerId, RZ_EQuestApproach.NONE, "collected the contribution");
-			gm.NotifyPlayer(playerId, m_sTitle, string.Format("She fills the sack herself, slowly, and doesn't hand it to you: she puts it on the ground. Bastion's clerk is at %1. Another house, in %2, would take it too.", m_sClerkPlace, m_sOther));
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("He fills the sack himself, slowly, and doesn't hand it to you: he puts it on the ground. Bastion's clerk is at %1. Another house, in %2, would take it too.", m_sClerkPlace, m_sOther));
 			return;
 		}
 
