@@ -2059,6 +2059,17 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The errand this player holds from this giver, -1 none (the talk screen's tracked-job replies).
+	int HeldIdFor(int playerId, string giverKey)
+	{
+		RZ_Errand e = FindFor(playerId, giverKey);
+		if (!e || e.m_eState != RZ_EErrandState.HELD)
+			return -1;
+
+		return e.m_iId;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected RZ_Errand FindFor(int playerId, string giverKey)
 	{
 		foreach (RZ_Errand e : m_aErrands)

@@ -535,6 +535,10 @@ class RZ_OpeningCase
 		r.m_bOwn = true;
 		r.m_bJob = true;
 		r.m_iRank = RZ_TalkReply.RANK_ON;
+		int lead;
+		if (m_mLead.Find(s.m_iPlayer, lead))
+			r.m_iFor = RZ_Dialogue.ForErrand(lead);
+
 		replies.InsertAt(r, 0);
 	}
 

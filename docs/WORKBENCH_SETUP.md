@@ -4089,6 +4089,9 @@ when it happens)
   A bitten wanderer, or one who's lost a town: that line shows first. A Haven house's resident you've
   never met, with Trees on and a `say? !met` intro written: the intro shows once, and the next talk
   opens on the replies. Pick a topic and come back to the hub with `hub`: no line, just the replies.
+- [ ] Track **The Case** on the Quests tab and talk to a Halcyon person carrying the papers too: only
+  *[Errand] Hand over the runner's case* and **There was something else.**; That shows every reply
+  for the rest of that talk. Track nothing: every reply, as before (DIALOGUE.md, "The order of the replies").
 - [ ] Talk to a Trader wanderer whose greeting has something to say: the talk screen opens with their name and sub-line at the top right
   in their colour and **only their line** in the band in the lower middle, **typing out**, the
   footer "A Skip" / "B Leave". It never moves on by itself: once it's typed a ▼ bounces at the

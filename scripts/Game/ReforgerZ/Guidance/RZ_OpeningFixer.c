@@ -689,14 +689,14 @@ class RZ_OpeningFixer
 		if (code % 10 == ROLE_NEIGHBOUR)
 		{
 			if (v.m_iPhase == PHASE_WARN)
-				replies.InsertAt(Job(REPLY_WARN, "He'll be back for more. Bolt your doors.", "Errand", ""), 0);
+				replies.InsertAt(Job(REPLY_WARN, "He'll be back for more. Bolt your doors.", "Errand", "", v.m_iErrand), 0);
 
 			return;
 		}
 
 		if (v.m_iPhase == PHASE_STAND)
 		{
-			replies.InsertAt(Job(REPLY_STAND, "The street's with me.", "Street", ""), 0);
+			replies.InsertAt(Job(REPLY_STAND, "The street's with me.", "Street", "", v.m_iErrand), 0);
 			return;
 		}
 
@@ -704,24 +704,25 @@ class RZ_OpeningFixer
 			return;
 
 		if (!v.m_bShort)
-			replies.InsertAt(Job(REPLY_RALLY, "Wait here. I'll talk to the street first.", "Street", ""), 0);
+			replies.InsertAt(Job(REPLY_RALLY, "Wait here. I'll talk to the street first.", "Street", "", v.m_iErrand), 0);
 
 		string tag;
 		string need = BluffNeed(playerId, tag);
-		replies.InsertAt(Job(REPLY_BLUFF, "Bastion's patrol is two streets away. You'd better go.", tag, need), 0);
+		replies.InsertAt(Job(REPLY_BLUFF, "Bastion's patrol is two streets away. You'd better go.", tag, need, v.m_iErrand), 0);
 
 		string missing = "";
 		if (!RZ_OpeningCase.Carries(user))
 			missing = "You don't have it on you";
 
-		replies.InsertAt(Job(REPLY_HAND, "Hand it over", "Trade", missing), 0);
+		replies.InsertAt(Job(REPLY_HAND, "Hand it over", "Trade", missing, v.m_iErrand), 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static RZ_TalkReply Job(int id, string label, string tag, string need)
+	protected static RZ_TalkReply Job(int id, string label, string tag, string need, int errand)
 	{
 		RZ_TalkReply r = new RZ_TalkReply();
 		r.m_iId = id;
+		r.m_iFor = RZ_Dialogue.ForErrand(errand);
 		r.m_sLabel = label;
 		r.m_bOwn = true;
 		r.m_bJob = true;

@@ -680,6 +680,7 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 			if (held)
 			{
 				r.m_iRank = RZ_TalkReply.RANK_ON;
+				r.m_iFor = RZ_Dialogue.ForErrand(errands.HeldIdFor(playerId, giver));
 				r.m_sLabel = "About " + title + ".";
 				if (errands.ReadyToHandIn(playerId, giver))
 					r.m_sLabel = "It's done: " + title + ".";
@@ -706,6 +707,7 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	protected void Step(RZ_GameModeComponent gm, RZ_Mission m, int playerId, int objIdx, bool choice, int slot, RZ_TalkReply r)
 	{
 		r.m_iRank = RZ_TalkReply.RANK_ON;
+		r.m_iFor = RZ_Dialogue.ForMission(gm, m, playerId);
 		// A hand-over for the job ("Hand over Bastion's rations", "Give the page to ...") is tagged by
 		// the job's kind, like any turn-in
 		string l = r.m_sLabel;
