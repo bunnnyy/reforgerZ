@@ -82,12 +82,12 @@ class RZT_Kitchen
 			ResourceName before;
 			bool atPiece;
 			sites.PlaceOf(KEY_TABLE, pos, before, atPiece);
-			IEntity prop = sites.PropOf(KEY_TABLE);
-			if (!prop && s_iWait < 20)
+			// Its look is worked out when the props first go out (a second or two)
+			if (s_iWait < 5)
 				return;
 
-			if (!prop)
-				Print(string.Format("RZT kitchen: by the building, nothing of its kind fits at %1 (only its prompt)", RZ_SettlementScanner.GridReference(pos)));
+			if (before.IsEmpty())
+				Fail(string.Format("by the building: nothing of its kind fits at %1, not even the pot (only its prompt)", RZ_SettlementScanner.GridReference(pos)));
 			else if (!IsKitchen(before))
 				Fail(string.Format("by the building: %1 stands at the stir the pot prompt, not a kitchen thing", RZ_Util.PrettyPrefabName(before)));
 			else

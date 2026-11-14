@@ -238,6 +238,8 @@ cp "$ROOT"/Prefabs/ReforgerZ/World/HandBuilt/RZ_HandSpot*.et* "$ADDON/Prefabs/Re
 # What shows in the arms while carrying (docs/DESIGN.md, "Carrying"): the carry check reads it
 mkdir -p "$ADDON/Prefabs/ReforgerZ/Work"
 cp "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Carried_*.et* "$ADDON/Prefabs/ReforgerZ/Work/"
+# The kitchen work looks (tools/camp_kit/work_looks.py) the kitchen check stands at a prompt
+cp "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Work_Stove.et* "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Work_KitchenTable.et* "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Work_ServeTable.et* "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Work_Pot.et* "$ADDON/Prefabs/ReforgerZ/Work/"
 "$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
 "$PY" "$HERE/sites.py" prepare "$ADDON" Worlds/RZTest/RZTest.ent || exit 2
 
