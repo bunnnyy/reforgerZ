@@ -63,10 +63,30 @@ class RZT_Fresh
 		run.Did(gm, id, RZ_EQuestApproach.NONE, "the last life was there");
 		Check(run.PlayerTookPartThisLife(gm, id), "a part this life counts as this life's (" + run.m_Line.m_sTitle + ")");
 		Check(q.IsVisibleTo(run, id), "the questline is in the journal of the life that took part");
+		// A new life as the game makes one: the life count goes up, and the mission manager takes the
+		// player off every running job (RZ_MissionManager.OnNewLife), the stage's mission included.
+		// Only this run's stage mission is touched here, and put back after, so the route goes on
 		profile.m_iLives = lives + 1;
+		RZ_Mission stage = gm.GetMissions().FindById(run.m_iMissionId);
+		bool wasIn = false;
+		bool wasOffered = false;
+		if (stage)
+		{
+			wasIn = stage.m_aParticipants.Contains(id);
+			wasOffered = stage.m_aOfferedTo.Contains(id);
+			stage.m_aParticipants.RemoveItem(id);
+			stage.m_aOfferedTo.RemoveItem(id);
+		}
+
 		Check(!run.PlayerTookPartThisLife(gm, id), "a new life doesn't inherit the last one's part");
 		Check(!q.IsVisibleTo(run, id), "the questline isn't in the new life's journal");
 		Check(run.PlayerTookPart(gm, id), "the story still remembers the player by identity");
+		if (stage && wasIn)
+			stage.m_aParticipants.Insert(id);
+
+		if (stage && wasOffered)
+			stage.m_aOfferedTo.Insert(id);
+
 		profile.m_iLives = lives;
 		if (run.m_aParts.Count() > partsBefore)
 			run.m_aParts.Remove(run.m_aParts.Count() - 1);

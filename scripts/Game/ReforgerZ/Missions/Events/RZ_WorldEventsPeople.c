@@ -121,7 +121,12 @@ class RZ_Event_DistressBase : RZ_PuzzleMission
 		if (!s)
 			return false;
 
-		m_vSpot = LandPointNear(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius + 150);
+		// The house is on dry land, off the line, near its town (the place need "mission", docs/PLACES.md):
+		// a town by the shore or the line has none of its own and isn't the call's town
+		m_vSpot = RZ_PlaceFind.Near(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius + 150, RZ_PlaceNeeds.Get("mission"), m_iSettlement);
+		if (m_vSpot == vector.Zero)
+			return false;
+
 		m_vPos = m_vSpot;
 		m_sCaller = RZ_NoteText.FirstName(m_Rng);
 		m_sTitle = "Distress Call";

@@ -1252,7 +1252,13 @@ class RZ_Errands
 		if (w.m_bUnseen)
 			sites.SetUnseen(key);
 
+		// Where the site really stands (moved off a slope or the shore, or to the camp's kitchen): the
+		// step's place, its marker and its tracker line follow it
 		e.m_vPlace = at;
+		vector stands = sites.PosOf(key);
+		if (stands != vector.Zero)
+			e.m_vPlace = stands;
+
 		return true;
 	}
 
