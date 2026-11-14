@@ -15,6 +15,9 @@ class RZ_Character
 	static const int WATCHED_INFAMY = 15;		// Infamy's "some" band (RZ_Reputation.Band) ...
 	static const int WATCHED_FAME_BELOW = 15;	// ... with Fame in its "low" band: Watched
 
+	static const float FLOOR_REACH = 40;		// coming back: a saved spot this far above the ground is a floor (higher: the ground)
+
+	protected static ref map<int, bool> s_mBack;		// the spawn handler put this player back where they left off
 	protected static ref map<int, bool> s_mMoved;		// the spawn handler moved this player's character to a camp
 	protected static ref map<int, string> s_mCamp;		// ... and the camp's name, for the line
 	protected static ref map<int, int> s_mCampFaction;	// ... and its people's faction
@@ -171,8 +174,10 @@ class RZ_Character
 			s_mMoved = new map<int, bool>();
 			s_mCamp = new map<int, string>();
 			s_mCampFaction = new map<int, int>();
+			s_mBack = new map<int, bool>();
 		}
 
+		s_mBack.Remove(playerId);
 		s_mMoved.Remove(playerId);
 		s_mCamp.Remove(playerId);
 		s_mCampFaction.Remove(playerId);
@@ -183,6 +188,21 @@ class RZ_Character
 		profile.EnsureArrays();
 		if (!profile.HasCharacter())
 			return false;
+
+		// Logged out alive (or the server stopped): back where they were, never a camp or a random start
+		if (profile.m_bLeftAlive && (profile.m_fLeftX != 0 || profile.m_fLeftZ != 0))
+		{
+			vector there = Vector(profile.m_fLeftX, profile.m_fLeftY, profile.m_fLeftZ);
+			vector ground = RZ_Util.GroundPos(there);
+			// On a floor or the ground as they stood; anything far above the ground (a flight) lands
+			if (there[1] < ground[1] || there[1] - ground[1] > FLOOR_REACH)
+				there = ground;
+
+			character.SetOrigin(there + Vector(0, 0.1, 0));
+			s_mBack.Set(playerId, true);
+			RZ_Log.Info(string.Format("Character: %1 comes back where they left off (%2)", RZ_Util.PlayerName(playerId), RZ_SettlementScanner.GridReference(there)));
+			return true;
+		}
 
 		vector at;
 		string name;
@@ -407,6 +427,143 @@ class RZ_Character
 		}
 
 		return "Found you on the road.";
+	}
+
+	// ================================================================ Coming back (a logout, not a death)
+	//------------------------------------------------------------------------------------------------
+	//! Did the spawn handler put this player back where they left off? (The game mode's spawn asks.)
+	static bool CameBack(int playerId)
+	{
+		return s_mBack && s_mBack.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every server tick, for each player alive with a character: where they are and what they carry,
+	//! so a logout, a crash or a server stop brings them back as they were.
+	static void Snapshot(RZ_GameModeComponent gm, array<int> ids, array<IEntity> players)
+	{
+		foreach (int i, IEntity me : players)
+		{
+			RZ_PlayerProfile profile = gm.GetProfile(ids[i]);
+			if (!profile || !me || !profile.HasCharacter())
+				continue;
+
+			Take(profile, me);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One player's look (also on a disconnect, while the character is still there). Worn clothes
+	//! aren't kept: they come back as the background's loadout wears them.
+	static void Take(RZ_PlayerProfile profile, IEntity me)
+	{
+		profile.EnsureArrays();
+		vector pos = me.GetOrigin();
+		profile.m_bLeftAlive = true;
+		profile.m_fLeftX = pos[0];
+		profile.m_fLeftY = pos[1];
+		profile.m_fLeftZ = pos[2];
+		profile.m_aLeftItems.Clear();
+		profile.m_aLeftQiPrefab.Clear();
+		profile.m_aLeftQiMission.Clear();
+		profile.m_aLeftQiGoods.Clear();
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(me.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inv)
+			return;
+
+		array<IEntity> items = {};
+		inv.GetItems(items);
+		foreach (IEntity item : items)
+		{
+			// The runner's case keeps itself (Guidance/RZ_OpeningCase.c); worn things are the loadout's
+			if (!item || RZ_ColdCaseComponent.Of(item) || IsWorn(me, item))
+				continue;
+
+			EntityPrefabData data = item.GetPrefabData();
+			if (!data)
+				continue;
+
+			string prefab = data.GetPrefabName();
+			RZ_MissionItemComponent job = RZ_MissionItemComponent.Cast(item.FindComponent(RZ_MissionItemComponent));
+			string goods = RZ_MissionGoods.Owner(item);
+			if (job || !goods.IsEmpty())
+			{
+				int mission = NO_MISSION;
+				if (job)
+					mission = job.GetMissionId();
+
+				profile.m_aLeftQiPrefab.Insert(prefab);
+				profile.m_aLeftQiMission.Insert(mission);
+				profile.m_aLeftQiGoods.Insert(goods);
+				continue;
+			}
+
+			// A magazine keeps its rounds: logging out never refills one
+			BaseMagazineComponent mag = BaseMagazineComponent.Cast(item.FindComponent(BaseMagazineComponent));
+			if (mag)
+				prefab = prefab + "|" + mag.GetAmmoCount().ToString(); // VERIFY: BaseMagazineComponent.GetAmmoCount gives a magazine's rounds
+
+			profile.m_aLeftItems.Insert(prefab);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! From the game mode's spawn, for a character put back where they left off: what they carried
+	//! replaces the loadout's carried things (what they wear stays), and the quest items come back
+	//! with their jobs. The spawn card's line.
+	static string ComeBack(RZ_GameModeComponent gm, int playerId, IEntity me, RZ_PlayerProfile profile)
+	{
+		profile.EnsureArrays();
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(me.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (inv)
+		{
+			array<IEntity> loadout = {};
+			inv.GetItems(loadout);
+			foreach (IEntity carried : loadout)
+			{
+				if (!carried || IsWorn(me, carried))
+					continue;
+
+				if (!inv.TryDeleteItem(carried))
+					SCR_EntityHelper.DeleteEntityAndChildren(carried);
+			}
+		}
+
+		int back = 0;
+		foreach (string entry : profile.m_aLeftItems)
+		{
+			string prefab = entry;
+			int rounds = -1;
+			int bar = entry.IndexOf("|");
+			if (bar > 0)
+			{
+				prefab = entry.Substring(0, bar);
+				rounds = entry.Substring(bar + 1, entry.Length() - bar - 1).ToInt();
+			}
+
+			IEntity thing = RZ_Util.SpawnPrefab(prefab, me.GetOrigin() + Vector(0, 0.3, 0), 0);
+			if (!thing)
+				continue;
+
+			BaseMagazineComponent mag = BaseMagazineComponent.Cast(thing.FindComponent(BaseMagazineComponent));
+			if (mag && rounds >= 0)
+				mag.SetAmmoCount(rounds); // VERIFY: BaseMagazineComponent.SetAmmoCount sets a magazine's rounds on the server
+
+			RZ_GameModeComponent.TrackLooseItem(thing);
+			RZ_Util.InsertIntoInventory(me, thing);
+			back++;
+		}
+
+		// The quest items carried then come back by the death's path, each while its job still runs
+		profile.m_aQiPrefab.Clear();
+		profile.m_aQiMission.Clear();
+		profile.m_aQiGoods.Clear();
+		profile.m_aQiPrefab.InsertAll(profile.m_aLeftQiPrefab);
+		profile.m_aQiMission.InsertAll(profile.m_aLeftQiMission);
+		profile.m_aQiGoods.InsertAll(profile.m_aLeftQiGoods);
+		GiveBackQuestItems(gm, playerId, me, profile);
+		RZ_Log.Info(string.Format("Character: %1 came back with %2 of %3 things", RZ_Util.PlayerName(playerId), back, profile.m_aLeftItems.Count()));
+		return "You're back where you left off.";
 	}
 
 	// ================================================================ The kit

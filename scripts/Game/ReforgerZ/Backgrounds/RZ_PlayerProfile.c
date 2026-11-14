@@ -17,6 +17,16 @@ class RZ_PlayerProfile
 	bool m_bDiedBitten;				// the last death was bitten: nobody carries a bitten body in (a random start)
 	float m_fDiedX;					// where the last death was (coming round picks the camp nearest it)
 	float m_fDiedZ;
+	// Where the character was and what they carried at the last server tick alive (RZ_Character.Take):
+	// logging back in puts them there with those things, never at a camp
+	bool m_bLeftAlive;				// alive at the last look: the next spawn is a coming back, not a coming round
+	float m_fLeftX;
+	float m_fLeftY;
+	float m_fLeftZ;
+	ref array<string> m_aLeftItems = {};	// carried things (not worn, not quest items): "prefab" or "prefab|rounds"
+	ref array<string> m_aLeftQiPrefab = {};	// quest items carried then, as m_aQi* below
+	ref array<int> m_aLeftQiMission = {};
+	ref array<string> m_aLeftQiGoods = {};
 	ref array<string> m_aInCamps = {};	// camps that took this character in (RZ_Character.CampKey) ...
 	ref array<int> m_aInUnix = {};		// ... and when, in real time (three an hour at most per camp)
 	// Quest items held through a death (Backgrounds/RZ_Character.c): put back in the pack on coming
@@ -179,6 +189,7 @@ class RZ_PlayerProfile
 	void OnDeath(bool bitten, vector at)
 	{
 		m_iDeaths++;
+		m_bLeftAlive = false;
 		m_bDiedBitten = bitten;
 		m_fDiedX = at[0];
 		m_fDiedZ = at[2];
@@ -209,6 +220,7 @@ class RZ_PlayerProfile
 	{
 		m_iCharacter++;
 		m_iDeaths = 0;
+		m_bLeftAlive = false;
 		m_bResetPending = false;
 		m_bDiedBitten = false;
 		m_aInCamps.Clear();
@@ -327,6 +339,14 @@ class RZ_PlayerProfile
 			m_aQiMission = new array<int>();
 		if (!m_aQiGoods)
 			m_aQiGoods = new array<string>();
+		if (!m_aLeftItems)
+			m_aLeftItems = new array<string>();
+		if (!m_aLeftQiPrefab)
+			m_aLeftQiPrefab = new array<string>();
+		if (!m_aLeftQiMission)
+			m_aLeftQiMission = new array<int>();
+		if (!m_aLeftQiGoods)
+			m_aLeftQiGoods = new array<string>();
 		if (!m_aFog)
 			m_aFog = new array<int>();
 		if (!m_aFame)

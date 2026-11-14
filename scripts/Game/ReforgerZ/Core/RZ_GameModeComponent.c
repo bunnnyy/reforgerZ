@@ -574,6 +574,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_bServerRunning)
 			return;
 
+		// The last look at a character leaving alive: where they stand and what they carry
+		IEntity leaving = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		RZ_PlayerProfile leaver = GetProfile(playerId);
+		if (leaving && leaver && leaver.HasCharacter() && RZ_Util.IsCharacterAlive(leaving))
+			RZ_Character.Take(leaver, leaving);
+
 		m_aWelcomed.RemoveItem(playerId);
 		if (m_BiteDetector)
 			m_BiteDetector.Forget(playerId);
@@ -1072,6 +1078,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			m_fSpawnRotateTimer = 0;
 			RefreshSpawnPoints(false);
 		}
+
+		// Where each character is and what they carry, for coming back after a logout
+		RZ_Character.Snapshot(this, ids, players);
 
 		m_fSaveTimer += dt;
 		if (m_fSaveTimer >= m_fSaveIntervalSeconds)
@@ -1805,13 +1814,19 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//------------------------------------------------------------------------------------------------
 	//! A character who goes on after a death (Backgrounds/RZ_Character.c): no new background, no
 	//! opening, no new goal; the kit trimmed, the quest items back, a word from whoever carried them in.
-	protected void ComeRound(int playerId, IEntity controlledEntity, RZ_PlayerProfile profile)
+	//! Back from a logout (`back`): where they left off, with what they carried.
+	protected void ComeRound(int playerId, IEntity controlledEntity, RZ_PlayerProfile profile, bool back)
 	{
 		RZ_Background bg = GetBackground(profile.m_sBackgroundId);
 		if (!bg)
 			bg = GetDefaultBackground();
 
-		string line = RZ_Character.ComeRound(this, playerId, controlledEntity, profile, bg);
+		string line;
+		if (back)
+			line = RZ_Character.ComeBack(this, playerId, controlledEntity, profile);
+		else
+			line = RZ_Character.ComeRound(this, playerId, controlledEntity, profile, bg);
+
 		m_BiteDetector.Reset(playerId);
 		m_Stealth.Forget(playerId);
 		m_Infection.OnPlayerSpawned(playerId);
@@ -1837,7 +1852,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// they carried is gone (docs/DESIGN.md, "A character who lasts")
 		if (profile.HasCharacter())
 		{
-			ComeRound(playerId, controlledEntity, profile);
+			ComeRound(playerId, controlledEntity, profile, RZ_Character.CameBack(playerId));
 			return;
 		}
 

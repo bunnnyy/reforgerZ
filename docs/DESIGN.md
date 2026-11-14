@@ -885,6 +885,20 @@ last real hour. Then the next camp; with none, a **random start** rolled by the 
 rules, without an opening. You come round in the camp's yard (its people's home), and one of its
 people says how you got back (a Haven man, a Bastion medic, a Red Hand crewman, a Halcyon orderly).
 
+**Coming back after a logout.** ✅ A character who left alive (logged out, lost the connection, or
+the server stopped) comes back **where they left off**, never at a camp or a random start (the
+author: no random respawn on logging back in). Each server tick, and once more as they leave, the
+server keeps where each living character stands and what they carry (`RZ_Character.Take`: the
+profile's `m_bLeftAlive`, `m_fLeft*`, `m_aLeftItems`, quest items as data); a death clears it. On
+the next spawn the spawn handler puts them there (on the floor they stood on; more than 40 m above
+the ground, on the ground), the loadout's carried things are swapped for what they carried, the
+quest items come back by the death's path, and the card says *"You're back where you left off."*
+No kit trimming, no death counted. *Simplified:* what they wear comes back as the background's
+loadout wears it (changed clothes aren't kept); a magazine keeps its rounds (VERIFY in
+`RZ_Character.c`); a weapon comes back as its prefab spawns, in the pack, not in the hands. Log:
+`Character: <player> comes back where they left off (<grid>)`, `Character: <player> came back with
+<k> of <n> things`.
+
 **The kit.** What you wear stays (clothes, vest, helmet, pack). Of what the loadout carried, one
 bandage, one water bottle and the background's own tool (the Mechanic's wrench, the Radio
 Operator's radio, the Nurse's and Doctor's dressing) stay; every weapon, magazine, round and
