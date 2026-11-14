@@ -76,6 +76,10 @@ class RZ_HandsOnGame
 	bool Act(int index, int playerId) { return false; }
 
 	//------------------------------------------------------------------------------------------------
+	//! Once a second while it's open (a game that runs by itself: the stove). True: send it again.
+	bool Tick(float dt) { return false; }
+
+	//------------------------------------------------------------------------------------------------
 	//! The view closed (the player, the guard, the game).
 	void Closed(int playerId) {}
 
@@ -237,6 +241,20 @@ class RZ_HandsOn
 		foreach (int s : shut)
 		{
 			Close(s);
+		}
+
+		// Games that run by themselves move on, and whoever has them open sees it
+		array<int> resend = {};
+		foreach (int tp, RZ_HandsOnGame tg : s_mGames)
+		{
+			if (tg.Tick(1))
+				resend.Insert(tp);
+		}
+
+		foreach (int r : resend)
+		{
+			if (s_mGames.Contains(r))
+				Send(r);
 		}
 
 		if (s_mGames.IsEmpty())

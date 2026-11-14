@@ -235,7 +235,9 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		m_iNeed = RZ_ENeed.FOOD;
 		m_sThread = "took a turn in the kitchen";
 		Task("Peel and chop for the pot", RZ_EWork.BENCH, "Peel and chop", 18, false, "Peel and chop at the kitchen table at {here}, then tell {giver}.", 3);
-		Task("Mind the pot", RZ_EWork.HANDS, "Stir the pot", 20, false, "Stir the pot on the stove at {here}, then tell {giver}.", 3).Look(LOOK_POT);
+		RZ_ErrandWay pot = Task("Mind the pot", RZ_EWork.HANDS, "Stir the pot", 20, false, "Stir the pot on the stove at {here}, then tell {giver}.", 3);
+		pot.Look(LOOK_POT);
+		pot.m_bStove = true;
 		Task("Serve the line", RZ_EWork.HANDS, "Ladle supper out", 16, false, "Ladle supper out to the line at {here}, then tell {giver}.", 3).Look(LOOK_POT);
 		RZ_ErrandWay give = Way("give");
 		give.m_sLabel = "Put two tins in the pot";

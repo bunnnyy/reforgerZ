@@ -1181,6 +1181,10 @@ it instead of the object menu's list, for a client that can show it:
 Pad: D-pad or left stick between the places, **A** looks, **X / Y / R3** the buttons, **B** closes. Keys:
 arrows, Enter, R / F / V, Esc. Mouse: click a place or a button (each lights under the cursor), the X.
 
+A game that runs by itself ticks once a second while it's open: **the stove** (the kitchen's Stir the
+pot, [ERRANDS.md](ERRANDS.md#minding-the-pot)) is the pot up close, its fire raised and lowered with the
+buttons, stirred and tasted at its places.
+
 It's one prop of the game, never the whole game: you still walk to each subject, take it up with your
 hands and carry it to its place. The server holds the truth and checks every look. It closes when you
 walk more than 6 m off. **Fallback:** a client that can't open it says so and gets the object menu's

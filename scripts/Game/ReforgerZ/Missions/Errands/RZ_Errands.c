@@ -1234,11 +1234,19 @@ class RZ_Errands
 		if (hold <= 0)
 			hold = RZ_WorkSites.HoldFor(w.m_fSeconds);
 
+		// The stove: a short press opens it up close, where the cooking is the work
+		if (w.m_bStove)
+			hold = 1.5;
+
 		if (sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, at, e.m_iAsker, before, "", yaw, inside) < 0)
 			return false;
 
 		if (w.m_bPerson)
 			sites.SetPerson(key, PersonPrefab(), w.m_bPersonLies);
+
+		// The stove: its press opens the pot up close, and the cooking is the work
+		if (w.m_bStove)
+			sites.SetGame(key, new RZ_StoveHandsOn(key, e.m_iAsker));
 
 		if (w.m_bUnseen)
 			sites.SetUnseen(key);

@@ -276,7 +276,8 @@ class RZ_WorkSites
 	protected ref RZ_Carries m_Carries;
 	protected ref array<ref RZ_WorkSite> m_aSites = {};
 	protected ref array<ref RZ_WorkChoice> m_aChoices = {};
-	protected ref map<string, ref RZ_HandsOnGame> m_mHands = new map<string, ref RZ_HandsOnGame>();	// choices shown up close (RZ_HandsOn) instead of as a list
+	protected ref map<string, ref RZ_HandsOnGame> m_mHands = new map<string, ref RZ_HandsOnGame>();
+	protected ref map<string, ref RZ_HandsOnGame> m_mGames = new map<string, ref RZ_HandsOnGame>();	// sites whose work is a game up close (the stove): its press opens it, it says when it's done	// choices shown up close (RZ_HandsOn) instead of as a list
 	protected int m_iNextId = 1;
 	protected float m_fClock;
 	protected float m_fSpawnTimer;
@@ -820,6 +821,37 @@ class RZ_WorkSites
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Site `key`'s work is `game`, up close (Interactions/RZ_HandsOn.c): pressing its prompt opens it
+	//! for a client that can show it (others hold the prompt as before); the game calls Complete.
+	void SetGame(string key, RZ_HandsOnGame game)
+	{
+		if (game)
+			m_mGames.Set(key, game);
+		else
+			m_mGames.Remove(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Site `key` done by `playerId`, as a finished hold (a game up close won).
+	void Complete(string key, int playerId)
+	{
+		RZ_WorkSite s = Find(key);
+		if (s && !s.m_bDone)
+			Finish(s, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The prop standing at site `key` now (its look while it's to do), or null.
+	IEntity BoxOf(string key)
+	{
+		RZ_WorkSite s = Find(key);
+		if (!s)
+			return null;
+
+		return s.m_Box;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! As if the player had picked site `siteKey` from the choice's list: its prompt waits for their
 	//! hold (the hands-on view's buttons that are work done with the body, like taking someone up).
 	void ArmChoice(string key, string siteKey, int playerId)
@@ -1193,6 +1225,14 @@ class RZ_WorkSites
 			if (gm)
 				gm.NotifyPlayer(playerId, s.m_sLabel, "They'd see you like that. Get low, keep out of the light, and start again.");
 
+			return;
+		}
+
+		// Work that's a game up close (the stove): the press opens it; the game says when it's done
+		RZ_HandsOnGame game = m_mGames.Get(s.m_sKey);
+		if (game && RZ_HandsOn.CanShow(playerId))
+		{
+			RZ_HandsOn.Open(playerId, game);
 			return;
 		}
 
@@ -1675,6 +1715,13 @@ class RZ_WorkSites
 	//------------------------------------------------------------------------------------------------
 	protected void Drop(RZ_WorkSite s)
 	{
+		RZ_HandsOnGame game = m_mGames.Get(s.m_sKey);
+		if (game)
+		{
+			RZ_HandsOn.CloseGame(game);
+			m_mGames.Remove(s.m_sKey);
+		}
+
 		DeleteProps(s);
 		m_aSites.RemoveItem(s);
 	}

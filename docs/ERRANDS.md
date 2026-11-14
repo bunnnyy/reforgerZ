@@ -592,7 +592,7 @@ hands at a [work site](#work-sites) at the place (or behind it), then back to th
 
 | Duty | Rung | Their own work (roles) | Haven | Bastion | Red Hand | Halcyon | Tasks (one a run) and ways | Pay | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| Kitchen | 1 | cook, storekeeper, farmer | Kitchen Duty | Mess Duty | Feeding the Crew | Canteen | Peel and chop (18 s) · Stir the pot (20 s) · Ladle supper out (16 s), both at the cook pot. Or **put two tins in the pot**, or **a leg of raw meat** (a deer's, [DESIGN.md](DESIGN.md#wildlife)) | 3 Favor; the tins 4 Favor and +1 food at a house, the meat 4 Favor and +2 (a house is fed by duties twice a season day at most) | ✅ |
+| Kitchen | 1 | cook, storekeeper, farmer | Kitchen Duty | Mess Duty | Feeding the Crew | Canteen | Peel and chop (18 s) · Stir the pot (20 s) · Ladle supper out (16 s), both at the cook pot (**Stir the pot** is [minded up close](#minding-the-pot)). Or **put two tins in the pot**, or **a leg of raw meat** (a deer's, [DESIGN.md](DESIGN.md#wildlife)) | 3 Favor; the tins 4 Favor and +1 food at a house, the meat 4 Favor and +2 (a house is fed by duties twice a season day at most) | ✅ |
 | Wood and water | 1 | storekeeper, farmer, mechanic, technician | Wood and Water | Fatigues | Earn Your Keep | The Boiler | Split the wood (18 s, at the woodpile) · Fill the water cans (15 s) · **Carry the crates in**: three crates from outside, one by one, stacked indoors ([carried for real](#carried-for-real)) | 3 Favor | ✅ |
 | Washing down | 1 | nurse, medic, lab assistant, clerk | Washing Down | Hygiene Detail | The Scrub | Decontamination, Minor | Scrub the tables (18 s) · Wash and hang the bedding (16 s, at the washing line) · Sluice the yard (18 s, a bucket) | 3 Favor | ✅ |
 | The line | 2 | nurse, medic, lookout, sentry, guard, toll man | The Line at the Door | The Wash-Down | The Look-Over | Intake | [A sorting duty](#the-sorting-duties): the people waiting at the gate. Take each by the arm to **the holding room** (a bite, clouded eyes), **the wash** (a fever) or **through the gate** | Up to 6 Favor by how many you got right; 1 Fame if every one | ✅ |
@@ -610,6 +610,22 @@ hands at a [work site](#work-sites) at the place (or behind it), then back to th
 | A cull | 4 | lookout, sentry, guard, farmer | The Strays | Clearing the Wire | — | — | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
 | The animal house | 4 | lab assistant, technician | — | — | — | The Animal House | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
 
+
+### Minding the pot
+
+The kitchen duty's **Stir the pot** is played at the real cook pot in the
+[hands-on view](UI.md#the-hands-on-view) (`RZ_StoveHandsOn`): a short press on its prompt opens it.
+
+| | |
+|---|---|
+| The fire | Yours: **More wood** and **Rake the fire down** (the panel's buttons, 0 to 4). The pot follows it slowly: cold, warming, simmering, boiling hard, boiling over |
+| Cooking | Twenty seconds at a simmer, stirred lately and nothing stuck, and it's done: the step is done, as the hold was. The status line counts it |
+| Stir it | A place on the pot: resets the clock. Hot and not stirred for 9 s, it catches (no cooking till it's scraped off with a stir); 16 s, it burns through and is started again (nothing lost but the time) |
+| Taste it | A place on the pot: says what it wants (more heat, keep it so, calm the fire) |
+| Boiling over | Too much fire: it spills, and the third time the fire is half drowned |
+| Pay | The chore's own 3 Favor, nothing more |
+
+Every turn is said in the panel's **What you found**. A client without the view holds the prompt as before.
 
 ### The sorting duties
 
