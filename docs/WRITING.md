@@ -94,7 +94,10 @@ hard edges are each faction's in [LORE.md](LORE.md#the-factions-as-people).
   talks like a neighbour on a doorstep: plain, relieved, a little embarrassed, never an institution.
   Nobody is new, so they never say you're new and never explain the Zone: the story comes one piece a
   step, in their own life (*"My brother tried the river road. The loudspeaker said his name. Then it
-  didn't."*), and the ask comes in their own need, never as a lesson.
+  didn't."*), and the ask comes in their own need, never as a lesson. They ask who you were in
+  passing, as a guess from how you stand or what you carry (*"Those hands have seen engines."*), never
+  as a form; your background's way through their favour is said in your own trade's voice (*"Leave the
+  key. Knocking is my job."*), dry, and their thanks are about their problem, not about you.
   - **Someone from before** knew you through your background: one shared detail from before (the
     stitches, the van, the apple every morning). Each background has a line for each reason: in
     the hiding place they'd stopped knocking; with your group gone they're the one who came back

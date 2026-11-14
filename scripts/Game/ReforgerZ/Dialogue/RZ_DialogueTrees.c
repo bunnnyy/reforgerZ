@@ -1508,6 +1508,16 @@ class RZ_DialogueTrees
 				d++;
 		}
 
+		// A good liar (Backgrounds/RZ_Habits.c): the first persuade of this conversation, one step easier
+		if (c.m_sCheck == "persuade" && RZ_Habits.IsLiar(ctx.m_iPlayer))
+		{
+			if (ctx.m_sLiarOn.IsEmpty())
+				ctx.m_sLiarOn = c.m_sId;
+
+			if (ctx.m_sLiarOn == c.m_sId)
+				d--;
+		}
+
 		return Math.ClampInt(d, 1, 4);
 	}
 

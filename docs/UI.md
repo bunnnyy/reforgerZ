@@ -476,6 +476,9 @@ samples' worth, about 4 days of work.", [DESIGN.md](DESIGN.md#cure-research-and-
 One menu with five tabs, in this order: **Standing, Quests, Radio, Journal, The season.** The map
 key isn't a tab: it's on the map ([The map](#the-map)). The hall of fame is part of The season.
 
+The Standing page's header ends with the character's habit, when it has one (*"HABIT: STEADY HANDS
+(holds at work 10% shorter)"*: the `H` record's sixth field, [DESIGN.md](DESIGN.md#habits)).
+
 | Open it | Keyboard and mouse | Gamepad / console |
 |---|---|---|
 | A key | **N** (`RZ_OpenNotebook`): the notebook item comes into your hand, then the notebook opens; without the item, it just opens | **View + RB**, the same |

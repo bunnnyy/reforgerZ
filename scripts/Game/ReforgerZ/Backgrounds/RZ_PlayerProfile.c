@@ -34,6 +34,10 @@ class RZ_PlayerProfile
 	ref array<int> m_aFog = {};
 	string m_sFogGrid;
 
+	// The habit (Backgrounds/RZ_Habits.c): picked at the opening's door, kept for the character
+	int m_iHabit;						// RZ_EPlayerHabit
+	int m_iHabitLife = -1;				// the character it belongs to (RZ_OpeningCase.CharacterStamp)
+
 	// The quest tracker (UI/RZ_Quests.c): the job this player follows, kept across relogs
 	int m_iTrackedId;					// its journal row id, 0 = none
 	string m_sTrackedTitle;				// its title, to find it again after a restart
