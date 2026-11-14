@@ -15,7 +15,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 
 | System | Design |
 |---|---|
-| Settlement detection, rotating spawn points, mission announcements, per-player map icons (vanilla text markers without them); the map's fog of war (only the ground this character has seen; walking, high ground, found maps, boards, asking about the roads and friends' camps reveal it; places as rumours until seen: [UI.md](UI.md#the-maps-fog)) | [Settlements](DESIGN.md#settlements-spawn-points-and-the-map) |
+| Settlement detection, rotating spawn points, mission announcements, per-player map icons (vanilla text markers without them); the map's fog of war (only the ground this character has seen; walking, high ground, found maps, boards, asking about the roads and friends' camps reveal it; places show only once seen: [UI.md](UI.md#the-maps-fog)) | [Settlements](DESIGN.md#settlements-spawn-points-and-the-map) |
 | The Director: four outbreak stages, infection spread, paced for a season of about 45 real days from about 2 to 20 regulars (research scaled to the last week's player-hours; season speed and cure pace for other season lengths; `tools/pacing_sim.py` checks the tuning) | [The Director](DESIGN.md#the-director-outbreak-stages-and-spread), [Season pacing](DESIGN.md#season-pacing) |
 | Heat from presence, vehicles, gunfire (suppressors quieter), noisemakers; hordes toward noise | [Heat and noise](DESIGN.md#heat-and-noise) |
 | Stealth: each player's visibility (stance, speed, light, weather, noise), the infected near them seeing the most visible player, losing a hidden player (search, then give up), gentler mission sight and notice checks for someone lying low, visibility on the HUD; any zombie mod (perception, or by distance) | [Stealth](DESIGN.md#stealth) |
@@ -417,6 +417,7 @@ In this order, because later ones depend on earlier ones:
 |---|---|
 | Supply drops, airdrops, the Supply Plane Crash event | The Zone is sealed: nothing comes in from outside |
 | Choosing where you start (the spawn screen's place picker, the safehouses as spawn points) | Every life starts at a random place that fits the background; no chosen starts (the author's call, 2026-11-12) |
+| The map's places as rumours (a "somewhere here" ring before a place is seen) and a see-through fog | The author's play-test: the unseen map is hidden fully, places included (2026-11-14) |
 | The talk screen opening by itself (an opening's contact speaking first at spawn and at each step, greets that opened at a distance) | The author's play-test: it should wait for you to interact; they call out as a subtitle instead, and the opening's first objective is to talk to them |
 | The spawn scenarios (a small clue by wherever you came to) | Every life has an opening now; their six clues stand in its scenes |
 | Our own Treat their wounds action on other players (its timer, cooldown and first-aid kit rule) | The game's own heal on another character already does it; only a Nurse's or Doctor's slowing of a bite is kept, on vanilla's heal |

@@ -1525,7 +1525,7 @@ stays seen). Code: `World/RZ_MapFog.c` (the server), `UI/RZ_MapFogDraw.c` (the d
 
 | Part | How |
 |---|---|
-| **The fog** | Unseen ground is under a dark grey layer (#2E3032 at **How dark**, 0.82), so the roads and the coast still show faintly through it. It's drawn on a canvas the icon layer makes first in the map's root, under the markers and the search area, so it needs only `RZ_MapIconsUI` on the map config (no layout) |
+| **The fog** | Unseen ground is under a solid dark grey layer (#2E3032 at **How dark**, 1), so nothing of it shows: not its roads, coast or names. Past the edge of the fog's grid (the sea, the map's margins) the layer goes on another 30 km, so no edge of the map shows. It's drawn on a canvas the icon layer makes first in the map's root, under the markers and the search area, so it needs only `RZ_MapIconsUI` on the map config (no layout) |
 | **Walking** | Reveals **Reveal radius** (150 m) round you each time you enter a new square |
 | **High ground** | **High radius** (400 m) while you stand **Tower height** (6 m) above the ground under you (a tower, a roof), or your ground is **Hill rise** (35 m) above the average of the land 400 m round; looked at as you move and every 10 s standing still |
 | **A found map** | A paper map put out as loot (not the one every life starts with) reveals its town, the settlement's radius plus 150 m and at least **Town radius** (500 m), once you carry it (looked for every 5 s); a line on the notice card says so |
@@ -1533,11 +1533,9 @@ stays seen). Code: `World/RZ_MapFog.c` (the server), `UI/RZ_MapFogDraw.c` (the d
 | **Asking about the roads** | The Haven's service (Known) also reveals a strip **Road strip** (200 m) wide from where you stand to the place of the job you track |
 | **Friends' camps** | Every 30 s, a faction you're Known with shares **Camp radius** (300 m) round each of its holdings; the Haven, round its safehouses too |
 
-**Places as rumours.** The places the map names (the lab, strongholds, outposts, safehouses, the
-power and radio stations, the sealed checkpoints) show their marker once their square is seen.
-Before that, a place everyone knows of is a **rumour**: a range ring 350 m round a spot off the
-place (the same spot every time, never the place), labelled "Safehouse, somewhere here". Your
-objective and the packs' rings are as above. **Places as rumours** off: the markers as before.
+**Places once seen.** The places the map names (the lab, strongholds, outposts, safehouses, the
+power and radio stations, the sealed checkpoints) show their marker once their square is seen, and
+nothing before that. Your objective and the packs' rings are as above.
 
 **The data.** One bit per square (**Square**, 100 m; at most 256 a side: Everon is 128 × 128, about
 2 KB), kept on the player's profile (`m_aFog`, with `m_sFogGrid`, the grid it was kept for; another

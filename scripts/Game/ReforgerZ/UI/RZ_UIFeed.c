@@ -1291,17 +1291,14 @@ class RZ_UIFeed
 
 	//------------------------------------------------------------------------------------------------
 	//! A place on the map: its pin once this player has seen its ground (the map's fog, World/RZ_MapFog.c),
-	//! else a rumour, a rough circle somewhere round it ("Safehouse, somewhere here"). With the fog
-	//! off, or its rumours off, the pin as before.
+	//! else nothing at all. With the fog off, the pin as before.
 	protected string PlaceEntry(int playerId, string icon, int faction, vector pos, string label)
 	{
 		RZ_MapFog fog = m_GM.GetMapFog();
-		if (!fog || !fog.RumoursOn() || fog.Seen(playerId, pos))
+		if (!fog || !fog.IsOn() || fog.Seen(playerId, pos))
 			return MapEntry(icon, faction, pos, label);
 
-		vector c = RZ_MapFog.RumourCentre(pos);
-		RZ_UILine ln = new RZ_UILine("P");
-		return ln.Add("marker_range").AddInt(-1).AddInt(RZ_Util.RoundToInt(c[0])).AddInt(RZ_Util.RoundToInt(c[2])).Add(label + ", somewhere here").AddInt(RZ_Util.RoundToInt(RZ_MapFog.RumourRadius())).End();
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
