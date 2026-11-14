@@ -1228,11 +1228,11 @@ class RZ_FactionPerks
 		if (m_GM.GetTownMemory())
 			m_GM.GetTownMemory().RecordJournal(victim, at);
 
-		// Haven Champion perk "Remembered": the Haven mourns them and greets their kin
+		// Haven Champion perk "Remembered" waits for the character's end (a reset), not a death
 		m_aHarbourTold.RemoveItem(victim);
-		RZ_Safehouses houses = m_GM.GetSafehouses();
-		if (houses && RZ_Reputation.IsAtLeast(m_GM.GetTier(victim, RZ_EFaction.SURVIVORS), RZ_ETier.CHAMPION))
-			houses.OnChampionFallen(victim, at);
+		// The character goes on: quest items held for coming round, the bite gone with the body
+		// (Backgrounds/RZ_Character.c); last, so everything above saw the death as it was
+		RZ_Character.OnDied(m_GM, victim, body, at);
 
 		StandDownHunters(victim, at, players);
 		PayBounty(victim, killer);

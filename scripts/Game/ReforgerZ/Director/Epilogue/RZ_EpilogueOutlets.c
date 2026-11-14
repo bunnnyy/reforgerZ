@@ -297,10 +297,10 @@ class RZ_EpiOutlets
 			return;
 		}
 
-		string lifeKey = string.Format("%1|%2", p.m_sIdentity, p.m_iLives);
+		string lifeKey = string.Format("%1|%2", p.m_sIdentity, p.m_iCharacter);
 		if (s.dosed.Contains(lifeKey))
 		{
-			m_GM.NotifyPlayer(playerId, title, "You've had yours this life. One each. The old ways work as well as they ever did.");
+			m_GM.NotifyPlayer(playerId, title, "You've had yours this character. One each. The old ways work as well as they ever did.");
 			return;
 		}
 

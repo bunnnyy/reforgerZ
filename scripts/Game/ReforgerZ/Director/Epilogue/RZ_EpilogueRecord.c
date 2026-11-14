@@ -243,7 +243,7 @@ class RZ_EpiRecord
 			}
 
 			if (kos)
-				AddKos(p.m_sIdentity, p.m_iLives, step);
+				AddKos(p.m_sIdentity, p.m_iCharacter, step);
 		}
 	}
 

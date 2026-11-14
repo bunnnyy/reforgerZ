@@ -194,7 +194,7 @@ class RZ_RepGates
 		p.EnsureArrays();
 		int cell = RZ_RepNames.GetRep(p.GetFame(f), p.GetInfamy(f));
 		string deed = p.m_aBestDeed[f];
-		int stamp = p.m_iLives * 100000 + cell * 1000 + Math.AbsInt(deed.Hash()) % 1000;
+		int stamp = p.m_iCharacter * 100000 + cell * 1000 + Math.AbsInt(deed.Hash()) % 1000;
 		string key = p.m_sIdentity + "|" + place;
 		int last;
 		if (m_mLast.Find(key, last) && last == stamp)

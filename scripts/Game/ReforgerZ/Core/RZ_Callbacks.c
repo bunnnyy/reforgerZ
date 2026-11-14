@@ -17,7 +17,7 @@
 class RZ_Callback
 {
 	string ident;		// "" = the system pool
-	int life;			// the profile's life number it belongs to (m_iLives)
+	int life;			// the profile's life number it belongs to (m_iCharacter)
 	string title;		// the speaker or the card's title
 	string text;
 	string boardNote;	// at death: this goes on the nearest board, unsigned ("" = nothing)
@@ -72,7 +72,7 @@ class RZ_Callbacks
 
 		RZ_Callback c = Make(title, text, subject, boardNote);
 		c.ident = p.m_sIdentity;
-		c.life = p.m_iLives;
+		c.life = p.m_iCharacter;
 		c.dueSeconds = p.m_fLifeSeconds + hours * 3600;
 		m_aList.Insert(c);
 		RZ_Log.Info(string.Format("Callbacks: queued for %1 in %2 h of play: %3", RZ_Util.PlayerName(playerId), hours, title));
@@ -158,7 +158,7 @@ class RZ_Callbacks
 				if (RZ_Util.DistXZ(ent.GetOrigin(), Vector(c.x, 0, c.z)) > m_Settings.m_fCallbackRadius)
 					continue;
 
-				bool mine = c.ident == p.m_sIdentity && c.life == p.m_iLives && p.m_fLifeSeconds >= c.dueSeconds;
+				bool mine = c.ident == p.m_sIdentity && c.life == p.m_iCharacter && p.m_fLifeSeconds >= c.dueSeconds;
 				bool world = c.ident.IsEmpty() && today >= c.dueSeconds;
 				if (mine || world)
 				{

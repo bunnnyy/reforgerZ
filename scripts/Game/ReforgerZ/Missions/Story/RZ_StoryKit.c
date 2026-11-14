@@ -255,7 +255,7 @@ class RZ_StoryKit
 		if (playerId > 0)
 			p = gm.GetProfile(playerId);
 
-		if (p && p.m_iLives == life)
+		if (p && p.m_iCharacter == life)
 		{
 			if (gm.GetFacts())
 				gm.GetFacts().SetFlag(SulkKey(ident, life, faction), RZ_Util.RoundToInt(p.m_fLifeSeconds) + SULK_SECONDS);
@@ -287,7 +287,7 @@ class RZ_StoryKit
 			return false;
 
 		RZ_PlayerProfile p = gm.GetProfile(playerId);
-		return p.m_fLifeSeconds < gm.GetFacts().Flag(SulkKey(p.m_sIdentity, p.m_iLives, l.m_eFaction));
+		return p.m_fLifeSeconds < gm.GetFacts().Flag(SulkKey(p.m_sIdentity, p.m_iCharacter, l.m_eFaction));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -357,7 +357,7 @@ class RZ_StoryKit
 				continue;
 			}
 
-			RZ_ErrandOwed o = RZ_ErrandOwed.Make(m.m_eGiver, fame, favor, m.m_sTitle, p.m_iLives);
+			RZ_ErrandOwed o = RZ_ErrandOwed.Make(m.m_eGiver, fame, favor, m.m_sTitle, p.m_iCharacter);
 			o.applyRivals = !m.m_bHasRival;
 			o.deed = m.DeedPhrase(gm);
 			o.amends = m.m_bAmends && !m.m_Story.m_Deciding.IsDirtyIdent(ident);
@@ -374,7 +374,7 @@ class RZ_StoryKit
 			}
 
 			errands.AddOwed(ident, o);
-			RZ_Log.Info(string.Format("Story: %1 pays %2 at their next join, life %3 (%4 Fame, %5 Favor)", m.m_sTitle, ident, p.m_iLives, fame, favor));
+			RZ_Log.Info(string.Format("Story: %1 pays %2 at their next join, life %3 (%4 Fame, %5 Favor)", m.m_sTitle, ident, p.m_iCharacter, fame, favor));
 		}
 	}
 

@@ -150,14 +150,14 @@ class RZ_MajorRest
 	{
 		RZ_PlayerProfile p = gm.GetProfile(playerId);
 		if (p && !p.m_sIdentity.IsEmpty())
-			RZ_WorldFacts.Get().SetFlag(string.Format("roster.%1.%2", p.m_sIdentity, p.m_iLives), 1);
+			RZ_WorldFacts.Get().SetFlag(string.Format("roster.%1.%2", p.m_sIdentity, p.m_iCharacter), 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static bool IsOnRoster(RZ_GameModeComponent gm, int playerId)
 	{
 		RZ_PlayerProfile p = gm.GetProfile(playerId);
-		return p && RZ_WorldFacts.Get().Flag(string.Format("roster.%1.%2", p.m_sIdentity, p.m_iLives)) != 0;
+		return p && RZ_WorldFacts.Get().Flag(string.Format("roster.%1.%2", p.m_sIdentity, p.m_iCharacter)) != 0;
 	}
 
 	//------------------------------------------------------------------------------------------------

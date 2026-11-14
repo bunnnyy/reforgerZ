@@ -934,7 +934,7 @@ class RZ_StandingPage : RZ_NotebookPage
 			left = RZ_UIText.Int(f, 12);
 
 		if (infamy > 0 && left >= 0)
-			see += string.Format("\nLeft to forgive this life: %1 Infamy", left);
+			see += string.Format("\nLeft to forgive this character: %1 Infamy", left);
 
 		if (RZ_Reputation.IsHunted(tier))
 			see += "\nHunter squads are out for you.";
@@ -1445,7 +1445,7 @@ class RZ_JournalPage : RZ_NotebookPage
 			return "Heard of: a rough area. Read: its ground. Mapped: where it lies up. Read and Mapped are rings on the map.";
 
 		if (kind == RZ_EMissionKindUI.DOORS)
-			return "What people wrote on doors, as you read it. It goes with this life.";
+			return "What people wrote on doors, as you read it. It goes with this character.";
 
 		if (kind == RZ_EMissionKindUI.FINALE)
 			return "The lab's readout by faction, never by player. Lock counts are never shown.";

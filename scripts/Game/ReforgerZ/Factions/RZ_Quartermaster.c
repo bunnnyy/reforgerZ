@@ -539,7 +539,7 @@ class RZ_FactionShopAction : ScriptedUserAction
 	protected string OnceKey(RZ_GameModeComponent gm, int playerId)
 	{
 		RZ_PlayerProfile p = gm.GetProfile(playerId);
-		return string.Format("shop.once.%1.%2.%3", p.m_sIdentity, p.m_iLives, m_sItemPrefab);
+		return string.Format("shop.once.%1.%2.%3", p.m_sIdentity, p.m_iCharacter, m_sItemPrefab);
 	}
 
 	//------------------------------------------------------------------------------------------------

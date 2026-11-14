@@ -500,8 +500,14 @@ modded class SCR_SpawnPointSpawnHandlerComponent
 		if (!super.PrepareEntity_S(requestComponent, entity, data))
 			return false;
 
+		// A character who goes on comes round at a camp (Backgrounds/RZ_Character.c); a new one gets
+		// the opening's rolled place
+		RZ_GameModeComponent rz = RZ_GameModeComponent.GetInstance();
+		if (rz && entity && requestComponent && RZ_Character.PlaceComeRound(rz, requestComponent.GetPlayerId(), entity))
+			return true;
+
 		RZ_Openings openings = RZ_Openings.Get();
-		if (openings && entity && requestComponent)
+		if (openings && entity && requestComponent && !(rz && rz.GetProfile(requestComponent.GetPlayerId()).HasCharacter()))
 			openings.PlaceSpawn(requestComponent.GetPlayerId(), entity);
 
 		return true;
@@ -514,7 +520,7 @@ modded class SCR_SpawnPointSpawnHandlerComponent
 	{
 		RZ_Openings openings = RZ_Openings.Get();
 		SCR_BaseGameMode gm = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
-		if (openings && entity && requestComponent && data && gm && openings.Moved(requestComponent.GetPlayerId()))
+		if (openings && entity && requestComponent && data && gm && (openings.Moved(requestComponent.GetPlayerId()) || RZ_Character.Moved(requestComponent.GetPlayerId())))
 		{
 			if (!data.GetSkipPreload() && gm.CanStartSpawnPreload())
 				requestComponent.StartSpawnPreload(entity.GetOrigin());

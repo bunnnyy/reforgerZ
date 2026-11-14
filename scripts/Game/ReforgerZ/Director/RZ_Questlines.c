@@ -125,7 +125,7 @@ class RZ_QuestPart
 	int m_iStage;
 	int m_iApproach;
 	string m_sDid;
-	int m_iLife = -1;	// which of their lives took part (RZ_PlayerProfile.m_iLives): a new life isn't in it
+	int m_iLife = -1;	// which of their characters took part (RZ_PlayerProfile.m_iCharacter): a new character isn't in it
 }
 
 //------------------------------------------------------------------------------------------------
@@ -341,13 +341,13 @@ class RZ_QuestRun
 
 			if (approach == RZ_EQuestApproach.NONE && p.m_iApproach != RZ_EQuestApproach.NONE)
 			{
-				p.m_iLife = gm.GetProfile(playerId).m_iLives;
+				p.m_iLife = gm.GetProfile(playerId).m_iCharacter;
 				return;
 			}
 
 			p.m_iApproach = approach;
 			p.m_sDid = what;
-			p.m_iLife = gm.GetProfile(playerId).m_iLives;
+			p.m_iLife = gm.GetProfile(playerId).m_iCharacter;
 			return;
 		}
 
@@ -360,7 +360,7 @@ class RZ_QuestRun
 		part.m_iStage = m_iStage;
 		part.m_iApproach = approach;
 		part.m_sDid = what;
-		part.m_iLife = gm.GetProfile(playerId).m_iLives;
+		part.m_iLife = gm.GetProfile(playerId).m_iCharacter;
 		m_aParts.Insert(part);
 	}
 
@@ -389,11 +389,11 @@ class RZ_QuestRun
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! This player took part in this life (the one they're living now). What a questline shows them
-	//! (the Quests tab, its start cards, its stage jobs offered) follows the life: a new character
-	//! never inherits the dead one's jobs. What the story remembers (IdentDid, the questlines' own
+	//! This player's character took part (the one they play now; a death doesn't end it, a reset
+	//! does). What a questline shows them (the Quests tab, its start cards, its stage jobs offered)
+	//! follows the character: a new character never inherits the last one's jobs. What the story remembers (IdentDid, the questlines' own
 	//! lines) stays by identity.
-	bool PlayerTookPartThisLife(RZ_GameModeComponent gm, int playerId)
+	bool PlayerTookPartThisCharacter(RZ_GameModeComponent gm, int playerId)
 	{
 		if (!gm || playerId <= 0)
 			return false;
@@ -404,7 +404,7 @@ class RZ_QuestRun
 
 		foreach (RZ_QuestPart p : m_aParts)
 		{
-			if (p.m_sIdent == profile.m_sIdentity && p.m_iLife == profile.m_iLives)
+			if (p.m_sIdent == profile.m_sIdentity && p.m_iLife == profile.m_iCharacter)
 				return true;
 		}
 
@@ -1190,7 +1190,7 @@ class RZ_Questlines
 		RZ_Util.GetAlivePlayers(ids, players);
 		foreach (int i, int pid : ids)
 		{
-			if (run.PlayerTookPartThisLife(m_GM, pid))
+			if (run.PlayerTookPartThisCharacter(m_GM, pid))
 				RZ_JobCards.MissionStarted(m_GM, pid, m, RZ_JobCards.FactionGiver(m), players[i]);
 		}
 	}
@@ -1820,7 +1820,7 @@ class RZ_Questlines
 		if (!run || run.m_bDone || playerId <= 0)
 			return false;
 
-		if (run.PlayerTookPartThisLife(m_GM, playerId))
+		if (run.PlayerTookPartThisCharacter(m_GM, playerId))
 			return true;
 
 		// The majors are the season's stories: everyone sees them (the journal's season view)

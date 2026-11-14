@@ -549,7 +549,7 @@ class RZ_RadioMenu : RZ_MenuBase
 			RZ_UIW.SetText(m_wRoot, "LogText" + idx, RZ_UIText.Clean(e.m_sText, LOG_CHARS));
 		}
 
-		string empty = "Nothing heard on it this life.";
+		string empty = "Nothing heard on it yet.";
 		if (state == "SCRAMBLED")
 			empty = "Chopped into pieces. A Radio Operator could put it back together.";
 		else if (state == "TOO FAINT")

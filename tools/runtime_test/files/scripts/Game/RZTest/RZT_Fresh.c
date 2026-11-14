@@ -59,16 +59,16 @@ class RZT_Fresh
 		s_bPartDone = true;
 		int id = RZT_Fake.ID;
 		RZ_PlayerProfile profile = gm.GetProfile(id);
-		int lives = profile.m_iLives;
+		int lives = profile.m_iCharacter;
 		int partsBefore = run.m_aParts.Count();
 		run.Did(gm, id, RZ_EQuestApproach.NONE, "the last life was there");
-		Check(run.PlayerTookPartThisLife(gm, id), "a part this life counts as this life's (" + run.m_Line.m_sTitle + ")");
+		Check(run.PlayerTookPartThisCharacter(gm, id), "a part this life counts as this life's (" + run.m_Line.m_sTitle + ")");
 		Check(q.IsVisibleTo(run, id), "the questline is in the journal of the life that took part");
-		profile.m_iLives = lives + 1;
-		Check(!run.PlayerTookPartThisLife(gm, id), "a new life doesn't inherit the last one's part");
+		profile.m_iCharacter = lives + 1;
+		Check(!run.PlayerTookPartThisCharacter(gm, id), "a new life doesn't inherit the last one's part");
 		Check(!q.IsVisibleTo(run, id), "the questline isn't in the new life's journal");
 		Check(run.PlayerTookPart(gm, id), "the story still remembers the player by identity");
-		profile.m_iLives = lives;
+		profile.m_iCharacter = lives;
 		if (run.m_aParts.Count() > partsBefore)
 			run.m_aParts.Remove(run.m_aParts.Count() - 1);
 
@@ -93,7 +93,7 @@ class RZT_Fresh
 
 		RZ_PlayerProfile profile = gm.GetProfile(id);
 		int guideLives = profile.m_iGuideLives;
-		int lives = profile.m_iLives;
+		int lives = profile.m_iCharacter;
 		profile.m_iGuideLives = 20;
 
 		// 1. The last life took part in a questline; the new life doesn't see it
@@ -116,9 +116,9 @@ class RZT_Fresh
 		{
 			partsBefore = run.m_aParts.Count();
 			run.Did(gm, id, RZ_EQuestApproach.NONE, "the last life was there");
-			Check(run.PlayerTookPartThisLife(gm, id), "a part this life counts as this life's");
-			profile.m_iLives = lives + 1;
-			Check(!run.PlayerTookPartThisLife(gm, id), "a new life doesn't inherit the last one's part in " + run.m_Line.m_sTitle);
+			Check(run.PlayerTookPartThisCharacter(gm, id), "a part this life counts as this life's");
+			profile.m_iCharacter = lives + 1;
+			Check(!run.PlayerTookPartThisCharacter(gm, id), "a new life doesn't inherit the last one's part in " + run.m_Line.m_sTitle);
 		}
 		else
 		{
@@ -194,7 +194,7 @@ class RZT_Fresh
 			run.m_aParts.Remove(run.m_aParts.Count() - 1);
 
 		profile.m_iGuideLives = guideLives;
-		profile.m_iLives = lives;
+		profile.m_iCharacter = lives;
 		Print(string.Format("RZT fresh: %1 checks, %2 failed", s_iChecks, s_iFails));
 		return true;
 	}

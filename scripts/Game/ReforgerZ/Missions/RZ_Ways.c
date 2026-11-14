@@ -153,7 +153,7 @@ class RZ_Ways
 
 		RZ_PlayerProfile profile = gm.GetProfile(playerId);
 		RZ_WorldFacts facts = gm.GetFacts();
-		string dayKey = string.Format("trick.%1.%2.%3.%4", profile.m_sIdentity, profile.m_iLives, faction, RZ_SeasonClock.Day());
+		string dayKey = string.Format("trick.%1.%2.%3.%4", profile.m_sIdentity, profile.m_iCharacter, faction, RZ_SeasonClock.Day());
 		if (facts && facts.Flag(dayKey) > 0)
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, "You've tried that on them once today. Twice and someone remembers.");

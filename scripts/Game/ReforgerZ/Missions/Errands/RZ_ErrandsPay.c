@@ -122,7 +122,7 @@ class RZ_ErrandsPay
 		RZ_PlayerProfile p = gm.GetProfile(playerId);
 		RZ_ErrandDeferred d = new RZ_ErrandDeferred();
 		d.ident = p.m_sIdentity;
-		d.life = p.m_iLives;
+		d.life = p.m_iCharacter;
 		d.faction = faction;
 		d.favor = favor;
 		d.title = e.m_sGiverTitle;
@@ -154,7 +154,7 @@ class RZ_ErrandsPay
 
 			int playerId = gm.FindPlayerByIdentity(d.ident);
 			m_aWaiting.Remove(i);
-			if (playerId <= 0 || gm.GetProfile(playerId).m_iLives != d.life)
+			if (playerId <= 0 || gm.GetProfile(playerId).m_iCharacter != d.life)
 				continue;
 
 			gm.AddFavor(playerId, faction, d.favor);

@@ -408,11 +408,11 @@ class RZ_TribePeople
 		RZ_TribeKnowing k;
 		if (m_mKnow.Find(p.m_sIdentity, k))
 		{
-			if (k.m_iLife == p.m_iLives)
+			if (k.m_iLife == p.m_iCharacter)
 				return k;
 
 			// A new character knows nothing
-			k.m_iLife = p.m_iLives;
+			k.m_iLife = p.m_iCharacter;
 			k.m_aTribe.Clear();
 			k.m_aLevel.Clear();
 			k.m_aHeard.Clear();
@@ -425,7 +425,7 @@ class RZ_TribePeople
 
 		k = new RZ_TribeKnowing();
 		k.m_sIdent = p.m_sIdentity;
-		k.m_iLife = p.m_iLives;
+		k.m_iLife = p.m_iCharacter;
 		m_mKnow.Set(p.m_sIdentity, k);
 		return k;
 	}
@@ -506,7 +506,7 @@ class RZ_TribePeople
 		if (profile && m_mRunsWith.Find(profile.m_sIdentity, runs))
 		{
 			tribes.Insert(0);
-			titles.Insert("Your last life");
+			titles.Insert("Your last character");
 			bys.Insert("");
 			wheres.Insert(vector.Zero);
 			briefs.Insert(runs);

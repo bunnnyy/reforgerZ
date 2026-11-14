@@ -181,12 +181,12 @@ class RZ_Locals
 		{
 			l.idents.Insert(profile.m_sIdentity);
 			l.memos.Insert(memo);
-			l.lives.Insert(profile.m_iLives);
+			l.lives.Insert(profile.m_iCharacter);
 		}
 		else
 		{
 			l.memos[i] = memo;
-			l.lives[i] = profile.m_iLives;
+			l.lives[i] = profile.m_iCharacter;
 		}
 
 		if (memo == "saved" || memo == "sold" || memo == "promised")
@@ -264,7 +264,7 @@ class RZ_Locals
 			return;
 		}
 
-		if (l.lives[i] != profile.m_iLives)
+		if (l.lives[i] != profile.m_iCharacter)
 		{
 			m_GM.Say(playerId, title, RZ_EFaction.SURVIVORS, "You've a look of someone. Never mind. Evening.");
 			return;

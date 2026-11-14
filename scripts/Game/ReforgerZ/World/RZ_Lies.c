@@ -61,7 +61,7 @@ class RZ_Lies
 		RZ_PlayerProfile profile = gm.GetProfile(playerId);
 		RZ_Lie lie = new RZ_Lie();
 		lie.ident = profile.m_sIdentity;
-		lie.life = profile.m_iLives;
+		lie.life = profile.m_iCharacter;
 		lie.key = key;
 		lie.subject = subject;
 		lie.faction = faction;
@@ -221,10 +221,10 @@ class RZ_Lies
 			trees.GetMemory().AddRegard(playerId, lie.speaker, "lied", 3);
 
 		// A conversation's lie: its choice's `found` effects (docs/DIALOGUE.md)
-		if (trees && profile && profile.m_iLives == lie.life)
+		if (trees && profile && profile.m_iCharacter == lie.life)
 			trees.OnLieFound(lie, playerId);
 
-		if (profile && profile.m_iLives == lie.life)
+		if (profile && profile.m_iCharacter == lie.life)
 		{
 			if (RZ_Factions.IsValid(lie.faction) && lie.infamy > 0)
 				gm.AddInfamy(playerId, lie.faction, lie.infamy, "a lie found out", RZ_RepFlag.SHARE);

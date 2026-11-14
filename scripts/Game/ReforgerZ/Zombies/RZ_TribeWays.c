@@ -582,7 +582,7 @@ class RZ_TribeWays
 		if (!profile)
 			return 0;
 
-		return profile.m_iLives;
+		return profile.m_iCharacter;
 	}
 
 	//------------------------------------------------------------------------------------------------

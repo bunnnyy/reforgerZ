@@ -472,7 +472,7 @@ class RZ_Epilogue
 			for (int f = 0; f < RZ_Factions.COUNT; f++)
 			{
 				// Wanted: Kill on Sight for 4 or more hours played in that life before the cure
-				if (p.GetTier(f) != RZ_ETier.KILL_ON_SIGHT || m_S.wantIdents.Count() >= 8 || !m_Record.LongWanted(p.m_sIdentity, p.m_iLives))
+				if (p.GetTier(f) != RZ_ETier.KILL_ON_SIGHT || m_S.wantIdents.Count() >= 8 || !m_Record.LongWanted(p.m_sIdentity, p.m_iCharacter))
 					continue;
 
 				m_S.wantIdents.Insert(p.m_sIdentity);

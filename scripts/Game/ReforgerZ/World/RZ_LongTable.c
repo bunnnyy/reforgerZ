@@ -530,9 +530,9 @@ class RZ_LongTable
 				continue;
 
 			// A new life: they don't know this face
-			if (mem.m_iLife != profile.m_iLives)
+			if (mem.m_iLife != profile.m_iCharacter)
 			{
-				mem.m_iLife = profile.m_iLives;
+				mem.m_iLife = profile.m_iCharacter;
 				mem.m_iMeals = 0;
 				mem.m_iFlags = 0;
 				mem.m_iBowlUnix = 0;
@@ -543,7 +543,7 @@ class RZ_LongTable
 
 		RZ_TableMemory made = new RZ_TableMemory();
 		made.m_sIdent = profile.m_sIdentity;
-		made.m_iLife = profile.m_iLives;
+		made.m_iLife = profile.m_iCharacter;
 		m_aMemory.Insert(made);
 		return made;
 	}
@@ -2681,7 +2681,7 @@ class RZ_LongTable
 				continue;
 
 			RZ_PlayerProfile profile = m_GM.FindProfileByIdentity(mem.m_sIdent);
-			if (!profile || profile.m_iLives != mem.m_iLife)
+			if (!profile || profile.m_iCharacter != mem.m_iLife)
 				continue;
 
 			int playerId = -1;

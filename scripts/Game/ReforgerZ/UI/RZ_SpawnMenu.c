@@ -658,7 +658,7 @@ class RZ_SpawnMenu : RZ_MenuBase
 			RZ_UIW.Icon(m_wRoot, "StateIcon", "status_door_locked");
 			RZ_UIW.SetText(m_wRoot, "StateText", "LOCKED");
 			RZ_UIW.Tint(m_wRoot, "StateText", RZ_UIColor.Dim());
-			string after = " Pick it now and you keep its gear, but you play as the default background this life.";
+			string after = " Pick it now and you keep its gear, but you play as the default background this character.";
 			if (RZ_UISettings.Get().m_bLockLoadouts)
 				after = " Until then you can't start as one.";
 
