@@ -142,6 +142,10 @@ airs at the next 20:30 as radio once the coda has run, and the walk at the 05:30
 box at the roll counts the tags brought home in the week. A per-life roster flag and a rank text are
 kept ([DESIGN.md](DESIGN.md#the-majors)).
 
+**Every night before it, too:** at the tallest mast, players hold the power while Bastion's radio
+officer calls Command, and nobody answers ([Bastion's last call](DESIGN.md#the-loops-relay-and-bastions-last-call));
+the nights are counted (`bastion.last_call`), and while this major runs he says they go in the CO's log.
+
 *Simplified:* the padding isn't covered post by post (one desk for the three posts), the curfew walk
 isn't offered, and the presence floor and the curfew aren't set.
 
