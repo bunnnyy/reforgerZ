@@ -1,0 +1,38 @@
+GenericEntity {
+ ID "19D72925139DE38B"
+ components {
+  RplComponent "{B9E3D0A22A02A0A1}" {
+  }
+  Hierarchy "{17270E787532C7BA}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{6D66A35ABDA08197}Prefabs/Props/Garbage/Military/Ammo/GarbageAmmunition_USSR_01.et" {
+   ID "A5F2C81CF9EF943A"
+   components {
+    Hierarchy "{433FA8DBC986F00E}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{0011A3CBD1B1212A}Prefabs/Props/Garbage/Military/Ammo/GarbageAmmunition_US_01.et" {
+   ID "439FCF17B121F6B2"
+   components {
+    Hierarchy "{4FBF39BC49938AE9}" {
+    }
+   }
+   coords 1.4 0 0.5
+   angles 0 70 0
+  }
+  GenericEntity : "{6D66A35ABDA08197}Prefabs/Props/Garbage/Military/Ammo/GarbageAmmunition_USSR_01.et" {
+   ID "E7BF05716A6C7E30"
+   components {
+    Hierarchy "{FB8B4E19B5EACCC8}" {
+    }
+   }
+   coords -1.2 0 0.9
+   angles 0 200 0
+  }
+ }
+}

@@ -40,6 +40,10 @@ class RZ_TalkSpeaker
 		if (obj && obj.GetMissionId() == RZ_OpeningFixer.TAG)
 			return new RZ_TalkFixer(owner, obj.GetObjectIndex());
 
+		// A road patrol's leader (Factions/RZ_RoadPatrols.c)
+		if (obj && obj.GetMissionId() == RZ_RoadPatrols.TAG)
+			return new RZ_TalkPatrol(owner, obj.GetObjectIndex());
+
 		// A quartermaster or the safehouse medic: their own actions are the replies
 		RZ_TalkAction talk = RZ_TalkAction.On(owner);
 		if (talk && !obj)

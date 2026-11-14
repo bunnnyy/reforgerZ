@@ -1,0 +1,8 @@
+SCR_AIGroup : "{6E725D44CA973C24}Prefabs/Groups/INDFOR/Group_FIA_SentryTeam.et" {
+ ID "0000000000000001"
+ coords 0 0 0
+ m_faction "BAND"
+ m_aUnitPrefabSlots {
+  "{83DB6D95360F0F5F}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_RedTop.et" "{6084D305DD046772}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Balaclava.et" "{68B6C1CFF30D8063}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Tracksuit.et" "{2CE403C9D321C6C2}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Hood.et"
+ }
+}

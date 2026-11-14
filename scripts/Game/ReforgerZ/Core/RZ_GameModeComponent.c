@@ -300,6 +300,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Supply trucks: truck and crew prefabs per faction, departures, unsticking, stock, shortages, escort and theft rewards (docs/DESIGN.md, Supply trucks)", category: "ReforgerZ|Territory")]
 	protected ref RZ_SupplySettings m_SupplySettings;
 
+	[Attribute(desc: "Road patrols: a faction's people walking the real roads out of its holdings and back, and a rare vehicle patrol, met by standing (docs/SITES.md, Road patrols)", category: "ReforgerZ|Territory")]
+	protected ref RZ_RoadPatrolSettings m_RoadPatrolSettings;
+
 	[Attribute(desc: "Faction life: needs, morale, radio chatter, life events, truces and feuds, remembered moments, rumours (docs/DESIGN.md, Factions in the background)", category: "ReforgerZ|Territory")]
 	protected ref RZ_FactionLifeSettings m_FactionLifeSettings;
 
@@ -496,6 +499,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Territory m_Territory;
 	protected ref RZ_Looks m_Looks;
 	protected ref RZ_SupplyLines m_Supply;
+	protected ref RZ_RoadPatrols m_RoadPatrols;
 	protected ref RZ_FactionLife m_FactionLife;
 	protected ref RZ_CampLife m_CampLife;
 	protected ref RZ_LongTable m_LongTable;
@@ -721,6 +725,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_SupplySettings)
 			m_SupplySettings = RZ_SupplySettings.Cast(RZ_Util.NewWithDefaults("RZ_SupplySettings"));
 
+		if (!m_RoadPatrolSettings)
+			m_RoadPatrolSettings = RZ_RoadPatrolSettings.Cast(RZ_Util.NewWithDefaults("RZ_RoadPatrolSettings"));
+
 		if (!m_FactionLifeSettings)
 			m_FactionLifeSettings = RZ_FactionLifeSettings.Cast(RZ_Util.NewWithDefaults("RZ_FactionLifeSettings"));
 
@@ -834,6 +841,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Guidance = new RZ_Guidance(this, m_GuidanceSettings);
 		m_Territory = new RZ_Territory(this, m_TerritorySettings);
 		m_Supply = new RZ_SupplyLines(this, m_SupplySettings);
+		m_RoadPatrols = new RZ_RoadPatrols(this, m_RoadPatrolSettings);
 		m_FactionLife = new RZ_FactionLife(this, m_FactionLifeSettings);
 		m_LongTable = new RZ_LongTable(this, m_LongTableSettings);
 		m_Land = new RZ_Land(this, m_TribeSettings);
@@ -918,6 +926,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_FactionLife.Setup();
 		m_Territory.Setup();
 		m_Supply.Setup();
+		m_RoadPatrols.Setup();
 		// The Long Table: once a season, a farm far from every holding, safehouse and the lab
 		m_LongTable.Setup();
 		// The land grid (Zombies > Tribes): its wild land keeps clear of the towns, holdings, safehouses,
@@ -1013,6 +1022,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Leaders.Tick(dt, ids, players);
 		m_Territory.Tick(dt, ids, players);
 		m_Supply.Tick(dt, ids, players);
+		m_RoadPatrols.Tick(dt, ids, players);
 		m_FactionLife.Tick(dt, ids, players);
 		m_LongTable.Tick(dt, ids, players);
 		m_Traces.Tick(dt, ids, players);
@@ -1225,6 +1235,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_CarSettings GetCarSettings() { return m_CarSettings; }
 	RZ_TrapSettings GetTrapSettings() { return m_TrapSettings; }
 	RZ_SupplySettings GetSupplySettings() { return m_SupplySettings; }
+	RZ_RoadPatrols GetRoadPatrols() { return m_RoadPatrols; }
 	ResourceName GetLabPrefab() { return m_sLabPrefab; }
 	float GetResearchPerSample() { return m_fResearchPerSample; }
 	float GetTickSeconds() { return m_fTickSeconds; }

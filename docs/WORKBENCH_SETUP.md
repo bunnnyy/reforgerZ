@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **382 prefab fields**: 46 on `RZ_GameModeComponent`, 319 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **364 entries**: 218 prefabs the plugin creates, 39 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 51 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **389 prefab fields**: 46 on `RZ_GameModeComponent`, 326 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **371 entries**: 222 prefabs the plugin creates, 41 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 108 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 52 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -511,6 +511,7 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | as the Bastion wreck, a civilian lorry (`RZ_Trace_TruckWreck_Haven.et`) | — | World > Traces > Kit > Truck wreck, the Haven | optional | L5; empty = text only. As car A |
 | (existing prefab) | as the Bastion wreck, a white van (`RZ_Trace_TruckWreck_Halcyon.et`) | — | World > Traces > Kit > Truck wreck, Halcyon | optional | L5; empty = text only. As car A |
 | (existing prefab) | sandbags in a half ring, a CHECKPOINT. HALT sign on its side (`RZ_Trace_RoadPostRelic.et`) | — | World > Traces > Kit > Road post relic | optional | L6, where a Bastion road post stood; empty = text only. As car A |
+| (existing prefab) | spent cases and torn ammo packaging on a verge (`RZ_Trace_PatrolFight.et`) | — | World > Traces > Kit > A road patrol's fight | optional | L9, where a road patrol met the infected; empty = text only. As car A |
 | (existing prefab) | one fence-paling cross (`RZ_Trace_Crosses.et`) | — | World > Traces > Kit > Cross | optional | N1, the crosses outside the warning zone, placed up to 7 times in a row; empty = text only. As car A |
 | (existing prefab) | two or three paper sheets on the ground, a decal or a flat mesh (`RZ_Trace_Sheets.et`) | — | World > Traces > Kit > Day 1 sheets | optional | N2, the Day 1 sheets near every barrier; empty = text only. As car A |
 | (existing prefab) | `LampKerosene_01_green.et`'s lit twin, its light on LIT_ON_SPAWN, no switch action (`RZ_Trace_Lantern_Lit.et`) | — | World > Traces > Kit > Lantern, lit | optional | S1, a lantern at the lived-in places nearest players after dark; empty = no lanterns. VERIFY 4 of the Traces spike: it lights on clients that stream it in |
@@ -737,6 +738,17 @@ and the UI files) need none, and eight have no base:
 | `RZ_TruckCrew_Bastion.et` | an AI group of 1-2 on MIL; the first one drives | — | Supply > Bastion crew | optional | the crew |
 | `RZ_TruckCrew_RedHand.et` | an AI group of 1-2 on BAND; the first one drives | — | Supply > Red Hand crew | optional | the crew; the truck crew in Tied Down |
 | `RZ_TruckCrew_Halcyon.et` | an AI group of 1-2 on INST; the first one drives | — | Supply > Halcyon crew | optional | the crew |
+
+#### Road patrols
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_Patrol_Bastion.et` | an AI group of four on MIL: a fire team in Bastion's own armed looks | — | Territory > Road patrols > Bastion patrol | optional | Bastion's foot patrols on the roads (empty = Supply > Bastion crew) |
+| `RZ_Patrol_RedHand.et` | an AI group of four on BAND: a crew in the Red Hand's armed looks | — | Territory > Road patrols > Red Hand patrol | optional | the Red Hand's crews on the roads (empty = Supply > Red Hand crew) |
+| `RZ_Patrol_Haven.et` | an AI group of three on SURV: a scavenging party in the Haven's armed looks | — | Territory > Road patrols > Haven patrol | optional | the Haven's scavenging parties on the roads (empty = Supply > Haven crew) |
+| `RZ_Patrol_Halcyon.et` | an AI group of three on INST: two in hazmat beaks and one armed field guard | — | Territory > Road patrols > Halcyon patrol | optional | Halcyon's sample teams on the roads (empty = Supply > Halcyon crew) |
+| (existing prefab) | a drivable jeep (the base game's M151A2) | — | Territory > Road patrols > Bastion patrol vehicle | optional | Bastion's rare vehicle patrol (empty = Supply > Bastion truck) |
+| (existing prefab) | a drivable pickup or car (empty uses the Red Hand's supply truck, a grey UAZ van) | — | Territory > Road patrols > Red Hand patrol vehicle | optional | the Red Hand's rare vehicle patrol (empty = Supply > Red Hand truck) |
 
 #### Camp life
 
@@ -1624,6 +1636,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Leaders | Leaders | `m_LeaderSettings` | **Enabled**, quartermaster is leader (on), interim posts (1, territory off only), body radius (200 m), replace minutes (120), job minutes (30), danger scale, discovery, kill Infamy, body prefabs |
 | Territory | Territory | `m_TerritorySettings` | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs, **Haven guard** (on: a Haven group at the lab gate in the stand after The Whole of It) |
 | Territory | Supply | `m_SupplySettings` | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
+| ReforgerZ|Territory | Road patrols | `m_RoadPatrolSettings` | **On**, at once (2, plus one every 4 players, at most 5), the gap between a faction's foot patrols (20–35 min of play; twice as long while it's weak), the walk out (1–3 km), walking speed (1.3 m/s), body radius (400 m), the chance of a fight on the way (0.25 × infection), **Vehicles** (on: at most one on the server, 45–60 min between a faction's), drive speed (9 m/s), vehicle body radius (700 m), the four patrol groups and the two vehicles ([SITES.md](SITES.md#road-patrols)) |
 | Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
 | Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (200, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)), **Site grid** (on), **Site read ms** (2), **Pre-read** (on), **Audit threshold** (70), **Solver** (on), **Candidates a piece** (24), **Layers** (on), **Board windows** (on), **Layer pieces** (60) ([SITES.md](SITES.md#settings)) |
 | Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), clue minutes (20), flyers, shout minutes (30), wanderer finds, the clue prefabs (car wreck, door, flyer, table radio, the two bodies, barricade); **Openings** (on), **Group gone weight** (18) and **Fever weight** (12), **Opening scenes** (the reasons' scenes and each background's props, filled by `tools/camp_kit/build.py`; a key with none: nothing there), **Contact** (empty: Puzzles > Civilian), **Opening Fame** (10) |
