@@ -40,8 +40,8 @@ class RZ_DutyHalcyon
 		if (seen == 0)
 		{
 			RZ_DutyScript.T("child", "A child is at the spot you've just marked, with a cup.", RZ_DutyBeat.AT_SAME, "found");
-			RZ_DutyScript.O("Take the cup out of her hand", "You take it. She howls. Her mother comes out to see who's laid hands on her, and you have to explain, in a suit.", "hold:3 local", "whose daughter was at the marked water", "A man in a white suit took the cup off my girl and I nearly brained him. Then he told me why. I've told the street.");
-			RZ_DutyScript.O("Chalk a cross on it and go", "A cross, in chalk. She can't read a cross. She drinks.", "write hold:3 infect+");
+			RZ_DutyScript.O("Take the cup out of his hand", "You take it. He howls. His father comes out to see who's laid hands on him, and you have to explain, in a suit.", "hold:3 local", "whose son was at the marked water", "A man in a white suit took the cup off my boy and I nearly brained him. Then he told me why. I've told the street.");
+			RZ_DutyScript.O("Chalk a cross on it and go", "A cross, in chalk. He can't read a cross. He drinks.", "write hold:3 infect+");
 		}
 		else if (seen == 1)
 		{
@@ -110,9 +110,9 @@ class RZ_DutyHalcyon
 			"A body-bag detail, two of them, grey in the face, wanting only to be let through to sit down.",
 			"A Bastion officer in a borrowed suit, who won't hand over his sidearm and says so twice.",
 			"A recruit on his first day out, who has put his own tape on, a great deal of it, everywhere.",
-			"A girl of six in a suit cut down to fit, carried in by a nurse. She thinks it's a game. She's very good at it.",
+			"A boy of six in a suit cut down to fit, carried in by a nurse. He thinks it's a game. He's very good at it.",
 			"The director. Alone. In a hurry. He holds his arms out for the lamp without being asked.",
-			"The night technician, back from the well with a case, humming, an hour later than her log.",
+			"The night technician, back from the well with a case, humming, an hour later than his log.",
 			"A driver who never left his cab, he says, and so doesn't need any of this.",
 			"Two porters with a trolley of clean linen, which isn't clean any more, and they know it.",
 			"An old doctor who wrote this protocol, and will tell you which parts of it you're doing wrong.",
@@ -120,7 +120,7 @@ class RZ_DutyHalcyon
 			"A sampling team of two, laughing, giddy, who can't stand still for the lamp.",
 			"A stretcher, and the man on it is one of ours. His suit is intact. He isn't conscious.",
 			"A cook from the canteen, who went out to the wire to buy eggs, in a suit, because rules are rules.",
-			"A technician carrying her own visor in her hand, because it fogged, and she couldn't see the road."};
+			"A technician carrying his own visor in his hand, because it fogged, and he couldn't see the road."};
 		array<int> station = {};
 		array<string> sign = {};
 		array<int> call = {};
@@ -233,7 +233,7 @@ class RZ_DutyHalcyon
 		Bag("waste", "A yellow bag, tied twice.", "Clinical waste, ward two. In the log, same number.", "Light. Dressings.", "Soft all through.", 0, "It goes up yellow, then black.", "Set aside. The director asks why ward two's dressings are on his desk.", "Dressings, used. You've a faceful of the smell, and nothing else.");
 		Bag("suits", "A grey bag, bulky, tied with tape.", "Suits, condemned, six, and a line in the log for them.", "Light for its size.", "Folded rubber, and the hard ring of a visor.", 0, "Rubber smoke, thick. Stand upwind.", "Set aside. Six condemned suits wait in a corridor for someone to wonder about them.", "Six suits. One has a name inked in the collar. Nothing more.");
 		Bag("body", "A long bag, on the low trolley.", "Clinical waste, it says. The log has no line for this number.", "A man's weight. You need both arms.", "A shoulder. A hand. A wristband, under the plastic.", 1, "It burns for a long time. Whoever it was is nobody now, and nobody's question.", "Set aside, and reported. Someone died in this building and wasn't written down. The director goes very quiet.", "A man of forty, in a ward gown. A trial band on the wrist, and the number cut off it.");
-		Bag("files", "A flat bag, square at the corners.", "Paper waste, the director's office. Logged this morning, in a hurry.", "Heavy, for paper. Dense.", "Folders. A great many. Metal clips.", 2, "It burns like paper. Whatever it said, it has stopped saying it.", "Set aside. The director's secretary comes for it herself, within the hour, and thanks you too carefully.", "Trial files. Names, doses, outcomes. Half the outcomes are one word.");
+		Bag("files", "A flat bag, square at the corners.", "Paper waste, the director's office. Logged this morning, in a hurry.", "Heavy, for paper. Dense.", "Folders. A great many. Metal clips.", 2, "It burns like paper. Whatever it said, it has stopped saying it.", "Set aside. The director's secretary comes for it himself, within the hour, and thanks you too carefully.", "Trial files. Names, doses, outcomes. Half the outcomes are one word.");
 		Bag("live", "A small bag, cold to the touch.", "Expired cultures, it says. The log line has a question mark beside it.", "Heavy for its size, and it clinks.", "A rack of tubes. Cold. One is warm.", 1, "Glass cracks in the fire. A week of somebody's work, and one tube that wasn't dead.", "Set aside, and back to the cold room at a run. Somebody labelled a live rack for burning. Somebody will be asked.", "A rack of live cultures, sweating in the air. You've had them open in the yard.");
 		Bag("moving", "A bag on the trolley's bottom shelf. It was at the other end a minute ago.", "Animal house, deceased, two, and the log agrees.", "It shifts against your arms.", "Fur. A leg. The leg pulls back.", 1, "It screams in the fire. Not for long. You'll hear it tonight.", "Set aside, at arm's length, and the animal house sent for. One of the two wasn't deceased. It's not in a mood to be handled.", "It's out before the knife is clear of the plastic. Small, fast, and through the fence toward the town.");
 		Bag("stripped", "A bag that rattles.", "Sharps, it says. Logged, initialled by a porter.", "Heavier than needles.", "Rings. Watch cases. A set of teeth, on a plate.", 1, "Gold doesn't burn. It'll be in the ash for whoever rakes it, and he knows that.", "Set aside. Somebody is taking things off the dead, and sending the proof to the fire. The porter's initials are on it.", "A pound of wedding rings. You stand in the yard holding them.");
@@ -337,9 +337,9 @@ class RZ_DutyHalcyon
 			RZ_DutyScript.O("Shout for the orderlies", "Three of them, with a blanket and a pole. It takes all three. The ward watches it happen.", "hold:3 morale- infect+", "", "", "A subject turned on the ward on your round. You'd written something else on the chart. Two orderlies are being stitched.");
 		}
 
-		RZ_DutyScript.T("chart", "The researcher, at the ward door, with the day's sheet. The trial needs the fevers written as responses, she says. It's only a word.", RZ_DutyBeat.AT_HERE);
-		RZ_DutyScript.O("Write the charts as they are", "As they are. She reads them, and her mouth goes thin, and she takes them.", "write record regard+ research", "", "", "You wrote the ward's charts true. The trial's numbers are worse for it, and right for it. That's worth more than a good week.");
-		RZ_DutyScript.O("Write them her way", "Her way. Three fevers become three responses. The trial has a good day, on paper.", "write shady2 +1");
+		RZ_DutyScript.T("chart", "The researcher, at the ward door, with the day's sheet. The trial needs the fevers written as responses, he says. It's only a word.", RZ_DutyBeat.AT_HERE);
+		RZ_DutyScript.O("Write the charts as they are", "As they are. He reads them, and his mouth goes thin, and he takes them.", "write record regard+ research", "", "", "You wrote the ward's charts true. The trial's numbers are worse for it, and right for it. That's worth more than a good week.");
+		RZ_DutyScript.O("Write them his way", "His way. Three fevers become three responses. The trial has a good day, on paper.", "write shady2 +1");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -386,19 +386,19 @@ class RZ_DutyHalcyon
 		RZ_DutyScript.O("Stand and talk them down", "You tell them what it is and who it's for. It takes a while. The oldest one has a sister on a ward. The bar goes up.", Code(wait[cargo]));
 		RZ_DutyScript.O("Leave the road, through the wood", "Down the bank, through bramble, over a stream on stones.", Code(rough[cargo]));
 		RZ_DutyScript.G("begs");
-		RZ_DutyScript.T("begs", "A woman, in the road, on her knees. She knows what the lab carries. One. For her boy. He's bitten, two days.", RZ_DutyBeat.AT_OUT);
+		RZ_DutyScript.T("begs", "A man, in the road, on his knees. He knows what the lab carries. One. For his boy. He's bitten, two days.", RZ_DutyBeat.AT_OUT);
 		if (cargo == 3)
 		{
-			RZ_DutyScript.O("Give her one of the four", "You break the seal and put one in her hands. She can't speak. Three go on to the lab.", "wrong local", "whose boy was bitten, on the lab road", "You gave me one of the four. He's alive. I know what it cost you at the other end. I'd do the same to you, and I'm not sorry.");
-			RZ_DutyScript.O("Tell her to bring him to the lab", "You tell her the door, and the name to ask for, and that there's a list. It's true. It isn't enough. She goes to fetch him.", "right local", "whose boy was bitten, on the lab road", "You wouldn't give me one, and you told me the door. He's on the list. He's third. I haven't decided about you yet.");
+			RZ_DutyScript.O("Give him one of the four", "You break the seal and put one in his hands. He can't speak. Three go on to the lab.", "wrong local", "whose boy was bitten, on the lab road", "You gave me one of the four. He's alive. I know what it cost you at the other end. I'd do the same to you, and I'm not sorry.");
+			RZ_DutyScript.O("Tell him to bring the boy to the lab", "You tell him the door, and the name to ask for, and that there's a list. It's true. It isn't enough. He goes to fetch him.", "right local", "whose boy was bitten, on the lab road", "You wouldn't give me one, and you told me the door. He's on the list. He's third. I haven't decided about you yet.");
 		}
 		else
 		{
-			RZ_DutyScript.O("Tell her it isn't the dose", "You open your mouth to explain what's in the box. She's already seen your face. She gets up, and walks off the road.", Code(wait[cargo]));
-			RZ_DutyScript.O("Tell her to bring him to the lab", "You tell her the door, and the name to ask for. She goes to fetch him, at a run.", "right local", "whose boy was bitten, on the lab road", "You told me which door. He's on the list. I didn't know there was a list.");
+			RZ_DutyScript.O("Tell him it isn't the dose", "You open your mouth to explain what's in the box. He's already seen your face. He gets up, and walks off the road.", Code(wait[cargo]));
+			RZ_DutyScript.O("Tell him to bring the boy to the lab", "You tell him the door, and the name to ask for. He goes to fetch him, at a run.", "right local", "whose boy was bitten, on the lab road", "You told me which door. He's on the list. I didn't know there was a list.");
 		}
 
-		RZ_DutyScript.O("Walk round her", "You step off the road, round her, and on. She doesn't call after you.", "right later", "", "A woman has been at the lab gate every day since you carried the box past her. She doesn't ask for anything. She looks at each of us as we come out.");
+		RZ_DutyScript.O("Walk round him", "You step off the road, round him, and on. He doesn't call after you.", "right later", "", "A man has been at the lab gate every day since you carried the box past him. He doesn't ask for anything. He looks at each of us as we come out.");
 		RZ_DutyScript.G("pack");
 		RZ_DutyScript.T("pack", "The cold pack has split. Water is running out of the box's corner, and the glass inside is sweating.", RZ_DutyBeat.AT_OUT);
 		RZ_DutyScript.O("Stand it in the stream to its lid", "Into the stream, to the lid, wedged with stones. A quarter hour, and it's cold through again.", Code(wait[cargo] && rough[cargo]));
@@ -449,10 +449,10 @@ class RZ_DutyHalcyon
 		}
 		else
 		{
-			RZ_DutyScript.T("short", "The far door, and the technician with the manifest. She counts. She counts again. One short, she says.", RZ_DutyBeat.AT_FAR_DOOR);
-			RZ_DutyScript.O("It was short when you took it", "You say so. She looks at you for a while. Then she turns the manifest over, and there's the cold room's own note: one held back.", "right report");
+			RZ_DutyScript.T("short", "The far door, and the technician with the manifest. He counts. He counts again. One short, he says.", RZ_DutyBeat.AT_FAR_DOOR);
+			RZ_DutyScript.O("It was short when you took it", "You say so. He looks at you for a while. Then he turns the manifest over, and there's the cold room's own note: one held back.", "right report");
 			RZ_DutyScript.O("Offer to walk back and look", "You walk the road again, looking at the verge, for something that was never in the box.", "wrong hold:8");
-			RZ_DutyScript.O("Say nothing", "You say nothing. She writes one short, and your name beside it.", "wrong regard-");
+			RZ_DutyScript.O("Say nothing", "You say nothing. He writes one short, and your name beside it.", "wrong regard-");
 		}
 
 		RZ_DutyScript.T("sign", "");

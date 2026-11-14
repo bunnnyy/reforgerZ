@@ -618,7 +618,7 @@ class RZ_EpiRest
 		if (m_Epi.Data().tableState == 2)
 		{
 			queue.people = Math.Min(cap, queue.people + 3);
-			queue.talk = queue.talk + "\nA family near the back with a covered basket. The mother says grace over a bowl she doesn't share.";
+			queue.talk = queue.talk + "\nA family near the back with a covered basket. The father says grace over a bowl he doesn't share.";
 			if (R().boyOut.IsEmpty())
 				queue.Verb("Talk the boy out of the queue", "rest:boy");
 
@@ -928,7 +928,7 @@ class RZ_EpiRest
 		if (who == 1)
 			m_GM.NotifyPlayer(playerId, "The queue", "The corporal listens, writes nothing down, and walks the family out of the line to the back of a truck. Nobody in the queue looks round.");
 		else
-			m_GM.NotifyPlayer(playerId, "The queue", "The chair listens, then goes down the line and stands with the mother a long time. The family stays in the queue, at the very back.");
+			m_GM.NotifyPlayer(playerId, "The queue", "The chair listens, then goes down the line and stands with the father a long time. The family stays in the queue, at the very back.");
 
 		m_Epi.Deed(playerId, "table");
 	}
@@ -940,7 +940,7 @@ class RZ_EpiRest
 		string key = string.Format("sit|%1|%2", Ident(playerId), RZ_WorldFacts.Get().Day());
 		if (m_Epi.GetClosing().Count(key) > 0)
 		{
-			m_GM.NotifyPlayer(playerId, spot.title, "You sat with her this morning. She's asleep now.");
+			m_GM.NotifyPlayer(playerId, spot.title, "You sat with him this morning. He's asleep now.");
 			return;
 		}
 
@@ -1152,7 +1152,7 @@ class RZ_EpiRest
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The route's line for each coda: the Haven's channel says her name, Bastion's last call reads
+	//! The route's line for each coda: the Haven's channel says his name, Bastion's last call reads
 	//! the four R numbers, the cook at the lorry, the readout, the chalk on the lab gate.
 	protected string RouteCodaLine(int which)
 	{
@@ -1168,7 +1168,7 @@ class RZ_EpiRest
 				if (unturned.IsEmpty() || RZ_MajorHelp.World(m_GM, "list.buried") != 0)
 					return "";
 
-				return string.Format("If you can hear this: her name is %1. She didn't turn. Say it at your table tonight.", unturned);
+				return string.Format("If you can hear this: his name is %1. He didn't turn. Say it at your table tonight.", unturned);
 			}
 			case 1: return "R1, R2, R3, R4. Four numbers on the roster nobody ever explained. Read for the record. Bastion out.";
 			case 2:
@@ -1181,7 +1181,7 @@ class RZ_EpiRest
 			case 3:
 			{
 				if (RZ_MajorHelp.World(m_GM, "cook.line_paid") != 0)
-					return "The cook's at the lorry with the pan. Her line's paid. Soup. It keeps.";
+					return "The cook's at the lorry with the pan. His line's paid. Soup. It keeps.";
 
 				return "Soup. It keeps.";
 			}
@@ -1269,7 +1269,7 @@ class RZ_EpiRest
 		{
 			case RZ_CureFinale.HAVEN:
 			{
-				lines.Insert("She gave three times so we could have this. I say her name at the table now. Everyone does.");
+				lines.Insert("He gave three times so we could have this. I say his name at the table now. Everyone does.");
 				lines.Insert("The medics come round with the cold box in the mornings. They ask your name first.");
 				lines.Insert("Our house, then the next house. That's the order. Nobody argued.");
 				lines.Insert("My boy had it this morning. He's asleep. He hasn't slept like that since Day 2.");

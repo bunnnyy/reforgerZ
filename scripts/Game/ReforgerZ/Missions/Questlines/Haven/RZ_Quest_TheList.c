@@ -6,7 +6,7 @@
 //! (world flag "list.contract"), or once a safehouse has gone hungry, from an Independent or Rogue
 //! council head.
 //!
-//! 1. Find the husband (mission): his name was crossed out while he was still out on a supply run.
+//! 1. Find the brother (mission): his name was crossed out while he was still out on a supply run.
 //!    His trail (a note, his pack, a third clue): half the time he's alive and comes home. A
 //!    Scavenger sells his last sighting for one food item; ★ Radio Op hears his last call.
 //! 2. Three copies of the List (mission): the asking house's own list is the first. Ask other
@@ -22,7 +22,7 @@
 //!    family has gone.
 //! 5. Someone's been asking (wait): two hours of play; gossip in the news.
 //! 6. The chair's decision (mission): read it out at every house (Trusted, ★ Elder, or Known with
-//!    the husband home as proof; Known with census.refused) and hold the reading while the bells
+//!    the brother home as proof; Known with census.refused) and hold the reading while the bells
 //!    bring the infected; give the copies to the chair; or take them, past two lookouts, to Bastion
 //!    or to the Red Hand.
 //!
@@ -64,7 +64,7 @@ class RZ_Quest_TheList : RZ_Questline
 	{
 		Info("list", "The List", RZ_EFaction.SURVIVORS);
 
-		RZ_QuestStage husband = MissionStage(S_HUSBAND, "Find the husband", "{wife} found {husband}'s name crossed off the list at the safehouse in {askerhouse} while he was still out on a supply run. He never came back. {asker} wants to know who crosses names out, and why, without the chair, {chair}, hearing who's asking. Start with {husband}.");
+		RZ_QuestStage husband = MissionStage(S_HUSBAND, "Find the brother", "{wife} found {husband}'s name crossed off the list at the safehouse in {askerhouse} while he was still out on a supply run. He never came back. {asker} wants to know who crosses names out, and why, without the chair, {chair}, hearing who's asking. Start with {husband}.");
 		husband.GiveUp(4, "{why}");
 		husband.Visits(2);
 
@@ -280,14 +280,14 @@ class RZ_Quest_TheList : RZ_Questline
 
 	//------------------------------------------------------------------------------------------------
 	//! The council head who asked has left the chair (died, replaced): {wife} carries it on, and the
-	//! texts name her from now on.
+	//! texts name him from now on.
 	protected void CheckAsker(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.Flag("asker_gone") == 1 || RZ_HavenQuest.KeptLeader(gm, run, "asker"))
 			return;
 
 		run.SetFlag("asker_gone", 1);
-		run.Note("{asker} isn't council head in {askerhouse} any more. {wife} carries on asking, on her own.");
+		run.Note("{asker} isn't council head in {askerhouse} any more. {wife} carries on asking, on his own.");
 		run.SetText("asker", run.Text("wife"));
 	}
 
@@ -579,7 +579,7 @@ class RZ_Quest_TheList : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A Scavenger sells the husband's last sighting (stage 1).
+	//! A Scavenger sells the brother's last sighting (stage 1).
 	override string OnWandererTalk(RZ_GameModeComponent gm, RZ_QuestRun run, int playerId, int wandererId)
 	{
 		RZ_QM_ListHusband m = RZ_QM_ListHusband.Cast(gm.GetMissions().FindById(run.m_iMissionId));
@@ -591,7 +591,7 @@ class RZ_Quest_TheList : RZ_Questline
 }
 
 //------------------------------------------------------------------------------------------------
-//! The List, stage 1 (Haven contract, Known): find the husband. {wife} at the safehouse, his note in
+//! The List, stage 1 (Haven contract, Known): find the brother. {wife} at the safehouse, his note in
 //! the town he was sent to, his pack in a second town, and in a third either him (alive: bring him
 //! home, +1 person) or his last letter. Each place shows its clue once the clue before it has been
 //! read. A Scavenger wanderer sells his last sighting for one food item, and ★ Radio Op hears his
@@ -660,12 +660,12 @@ class RZ_QM_ListHusband : RZ_HavenQM
 		if (gm.GetBroadcast())
 			day = Math.Max(6, gm.GetBroadcast().GetDay() - 3);
 
-		m_iWifeTalk = AddClue(QText(gm, "wife"), QFill(gm, string.Format("\"He went to %1 for the run. Three days, he said. On the fourth day his name had a line through it, in the council's pencil, on the list by the gate.\" {wife} holds her own copy of the list as if it might bite. \"I don't want to know who. I want to know where he is.\"", m_aTowns[0])));
+		m_iWifeTalk = AddClue(QText(gm, "wife"), QFill(gm, string.Format("\"He went to %1 for the run. Three days, he said. On the fourth day his name had a line through it, in the council's pencil, on the list by the gate.\" {wife} holds his own copy of the list as if it might bite. \"I don't want to know who. I want to know where he is.\"", m_aTowns[0])));
 		m_iNote = AddClue("A note in his hand", QFill(gm, string.Format("Pinned inside a shop door: \"{husband}, Day %1. %2 picked clean. Going on to %3 for the rest. Back a day late. Tell {wife} not to let them put a line through me.\"", day, m_aTowns[0], m_aTowns[1])));
 		if (m_bAlive)
 		{
 			m_iPack = AddClue("His pack", QFill(gm, string.Format("{husband}'s pack, tins still in it, pushed under a hedge outside %1. On the flap, in pencil: \"Went home Day %2. Saw the list on the gate. I'm already through, so I'll go where crossed-out people go. %3, for now. Don't come after me.\"", m_aTowns[1], day + 3, m_aTowns[2])));
-			m_iEnd = AddClue(QText(gm, "husband"), QFill(gm, "\"She sent you.\" {husband} is thinner than his name. \"I came back on the fourth day and I was already crossed out. Before I was even late, by the look of the pencil. I didn't go in. Where do you go when you're already dead?\""));
+			m_iEnd = AddClue(QText(gm, "husband"), QFill(gm, "\"He sent you.\" {husband} is thinner than his name. \"I came back on the fourth day and I was already crossed out. Before I was even late, by the look of the pencil. I didn't go in. Where do you go when you're already dead?\""));
 		}
 		else
 		{
@@ -674,8 +674,8 @@ class RZ_QM_ListHusband : RZ_HavenQM
 		}
 
 		VoiceBy(gm, "asker");
-		m_sTitle = "The List: the husband";
-		m_sBrief = QFill(gm, string.Format("{wife}'s husband {husband} went on a supply run to %1. While he was still out, someone crossed his name off our list. Nobody will say who. Find him, or find what happened to him. Start with {wife}, at the safehouse in {askerhouse}.", m_aTowns[0]));
+		m_sTitle = "The List: the brother";
+		m_sBrief = QFill(gm, string.Format("{wife}'s brother {husband} went on a supply run to %1. While he was still out, someone crossed his name off our list. Nobody will say who. Find him, or find what happened to him. Start with {wife}, at the safehouse in {askerhouse}.", m_aTowns[0]));
 		m_sObjective = QFill(gm, string.Format("Find out what happened to {husband} on the supply run to %1.", m_aTowns[0]));
 		return true;
 	}
@@ -796,7 +796,7 @@ class RZ_QM_ListHusband : RZ_HavenQM
 			return;
 
 		RZ_Questline.ChangePopulation(gm, m_iHouse, 1);
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "He's quiet for a long time. Then he picks up his coat. \"If she still wants me.\" By supper he's back in {askerhouse}, and somebody has rubbed the line off his name with a thumb."));
+		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "He's quiet for a long time. Then he picks up his coat. \"If he still wants me.\" By supper he's back in {askerhouse}, and somebody has rubbed the line off his name with a thumb."));
 		Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_TheList.OUT_ALIVE, "brought him home");
 	}
 
@@ -813,7 +813,7 @@ class RZ_QM_ListHusband : RZ_HavenQM
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! From the questline: a Scavenger is talked to while the husband is missing. One food item
+	//! From the questline: a Scavenger is talked to while the brother is missing. One food item
 	//! buys his last sighting.
 	string WandererTalk(RZ_GameModeComponent gm, int playerId, int wandererId)
 	{

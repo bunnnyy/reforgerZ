@@ -18,7 +18,7 @@ node start
   > @terms Let's settle it. -> terms
 
 node more
-  say She turns the empty finger with her thumb, round and round, where the ring used to sit.
+  say He turns the empty finger with his thumb, round and round, where the ring used to sit.
   > @ask I've another question. -> start
   > @settle Let's settle it. -> terms
 
@@ -114,7 +114,7 @@ node start
   > @terms Let's settle it. -> terms
 
 node more
-  say Across the room the old woman has her hand flat on her brooch, as if it might go next.
+  say Across the room the old man has his hand over his signet ring, as if it might go next.
   > @ask Hang on. -> start
   > @settle Let's settle it. -> terms
 
@@ -122,7 +122,7 @@ node terms
   say One tin. Quick, before I change my mind.
   > @take A tin for the spoon. -> end   do call:slot:3
   > @no Put it away. -> end   do call:slot:4
-  > @third Let's ask the lady whose spoon it is. -> end   do call:slot:5
+  > @third Let's ask the gentleman whose spoon it is. -> end   do call:slot:5
 
 conv duty.swap.hoard
 for duty:swap:hoard
@@ -155,21 +155,21 @@ prio quest
 voice haven
 
 node start
-  say Lamp oil, salt, and a needle, a proper one, for wool. Gran says the eggs are worth more than that. Gran says to say so.
+  say Lamp oil, salt, and a needle, a proper one, for wool. Grandad says the eggs are worth more than that. Grandad says to say so.
   say I'm only fetching. It's not my list.
-  > @where Why didn't your gran come? -> more   do call:slot:1
+  > @where Why didn't your grandad come? -> more   do call:slot:1
   > @who Is any of it for you? -> more   do call:slot:2
   > @terms Let's see what we've got. -> terms
 
 node more
-  say Her eyes go to the jar of boiled sweets at the end of the table, and away, and back.
+  say His eyes go to the jar of boiled sweets at the end of the table, and away, and back.
   > @ask Wait, I've a question. -> start
   > @settle Let's see what we've got. -> terms
 
 node terms
   say Can I have them? The things on the list?
   > @take The list, for the eggs. -> end   do call:slot:3
-  > @no Your gran has to come herself. -> end   do call:slot:4
+  > @no Your grandad has to come himself. -> end   do call:slot:4
   > @third The list for four eggs. Keep two. -> end   do call:slot:5
 
 conv duty.swap.crew
@@ -234,7 +234,7 @@ node start
   > @terms Let's talk about the list. -> terms
 
 node more
-  say She doesn't touch the pearls. She looks at the door, where a boy is pretending not to wait.
+  say He doesn't touch the pearls. He looks at the door, where a boy is pretending not to wait.
   > @ask I need to ask you something. -> start
   > @settle Let's talk about the list. -> terms
 
@@ -329,7 +329,7 @@ node start
   > @terms Let's settle it. -> terms
 
 node more
-  say She keeps the sack tied at the bottom with her hand on the knot.
+  say He keeps the sack tied at the bottom with his hand on the knot.
   > @ask Hold on. -> start
   > @settle Let's settle it. -> terms
 
@@ -377,7 +377,7 @@ node start
   > @terms Let's settle it. -> terms
 
 node more
-  say She holds the little knife the way you hold a thing you've held for a long time, without looking at it.
+  say He holds the little knife the way you hold a thing you've held for a long time, without looking at it.
   > @ask Tell me one more thing. -> start
   > @settle Let's settle it. -> terms
 

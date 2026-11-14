@@ -201,7 +201,7 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The nurse's house emptied: she's gone to the walker's house, and the stages meet her there.
+	//! The nurse's house emptied: he's gone to the walker's house, and the stages meet him there.
 	protected void CheckNurse(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		int nurseHouse = run.Flag("nursehouse", -1);
@@ -209,7 +209,7 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 		if (nurseHouse == walkHouse || RZ_HavenQuest.LiveHouse(gm, nurseHouse) || !RZ_HavenQuest.LiveHouse(gm, walkHouse))
 			return;
 
-		run.Note("{nursehouse} stands empty now. {nurse} has moved to {walkhouse}, and brought her bag.");
+		run.Note("{nursehouse} stands empty now. {nurse} has moved to {walkhouse}, and brought his bag.");
 		run.SetFlag("nursehouse", walkHouse);
 		run.SetText("nursehouse", run.Text("walkhouse"));
 	}
@@ -949,9 +949,9 @@ class RZ_QM_EdgeNumbers : RZ_HavenQM
 		m_vRecords = LandPointNear(lab, 4, 9);
 		m_vCourier = LandPointNear(lab, 40, 60);
 		m_vPos = m_vLead;
-		m_iLeadTalk = AddClue("The field lead", "A tired woman in a lab coat over two jumpers, on her third coffee of the night shift. \"The Haven? You want to know about the trial.\" She doesn't say yes or no.");
+		m_iLeadTalk = AddClue("The field lead", "A tired man in a lab coat over two jumpers, on his third coffee of the night shift. \"The Haven? You want to know about the trial.\" He doesn't say yes or no.");
 		m_iRecords = AddClue("The trial records", "Ring binders on a trolley under a dim bulb. The first pages of each file have a name. After the first week, the files have numbers. Every file has two columns: walked out, and observed. The observed column has times in it, every quarter of an hour, until it stops.");
-		m_iCourierTalk = AddClue("A courier", "A Halcyon courier with a satchel she's not supposed to open, waiting for the gate. \"Files? I carry them. I don't read them.\" A pause. \"Mostly.\"");
+		m_iCourierTalk = AddClue("A courier", "A Halcyon courier with a satchel he's not supposed to open, waiting for the gate. \"Files? I carry them. I don't read them.\" A pause. \"Mostly.\"");
 		m_sTitle = "The Edge of Town: the lab's numbers";
 		m_sBrief = QFill(gm, "{walker} says the lab writes down the other two in ten. I want to know what that means before I tell another house to send its bitten to {lab}. Find out. Nicely, if you can.");
 		m_sObjective = QFill(gm, "Find out at the lab in {lab_town} what becomes of the other two in ten.");
@@ -1014,11 +1014,11 @@ class RZ_QM_EdgeNumbers : RZ_HavenQM
 			if (!TryPersuade(gm, playerId, RZ_EFaction.INSTITUTE, 2, "labtech,doctor"))
 			{
 				Remember(gm, playerId, RZ_EQuestApproach.PERSUADE, "asked the field lead, and was told nothing");
-				gm.NotifyPlayer(playerId, m_sTitle, "\"I can't discuss trial outcomes with the public.\" She means it kindly. She also means it.");
+				gm.NotifyPlayer(playerId, m_sTitle, "\"I can't discuss trial outcomes with the public.\" He means it kindly. He also means it.");
 				return;
 			}
 
-			gm.NotifyPlayer(playerId, m_sTitle, "She looks at her coffee. \"We keep them. We watch. We write it down, every quarter of an hour, because it's the only thing that makes the next dose better. Two in ten. I know their names. I'm not supposed to.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "He looks at his coffee. \"We keep them. We watch. We write it down, every quarter of an hour, because it's the only thing that makes the next dose better. Two in ten. I know their names. I'm not supposed to.\"");
 			Learned(gm, playerId, RZ_EQuestApproach.PERSUADE, "got it from a field lead");
 			return;
 		}
@@ -1070,7 +1070,7 @@ class RZ_QM_EdgeOffers : RZ_HavenQM
 
 		m_iSettlement = h.m_iSettlement;
 		m_vPos = LandPointNear(h.m_vPos, 4, 10);
-		m_iTalk = AddClue(QText(gm, "nurse"), QFill(gm, "{nurse} has both offers written on the back of a ration card. \"{director} says the lab will take every bitten Haven member who'll come, and sell doses to our clinics at fair prices. The Red Hand says it has a cheaper dose, for every house. Cut, they don't say how much.\" She turns the card over. \"Or we keep walking them out. You've seen both ends now. You choose.\""));
+		m_iTalk = AddClue(QText(gm, "nurse"), QFill(gm, "{nurse} has both offers written on the back of a ration card. \"{director} says the lab will take every bitten Haven member who'll come, and sell doses to our clinics at fair prices. The Red Hand says it has a cheaper dose, for every house. Cut, they don't say how much.\" He turns the card over. \"Or we keep walking them out. You've seen both ends now. You choose.\""));
 		m_sTitle = "The Edge of Town: two offers";
 		m_sBrief = QFill(gm, "The lab has made an offer, and so has the Red Hand. The houses can't agree, so they've agreed to let whoever's seen it all decide. Come to {nursehouse}.");
 		m_sObjective = QFill(gm, "Choose between the lab's offer and the Red Hand's at the safehouse in {nursehouse}.");
@@ -1117,7 +1117,7 @@ class RZ_QM_EdgeOffers : RZ_HavenQM
 
 		if (option == 1)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{nurse} nods slowly, as if she knew. \"Then {walker} keeps walking them. And somebody had better walk with him.\""));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{nurse} nods slowly, as if he knew. \"Then {walker} keeps walking them. And somebody had better walk with him.\""));
 			Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_EdgeOfTown.OUT_REFUSE, "refused both offers");
 			return;
 		}
@@ -1132,7 +1132,7 @@ class RZ_QM_EdgeOffers : RZ_HavenQM
 		}
 
 		RZ_QuestApproach.SideWith(gm, playerId, RZ_EFaction.BANDITS, -1, 5, 0);
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{nurse} looks at you for a long time. \"Half price for half a cure.\" She writes it down anyway."));
+		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{nurse} looks at you for a long time. \"Half price for half a cure.\" He writes it down anyway."));
 		Resolve(gm, playerId, RZ_EQuestApproach.SIDE, RZ_Quest_EdgeOfTown.OUT_CUT, "took the Red Hand's offer", false);
 	}
 
@@ -1263,7 +1263,7 @@ class RZ_QM_EdgeCutDose : RZ_HavenQM
 		m_vClinic = LandPointNear(h.m_vPos, 4, 10);
 		m_vPos = m_vCrate;
 		m_iSettlement = gm.FindNearestSettlement(m_vCrate);
-		m_Courier.m_sWho = "Halcyon's courier, on the road with her satchel,";
+		m_Courier.m_sWho = "Halcyon's courier, on the road with his satchel,";
 		m_sTitle = "The Edge of Town: the cut dose";
 		m_sBrief = QFill(gm, "The Haven's houses want our dose. Cheap, and for everyone. The crate's at our drop outside " + boss.m_sPlace + ". Get it to {nursehouse}, and keep away from Halcyon's courier on the road. The lab would take it personally.");
 		m_sObjective = QFill(gm, "Take the Red Hand's crate from outside " + boss.m_sPlace + " to the safehouse in {nursehouse}.");
@@ -1348,7 +1348,7 @@ class RZ_QM_EdgeCutDose : RZ_HavenQM
 		if (run)
 			run.Reward(gm, playerId, RZ_EFaction.BANDITS, 6, 20, "The Red Hand pays its carriers. The houses will pay the Red Hand.");
 
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{nurse} counts the vials and doesn't say anything about the labels. \"Half price,\" she says, to nobody."));
+		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{nurse} counts the vials and doesn't say anything about the labels. \"Half price,\" he says, to nobody."));
 		Resolve(gm, playerId, RZ_EQuestApproach.SIDE, RZ_Quest_EdgeOfTown.OUT_DELIVERED, "brought the cut dose to the houses");
 	}
 

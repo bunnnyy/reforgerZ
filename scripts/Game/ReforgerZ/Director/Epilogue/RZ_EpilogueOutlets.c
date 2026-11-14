@@ -109,7 +109,7 @@ class RZ_EpiOutlets
 				if (m_iTerms == 4)
 					refill = 90;
 
-				// Her house first (her terms): the woman's house has the dose whatever its size
+				// His house first (his terms): the man's house has the dose whatever its size
 				int hers = -1;
 				RZ_CureFinale finH = RZ_CureFinale.Get();
 				if (m_iTerms == 1 && finH && finH.GetPeople())
@@ -148,7 +148,7 @@ class RZ_EpiOutlets
 				AddOutlet("board", RZ_EFaction.BANDITS, spots.CrossroadsPos(), "Rudi's crossroads", 4, 20, -1, "Pay the board for a dose");
 				if (m_iTerms == 3 && houses)
 				{
-					// The first pan at the cook's sister's house while she lives, else the house nearest the crossroads
+					// The first pan at the cook's brother's house while he lives, else the house nearest the crossroads
 					int pan = houses.FindNearest(spots.CrossroadsPos());
 					RZ_CureFinale fin = RZ_CureFinale.Get();
 					if (fin && fin.GetPeople() && fin.GetPeople().IsAlive("sister"))
@@ -437,11 +437,11 @@ class RZ_EpiOutlets
 					return Favor(playerId, RZ_EFaction.SURVIVORS, 10, title, "Ten for the batch. The method's free. The hands aren't.", paid);
 				}
 
-				// The cook's sister's house under the first pan
+				// The cook's brother's house under the first pan
 				if (o.key == "pan")
 					return true;
 
-				// Her house first: free at the chair's house and at hers (the woman's)
+				// His house first: free at the chair's house and at his (the man's)
 				if (m_iTerms == 1 && (o.house == RZ_HavenQuest.ChairHouse(m_GM) || o.house == WomanHouse()))
 					return true;
 
@@ -619,7 +619,7 @@ class RZ_EpiOutlets
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The house the finale's woman lives in now, -1 without her.
+	//! The house the finale's man lives in now, -1 without him.
 	protected int WomanHouse()
 	{
 		RZ_CureFinale fin = RZ_CureFinale.Get();

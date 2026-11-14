@@ -365,7 +365,7 @@ class RZ_DutyHaven
 			1, "Six tins for chalk and aspirin. Somebody will take them for a fever that needs more.", "You push the packet back across. He's surprised, and then not there.", "You call the nurse over. He breaks one, tastes it, and looks at him until he leaves.",
 			"", "");
 		Swap("stolen", "A lad puts a silver spoon on the cloth. Across the room, an old man has stopped talking.",
-			"A crest on the handle. The same crest is on the brooch the old man is wearing.", "Found it, he says. On a windowsill. Inside a window.", "For his mates. There are three of them at the door, not looking at you.",
+			"A crest on the handle. The same crest is on the signet ring the old man is wearing.", "Found it, he says. On a windowsill. Inside a window.", "For his mates. There are three of them at the door, not looking at you.",
 			1, "A tin for his own spoon. He watches it go into the box. He says nothing, loudly.", "Back across the cloth. He pockets it. He watches that as well.", "You call him over. He takes the spoon, and then, after a while, gives him a tin for bringing it back.",
 			"who had his spoon brought back at the swap table", "He brought my spoon back because you made him, and I gave him a tin because you made me. We're both better for it, I suppose.");
 		Swap("hoard", "A man with a sack wants every candle on the table. He'll pay in tins. He has the tins.",
@@ -385,7 +385,7 @@ class RZ_DutyHaven
 			2, "A loaf for a fortune. He thanks you as if you'd done well out of it.", "You shake your head. He squares the notes up, carefully, and puts them away.", "A loaf for an afternoon's work on the house's sums. He was a bookkeeper. He nearly smiles.",
 			"who offered banknotes for a loaf", "I keep the house's books now. It's twelve lines. I've never been so careful with twelve lines.");
 		Swap("pearls", "A string of pearls, laid out straight. The man wants a place on the truck list for his son.",
-			"Real, and old, and knotted between each one. The clasp has a jeweller's mark.", "They were my father's, he says. I'd rather he lived than they stayed in a drawer.", "For the son. He's fourteen, and outside, and doesn't know he's in here.",
+			"Real, and old, and knotted between each one. The clasp has a jeweller's mark.", "They were my mother's, he says. I'd rather he lived than they stayed in a drawer.", "For the son. He's fourteen, and outside, and doesn't know he's in here.",
 			2, "The pearls go in the box. You can't sell him a place on a list. You've taken them anyway.", "You tell him the list isn't for sale. He nods as if he knew, and had to try.", "You send him to the clerk, with the pearls in his pocket. The list is by need. His name was already on it.",
 			"who tried to buy his son a place with pearls", "His name was on the list already. You could have had the pearls and I'd never have known. I know now.");
 		Swap("papers", "A thin man with a folder. Travel papers, stamped, three sets. A week's food for the three.",

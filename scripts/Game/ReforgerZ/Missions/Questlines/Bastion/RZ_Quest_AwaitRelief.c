@@ -705,7 +705,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 			}
 			case BRANCH_HAVEN:
 			{
-				run.Note("The chair keeps the page in a locked drawer. She says nothing, yet.");
+				run.Note("The chair keeps the page in a locked drawer. He says nothing, yet.");
 				break;
 			}
 		}
@@ -950,7 +950,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 				if (outcome == OUT_PAID)
 				{
 					run.SetFlag("paid", 1);
-					return Finish(run, E_HAVEN, "The Haven's leverage. The chair has the page, and Bastion's rations stop at her door.");
+					return Finish(run, E_HAVEN, "The Haven's leverage. The chair has the page, and Bastion's rations stop at his door.");
 				}
 
 				return Finish(run, E_HAVEN, "The Haven's leverage. Bastion's rations never came, and the chair still has the page.");
@@ -992,7 +992,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 10, 0);
 				ChangeStanding(gm, run, RZ_EFaction.MILITARY, 5, 0);
 				RZ_BastionQuest.SetWorld(gm, KEY + ".haven", 1);
-				SpreadRumour(gm, "The chair's got something on Bastion. You can tell: their trucks slow down past her door now.", 10);
+				SpreadRumour(gm, "The chair's got something on Bastion. You can tell: their trucks slow down past his door now.", 10);
 				break;
 			}
 		}
@@ -1116,7 +1116,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 			case BRANCH_STOVE: return run.Fill("The page went into the stove at {stronghold}. {operator} has been moved there, for his own good. The log at {post} says \"No reply\".");
 			case BRANCH_READ: return run.Fill("{cmd} read the page to the whole post at the shift change, 'expended' and all. Two of the men walked off {post} before dawn. The stronghold will have heard by now.");
 			case BRANCH_MOCKED: return run.Fill("The Red Hand reads \"expended\" on the open channel every hour. Bastion's channel has gone quiet. Somebody at {stronghold} wants to know who leaked it.");
-			case BRANCH_HAVEN: return run.Fill("The chair keeps the page in a locked drawer. She says nothing, yet.");
+			case BRANCH_HAVEN: return run.Fill("The chair keeps the page in a locked drawer. He says nothing, yet.");
 		}
 
 		return "";
@@ -1136,7 +1136,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 
 				return run.Fill("The page is ash. A copy of {operator}'s tape is still out there, with whoever made it. It can still go to {cmd}, a Red Hand crew or the chair. Once.");
 			}
-			case BRANCH_HAVEN: return run.Fill("The chair's price for keeping quiet: Bastion rations for her house. Carry them to her.");
+			case BRANCH_HAVEN: return run.Fill("The chair's price for keeping quiet: Bastion rations for his house. Carry them to him.");
 		}
 
 		return "";
@@ -1798,7 +1798,7 @@ class RZ_QM_OrdersWho : RZ_QuestMission
 		if (m_bHasChair && !m_bChairShown && RZ_ContractHelp.AnyNear(players, m_vChair, 300))
 		{
 			m_bChairShown = true;
-			int chairClue = AddClue(RZ_Util.Capitalize(m_sChair), "The chair reads everything that comes to this door. Bastion walked us to the line on Day 2. She'd like to know what they were told.");
+			int chairClue = AddClue(RZ_Util.Capitalize(m_sChair), "The chair reads everything that comes to this door. Bastion walked us to the line on Day 2. He'd like to know what they were told.");
 			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vChair, OBJ_CHAIR, GiveLabel(m_sChair), "", chairClue, "Talk to " + m_sChair);
 		}
 	}
@@ -1948,7 +1948,7 @@ class RZ_QM_OrdersWho : RZ_QuestMission
 	{
 		m_iChosen = OBJ_CHAIR;
 		RZ_QuestApproach.SideWith(gm, playerId, RZ_EFaction.SURVIVORS, -1, 5, 0);
-		gm.NotifyPlayer(playerId, m_sTitle, "The clerk takes it in to the chair. You hear a drawer lock. When the clerk comes back out, all he says is: \"She knows now what they were told. Thank you.\"");
+		gm.NotifyPlayer(playerId, m_sTitle, "The clerk takes it in to the chair. You hear a drawer lock. When the clerk comes back out, all he says is: \"He knows now what they were told. Thank you.\"");
 		Resolve(gm, playerId, RZ_EQuestApproach.SIDE, RZ_Quest_AwaitRelief.OUT_HAVEN, "gave it to the Haven's chair", false);
 	}
 
@@ -2434,7 +2434,7 @@ class RZ_QM_OrdersOperator : RZ_QuestMission
 //------------------------------------------------------------------------------------------------
 //! Await Relief, stage 5 of the Haven's branch (Bastion contract, Known): the chair's price for
 //! keeping quiet. A crate of rations at the commander's post (the stronghold if he's gone), carried
-//! to the chair's clerk at her safehouse: +4 food there.
+//! to the chair's clerk at his safehouse: +4 food there.
 class RZ_QM_OrdersPrice : RZ_QuestMission
 {
 	protected ref RZ_QuestCarry m_Crate = new RZ_QuestCarry();
@@ -2495,7 +2495,7 @@ class RZ_QM_OrdersPrice : RZ_QuestMission
 		m_iSettlement = gm.FindNearestSettlement(m_vCrate);
 		m_vPos = m_vCrate;
 		m_sTitle = "Await Relief: the chair's price";
-		m_sBrief = QFill(gm, string.Format("The Haven's chair has something of ours, and her price for keeping it in a drawer is rations. A crate is waiting at %1. Take it to her house in %2. Don't sign for it.", m_sFrom, h.m_sName));
+		m_sBrief = QFill(gm, string.Format("The Haven's chair has something of ours, and his price for keeping it in a drawer is rations. A crate is waiting at %1. Take it to his house in %2. Don't sign for it.", m_sFrom, h.m_sName));
 		m_sObjective = QFill(gm, string.Format("Take the ration crate at %1 to the Haven chair's house in %2.", m_sFrom, h.m_sName));
 		return true;
 	}
@@ -2543,7 +2543,7 @@ class RZ_QM_OrdersPrice : RZ_QuestMission
 		if (!m_bClerkShown && RZ_ContractHelp.AnyNear(players, m_vClerk, 300))
 		{
 			m_bClerkShown = true;
-			int clue = AddClue("The chair's clerk", "\"Bastion's rations? The chair said they'd come. She didn't say when.\" He holds the door.");
+			int clue = AddClue("The chair's clerk", "\"Bastion's rations? The chair said they'd come. He didn't say when.\" He holds the door.");
 			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vClerk, OBJ_CLERK, "Hand over Bastion's rations", "", clue, "Talk to the chair's clerk");
 		}
 	}
