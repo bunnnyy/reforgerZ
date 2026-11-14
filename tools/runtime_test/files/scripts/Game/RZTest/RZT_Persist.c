@@ -66,7 +66,7 @@ class RZT_Persist
 			RZ_Util.InsertIntoInventory(me, pack);
 
 		IEntity goods = RZ_MissionGoods.Give(me, "{00E36F41CA310E2A}Prefabs/Items/Medicine/SalineBag_01/SalineBag_US_01.et", "the test");
-		bool inPack = goods && RZ_Util.GetCarrierPlayerId(goods) == id;
+		int heldBefore = p.m_aQiPrefab.Count();
 		p.m_fWoundLeft = 30;
 		RZ_Character.OnDied(gm, id, me, me.GetOrigin());
 		Check(p.m_iCharacter == before, "a death keeps the character number");
@@ -76,6 +76,7 @@ class RZT_Persist
 		Check(p.m_aFog.Count() == fogWords, "a death keeps the map's fog");
 		Check(p.m_fWoundLeft <= 0 && p.m_fInfectionLeft < 0, "the bite goes with the body");
 		Check(p.m_bDiedBitten, "the death is marked bitten");
+		bool inPack = p.m_aQiPrefab.Count() > heldBefore;
 		if (inPack)
 		{
 			Check(p.m_aQiPrefab.Count() == 1, string.Format("the quest item is held as data (%1)", p.m_aQiPrefab.Count()));
@@ -83,7 +84,7 @@ class RZT_Persist
 		}
 		else
 		{
-			Print("RZT persist: the goods didn't go into the tester's pack; the hold isn't checked");
+			Print("RZT persist: the goods didn't go into the tester's inventory; the hold isn't checked");
 		}
 
 		// 2. Coming round

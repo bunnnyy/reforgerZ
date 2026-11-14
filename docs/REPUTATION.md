@@ -256,18 +256,21 @@ mixed cell), SIDED, FRIEND_OF_ALL, ONE_SIDE, WATCHED, UNKNOWN.
 
 ### Face and name
 
-✅ **Leader and wanderer memory is life-stamped** (**Reputation > Life-stamped memory**, on). Each
-entry keeps the life it was written in. Memory from this life counts as built; memory from an
-earlier life counts at half, rounded toward zero (crossed −3 becomes −1, saved +2 becomes +1, helped
-+1 becomes 0), and met doesn't carry, so a new character isn't refused by people who never met them.
-Old saves load their entries as an earlier life. Questline participation stays by identity.
+✅ **Leader and wanderer memory is character-stamped** (**Reputation > Life-stamped memory**, on;
+the setting kept its name). Each entry keeps the character it was written for
+([DESIGN.md](DESIGN.md#a-character-who-lasts)); a death doesn't change the character, so people
+remember you across deaths. Memory from this character counts as built; memory from an earlier
+character (before a reset) counts at half, rounded toward zero (crossed −3 becomes −1, saved +2
+becomes +1, helped +1 becomes 0), and met doesn't carry, so a new character isn't refused by people
+who never met them. A save from before characters lasted loads its last life as the character, so
+its entries still count in full. What a questline remembers stays by identity.
 
 **Regard.** With Trees on, how you talk to a leader or wanderer adds regard ÷ 2 to their attitude,
 at most ±2 and fading a step a real day ([DIALOGUE.md](DIALOGUE.md#memory)). Prices still read
 only the built memory.
 
 **The name outlives the face** this season: [the season record](#the-season-record). A leader who
-never met this life's face, but whose faction an earlier life stood out with, greets it once with
+never met this character's face, but whose faction an earlier character stood out with, greets it once with
 the name: "Don't know the face. Know the name. It's in the file as Useful Trouble."
 
 ### The season record
@@ -331,18 +334,23 @@ Bastion → Red Hand 25%, Red Hand → Bastion 20% and Haven 15%, Halcyon → Re
 A mission with its own rival uses that instead. A truce halves it, a feud makes it ×1.5
 ([Truces and feuds](#morale-needs-truces-and-feuds)).
 
-### Lives and carry-over
+### Characters and carry-over
 
-Reputation is per character, so a new life starts fresh with only its background's starting
-standing ([DESIGN.md](DESIGN.md), "Backgrounds and personal goals"). Two things carry over:
+Reputation is per character, and a character lasts across deaths until the player resets it
+([DESIGN.md](DESIGN.md#a-character-who-lasts)): a death changes no Fame, Infamy or Favor. A reset
+starts a new character with only its background's starting standing
+([DESIGN.md](DESIGN.md#backgrounds-and-personal-goals)). What carries to the new one:
 
 - **Word gets around** ✅: if any past character reached Champion with a faction, every new
   character starts at least Known with it (at least 15 Fame, and any starting Infamy the
   background gives with it is cut to 14).
 - **Unlocks** ✅: Champion with a faction unlocks a background (Soldier, Doctor, Raider, Elder);
   10 Legacy points unlock the Drifter.
-- **Remembered** ✅: the next character after a Haven Champion dies is kin of the fallen
+- **Remembered** ✅: the next character after a Haven Champion is reset is kin of the fallen
   ([The Haven](#the-haven)).
+- **The name** ✅: with any faction the last character was Hunted or worse with, the new one
+  starts Watched (Fame under 15, Infamy at least 15). They don't know the face; they know the name.
+  A debt in the Red Hand's book stays in it.
 
 ## What each faction gives you
 
@@ -373,9 +381,9 @@ squad is sent after them, and a squad already hunting them loses the trail: it w
 and gives up within 2 minutes (the player is told once a life). Bounty notices give only a
 vague area: a town 1.5–3 km from where they really are.
 
-**Remembered.** When a Haven Champion dies, a memorial headline goes out to everyone and the
-nearest safehouse's council head reads the name at supper (players Known with the Haven hear
-it). That player's next character is **kin of the fallen**: at their first safehouse they're
+**Remembered.** When a Haven Champion's character ends (a reset: a death no longer ends one), a
+memorial headline goes out to everyone and the nearest safehouse's council head reads the name at
+supper (players Known with the Haven hear it). That player's next character is **kin of the fallen**: at their first safehouse they're
 greeted as family and the medic sees to them for nothing, once (a full heal; a bite is slowed as
 if declared at a Town, which counts as declaring it). Nothing more: the "word gets around" Known
 start is separate.

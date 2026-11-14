@@ -302,7 +302,8 @@ it (`book.last` 1–4). Questlines hear the stand through `OnFinalStandStart` an
   taken in talk from its giver's first replies (*[Quest] The Other Two: his number*, locked with its
   start check when you can't take it yet: [DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies)); it's
   already yours once you took part in an earlier stage, and each new stage sends you its start card
-  (*Quest started: ...*, [UI.md](UI.md#notices)).
+  (*Quest started: ...*, [UI.md](UI.md#notices)). Taking part belongs to the character: a death
+  keeps it, a reset doesn't ([DESIGN.md](DESIGN.md#a-character-who-lasts)).
 - **Approaches** in each stage:
 
   | Approach | What it means |
@@ -364,7 +365,7 @@ And always:
 Siding against a faction matters in that faction's own questlines:
 
 - **Personal:** every ending records *(you)* which faction you worked against, if any. That
-  faction's questline Talk checks need one tier more from you this life, and its leaders open
+  faction's questline Talk checks need one tier more from you this character, and its leaders open
   with it ("You're the one who sold the List.").
 - **The world:** the flags in [Crossings](#crossings) open, close or bend stages in other lines.
 
@@ -573,7 +574,7 @@ the line starts at that post.
   contract chases; when its source is the tape, the line starts at that post.
 - With R1's `book.bastion` (the Bastion commander's leader id + 1), that commander is the one,
   if he's Independent and still in the chair.
-- The copy is a record of who sneaked it, by identity rather than by life. Copying needs a radio
+- The copy is a record of who sneaked it, by identity rather than by character. Copying needs a radio
   on you and nobody noticing you at the post.
 - The people are standing stand-ins: the commanding officer's duty officer, the commander himself
   (his own body is held for the stage), a crew boss's radio man, the chair's clerk. Only the
@@ -717,7 +718,7 @@ the faction's Rogue leaders where there are any, else Independent ones.
 
 | Ending | You get | The world |
 |---|---|---|
-| **The book balances** | Red Hand Fame +20, 40 Favor; the crew gives you a name, used in headlines and by Red Hand leaders this life | Red Hand morale +5; every leader you collected from remembers you crossed them |
+| **The book balances** | Red Hand Fame +20, 40 Favor; the crew gives you a name, used in headlines and by Red Hand leaders this character | Red Hand morale +5; every leader you collected from remembers you crossed them |
 | **Held over them** | 20 Favor, once, from each faction whose leader you squeezed; when the boss hears (a session later), Red Hand Infamy +15 | The leader you squeezed hardest swings toward Rogue |
 | **Bastion's file** | Bastion Fame +20; Red Hand Infamy +25 | The Bastion commander on the page is pulled into line (loyalty +25); Red Hand strength −3; Bastion keeps Red Hand prisoners longer (Bust Out a little more often, ×1.2) |
 | **Burnt** | Haven Fame +5 if the thief lived; Red Hand Infamy +25 (a debt is a debt) | The debts die with the page; Red Hand morale −5; the three leaders remember you saved them |
@@ -1011,7 +1012,7 @@ doing. It starts with the dead. Their story started that way too.
 This is the darkest line in the mod. Most players take it to get proof for C1. A player is never
 the one taken, and nothing here is described: it's all said sideways ([LORE.md](LORE.md#the-long-table)).
 
-**Needs:** ate with the Long Table twice this life; not Trusted with the Haven (the host doesn't
+**Needs:** ate with the Long Table twice this character; not Trusted with the Haven (the host doesn't
 ask the Haven's friends). ★ Police: anything you learn counts as proof.
 **Starts:** the host, on your third visit.
 
