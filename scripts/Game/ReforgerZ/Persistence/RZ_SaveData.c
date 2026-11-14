@@ -93,6 +93,7 @@ class RZ_SaveData
 	// The power station (where, how far restored, its condition) and the radio station
 	ref RZ_PowerSave power;
 	ref RZ_RadioStationSave radio;
+	ref RZ_MastsSave masts;
 
 	// Story arcs (the running one, when each last ran) and the session headlines' own facts
 	ref RZ_StorySave story;

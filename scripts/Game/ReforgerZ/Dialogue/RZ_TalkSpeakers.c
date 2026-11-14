@@ -28,6 +28,10 @@ class RZ_TalkSpeaker
 		if (obj && obj.GetMissionId() == RZ_DutyScenes.TAG_PERSON)
 			return new RZ_TalkDutyPerson(owner, obj.GetObjectIndex());
 
+		// A mast's keeper: the old radio man, the Red Hand crewman (World/RZ_Masts.c)
+		if (obj && obj.GetMissionId() == RZ_Masts.TAG_PERSON)
+			return new RZ_TalkMastKeeper(owner, obj.GetObjectIndex());
+
 		// An opening's contact, someone from before (Guidance/RZ_Openings.c)
 		if (obj && obj.GetMissionId() == RZ_Openings.TAG)
 			return new RZ_TalkOpening(owner, obj.GetObjectIndex());

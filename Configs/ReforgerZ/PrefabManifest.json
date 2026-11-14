@@ -4867,7 +4867,7 @@
     {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=2"], "name": "Choose"},
     {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=3"], "name": "Choose"}
    ],
-   "slots": ["m_RadioStationSettings.m_sConsolePrefab"],
+   "slots": ["m_RadioStationSettings.m_sConsolePrefab", "m_MastSettings.m_sCabinetPrefab"],
    "listSlot": false,
    "slotLabel": "World > Radio station > Console prefab",
    "required": false,
@@ -7586,6 +7586,12 @@
   },
   {
    "category": "World",
+   "object": "Masts",
+   "field": "m_MastSettings",
+   "covers": "On (1), masts at least (3) and at most (5), region (2500 m), climb hold (25 s), bearing hold (10 s), fog cleared (1000 m), minutes between warnings (6), overheard lines (9), the drone operators (15), trapped voices (90) and how long one calls (30), Fame for handing one to a faction (5), Red Hand Favor for selling one (15), **Cabinet prefab** (empty: Puzzles > Radio mast) ([DESIGN.md](DESIGN.md#the-masts))"
+  },
+  {
+   "category": "World",
    "object": "Wildlife",
    "field": "m_WildlifeSettings",
    "covers": "**Doe** and **Buck** prefabs (WildlifeExpansion's; no doe = off), **Meat** (the raw meat leg), herds on the server (2), does a herd (up to 3), buck chance (0.7), chance a minute for a player in the country (0.25; ×0.5 at night), minutes before the same player gets another (20), put out 150 to 300 m away and put away past 450 m, margin from towns and faction places (150 m), meat a deer (1 to 2), shot range (260 m), deer a minute that leave meat (4) ([DESIGN.md](DESIGN.md#wildlife))"
@@ -7964,6 +7970,28 @@
    "label": "Radio station",
    "cls": "RZ_RadioStationSettings",
    "defaults": {"m_bEnabled": "1", "m_fTakeoverSeconds": "30", "m_fCooldownMinutes": "10"}
+  },
+  {
+   "field": "m_MastSettings",
+   "category": "World",
+   "label": "Masts",
+   "cls": "RZ_MastSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_iMin": "3",
+    "m_iMax": "5",
+    "m_fRegion": "2500",
+    "m_fClimbSeconds": "25",
+    "m_fBearingSeconds": "10",
+    "m_fFogRadius": "1000",
+    "m_fWarnMinutes": "6",
+    "m_fListenMinutes": "9",
+    "m_fChatterMinutes": "15",
+    "m_fVoiceMinutes": "90",
+    "m_fVoiceLastsMinutes": "30",
+    "m_iHandFame": "5",
+    "m_iSellFavor": "15"
+   }
   },
   {
    "field": "m_WildlifeSettings",
