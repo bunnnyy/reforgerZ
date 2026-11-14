@@ -3270,6 +3270,8 @@ and for the first five minutes cards come at most one every 45 s; the rules and 
 
 ### Openings: how every life starts
 
+Planned: the opening rebuilt around the Halcyon case, leading into Proof ([designs/OPENING.md](../designs/OPENING.md)).
+
 Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningScenes.c`, `RZ_OpeningChain.c`,
 `RZ_OpeningSteps.c`, `RZ_OpeningText.c`, `Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
 

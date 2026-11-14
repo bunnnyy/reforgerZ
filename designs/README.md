@@ -6,6 +6,8 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 
 ## Order of work
 
-None waits: every approved design is built.
+| # | Design | What | Status |
+|---|---|---|---|
+| 1 | [OPENING.md](OPENING.md) | The opening rebuilt as five beats (the door, the favour, the line, the Halcyon case, the Red Hand fixer) that lead into Proof | approved 2026-11-14, not started |
 
 A new approved design goes here with its place in the order.
