@@ -58,7 +58,7 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 			case S_ACT1: return "Find out if {cook}, at the Red Hand's dusk meal, can finish the cure.";
 			case S_DOOR: return "Get {cook} a tray of the lab's batch, or four stolen doses.";
 			case S_PIECE: return "Run the still near {still} with {cook} on the lab's night shift.";
-			case S_ACT4: return "Dose someone bitten who asks, then take the case to the lab gate in {lab_town} by day.";
+			case S_ACT4: return "Give the proof dose to someone bitten who asks, near the Red Hand's stronghold.";
 		}
 
 		return "";
@@ -208,8 +208,18 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 			}
 			case S_ACT4:
 			{
+				// Two places, two lines: the proof dose by the stronghold, then the case to the lab
+				RZ_QM_RouteScene route = RZ_QM_RouteScene.Cast(scene);
+				if (route)
+				{
+					route.ObjThenLines(scene.m_sObjective, run.Fill("Take the cook's case to the duty officer at the lab gate in {lab_town}, by day."));
+					route.m_sThenFlag = "proved";
+				}
+
 				scene.m_vPos = gm.GetLabPosition();
 				int vol = scene.Person(RZ_Mission.LandPointNear(rh, 15, 40), "someone bitten who asked for it", "Talk to the volunteer", "It's yours? Never tried on a tray of theirs? Give it here anyway.");
+				if (route)
+					route.m_iFirstSpot = vol;
 				scene.Choice(vol, "Give the dose, told plainly").Sets("do:proof").Says("Five minutes, watched. It holds.", "gave the proof dose");
 				scene.Choice(vol, "Take the proof dose yourself").Sets("do:proof_self").Says("You roll up your own sleeve. Five minutes, watched. It holds, and the crews saw you do it.", "took the proof dose themselves");
 				int duty = DutyOfficer(gm, scene, "A case of cut doses, at the front door. The director checks it in an hour.");

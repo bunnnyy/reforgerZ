@@ -19,13 +19,13 @@ for the play-test. [The audit](#the-audit) below is the last full pass.
 | # | Rule | Where it lives | How it's kept | Status |
 |---|---|---|---|---|
 | 1 | **A place is what its words say.** "The chemist's" is a real pharmacy, "the farm" a farm, "the hall" a hall. If there's no such building, the words change ("the old aid post", "my old medical cabinet") or the task isn't offered there. | [PLACES.md](PLACES.md#a-place-is-what-its-words-say) | `RZ_PlaceCheck.WordsTrue`; `run.sh tasks` fails a place whose words are false (`Places words:` lines); `mission_rules.py` (a building named in a file that never asks for one) | held |
-| 2 | **What the words name stands there.** A box at "take the box", crates at "carry the crates", a patient at "treat the boy". If it can't be put out, it falls back to a plainer thing, never to nothing. | [ERRANDS.md](ERRANDS.md#work-sites) | the work sites' looks and their fallbacks; runtime `RZT rules FAIL thing` | partly: missing crates at The Boiler and the Nurse's missing boy are being fixed |
-| 3 | **Real doors only.** Anything "at a door" happens on a real building's doorstep. The mod never spawns a door. | [ERRANDS.md](ERRANDS.md#work-sites) | the locks' door finder; `mission_rules.py` (a prefab built on a base-game door) | partly: the openings' scratched door and the boarded doorway are being moved onto real doors |
+| 2 | **What the words name stands there.** A box at "take the box", crates at "carry the crates", a patient at "treat the boy". If it can't be put out, it falls back to a plainer thing, never to nothing. | [ERRANDS.md](ERRANDS.md#work-sites) | the work sites' looks and their fallbacks; runtime `RZT rules FAIL thing` | held: a work site always shows the thing its words name, else a box, logged; the Nurse's son and the Doctor's bitten friend lie there (runtime `RZT openings`, `RZT rules thing`) |
+| 3 | **Real doors only.** Anything "at a door" happens on a real building's doorstep. The mod never spawns a door. | [ERRANDS.md](ERRANDS.md#work-sites) | the locks' door finder; `mission_rules.py` (a prefab built on a base-game door) | held: no door is spawned; the boarded doorway goes up only in a real doorway (a trap's barricade within 3 m of one, a work look within 1.2 m) |
 | 4 | **"In" means inside.** A search, a stack or a patient "in" a building is inside it, on its ground floor. | [PLACES.md](PLACES.md#a-place-is-what-its-words-say) | `RZ_WorkSites.FloorOf` | held |
 | 5 | **A line stands at a real way in,** with a path to it: the camp's gate, else the road into town, else the giver's door. | [ERRANDS.md](ERRANDS.md#duties) | `AT_ENTRY` beats, logged | held |
 | 6 | **Nothing stands in a wall, a building or the road.** Props use their measured sizes, and a prop that doesn't fit is dropped, not squeezed. | [SITES.md](SITES.md#where-a-place-stands) | `footprints.json`, the fit checks, the site audit | held |
 | 7 | **Within walking reach.** A giver offers jobs within 2.5 km and errands within 1.5 km. A fixed far place is handed out by a nearer giver of the same faction, and failing that, it says it's a long walk. | [PLACES.md](PLACES.md#offer-reach) | **Offer reach**, **Errand reach**; `Reach jobs` lines in `run.sh tasks` | held |
-| 8 | **Mainland only.** No task sends you to an island, into water or onto the line. | [PLACES.md](PLACES.md) | the place needs; `run.sh tasks` | held |
+| 8 | **Mainland only.** No task sends you to an island, into water or onto the line. The one exception is the perimeter's own jobs (The Blind Spot, The Crossing, Shot at the Line, the Last Pilot's wreck), whose place is the line by design: still dry and on the mainland (`mission.line`). | [PLACES.md](PLACES.md) | the place needs; the live check; `run.sh tasks` | held |
 
 ## The people
 
@@ -41,7 +41,7 @@ for the play-test. [The audit](#the-audit) below is the last full pass.
 | # | Rule | Where it lives | How it's kept | Status |
 |---|---|---|---|---|
 | 13 | **One spot, one prompt.** Several things to do at one place are one prompt, named for the spot, that opens a menu of choices. | [UI.md](UI.md#the-object-menu) | `RZ_WorkSites.Gather` | held |
-| 14 | **Carrying is carrying.** "Carry the crates in" means picking real crates up and putting them down where they go, not holding a button. | [ERRANDS.md](ERRANDS.md#work-sites) | the lift-and-put-down of the sorting duties; `mission_rules.py` (a hold whose words say carry, stack or load) | open: being built for every carry task |
+| 14 | **Carrying is carrying.** "Carry the crates in" means picking real crates up and putting them down where they go, not holding a button. | [ERRANDS.md](ERRANDS.md#work-sites) | `RZ_Carry` (real things picked up and put down); `mission_rules.py` (a hold whose words say carry, stack or load, unless its way is carried for real) | held |
 | 15 | **Games are played in the world,** with your hands on things that stand there, never as a menu. A menu may be one prop of the game (a clipboard, a ledger). | [UI.md](UI.md#default-first-then-menus) | the interaction audit in UI.md | held |
 | 16 | **A hold looks like work.** Holding the key plays an animation and keeps you still, like digging in vanilla. | [ERRANDS.md](ERRANDS.md#work-sites) | `RZ_WorkHold` | held |
 | 17 | **The rules are where you need them,** in the tracker and the spot's menu, so you never walk back to a note to reread it. | [ERRANDS.md](ERRANDS.md#duties) | the sorting duties' tracker lines | held |
@@ -51,8 +51,8 @@ for the play-test. [The audit](#the-audit) below is the last full pass.
 
 | # | Rule | Where it lives | How it's kept | Status |
 |---|---|---|---|---|
-| 19 | **Handing over is a reply you pick.** Nothing completes when you walk up, or when you open the talk screen. | [ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain) | the [Errand] reply, locked with what's missing; `mission_rules.py` (a distance check to a person that completes); runtime `RZT rules FAIL walk-up` | partly: a handed errand (an opening's step) still hands in by walking back: being fixed |
-| 20 | **The next step is told in words,** by the giver, the next person or the one walking with you. | [DESIGN.md](DESIGN.md#openings-how-every-life-starts) | the openings' chain | partly: same fix as 19 |
+| 19 | **Handing over is a reply you pick.** Nothing completes when you walk up, or when you open the talk screen. | [ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain) | the [Errand] reply, locked with what's missing; `mission_rules.py` (a distance check to a person that completes); runtime `RZT rules FAIL walk-up` | held: every errand, handed ones too, hands in by its reply while the talk screen is on; a handed step ends where it's done and a hand-over counts only by its reply (runtime `RZT openings`); walking back hands in only with the talk screen off |
+| 20 | **The next step is told in words,** by the giver, the next person or the one walking with you. | [DESIGN.md](DESIGN.md#openings-how-every-life-starts) | the openings' chain | held |
 | 21 | **Ask again and they repeat it.** A giver tells you your current task when asked. | [DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies) | the talk replies | held |
 | 22 | **No pitch for work that isn't there.** A giver with nothing says so. | [DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies) | the talk replies | held |
 
@@ -60,7 +60,7 @@ for the play-test. [The audit](#the-audit) below is the last full pass.
 
 | # | Rule | Where it lives | How it's kept | Status |
 |---|---|---|---|---|
-| 23 | **One objective per action and place.** "Take the box, carry it to the far door, hand it over, sign" are four lines, each at its own place. | [WRITING.md](WRITING.md#objective-lines) | `RZ_DutyGoals`; `ObjThen` (missions), `RZ_ErrandWay.First` (errands); `mission_rules.py` | held, but for the finale's act 4 line on the Red Hand route |
+| 23 | **One objective per action and place.** "Take the box, carry it to the far door, hand it over, sign" are four lines, each at its own place. | [WRITING.md](WRITING.md#objective-lines) | `RZ_DutyGoals`; `ObjThen` (missions), `RZ_ErrandWay.First` (errands); `mission_rules.py` | held |
 | 24 | **Taking a job tracks it.** The job you agree to in a talk is on the tracker at once. | [UI.md](UI.md#the-quest-tracker) | `RZ_QuestTracker.Push`; `mission_rules.py` (a kind of job the tracker never lists) | held |
 | 25 | **Errands and jobs are separate.** A job or the opening's chain never blocks an errand. | [ERRANDS.md](ERRANDS.md) | `CountHeld`, `HasOpenOffer`, `ChoresAt` | held |
 | 26 | **A journey, never a return trip.** An opening's steps go on from where you are; nothing sends you back just to report. | [ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain) | the openings' chain; `mission_rules.py` (an opening's step that only sends you back) | held |
@@ -89,7 +89,8 @@ for the play-test. [The audit](#the-audit) below is the last full pass.
 
 The last full pass over every task, 2026-11-14 (`mission_rules.py` and a read of each family). Hits
 before the fixes, then after: 60 hits before (rule 1: 5, 3: 2, 10: 10, 14: 6, 19: 2, 23: 35);
-after, none open: 15 right as they are (in the allowlist with why) and 16 pending the work named.
+after, none open: 15 right as they are (in the allowlist with why) and 16 pending the work named. Those
+16 were closed the same day once that work was in: none pending now.
 
 | Family | Rules broken | What happened |
 |---|---|---|
@@ -101,12 +102,14 @@ after, none open: 15 right as they are (in the allowlist with why) and 16 pendin
 | The snare line (duty) | 23 | Fixed: "then bring what's caught to {giver}", so the way back is its own line |
 | Questline stages (Authors: the Red Hand's offer; The Long Table: the dead) | 23 | Fixed: two lines each (`ObjThen`): hear the offer, then the director; stand where they fell, then the host |
 | The Price of the Door | 1 | Fixed: "a barn outside {barn}" is a real farm building at that town's edge, and he sleeps inside it; a town without one isn't picked |
-| The finale's Red Hand route, act 4 | 23 | Pending: one line per stage; "dose someone, then the case to the lab gate" needs the route's dose flag |
+| The finale's Red Hand route, act 4 | 23 | Fixed: two lines (`ObjThen` on the route's scene): the proof dose to the volunteer (the marker on him), then the cook's case to the lab gate once the dose has held (the run's `proved` flag) |
 | People's names (holding people, wanderers, the priest in a mystery, every generated name) | 10 | Fixed: a man's name for everyone (`RZ_NoteText.FirstName` is `ManName` now) |
 | The Haven chair's clerk (The Cargo) | 10 | Fixed: a man at the table |
 | Written women who stand in the world: the openings' mothers, the swap table's people, the sister at the door (Halcyon), the finale's lodger, cook, cook's sister and vet, The List's wife, the Red Hand storekeeper and daughter, the Long Table's mother, Dr Wolff, the field lead, the director, the toll's passers, the strangers, the chair, nurses and medics | 10 | Fixed: all men (the author: "make it all male"); the lodger is "the man who didn't turn", the Long Table's mother is its father (Adam Moravec), The List's wife is the missing man's brother; 130 lines name women only mentioned (a dead wife, a voice), listed in the allowlist |
-| The Boiler's crates, Margin Proof's chairs | 14, 2 | Pending: the carry-tasks work (real things picked up and put down) |
-| The openings' scratched door, the boarded doorway (a trap's barricade, the BOARDS work look) | 3 | Pending: the openings work (real doors only) |
-| Handed errands (an opening's step) | 19 | Pending: the openings work. `RZ_Errands` hands them in by walking back to the giver (`byTalk` leaves them out); with the talk screen off there's no reply, so walking back stays the hand-in only then |
+| The Boiler's crates, Margin Proof's chairs | 14, 2 | Fixed: carried for real (`RZ_Carry`); Margin Proof's words now say you carry three out, as you do |
+| The openings' scratched door, the boarded doorway (a trap's barricade, the BOARDS work look) | 3 | Fixed: the scratched door is gone (the clue is on a real door); the boards go up only in a real doorway: a trap's barricade within 3 m of one, snapped into it, a work look within 1.2 m |
+| Handed errands (an opening's step) | 19 | Fixed: `RZ_Errands` no longer leaves handed errands out of the reply rule; every handed step ends where it's done (`Hand` makes sure, with a warning), and a hand-over (The Cut) counts only by its reply, even with no opening behind it. With the talk screen off, walking back stays the hand-in |
+| The perimeter's own jobs (The Blind Spot, The Crossing, Shot at the Line, the Last Pilot's wreck) | 8 | Right as designed: their place is the line; checked against `mission.line` (dry, mainland, the line allowed), so the live check no longer fails them for it |
+| Crash Site, Last Helicopter (an island in the full runtime test) | 8 | Fixed: the wreck and the LZ are tried again a few towns over until they're on the mainland and off the line |
 | Halcyon's station at Morton: a named person's body outside the fence | 12 | Open: a place fault for the PC to report where they should stand (the board) |
 | Everything else (events, leaders, arcs, the Long Table, checkpoints, supply, the epilogue's cards, the duties' scenes) | none found | The checks found nothing; rules 2, 13 and 16 there are for the play-test |

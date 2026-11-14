@@ -1880,7 +1880,12 @@ before the missions, the openings' play-test faults are checked at the route's f
 the test world leaves them off): the Fever's son is a body on a care work site and the tracker's place
 is on him; 24 s by his father with nothing done doesn't finish it; the hold with a field dressing in
 the pack does, and takes it; the Cut's hand-over (`RZ_Errands.FinishNow`) is refused without a
-dressing and done in the same second with one; a real outside door is found near the town, a boarded
+dressing, 15 s by the giver with one doesn't finish it, and the reply does in the same second; every
+handed step of every opening (all backgrounds) ends where it's done, so none waits to be handed in by
+walking back (`N opening steps checked; 0 wait ...`); the rules check's own errand (a named person's
+ask, `RZT_RulesDef` in `RZT_Rules.c`) is done at a work site near them: its crate stands there 10 s
+after arriving, 15 s back with the giver doesn't hand it in while the talk screen is on, and the
+hand-in reply does, so `RZT rules:` counts at least one thing and one hand-in "by reply"; a real outside door is found near the town, a boarded
 doorway fits in it and is refused in the open; and the contacts' names and the Nurse's words are
 printed (`RZT openings OK|FAIL <what>`, then `RZT openings: N checks, N failed`; the run fails on
 FAIL). From then
@@ -2745,7 +2750,7 @@ Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one life each:
 for <player>: <background>, <kind> in <town> (<grid>), level N, <hiding|group|fever>, <before|stranger|earlier|nobody>:
 <who>, chain <search, task, walk> to <place>` (levels 2-3: `chain task, lead` or `chain lead`), `Openings: <name> called <player> over before step N`, `Openings: step 1 for <background> is <words> (<prefab>, <kind>), the spot N m from its middle` (the building step 1 sends you into, and the words its kind gave), `Openings: <name> talked to by <player> before
 step N`, `Openings: <name> went on talking with <player> into step N`,
-`Errands: opening.<step> handed to <player> (<name>)`, the pattern at the end of `started` (`, they walk with you` or `, handed on`), `Openings: <name> walks with <player>` (or `can't walk with <player> (no escort room), the steps start where you are`), `Openings: <first> sent <player> on to <next> at <place>, <direction>` (or `Openings: no house for the next person for <player> at <grid>, back to <name> instead`), `Openings: <player> handed over to <name> (step 2, task N), done there and then`, `Openings: the scratched door is a real door at <grid>, N m from the opening` (or `Openings: no real door within 80 m of <grid> for the scratched door, no clue`), `Openings: <name> step N (<key>) for <player>,
+`Errands: opening.<step> handed to <player> (<name>)` (a step that didn't end where it's done is made to, with `Errands: handed <key> didn't end where it's done; it does now (no walking back to hand it in)`), the pattern at the end of `started` (`, they walk with you` or `, handed on`), `Openings: <name> walks with <player>` (or `can't walk with <player> (no escort room), the steps start where you are`), `Openings: <first> sent <player> on to <next> at <place>, <direction>` (or `Openings: no house for the next person for <player> at <grid>, back to <name> instead`), `Openings: <player> handed over to <name> (step 2, task N), done there and then`, `Openings: the scratched door is a real door at <grid>, N m from the opening` (or `Openings: no real door within 80 m of <grid> for the scratched door, no clue`), `Openings: <name> step N (<key>) for <player>,
 <direction>`, `Openings: <name> step N done by <player> in N s`, `Openings: <name> died (step N for
 <player>)`, `Openings: <name>'s bitten friend was lost (the clock ran out for <player>)` and `Openings: ended
 for <player>: <why> (step N, N min)`; the fallbacks' `Openings: no step 2 can run for <player> here
@@ -3620,7 +3625,11 @@ when it happens)
   step is done in that talk (log: `Openings: <you> handed over to <name> (step 2, task N), done there
   and then`) and the next step is said into the same talk a moment later; walking away and back never
   finishes anything. An errand done elsewhere is handed in only with *[Errand] It's done: ...*, never
-  by opening the talk.
+  by opening the talk. Then do every opening step once more without ever opening the talk until it's
+  done: no step, of any background, finishes or moves on because you walked back to whoever gave it.
+- [ ] **A trap's planks go up only in a real doorway**: set them in the open (*"There's no door here to
+  board up."*), then within 3 m of a house's outside door: the boards stand in that doorway, facing out,
+  not where you dropped them.
 - [ ] **No door is ever spawned** (the author: "use real doors in the game, rather than spawning a
   door"). In the hiding place, the scratched door (*NOBODY GETS OUT*) is a real door of a building
   6–80 m from yours, read at its leaf (log: `Openings: the scratched door is a real door at ...`); no

@@ -1363,6 +1363,11 @@ class RZ_PlaceNeeds
 		// Contracts and world events, questline stages and arcs (Missions/): checked when one starts
 		n = Add("mission", "at {town}: the town its brief names");
 		n.InTown(1500);
+
+		// The perimeter's own jobs (The Blind Spot, The Crossing, Shot at the Line, the Last Pilot's
+		// wreck): at the line by design (docs/MISSION_RULES.md, rule 8), still dry and on the mainland
+		n = Add("mission.line", "at the line, by design: the perimeter's own jobs");
+		n.m_iFlags = RZ_EPlaceFlag.DRY | RZ_EPlaceFlag.MAINLAND;
 	}
 
 	//------------------------------------------------------------------------------------------------

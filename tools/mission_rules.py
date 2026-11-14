@@ -23,7 +23,8 @@ Rules checked here (their numbers are MISSION_RULES.md's):
     9  a person's marker on a stored spot: RZ_ObjPlace.Spot(...) given a giver's or a person's position
    10  a woman's name or word in a line the game shows (everyone met is a man: the stack has no female
        body); the allowlist names each woman who is only mentioned, never met (a dead wife, a voice)
-   14  carrying done as a hold: a hold's words say carry, move, stack, load, haul or bring in
+   14  carrying done as a hold: a hold's words say carry, move, stack, load, haul or bring in, and its
+       way isn't carried for real (no `.Carry(` before the next way)
    19  a hand-over done by walking up: a distance check to a person that completes a step or a job
    23  two actions or places in one objective line ("Find the ring, give it to the mother at ...")
    24  a kind of job the tracker never lists (so it can't be tracked when taken)
@@ -212,11 +213,27 @@ CARRY = re.compile(r"\b(carry|carried|move|stack|load|haul|bring in|lug|shift)\b
 HOLD = re.compile(r"(RZ_EWork\.\w+|\.Work\(|Task\()")
 
 
+NEXT_WAY = re.compile(r"(\bWay\(|\bTask\(|^\s*\}\s*$)")
+
+
+def carried_for_real(lines, i):
+    """The way this hold belongs to is carried for real: a `.Carry(` follows it before the next way
+    (Missions/Blocks/RZ_Carry.c: the things picked up and put down; the hold is only its fallback)."""
+    for j in range(i, min(len(lines), i + 12)):
+        s = strip_comment(lines[j])
+        if j > i and NEXT_WAY.search(s):
+            return False
+        if ".Carry(" in s:
+            return True
+    return False
+
+
 def check_carry(hits):
     for path in script_files():
         if not is_task_file(path):
             continue
-        for i, raw in enumerate(read(path)):
+        lines = read(path)
+        for i, raw in enumerate(lines):
             line = strip_comment(raw)
             if not HOLD.search(line):
                 continue
@@ -224,7 +241,8 @@ def check_carry(hits):
             # The hold's own words: its label (the short ones), not the step's long line
             for lit in lits:
                 if len(lit) <= 48 and CARRY.search(lit):
-                    hits.append(Hit(14, path, i + 1, raw))
+                    if not carried_for_real(lines, i):
+                        hits.append(Hit(14, path, i + 1, raw))
                     break
 
 

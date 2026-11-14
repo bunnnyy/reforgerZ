@@ -108,16 +108,16 @@ class RZ_Errand_ChairsForTheReading : RZ_ErrandCard
 		w.m_fSeconds = 30;
 		w.m_fRadius = 80;
 		w.m_sStep = "Carry three of the stacking chairs out of the village hall in {place} and set them by its door for the station's handcart, then tell {giver}.";
-		w.Work(RZ_EWork.BENCH, "Stack the chairs");
+		w.Work(RZ_EWork.BENCH, "Carry the chairs out");
 		// Carried for real (Missions/Blocks/RZ_Carry.c): out of the hall, one by one, in a row by the door
 		w.Carry("chair", "chairs", "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et", 3, false, false);
 		w.m_sInside = "public";
 		w.m_iFavor = 4;
-		w.Done("Twelve. Good. Someone will need the twelfth.",
+		w.Done("Three by the door, and the handcart for the rest. Good. Someone will need the twelfth.",
 			"In rows, please. Rows make people listen.");
 
 		w = Way("talk");
-		w.m_sLabel = "Tell his they can stand";
+		w.m_sLabel = "Tell him they can stand";
 		w.Done("Standing, then. I'll put that in the minutes. 'Attendance: standing.'");
 	}
 

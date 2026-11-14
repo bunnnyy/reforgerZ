@@ -1,6 +1,6 @@
 //! The Officer's Coat (docs/ERRANDS.md, the house; a disguise card): you're in Bastion kit as a
 //! disguise (below Known with Bastion) at a Haven house. A father asks after his son in the stockade.
-//! Tell his you're not Bastion; play the soldier and take a tin "for the paperwork" (a lie, found
+//! Tell him you're not Bastion; play the soldier and take a tin "for the paperwork" (a lie, found
 //! when he asks at a post); or go to the post yourself and ask: "He's on the roster as KIA, or
 //! struck off."
 class RZ_Errand_OfficersCoat : RZ_ErrandCard
@@ -18,7 +18,7 @@ class RZ_Errand_OfficersCoat : RZ_ErrandCard
 		Over("Never mind. Someone from the post came by. I know now, and I wish I didn't.");
 
 		RZ_ErrandWay w = Way("talk");
-		w.m_sLabel = "Tell his you're not Bastion";
+		w.m_sLabel = "Tell him you're not Bastion";
 		w.Done("Oh. Not Bastion. Just the jacket, then. Well. Thank you for saying so. Most wouldn't.");
 
 		w = Way("lie");

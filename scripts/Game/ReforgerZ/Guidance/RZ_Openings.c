@@ -1703,7 +1703,15 @@ class RZ_Openings
 	bool StepCounts(RZ_Errands dealer, RZ_Errand e, IEntity me)
 	{
 		RZ_Opening o = ByErrand(e.m_iId);
-		if (!o || Stage(o) != RZ_EOpeningStage.TASK || o.m_iTask == RZ_EOpeningTask.NONE)
+		if (!o)
+		{
+			// A hand-over is finished only by its reply (RZ_Errands.FinishNow), never for standing
+			// by the giver with the thing on you, even with no opening behind it (docs/MISSION_RULES.md, rule 19)
+			RZ_OpeningStepDef sd = RZ_OpeningStepDef.Cast(e.m_Def);
+			return !sd || !RZ_OpeningTasks.HandsOver(sd.m_iTask);
+		}
+
+		if (Stage(o) != RZ_EOpeningStage.TASK || o.m_iTask == RZ_EOpeningTask.NONE)
 			return true;
 
 		return m_Tasks.Counts(dealer, o, e, me);
