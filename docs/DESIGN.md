@@ -3699,7 +3699,8 @@ chain without it), the step (`opening.case`) puts a dead man where he fell, 200â
 from whoever gives it (as far as 1 km when nothing nearer fits): by a road, else in a yard on the edge
 of town, never in a field, the water or at the line (the needs `opening.runner` and
 `opening.runner.yard`, [PLACES.md](PLACES.md#the-needs)). He's **Puzzles > Civilian**, killed
-where he stands and kept from the corpse cleanup until the opening ends. By him lies **Halcyon's cold
+where he stands and kept from the corpse cleanup until the opening ends; dead, he shows none of a
+puzzle person's prompts. 1.5â€“2 m from him lies **Halcyon's cold
 case** (**Guidance > Cold case**): a real item, picked up with vanilla's prompt. Its tag (**Read the
 tag** on the ground, the reader) says *"HALCYON. FIELD STATION. LIVE. KEEP COLD. Packed <day>.<month>.
 Not for transport by road."*: the date is the season's canon (`origin.told`), the day the clinic told

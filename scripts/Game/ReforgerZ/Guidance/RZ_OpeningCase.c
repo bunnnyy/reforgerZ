@@ -272,7 +272,7 @@ class RZ_OpeningCase
 	bool SpawnCaseBy(vector at, int playerId)
 	{
 		vector ground = RZ_Util.GroundPos(at);
-		IEntity item = RZ_Util.SpawnPrefab(CasePrefab(m_GM), RZ_Util.RandomPointInRing(ground, 0.6, 1.1) + Vector(0, 0.3, 0), Math.RandomFloat(0, 360));
+		IEntity item = RZ_Util.SpawnPrefab(CasePrefab(m_GM), RZ_Util.RandomPointInRing(ground, 1.5, 2.0) + Vector(0, 0.3, 0), Math.RandomFloat(0, 360));
 		RZ_ColdCaseComponent c = RZ_ColdCaseComponent.Of(item);
 		if (!c)
 		{

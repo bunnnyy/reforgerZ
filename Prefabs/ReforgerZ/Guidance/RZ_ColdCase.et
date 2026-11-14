@@ -18,9 +18,9 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
      Description "A sealed case with Halcyon's stencil on the lid and a luggage tag on the handle: HALCYON. FIELD STATION. LIVE. KEEP COLD. Whatever's inside is meant to stay cold."
     }
     ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
-     Weight 4
+     Weight 1
      SizeSetupStrategy Manual
-     ItemVolume 3000
+     ItemVolume 1000
     }
     CustomAttributes {
      PreviewRenderAttributes "{6AD67DC2C18B0003}" {

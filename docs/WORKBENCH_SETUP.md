@@ -772,7 +772,7 @@ and the UI files) need none, and eight have no base:
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_ColdCase.et` | an inventory item with the medical kit's case mesh (no medical or arsenal parts) | `RZ_ColdCaseComponent`; `RZ_ReadCaseTagAction` | Guidance > Cold case | optional | the runner's case at the opening's end: picked up by the runner, taken to Halcyon's field station (empty = no case, the chain ends as before). The repo's is vanilla Item_Base with MedicalKit_01's mesh, 4 kg, 2x2. It must show vanilla's pick-up prompt on the ground; check its collision, since ModelGeometry reads the kit's own colliders |
+| `RZ_ColdCase.et` | an inventory item with the medical kit's case mesh (no medical or arsenal parts) | `RZ_ColdCaseComponent`; `RZ_ReadCaseTagAction` | Guidance > Cold case | optional | the runner's case at the opening's end: picked up by the runner, taken to Halcyon's field station (empty = no case, the chain ends as before). The repo's is vanilla Item_Base with MedicalKit_01's mesh, 1 kg (the kit's own weight) and 1 L, 2x2, so a starting satchel can take it (at 4 kg vanilla's pick-up said Heavy; 1 kg not yet tried in game). It must show vanilla's pick-up prompt on the ground; check its collision, since ModelGeometry reads the kit's own colliders |
 
 #### Power grid and radio station
 
