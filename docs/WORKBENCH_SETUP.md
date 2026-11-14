@@ -1696,7 +1696,8 @@ What it can't do:
 
 ### Mission rules check
 
-`tools/mission_rules.py` checks the source against [MISSION_RULES.md](MISSION_RULES.md): two places
+`tools/mission_rules.py` checks the source against [MISSION_RULES.md](MISSION_RULES.md): a work
+prompt whose words name a pot, the wood or the washing line without a look of that kind, two places
 in one objective line, a hand-in by walking up to someone, a spawned door, carrying done as a hold, a
 person's marker on a stored spot, a woman's name or word in a line the game shows (everyone met is a man; women only mentioned are in the allowlist), a building named
 where nothing asks for one, a kind of job the tracker can't list, an opening step that only sends you
@@ -1829,6 +1830,12 @@ without a place (N world events, not jobs)` (a world event is news, never on the
 checked once while the giver's body is out; the tracker's point must be within 5 m of that body.
 Each miss is `RZT objplace FAIL person errand <id> '<objective>': the tracker points at <grid>,
 <giver> stands at <grid> (<n> m off)`, the sum `RZT person objectives: N checked, N wrong`.
+**Kitchen work** (`RZT_Kitchen.c`, [ERRANDS.md](ERRANDS.md#work-sites)): five minutes in, a *Stir the
+pot* opened beside the nearest building must stand with a kitchen thing (the stove, the kitchen table
+or the pot), never a cardboard box; then one at the nearest cook pot a camp has laid out must stand at
+it with nothing more put out. Lines `RZT kitchen: ...`, the sum `RZT kitchen: done, N failures`, and
+`RZT kitchen FAIL ...` for each miss (the run fails on any).
+
 **Carrying** (`RZT_Carry.c`, [DESIGN.md](DESIGN.md#carrying)): four minutes in, the tester carries
 three crates from the open into the nearest building with a ground floor (each hold done for him):
 at the pile its crate and the others beside it stand; carrying, a put-down prompt opens inside, on
@@ -2784,7 +2791,7 @@ dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by
 <player> overtaken`, `Work sites: errand.N "Dig the latrine" (LATRINE, 15 s) at <grid>` and
 `Work sites: <key> "<label>" done by <player>` (a mission's are `mission.<id>.point.N`, `.truck`,
 `.tissue`, `.well`, `.sample`, `.chain`, `.charge.N`; the Red Hand van's `cargovan.N`; a stranger's `stranger.N`), `Work sites: measured <look>: W x D m`
-once per look, `Work sites: <key> look <look> fits at <grid> (N m off, heading N)` or `... doesn't fit at <grid>, a box instead` (then the box's own line), `Work sites: <key> has nothing standing at it at <grid> (not even a box fits): only its prompt`, `Errands: <errand> '<prompt>' has nothing standing at its work site (no look, no person)` (a fault: the words name a thing nothing stands for), carrying for real ([DESIGN.md](DESIGN.md#carrying)): `Carry: errand.N, 3 crates from <grid> (outside) to <grid> (indoors, on the ground floor)`, `Carry: errand.N, N of 3 crates put down indoors, on the ground floor`, `Carry: errand.N, a crate put down at <grid>, not at the stack`, `Errands: <errand> carries <things>, but no building within 60 m of <grid>: carried to its door`, `Carry: the thing in the arms didn't attach to the character; ...` (once),
+once per look, `Work sites: <key> look <look> fits at <grid> (N m off, heading N)` or `... doesn't fit at <grid>, <plainer look> instead` (then its own fits line), `Work sites: <key> has nothing of its kind at <grid> (<look> and its plainer looks don't fit within 8 m): only its prompt` (a fault), kitchen work: `Errands: <errand> kitchen work at the camp's cook pot, <grid> (N m from the place)` (or `the hand-built site's cook spot`) or `Errands: <errand> kitchen work: no cook pot laid out within 60 m of <grid>, at its own table`, `Errands: <errand> '<prompt>' has nothing standing at its work site (no look, no person)` (a fault: the words name a thing nothing stands for), carrying for real ([DESIGN.md](DESIGN.md#carrying)): `Carry: errand.N, 3 crates from <grid> (outside) to <grid> (indoors, on the ground floor)`, `Carry: errand.N, N of 3 crates put down indoors, on the ground floor`, `Carry: errand.N, a crate put down at <grid>, not at the stack`, `Errands: <errand> carries <things>, but no building within 60 m of <grid>: carried to its door`, `Carry: the thing in the arms didn't attach to the character; ...` (once),
 `Work sites: <key> after look <look> doesn't fit ...`, `Work sites: <key> has no room for its person at <grid>, left out`, `Doors: <prop> left out at <grid> (<key>): no real doorway within 1.2 m, and no door is ever spawned in the open`, `Duties: no real door within reach for beat <key> at <grid>: it stands in the open (no door is spawned)`, `Work sites: the Site prefab has no
 RZ_WorkSiteComponent, so it shows no prompt` once if the prefab is wrong, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
 <place> fixed`, every 30 minutes `Errands | live N | asked N, called out N | <family>: dealt N,
@@ -4799,12 +4806,18 @@ on the talk screen says why something wasn't dealt)
   a house. The log's `Work sites: ... look ... fits at` line for each, and the measured size of the
   table and the crate looks matches what you see (VERIFY `Missions/Blocks/RZ_WorkSites.c`'s
   `JoinBounds`). Put a look's spot against a wall or a car on purpose: it moves up to 3 m or turns,
-  else a small cardboard box stands there instead (`... a box instead`); a prompt never stands on
-  bare ground.
+  else a plainer thing of the same kind stands there (`... doesn't fit at <grid>, <look> instead`),
+  never a box of another kind.
 - [ ] **The thing its words name** (the author: *"no visible crates"* at The Boiler, Morton's hall):
   as any background with Known standing, ask for the kitchen, wood and water, and washing-down
-  duties until each task has come up. **Stir the pot** and **Ladle supper out** have the cook pot on
-  its fire, **Split the wood** the woodpile and chopping block, **Wash and hang the bedding** the
+  duties until each task has come up. The kitchen's three (**Peel and chop**, **Stir the pot**,
+  **Ladle supper out**) stand at the camp's own cook pot at a holding, nothing more put out; at a
+  giver with no camp kitchen (Morton's hall), at a kitchen table or the stove with the pot on it,
+  never a cardboard box (the author: *"should be a pot or kitchen thing ... at the kitchen, or at
+  least on a table"*). Open the four `Prefabs/ReforgerZ/Work/RZ_Work_Stove.et`, `RZ_Work_KitchenTable.et`,
+  `RZ_Work_ServeTable.et` and `RZ_Work_Pot.et` once so their ids register, and say whether the pot and
+  bowls sit on the table top and the stove's hob (VERIFY `tools/camp_kit/work_looks.py`'s `TOP` 0.78
+  and `STOVE_TOP` 1.05). **Split the wood** the woodpile and chopping block, **Wash and hang the bedding** the
   washing line, **Sluice the yard** a bucket; False Hope at the Line's two prompts have the forger
   standing at the gate. The log has no `has nothing standing at its work site` line.
 - [ ] **Carried for real** ([DESIGN.md](DESIGN.md#carrying)): take **Carry the crates in** (Wood and

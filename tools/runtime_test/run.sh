@@ -266,6 +266,7 @@ grep -E 'RZT objplace FAIL' "$LOG" | sed 's/.*RZT objplace FAIL /  objective pla
 grep -E 'RZT Power test: ' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT carry(: done| FAIL|: off|: no building)' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT openings' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT kitchen' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (epilogue check: .*FAILED|epilogue done|epilogue: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E '\[ReforgerZ\] Sites audit: [0-9]+ sites,' "$LOG" | sed 's/.*\[ReforgerZ\] /  /'
@@ -275,5 +276,6 @@ grep -q 'Virtual Machine Exception' "$LOG" && exit 1
 grep -q 'RZT objplace FAIL' "$LOG" && { echo "FAILED: an objective points somewhere else than where its step is done"; exit 1; }
 grep -q 'RZT carry FAIL' "$LOG" && { echo "FAILED: carrying for real (the pile, the put-down indoors, the stack)"; exit 1; }
 grep -q 'RZT openings FAIL' "$LOG" && { echo "FAILED: an opening's step (the son, a hand-over, a door: RZT_Openings.c)"; exit 1; }
+grep -q 'RZT kitchen FAIL' "$LOG" && { echo "FAILED: kitchen work at a kitchen (RZT_Kitchen.c: a kitchen thing at the prompt, the camp's own cook pot)"; exit 1; }
 grep -q 'RZT Power test: .*FAILED' "$LOG" && { echo "FAILED: the power station's looks (the dressing, the generator's sound or the lamps' list)"; exit 1; }
 exit 0
