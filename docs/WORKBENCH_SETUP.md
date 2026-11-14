@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **401 prefab fields**: 46 on `RZ_GameModeComponent`, 338 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **374 entries**: 223 prefabs the plugin creates, 41 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 110 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 52 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **402 prefab fields**: 46 on `RZ_GameModeComponent`, 339 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **375 entries**: 224 prefabs the plugin creates, 41 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 110 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 52 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -838,6 +838,7 @@ and the UI files) need none, and eight have no base:
 | `RZ_WaterFilter_Purification.et` | the tablets item renamed; keep "purification" in its name (a Water tablet keyword) and no "charcoal" | — | Interactions > Crafting > Filter | optional | cleaning a bottle of untreated water |
 | `RZ_RadioLure.et` | the tin rattle with the small radio mesh and a longer noise (RZ_NoisemakerComponent: 8 bursts 9 s apart, 25 heat each) | — | Interactions > Crafting > Lure | optional | drawing the infected away |
 | `RZ_MapCopy.et` | vanilla's folded paper map renamed | — | Interactions > Crafting > Map copy | optional | a map you can open |
+| `RZ_Fuse.et` | an inventory item with the metal fragment mesh; keep "fuse" in its name (RZ_Fuse) | — | Interactions > Crafting > Fuse | optional | a substation's fuse, fitted before its breaker closes; also a garage find. Search > Extra finds (garage, rare) |
 | `RZ_SterileDressing_Swab.et` | the field dressing renamed; keep "swab" (an Antiseptic keyword) and "dressing" (a Bandage keyword) in its name | — | Interactions > Crafting > Sterile | optional | a bandage that cleans a bite |
 | `RZ_Charcoal.et` | an item with the kindling mesh; keep "charcoal" in its name | — | Interactions > Crafting > Charcoal | optional | the water filter |
 | `RZ_Stew.et` | Metabolism's MRE with more food and some drink (B_FoodWaterGadgetComponent) | — | Interactions > Crafting > Stew | optional | food |
@@ -1924,13 +1925,28 @@ done, N failures`, and `RZT patrol FAIL ...` for each miss (the run fails on any
 
 **The grid past the station** (`RZT_Grid.c`, [DESIGN.md](DESIGN.md#the-grid-region-by-region)):
 right after the masts, in one go: the substations found and their towns; with the station running a
-switched-off substation's first town is dark, switched on it's lit, with the station stopped it's dark
+switched-off substation's first town is dark, its breaker won't close without a fuse, a fuse goes in
+and then the breaker (two steps), and it's lit; with the station stopped it's dark
 again; a line breaks (the town dark) and its splice lights it again; a Red Hand toll break has its
 crewman; the lab's multiplier is within 1 and 1.5, lit streets' within 0.5 and 1, a day's morale within
 its cap; a cut breaker darkens the town; a mast cut goes down for its old holder and put back up is
 theirs again. The station's step is put back as it was. Lines `RZT grid OK|FAIL ...`, `RZT grid: ...`,
 the sum `RZT grid: N checks, N failed` (the run fails on any FAIL). On a map with no substations it
 says so and only tries the mast.
+
+**The power and radio leftovers** (`RZT_PowerRest.c`, [DESIGN.md](DESIGN.md#the-grid-region-by-region)):
+right after the grid's, in one go: how many masts carry their prompt on the map's own cabinet (a
+line per mast); a mast put up for the Haven is talked about by the Haven's people in its region and
+not by Bastion's; **Lights Out** is offered against it, holds the book's own tip back for that cut,
+is done once the mast is cut, and lets go of the tip when it ends. With a substation (the region
+shrunk to 400 m as the grid's check does, and the Haven set to hold its towns): a lit town's cold
+room runs under 1 and a dark one's at 1; a cut breaker takes its fuse and is remembered as cut;
+**Lights Back** is offered, its tracker line is the fuse then the breaker, and it's done once the
+breaker's back in. Then Bastion's call: a Red Hand crew comes for it only with a Red Hand holding
+within 4 km (logged either way; when it comes it stands and is sent home), and the call counts a
+night Await Relief reads. Lines `RZT power OK|FAIL ...`, `RZT power: ...`, the sum `RZT power: N
+checks, N failed` (the run fails on any FAIL). A generator in a car's back isn't tried here (VERIFY,
+play-test).
 
 **The new recipes and the lockpick** (`RZT_Craft.c`, [DESIGN.md](DESIGN.md#light-crafting)): three
 minutes in, each of the eighteen new item prefabs (the recipes' outputs and the loot's junk) must
@@ -2361,7 +2377,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **213** lines with the tag, all but one in the game scripts (one is the comment in
+There are **214** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2388,7 +2404,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
-| `World/RZ_Substations.c:1013` | the map's power-line poles (`PowerLine_*_pole*`) are static entities with their prefab's name, also where a power-line generator placed them, so a broken line's spot stands on a real pole | The break is at the yard's own cabinet (the log says "at the yard (no pole found)") |
+| `World/RZ_Substations.c:1122` | the map's power-line poles (`PowerLine_*_pole*`) are static entities with their prefab's name, also where a power-line generator placed them, so a broken line's spot stands on a real pole | The break is at the yard's own cabinet (the log says "at the yard (no pole found)") |
 | `Factions/RZ_RoadPatrols.c:566` | a road's points (`BaseRoad.GetPoints`, from `GetRoadsInAABB`) are world positions along it with its two ends included, so a patrol's route runs on the road and roads join where their ends meet | Routes come out short and the holding sends nobody (`Road patrols: ... sends nobody`) |
 | `Factions/RZ_RoadPatrols.c:1106` | a road patrol's group walks to its move waypoint, and a crew seated in its vehicle drives there along the roads | It stands; after 90 s without reaching a point it's sent to the next, and it's taken away when everyone leaves |
 | `Interactions/RZ_Interactions.c:1468` | the repo's `Prefabs/Props/Civilian/RadioSmall_01_Base.et` (vanilla's GUID `{B68D3829D4442F80}`, a full copy of vanilla's with our set added) replaces vanilla's prefab, so every small radio on the map and in compositions, its four colours too, carries **Listen to the radio** and the four options in its own `SCR_TurnOnAction` context, beside vanilla's Turn on/off. The hosting itself ran in the runtime test (a new-GUID copy spawned by the tester: tagged, untagged when the tester left, no exception), but the Linux test server doesn't apply a same-GUID copy from an unpacked addon (no more than `chimeraMenus.conf`), so only Workbench or a packed build shows this | The radio gets its own invisible spot again, a second prompt beside vanilla's (as before). In Workbench, open the radio's prefab: the Resource Browser should show the ReforgerZ copy, and its ActionsManagerComponent our five actions; if Workbench wants an override made its own way, use **Override in ReforgerZ** on vanilla's prefab and add the same set (the table in [Add to prefabs you already have](#add-to-prefabs-you-already-have)) |
@@ -2491,15 +2507,16 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1475` | a quartermaster or the medic moved and turned with `SetWorldTransform` on the server stays at their hand-placed spot, facing its way, on every client | They stand where they spawned; the quartermaster turns to serve as before |
 | `World/HandBuilt/RZ_HandSpots.c:402` | a short flat trace through a spot inside a wall, a crate or a tent's side reports a hit (the spot turns red), and the excluded marker cone doesn't | A spot in a wall isn't flagged; the author sees it in play |
 
-### Low risk: contained or cosmetic (58)
+### Low risk: contained or cosmetic (59)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `World/RZ_LongTableReach.c:698` | the farm building's world box (`GetWorldBounds`) tops out at its roof, so the chimney smoke (**Long Table > Reach > Chimney smoke**) stands over the house, not inside it or high above | The smoke is in the wrong place: empty the slot |
 | `World/RZ_LongTableReach.c:809` | the bowls, jars and lanterns at 0.82 m sit on TableLong_01's top, not sunk into it or floating | Adjust the 0.82 (`top` in `SetTable` and `Lanterns`) |
+| `Interactions/RZ_Traps.c:1011` | a generator kit moved from the ground straight into a vehicle's cargo storage has the vehicle as its root parent, so a running one runs on in a car's back | It stops as if picked up: set it down to run it, as before |
 | `World/RZ_MapFog.c:119` | the map's fog's grid from `BaseWorld.GetBoundBox()` covers the terrain (the log's `Map fog: <w> x <h> squares`) | A box larger than the map only adds squares nobody walks; a smaller one leaves its edge never fogged |
 | `World/RZ_MapFog.c:512` | a paper map in a character's inventory has the character as its root parent, so a found map is seen as carried | A found map never reveals its town; walking and boards still do |
-| `Interactions/RZ_Crafting.c:579` | what you wear or hold is never a recipe's input: worn clothes sit in the character's loadout storage, what's in the hands in its weapon storage, a worn watch or compass in an equipment storage the character owns, and a pocket's or a pack's things in the clothing's own storage | A worn shirt or trousers could be cut up into rags, or a worn item used for a bandage: take it off and say so |
+| `Interactions/RZ_Crafting.c:583` | what you wear or hold is never a recipe's input: worn clothes sit in the character's loadout storage, what's in the hands in its weapon storage, a worn watch or compass in an equipment storage the character owns, and a pocket's or a pack's things in the clothing's own storage | A worn shirt or trousers could be cut up into rags, or a worn item used for a bandage: take it off and say so |
 | `World/HandBuilt/RZ_SiteBuilderEditor.c:121` | setting the manual camera's world transform moves Game Master's camera to look at the site (**Go there**) | The camera stays: fly it to your character |
 | `World/HandBuilt/RZ_SiteBuilderEditor.c:170` | debug shapes made on a game client (`Shape.CreateLines`, `CreateSphere`) draw in the world for that player, Game Master's camera too, not only in Workbench | The menu's words only: the checklist and where the first red spot is |
 | `Interactions/RZ_Interactions.c:187` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
@@ -2628,14 +2645,15 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] No checkpoint barricade prefab set: road checkpoints are off (the roads give 0 spots).
 [ReforgerZ] Power grid: <the station> at grid G (picked), N towns in its region, dark, locked up. Control <where>; <its looks>.
 [ReforgerZ] Radio station: the radio mast near Beauregard at grid 31-27 (picked).
-[ReforgerZ] Masts: <name> (<n>) at <grid>, missing <part>, trouble NONE|MAN|CREW|PACK, down|up, <whose> (found|save).
+[ReforgerZ] Masts: <name> (<n>) at <grid>, missing <part>, trouble NONE|MAN|CREW|PACK, down|up, <whose> (found|save), our cabinet at its foot|the map's own cabinet.
 [ReforgerZ] Masts: N on this map, N up.
 [ReforgerZ] Masts: the loop's relay is <name>; Bastion calls from <name>.
 [ReforgerZ] Masts: <player> cut the loop's relay; silent for N h.   / swapped the loop's tape (N) for N h.
 [ReforgerZ] Masts: <player> holds the power at <name> for Bastion's call.   / Bastion called Command from <name> (<player> held the power). No answer.
+[ReforgerZ] Masts: a Red Hand crew comes up <name> for the set while Bastion calls (from <grid>).   / the Red Hand's crew goes home from the call.
 [ReforgerZ] Substations: <name> (<n>) at <grid>, N towns (<names>), switched off|on|on, with a line down to <town>.
 [ReforgerZ] Substations: N on this map, N switched on.   (or "Substations: off.")
-[ReforgerZ] Substations: <player> switched on <name> (<towns>).   / spliced the line to <town> from <name>.   / cut the breaker at <name> (N factions hurt).
+[ReforgerZ] Substations: <player> fitted a fuse at <name>.   / switched on <name> (<towns>).   / spliced the line to <town> from <name>.   / cut the breaker at <name> (N factions hurt).
 [ReforgerZ] Substations: the line from <name> to <town> is down (wear|the storm|the infected|the Red Hand's toll) at <grid>, at a pole|at the yard (no pole found).
 [ReforgerZ] Substations: <player> paid the Red Hand's toll on the line to <town>.
 [ReforgerZ] Masts: <player> cut <name> (it was <whose>); it now needs <part>.   / put <name> back up; it's <whose> again.
@@ -3369,7 +3387,7 @@ session, tick off:
   Charcoal, Jerky, Stew). At a workbench the list has fifteen and scrolls; a kept tool (Knife,
   Wrench) is a row of its own and is still in your pack afterwards. Cut a shirt from your pack into
   two rags, and make sure the shirt you're **wearing** is never used (VERIFY
-  `Interactions/RZ_Crafting.c:579`). At a stove or a lit campfire: Sterile dressing (boil), Charcoal
+  `Interactions/RZ_Crafting.c:583`). At a stove or a lit campfire: Sterile dressing (boil), Charcoal
   (burn), Jerky (dry), Stew (cook). The new items look right in the hand and the inventory and lie
   on a table without falling through it (their meshes are props': wire and scrap a metal fragment,
   nails, salt and the empty tin a tin, cells a paper wrap, the pad a notebook, bleach a plastic
@@ -5502,5 +5520,5 @@ on the talk screen says why something wasn't dealt)
   spawns or rewards from rereading.
 - [ ] 1 player and a full server: spot cap (70) and escort (3) and capture (2) caps hold; with
   everyone in one town some players get no interaction spots until others leave (expected).
-- [ ] **The grid past the station** (DESIGN.md, "The grid, region by region"). The log's `Substations:` lines name each yard and its towns. With the station running, walk to one: **Look at the substation** opens its menu with a pad; with a coil of wire, **Fit a fuse and close the breaker** (does the hold animate?), and its towns' lamps come on at night. Wait for (or admin-force) a broken line: the open channel says so on a radio; **Look at the line** stands on a real power pole (not a field: VERIFY `World/RZ_Substations.c` pole query), **Splice the line** with wire. A Red Hand toll: the crewman stands under the pole, **Pay him two tins** works. **Cut the breaker** darkens its towns; at an up mast, **Cut its cable**, then put it back up and see it return to its old holder. Say how often lines break and whether the lit towns feel different at night.
+- [ ] **The grid past the station** (DESIGN.md, "The grid, region by region"). The log's `Substations:` lines name each yard and its towns. With the station running, walk to one: **Look at the substation** opens its menu with a pad; with a fuse (make two at a bench from wire and scrap, or find one in a garage), **Fit a fuse**, then **Close the breaker** (do the holds animate?), and its towns' lamps come on at night. Open `Prefabs/ReforgerZ/Crafting/RZ_Fuse.et` once so it registers, and check **Interactions > Crafting > Fuse** came through. Wait for (or admin-force) a broken line: the open channel says so on a radio; **Look at the line** stands on a real power pole (not a field: VERIFY `World/RZ_Substations.c` pole query), **Splice the line** with wire. A Red Hand toll: the crewman stands under the pole, **Pay him two tins** works. **Cut the breaker** darkens its towns (and takes the fuse); at an up mast, **Cut its cable**, then put it back up and see it return to its old holder. Ask a Red Hand giver for work with a rival's lit substation or mast about: **Lights Out** is offered, and pays (no extra tip on top); after a cut, the faction holding the towns offers **Lights Back** (the fuse, then the breaker). A mast whose foot has the map's own electrical cabinet within 25 m carries its prompt there (the log's `Masts:` line says which). Talk to a leader of the faction a mast serves, inside its region: now and then he names the mast and who climbed it. Start a generator on the ground, load it straight into a car's storage from the ground, and drive: does it keep running, lighting and charging where the car stops (VERIFY `Interactions/RZ_Traps.c:1011`)? A Haven safehouse in a lit town eats its food slower (the cold room). Hold Bastion's call near a Red Hand holding: a crew comes up the hill for the set and fights; they go home three minutes after. Say how often lines break and whether the lit towns feel different at night.
 

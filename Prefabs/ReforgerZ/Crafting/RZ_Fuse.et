@@ -1,0 +1,34 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "4F2B7D1C9A3E5061"
+ components {
+  MeshObject "{964278938DB492C5}" {
+   Object "{D9678156553F87C7}Assets/Props/Debris/Metal/FragmentMetal_dbr_02.xob"
+  }
+  RigidBody "{7BFE5DBBEDF42504}" {
+   Mass 0.1
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Fuse"
+     Description "A cartridge fuse for a substation's cabinet, or a homemade one: wire wound round a scrap of metal. It goes in before the breaker will close."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.1
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{C3B485C281607AA6}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 0.5
+     }
+    }
+    m_Size SLOT_1x1
+   }
+  }
+ }
+ coords 0 0 0
+}

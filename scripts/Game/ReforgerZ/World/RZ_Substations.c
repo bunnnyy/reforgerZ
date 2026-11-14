@@ -26,8 +26,14 @@ class RZ_SubstationSettings
 	[Attribute("2000", UIWidgets.Slider, "Two substations stand at least this far apart (m)", "500 6000 100")]
 	float m_fSpacing;
 
-	[Attribute("12", UIWidgets.Slider, "Seconds of the hold that fits a fuse and closes a substation's breaker", "3 60 1")]
+	[Attribute("12", UIWidgets.Slider, "Seconds of the hold that closes a substation's breaker (once a fuse is in)", "3 60 1")]
 	float m_fSwitchSeconds;
+
+	[Attribute("5", UIWidgets.Slider, "Seconds of the hold that fits a fuse in a substation's cabinet (a fuse: Crafting > Fuse, or found in garages)", "2 30 1")]
+	float m_fFuseSeconds;
+
+	[Attribute("0.8", UIWidgets.Slider, "The Haven's cold room: a safehouse in a lit town eats its stores this much as fast (the food keeps; 1 = off)", "0.5 1 0.05")]
+	float m_fColdRoomMult;
 
 	[Attribute("15", UIWidgets.Slider, "Seconds of the hold that splices a broken line", "3 60 1")]
 	float m_fSpliceSeconds;
@@ -75,6 +81,8 @@ class RZ_SubstationSave
 	float bz;
 	int kind;
 	string keeper;
+	bool fused;				// a fuse is in (an old save: whatever was on)
+	bool cut;				// its breaker was cut on purpose (a rival's job to put it back)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -95,6 +103,10 @@ class RZ_Substation
 	string m_sName;				// "the substation in Levie"
 	ref array<int> m_aTowns = {};
 	bool m_bOn;
+	bool m_bFused;				// a fuse is in: the breaker can be closed
+	bool m_bCut;				// cut on purpose and not yet put back (RZ_Mission_LightsBack)
+	int m_iCutBy;				// this session's player who cut it last (0 none)
+	int m_iOnBy;				// and who closed its breaker last
 	int m_iBroken = -1;			// the town whose line is down
 	vector m_vBreak;
 	int m_iKind;				// RZ_Substations.BREAK_*
@@ -198,9 +210,11 @@ class RZ_Substations
 	protected static const float CUT_HEAT = 8;
 	protected static const int TOLL_TINS = 2;
 	protected static const string SWITCH = "grid.switch.";
+	protected static const string FUSE = "grid.fuse.";
 	protected static const string SPLICE = "grid.splice.";
 	protected static const string CUT = "grid.cut.";
 
+	static int s_iTestHurt = -1;		// the runtime test only: the faction that holds every substation's towns (a test map may have none there)
 	static bool s_bTestNoParts;			// the runtime test only: a fuse or a splice needs no wire (its items don't go into a pack there)
 
 	protected RZ_GameModeComponent m_GM;
@@ -209,6 +223,7 @@ class RZ_Substations
 	protected ref RZ_SubstationsSave m_Restored;
 	protected ref array<ref RZ_Substation> m_aSubs = {};
 	protected ref array<string> m_aPaid = {};
+	protected ref array<string> m_aContracted = {};	// "sub:<id>" / "mast:<id>": a Lights Out job pays for this cut, not the book's tip
 	protected ref map<int, float> m_mMoraleToday = new map<int, float>();
 	protected int m_iMoraleDay = -1;
 	protected bool m_bOn;
@@ -331,6 +346,59 @@ class RZ_Substations
 
 	//------------------------------------------------------------------------------------------------
 	//! The Red Hand pay for a rival's light or voice cut, once a real day per player (masts too).
+	//! The faction (not the Red Hand) holding a town on substation `index`: who its lights are for, and
+	//! who minds a cut. -1 when none does.
+	int HurtFaction(int index)
+	{
+		RZ_Substation s = GetSub(index);
+		if (s && s_iTestHurt >= 0)
+			return s_iTestHurt;
+
+		RZ_Territory territory = m_GM.GetTerritory();
+		if (!s || !territory)
+			return -1;
+
+		foreach (RZ_Holding h : territory.GetHoldings())
+		{
+			if (h && h.m_eFaction != RZ_EFaction.BANDITS && s.m_aTowns.Contains(h.m_iSettlement))
+				return h.m_eFaction;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A Lights Out job (Missions/RZ_PowerJobs.c) pays for this cut: the book's own tip isn't paid too.
+	void SetContracted(string key, bool on)
+	{
+		if (on && !m_aContracted.Contains(key))
+			m_aContracted.Insert(key);
+		else if (!on)
+			m_aContracted.RemoveItem(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsContracted(string key)
+	{
+		return m_aContracted.Contains(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Haven's cold room (docs/DESIGN.md, "The grid, region by region"): a safehouse whose town
+	//! has the grid's power eats its stores this much as fast (RZ_Safehouses' upkeep). 1 elsewhere.
+	static float ColdRoomMult(vector pos)
+	{
+		RZ_Substations subs = Get();
+		if (!RZ_PowerGrid.IsPoweredAt(pos))
+			return 1;
+
+		if (!subs || !subs.m_Settings)
+			return 0.8;
+
+		return Math.Clamp(subs.m_Settings.m_fColdRoomMult, 0.5, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void PayCutter(RZ_GameModeComponent gm, int playerId, string what)
 	{
 		RZ_Substations subs = Get();
@@ -373,6 +441,8 @@ class RZ_Substations
 			e.bz = s.m_vBreak[2];
 			e.kind = s.m_iKind;
 			e.keeper = s.m_sKeeper;
+			e.fused = s.m_bFused;
+			e.cut = s.m_bCut;
 			data.list.Insert(e);
 		}
 
@@ -408,6 +478,8 @@ class RZ_Substations
 					continue;
 
 				match.m_bOn = e.on;
+				match.m_bFused = e.fused || e.on;
+				match.m_bCut = e.cut && !e.on;
 				match.m_iKind = e.kind;
 				match.m_sKeeper = e.keeper;
 				if (e.broken >= 0 && match.m_aTowns.Contains(e.broken))
@@ -620,8 +692,10 @@ class RZ_Substations
 		}
 
 		string text = string.Format("A cabinet with a breaker for each line out: %1.", TownNames(s));
-		if (!s.m_bOn)
-			text += " The breaker's open and the fuse is gone. A coil of wire would make a fuse that holds.";
+		if (!s.m_bOn && !s.m_bFused)
+			text += " The breaker's open and the fuse holder's empty. It wants a fuse before anything else.";
+		else if (!s.m_bOn)
+			text += " A fuse is in. The breaker's still open.";
 		else if (!m_Grid.IsPowered())
 			text += string.Format(" The breaker's closed, but nothing comes in: %1 isn't running.", m_Grid.GetName());
 		else
@@ -666,15 +740,23 @@ class RZ_Substations
 			return;
 		}
 
-		if (!s.m_bOn)
+		if (!s.m_bOn && !s.m_bFused)
 		{
 			string fuse = "";
-			if (user && RZ_Masts.CountPart(user, RZ_EMastPart.WIRE) < 1)
-				fuse = "You haven't got any wire on you to make a fuse.";
+			if (user && RZ_Masts.CountPart(user, RZ_EMastPart.FUSE) < 1)
+				fuse = "You haven't got a fuse. A bench makes one from wire and scrap, and garages have them.";
 
-			acts.Insert("switch");
-			labels.Insert("Fit a fuse and close the breaker");
+			acts.Insert("fuse");
+			labels.Insert("Fit a fuse");
 			locks.Insert(fuse);
+			return;
+		}
+
+		if (!s.m_bOn)
+		{
+			acts.Insert("switch");
+			labels.Insert("Close the breaker");
+			locks.Insert("");
 			return;
 		}
 
@@ -694,8 +776,10 @@ class RZ_Substations
 		if (playerId <= 0)
 			return;
 
-		if (act == "switch" && !s.m_bOn && RZ_Masts.CountPart(user, RZ_EMastPart.WIRE) >= 1)
-			OpenHold(SWITCH, s, "Fit a fuse and close the breaker", m_Settings.m_fSwitchSeconds, s.m_vControl, playerId);
+		if (act == "fuse" && !s.m_bOn && !s.m_bFused && (s_bTestNoParts || RZ_Masts.CountPart(user, RZ_EMastPart.FUSE) >= 1))
+			OpenHold(FUSE, s, "Fit a fuse", m_Settings.m_fFuseSeconds, s.m_vControl, playerId);
+		else if (act == "switch" && !s.m_bOn && s.m_bFused)
+			OpenHold(SWITCH, s, "Close the breaker", m_Settings.m_fSwitchSeconds, s.m_vControl, playerId);
 		else if (act == "cut" && s.m_bOn)
 			OpenHold(CUT, s, "Cut the breaker", m_Settings.m_fCutSeconds, s.m_vControl, playerId);
 		else if (act == "splice" && s.m_iBroken >= 0 && RZ_Masts.CountPart(user, RZ_EMastPart.WIRE) >= 1)
@@ -819,7 +903,9 @@ class RZ_Substations
 	//------------------------------------------------------------------------------------------------
 	protected void Done(string prefix, RZ_Substation s, int playerId)
 	{
-		if (prefix == SWITCH)
+		if (prefix == FUSE)
+			FitFuse(s, playerId, null);
+		else if (prefix == SWITCH)
 			SwitchOn(s, playerId, null);
 		else if (prefix == SPLICE)
 			Splice(s, playerId, null);
@@ -828,20 +914,40 @@ class RZ_Substations
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A fuse made from a coil of wire, the breaker closed: the towns on it light while the station runs.
+	//! A fuse into the empty holder (the first of two steps): the breaker can be closed now.
+	bool FitFuse(RZ_Substation s, int playerId, IEntity who)
+	{
+		IEntity ent = who;
+		if (!ent)
+			ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+
+		if (s.m_bOn || s.m_bFused || !ent)
+			return false;
+
+		if (!s_bTestNoParts && RZ_Masts.TakePart(ent, RZ_EMastPart.FUSE, 1) < 1)
+			return false;
+
+		s.m_bFused = true;
+		UpdateLabels(s);
+		RZ_Log.Info(string.Format("Substations: %1 fitted a fuse at %2.", RZ_Names.Public(playerId), s.m_sName));
+		m_GM.SayAt(playerId, Capitalize(s.m_sName), -1, "The fuse seats with a click. Now the breaker.", s.m_vControl);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The breaker closed over a fitted fuse: the towns on it light while the station runs.
 	bool SwitchOn(RZ_Substation s, int playerId, IEntity who)
 	{
 		IEntity ent = who;
 		if (!ent)
 			ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 
-		if (s.m_bOn || !ent)
-			return false;
-
-		if (!s_bTestNoParts && RZ_Masts.TakePart(ent, RZ_EMastPart.WIRE, 1) < 1)
+		if (s.m_bOn || !s.m_bFused || !ent)
 			return false;
 
 		s.m_bOn = true;
+		s.m_bCut = false;
+		s.m_iOnBy = playerId;
 		ApplyTowns();
 		UpdateLabels(s);
 		RZ_Log.Info(string.Format("Substations: %1 switched on %2 (%3).", RZ_Names.Public(playerId), s.m_sName, TownNames(s)));
@@ -910,6 +1016,9 @@ class RZ_Substations
 			return false;
 
 		s.m_bOn = false;
+		s.m_bFused = false;		// whoever cuts it pockets the fuse: putting it back takes a new one
+		s.m_bCut = true;
+		s.m_iCutBy = playerId;
 		ApplyTowns();
 		UpdateLabels(s);
 		if (m_GM.GetHeat())
@@ -936,7 +1045,7 @@ class RZ_Substations
 		}
 
 		RZ_Log.Info(string.Format("Substations: %1 cut the breaker at %2 (%3 factions hurt).", RZ_Names.Public(playerId), s.m_sName, hurt.Count()));
-		if (!hurt.IsEmpty())
+		if (!hurt.IsEmpty() && !IsContracted("sub:" + s.m_iId.ToString()))
 			PayCutter(m_GM, playerId, "the lights in " + TownNames(s));
 
 		if (m_GM.GetLeaders())
@@ -1203,7 +1312,7 @@ class RZ_Substations
 		if (!sites)
 			return;
 
-		array<string> prefixes = {SWITCH, SPLICE, CUT};
+		array<string> prefixes = {FUSE, SWITCH, SPLICE, CUT};
 		foreach (string prefix : prefixes)
 		{
 			string key = prefix + s.m_iId.ToString();

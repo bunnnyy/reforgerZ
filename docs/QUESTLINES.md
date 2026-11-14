@@ -151,6 +151,8 @@ kept ([DESIGN.md](DESIGN.md#the-majors)).
 **Every night before it, too:** at the tallest mast, players hold the power while Bastion's radio
 officer calls Command, and nobody answers ([Bastion's last call](DESIGN.md#the-loops-relay-and-bastions-last-call));
 the nights are counted (`bastion.last_call`), and while this major runs he says they go in the CO's log.
+The muster reads them: its brief says how many nights the log holds with no reply, and from three
+nights on *Say read it to them* is one step easier (the room has heard the hiss for itself).
 
 *Simplified:* the padding isn't covered post by post (one desk for the three posts), the curfew walk
 isn't offered, and the presence floor and the curfew aren't set.

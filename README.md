@@ -107,7 +107,7 @@ and one way to end it: **research the cure.**
   story still open can end inside the week (loose ends, names brought home, towns taken back, the
   last broadcast, your own line on the Names board), and on the last day your character can walk
   out at the north road, one name at a time.
-- **164 missions** (plus about 90 questline stages): faction contracts (a few about what a faction would rather not say), world
+- **166 missions** (plus about 90 questline stages): faction contracts (a few about what a faction would rather not say), world
   events, puzzle missions, unarmed stealth jobs, missions at the quarantine line, morally grey
   Haven and Red Hand work and leaders' off-book jobs. **Jobs only by interaction:** every job
   starts from a person you ask or a thing you use (the radio only says who's asking, and world
@@ -185,12 +185,14 @@ and one way to end it: **research the cure.**
   map's own masts, each missing a part, with an old radio man, a Red Hand crewman or a pack at its
   foot. Climb it with the part and say whose voice it is (a faction's, everyone's, or the Red Hand's
   to sell): its region hears warnings, overhears factions' traffic, and with two up a trapped man's
-  voice can be found by taking bearings.
+  voice can be found by taking bearings. Past the power station, substations light the rest of the
+  map region by region (a fuse, then the breaker), lines break and are spliced, and the Red Hand pay
+  to have a rival's lights cut (Lights Out) while the dark towns ask for them back (Lights Back).
 - **Loot the world**: a few things lie loose in every building, on worktops and floors and suited
   to it (medicine in a pharmacy, tools in a garage), and you pick them up the game's way; picked-over
   towns are thin; bodies looted like any body, car wrecks' boots to open like any storage; treating each other is the
   game's own, and a Nurse or Doctor also slows a bite; locked doors that keep the infected out (they bang on them)
-  and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting (nineteen recipes at the bench and the stove, with junk to find for them; a lockpick for locked doors),
+  and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting (twenty recipes at the bench and the stove, with junk to find for them; a lockpick for locked doors),
   traps, fire (a full fuel can in your hands at the door), water and secure radio channels.
 - **Teaches itself**: no tutorial pop-ups, just a note where you wake, a wind-up radio and
   people who tell you things.
