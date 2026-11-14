@@ -121,12 +121,12 @@ scene stove_bed speaker who tier:haven>=known
 
 node start public
   jump decided -> settled
-  say There's one bed by the stove and three who want it. The old man who's cold all the time, the girl with the cough, and the new one who stood the gate all last night.
+  say There's one bed by the stove and three who want it. The old man who's cold all the time, the boy with the cough, and the new one who stood the gate all last night.
   say The council says whoever the house trusts can choose, so nobody can say the council chose wrong. That might be you. Everyone's listening, so choose kindly.
   > @old The old man. He's cold all the time. -> chosen   do decide:old
-  > @girl Give it to the girl with the cough. -> chosen   do decide:girl
+  > @girl Give it to the boy with the cough. -> chosen   do decide:girl
   > @gate The one who stood the gate last night. -> chosen   do decide:gate
-  > @vote My vote's for the girl, if it counts. -> hub   do sway:stove.girl
+  > @vote My vote's for the boy, if it counts. -> hub   do sway:stove.girl
   > @notme That's not mine to say. -> hub
 
 node chosen public

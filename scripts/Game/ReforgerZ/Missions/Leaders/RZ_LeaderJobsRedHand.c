@@ -349,7 +349,7 @@ class RZ_Job_SoftTouch : RZ_LeaderDelivery
 		if (h)
 			RZ_LeaderJob.TownInfection(gm, h.m_vPos, -5);
 
-		gm.NotifyPlayer(playerId, m_sTitle, "The medic opens the box and goes very quiet. \"Who sent this?\" You tell her nobody did.");
+		gm.NotifyPlayer(playerId, m_sTitle, "The medic opens the box and goes very quiet. \"Who sent this?\" You tell his nobody did.");
 	}
 
 	//------------------------------------------------------------------------------------------------

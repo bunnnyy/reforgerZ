@@ -37,7 +37,7 @@ enum RZ_ETableEnd
 {
 	WALKED_OUT,	// the Haven walked them to the edge of town
 	BURNT,		// Bastion's guns
-	STUDIED,	// the mother to the lab, the rest scattered
+	STUDIED,	// the father to the lab, the rest scattered
 	BY_HAND,	// a fight
 	SCATTERED	// found out, with nowhere left to go
 }
@@ -479,7 +479,7 @@ class RZ_LongTable
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Grown-ups still at the farm (the mother included).
+	//! Grown-ups still at the farm (the father included).
 	int CountAdults()
 	{
 		int n = 0;
@@ -761,7 +761,7 @@ class RZ_LongTable
 
 				RZ_TableMember m = new RZ_TableMember();
 				m.m_eRole = ms.role;
-				m.m_sName = ms.name;
+				m.m_sName = RZ_NoteText.ManFromOld(ms.name);	// an older save's women's names
 				m.m_bAlive = ms.alive;
 				m_aMembers.Insert(m);
 			}
@@ -883,12 +883,12 @@ class RZ_LongTable
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Four to seven of them: the mother, the host, the quiet son, the boy, and up to three more.
+	//! Four to seven of them: the father, the host, the quiet son, the boy, and up to three more.
 	protected void GenerateFamily()
 	{
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		m_sSurname = RZ_NoteText.Surname(rng);
-		array<string> mothers = {"Ada", "Marta", "Irena", "Vera", "Hana", "Olga", "Edith", "Agnes", "Ruth", "Zofia"};
+		array<string> mothers = {"Adam", "Marek", "Ivo", "Vaclav", "Hanus", "Oldrich", "Edmund", "Albin", "Rudolf", "Zdenek"};
 		array<string> sons = {"Pavel", "Karel", "Josef", "Milan", "Viktor", "Emil", "Anton", "Oskar", "Jakub", "Bruno"};
 		array<string> boys = {"Tomik", "Jiri", "Petr", "Ondra", "Lukas", "Filip", "Matej", "Vit"};
 		// A cousin, an uncle, a lodger who stayed (men: whoever keeps the road is "he")
@@ -1626,7 +1626,7 @@ class RZ_LongTable
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Within 300 m: the host and one or two others outside, the mother at the door, sometimes the
+	//! Within 300 m: the host and one or two others outside, the father at the door, sometimes the
 	//! boy. Not while a questline has the farm, the house is fighting or nobody is at the farm.
 	protected void UpdateBodies(array<IEntity> players)
 	{
@@ -1786,7 +1786,7 @@ class RZ_LongTable
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The kitchen is the house: without the mother, or with fewer than two grown-ups, it's over.
+	//! The kitchen is the house: without the father, or with fewer than two grown-ups, it's over.
 	protected void BreakIfFinished()
 	{
 		if (!Exists() || m_eState == RZ_ETableState.QUIET)
@@ -1943,7 +1943,7 @@ class RZ_LongTable
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! host, mother, son, boy, other: the word a conversation's speaker selector uses.
+	//! host, mother (the old father of the house: the key is kept), son, boy, other: the word a conversation's speaker selector uses.
 	static string RoleWord(int role)
 	{
 		switch (role)
@@ -1983,7 +1983,7 @@ class RZ_LongTable
 				if (Remembers(playerId, MEM_FAMILY))
 					return string.Format("%1 touches your arm on the way past. \"You're thin again. There's a bowl kept back for you.\"", m.m_sName);
 
-				return string.Format("%1 wipes her hands on her apron. \"Sit, sit. You're thin. Where've you come from, and does anyone know you're out this way?\"", m.m_sName);
+				return string.Format("%1 wipes his hands on his apron. \"Sit, sit. You're thin. Where've you come from, and does anyone know you're out this way?\"", m.m_sName);
 			}
 			case RZ_ETableRole.HOST:
 				return string.Format("%1 smiles like you're an old friend. %2 \"There's always a place set. Supper's at half six.\"", m.m_sName, RoadNews(from));
@@ -2120,7 +2120,7 @@ class RZ_LongTable
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Old Marta" out of "Old Marta the trader" (the name as grace reads it).
+	//! "Old Marek" out of "Old Marek the trader" (the name as grace reads it).
 	string ShortLost()
 	{
 		string name = m_sLostName;
@@ -2184,7 +2184,7 @@ class RZ_LongTable
 		ResourceName jar = PickFood();
 		if (jar.IsEmpty())
 		{
-			m_GM.NotifyPlayer(playerId, FarmTitle(), string.Format("%1 shakes her head. \"Nothing put by this week. Next time.\"", mother));
+			m_GM.NotifyPlayer(playerId, FarmTitle(), string.Format("%1 shakes his head. \"Nothing put by this week. Next time.\"", mother));
 			return;
 		}
 
@@ -2220,7 +2220,7 @@ class RZ_LongTable
 		}
 
 		Remember(playerId, MEM_BLESSED);
-		m_GM.NotifyPlayer(playerId, FarmTitle(), string.Format("%1 looks at the bite for a long time, and then at you. \"Thank you for telling us. People don't, always.\" She wraps bread in a cloth, says a blessing over you with her hand on your head, and walks you to the gate. \"Go on, now, while it's light.\"", mother));
+		m_GM.NotifyPlayer(playerId, FarmTitle(), string.Format("%1 looks at the bite for a long time, and then at you. \"Thank you for telling us. People don't, always.\" He wraps bread in a cloth, says a blessing over you with his hand on your head, and walks you to the gate. \"Go on, now, while it's light.\"", mother));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2359,7 +2359,7 @@ class RZ_LongTable
 	{
 		if (option == 0)
 		{
-			m_GM.NotifyPlayer(playerId, m.m_sName, string.Format("\"Good. I'll tell Mother to set another place.\" He points the way: the farm past %1 (%2). \"Don't be late. She worries.\"",
+			m_GM.NotifyPlayer(playerId, m.m_sName, string.Format("\"Good. I'll tell Father to set another place.\" He points the way: the farm past %1 (%2). \"Don't be late. He worries.\"",
 				GetTownName(), RZ_Util.DirectionText(user.GetOrigin(), m_vHouse)));
 		}
 		else
@@ -2400,7 +2400,7 @@ class RZ_LongTable
 			lines.Insert(string.Format("Something's stirred them up %1 from here. We heard it at the farm.", RZ_Util.DirectionText(from, hot)));
 
 		if (lines.IsEmpty())
-			return "The roads are quiet. Mother says that's when you watch them.";
+			return "The roads are quiet. Father says that's when you watch them.";
 
 		return lines.GetRandomElement();
 	}
@@ -2659,7 +2659,7 @@ class RZ_LongTable
 		RZ_Questline.SpreadRumour(m_GM, string.Format("Bastion has it down as an infected cluster past %1. Containment, they call it. They'll burn it if nobody else ends it.", town), 12);
 
 		// Halcyon: interested, and ashamed of being interested
-		RZ_Questline.SpreadRumour(m_GM, "A Halcyon researcher asked whether they ever ate the bitten. Then she wouldn't look at anyone.", 8);
+		RZ_Questline.SpreadRumour(m_GM, "A Halcyon researcher asked whether they ever ate the bitten. Then he wouldn't look at anyone.", 8);
 
 		// The Red Hand: the crew that bought the jars is purged (on the next round, not in the middle
 		// of someone's talk with a crew boss), and the open channel laughs
@@ -3109,7 +3109,7 @@ class RZ_LongTable
 		m_aFightDead.Clear();
 		RZ_Log.Info(string.Format("Long Table: the fight is over (%1, %2 of them left).", result, CountAlive()));
 
-		// Their men are dead: the mother is gone by morning, the boy is out
+		// The grown sons are dead: the father is gone by morning, the boy is out
 		if (result == 1 && CountFighters() == 0)
 		{
 			RZ_TableMember mother = Find(RZ_ETableRole.MOTHER);

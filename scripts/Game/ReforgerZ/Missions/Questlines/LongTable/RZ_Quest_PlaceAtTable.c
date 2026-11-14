@@ -113,7 +113,7 @@ class RZ_Quest_PlaceAtTable : RZ_Questline
 
 		string mother = t.NameOf(RZ_ETableRole.MOTHER);
 		if (mother.IsEmpty())
-			mother = "the mother";
+			mother = "the father";
 
 		run.SetText("mother", mother);
 		run.SetText("host", t.GreeterName());
@@ -1003,7 +1003,7 @@ class RZ_QM_PlaceStray : RZ_QM_PlaceBase
 }
 
 //------------------------------------------------------------------------------------------------
-//! C2 stage 4, Grace: the mother at the long table. Sit and say the name (family), get up and go
+//! C2 stage 4, Grace: the father at the long table. Sit and say the name (family), get up and go
 //! with the proof, or fight, at the table (the fight prefab; the house is finished if you win).
 class RZ_QM_PlaceGrace : RZ_QM_PlaceBase
 {
@@ -1033,7 +1033,7 @@ class RZ_QM_PlaceGrace : RZ_QM_PlaceBase
 			name = "the ones who came before";
 
 		SetText(gm, "name", name);
-		m_iTalk = AddClue(QText(gm, "mother"), QFill(gm, "{mother} has set your place at the head of the table, where {host} usually sits. Everyone is waiting. Nobody eats. \"Grace tonight is yours,\" she says. \"Say a name.\" She doesn't need to tell you which."));
+		m_iTalk = AddClue(QText(gm, "mother"), QFill(gm, "{mother} has set your place at the head of the table, where {host} usually sits. Everyone is waiting. Nobody eats. \"Grace tonight is yours,\" he says. \"Say a name.\" He doesn't need to tell you which."));
 		m_Quiet.Watch(m_vHouse, 100);
 		m_vPos = m_vHouse;
 		m_iSettlement = t.GetSettlement();
@@ -1071,7 +1071,7 @@ class RZ_QM_PlaceGrace : RZ_QM_PlaceBase
 		if (option == 0)
 		{
 			t.RecordMeal(playerId);
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You say it. \"For what we are about to receive. For {name}, who came from {name_from}.\" Everyone says amen. The boy says it last. {mother} squeezes your hand across the corner of the table. \"Family,\" she says, and passes you the bread."));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You say it. \"For what we are about to receive. For {name}, who came from {name_from}.\" Everyone says amen. The boy says it last. {mother} squeezes your hand across the corner of the table. \"Family,\" he says, and passes you the bread."));
 			Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_PlaceAtTable.OUT_SAT, "sat at the head of the table and said the name");
 			return;
 		}

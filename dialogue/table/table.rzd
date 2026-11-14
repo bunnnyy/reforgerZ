@@ -15,7 +15,7 @@ node start
   > @road I'm just passing through. -> passing
 
 node alone
-  say Then you'll eat with us tonight. Mother cooks for twenty and there are never twenty any more. Supper's at half six, at the farmhouse up the lane, with the lamp in the window.
+  say Then you'll eat with us tonight. Father cooks for twenty and there are never twenty any more. Supper's at half six, at the farmhouse up the lane, with the lamp in the window.
   do claim:alone
   > @maybe Maybe I will. Thank you. -> hub
   > @no Another time, maybe. -> hub
@@ -26,7 +26,7 @@ node expected
   > @thanks Thanks. I'll mind the verges. -> hub
 
 node passing
-  say Everyone is, these days. That's what roads are for. The offer stands whenever you're passing next. Supper's at half six, and Mother always asks after the ones who said no.
+  say Everyone is, these days. That's what roads are for. The offer stands whenever you're passing next. Supper's at half six, and Father always asks after the ones who said no.
   > @back1 I'll remember that. -> hub
 
 conv table.mother.house

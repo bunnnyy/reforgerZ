@@ -675,7 +675,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				m_sTitle = "The School Room";
 				SceneWay("Mind the school room", false, "Count the heads in the school room at {here}, and find whoever is missing from the benches. Then tell {giver}.", 4, 0);
 				Offer("The school room wants minding for an hour, and the teacher has a tooth. {why} Count them when you go in. Count them again when you come out. The numbers are meant to match.");
-				Over("Never mind. The teacher's tooth came out and she's back.");
+				Over("Never mind. The teacher's tooth came out and he's back.");
 				Said("They'll try it on. They try it on with everyone.", "Twelve in, twelve out. You'd be surprised how often it isn't.", "Thank you. They liked you, which they'll deny.");
 				break;
 			}
@@ -1137,7 +1137,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			m_sThread = "put the names on the week's work";
 			SceneWay("Read the desks for the week's report", false, "Go to each of the three desks at {here}, read what's on it, and place each name on the week's report: first, thanked, or left off. Then initial it and tell {giver}.", 10, 2);
 			Offer("The week's bench report goes in the record tonight, and the names on it are wrong more often than they're right. {why} Read the desks. The notebooks don't lie, even when the people do. Whatever you place stays on their record.");
-			Over("Never mind. The director placed the names herself.");
+			Over("Never mind. The director placed the names himself.");
 			Said("The notebooks are on the desks. Read the hands, not the covers.", "The report. Show me where you put them.", "Initialled. Thank you. It's the first one in a month I'd sign.");
 			return;
 		}

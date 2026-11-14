@@ -3,7 +3,7 @@
 //!
 //! 1. Where the food goes (mission): a safehouse's stores come up short. Ask its storekeeper,
 //!    lean on him (persuade), cover the shortfall (bribe, Haven Favor) or read his ledger
-//!    (sneak). He's trading tins to the Red Hand for antibiotics for a sick girl.
+//!    (sneak). He's trading tins to the Red Hand for antibiotics for a sick boy.
 //! 2. The next handover (wait): 30 minutes of play or 12 real hours.
 //! 3. The handover (mission): outside town, the storekeeper, a Red Hand runner and the crate.
 //!    Turn him in (talk), talk him out of it (persuade), run the runner off (force, armed), pay
@@ -421,7 +421,7 @@ class RZ_QM_ShortWeightHandover : RZ_QuestMission
 		m_vKeeper = RZ_Util.RandomPointInRing(m_vPos, 1, 3);
 		m_vRunner = RZ_Util.RandomPointInRing(m_vPos, 3, 5);
 		m_vCrate = LandPointNear(m_vPos, 20, 28);
-		m_iKeeperTalk = AddClue(QText(gm, "keeper"), QFill(gm, "{keeper} won't meet your eyes. \"Don't. Please. She's nine, and it's in her chest now.\""));
+		m_iKeeperTalk = AddClue(QText(gm, "keeper"), QFill(gm, "{keeper} won't meet your eyes. \"Don't. Please. He's nine, and it's in his chest now.\""));
 		m_iRunnerTalk = AddClue(QText(gm, "runner"), QFill(gm, "{runner} grins. \"Haven's out for a walk. Tins for pills, friend. Everybody wins, except the mice.\""));
 		m_sTitle = "Short Weight: the handover";
 		m_sBrief = QFill(gm, "{keeper} is meeting a Red Hand runner, {runner}, near the old bus shelter outside {town}, with a crate of the house's food. Bring the food back. How is up to you.");
@@ -520,7 +520,7 @@ class RZ_QM_ShortWeightHandover : RZ_QuestMission
 		}
 
 		Remember(gm, playerId, RZ_EQuestApproach.PERSUADE, "tried to talk him out of it");
-		gm.NotifyPlayer(playerId, m_sTitle, "\"You don't know her. You don't know anything.\" He turns his back on you.");
+		gm.NotifyPlayer(playerId, m_sTitle, "\"You don't know him. You don't know anything.\" He turns his back on you.");
 	}
 
 	//------------------------------------------------------------------------------------------------

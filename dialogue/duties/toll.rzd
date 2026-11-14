@@ -133,7 +133,7 @@ once
 voice haven
 
 node start
-  say My husband. He was on this road with the cart, the first week. I've come to see the place. That's all. I won't stay long. I just want to see the place.
+  say My wife. She was on this road with the cart, the first week. I've come to see the place. That's all. I won't stay long. I just want to see the place.
   > @back9 Right. -> hub
 
 conv duty.toll.pedlar

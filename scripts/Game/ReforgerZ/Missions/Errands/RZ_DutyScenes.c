@@ -145,7 +145,7 @@ class RZ_DutyBeat
 	string m_sGroup;			// the interaction it belongs to (its flags are its own)
 	string m_sPassed;			// said when it's left alone past its timeout ("" the plain line)
 	string m_sTalk;				// someone stands here to talk to: their conversations are for duty:<this> ("swap:ring")
-	string m_sTalkName;			// who they are, the talk screen's name ("A woman with a ring")
+	string m_sTalkName;			// who they are, the talk screen's name ("A man with a ring")
 	ResourceName m_sThing;		// what stands on the table or the ground in front (a display copy, RZ_DutyThings)
 	int m_iBody = -1;			// the scene's own person who is already there (m_aBodies: a patient in a bed) is this beat's person to talk to
 	float m_fFace = -1;			// >= 0: the bearing of the side to stand on (a bed against a wall): the options set out (m_fOut) spread along that side only

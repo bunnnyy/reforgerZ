@@ -133,11 +133,11 @@ class RZ_Job_BringThemHome : RZ_LeaderPuzzle
 		string local = RZ_NoteText.FirstName(m_Rng);
 		m_sFamily = RZ_NoteText.Surname(m_Rng);
 		string bitten = RZ_NoteText.FirstName(m_Rng);
-		m_iTalk = AddClue("The " + m_sFamily + "s", string.Format("\"%1 sent you? Thank God. There are three of us.\" She glances at the back room. \"%2 got bitten on Tuesday. He says it's a scratch. It isn't, is it.\"", local, bitten));
+		m_iTalk = AddClue("The " + m_sFamily + "s", string.Format("\"%1 sent you? Thank God. There are three of us.\" He glances at the back room. \"%2 got bitten on Tuesday. He says it's a scratch. It isn't, is it.\"", local, bitten));
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", "Bring all three home|Bring the two who are well|Leave them where they are", m_iTalk, "Talk to the " + m_sFamily + "s");
 
 		m_sTitle = "Fetch the Family";
-		m_sBrief = string.Format("%1 hasn't slept since the gates closed. Her sister's family, the %2s, are holed up in %3. Bring them here. We'll find the beds. We always do.",
+		m_sBrief = string.Format("%1 hasn't slept since the gates closed. His brother's family, the %2s, are holed up in %3. Bring them here. We'll find the beds. We always do.",
 			local, m_sFamily, s.m_sName);
 		m_sObjective = string.Format("Bring the %1 family from %2 to {leader:%3} in {leader_place:%3}.", m_sFamily, s.m_sName, m_iLeaderId);
 		return true;
@@ -418,7 +418,7 @@ class RZ_Job_ShutTheDoor : RZ_LeaderPuzzle
 		if (from)
 			town = from.m_sName;
 
-		m_iTalk = AddClue("Newcomers", string.Format("\"We walked from %1. Four days. People said the Haven takes anyone in.\" A woman, two children, and a man who keeps his left hand in his pocket.", town));
+		m_iTalk = AddClue("Newcomers", string.Format("\"We walked from %1. Four days. People said the Haven takes anyone in.\" A man, two children, and another man who keeps his left hand in his pocket.", town));
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", "Turn them away|Let them in anyway", m_iTalk, "Talk to the newcomers");
 
 		m_sTitle = "Shut the Door";
@@ -439,7 +439,7 @@ class RZ_Job_ShutTheDoor : RZ_LeaderPuzzle
 			if (gm.GetWanderers())
 				gm.GetWanderers().AddFromLeaver(m_vPos);
 
-			gm.NotifyPlayer(playerId, m_sTitle, "You tell them there's no room. The woman says thank you, which is worse. They walk on toward the next town.");
+			gm.NotifyPlayer(playerId, m_sTitle, "You tell them there's no room. The man says thank you, which is worse. They walk on toward the next town.");
 			m_eState = RZ_EMissionState.SUCCEEDED;
 			return;
 		}

@@ -216,7 +216,7 @@ class RZ_GuidanceTips
 		t.m_sPlain = "You're bleeding. A bandage stops it; it won't stop on its own.";
 
 		t = Add(list, "quartermaster", false, 2, true, 0);
-		t.m_sHaven = "That's our quartermaster. Tins and medicine, for Favor. Bring food and she'll remember you.";
+		t.m_sHaven = "That's our quartermaster. Tins and medicine, for Favor. Bring food and he'll remember you.";
 		t.m_sBastion = "Quartermaster. Requisitions against Favor, nothing on credit.";
 		t.m_sRedHand = "The quartermaster. Pay in Favor. The prices are the prices, and so is the man behind them.";
 		t.m_sHalcyon = "Our quartermaster. Equipment against Favor; the better kit wants more standing.";

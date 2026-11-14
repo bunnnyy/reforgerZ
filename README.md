@@ -90,7 +90,7 @@ and one way to end it: **research the cure.**
   defaults fire from what the server is really doing (research pace, hours played, who's engaging,
   the gap since the last beat), never on fixed days ([QUESTLINES.md](docs/QUESTLINES.md#the-majors)).
 - **The cure's finale** ([FINALE.md](docs/FINALE.md)): at 90% the lab's batch is missing one thing,
-  and five routes race to bring it (the woman who didn't turn, the captain's Day 2 tubes, the cook's
+  and five routes race to bring it (the man who didn't turn, the captain's Day 2 tubes, the cook's
   still, the lower store's reference stock, the eight who walked out of the Day 6 trial). Each needs
   one thing a rival faction holds, and every door has a slower way round. You lock to one route for
   the season; the first to finish makes the batch and earns its faction a capped chunk of season

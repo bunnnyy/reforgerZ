@@ -156,7 +156,7 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 //! safehouse 0.8-3.5 km away (RZ_Escort). They only walk while someone is with them and hide
 //! when infected come close. Three join the safehouse. Big Fame.
 //! A story job (key `column`, kept per town): a family, as they said; one of them bitten (a cousin with
-//! his sleeve down); or one who owes a crew within 6 km. The grandmother (the talk scene): a nearer
+//! his sleeve down); or one who owes a crew within 6 km. The grandfather (the talk scene): a nearer
 //! house ([Known - Haven], when there is one) or two tins for a carter (they ride: in two minutes
 //! they're there). At the door the house asks: all in, or Bastion's post (sheltered, 5 Bastion Favor,
 //! the Haven pays nothing); bitten: tell them (two join) or say nothing (three; a lie a visit finds
@@ -265,7 +265,7 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 		m_Job.m_vReadAt = m_vPos;
 		m_Job.Read("bitten", "nurse,doctor", "The cousin keeps his left sleeve down in this heat. Under it, a bite, a day old at most.");
 		m_Job.Read("owed", "excon,raider", string.Format("The thin one won't look up the east road. That's a man who owes %1, and knows it.", m_sCrew));
-		m_Job.Read("", "elder", string.Format("Three generations of %1s and one pram. The grandmother is pushing the pram, and the pram is full of spoons.", m_sSurname));
+		m_Job.Read("", "elder", string.Format("Three generations of %1s and one pram. The grandfather is pushing the pram, and the pram is full of spoons.", m_sSurname));
 
 		string reveal = string.Format("The %1s. All of us, and the spoons. Nobody else.", m_sSurname);
 		if (truth == "bitten")
@@ -273,15 +273,15 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 		else if (truth == "owed")
 			reveal = string.Format("And him. He married in. He owes %1 for the wedding, if you can believe it.", m_sCrew);
 
-		RZ_TalkScene sc = m_Job.Scene("The grandmother", "column.gran", LandPointNear(m_vPos, 4, 7));
-		int n0 = sc.Node("An old woman sits on a suitcase. \"We packed the good spoons. Priorities.\"");
+		RZ_TalkScene sc = m_Job.Scene("The grandfather", "column.gran", LandPointNear(m_vPos, 4, 7));
+		int n0 = sc.Node("An old man sits on a suitcase. \"We packed the good spoons. Priorities.\"");
 		int n1 = sc.Node("So where are you walking us, and how slow?");
 		sc.Ask(n0, "Who's with you?", n1, reveal, true);
 		if (m_iNearer >= 0)
-			sc.Way(n1, "There's a nearer house.", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_NEAR, string.Format("\"Nearer is better.\" She points the pram at %1.", gm.GetSafehouses().Get(m_iNearer).m_sName), "Nearer to what? We were told the other one.");
+			sc.Way(n1, "There's a nearer house.", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_NEAR, string.Format("\"Nearer is better.\" He points the pram at %1.", gm.GetSafehouses().Get(m_iNearer).m_sName), "Nearer to what? We were told the other one.");
 
-		sc.Way(n1, "Two tins for a carter", RZ_TalkScene.FOOD, -1, 2, WAY_CART, "A man with a horse cart takes the tins and the grandmother. The rest climb on after her.");
-		sc.Service(n1, "Fix the carter's axle", "mechanic", 25, WAY_CART, "The axle holds. The carter takes the grandmother first, then the spoons, then the rest.");
+		sc.Way(n1, "Two tins for a carter", RZ_TalkScene.FOOD, -1, 2, WAY_CART, "A man with a horse cart takes the tins and the grandfather. The rest climb on after him.");
+		sc.Service(n1, "Fix the carter's axle", "mechanic", 25, WAY_CART, "The axle holds. The carter takes the grandfather first, then the spoons, then the rest.");
 
 		string labels = "Let them all in";
 		if (truth == "bitten")
@@ -343,7 +343,7 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 		{
 			m_iJoin = PEOPLE - 1;
 			RZ_StoryKit.Record(this, "fate", town, "told", who);
-			NotifyParticipants(gm, m_sTitle, "The house takes the nephew out to the field at dusk. The grandmother goes with him and comes back alone.");
+			NotifyParticipants(gm, m_sTitle, "The house takes the nephew out to the field at dusk. The grandfather goes with him and comes back alone.");
 			return;
 		}
 
@@ -365,7 +365,7 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 			m_Choice.PayWith(gm, this, RZ_EFaction.BANDITS, 10);
 			m_Choice.BlameWith(gm, this, RZ_EFaction.SURVIVORS, 4, "handed a refugee to a crew");
 			RZ_StoryKit.Record(this, "fate", town, "handed", who);
-			NotifyParticipants(gm, m_sTitle, string.Format("Two men from %1 are waiting by the road. He goes with them without a word. The grandmother doesn't watch.", m_sCrew));
+			NotifyParticipants(gm, m_sTitle, string.Format("Two men from %1 are waiting by the road. He goes with them without a word. The grandfather doesn't watch.", m_sCrew));
 			return;
 		}
 
@@ -383,7 +383,7 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 		if (h)
 		{
 			RZ_StoryKit.BoardThanks(gm, h.m_vPos, "The good spoons are on the long table now. Thank you for walking slowly.", string.Format("The %1s", m_sSurname));
-			RZ_StoryKit.LaterWith(gm, this, h.m_sName, "The grandmother is on the bench by the door, polishing a spoon. \"You walk too fast. Sit.\"", h.m_vPos, true);
+			RZ_StoryKit.LaterWith(gm, this, h.m_sName, "The grandfather is on the bench by the door, polishing a spoon. \"You walk too fast. Sit.\"", h.m_vPos, true);
 		}
 	}
 
@@ -529,7 +529,7 @@ class RZ_Mission_FortifySafehouse : RZ_Mission_Hold
 //! A story job (key `informant`, kept per town): the names, as they said; bait (he knows what you are
 //! and sells you the wrong names); or he sells to Bastion too (a Bastion holding on the map). The
 //! seller is the talk scene: buy (the old way: spotted 20%, +30% armed), pay in tins (no standing:
-//! never spotted), or [Red Hand kit] "Mira sent me" (a trick: the full list, never spotted). At the
+//! never spotted), or [Red Hand kit] "Mirek sent me" (a trick: the full list, never spotted). At the
 //! house the council asks: the names to the Haven; bait: burn the list (half pay, a record); Bastion:
 //! sell Bastion a copy (10 Bastion Favor, a lie a Haven-Known visitor to the house finds out).
 class RZ_Mission_TheInformant : RZ_PuzzleMission
@@ -663,7 +663,7 @@ class RZ_Mission_TheInformant : RZ_PuzzleMission
 		sc.Way(n0, "Buy what he's selling", RZ_TalkScene.WAY, -1, 0, WAY_BUY, "He counts your money and talks while he counts.");
 		sc.Ask(n0, "How do you pay, then?", n1, "Money, tins, a name. Names are the dearest. Don't ask who's buying yours.");
 		sc.Way(n1, "Pay in tins", RZ_TalkScene.FOOD, -1, 2, WAY_TINS, "He likes tins. Tins don't ask questions either.");
-		sc.Way(n1, "Mira sent me.", RZ_TalkScene.TRICK, RZ_EFaction.BANDITS, 1, WAY_KIT, "\"Why didn't you say?\" He gives you the long list, the one for friends.", "\"Mira's been dead a month.\" He walks off fast.");
+		sc.Way(n1, "Mirek sent me.", RZ_TalkScene.TRICK, RZ_EFaction.BANDITS, 1, WAY_KIT, "\"Why didn't you say?\" He gives you the long list, the one for friends.", "\"Mira's been dead a month.\" He walks off fast.");
 
 		string labels = "Give the Haven the names";
 		if (truth == "bait")

@@ -75,7 +75,7 @@ class RZ_Opening
 	bool m_bHadContact;
 	bool m_bContactDead;
 	string m_sName;				// "Pavel Holm"
-	string m_sShort;			// "Pavel" ("Old Marta" for a wanderer)
+	string m_sShort;			// "Pavel" ("Old Marek" for a wanderer)
 	string m_sWho;				// "a patient's father"
 	string m_sSpeaker;			// the title their lines come under; whoever finds you, once they're dead
 	int m_iEnd = -1;			// the faction the chain ends with

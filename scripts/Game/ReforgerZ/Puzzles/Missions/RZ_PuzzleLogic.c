@@ -316,7 +316,7 @@ class RZ_Mission_PatientZeroLedger : RZ_PuzzleMission
 		m_iWrong++;
 		if (m_iWrong >= 2)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"No. And now the report is wrong.\" She tears the page out.");
+			gm.NotifyPlayer(playerId, m_sTitle, "\"No. And now the report is wrong.\" He tears the page out.");
 			m_eState = RZ_EMissionState.FAILED;
 			return;
 		}

@@ -5,7 +5,7 @@
 //------------------------------------------------------------------------------------------------
 //! His Lighter (the dead, the Red Hand's way): someone died within 1 km of a Red Hand camp in the
 //! last season day. His kit is on the market before the horns stop, and the lighter's the last of it.
-//! Sell it to the fence, take it to his mother at a Haven house (a local), or sell it to Bastion as
+//! Sell it to the fence, take it to his father at a Haven house (a local), or sell it to Bastion as
 //! proof of one less (a lie the crews' rumour round finds).
 class RZ_Routine_HisLighter : RZ_ErrandDef
 {
@@ -27,14 +27,14 @@ class RZ_Routine_HisLighter : RZ_ErrandDef
 		w.Done("Bought fair. It's in the book. That's all anyone will say about him now.");
 
 		w = Way("give");
-		w.m_sLabel = "Take it to his mother";
+		w.m_sLabel = "Take it to his father";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT2;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
-		w.m_sStep = "Take the dead lad's lighter to his mother at {house} (5 s at the door), then tell {giver}.";
+		w.m_sStep = "Take the dead lad's lighter to his father at {house} (5 s at the door), then tell {giver}.";
 		w.m_iFame = 1;
 		w.m_iPayFaction = RZ_EFaction.SURVIVORS;
-		w.Done("To his mother. You didn't sell it, and you didn't rat. Fair enough. Nobody in the crew will say anything else about it.");
+		w.Done("To his father. You didn't sell it, and you didn't rat. Fair enough. Nobody in the crew will say anything else about it.");
 
 		w = Way("lie");
 		w.m_sLabel = "Sell it to Bastion as proof of one less";
@@ -83,7 +83,7 @@ class RZ_Routine_HisLighter : RZ_ErrandDef
 		if (w.m_iIndex == 1 && dealer.GetLocals() && e.m_iValue >= 0)
 		{
 			dealer.GetLocals().Make(playerId, "whose son ran with the crews", "You brought me his lighter. Nobody else brought me anything.", e.m_iValue, "stove", false, "helped");
-			said.Insert(e.Fill("His mother at {house} took it in both hands, I hear. What he owed is in the book against her now, and a lighter won't pay it. She knows."));
+			said.Insert(e.Fill("His father at {house} took it in both hands, I hear. What he owed is in the book against him now, and a lighter won't pay it. He knows."));
 			return;
 		}
 
@@ -95,8 +95,8 @@ class RZ_Routine_HisLighter : RZ_ErrandDef
 
 //------------------------------------------------------------------------------------------------
 //! The Market (the fence): the Zone just made something. A wedding party broke up within 3 km in the
-//! last season day, and a ring came off a finger. The fence wants it; the groom's mother at a Haven
-//! house wants it too. Give it to her, sell it to her for two of the house's tins, or sell it to him.
+//! last season day, and a ring came off a finger. The fence wants it; the groom's father at a Haven
+//! house wants it too. Give it to him, sell it to him for two of the house's tins, or sell it to him.
 //! Inside it: a date, and "for ever". Nobody laughs except the fence.
 class RZ_Routine_Market : RZ_ErrandDef
 {
@@ -109,8 +109,8 @@ class RZ_Routine_Market : RZ_ErrandDef
 		m_iFaction = RZ_EFaction.BANDITS;
 		m_sRoles = "fence,toll man";
 		Offer("There's a ring loose {subject_place}. A wedding party got broken up there, the infected came through the middle of it, and the ring's somewhere in the grass. Find it before the rain does and I'll give you a fair price. Fairish.",
-			"A wedding party broke up {subject_place}, badly. Somewhere in the grass there's a ring with a date in it. I want it. So does the groom's mother, I hear. I want it more.");
-		Over("The ring's gone. Somebody's mother got there first. Mothers do.");
+			"A wedding party broke up {subject_place}, badly. Somewhere in the grass there's a ring with a date in it. I want it. So does the groom's father, I hear. I want it more.");
+		Over("The ring's gone. Somebody's father got there first. Fathers do.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Find it, and sell it to him";
@@ -123,25 +123,25 @@ class RZ_Routine_Market : RZ_ErrandDef
 		w.Done("For ever, it says inside. For ever. Ha. That's worth a tin on its own.");
 
 		w = Way("give");
-		w.m_sLabel = "Give it to the groom's mother";
+		w.m_sLabel = "Give it to the groom's father";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT2;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
 		w.First(RZ_EErrandPlace.SUBJECT, "Search the grass where the wedding party was {subject_place} for the ring (20 s there).", 20);
-		w.m_sStep = "Give the ring to the groom's mother at {house} (5 s at the door), then tell {giver}.";
+		w.m_sStep = "Give the ring to the groom's father at {house} (5 s at the door), then tell {giver}.";
 		w.m_iFame = 2;
 		w.m_iPayFaction = RZ_EFaction.SURVIVORS;
-		w.Done("To the mother? Soft. You're soft. I'll remember that, and so will the price of everything.");
+		w.Done("To the father? Soft. You're soft. I'll remember that, and so will the price of everything.");
 
 		w = Way("do");
-		w.m_sLabel = "Sell it to her for two tins";
+		w.m_sLabel = "Sell it to him for two tins";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT2;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
 		w.First(RZ_EErrandPlace.SUBJECT, "Search the grass where the wedding party was {subject_place} for the ring (20 s there).", 20);
-		w.m_sStep = "Sell the ring to the groom's mother at {house} for two tins (5 s at the door), then tell {giver}.";
+		w.m_sStep = "Sell the ring to the groom's father at {house} for two tins (5 s at the door), then tell {giver}.";
 		w.m_iFavor = 4;
-		w.Done("Two tins from a mother. That's business. Ugly business, but business.");
+		w.Done("Two tins from a father. That's business. Ugly business, but business.");
 	}
 
 	override bool Why(RZ_Errands dealer, RZ_Errand e)
@@ -177,7 +177,7 @@ class RZ_Routine_Market : RZ_ErrandDef
 		}
 
 		if (w.m_iIndex == 1)
-			said.Insert(e.Fill("The groom's mother at {house} wears it on her own finger now, I hear, because it's the only safe place. A date inside, and 'for ever'."));
+			said.Insert(e.Fill("The groom's father at {house} wears it on his own finger now, I hear, because it's the only safe place. A date inside, and 'for ever'."));
 	}
 }
 

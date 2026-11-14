@@ -96,13 +96,13 @@ class RZ_Mission_TheList : RZ_PuzzleMission
 		RZ_NoteText.DistinctFirstNames(m_Rng, 3, firsts);
 		while (firsts.Count() < 3)
 		{
-			firsts.Insert("Dana");
+			firsts.Insert("Dalibor");
 		}
 
 		m_sName = firsts[0] + " " + RZ_NoteText.Surname(m_Rng);
 		m_sKin = firsts[1];
 		m_sCouncil = firsts[2];
-		array<string> kinWords = {"brother", "sister", "son", "daughter", "husband", "wife"};
+		array<string> kinWords = {"brother", "son", "father", "cousin"};
 		m_sKinWord = m_Rng.Pick(kinWords);
 
 		m_iTruth = m_Rng.Int(0, 4);

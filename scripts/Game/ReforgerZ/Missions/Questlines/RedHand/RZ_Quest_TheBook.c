@@ -8,7 +8,7 @@
 //! 2. Find him (mission): his trail through two towns (a step chain) to a barn. Talk him out
 //!    (unarmed; Known with the Red Hand, or ★ Ex-Con), take him (his two friends fight, with the
 //!    Red Hand group prefab; else at gunpoint) or pay him to run (20 Red Hand Favor). He says why:
-//!    his sister's house is on the page.
+//!    his brother's house is on the page.
 //! 3. Read the page (mission): one name per faction (a Bastion outpost commander, a Halcyon field
 //!    lead, a Haven council head: Rogue ones first, else Independent, else any), each met at
 //!    their own seat. Collect (talk 60%, lean on them, or pay it yourself), let it lie, or turn
@@ -97,7 +97,7 @@ class RZ_Quest_TheBook : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The boss, one name per other faction (two at least), the thief and his sister. From the
+	//! The boss, one name per other faction (two at least), the thief and his brother. From the
 	//! second real day of the season.
 	override bool CanStart(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
@@ -145,7 +145,7 @@ class RZ_Quest_TheBook : RZ_Questline
 		run.SetText("thief_short", names[0]);
 		run.SetText("inno1", names[1]);
 		run.SetText("inno2", names[2]);
-		run.SetText("sister", RZ_RedHandQuest.WomanName(rng));
+		run.SetText("sister", RZ_NoteText.ManName(rng));
 		run.SetFlag("turned", -1);
 		CountCutDose(gm, run);
 		run.SetPlace(boss.m_vPos, boss.m_sPlace);
@@ -544,7 +544,7 @@ class RZ_Quest_TheBook : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Why he tore it out: his sister's house is on the page (said as it stands now: a council head
+	//! Why he tore it out: his brother's house is on the page (said as it stands now: a council head
 	//! who has left the chair since is spoken of in the past).
 	static string SisterLine(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
@@ -556,12 +556,12 @@ class RZ_Quest_TheBook : RZ_Questline
 		{
 			string key = Key(haven);
 			if (!Name(gm, run, haven))
-				return string.Format("He says why. His sister {sister} lives at the Haven house in %1, and its council head was on the page. He wanted one house in the Zone to owe nobody.", run.Text(key + "_place"));
+				return string.Format("He says why. His brother {sister} lives at the Haven house in %1, and its council head was on the page. He wanted one house in the Zone to owe nobody.", run.Text(key + "_place"));
 
-			return string.Format("He says why. His sister {sister} lives at the Haven house in %1, and %2, its council head, is on the page. He wanted one house in the Zone to owe nobody.", run.Text(key + "_place"), run.Text(key));
+			return string.Format("He says why. His brother {sister} lives at the Haven house in %1, and %2, its council head, is on the page. He wanted one house in the Zone to owe nobody.", run.Text(key + "_place"), run.Text(key));
 		}
 
-		return "He says why. His sister {sister} owes too, through somebody on the page, and he wanted one family in the Zone to owe nobody.";
+		return "He says why. His brother {sister} owes too, through somebody on the page, and he wanted one family in the Zone to owe nobody.";
 	}
 
 	//------------------------------------------------------------------------------------------------

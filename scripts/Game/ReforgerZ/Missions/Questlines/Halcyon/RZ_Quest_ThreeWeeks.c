@@ -6,21 +6,21 @@
 //! 1. The driver (mission): the Scavenger who drove Dr Wolff up to the closed site on Day 3 sits at
 //!    the edge of the town nearest it. Talk (Known with the Haven and not Trusted with Halcyon, or a
 //!    Radio Operator, who heard his call that day), share food twice, or threaten him (armed, +3
-//!    Haven Infamy). He names the site: "She stayed because she wanted to."
+//!    Haven Infamy). He names the site: "He stayed because he wanted to."
 //! 2. The site (mission): a remote spot on high ground between two towns (a mast, a factory or a
-//!    barracks there if there is one). Three of her team lie around it, each with two digits of the
+//!    barracks there if there is one). Three of his team lie around it, each with two digits of the
 //!    store's six. Lab Tech: the first digit. Three wrong: the keypad is dead for 2 minutes, loud.
-//! 3. The team lead (mission): Dr Wolff is inside, turned long ago. Mercy (kill her, take the
+//! 3. The team lead (mission): Dr Wolff is inside, turned long ago. Mercy (kill him, take the
 //!    notebook), live capture (RZ_LiveCapture: the cage, then the lab, research +2) or sneak (take
-//!    the notebook unseen and leave her).
+//!    the notebook unseen and leave him).
 //! 4. Who reads it (mission): the notebook says the Institute was told on the first day and wrote
 //!    back one word, "Continue." To the director (Trusted, or Known as a Lab Tech or Doctor), the
 //!    field lead, Bastion's commanding officer, the Haven's chair or the Red Hand's boss (40 Favor).
 //! 5. The lab answers (wait, one session). Public: the Red Hand raids the lab (Lab Defence). In the
-//!    record: the field lead walks out (walk her to a safehouse, or back to the lab). Bastion: no more.
+//!    record: the field lead walks out (walk him to a safehouse, or back to the lab). Bastion: no more.
 //!
-//! Endings: In the record, Out on the open channel, Bastion's file; and with any of them, if she was
-//! brought in alive, the director speaks about her on the open channel. Starts once Patient Zero or
+//! Endings: In the record, Out on the open channel, Bastion's file; and with any of them, if he was
+//! brought in alive, the director speaks about him on the open channel. Starts once Patient Zero or
 //! Patient Zero's Ledger has been solved this season (they set FLAG_RECORDS), with an Independent or
 //! Rogue field lead, a Scavenger wanderer and a site to be found.
 class RZ_Quest_ThreeWeeks : RZ_Questline
@@ -31,7 +31,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 	static const string FLAG_BASTION = "weeks.bastion";		// set: Bastion has it (HC3 starts with its terms on the table)
 	static const string FLAG_RECORD = "weeks.record";		// set: it went into the lab's record
 	static const string FLAG_CAPTURED = "weeks.captured";	// set: Dr Wolff is in the lab's isolation room
-	static const string FLAG_LEAD_LEFT = "weeks.lead_left";	// set: the field lead left her station
+	static const string FLAG_LEAD_LEFT = "weeks.lead_left";	// set: the field lead left his station
 
 	static const int S_DRIVER = 0;
 	static const int S_SITE = 1;
@@ -43,10 +43,10 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 
 	static const int OUT_NAMED = 10;		// the driver named the site
 	static const int OUT_OPEN = 11;			// the store is open
-	static const int OUT_MERCY = 12;		// she was ended; the notebook taken
-	static const int OUT_CAPTURED = 13;		// she's at the lab, alive
-	static const int OUT_SNEAK = 14;		// the notebook taken, she was left
-	static const int OUT_LOOSE = 15;		// caught, then lost on the way: she's loose
+	static const int OUT_MERCY = 12;		// he was ended; the notebook taken
+	static const int OUT_CAPTURED = 13;		// he's at the lab, alive
+	static const int OUT_SNEAK = 14;		// the notebook taken, he was left
+	static const int OUT_LOOSE = 15;		// caught, then lost on the way: he's loose
 	static const int OUT_DIRECTOR = 16;
 	static const int OUT_LEAD = 17;
 	static const int OUT_BASTION = 18;
@@ -64,7 +64,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 	static const int E_PUBLIC = 1;
 	static const int E_BASTION = 2;
 
-	static const string WOLFF = "Dr Greta Wolff";
+	static const string WOLFF = "Dr Gregor Wolff";
 
 	//------------------------------------------------------------------------------------------------
 	override void Define()
@@ -75,12 +75,12 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 		driver.GiveUp(4, "{driver} never said what was up at the site on Day 3, and nobody will hear it now.");
 		driver.Visits(2);
 
-		RZ_QuestStage site = MissionStage(S_SITE, "The site", "{driver} named the closed site: {site_place}, grid {site_grid}. Dr Wolff went back up on Day 3 with her team, and the store there has a keypad.");
+		RZ_QuestStage site = MissionStage(S_SITE, "The site", "{driver} named the closed site: {site_place}, grid {site_grid}. Dr Wolff went back up on Day 3 with his team, and the store there has a keypad.");
 		site.GiveUp(4, "Nobody went back up to the site near {site_town}. Whatever is in the store stays in it.");
 		site.Visits(2);
 
-		RZ_QuestStage lead = MissionStage(S_LEAD, "The team lead", "The store at the site near {site_town} is open. Dr Wolff's notebook is inside, and so is she. She turned a long time ago.");
-		lead.GiveUp(4, "Nobody went into the store at the site. Dr Wolff is still in there with her notebook.");
+		RZ_QuestStage lead = MissionStage(S_LEAD, "The team lead", "The store at the site near {site_town} is open. Dr Wolff's notebook is inside, and so is he. He turned a long time ago.");
+		lead.GiveUp(4, "Nobody went into the store at the site. Dr Wolff is still in there with his notebook.");
 		lead.Visits(2);
 
 		RZ_QuestStage readers = MissionStage(S_READERS, "Who reads it", "The notebook doesn't say what the site was for. It says the Institute was told on the first day of the three weeks, and wrote back one word: \"Continue.\" Somebody has to decide who reads it.");
@@ -94,7 +94,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 		RZ_QuestStage raid = MissionStage(S_RAID, "The raid", "Since the notebook was read out, the Red Hand is sure the lab has more to hide, and a crew is coming to look. Hold the lab.");
 		raid.GiveUp(4, "The Red Hand never came for the lab after all. The notebook is still all anyone talks about.");
 
-		RZ_QuestStage walkout = MissionStage(S_WALKOUT, "The field lead walks out", "{lead} heard the notebook went into the record without the pages about the director. She's leaving {lead_place}. Walk her to a safehouse, or bring her back to the lab.");
+		RZ_QuestStage walkout = MissionStage(S_WALKOUT, "The field lead walks out", "{lead} heard the notebook went into the record without the pages about the director. He's leaving {lead_place}. Walk him to a safehouse, or bring him back to the lab.");
 		walkout.GiveUp(3, "{lead} left {lead_place} alone one night, and the lab hasn't said where to.");
 	}
 
@@ -287,7 +287,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The field lead voices the stage's brief and pays it, while she's still the one in her chair.
+	//! The field lead voices the stage's brief and pays it, while he's still the one in his chair.
 	static void Voice(RZ_GameModeComponent gm, RZ_Mission m)
 	{
 		if (!gm.GetQuestlines())
@@ -357,7 +357,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 					return S_DRIVER;
 				}
 
-				run.Note("{driver} named the site: {site_place}, grid {site_grid}. Then, to nobody: \"She stayed because she wanted to.\"");
+				run.Note("{driver} named the site: {site_place}, grid {site_grid}. Then, to nobody: \"He stayed because he wanted to.\"");
 				run.SetPlace(RZ_QM_HalcyonScene.LoadPos(run, "site"), run.Text("site_place"));
 				return S_SITE;
 			}
@@ -421,19 +421,19 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 		if (outcome == OUT_CAPTURED)
 		{
 			run.SetFlag("captured", 1);
-			run.Note("Dr Wolff is in the lab's isolation room, alive in the way the infected are. Her notebook came down with her.");
+			run.Note("Dr Wolff is in the lab's isolation room, alive in the way the infected are. His notebook came down with him.");
 		}
 		else if (outcome == OUT_SNEAK)
 		{
-			run.Note("Somebody took the notebook and left her in the store. She didn't look up.");
+			run.Note("Somebody took the notebook and left him in the store. He didn't look up.");
 		}
 		else if (outcome == OUT_LOOSE)
 		{
-			run.Note("She woke on the way down and broke out of the case. She's out there now. The notebook is safe.");
+			run.Note("He woke on the way down and broke out of the case. He's out there now. The notebook is safe.");
 		}
 		else
 		{
-			run.Note("Dr Wolff is at rest. Her notebook was in her coat.");
+			run.Note("Dr Wolff is at rest. His notebook was in his coat.");
 		}
 
 		return S_READERS;
@@ -454,7 +454,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 			{
 				run.SetBranch(BR_PUBLIC);
 				run.SetFlag("readers", RZ_EFaction.INSTITUTE);
-				run.Note("{lead} has the notebook. She read it on the open channel, every page.");
+				run.Note("{lead} has the notebook. He read it on the open channel, every page.");
 				return S_ANSWER;
 			}
 			case OUT_HAVEN:
@@ -498,7 +498,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 			return S_RAID;
 		}
 
-		// In the record: the field lead walks out, if she's still the one in her chair
+		// In the record: the field lead walks out, if he's still the one in his chair
 		if (RZ_QM_HalcyonScene.SameLeader(gm, run, "lead"))
 			return S_WALKOUT;
 
@@ -560,7 +560,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! In the record: she leaves her station (a life event), if she's still in it.
+	//! In the record: he leaves his station (a life event), if he's still in it.
 	protected void LeadLeaves(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		RZ_Leader l = RZ_QM_HalcyonScene.SameLeader(gm, run, "lead");
@@ -568,14 +568,14 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 			return;
 
 		int to = run.Flag("lead_to");
-		string headline = run.Fill("{lead} has left the field station in {lead_place}. Nobody at the lab says where she went.");
+		string headline = run.Fill("{lead} has left the field station in {lead_place}. Nobody at the lab says where he went.");
 		if (to == 2)
 			headline = run.Fill("{lead} has left the field station in {lead_place} for a desk at the lab, where the director can watch the work.");
 
 		int house = run.Flag("lead_house", -1);
 		RZ_Safehouse h = GetHouse(gm, house);
 		if (to == 1 && h)
-			headline = run.Fill("{lead} has left Halcyon. She sleeps at the safehouse in " + h.m_sName + " now, and she has stopped keeping a notebook.");
+			headline = run.Fill("{lead} has left Halcyon. He sleeps at the safehouse in " + h.m_sName + " now, and he has stopped keeping a notebook.");
 
 		if (!ReplaceLeader(gm, l.m_iId, headline))
 			return;
@@ -618,7 +618,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 			return "Somebody's been up at the old site past {site_town}. Halcyon's people go quiet when you ask what they kept up there.";
 
 		if (run.m_iStage == S_READERS)
-			return "There's a dead woman's notebook going round, and everybody wants to read it first.";
+			return "There's a dead man's notebook going round, and everybody wants to read it first.";
 
 		return "";
 	}
@@ -632,7 +632,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 
 		RZ_Leader lead = RZ_QM_HalcyonScene.SameLeader(gm, run, "lead");
 		if (lead && lead.m_iId == leaderId)
-			return string.Format("%1 keeps her voice down. \"I don't want to know what we wrote down about those three weeks. I want to know what we did.\"", lead.m_sShort);
+			return string.Format("%1 keeps his voice down. \"I don't want to know what we wrote down about those three weeks. I want to know what we did.\"", lead.m_sShort);
 
 		RZ_Leader director = RZ_QM_HalcyonScene.Top(gm, RZ_EFaction.INSTITUTE);
 		if (director && director.m_iId == leaderId && run.m_iStage >= S_SITE)
@@ -841,7 +841,7 @@ class RZ_QM_WeeksDriver : RZ_QM_HalcyonScene
 	//------------------------------------------------------------------------------------------------
 	protected void Named(RZ_GameModeComponent gm, int playerId, string opener, int approach, string what)
 	{
-		gm.NotifyPlayer(playerId, m_sTitle, opener + " " + QFill(gm, "\"The site's {site_place}. Grid {site_grid}. I drove her up on Day 3 and she told me to wait till dark. Her team went up with her. I waited.\" A long breath. \"She stayed because she wanted to. That's what nobody at the lab will say.\""));
+		gm.NotifyPlayer(playerId, m_sTitle, opener + " " + QFill(gm, "\"The site's {site_place}. Grid {site_grid}. I drove him up on Day 3 and he told me to wait till dark. His team went up with him. I waited.\" A long breath. \"He stayed because he wanted to. That's what nobody at the lab will say.\""));
 		Resolve(gm, playerId, approach, RZ_Quest_ThreeWeeks.OUT_NAMED, what);
 	}
 
@@ -887,7 +887,7 @@ class RZ_QM_WeeksDriver : RZ_QM_HalcyonScene
 }
 
 //------------------------------------------------------------------------------------------------
-//! The Three Weeks, stage 2 (Halcyon contract, Known, Lab Tech): the site. Three of her team on the
+//! The Three Weeks, stage 2 (Halcyon contract, Known, Lab Tech): the site. Three of his team on the
 //! ground around it, each with two of the store's six digits; the keypad (or terminal) at the store.
 class RZ_QM_WeeksSite : RZ_QM_HalcyonScene
 {
@@ -940,7 +940,7 @@ class RZ_QM_WeeksSite : RZ_QM_HalcyonScene
 			AddSpot(m_vDoor, RZ_EPuzzleProp.OBJECT, OBJ_DOOR, m_iScreen, "Read the door", "", "the store at the site", "Turn the wheels to the code");
 		}
 
-		// Her team: three bodies around the site, each with two of the digits
+		// His team: three bodies around the site, each with two of the digits
 		array<vector> used = {};
 		for (int i = 0; i < BODIES; i++)
 		{
@@ -953,7 +953,7 @@ class RZ_QM_WeeksSite : RZ_QM_HalcyonScene
 			used.Insert(pos);
 			string who = RZ_NoteText.FullName(m_Rng);
 			string digits = string.Format("%1 and %2", m_sCode.Substring(i * 2, 1), m_sCode.Substring(i * 2 + 1, 1));
-			int clue = AddClue(who, string.Format("An Institute field card, %1, and a page folded into it. \"Store 2. My part of the six, numbers %2 and %3: %4. Greta has all of them. She would.\" Under it, later, in a worse hand: \"Day 3. She's gone in to finish it. We're not to follow.\"",
+			int clue = AddClue(who, string.Format("An Institute field card, %1, and a page folded into it. \"Store 2. My part of the six, numbers %2 and %3: %4. Gregor has all of them. He would.\" Under it, later, in a worse hand: \"Day 3. He's gone in to finish it. We're not to follow.\"",
 				who, i * 2 + 1, i * 2 + 2, digits));
 			AddSpot(pos, RZ_EPuzzleProp.BODY, -1, clue, "Search the body", "", "");
 			m_aPages.Insert(clue);
@@ -966,7 +966,7 @@ class RZ_QM_WeeksSite : RZ_QM_HalcyonScene
 
 		m_sItemName = "the code";
 		m_sTitle = "The Three Weeks: the site";
-		m_sBrief = QFill(gm, "The closed site is {site_place}, grid {site_grid}. Dr Wolff went into the store there on Day 3 and her team stayed outside. The store has a six-figure lock. Her team will have had the code between them.");
+		m_sBrief = QFill(gm, "The closed site is {site_place}, grid {site_grid}. Dr Wolff went into the store there on Day 3 and his team stayed outside. The store has a six-figure lock. His team will have had the code between them.");
 		m_sObjective = QFill(gm, "Open the store at the closed site, grid {site_grid}, with the team's code.");
 		return true;
 	}
@@ -1031,7 +1031,7 @@ class RZ_QM_WeeksSite : RZ_QM_HalcyonScene
 		m_mPagesRead.Find(playerId, mask);
 		if (mask != (1 << BODIES) - 1)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "You don't have all six figures. Her team had them between them, and they're still lying around the site.");
+			gm.NotifyPlayer(playerId, m_sTitle, "You don't have all six figures. His team had them between them, and they're still lying around the site.");
 			return;
 		}
 
@@ -1081,9 +1081,9 @@ class RZ_QM_WeeksSite : RZ_QM_HalcyonScene
 
 //------------------------------------------------------------------------------------------------
 //! The Three Weeks, stage 3 (Halcyon contract, Known): Dr Wolff in the store, turned (a special).
-//! Kill her and take the notebook (mercy), catch her (the cage, RZ_LiveCapture) and bring her to the
-//! lab (research +2), or take the notebook unseen and leave her (sneak). Without room for a capture
-//! (or the mission item or the lab drop), there's no cage, and she's spawned by the mission.
+//! Kill him and take the notebook (mercy), catch him (the cage, RZ_LiveCapture) and bring him to the
+//! lab (research +2), or take the notebook unseen and leave him (sneak). Without room for a capture
+//! (or the mission item or the lab drop), there's no cage, and he's spawned by the mission.
 class RZ_QM_WeeksLead : RZ_QM_HalcyonScene
 {
 	protected ref RZ_LiveCapture m_Capture = new RZ_LiveCapture();
@@ -1120,11 +1120,11 @@ class RZ_QM_WeeksLead : RZ_QM_HalcyonScene
 		m_iSettlement = run.Flag("site_town", -1);
 		m_vPos = site;
 		m_vLair = LandPointNear(site, 1, 4);
-		m_iPage = AddClue("Dr Wolff's notebook", QFill(gm, "Numbered, like every Halcyon notebook. The first day of the three weeks: \"Clinic in town reports a fever. One of ours, a site worker. Institute informed, 14:10.\" The next morning, one word on a line of its own, copied out and underlined: \"Continue.\" The pages after that are about the work, and about {director}, and some of them are about why she came back up the hill."));
-		m_iNoteSpot = AddSpot(LandPointNear(site, 2, 5), RZ_EPuzzleProp.OBJECT, OBJ_NOTEBOOK, m_iPage, "Read the open page", "", "the store at the site", "Take her notebook");
+		m_iPage = AddClue("Dr Wolff's notebook", QFill(gm, "Numbered, like every Halcyon notebook. The first day of the three weeks: \"Clinic in town reports a fever. One of ours, a site worker. Institute informed, 14:10.\" The next morning, one word on a line of its own, copied out and underlined: \"Continue.\" The pages after that are about the work, and about {director}, and some of them are about why he came back up the hill."));
+		m_iNoteSpot = AddSpot(LandPointNear(site, 2, 5), RZ_EPuzzleProp.OBJECT, OBJ_NOTEBOOK, m_iPage, "Read the open page", "", "the store at the site", "Take his notebook");
 		m_Quiet.Watch(site, 60);
 
-		// The cage, if a capture can run and there's somewhere at the lab to hand her in
+		// The cage, if a capture can run and there's somewhere at the lab to hand him in
 		if (RZ_LiveCapture.HasRoom(gm) && !gm.GetDropPointPrefab(RZ_EFaction.INSTITUTE).IsEmpty())
 		{
 			m_Drop = RZ_HalcyonContractHelp.SpawnLabDrop(gm);
@@ -1141,10 +1141,10 @@ class RZ_QM_WeeksLead : RZ_QM_HalcyonScene
 
 		m_sItemName = "the notebook";
 		m_sTitle = "The Three Weeks: the team lead";
-		m_sBrief = QFill(gm, "Dr Wolff's notebook is in the store at the site near {site_town}, and so is she. She turned a long time ago. Bring the notebook down. What you do about her is up to you.");
+		m_sBrief = QFill(gm, "Dr Wolff's notebook is in the store at the site near {site_town}, and so is he. He turned a long time ago. Bring the notebook down. What you do about him is up to you.");
 		m_sObjective = QFill(gm, "Bring Dr Wolff's notebook down from the store at the site near {site_town}.");
 		if (m_bCage)
-			m_sBrief += " The lab has left a cage trap outside, if you'd rather bring her too.";
+			m_sBrief += " The lab has left a cage trap outside, if you'd rather bring him too.";
 
 		return true;
 	}
@@ -1168,14 +1168,14 @@ class RZ_QM_WeeksLead : RZ_QM_HalcyonScene
 		{
 			m_bCrated = true;
 			SetSpotOn(m_iNoteSpot, false);
-			NotifyParticipants(gm, m_sTitle, string.Format("Her notebook goes into the case with her. The lab's drop is at grid %1. The sedative won't last long.", RZ_SettlementScanner.GridReference(m_Drop.GetOrigin())));
+			NotifyParticipants(gm, m_sTitle, string.Format("His notebook goes into the case with him. The lab's drop is at grid %1. The sedative won't last long.", RZ_SettlementScanner.GridReference(m_Drop.GetOrigin())));
 		}
 
-		// Caught, then lost on the way: she's loose, and the notebook is still yours
+		// Caught, then lost on the way: he's loose, and the notebook is still yours
 		if (m_Capture.IsLost() && m_bCrated)
 		{
 			int near = RZ_EscortHelp.PlayerBeside(ids, players, m_Capture.m_vHeld, 100000);
-			Resolve(gm, near, RZ_EQuestApproach.FORCE, RZ_Quest_ThreeWeeks.OUT_LOOSE, "caught her and lost her again");
+			Resolve(gm, near, RZ_EQuestApproach.FORCE, RZ_Quest_ThreeWeeks.OUT_LOOSE, "caught him and lost him again");
 		}
 	}
 
@@ -1187,7 +1187,7 @@ class RZ_QM_WeeksLead : RZ_QM_HalcyonScene
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Take the notebook and leave her: only unseen, and only while she's still in there.
+	//! Take the notebook and leave him: only unseen, and only while he's still in there.
 	override protected void OnUse(RZ_GameModeComponent gm, int playerId, int objIdx, int value, IEntity source, IEntity user)
 	{
 		if (objIdx != OBJ_NOTEBOOK || !MayAct(gm, playerId))
@@ -1195,7 +1195,7 @@ class RZ_QM_WeeksLead : RZ_QM_HalcyonScene
 
 		if (m_bCage && m_Capture.m_eState != RZ_ECaptureState.BAIT)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "It's going with her.");
+			gm.NotifyPlayer(playerId, m_sTitle, "It's going with him.");
 			return;
 		}
 
@@ -1204,16 +1204,16 @@ class RZ_QM_WeeksLead : RZ_QM_HalcyonScene
 			string why = m_Quiet.Why(gm, playerId);
 			m_Quiet.Spot(playerId);
 			Remember(gm, playerId, RZ_EQuestApproach.SNEAK, "was heard at the notebook");
-			gm.NotifyPlayer(playerId, m_sTitle, why + " Her head comes up. She knows you're there now.");
+			gm.NotifyPlayer(playerId, m_sTitle, why + " His head comes up. He knows you're there now.");
 			return;
 		}
 
-		gm.NotifyPlayer(playerId, m_sTitle, "You lift the notebook off the bench without a sound. She doesn't turn round. You leave her where she chose to be.");
-		Resolve(gm, playerId, RZ_EQuestApproach.SNEAK, RZ_Quest_ThreeWeeks.OUT_SNEAK, "took the notebook and left her");
+		gm.NotifyPlayer(playerId, m_sTitle, "You lift the notebook off the bench without a sound. He doesn't turn round. You leave him where he chose to be.");
+		Resolve(gm, playerId, RZ_EQuestApproach.SNEAK, RZ_Quest_ThreeWeeks.OUT_SNEAK, "took the notebook and left him");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Mercy: she's dead, and the notebook is in her coat.
+	//! Mercy: he's dead, and the notebook is in his coat.
 	override void OnZombiesKilled(RZ_GameModeComponent gm, int settlementIdx, int missionId, bool special, vector pos, int count)
 	{
 		if (missionId != m_iId || !special || m_bCrated || m_bResolved)
@@ -1227,7 +1227,7 @@ class RZ_QM_WeeksLead : RZ_QM_HalcyonScene
 		array<IEntity> players = {};
 		RZ_Util.GetAlivePlayers(ids, players);
 		int killer = RZ_EscortHelp.PlayerBeside(ids, players, pos, 400);
-		NotifyParticipants(gm, m_sTitle, "She goes down for the last time. Her notebook is in her coat pocket, dry.");
+		NotifyParticipants(gm, m_sTitle, "He goes down for the last time. His notebook is in his coat pocket, dry.");
 		Resolve(gm, killer, RZ_EQuestApproach.FORCE, RZ_Quest_ThreeWeeks.OUT_MERCY, "ended it");
 	}
 
@@ -1238,8 +1238,8 @@ class RZ_QM_WeeksLead : RZ_QM_HalcyonScene
 			return false;
 
 		AddParticipant(playerId);
-		gm.GetCure().AddResearch(RESEARCH, "Dr Greta Wolff is in the lab's isolation room. Halcyon is writing everything down.");
-		Resolve(gm, playerId, RZ_EQuestApproach.FORCE, RZ_Quest_ThreeWeeks.OUT_CAPTURED, "brought her to the lab alive");
+		gm.GetCure().AddResearch(RESEARCH, "Dr Gregor Wolff is in the lab's isolation room. Halcyon is writing everything down.");
+		Resolve(gm, playerId, RZ_EQuestApproach.FORCE, RZ_Quest_ThreeWeeks.OUT_CAPTURED, "brought him to the lab alive");
 		return true;
 	}
 
@@ -1295,7 +1295,7 @@ class RZ_QM_WeeksLead : RZ_QM_HalcyonScene
 
 //------------------------------------------------------------------------------------------------
 //! The Three Weeks, stage 4 (Halcyon contract, Known): who reads the notebook. The duty officer at
-//! the lab (for the director: Trusted, or Known as a Lab Tech or Doctor), the field lead at her
+//! the lab (for the director: Trusted, or Known as a Lab Tech or Doctor), the field lead at him
 //! station (held while this runs), and the other factions' strongholds: Bastion's adjutant, the
 //! Haven's council clerk, the Red Hand's boss's man. Only a seat that's there is offered.
 class RZ_QM_WeeksReaders : RZ_QM_HalcyonScene
@@ -1329,21 +1329,21 @@ class RZ_QM_WeeksReaders : RZ_QM_HalcyonScene
 		vector lab = gm.GetLabPosition();
 		m_vPos = LandPointNear(lab, 6, 12);
 		m_iSettlement = gm.GetLabSettlement();
-		int duty = AddClue("The duty officer", QFill(gm, "The duty officer at the lab has a clipboard and a cold. \"If it's for {director}, it goes through me. She'll want to know who brought it.\""));
+		int duty = AddClue("The duty officer", QFill(gm, "The duty officer at the lab has a clipboard and a cold. \"If it's for {director}, it goes through me. He'll want to know who brought it.\""));
 		AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_DIRECTOR, duty, "Talk to the duty officer", "Give it to the director", "the duty officer at the lab");
 
-		// Her seat is offered unless another mission has her just now
+		// His seat is offered unless another mission has his just now
 		RZ_Leader lead = SameLeader(gm, run, "lead");
 		if (lead && lead.m_iHeldBy < 0 && gm.GetLeaders())
 		{
 			m_iLead = lead.m_iId;
 			gm.GetLeaders().Hold(m_iLead, m_iId);
-			int talk = AddClue(lead.m_sName, string.Format("%1 has cleared a space on her desk for it. \"If it says what I think it says, people have a right to hear it. All of them.\"", lead.m_sShort));
-			AddSpot(NearSeat(lead.m_vPos), RZ_EPuzzleProp.CIVILIAN, OBJ_LEAD, talk, "Talk to " + lead.m_sShort, "Give it to her", string.Format("%1 at the field station in %2", lead.m_sShort, lead.m_sPlace));
+			int talk = AddClue(lead.m_sName, string.Format("%1 has cleared a space on his desk for it. \"If it says what I think it says, people have a right to hear it. All of them.\"", lead.m_sShort));
+			AddSpot(NearSeat(lead.m_vPos), RZ_EPuzzleProp.CIVILIAN, OBJ_LEAD, talk, "Talk to " + lead.m_sShort, "Give it to him", string.Format("%1 at the field station in %2", lead.m_sShort, lead.m_sPlace));
 		}
 
 		AddSeat(gm, RZ_EFaction.MILITARY, OBJ_BASTION, "The adjutant", "Talk to the adjutant", "The commanding officer's adjutant reads the first page standing up, then sits down. \"The CO will want this. The CO has always said the lab knew.\"", "Give it to Bastion", "the commanding officer's adjutant");
-		AddSeat(gm, RZ_EFaction.SURVIVORS, OBJ_HAVEN, "The council clerk", "Talk to the council clerk", "The Haven council's clerk wipes her hands before she touches it. \"The chair reads things like this at supper, to everyone. That's the rule.\"", "Give it to the chair", "the council clerk at the Haven");
+		AddSeat(gm, RZ_EFaction.SURVIVORS, OBJ_HAVEN, "The council clerk", "Talk to the council clerk", "The Haven council's clerk wipes his hands before he touches it. \"The chair reads things like this at supper, to everyone. That's the rule.\"", "Give it to the chair", "the council clerk at the Haven");
 		AddSeat(gm, RZ_EFaction.BANDITS, OBJ_REDHAND, "The boss's man", "Talk to the boss's man", "The boss's man doesn't open it. \"A dead scientist's diary? We'll read it on the open channel, slowly. Forty Favor, and the boss owes you a laugh.\"", "Sell it to the Red Hand (40 Favor)", "the boss's man at the Red Hand's camp");
 
 		m_sItemName = "the notebook";
@@ -1380,13 +1380,13 @@ class RZ_QM_WeeksReaders : RZ_QM_HalcyonScene
 				if (!TryPersuade(gm, playerId, RZ_EFaction.INSTITUTE, 2, "labtech,doctor"))
 				{
 					Remember(gm, playerId, RZ_EQuestApproach.PERSUADE, "was turned away at the lab");
-					gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"{director} doesn't see people she doesn't know. Leave it with me.\" You don't. (The director takes it from someone she trusts, or from a Lab Tech or Doctor she knows.)"));
+					gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"{director} doesn't see people he doesn't know. Leave it with me.\" You don't. (The director takes it from someone he trusts, or from a Lab Tech or Doctor he knows.)"));
 					return;
 				}
 
-				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{director} comes down herself. She reads the first page and the last, closes it, and thanks you without a flicker. \"It goes in the record. All of it that matters.\""));
+				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{director} comes down himself. He reads the first page and the last, closes it, and thanks you without a flicker. \"It goes in the record. All of it that matters.\""));
 				if (run)
-					run.Reward(gm, playerId, RZ_EFaction.INSTITUTE, 8, 10, "The director signed for it herself.");
+					run.Reward(gm, playerId, RZ_EFaction.INSTITUTE, 8, 10, "The director signed for it himself.");
 
 				Resolve(gm, playerId, RZ_EQuestApproach.PERSUADE, RZ_Quest_ThreeWeeks.OUT_DIRECTOR, "took it to the director");
 				return;
@@ -1507,9 +1507,9 @@ class RZ_QM_WeeksRaid : RZ_Mission_LabDefence
 }
 
 //------------------------------------------------------------------------------------------------
-//! The Three Weeks, stage 5 in the record (Halcyon contract, Known): the field lead walks out. She
+//! The Three Weeks, stage 5 in the record (Halcyon contract, Known): the field lead walks out. He
 //! follows whoever offers (RZ_Escort) to the nearest safehouse or back to the lab. With no room for
-//! another escort she goes on her own, wherever she's told. Killed on the way: she's dead.
+//! another escort he goes on his own, wherever he's told. Killed on the way: he's dead.
 class RZ_QM_WeeksWalkout : RZ_QM_HalcyonScene
 {
 	protected ref RZ_Escort m_Escort = new RZ_Escort();
@@ -1534,7 +1534,7 @@ class RZ_QM_WeeksWalkout : RZ_QM_HalcyonScene
 	//------------------------------------------------------------------------------------------------
 	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
 	{
-		// Not while another mission has her (its own stand-in is out there)
+		// Not while another mission has him (its own stand-in is out there)
 		RZ_QuestRun run = Run(gm);
 		RZ_Leader l = SameLeader(gm, run, "lead");
 		if (!l || l.m_iHeldBy >= 0)
@@ -1547,11 +1547,11 @@ class RZ_QM_WeeksWalkout : RZ_QM_HalcyonScene
 		m_iSettlement = gm.FindNearestSettlement(l.m_vPos);
 		gm.GetLeaders().Hold(m_iLead, m_iId);
 
-		string choices = "|Take her back to the lab";
+		string choices = "|Take him back to the lab";
 		if (h)
-			choices = string.Format("Walk her to the safehouse in %1|Take her back to the lab", h.m_sName);
+			choices = string.Format("Walk him to the safehouse in %1|Take him back to the lab", h.m_sName);
 
-		int talk = AddClue(l.m_sName, string.Format("%1 has one bag, and the notebook isn't in it. \"The record. Of course. Minus the pages that matter.\" She buttons her coat. \"I'm not staying. Where I go is the only thing I've got left to decide, and I'd rather not walk it alone.\"", l.m_sShort));
+		int talk = AddClue(l.m_sName, string.Format("%1 has one bag, and the notebook isn't in it. \"The record. Of course. Minus the pages that matter.\" He buttons his coat. \"I'm not staying. Where I go is the only thing I've got left to decide, and I'd rather not walk it alone.\"", l.m_sShort));
 		m_Escort.m_sName = l.m_sShort;
 		m_Escort.m_sPrefab = RZ_Escort.PrefabFor(gm, 1);
 		m_Escort.SetTalk(m_iId, OBJ_LEAD, choices, talk, "Talk to " + l.m_sShort);
@@ -1560,7 +1560,7 @@ class RZ_QM_WeeksWalkout : RZ_QM_HalcyonScene
 			AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_LEAD, talk, "Talk to " + l.m_sShort, choices, string.Format("%1 at the field station in %2", l.m_sShort, l.m_sPlace));
 
 		m_sTitle = "The Three Weeks: the field lead walks out";
-		m_sBrief = string.Format("%1 has heard the notebook went into the record, without the pages about the director, and she's leaving the field station in %2. She shouldn't walk alone. Take her to a safehouse, or back to the lab.", l.m_sName, l.m_sPlace);
+		m_sBrief = string.Format("%1 has heard the notebook went into the record, without the pages about the director, and he's leaving the field station in %2. He shouldn't walk alone. Take him to a safehouse, or back to the lab.", l.m_sName, l.m_sPlace);
 		m_sObjective = string.Format("Walk %1 from the field station in %2 to a safehouse or the lab.", l.m_sName, l.m_sPlace);
 		return true;
 	}
@@ -1617,7 +1617,7 @@ class RZ_QM_WeeksWalkout : RZ_QM_HalcyonScene
 		if (run && m_iDest == DEST_HOUSE)
 			run.SetFlag("lead_house", m_iHouse);
 
-		// No room for another escort: she goes on ahead on her own
+		// No room for another escort: he goes on ahead on his own
 		if (!m_bEscort)
 		{
 			Arrived(gm, playerId);
@@ -1626,26 +1626,26 @@ class RZ_QM_WeeksWalkout : RZ_QM_HalcyonScene
 
 		m_Escort.Follow(playerId);
 		m_Escort.Go();
-		gm.NotifyPlayer(playerId, m_sTitle, string.Format("She falls in behind you without a word. %1.", RZ_Util.Capitalize(RZ_Util.DirectionText(m_vPos, m_vDest))));
+		gm.NotifyPlayer(playerId, m_sTitle, string.Format("He falls in behind you without a word. %1.", RZ_Util.Capitalize(RZ_Util.DirectionText(m_vPos, m_vDest))));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void Arrived(RZ_GameModeComponent gm, int playerId)
 	{
 		RZ_Leader l = gm.GetLeaders().Get(m_iLead);
-		string name = "She";
+		string name = "He";
 		if (l)
 			name = l.m_sShort;
 
 		if (m_iDest == DEST_HOUSE)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, string.Format("%1 stops at the safehouse gate long enough to take her lab badge off. Then she goes in, and somebody gives her soup.", name));
-			Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_ThreeWeeks.OUT_TO_HOUSE, "walked her to a safehouse");
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("%1 stops at the safehouse gate long enough to take his lab badge off. Then he goes in, and somebody gives his soup.", name));
+			Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_ThreeWeeks.OUT_TO_HOUSE, "walked him to a safehouse");
 			return;
 		}
 
-		gm.NotifyPlayer(playerId, m_sTitle, string.Format("%1 walks into the lab as if she'd never left. The director will give her a desk where she can see it.", name));
-		Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_ThreeWeeks.OUT_TO_LAB, "brought her back to the lab");
+		gm.NotifyPlayer(playerId, m_sTitle, string.Format("%1 walks into the lab as if he'd never left. The director will give him a desk where he can see it.", name));
+		Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_ThreeWeeks.OUT_TO_LAB, "brought him back to the lab");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1659,7 +1659,7 @@ class RZ_QM_WeeksWalkout : RZ_QM_HalcyonScene
 
 		ReleaseLead(gm);
 		gm.GetLeaders().KillOffscreen(m_iLead, "was killed on the road from " + place);
-		Resolve(gm, near, RZ_EQuestApproach.NONE, RZ_Quest_ThreeWeeks.OUT_LEAD_DIED, "was with her on the road", false);
+		Resolve(gm, near, RZ_EQuestApproach.NONE, RZ_Quest_ThreeWeeks.OUT_LEAD_DIED, "was with him on the road", false);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1687,9 +1687,9 @@ class RZ_QM_WeeksWalkout : RZ_QM_HalcyonScene
 		if (!m_bEscort)
 			return super.GetWhereText(gm, from);
 
-		string text = "She is " + RZ_Util.DirectionText(from, m_vPos);
+		string text = "He is " + RZ_Util.DirectionText(from, m_vPos);
 		if (m_iDest != 0)
-			text += "\nWhere she's going: " + RZ_Util.DirectionText(from, m_vDest);
+			text += "\nWhere he's going: " + RZ_Util.DirectionText(from, m_vDest);
 
 		return text;
 	}
@@ -1697,11 +1697,11 @@ class RZ_QM_WeeksWalkout : RZ_QM_HalcyonScene
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return "The Three Weeks: the field lead left on her own.";
+		return "The Three Weeks: the field lead left on his own.";
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Her at the field station, then (she follows you) where she goes.
+	//! Him at the field station, then (he follows you) where he goes.
 	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
 	{
 		if (m_iDest != 0 && m_Escort.GetFollowed() > 0 && !m_Escort.IsArrived())

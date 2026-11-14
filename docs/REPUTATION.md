@@ -240,7 +240,7 @@ seal"*, *"brought the cure home"*). War deeds between locked players are the fin
 [FINALE.md](FINALE.md)).
 
 **Deed phrases** beyond the missions: firing at a house (*"fired at the door in Levie"*), killing
-or robbing a wanderer (*"shot Old Marta, who walked the roads"*, *"robbed the Trader on the road"*),
+or robbing a wanderer (*"shot Old Marek, who walked the roads"*, *"robbed the Trader on the road"*),
 and shooting the farm's people (*"shot a farmer who'd done nobody any harm"*).
 
 **The whole picture** (`RZ_RepVoice.Picture`): the two factions that know your name best, in a
@@ -310,7 +310,7 @@ cure goes to with nobody in the room, next season's rules), through flags on `Ad
   above 39 (they can make you Known, never Trusted), at most 10 a faction a season day, no rival
   shares, and left out of the hall of fame's Fame lines and the best deed too. Errand Favor is at
   most 40 an hour, with diminishing returns ([ERRANDS.md](ERRANDS.md#pay-nothing-for-free)).
-  Their dark ways cost Infamy only when someone saw (the witness rule) or you knew: selling a woman
+  Their dark ways cost Infamy only when someone saw (the witness rule) or you knew: selling a man
   to a toll or a crew lad seen by the Haven's +12 Haven Infamy, robbing the dead in front of the
   digger +3; killing a stranger or a local costs what killing a wanderer does (+15). Their lies go
   into the one lie store and cost 2–5 when found ([ERRANDS.md](ERRANDS.md#strangers)).
@@ -806,7 +806,7 @@ proof or come to end it, it costs nothing with anyone.
 | The Haven | Morale −8 (shame), and a rumour that it was one of theirs, and no more; wants them walked out (C1) | Proof: +10 Haven Fame. Family of the house when it's found out: Haven Infamy +40 |
 | Bastion | A rumour: an infected cluster, containment. If nobody else ends it within a real day, it burns the farm | Proof: +10 Bastion Fame. Family: Bastion Infamy +20 |
 | The Red Hand | On the next round the boss purges the crew that bought from them (the crew boss of the Red Hand outpost nearest the farm is replaced; Red Hand morale −3), once, unless the buyer is already gone; the open channel says "pork" and laughs | Proof: +4 Red Hand Fame |
-| Halcyon | A rumour about whether they ate the bitten; wants one of them alive, and the mother's kitchen notebook (C1) | Proof: +10 Halcyon Fame; the volunteer brought in: research +2 |
+| Halcyon | A rumour about whether they ate the bitten; wants one of them alive, and the father's kitchen notebook (C1) | Proof: +10 Halcyon Fame; the volunteer brought in: research +2 |
 
 Family who are online are named in the headline; those offline get their Infamy on their saved
 profile. Trading with them before anyone knew costs nothing. Only what a player did knowingly

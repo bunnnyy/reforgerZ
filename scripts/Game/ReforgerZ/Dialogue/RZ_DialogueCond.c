@@ -14,8 +14,8 @@ class RZ_DCtx
 	string m_sKey;					// memory key ("leader:12:0", "wanderer:3:1", "house:2", "named:41:1", "post:2:7", "table:host")
 	int m_iMetBefore = -1;			// `met` as it was when this conversation opened (1 or 0), -1 not taken yet
 	int m_iFaction = -1;			// the speaker's faction, -1 none
-	string m_sName;					// "Ines Calder"
-	string m_sShort;				// "Calder", "Old Marta"
+	string m_sName;					// "Ivan Calder"
+	string m_sShort;				// "Calder", "Old Marek"
 	string m_sRole;					// "council head", "toll man", "trader"
 	string m_sPlace;				// the town or holding
 	RZ_Leader m_Leader;				// weak

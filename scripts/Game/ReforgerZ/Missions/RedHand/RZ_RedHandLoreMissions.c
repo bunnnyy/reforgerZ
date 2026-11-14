@@ -1179,7 +1179,7 @@ class RZ_Mission_TiedDown : RZ_PuzzleMission
 		m_Chain.AddStep(gm, towns[0], m_vStop, WATCH_RADIUS, WATCH_SECONDS);
 		m_Chain.AddStep(gm, towns[1], m_vPen, 30, 0);
 
-		m_iDoorTalk = AddClue("Through the boards", "A woman's voice, very calm: \"They said we'd work it off. Nobody said where, or for how long. There are children in here.\"");
+		m_iDoorTalk = AddClue("Through the boards", "A man's voice, very calm: \"They said we'd work it off. Nobody said where, or for how long. There are children in here.\"");
 		m_iDriverTalk = AddClue("The driver", "He's eating out of a tin with his fingers. \"Cargo. It's in the book, same as everything else. Somebody owed, now somebody's paying. You going to make it your business? Or do you want a cut?\"");
 
 		m_iTruck = TRUCK_STOP;

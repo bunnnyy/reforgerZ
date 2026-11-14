@@ -3,7 +3,7 @@
 
 //------------------------------------------------------------------------------------------------
 //! The base: a person's name and sub-line from the title their lines come under
-//! ("Ines Calder, council head in Morton" is Ines Calder, then the rest).
+//! ("Ivan Calder, council head in Morton" is Ivan Calder, then the rest).
 class RZ_TalkSpeaker
 {
 	//------------------------------------------------------------------------------------------------

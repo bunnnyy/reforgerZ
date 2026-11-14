@@ -1768,7 +1768,7 @@ class RZ_QuestsPage : RZ_JournalPage
 
 	//------------------------------------------------------------------------------------------------
 	//! One line: the giver's faction, who gave it (a questline's stage as it stands) and the area:
-	//! "The Haven · from Elder Mara · Morton, a few km north-west".
+	//! "The Haven · from Elder Marek · Morton, a few km north-west".
 	override protected string BylineText(array<string> m)
 	{
 		array<string> parts = {};
@@ -1877,7 +1877,7 @@ class RZ_QuestsPage : RZ_JournalPage
 
 	//------------------------------------------------------------------------------------------------
 	//! O|id|state|line|place from the detail, rows Obj1 to Obj6: a mark (ObjNMark) and the line (its place
-	//! after it when that differs: "Go back to Mara · Morton"). Done: a tick and the line dim and struck
+	//! after it when that differs: "Go back to Marek · Morton"). Done: a tick and the line dim and struck
 	//! through (ObjNDone); current: a filled diamond, bright; the known next: an open diamond, dim;
 	//! optional: the same with "(Optional)"; failed: "Failed:".
 	override protected void DrawObjectives(string id, array<ref array<string>> detail)

@@ -377,7 +377,7 @@ class RZ_Stranger_Funeral : RZ_StrangerKind
 }
 
 //------------------------------------------------------------------------------------------------
-//! Which Way's Morton: she's walking to a house 600 m-1.5 km on, and a road post or a range sits
+//! Which Way's Morton: he's walking to a house 600 m-1.5 km on, and a road post or a range sits
 //! between.
 class RZ_Stranger_WhichWay : RZ_StrangerKind
 {
@@ -385,7 +385,7 @@ class RZ_Stranger_WhichWay : RZ_StrangerKind
 	{
 		m_sKey = "which_way";
 		m_iSpots = RZ_StrangerSpot.ROAD | RZ_StrangerSpot.ROUTE;
-		m_sLabels = "Point her round it|Walk her past it|Tell her the toll's cheap";
+		m_sLabels = "Point him round it|Walk him past it|Tell him the toll's cheap";
 	}
 
 	override bool Why(RZ_Strangers s, RZ_StrangerVisit v, RZ_StrangerHere here)
@@ -419,7 +419,7 @@ class RZ_Stranger_WhichWay : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Which way's {town}? I've a cousin there, if she's still there. The straight way goes past {trouble}, and I'd rather not. It's only pans in the pram. Everything I could carry.";
+		return "Which way's {town}? I've a cousin there, if he's still there. The straight way goes past {trouble}, and I'd rather not. It's only pans in the pram. Everything I could carry.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -438,11 +438,11 @@ class RZ_Stranger_WhichWay : RZ_StrangerKind
 			if (!h)
 				return;
 
-			s.StartStep(v, 1, RZ_Strangers.Toward(v.m_vPos, h.m_vPos, 500), 5, 25, false, "Walk with her past {trouble}. She'll go on alone after about 500 m.");
+			s.StartStep(v, 1, RZ_Strangers.Toward(v.m_vPos, h.m_vPos, 500), 5, 25, false, "Walk with him past {trouble}. He'll go on alone after about 500 m.");
 			return;
 		}
 
-		// A lie: found if a post really stands there when someone who knows her passes it
+		// A lie: found if a post really stands there when someone who knows his passes it
 		if (v.m_vSubject != vector.Zero && gm.GetFacts())
 			gm.GetFacts().Memory().Lies().Tell(gm, playerId, "errand.which_way", "post:" + RZ_SettlementScanner.GridReference(v.m_vSubject), RZ_EFaction.SURVIVORS, "",
 				v.m_vSubject, RZ_ELieTest.VISIT, 2, "Word came back from {town}: the toll wasn't cheap, and someone on the road said it was.");
@@ -597,7 +597,7 @@ class RZ_Stranger_TwoInTheBack : RZ_StrangerKind
 
 	protected void Done(RZ_Strangers s, RZ_StrangerVisit v, int playerId)
 	{
-		s.Finish(v, playerId, "She's going. Listen to them cheering in the back, like it's a football match. We'll be at {house} before dark. Thank you.", true);
+		s.Finish(v, playerId, "He's going. Listen to them cheering in the back, like it's a football match. We'll be at {house} before dark. Thank you.", true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
 		Local(s, v, playerId, "with the car and the two kids", "The kids still call you the car man. I've stopped correcting them.", "gate", "helped");
 	}
@@ -611,7 +611,7 @@ class RZ_Stranger_Digger : RZ_StrangerKind
 	{
 		m_sKey = "digger";
 		m_iSpots = RZ_StrangerSpot.FRESH;
-		m_sLabels = "Help her dig|Tell her who it was|Take the dead's things";
+		m_sLabels = "Help his dig|Tell him who it was|Take the dead's things";
 	}
 
 	override bool Why(RZ_Strangers s, RZ_StrangerVisit v, RZ_StrangerHere here)
@@ -635,7 +635,7 @@ class RZ_Stranger_Digger : RZ_StrangerKind
 		RZ_GameModeComponent gm = s.GetGM();
 		if (option == 0)
 		{
-			s.StartWork(v, 0, RZ_WorkSites.Spot(v.m_vPos, 3, 5), 30, 10, false, "Dig the grave with her (30 s).", RZ_EWork.GRAVE, "Dig the grave", 15);
+			s.StartWork(v, 0, RZ_WorkSites.Spot(v.m_vPos, 3, 5), 30, 10, false, "Dig the grave with him (30 s).", RZ_EWork.GRAVE, "Dig the grave", 15);
 			return;
 		}
 
@@ -652,7 +652,7 @@ class RZ_Stranger_Digger : RZ_StrangerKind
 			return;
 		}
 
-		// She's right there: she always sees
+		// He's right there: he always sees
 		gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, 3, "robbed the dead in front of the digger", 0, "went through a dead man's pockets at a graveside");
 		s.Gift(playerId, user);
 		s.Finish(v, playerId, "Go on, then. Go through the pockets. I'll keep digging. I'll tell {house} what I saw, though.", false);
@@ -1010,9 +1010,9 @@ class RZ_Stranger_Manners : RZ_StrangerKind
 }
 
 //------------------------------------------------------------------------------------------------
-//! My Sister at Morton: a house lost people lately, and a man on the road asks after his sister. Half
-//! the time he's her brother; half the time a crew lad (a red hand on the wrist), named to a Police or
-//! Ex-Con background, or Known with the Red Hand. Knowingly sending a crew lad to her is selling her.
+//! My Brother at Morton: a house lost people lately, and a man on the road asks after his brother. Half
+//! the time he's really his brother; half the time a crew lad (a red hand on the wrist), named to a Police or
+//! Ex-Con background, or Known with the Red Hand. Knowingly sending a crew lad to him is selling him.
 class RZ_Stranger_Sister : RZ_StrangerKind
 {
 	override void Define()
@@ -1057,17 +1057,17 @@ class RZ_Stranger_Sister : RZ_StrangerKind
 	{
 		// The same replies show whether or not he's lying; the tell is named only to those who'd see it
 		if (v.m_bTwist && Knows(s, v.m_iAsker))
-			return "Find her and tell him|Warn her on to another house|Call him out [a red hand on his wrist]";
+			return "Find him and tell him|Warn him on to another house|Call him out [a red hand on his wrist]";
 
-		return "Find her and tell him|Warn her on to another house|Call him out";
+		return "Find him and tell him|Warn him on to another house|Call him out";
 	}
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
 		if (v.m_bTwist && Knows(s, v.m_iAsker))
-			return "My sister was put out of {house}, at night, without her things. Upkeep, they called it: too many mouths. You'll have seen her on the road? I just want to know where she's got to.";
+			return "My brother was put out of {house}, at night, without his things. Upkeep, they called it: too many mouths. You'll have seen him on the road? I just want to know where he's got to.";
 
-		return "My sister was put out of {house}. Upkeep, they called it: too many mouths and not enough tins. You'll have seen her on the road? She'll be in some barn. She always liked barns.";
+		return "My brother was put out of {house}. Upkeep, they called it: too many mouths and not enough tins. You'll have seen him on the road? He'll be in some barn. He always liked barns.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1076,7 +1076,7 @@ class RZ_Stranger_Sister : RZ_StrangerKind
 		{
 			if (v.m_bTwist)
 			{
-				s.Finish(v, playerId, "A lot of brothers, she has? Ha. You've seen the hand, then. All right. I'll be on my way.", true);
+				s.Finish(v, playerId, "A lot of brothers, he has? Ha. You've seen the hand, then. All right. I'll be on my way.", true);
 				return;
 			}
 
@@ -1085,7 +1085,7 @@ class RZ_Stranger_Sister : RZ_StrangerKind
 			return;
 		}
 
-		s.StartStep(v, option, v.m_vSubject, 15, 40, false, "Look for his sister in {barn} (15 s there).");
+		s.StartStep(v, option, v.m_vSubject, 15, 40, false, "Look for his brother in {barn} (15 s there).");
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
@@ -1093,7 +1093,7 @@ class RZ_Stranger_Sister : RZ_StrangerKind
 		RZ_GameModeComponent gm = s.GetGM();
 		if (option == 1)
 		{
-			// Warned on: she goes to another house
+			// Warned on: he goes to another house
 			int other = v.m_iValue;
 			if (other < 0)
 				other = v.m_iHouse;
@@ -1108,30 +1108,30 @@ class RZ_Stranger_Sister : RZ_StrangerKind
 
 		if (!v.m_bTwist)
 		{
-			s.Finish(v, playerId, "That barn? She always liked barns. Thank you. We'll be arguing about something from when we were kids by tonight. I can't wait.", true);
+			s.Finish(v, playerId, "That barn? He always liked barns. Thank you. We'll be arguing about something from when we were kids by tonight. I can't wait.", true);
 			s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
 			return;
 		}
 
-		// He was a crew lad. Knowing, it's selling her; tricked, it costs you nothing
+		// He was a crew lad. Knowing, it's selling him; tricked, it costs you nothing
 		RZ_ErrandSettings settings = RZ_ErrandSettings.Get();
 		if (Knows(s, playerId) && settings.m_bDarkCards)
 		{
 			s.HouseFavor(playerId, RZ_EFaction.BANDITS, 6);
 			if (RZ_Witness.Seen(gm, playerId, v.m_vSubject, RZ_EFaction.SURVIVORS))
-				gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, 12, "sold a woman to the crews", 0, "told a crew lad where a woman was sleeping");
+				gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, 12, "sold a man to the crews", 0, "told a crew lad where a man was sleeping");
 
-			s.Finish(v, playerId, "That barn. Thanks. That's worth a few tins to the right people. Don't look at me like that. Somebody would have sold her.", false);
+			s.Finish(v, playerId, "That barn. Thanks. That's worth a few tins to the right people. Don't look at me like that. Somebody would have sold him.", false);
 			return;
 		}
 
-		s.Finish(v, playerId, "That barn. Thanks. I'll go now, quick, before she moves on.", false);
+		s.Finish(v, playerId, "That barn. Thanks. I'll go now, quick, before he moves on.", false);
 	}
 }
 
 //------------------------------------------------------------------------------------------------
-//! Wrong Side of the Toll (a dark card): a Haven woman with a Red Hand roadblock between her and her
-//! house. Sell her to the toll, knowing: she never arrives.
+//! Wrong Side of the Toll (a dark card): a Haven man with a Red Hand roadblock between him and him
+//! house. Sell him to the toll, knowing: he never arrives.
 class RZ_Stranger_Toll : RZ_StrangerKind
 {
 	override void Define()
@@ -1157,7 +1157,7 @@ class RZ_Stranger_Toll : RZ_StrangerKind
 
 	override string Labels(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Pay her toll (10 Favor)|Say she's with you [Trusted: Red Hand]|Walk her round the toll|Sell her to the toll";
+		return "Pay his toll (10 Favor)|Say he's with you [Trusted: Red Hand]|Walk him round the toll|Sell him to the toll";
 	}
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
@@ -1196,19 +1196,19 @@ class RZ_Stranger_Toll : RZ_StrangerKind
 
 		if (option == 2)
 		{
-			s.StartStep(v, 2, RZ_Mission.LandPointNear(v.m_vSubject, 200, 260), 5, 30, false, "Walk her round the Red Hand's toll, well off the road.");
+			s.StartStep(v, 2, RZ_Mission.LandPointNear(v.m_vSubject, 200, 260), 5, 30, false, "Walk him round the Red Hand's toll, well off the road.");
 			return;
 		}
 
-		// Sold, knowing: she never arrives. Seen by any of the Haven's walking with her, it's known
+		// Sold, knowing: he never arrives. Seen by any of the Haven's walking with him, it's known
 		s.HouseFavor(playerId, RZ_EFaction.BANDITS, 6);
 		if (RZ_Witness.Seen(gm, playerId, v.m_vPos, RZ_EFaction.SURVIVORS))
-			gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, 12, "sold a woman to the toll", 0, "walked a woman to the toll and left her there");
+			gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, 12, "sold a man to the toll", 0, "walked a man to the toll and left him there");
 
 		s.GetErrands().HouseShy(playerId, v.m_iHouse);
 		array<int> who = {playerId};
 		RZ_WorldFacts.Get().Memory().Record("errand.toll_sold", RZ_WorldFacts.Safehouse(v.m_iHouse), "sold", RZ_WorldMemory.SOURCE_ERRAND, false, who);
-		s.Finish(v, playerId, "You walked her up to the toll and left her there. The crew took her somewhere. Nobody on that road will say where.", false);
+		s.Finish(v, playerId, "You walked him up to the toll and left him there. The crew took his somewhere. Nobody on that road will say where.", false);
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
@@ -1220,8 +1220,8 @@ class RZ_Stranger_Toll : RZ_StrangerKind
 }
 
 //------------------------------------------------------------------------------------------------
-//! She Waves at the Line (a dark card): the line, while the Zone is sealed. She stops at the warning
-//! zone's edge to wave at a husband she thinks is outside. She never goes in.
+//! He Waves at the Line (a dark card): the line, while the Zone is sealed. He stops at the warning
+//! zone's edge to wave at a wife he thinks is outside. He never goes in.
 class RZ_Stranger_Line : RZ_StrangerKind
 {
 	override void Define()
@@ -1243,12 +1243,12 @@ class RZ_Stranger_Line : RZ_StrangerKind
 
 	override string Labels(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Talk her back [Known: Haven, or Nurse]|Walk out there with her|Leave her be";
+		return "Talk him back [Known: Haven, or Nurse]|Walk out there with him|Leave him be";
 	}
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "He's just there, past the line, behind the trees. He was on the other side when they shut it. He waves back, sometimes. Can you see him?";
+		return "She's just there, past the line, behind the trees. She was on the other side when they shut it. She waves back, sometimes. Can you see her?";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1258,7 +1258,7 @@ class RZ_Stranger_Line : RZ_StrangerKind
 		{
 			if (!AtLeast(s, playerId, RZ_EFaction.SURVIVORS, RZ_ETier.KNOWN) && !Bg(s, playerId, "nurse"))
 			{
-				s.Say(v, playerId, "She doesn't hear you. You're nobody she knows.");
+				s.Say(v, playerId, "He doesn't hear you. You're nobody he knows.");
 				return;
 			}
 
@@ -1276,9 +1276,9 @@ class RZ_Stranger_Line : RZ_StrangerKind
 
 		RZ_Leaders leaders = gm.GetLeaders();
 		if (leaders && gm.GetErrands().PayKinds().MayHeadline())
-			leaders.AddHeadline("A woman from the north road waves at the line every evening. The Haven leaves a chair there now.", false);
+			leaders.AddHeadline("A man from the north road waves at the line every evening. The Haven leaves a chair there now.", false);
 
-		s.Finish(v, playerId, "Go on. I'll stay a while. He'll wave back. He always does, in the end.", false);
+		s.Finish(v, playerId, "Go on. I'll stay a while. She'll wave back. She always does, in the end.", false);
 	}
 }
 

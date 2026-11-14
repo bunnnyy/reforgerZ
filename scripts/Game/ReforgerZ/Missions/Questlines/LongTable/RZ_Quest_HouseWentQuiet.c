@@ -11,13 +11,13 @@
 //! 2. Guest: the host meets you on the road. Talk: accept and eat (table.guest, yours; the guest
 //!    rule watches the rest of the visit). Sneak: decline and watch the house unseen. Declare a
 //!    bite: blessed and sent on.
-//! 3. Proof: three of the guestbook, the boots, the letters in a drawer, the cellar (the mother's
+//! 3. Proof: three of the guestbook, the boots, the letters in a drawer, the cellar (the father's
 //!    key, or a crowbar, which is loud). Sneak in at supper (18:30), talk to the boy away from the
 //!    house, unarmed (★ Nurse or Elder: he says one thing, and where the key is), or fight.
 //! 4. Who to tell: any leader of the Haven, Bastion, Halcyon or the Red Hand (table.haven,
 //!    table.bastion, table.halcyon, table.redhand): the house is found out. Or the gate: yourself.
 //! 5. The end of the house: the Haven walks them out at dusk, unarmed; Bastion's guns after five
-//!    minutes (get the boy out first, or don't); Halcyon takes the mother as a "volunteer";
+//!    minutes (get the boy out first, or don't); Halcyon takes the father as a "volunteer";
 //!    a Red Hand crew moves them on while you hold the farm 90 s; or by your own hand.
 //! 6. The proof (wait, after "by your own hand"): taken to a faction now, half its Fame.
 //!
@@ -131,7 +131,7 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 
 		string mother = t.NameOf(RZ_ETableRole.MOTHER);
 		if (mother.IsEmpty())
-			mother = "the mother";
+			mother = "the father";
 
 		run.SetText("mother", mother);
 		run.SetText("host", t.GreeterName());
@@ -197,7 +197,7 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 			case RZ_EFaction.INSTITUTE:
 			{
 				if (mother)
-					return "Halcyon's director wants one of them alive, and {mother}'s kitchen notebook: why they never eat the bitten. Walk her to the lab as a volunteer.";
+					return "Halcyon's director wants one of them alive, and {mother}'s kitchen notebook: why they never eat the bitten. Walk him to the lab as a volunteer.";
 
 				return "Halcyon's director wants one of them alive, and the kitchen notebook: why they never eat the bitten. Walk one of them to the lab as a volunteer.";
 			}
@@ -936,7 +936,7 @@ class RZ_QM_TableGuest : RZ_QM_TableBase
 		{
 			m_iGuest = playerId;
 			Remember(gm, playerId, RZ_EQuestApproach.TALK, "accepted the invitation");
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"Good. Mother will be pleased.\" He walks you up the lane to the farm and holds the door. The table's laid. Go in and sit down."));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"Good. Father will be pleased.\" He walks you up the lane to the farm and holds the door. The table's laid. Go in and sit down."));
 			m_vPos = m_vHouse;
 			return;
 		}
@@ -967,7 +967,7 @@ class RZ_QM_TableGuest : RZ_QM_TableBase
 
 		t.Remember(playerId, RZ_LongTable.MEM_BLESSED);
 		SetQFlag(gm, "boots_seen", 1);
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{host} looks at your arm, and something in the face goes careful. \"Thank you for saying.\" You're taken as far as the yard, where {mother} blesses you with her hand on your head and gives you bread in a cloth. By the door there's a row of boots, in too many sizes. \"Go on, now, while it's light.\""));
+		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{host} looks at your arm, and something in the face goes careful. \"Thank you for saying.\" You're taken as far as the yard, where {mother} blesses you with his hand on your head and gives you bread in a cloth. By the door there's a row of boots, in too many sizes. \"Go on, now, while it's light.\""));
 		Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_HouseWentQuiet.OUT_BLESSED, "declared a bite, and was blessed and sent on");
 	}
 
@@ -1045,7 +1045,7 @@ class RZ_QM_TableGuest : RZ_QM_TableBase
 //! C1 stage 3, Proof: three of the guestbook, the boots, the letters, the cellar, or the boy's one
 //! thing. At supper the house is at the table and nobody sees you; otherwise a family member
 //! within 20 m, shots or the infected's notice and you're caught: they set on you (a fight with
-//! the fight prefab) or shut the house. The cellar: the mother's key (the boy says where it is)
+//! the fight prefab) or shut the house. The cellar: the father's key (the boy says where it is)
 //! or a crowbar, which they hear. A fight you win opens the house.
 class RZ_QM_TableProof : RZ_QM_TableBase
 {
@@ -1128,7 +1128,7 @@ class RZ_QM_TableProof : RZ_QM_TableBase
 			SpawnClue(gm, RZ_EPuzzleProp.CLUE, LandPointNear(m_vHouse, 3, 5), m_iBoots, "Look at the boots by the door");
 
 		SpawnClue(gm, RZ_EPuzzleProp.CLUE, LandPointNear(m_vHouse, 1, 3), m_iLetters, "Open the dresser drawer");
-		SpawnObject(gm, RZ_EPuzzleProp.OBJECT, LandPointNear(m_vHouse, 5, 9), OBJ_CELLAR, "Open it with the mother's key|Force it with a crowbar", "", m_iCellarLook, "Look at the cellar door");
+		SpawnObject(gm, RZ_EPuzzleProp.OBJECT, LandPointNear(m_vHouse, 5, 9), OBJ_CELLAR, "Open it with the father's key|Force it with a crowbar", "", m_iCellarLook, "Look at the cellar door");
 		SpawnMember(gm, RZ_ETableRole.MOTHER, LandPointNear(m_vHouse, 2, 4), OBJ_MOTHER, -1, "");
 		SpawnMember(gm, RZ_ETableRole.BOY, m_vBoy, OBJ_BOY, m_iBoyTalk, "Ask him about the house");
 		UpdateMen(gm);
@@ -1506,7 +1506,7 @@ class RZ_QM_TableTell : RZ_QM_TableBase
 
 		int f = l.m_eFaction;
 		if (f == RZ_EFaction.INSTITUTE && !gm.HasLab())
-			return string.Format("%1 listens to the end. \"We'd want one of them alive. There's nowhere to keep her.\" They won't take it further.", l.m_sShort);
+			return string.Format("%1 listens to the end. \"We'd want one of them alive. There's nowhere to keep him.\" They won't take it further.", l.m_sShort);
 
 		if (f == RZ_EFaction.MILITARY && !Table(gm).BastionAround())
 			return "";
@@ -1535,7 +1535,7 @@ class RZ_QM_TableTell : RZ_QM_TableBase
 		{
 			case RZ_EFaction.SURVIVORS: return string.Format("%1 sits down without meaning to. \"We sent them our mouths.\" A long time later: \"Bring them home. All of them. And then walk them out, at dusk, the way we do it.\"", who);
 			case RZ_EFaction.MILITARY: return string.Format("%1 writes it in the margin of something else: infected cluster, past {town}. \"We'll clear it. Five minutes' warning, like always. If there's anyone there you'd want out, get them out first.\"", who);
-			case RZ_EFaction.INSTITUTE: return string.Format("%1 is quiet for a long time, and then ashamed of the first question. \"Do they eat the bitten?\" Another silence. \"Bring the mother here. As a volunteer. And her kitchen notebook.\"", who);
+			case RZ_EFaction.INSTITUTE: return string.Format("%1 is quiet for a long time, and then ashamed of the first question. \"Do they eat the bitten?\" Another silence. \"Bring the father here. As a volunteer. And his kitchen notebook.\"", who);
 			case RZ_EFaction.BANDITS: return string.Format("%1 laughs until he stops. \"Pork.\" Then, not laughing: \"The boss'll pay them to move on. Hold the farm while a crew shifts them. Don't make it a story.\"", who);
 		}
 
@@ -1596,7 +1596,7 @@ class RZ_QM_TableWalkOut : RZ_QM_TableBase
 
 		m_vEdge = LandPointNear(RZ_Compass.PointAt(m_vHouse, bearing, 220), 0, 30);
 		m_bSonDone = !t.IsAlive(RZ_ETableRole.SON);
-		m_iMotherTalk = AddClue(QText(gm, "mother"), QFill(gm, "{mother} has her good coat on already. \"The Haven sent for us, then.\" She doesn't ask who told. \"We'll walk. We know how it's done. Not with a gun at our backs, mind.\""));
+		m_iMotherTalk = AddClue(QText(gm, "mother"), QFill(gm, "{mother} has his good coat on already. \"The Haven sent for us, then.\" He doesn't ask who told. \"We'll walk. We know how it's done. Not with a gun at our backs, mind.\""));
 		m_iSonTalk = AddClue(QText(gm, "son"), QFill(gm, "{son} is at the woodpile with the axe, not splitting anything. \"I'm not walking anywhere.\""));
 		m_iEdgeTalk = AddClue(QText(gm, "mother"), QFill(gm, "They're waiting at the edge of town in their good coats, {boy} in front, the way they were told."));
 		m_vPos = m_vHouse;
@@ -1648,7 +1648,7 @@ class RZ_QM_TableWalkOut : RZ_QM_TableBase
 
 			if (!m_bSonDone)
 			{
-				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"Not without {son}.\" She looks at the woodpile, where he's standing with his back to you."));
+				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"Not without {son}.\" He looks at the woodpile, where {son} is standing with his back to you."));
 				return;
 			}
 
@@ -1674,11 +1674,11 @@ class RZ_QM_TableWalkOut : RZ_QM_TableBase
 		if (Table(gm).IsAlive(RZ_ETableRole.BOY))
 		{
 			SetQFlag(gm, "boy_out", 1);
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{mother} turns once, and nods to you as if you'd done her a kindness. Then they walk on toward the trees, all of them but {boy}, who stays at your side and doesn't watch them go."));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{mother} turns once, and nods to you as if you'd done him a kindness. Then they walk on toward the trees, all of them but {boy}, who stays at your side and doesn't watch them go."));
 		}
 		else
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{mother} turns once, and nods to you as if you'd done her a kindness. Then they walk on toward the trees, and nobody looks back."));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{mother} turns once, and nods to you as if you'd done him a kindness. Then they walk on toward the trees, and nobody looks back."));
 		}
 
 		Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_HouseWentQuiet.OUT_ENDED, "walked them out");
@@ -1697,7 +1697,7 @@ class RZ_QM_TableWalkOut : RZ_QM_TableBase
 				m_bSonDone = true;
 				RemoveMembers(RZ_ETableRole.SON);
 				Remember(gm, playerId, RZ_EQuestApproach.PERSUADE, "talked the quiet son round");
-				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{son} puts the axe down, very carefully, as if it might break. \"For Mother, then.\" He goes in to get his coat."));
+				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{son} puts the axe down, very carefully, as if it might break. \"For Father, then.\" He goes in to get his coat."));
 				return;
 			}
 
@@ -1733,7 +1733,7 @@ class RZ_QM_TableWalkOut : RZ_QM_TableBase
 
 		if (role == RZ_ETableRole.MOTHER && !m_bResolved)
 		{
-			NotifyParticipants(gm, m_sTitle, "Somebody shot her. That isn't how the Haven does it.");
+			NotifyParticipants(gm, m_sTitle, "Somebody shot him. That isn't how the Haven does it.");
 			m_eState = RZ_EMissionState.FAILED;
 		}
 	}
@@ -1881,7 +1881,7 @@ class RZ_QM_TableGuns : RZ_QM_TableBase
 }
 
 //------------------------------------------------------------------------------------------------
-//! C1 stage 5, Halcyon's way (a Halcyon contract): walk the mother (or, without her, one of them
+//! C1 stage 5, Halcyon's way (a Halcyon contract): walk the father (or, without him, one of them
 //! alive) to the lab as a "volunteer" (an escort that follows you). The rest scatter.
 class RZ_QM_TableVolunteer : RZ_QM_TableBase
 {
@@ -1980,7 +1980,7 @@ class RZ_QM_TableVolunteer : RZ_QM_TableBase
 
 		m_Escort.Arrive();
 		int by = m_Escort.GetFollowed();
-		gm.NotifyPlayer(by, m_sTitle, string.Format("At the lab door a researcher in a mask takes the notebook first, then %1's arm. \"Volunteer,\" she says, writing it down. %1 says thank you, and goes in.", m_Escort.m_sName));
+		gm.NotifyPlayer(by, m_sTitle, string.Format("At the lab door a researcher in a mask takes the notebook first, then %1's arm. \"Volunteer,\" he says, writing it down. %1 says thank you, and goes in.", m_Escort.m_sName));
 		Resolve(gm, by, RZ_EQuestApproach.SIDE, RZ_Quest_HouseWentQuiet.OUT_ENDED, "brought a volunteer to the lab");
 	}
 
@@ -2088,9 +2088,9 @@ class RZ_QM_TableMoveOn : RZ_QM_TableBase
 
 //------------------------------------------------------------------------------------------------
 //! C1 stage 5, by your own hand (nobody told): fight them (three or four, the fight prefab), or
-//! talk the last of them out once the mother is gone: tell her you know (persuade, Haven,
-//! difficulty 2; ★ Elder or Nurse +1) and she walks out; then tell the rest to go. A failed word
-//! and she calls them: they set on you. Get the boy out first if you can.
+//! talk the last of them out once the father is gone: tell him you know (persuade, Haven,
+//! difficulty 2; ★ Elder or Nurse +1) and he walks out; then tell the rest to go. A failed word
+//! and he calls them: they set on you. Get the boy out first if you can.
 class RZ_QM_TableByHand : RZ_QM_TableBase
 {
 	protected vector m_vHouse;
@@ -2121,7 +2121,7 @@ class RZ_QM_TableByHand : RZ_QM_TableBase
 
 		m_vHouse = t.GetHousePos();
 		m_bMotherGone = !t.IsAlive(RZ_ETableRole.MOTHER);
-		m_iMotherTalk = AddClue(QText(gm, "mother"), QFill(gm, "{mother} is laying the table. She sets a place for you without asking. \"You're thin.\""));
+		m_iMotherTalk = AddClue(QText(gm, "mother"), QFill(gm, "{mother} is laying the table. He sets a place for you without asking. \"You're thin.\""));
 		m_iHostTalk = AddClue(QText(gm, "host"), QFill(gm, "{host} is by the door, where the boots are. He isn't smiling."));
 		m_iBoyTalk = AddClue(QText(gm, "boy"), QFill(gm, "{boy} is on the step with a bowl he isn't eating."));
 		m_Quiet.Watch(m_vHouse, 120);
@@ -2137,7 +2137,7 @@ class RZ_QM_TableByHand : RZ_QM_TableBase
 	override protected bool SpawnScene(RZ_GameModeComponent gm)
 	{
 		if (!m_bMotherGone)
-			SpawnMember(gm, RZ_ETableRole.MOTHER, LandPointNear(m_vHouse, 2, 4), OBJ_MOTHER, m_iMotherTalk, "Tell her you know");
+			SpawnMember(gm, RZ_ETableRole.MOTHER, LandPointNear(m_vHouse, 2, 4), OBJ_MOTHER, m_iMotherTalk, "Tell him you know");
 
 		RZ_TableMember greeter = Table(gm).Greeter();
 		if (greeter)
@@ -2190,12 +2190,12 @@ class RZ_QM_TableByHand : RZ_QM_TableBase
 				m_bMotherGone = true;
 				RemoveMembers(RZ_ETableRole.MOTHER);
 				t.MemberGone(RZ_ETableRole.MOTHER);
-				Remember(gm, playerId, RZ_EQuestApproach.PERSUADE, "told the mother they knew");
-				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{mother} listens to the end without stopping you. Then she takes off her apron, folds it, lays it on the table, and walks out of the gate toward the trees. She doesn't look back. The others watch her go."));
+				Remember(gm, playerId, RZ_EQuestApproach.PERSUADE, "told the father they knew");
+				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{mother} listens to the end without stopping you. Then he takes off his apron, folds it, lays it on the table, and walks out of the gate toward the trees. He doesn't look back. The others watch him go."));
 				return;
 			}
 
-			Remember(gm, playerId, RZ_EQuestApproach.PERSUADE, "told the mother, and was set on");
+			Remember(gm, playerId, RZ_EQuestApproach.PERSUADE, "told the father, and was set on");
 			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"You've eaten at our table,\" says {mother}, and calls for {son}."));
 			StartFight(gm, playerId, true);
 			return;
@@ -2206,7 +2206,7 @@ class RZ_QM_TableByHand : RZ_QM_TableBase
 
 		if (!m_bMotherGone)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{host} looks past you at the kitchen, where {mother} is. Nobody here goes anywhere while she's in it."));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{host} looks past you at the kitchen, where {mother} is. Nobody here goes anywhere while he's in it."));
 			return;
 		}
 

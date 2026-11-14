@@ -1698,7 +1698,7 @@ What it can't do:
 
 `tools/mission_rules.py` checks the source against [MISSION_RULES.md](MISSION_RULES.md): two places
 in one objective line, a hand-in by walking up to someone, a spawned door, carrying done as a hold, a
-person's marker on a stored spot, a woman's word on someone who stands in the world, a building named
+person's marker on a stored spot, a woman's name or word in a line the game shows (everyone met is a man; women only mentioned are in the allowlist), a building named
 where nothing asks for one, a kind of job the tracker can't list, an opening step that only sends you
 back, and an input action without a pad binding. Python 3 only, about ten seconds. Run it before
 every commit that adds or changes a task; with `--strict` it must end `mission_rules: OK`.
@@ -2652,7 +2652,7 @@ route.`, `Finale: clean room <route> -> <route> (force|theft) with N of the stan
 the stand was lost (N this season). Remake from <route> or the backlog.`, `Finale: controller <route>,
 how <how>, partner <route>.`, `Finale: controller <route>, how <how>, terms N, deciders N.`, `Finale:
 item N (...) for <route> to <ident>.` and its drops, returns, spoils and hand-ins, `Finale: the rota
-moved the woman to house N.`, `Finale: a price door paid for <route>.`, `Finale: the Coat Run passed.`
+moved the man to house N.`, `Finale: a price door paid for <route>.`, `Finale: the Coat Run passed.`
 or `... was caught.`, `Finale: <route> broke its pact with <route> (...).`, `Finale: the routes' pitches
 went on air at 85 percent.`, `Finale: asset <kind> for <route> to <ident> (<record>).`, `Finale: asset
 <kind> played for <route> by <ident>.`, `Finale: <route> spoiled <route>'s case with <person>.`,
@@ -3667,7 +3667,7 @@ when it happens)
   Cold Chain: the tracker shows *Take the cold box*, then *Carry the cold box to the far door*, *Hand
   over the cold box*, *Sign the manifest* and *Go back to ...*, one at a time, each ticked as you do it
   and the arrow moving on. A Halcyon nametag reads Doctor only under a "Dr" name. In the Quests tab's detail a next objective somewhere else shows its place after it
-  ("Go back to Mara · Morton"), and so does the tracker's dim next line.
+  ("Go back to Marek · Morton"), and so does the tracker's dim next line.
 - [ ] **Only the tracked job on the HUD**: take a second and a third job. The first stays tracked
   and the tracker still shows that one job alone: no dim lines under it and no "+N more". The others
   are in the Quests tab only. A major you haven't taken part in never shows. Crack a secure channel:
@@ -3799,7 +3799,7 @@ when it happens)
   100 m and goes when you leave. "Ask about the toll." pays the built toll; the threat shows "[Fear N
   of 2 - +3 Infamy]", always costs the Infamy, and the pole goes up on a pass; nobody can threaten
   that toll man again this season. At a Bastion checkpoint, a Soldier's "I know the drill." can wave
-  you through without the search. The Long Table's host on the road and the mother at the farm talk,
+  you through without the search. The Long Table's host on the road and the father at the farm talk,
   and nothing they say describes anything.
 - [ ] Trees on, a leader you've met greets you by your standing in their voice; finish their
   personal job and the next greeting is "You're the one who ..."; "What do you make of me?" gives
@@ -4158,7 +4158,7 @@ when it happens)
   route's -1]*; you're told of your route's marks on the verge; the night man at a desk buys a note
   about another route once, hands over what you carry to a rival within 10 m, buys a rival's item for 30;
   standing beside a rival's item on the ground for 20 s spoils it; *Guard the door* once, then a rival's
-  sneak there fails about half the time; the Haven's terms one by one at her table; under Bastion,
+  sneak there fails about half the time; the Haven's terms one by one at his table; under Bastion,
   Command, a carrier is searched at the lab road's checkpoint for 90 s.
 - [ ] The epilogue's rest ([EPILOGUE.md](EPILOGUE.md)): a new face's first spawn in the week gets Petr's
   note and The Key Where It Was; at most two of the deck offered within 3 km; the codas' standing
@@ -4177,8 +4177,8 @@ when it happens)
   shows even when they refuse you, its "What would it mean?" shows the lock card tagged [Point of no
   return], and "Write me down." locks you (dimmed with the reason when you can't). Finish a story job
   that leans to a route (the black box into the stove): a "What you'd bring" notice, and the lock card
-  lists it. On a sworn stage, a player locked to another route takes "Tell her the truth about them"
-  (the next persuade is a step harder for the route) and "Walk her to your own people" (+20 Haven
+  lists it. On a sworn stage, a player locked to another route takes "Tell him the truth about them"
+  (the next persuade is a step harder for the route) and "Walk him to your own people" (+20 Haven
   Infamy; the stage comes back with "Talk them out of it"). Spoil the captain's freezers: the stage
   comes back as Processing Again. Do the Haven's Act I by the chair: the track readout says
   "The Haven's work is at two" and a tissue hunt is offered. Hunted by Bastion, Bastion's desk refuses
@@ -4237,8 +4237,8 @@ when it happens)
   ending's headline.
 - [ ] The Other Two (same settings): the clerk refuses a stranger; the ledger only opens at night;
   the courier follows you to the station (or hands you his case); the brother's clock starts when
-  you reach the room, and walking him home ends at the sister's safehouse; the sample kit gets him
-  up as an infected; selling ends the line; the sister's name choices appear only after the list
+  you reach the room, and walking him home ends at the brother's safehouse; the sample kit gets him
+  up as an infected; selling ends the line; the brother's name choices appear only after the list
   and the man who walked them up; the names go to the director, the chair, or nowhere.
 - [ ] Authors (same settings, and Cure > Research per sample raised and Lab research per day 0 so a few samples reach 50%):
   it doesn't start at 90% or more; the letter can be read and copied onto the field lead's desk;
@@ -4276,7 +4276,7 @@ when it happens)
   to the farm gate; at the guest stage decline and lie up on the rise unseen; take the proof at
   supper, then tell a Haven council head (the house is found out: headline, Haven morale −8), and
   walk the family out at dusk unarmed. On another season tell Bastion and get the boy out before
-  the guns, or keep it to yourself and talk the mother out.
+  the guns, or keep it to yourself and talk the father out.
 - [ ] A Place at the Table: eat three times in one life (not Trusted with the Haven): the host makes
   his offer. Do the dead (the traveller in the ditch), send the dying man the wrong way (he's a
   bitten wanderer on the roads after), walk the stray to a safehouse instead (Undercover: The House
@@ -4736,7 +4736,7 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
 **Errands and the story blocks** ([ERRANDS.md](ERRANDS.md); a safehouse, a Bastion post, a Red
 Hand camp and a Halcyon station near each other help; the admin reply **[Admin] Errands near here**
 on the talk screen says why something wasn't dealt)
-- [ ] A safehouse's first two occupants have names and roles ("Talk to Mara Kovac"); **Anything need
+- [ ] A safehouse's first two occupants have names and roles ("Talk to Marek Kovac"); **Anything need
   doing?** on one offers a true errand, its ways become their replies with tags, and a second player
   picking one hears "Give us a minute. I'm in the middle of something..."
 - [ ] The Pot: with the house short of food, hand over two tins; the house's food goes up by 2 and
@@ -4864,8 +4864,8 @@ on the talk screen says why something wasn't dealt)
   Mission never pick a town within 300 m of a safehouse or holding.
 
 **The story jobs** (wave 3; check the log's `Story:` lines for the truth drawn)
-- [ ] Protection Racket: the storekeeper's options change when the receipt (paid twice) or the girl
-  (her cut) has been read; Press costs Haven Infamy through the threat; Cover it takes 4 food or 20
+- [ ] Protection Racket: the storekeeper's options change when the receipt (paid twice) or the boy
+  (his cut) has been read; Press costs Haven Infamy through the threat; Cover it takes 4 food or 20
   Red Hand Favor and the next racket at that house finds the lie (`Story: lie racket.covered found
   out by tick`); Side with the house waits 5 s and can be objected to; a non-contractor picking a
   deciding option hears "It's not your call". Time up: `Errands: fallout pot ...`, and the house's cook
@@ -4886,7 +4886,7 @@ on the talk screen says why something wasn't dealt)
   at 60 m; bait has "Cut them loose" (at night, quietly), "They're mine", Buy them, Side with the crew
   (the hold; a Haven witness or Haven-Known player within 150 m: +12 Haven Infamy at once, else a lie
   the next Tied Down finds). People dead: The Name on the Tag at the nearest house.
-- [ ] Survivors Trapped: after the hold the mother appears with three choices (a 5 s hold); nobody in
+- [ ] Survivors Trapped: after the hold the father appears with three choices (a 5 s hold); nobody in
   90 s sends them to the nearest house; a bitten father (one time in four) is seen by a Nurse or
   Doctor and walked out at the door.
 - [ ] A Tier 0 job failing (Walk Him Out, The Rat, a leader job such as Debt Collection) sends its fallout
@@ -4956,7 +4956,7 @@ on the talk screen says why something wasn't dealt)
 - [ ] Up on the Roof: "Talk them down" refuses with infected within 25 m; done, +1 at the nearest house
   and 4 Haven Favor. The Last Tin: a tin for a true tip, and he greets you at his house's gate later
   (a local on an occupant: **Talk to {name}**, "You gave me a tin on the road").
-- [ ] Ways that send you somewhere (walk her past the post, dig with her) say where; the stranger waits
+- [ ] Ways that send you somewhere (walk him past the post, dig with him) say where; the stranger waits
   10 minutes while you do it, then gives up. Only you or your group can answer them.
 - [ ] Kill a stranger: +15 Infamy with their people, and no stranger finds you for a real day.
 - [ ] They call out once at 40 m and are gone 5 minutes later or once you're 150 m away; the next one

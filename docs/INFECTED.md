@@ -600,7 +600,7 @@ thins out, and on the last dusk nothing answers ([The last week](#the-last-week)
 - **Hearing as data:** a hunting part with no bodies turns to a remembered noise within 700 m (the young
   and a cautious tribe 400) and waits there 3 minutes, once per noise.
 - **Takings as data:** at night, with no player within 1 km, a hunting part takes a wanderer it passes
-  (within 150 m, 1 time in 10), at most once a tribe every 3 counted nights: *"Marta the runner was
+  (within 150 m, 1 time in 10), at most once a tribe every 3 counted nights: *"Marek the runner was
   taken by the infected on the road to Morton."* Supply trucks too ([Trucks taken as
   data](#trucks-taken-as-data)), and Bastion patrols ([The taken](#the-taken-and-the-ones-who-ran)).
 - **Post-feed sleep.** After a counted night in which it took someone, it sleeps through the next day:
@@ -883,7 +883,7 @@ there as data (bodies near players walk too), and its place, trails and posts ar
 - **Nomads** keep a loop of 3-4 lairs within about 2 km and move on every 2-4 season days. They leave
   no vacuum and no fear places.
 - **Abandoned lairs** stay a find for 2 season days. A player within 25 m finds it once: *"Somebody's
-  things at the back of it: what's left of Marta the runner."* (the first of the people it took), and
+  things at the back of it: what's left of Marek the runner."* (the first of the people it took), and
   a sample if a courier was among them (once), and their things: 1–2 items from the body search's
   table at its back, once a lair, loose items like any find. A nomad's empty old lair reads *"...
   Whatever lay up here has moved on. Never the same place twice."*
@@ -1034,7 +1034,7 @@ Code: `Zombies/RZ_TribeWays.c`.
   Work clothes, Dust-grey, Outdoor prefabs**, if set). Soldiers it takes (a Soldier's or a Police
   Officer's character, a soldier, a patrol, a deserter) raise its share in military clothes, so its
   look mixes as it hunts. Empty lists: as before.
-- **Histories.** Each alpha keeps its last 6 events (took Marta the runner, won the bridge off the
+- **Histories.** Each alpha keeps its last 6 events (took Marek the runner, won the bridge off the
   woods north of Levie, moved, split, starved, took a supply truck, how it took the lead), shown by
   `/tribes`. The headlines (never broadcast: the latest are read on joining; never a player's name)
   carry them, always with the place: a leader falls (*"The calling at the quarry by Morton stopped

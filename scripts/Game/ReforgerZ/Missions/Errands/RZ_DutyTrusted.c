@@ -13,8 +13,8 @@ class RZ_DutyTrusted
 	{
 		RZ_Rng rng = RZ_DutyPosts.Seed(e, 37);
 		array<string> hiding = {"A thin larder, and a loose board by the stove with tins under it. Eleven.", "Bare rooms. A new padlock on the coal shed, and the key on a string round the boy's neck.", "Nothing on the table. Fresh tobacco on the air, and a good coat behind the door."};
-		array<string> broke = {"Nothing in the larder but a jar of dripping. Two children under one blanket.", "A man in bed with a leg that won't mend, and his wife boiling nettles.", "The furniture's gone for firewood. The last chair is in the grate."};
-		array<string> paid = {"A chit on the nail by the door, with the boss's red thumbprint on it, and last week's date.", "She shows you the mark on her wrist: red thread, the paid knot. The book has no line for it.", "A receipt in the crew's own hand, for the tins and the interest. Somebody didn't copy it into the book."};
+		array<string> broke = {"Nothing in the larder but a jar of dripping. Two children under one blanket.", "A man in bed with a leg that won't mend, and his brother boiling nettles.", "The furniture's gone for firewood. The last chair is in the grate."};
+		array<string> paid = {"A chit on the nail by the door, with the boss's red thumbprint on it, and last week's date.", "He shows you the mark on his wrist: red thread, the paid knot. The book has no line for it.", "A receipt in the crew's own hand, for the tins and the interest. Somebody didn't copy it into the book."};
 		RZ_DutyScript.Into(scene.m_aBeats);
 		for (int i = 0; i < 3; i++)
 		{
@@ -34,7 +34,7 @@ class RZ_DutyTrusted
 			if (truth == 1)
 				o.Told(string.Format("You sent the collectors to %1. There was nothing there to take, so they took the stove. It's a cold house now, and everyone on the lane knows whose book it was.", who));
 			else if (truth == 2)
-				o.Told(string.Format("You sent the collectors for a debt %1 had paid. She showed them the knot on her wrist. The crew don't like being made to look like thieves to their own.", who));
+				o.Told(string.Format("You sent the collectors for a debt %1 had paid. He showed them the knot on his wrist. The crew don't like being made to look like thieves to their own.", who));
 
 			o = RZ_DutyScript.O("Write it off as can't pay", "A line through it, and the words. The boss reads those lines himself.", codes[1] + " write hold:4");
 			if (truth == 0)
@@ -120,7 +120,7 @@ class RZ_DutyTrusted
 		{
 			charts.Insert(string.Format("Corporal %1. Bitten on the wire yesterday, holding a section together since. They need him.", who[0]));
 			charts.Insert(string.Format("Private %1. Eighteen, bitten three days ago, and the youngest on the post.", who[1]));
-			charts.Insert(string.Format("%1, the cook's girl, not on the strength. Bitten carrying water to the wire.", who[2]));
+			charts.Insert(string.Format("%1, the cook's boy, not on the strength. Bitten carrying water to the wire.", who[2]));
 			back = "Send it back to the lab";
 		}
 		else if (e.m_iFaction == RZ_EFaction.BANDITS)
@@ -135,7 +135,7 @@ class RZ_DutyTrusted
 		else
 		{
 			charts.Insert(string.Format("%1, who keeps the house's well and the night roof. Bitten on the roof, yesterday.", who[0]));
-			charts.Insert(string.Format("%1. A mother of three, bitten four days ago and hiding it until this morning.", who[1]));
+			charts.Insert(string.Format("%1. A father of three, bitten four days ago and hiding it until this morning.", who[1]));
 			charts.Insert(string.Format("%1. Seventy, bitten at the gate holding it shut, and asking only that it be given to someone else.", who[2]));
 		}
 

@@ -1093,7 +1093,7 @@ class RZ_Infection
 		if (took)
 		{
 			m_GM.CurePlayer(playerId);
-			m_GM.NotifyPlayer(playerId, title, "A signature, a needle, an hour on a cot with a researcher writing down your pulse. Then the fever breaks. \"Eight in ten,\" she says. \"You were one of the eight.\"");
+			m_GM.NotifyPlayer(playerId, title, "A signature, a needle, an hour on a cot with a researcher writing down your pulse. Then the fever breaks. \"Eight in ten,\" he says. \"You were one of the eight.\"");
 			return;
 		}
 

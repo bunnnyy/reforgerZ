@@ -77,7 +77,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 		Info(KEY, "Every Name", RZ_EFaction.SURVIVORS);
 		Major();
 
-		RZ_QuestStage family = MissionStage(S_FAMILY, "The ones who can't work", "A family of four waits at the edge of {family_town} at dusk: two who can work, a grandfather in a wheelchair, and a girl of eight with a cough. {family_head} will take two.");
+		RZ_QuestStage family = MissionStage(S_FAMILY, "The ones who can't work", "A family of four waits at the edge of {family_town} at dusk: two who can work, a grandfather in a wheelchair, and a boy of eight with a cough. {family_head} will take two.");
 		family.GiveUp(4, "");
 
 		RZ_QuestStage summons = WaitStage(S_SUMMONS, "The first sitting", "The houses are filling and the trucks come less often. Sooner or later {chair} will call the council to write the second rule down.");
@@ -530,7 +530,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 			return false;
 
 		scene.m_sTitle = "The ones who can't work";
-		scene.m_sBrief = run.Fill("A family at the edge of {family_town}: two who can work, a grandfather in a wheelchair, a girl of eight with a cough. {family_head}: \"We can take two. The two who can work. Not with that cough.\"");
+		scene.m_sBrief = run.Fill("A family at the edge of {family_town}: two who can work, a grandfather in a wheelchair, a boy of eight with a cough. {family_head}: \"We can take two. The two who can work. Not with that cough.\"");
 		scene.m_sObjective = run.Fill("Talk to {family_head} about the family at the edge of {family_town}.");
 		scene.m_eTier = RZ_ETier.STRANGER;
 		scene.m_iFame = 5;
@@ -543,10 +543,10 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 			easier = 1;
 
 		int spot = scene.Person(scene.m_vPos, run.Fill("{family_head} at the edge of town"), "Talk to the council head", "It's the first hungry week again, in small. I can feed two who work. I can't feed four who don't.");
-		scene.Choice(spot, "Talk the head round").Persuade(RZ_EFaction.SURVIVORS, easier, "elder,nurse,doctor").Decides(OUT_ALL_IN).Says("All four come in. The girl's cough is a chest cold, and the grandfather asks where he can be useful. The house is two meals shorter.", "talked the head into taking all four").Refused("Kind of you. Feed them yourself, then.");
+		scene.Choice(spot, "Talk the head round").Persuade(RZ_EFaction.SURVIVORS, easier, "elder,nurse,doctor").Decides(OUT_ALL_IN).Says("All four come in. The boy's cough is a chest cold, and the grandfather asks where he can be useful. The house is two meals shorter.", "talked the head into taking all four").Refused("Kind of you. Feed them yourself, then.");
 		scene.Choice(spot, "Pay into the stores (20 Favor)").Bribe(RZ_EFaction.SURVIVORS, 20).Decides(OUT_ALL_IN).Says("The stores take your Favor in tins. All four come in, and the head writes four names on the house's List.", "paid the stores for the family");
-		scene.Choice(spot, "Walk two to a Bastion post").Needs(RZ_EFaction.MILITARY, 1).Side(RZ_EFaction.MILITARY, -1, 5, 0).Decides(OUT_TO_BASTION).Says("The grandfather and the girl are signed for at the nearest post, as civilians sheltered. The two who can work go in.", "walked two of the family to Bastion");
-		scene.Choice(spot, "Walk two back to the road").Way(RZ_EQuestApproach.LEAVE).Decides(OUT_TURNED).Says("At dusk you walk the grandfather and the girl back to the road. The head pays you, and writes two names on the List with a line through them.", "walked two of the family back to the road");
+		scene.Choice(spot, "Walk two to a Bastion post").Needs(RZ_EFaction.MILITARY, 1).Side(RZ_EFaction.MILITARY, -1, 5, 0).Decides(OUT_TO_BASTION).Says("The grandfather and the boy are signed for at the nearest post, as civilians sheltered. The two who can work go in.", "walked two of the family to Bastion");
+		scene.Choice(spot, "Walk two back to the road").Way(RZ_EQuestApproach.LEAVE).Decides(OUT_TURNED).Says("At dusk you walk the grandfather and the boy back to the road. The head pays you, and writes two names on the List with a line through them.", "walked two of the family back to the road");
 		return true;
 	}
 
@@ -785,19 +785,19 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 		ReleaseEvening(S_FAMILY);
 		int house = run.Flag("family_house", -1);
 		int family = 3;
-		string line = "Two of the family went in. The grandfather and the girl were walked back to the road at dusk, and their names were crossed off. The season's first.";
+		string line = "Two of the family went in. The grandfather and the boy were walked back to the road at dusk, and their names were crossed off. The season's first.";
 		if (outcome == OUT_ALL_IN)
 		{
 			family = 1;
 			ChangePopulation(gm, house, 3);
 			ChangeFood(gm, house, -2);
-			line = "All four came in at {family_town}. The girl's cough was a chest cold. Somebody painted a bear on the door.";
+			line = "All four came in at {family_town}. The boy's cough was a chest cold. Somebody painted a bear on the door.";
 		}
 		else if (outcome == OUT_TO_BASTION)
 		{
 			family = 2;
 			ChangePopulation(gm, house, 2);
-			line = "Two went in at {family_town}. The grandfather and the girl are civilians sheltered at a Bastion post now.";
+			line = "Two went in at {family_town}. The grandfather and the boy are civilians sheltered at a Bastion post now.";
 		}
 		else if (outcome == OUT_TURNED || fallback)
 		{

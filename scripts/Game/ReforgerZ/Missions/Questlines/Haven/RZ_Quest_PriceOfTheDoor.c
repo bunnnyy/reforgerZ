@@ -1307,7 +1307,7 @@ class RZ_QM_DoorVote : RZ_HavenQM
 		m_iSettlement = h.m_iSettlement;
 		m_vPos = LandPointNear(h.m_vPos, 4, 9);
 		m_bExile = QFlag(gm, "exile_home") == 1;
-		m_iTalk = AddClue("The meeting", QFill(gm, "Everyone who sleeps in {house} is in the one room, standing, because there aren't enough chairs. {head} sits at the front and doesn't say anything. The cook has her arms folded. Somebody says the word \"price\", and the room goes quiet."));
+		m_iTalk = AddClue("The meeting", QFill(gm, "Everyone who sleeps in {house} is in the one room, standing, because there aren't enough chairs. {head} sits at the front and doesn't say anything. The cook has his arms folded. Somebody says the word \"price\", and the room goes quiet."));
 		if (m_bExile)
 			m_iExileTalk = AddClue(QText(gm, "exile"), QFill(gm, "{exile} stands at the back by the door, where he can leave fast. \"I took bread. I'd take it again. Ask them who they'd have fed.\""));
 

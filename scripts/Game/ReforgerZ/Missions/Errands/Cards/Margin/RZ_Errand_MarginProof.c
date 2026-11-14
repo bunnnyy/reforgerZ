@@ -84,7 +84,7 @@ class RZ_Errand_CleanPaper : RZ_ErrandCard
 
 //------------------------------------------------------------------------------------------------
 //! Chairs for the Reading (margin: Proof, before the reading): people should sit down for numbers
-//! like these, the technician says. Or tell her they'll stand.
+//! like these, the technician says. Or tell his they'll stand.
 class RZ_Errand_ChairsForTheReading : RZ_ErrandCard
 {
 	//------------------------------------------------------------------------------------------------
@@ -117,7 +117,7 @@ class RZ_Errand_ChairsForTheReading : RZ_ErrandCard
 			"In rows, please. Rows make people listen.");
 
 		w = Way("talk");
-		w.m_sLabel = "Tell her they can stand";
+		w.m_sLabel = "Tell his they can stand";
 		w.Done("Standing, then. I'll put that in the minutes. 'Attendance: standing.'");
 	}
 

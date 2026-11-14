@@ -159,10 +159,10 @@ class RZ_Route_Halcyon : RZ_FinaleRoute
 			{
 				scene.m_vPos = lower;
 				int vet = scene.Person(PersonAt("vet", lower), "the vet with the tank", "Talk to the vet", "The tank holds six. The first ampoules go to my house.");
-				scene.Choice(vet, "Borrow the tank [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Sets("tank").Says("A promise: her house first. The tank keeps a real day.", "borrowed the vet's tank");
-				scene.Choice(vet, "Pay for the tank [25 Haven Favor]").Bribe(RZ_EFaction.SURVIVORS, 25).Sets("tank").Says("The tank, and a look that says she'll remember.", "paid for the vet's tank");
-				scene.Choice(vet, "Take the tank at night [unseen]").Sneak().Sets("tank").Says("The tank goes out of the surgery at night. Her house won't be first now.", "took the vet's tank at night");
-				scene.Choice(vet, "Requisition it [Halcyon: Trusted]").Needs(RZ_EFaction.INSTITUTE, 2).Sets("tank").Says("A requisition form, signed. She keeps the carbon.", "requisitioned the vet's tank");
+				scene.Choice(vet, "Borrow the tank [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Sets("tank").Says("A promise: his house first. The tank keeps a real day.", "borrowed the vet's tank");
+				scene.Choice(vet, "Pay for the tank [25 Haven Favor]").Bribe(RZ_EFaction.SURVIVORS, 25).Sets("tank").Says("The tank, and a look that says he'll remember.", "paid for the vet's tank");
+				scene.Choice(vet, "Take the tank at night [unseen]").Sneak().Sets("tank").Says("The tank goes out of the surgery at night. His house won't be first now.", "took the vet's tank at night");
+				scene.Choice(vet, "Requisition it [Halcyon: Trusted]").Needs(RZ_EFaction.INSTITUTE, 2).Sets("tank").Says("A requisition form, signed. He keeps the carbon.", "requisitioned the vet's tank");
 				if (IsDrained())
 				{
 					// Second best: the dewar is spoiled; Wolff's one marked tube, and the long way

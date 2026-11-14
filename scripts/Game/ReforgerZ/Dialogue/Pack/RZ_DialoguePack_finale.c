@@ -69,7 +69,7 @@ class RZ_DialoguePack_finale
 		db.Choice("hp_back", "Thank you for being straight with me.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("finale.haven.route", "stronghold:haven", "finale:open & route:none", "What happens with the cure?", 0, 8, "haven");
 		db.Node("start");
-		db.Say("", "The lab is stuck at ninety. What's missing is a woman we crossed off our own List to keep her alive: bitten on Day 4, and never turned. Her blood, given by her own yes, would finish it.");
+		db.Say("", "The lab is stuck at ninety. What's missing is a man we crossed off our own List to keep him alive: bitten on Day 4, and never turned. His blood, given by his own yes, would finish it.");
 		db.Say("", "If it's ours, the cure goes hand to hand, to the people the others would leave till last, and the houses decide who goes first. The same houses that kept the List.");
 		db.Choice("hr_mean", "What would it mean?", "card", "", "", "", "", "", "", "", "");
 		db.Choice("hr_later", "Not yet. Let me think about it.", "hub", "", "", "", "", "", "", "", "");
@@ -80,7 +80,7 @@ class RZ_DialoguePack_finale
 		db.Choice("hr_wait", "Let me think about it.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("finale.haven.seat", "seat:haven/council_head", "finale:open & route:none & loyalty:loyal", "What happens with the cure?", 0, 8, "haven");
 		db.Node("start");
-		db.Say("", "The chair takes names for the houses, and so do I, when the road to the chair is long. Her blood finishes the cure, the woman we crossed off, and the houses decide who it reaches first.");
+		db.Say("", "The chair takes names for the houses, and so do I, when the road to the chair is long. His blood finishes the cure, the man we crossed off, and the houses decide who it reaches first.");
 		db.Say("", "I'll tell you what the chair would: the houses that hand it out are the houses that kept the List. You should know that before your name's on it.");
 		db.Choice("hs_mean", "What would it mean?", "card", "", "", "", "", "", "", "", "");
 		db.Choice("hs_later", "Not yet. Let me think about it.", "hub", "", "", "", "", "", "", "", "");
@@ -116,7 +116,7 @@ class RZ_DialoguePack_finale
 		db.Choice("rp_back", "Honest, at least.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("finale.redhand.route", "stronghold:redhand", "finale:open & route:none", "What happens with the cure?", 0, 8, "redhand");
 		db.Node("start");
-		db.Say("", "Our cook says she can make the cure keep, cooked on one tray of the lab's own batch. Every time, not half the time. She's never once been wrong about a pan.");
+		db.Say("", "Our cook says he can make the cure keep, cooked on one tray of the lab's own batch. Every time, not half the time. He's never once been wrong about a pan.");
 		db.Say("", "Ours reaches anyone who can pay, including the people nobody else would serve. The price is the queue. The cut dose was sold the same way, and nobody here pretends otherwise.");
 		db.Choice("rr_mean", "What would it mean?", "card", "", "", "", "", "", "", "", "");
 		db.Choice("rr_later", "Not yet.", "hub", "", "", "", "", "", "", "", "");

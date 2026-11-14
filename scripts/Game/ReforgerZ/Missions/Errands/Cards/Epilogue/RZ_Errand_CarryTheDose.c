@@ -40,7 +40,7 @@ class RZ_Errand_CarryTheDose : RZ_EpiCard
 		if (e.m_iFaction != epi.Faction())
 			return false;
 
-		array<string> holdouts = {"Mr Dvorak", "the Bartos sisters", "a man called Hruby", "Mrs Kolar", "the Zeman lad", "old Pospisil"};
+		array<string> holdouts = {"Mr Dvorak", "the Bartos brothers", "a man called Hruby", "Mr Kolar", "the Zeman lad", "old Pospisil"};
 		int pick = RZ_Util.PickIndex(e.m_sGiver.Hash(), holdouts.Count());
 		e.SetText("holdout", holdouts[pick]);
 		e.m_sSubject = "epi.dose:" + e.m_sGiver;
