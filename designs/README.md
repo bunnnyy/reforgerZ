@@ -17,5 +17,6 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 | 7 | [LANDMARKS.md](LANDMARKS.md) | 8–12 hand-built places a map, each with a story, a puzzle, fitting loot and an heirloom | approved 2026-11-14; the author picks the places in Game Master |
 | 8 | [ALPHA_HUNT.md](ALPHA_HUNT.md) | Hunting a tribe's named leader for one of four factions' reasons; his tag an heirloom | approved 2026-11-14 |
 | 9 | [COMPANION.md](COMPANION.md) | One companion per character, from the world, with approval, a limit and a death | approved 2026-11-14 |
+| — | [MAP_FOG.md](MAP_FOG.md) | The map's fog of war: only what this character has seen, places as rumours until seen | approved 2026-11-14, being built now (out of order, the author's call) |
 
 A new approved design goes here with its place in the order.
