@@ -785,6 +785,12 @@ look and the next one along wears another. An empty list keeps the slot's own pr
 | A supply truck's crew, a hunter squad, a stronghold quartermaster, a mission's faction group (the finale's stand, Authors, the Red Hand vans, Bastion's gate squad, the crash site's recovery team, the squad sent to arrest a post's commander) | the spot it spawns at |
 | A stronghold leader, council head or outpost leader | the seat and the generation: a successor wears another look |
 
+**Names fit the body.** The base game's people are all men (its identity list has no women), so
+anyone who stands in the world gets a man's first name (`RZ_NoteText.ManName`: holding people, road
+crews, wanderers, a mystery's priest) and a man's words; `RZ_NoteText.FirstName` is for people nobody
+meets (a note's writer, a name on a list). The written women who still stand in the world wait for
+the author ([MISSION_RULES.md](MISSION_RULES.md#the-audit)).
+
 **Nobody of a faction wears a vanilla soldier's kit.** Three rules make sure of it:
 
 - **A look dresses the whole body.** Every look sets every garment you can see (hat, jacket,

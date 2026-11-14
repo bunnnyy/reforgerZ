@@ -1138,7 +1138,7 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 		m_fParticipationRadius = 0;
 		m_sTitle = "Research Data";
 		m_sDeed = "recovered the data at {town}";
-		m_sObjective = string.Format("Find Halcyon's hard drive in %1 and take it to the lab.", s.m_sName);
+		ObjThen(string.Format("Find Halcyon's hard drive in %1.", s.m_sName), "Take the drive to the lab.");
 		if (clinic)
 			m_sBrief = string.Format("There's a hard drive with Halcyon's research somewhere in %1 in %2: a padded case, on a shelf or on the floor. Find it and take it to the lab. Bastion's drop in %3 would pay for it too.", clinic.m_sName, s.m_sName, b.m_sName);
 		else

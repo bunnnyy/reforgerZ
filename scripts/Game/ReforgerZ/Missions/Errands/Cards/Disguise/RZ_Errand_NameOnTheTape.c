@@ -38,7 +38,7 @@ class RZ_Errand_NameOnTheTape : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Find the body of {dead} {where_place}, take the jacket (15 s there), and sell it to the Red Hand's fence, who pays well for a name the army can't check twice. Then tell {giver} it was gone.";
+		w.m_sStep = "Find the body of {dead} {where_place} and take the jacket for the Red Hand's fence, who pays well for a name the army can't check twice (15 s there). Then tell {giver} it was gone.";
 		w.Work(RZ_EWork.TAKE, "Take the jacket");
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 10;

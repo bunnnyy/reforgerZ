@@ -428,6 +428,13 @@ class RZ_Job_PrivateCollection : RZ_PuzzleMission
 	protected static const int EXPOSE_FAVOR = 10;
 
 	//------------------------------------------------------------------------------------------------
+	//! Caught: it's in its case.
+	override protected bool ObjFirstDone()
+	{
+		return m_Capture.m_eState == RZ_ECaptureState.CRATED || m_Capture.m_eState == RZ_ECaptureState.DELIVERED;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void GetPropSpots(notnull array<vector> result)
 	{
 		super.GetPropSpots(result);
@@ -484,7 +491,7 @@ class RZ_Job_PrivateCollection : RZ_PuzzleMission
 		m_vPos = cage;
 		m_sTitle = "Private Collection";
 		m_sBrief = string.Format("I want one of the specials alive, for me, not for the director's committee. The trap is set outside %1. Bring it here in its case. Nobody at the lab needs to know.", s.m_sName);
-		m_sObjective = string.Format("Trap a special outside %1 and bring the case to {leader:%2}.", s.m_sName, m_iLeaderId);
+		ObjThen(string.Format("Trap a special outside %1.", s.m_sName), string.Format("Bring the case to {leader:%1}.", m_iLeaderId));
 		return m_Capture.Begin(gm, m_iId, m_iSettlement, cage, lair, 0);
 	}
 

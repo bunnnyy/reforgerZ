@@ -464,6 +464,13 @@ class RZ_Mission_BringThemHome : RZ_TribeContract
 	protected int m_iBy = -1;
 
 	//------------------------------------------------------------------------------------------------
+	//! Laid down: the pockets are yours to carry.
+	override protected bool ObjFirstDone()
+	{
+		return m_bDown;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.KNOWN, 25, 25);
@@ -514,7 +521,7 @@ class RZ_Mission_BringThemHome : RZ_TribeContract
 				m_sTitle = "Bring Them Home";
 				m_sDeed = "brought someone home";
 				m_sBrief = string.Format("%1 runs with %2 now. Find them with the young ones (by day they may be out walking with a few others), lay them down, and bring back what's in their pockets to any of our houses. We'll read the name.", RZ_Tribes.Capitalize(who), tribes.GetPeople().NameAt(t, RZ_EFaction.SURVIVORS));
-				m_sObjective = string.Format("Find %1 near %2, lay them down and bring the pockets to a Haven safehouse.", who, t.m_sPlace);
+				ObjThen(string.Format("Find %1 near %2 and lay them down.", who, t.m_sPlace), "Bring the pockets to a Haven safehouse.");
 				array<string> values = {"named", "other"};
 				array<float> weights = {0.7, 0.3};
 				m_Job.Draw(this, "named:" + who, values, weights);

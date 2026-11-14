@@ -1,0 +1,43 @@
+# Hits of tools/mission_rules.py that are right as they are, or that work under way clears.
+# One line each: <rule> <file> <text the hit's line holds>  # why
+# A reason starting "pending:" names the work that clears it (counted apart; doesn't fail --strict).
+
+# 1: a building's name in a task's words
+1 RZ_DutyGoals.c Count the heads in the school room at  # the Haven holding's own school room, a corner of its camp, not a school building
+1 RZ_Quest_Authors.c I want the method at a Haven clinic  # "the clinic at the safehouse": the safehouse's own sick room
+1 RZ_Quest_Authors.c Carry the method from the field station to the clinic  # the same: a safehouse's sick room
+
+# 3: doors
+3 RZ_ScratchedDoor.et BuildingParts/Doors  # pending: the openings work (no spawned doors; a real door's own face)
+3 RZ_BoardedDoorway.et BuildingParts/Doors  # pending: the openings work (a trap's barricade and the BOARDS work look's after-prop must stand in a real doorway)
+
+# 10: women's words on people who stand in the world (the base game's people are all men)
+10 RZ_OpeningText.c a patient's mother  # pending: the openings work (contact's name, words and body agree)
+10 RZ_OpeningText.c a mother from your street  # pending: the openings work
+10 RZ_OpeningText.c the mother with the sick boy  # pending: the openings work
+10 RZ_DutyHaven.c A woman with a sack  # pending: author's decision on written women (swap table: the salt woman, the girl with the knife, the proxy girl); make them men or keep them unseen
+10 RZ_HalcyonMissions.c Talk to the woman at the door  # pending: author's decision on written women (the sister in Patient's Family)
+10 RZ_Route_Haven.c return "woman";  # pending: author's decision on written women (the finale's woman in the Haven house and "her son")
+10 RZ_Quest_TheList.c QText(gm, "wife")  # pending: author's decision on written women (The List's wife)
+10 RZ_RedHandContracts.c Talk to the girl  # pending: author's decision on written women (the daughter)
+10 RZ_LongTable.c case RZ_ETableRole.MOTHER  # pending: author's decision on written women (the Long Table's mother)
+
+# 14: carrying done as a hold
+14 RZ_OpeningChain.c Fill what you can carry  # one place: filling cans at the well; "carry" is how much
+14 RZ_WorkSites.c Fill and stack the sandbags  # one place: the bags are filled and stacked where the wall goes
+14 RZ_ErrandRoutinesPeople.c Fill and stack the sandbags  # the same
+14 RZ_ErrandDuties.c Carry and stack the crates  # pending: the carry-tasks work (real crates picked up and put down)
+14 RZ_Errand_MarginProof.c Stack the chairs  # pending: the carry-tasks work ("stack the chairs ... and bring them back": a real carry)
+
+# 19: completing by walking up to a person
+19 RZ_Errands.c !byTalk && carrier > 0 && RZ_Arrive.AtSpot  # pending: the openings work (a handed errand must hand in by reply too; with the talk screen off there's no reply to pick)
+19 RZ_Errands.c !byTalk && RZ_Arrive.AtSpot(me, giverAt  # pending: the openings work (the same)
+
+# 23: two places in one objective line
+23 RZ_Errand_UnknownFace.c Write your own letter and carry it into  # one place: the letter is written on the way and handed in there
+23 RZ_Errand_WrongWayRound.c tell them to paint over the hands  # one place: "tell them to" is what's said, not a second place
+23 RZ_Errand_DesertersWay.c Walk to the Bastion post  # one place: the name is given at the post's barrier
+23 RZ_Errand_RedDoor.c then go back to the boy at  # the way back is its own line: the boy at the house is who asked (the card's giver speaks for him)
+23 RZ_HalcyonContracts.c Follow the first case's trail  # a step chain: its steps are the objectives (RZ_StepChain), this line never shows
+23 RZ_PuzzleLogic.c Work out who infected the ward  # a puzzle: the thinking has no place; the answer at the lab is the one step
+23 RZ_Route_RedHand.c Dose someone bitten who asks  # pending: the finale's stage lines (one line per stage); split with the route's dose flag

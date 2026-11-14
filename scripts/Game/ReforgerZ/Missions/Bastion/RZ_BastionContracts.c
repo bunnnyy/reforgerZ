@@ -225,7 +225,7 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 		m_sTitle = "The Armory";
 		m_sDeed = "found the rifles near {town}";
 		m_sBrief = string.Format("Our people left weapons in %1 in %2 when it fell: a long case with Bastion stencils, somewhere inside. Find it and bring it to %3. Don't get ideas about keeping it.", place, s.m_sName, meetName);
-		m_sObjective = string.Format("Find the Bastion weapons case in %1 in %2 and bring it to %3.", place, s.m_sName, meetName);
+		ObjThen(string.Format("Find the Bastion weapons case in %1 in %2.", place, s.m_sName), string.Format("Bring the case to %1.", meetName));
 		m_Mirror.Roll();
 		Truth(gm);
 		return true;
@@ -731,6 +731,13 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 	protected static const float BLEED_SECONDS = 1200;
 
 	//------------------------------------------------------------------------------------------------
+	//! Found: the pilot is walking with you.
+	override protected bool ObjFirstDone()
+	{
+		return m_Escort.IsStarted();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.MILITARY, RZ_ETier.TRUSTED, 35, 30);
@@ -778,7 +785,7 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 		m_sTitle = "Rescue the Pilot";
 		m_sDeed = "brought the pilot in from {town}";
 		m_sBrief = string.Format("The last helicopter put down hard outside %1 on its run. The mechanics will get the airframe back; the pilot is still out there, hurt, and Bastion has nobody else to fly it. Find him and walk him to %2.", s.m_sName, m_sDestName);
-		m_sObjective = string.Format("Find the downed pilot outside %1 and walk the pilot to %2.", s.m_sName, m_sDestName);
+		ObjThen(string.Format("Find the downed pilot outside %1.", s.m_sName), string.Format("Walk the pilot to %1.", m_sDestName));
 		if (!m_Escort.Begin(gm, LandPointNear(m_vWreck, 3, 8)))
 			return false;
 
@@ -1044,6 +1051,13 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 	protected static const int CROSS_INFAMY = 15;
 
 	//------------------------------------------------------------------------------------------------
+	//! Met: the courier walks.
+	override protected bool ObjFirstDone()
+	{
+		return m_bMet;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.MILITARY, RZ_ETier.CHAMPION, 45, 40);
@@ -1081,7 +1095,7 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 		m_Escort.SetDestination(LandPointNear(m_vLab, 6, 12));
 		m_sTitle = "Secure the Shipment";
 		m_sBrief = string.Format("Halcyon is walking a case of samples from %1 to their lab. We want it. Walk with the courier and, when nobody's looking, bring it to %2 instead. Or don't, and answer for it.", s.m_sName, m_sBastionName);
-		m_sObjective = string.Format("Walk with Halcyon's courier from %1, then take the samples to %2.", s.m_sName, m_sBastionName);
+		ObjThen(string.Format("Meet Halcyon's courier in %1.", s.m_sName), string.Format("Walk her and the samples to %1.", m_sBastionName));
 		return m_Escort.Begin(gm, m_vPos);
 	}
 

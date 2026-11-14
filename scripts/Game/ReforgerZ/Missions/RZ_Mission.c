@@ -736,6 +736,7 @@ class RZ_Mission
 	// ObjReveal); the default is get to the place, then the ask. An objective stands on its own: who,
 	// what and where in one short line (docs/WRITING.md, "Objective lines"; voice_lint checks it).
 	string m_sObjective;					// the ask in one line ("Hold the cellar cache in Levie for a minute."); world tokens filled when shown
+	string m_sObjThen;					// a second place's step after it ("Bring it to the lab."), its own line (ObjThen)
 	protected ref array<string> m_aObjSteps;	// declared steps, in order (ObjSteps)
 	protected ref array<bool> m_aObjOptional;
 	protected int m_iObjStep;					// the current step
@@ -756,6 +757,23 @@ class RZ_Mission
 			m_aObjSteps.Insert(st);
 			m_aObjOptional.Insert(false);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A job done at two places (find the thing, then bring it somewhere): two objective lines, one
+	//! action and one place each (docs/MISSION_RULES.md, rule 23). The first is current until
+	//! ObjFirstDone says it's done; then the second, pointed where ObjectivePlace points then.
+	protected void ObjThen(string first, string then)
+	{
+		m_sObjective = first;
+		m_sObjThen = then;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first of ObjThen's two lines is done (a delivery's thing is carried, a captive caged...).
+	protected bool ObjFirstDone()
+	{
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -942,9 +960,29 @@ class RZ_Mission
 		string ask = ObjectiveText(gm);
 		RZ_ObjPlace work = ObjectivePlace(gm, playerId, from);
 		bool there = m_bGlobal || m_aParticipants.Contains(playerId);
+
+		// Two places (ObjThen): the first line, then the second where the work moves to
+		string then = "";
+		if (!m_sObjThen.IsEmpty())
+		{
+			then = m_sObjThen;
+			if (gm && gm.GetFacts())
+				then = gm.GetFacts().Fill(m_sObjThen);
+
+			if (ObjFirstDone())
+			{
+				list.Add(ask, RZ_EObjState.DONE, null);
+				list.Add(then, RZ_EObjState.CURRENT, work);
+				return;
+			}
+		}
+
 		if (there)
 		{
 			list.Add(ask, RZ_EObjState.CURRENT, work);
+			if (!then.IsEmpty())
+				list.Add(then, RZ_EObjState.NEXT, null);
+
 			return;
 		}
 
@@ -956,6 +994,8 @@ class RZ_Mission
 			list.Add("Get to " + place + ".", RZ_EObjState.CURRENT, getThere);
 
 		list.Add(ask, RZ_EObjState.NEXT, work);
+		if (!then.IsEmpty())
+			list.Add(then, RZ_EObjState.NEXT, null);
 	}
 
 	//------------------------------------------------------------------------------------------------

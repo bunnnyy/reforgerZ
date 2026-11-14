@@ -19,7 +19,7 @@ class RZ_Errand_TheBoy : RZ_EpiCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 30;
-		w.m_sStep = "Find {kid} {where} and walk the boy into the queue on the north road (15 s together), then tell {giver}.";
+		w.m_sStep = "Find {kid} {where} and talk the boy round to the queue on the north road (15 s together), then tell {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
 		w.Done("The queue? Good. A line is somewhere to stand, at least, with people in front and behind.");
@@ -29,7 +29,7 @@ class RZ_Errand_TheBoy : RZ_EpiCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 30;
-		w.m_sStep = "Find {kid} {where} and bring the boy back to this house (15 s together), then tell {giver}.";
+		w.m_sStep = "Find {kid} {where} and talk the boy round to coming back here (15 s together), then tell {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
 		w.Done("Here. Good. We've a blanket and a bowl for him. That's what we've got, and it's his.");

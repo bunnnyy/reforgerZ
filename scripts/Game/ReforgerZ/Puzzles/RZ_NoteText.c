@@ -106,6 +106,17 @@ class RZ_NoteText
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A man's first name, for someone who stands in the world: the base game's people are all men
+	//! (its identity list has no women, SCR_EIdentityGender), so a body's name matches it
+	//! (docs/MISSION_RULES.md, rule 10). FirstName stays for people nobody meets (a note's writer).
+	static string ManName(RZ_Rng rng)
+	{
+		array<string> names = {"Pavel", "Henri", "Radim", "Emil", "Anton", "Viktor", "Karel", "Oskar", "Milan", "Jakub",
+			"Bruno", "Leon", "Rudolf", "Patrik", "Lukas", "Vilem", "Felix", "Otto", "Konrad", "Erik", "Stanislav", "Hugo", "Dominik", "Jan"};
+		return rng.Pick(names);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static string Surname(RZ_Rng rng)
 	{
 		array<string> names = {"Novak", "Laurent", "Brandt", "Kowal", "Duval", "Mercer", "Horak", "Petit", "Vogel", "Sorel",

@@ -807,6 +807,10 @@ class RZ_Errands
 					continue;
 				}
 
+				// A first place before the step's own (RZ_ErrandWay.First): there long enough, then on
+				if (!FirstWorked(e, w, me, dt))
+					continue;
+
 				if (!e.m_Def.StepCounts(this, e, me))
 					continue;
 
@@ -1082,6 +1086,26 @@ class RZ_Errands
 		Say(e, Pick(e.m_Def.m_aOver), true);
 		RZ_Log.Info(string.Format("Errands: %1 for %2 overtaken", e.m_Def.m_sKey, RZ_Util.PlayerName(e.m_iAsker)));
 		End(e, "overtaken");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The way's first place (RZ_ErrandWay.First) is done: true at once without one. Stay there its
+	//! seconds; then the step's own place is the objective, and the asker is told.
+	protected bool FirstWorked(RZ_Errand e, RZ_ErrandWay w, IEntity me, float dt)
+	{
+		if (e.m_bFirstDone || !w.HasFirst() || e.m_vFirst == vector.Zero)
+			return true;
+
+		if (!w.IsAtPlace(me, e.m_vFirst))
+			return false;
+
+		e.m_fFirstProgress += dt;
+		if (e.m_fFirstProgress < w.m_fFirstSeconds)
+			return false;
+
+		e.m_bFirstDone = true;
+		m_GM.NotifyPlayer(e.m_iAsker, "Errand: " + e.Fill(e.m_Def.m_sTitle), e.Fill(RZ_QuestTracker.WithoutBack(w.StepText())));
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2311,6 +2335,9 @@ class RZ_Errands
 
 		e.m_vPlace = PlaceFor(e, w.m_ePlace, w.NeedKey());
 		e.SetText("place", PlaceText(e, w.m_ePlace, user.GetOrigin()));
+		e.m_bFirstDone = !w.HasFirst();
+		if (w.HasFirst())
+			e.m_vFirst = PlaceFor(e, w.m_eFirst);
 		RZ_PlaceNeeds.Verify(w.NeedKey(), e.m_vPlace, e.m_Def.m_sKey + ": " + e.Fill(w.m_sStep));
 		if (w.m_eProp != RZ_EErrandProp.NONE)
 			RZ_PlaceNeeds.Verify("errand." + RZ_PlaceThings.PropSlot(w.m_eProp), e.m_vPlace, e.m_Def.m_sKey + ": " + e.Fill(w.m_sStep));

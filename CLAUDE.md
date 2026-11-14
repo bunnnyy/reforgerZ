@@ -51,7 +51,8 @@ one. Designs are not docs:
 When you restructure, update the **Doc map** below and the README's doc list in the same commit.
 
 ### Before committing, check
-- [ ] A new or changed task meets `docs/MISSION_RULES.md` (its checklist); a rule's status there is current.
+- [ ] A new or changed task meets `docs/MISSION_RULES.md` (its checklist); a rule's status there is current;
+      `python3 tools/mission_rules.py --strict` ends `mission_rules: OK`.
 - [ ] Every doc statement you touched matches the code. Docs say "planned" for anything not built.
 - [ ] No doc mentions a dropped idea except the roadmap's "Dropped" list.
 - [ ] No broken relative links (`grep -o '([^)]*\.md)' -r README.md docs/ designs/`).
@@ -119,6 +120,8 @@ Write conservatively:
 - Conversations are `.rzd` files in `dialogue/`: after changing one, run `python3 tools/dialogue_pack.py`
   (the dialogue lint; it writes the generated packs in `Dialogue/Pack/`, never edited by hand) and
   `--lock` when new ids ship (`docs/DIALOGUE.md`).
+- Run `python3 tools/mission_rules.py --strict` after adding or changing a task: it must end
+  `mission_rules: OK` (what it checks: `docs/WORKBENCH_SETUP.md`, "Mission rules check").
 - Run `python3 tools/voice_lint.py` after changing player text: it must print `voice_lint: OK`
   (the text lint: what it checks is in `docs/WRITING.md`, how to run it in `docs/WORKBENCH_SETUP.md`).
 - After changes to missions or cross-system logic, run `tools/runtime_test/run.sh` (60–90 min)

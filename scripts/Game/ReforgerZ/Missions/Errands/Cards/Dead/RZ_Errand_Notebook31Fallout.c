@@ -36,7 +36,7 @@ class RZ_Errand_Notebook31Fallout : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Take the notebook from the body {subject_place} (15 s), sell it at the fence, and tell {giver} it wasn't there.";
+		w.m_sStep = "Take the notebook from the body {subject_place} for the fence (15 s). Then tell {giver} it wasn't there.";
 		w.Work(RZ_EWork.TAKE, "Take the notebook");
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 6;

@@ -1687,6 +1687,28 @@ What it can't do:
 | No behaviour is tested | It only compiles. Nothing runs until there's a world with the game mode in it |
 | Folder names must be lowercase `scripts/` | The Linux server is case-sensitive and only looks there. Windows doesn't care, so keep it lowercase for Linux-hosted servers |
 
+### Mission rules check
+
+`tools/mission_rules.py` checks the source against [MISSION_RULES.md](MISSION_RULES.md): two places
+in one objective line, a hand-in by walking up to someone, a spawned door, carrying done as a hold, a
+person's marker on a stored spot, a woman's word on someone who stands in the world, a building named
+where nothing asks for one, a kind of job the tracker can't list, an opening step that only sends you
+back, and an input action without a pad binding. Python 3 only, about ten seconds. Run it before
+every commit that adds or changes a task; with `--strict` it must end `mission_rules: OK`.
+
+```bash
+python3 tools/mission_rules.py              # every open and pending hit (file:line, rule #), then the counts
+python3 tools/mission_rules.py --strict     # exit 1 on any open hit
+python3 tools/mission_rules.py --rule 23    # one rule
+python3 tools/mission_rules.py --all        # the allowed hits too
+```
+
+Each check is a heuristic, so a hit is a place to look. One that's right as it is goes in
+`tools/mission_rules_allow.txt` with its reason (`<rule> <file> <text on the line>  # why`); a reason
+starting `pending:` names the work that clears it, is listed on every run and doesn't fail
+`--strict`. A line that matches nothing any more is reported: remove it. What the source can't show
+is the runtime test's (`RZT rules` lines, [below](#runtime-test-without-workbench)).
+
 ### Text lint
 
 `tools/voice_lint.py` checks every line of player text in the scripts against the writing rules;
@@ -1800,6 +1822,13 @@ without a place (N world events, not jobs)` (a world event is news, never on the
 checked once while the giver's body is out; the tracker's point must be within 5 m of that body.
 Each miss is `RZT objplace FAIL person errand <id> '<objective>': the tracker points at <grid>,
 <giver> stands at <grid> (<n> m off)`, the sum `RZT person objectives: N checked, N wrong`.
+**The mission rules the source can't show** (`RZT_Rules.c`, [MISSION_RULES.md](MISSION_RULES.md)):
+an errand step done at a work site must have its prop up 10 s after the tester first stands there
+(`RZT rules FAIL thing: errand <id> '<step>' at <grid>: nothing stands at its work site 10 s after
+arriving`); every errand handed in after its step is counted by reply (the talk screen's hand-in) or
+by walking up, and a walk-up while the talk screen is on is `RZT rules FAIL walk-up: errand <id>
+'<title>' was handed in by walking up to <giver> (handed <true|false>), not by a reply`. The sum:
+`RZT rules: things N checked, N missing; hand-ins N, by reply N, by walking up N`.
 
 **The cure finale.** Last, after the route walk (the cure stands the line down), the questlines'
 **Wait scale** goes to 0.1 and a scripted finale runs: a commit refused below the gate; the slow

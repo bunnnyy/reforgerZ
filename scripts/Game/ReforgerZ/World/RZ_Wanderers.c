@@ -635,7 +635,7 @@ class RZ_Wanderers
 	//------------------------------------------------------------------------------------------------
 	protected string UniqueName(RZ_Rng rng)
 	{
-		string name = RZ_NoteText.FirstName(rng);
+		string name = RZ_NoteText.ManName(rng);
 		for (int i = 0; i < 20; i++)
 		{
 			bool taken = false;
@@ -648,7 +648,7 @@ class RZ_Wanderers
 			if (!taken)
 				return name;
 
-			name = RZ_NoteText.FirstName(rng);
+			name = RZ_NoteText.ManName(rng);
 		}
 
 		return name;

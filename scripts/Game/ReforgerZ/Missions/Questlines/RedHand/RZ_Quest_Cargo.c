@@ -1519,8 +1519,8 @@ class RZ_QM_CargoTell : RZ_RedHandQuestMission
 
 		if (spot == m_iHavenSpot)
 		{
-			int clerk = AddClue("The chair's table", "A woman is writing the names of the missing on the back of a ration list. The list is long.");
-			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_aSpots[spot], OBJ_HAVEN, "", "Tell the chair where the strays go", clerk, "Talk to the woman at the table");
+			int clerk = AddClue("The chair's table", "A man is writing the names of the missing on the back of a ration list. The list is long.");
+			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_aSpots[spot], OBJ_HAVEN, "", "Tell the chair where the strays go", clerk, "Talk to the man at the table");
 		}
 	}
 

@@ -861,7 +861,7 @@ class RZ_Mission_SpecimenFromTheNest : RZ_Mission_Delivery
 
 		m_sTitle = "Specimen from the Nest";
 		m_sBrief = string.Format("There's a hive in %1, where they lie up together through the day. Living tissue from inside it tells us more about what they're becoming than any body on the slab. Cut a sample and bring it to the lab. Don't burn it, whatever the Haven tells you. Burnt tissue is just ash.", s.m_sName);
-		m_sObjective = string.Format("Cut a tissue sample in the hive in %1 and bring it to the lab.", s.m_sName);
+		ObjThen(string.Format("Cut a tissue sample in the hive in %1.", s.m_sName), "Bring the sample to the lab.");
 		return true;
 	}
 
@@ -1244,6 +1244,13 @@ class RZ_Mission_LiveCapture : RZ_PuzzleMission
 	protected bool m_bPackTaken;
 
 	//------------------------------------------------------------------------------------------------
+	//! Caught: it's in its case.
+	override protected bool ObjFirstDone()
+	{
+		return m_Capture.m_eState == RZ_ECaptureState.CRATED || m_Capture.m_eState == RZ_ECaptureState.DELIVERED;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void GetPropSpots(notnull array<vector> result)
 	{
 		super.GetPropSpots(result);
@@ -1289,7 +1296,7 @@ class RZ_Mission_LiveCapture : RZ_PuzzleMission
 		m_vPos = cage;
 		m_sTitle = "Live Capture";
 		m_sBrief = string.Format("We need a special alive. There's a cage trap set outside its lair in %1. Get it to follow you in, drop the door, keep it calm until the sedative takes, then bring it to the lab before it wakes. Or bring it down without killing it and tie it. Dead is no use to us.", s.m_sName);
-		m_sObjective = string.Format("Trap the special at its lair in %1 and bring it to the lab alive.", s.m_sName);
+		ObjThen(string.Format("Trap the special at its lair in %1.", s.m_sName), "Bring it to the lab alive.");
 		return m_Capture.Begin(gm, m_iId, m_iSettlement, cage, lair, 0);
 	}
 
@@ -1335,7 +1342,7 @@ class RZ_Mission_LiveCapture : RZ_PuzzleMission
 			m_vPos = cage;
 			m_sTitle = "Live Capture";
 			m_sBrief = string.Format("We need one of %1 alive: %2. There's a cage trap set near where they lie up. Get it to follow you in and drop the door, or bring it down without killing it and tie it. Keep it calm until the sedative takes, then bring it to the lab before it wakes. Dead is no use to us.", people.NameAt(t, RZ_EFaction.INSTITUTE), what);
-			m_sObjective = string.Format("Take %1 alive and bring it to the lab before the sedative wears off.", what);
+			ObjThen(string.Format("Take %1 alive.", what), "Bring it to the lab before the sedative wears off.");
 			if (!m_Capture.Begin(gm, m_iId, -1, cage, lair, 0))
 				return false;
 

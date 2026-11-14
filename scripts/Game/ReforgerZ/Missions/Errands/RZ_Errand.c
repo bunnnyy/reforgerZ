@@ -78,6 +78,9 @@ class RZ_ErrandWay
 	RZ_EErrandItem m_eItem = RZ_EErrandItem.NONE;
 	int m_iItems;				// how many, handed over when picked (or at the place, m_bGiveThere)
 	bool m_bGiveThere;			// the items are handed over at the step's place
+	RZ_EErrandPlace m_eFirst = RZ_EErrandPlace.NONE;	// a place to go first (First), then the step's own
+	string m_sFirst;			// its objective line
+	float m_fFirstSeconds;		// how long there
 	int m_iFavorCost;			// paid when picked, with the giver's faction
 	string m_sBackground;		// one of these backgrounds ("nurse,doctor")
 	int m_iTrust;				// a Trust check with the giver's faction (difficulty 1-3), 0 none
@@ -125,6 +128,23 @@ class RZ_ErrandWay
 	bool IsAtPlace(IEntity me, vector place)
 	{
 		return RZ_Arrive.AtSpot(me, place, m_fRadius);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A place to go first, before the step's own (find the ring in the grass, then take it to the
+	//! mother's door): its own objective line (docs/MISSION_RULES.md, rule 23), done by staying there
+	//! `seconds`. `line` is its objective ("Search the grass {subject_place} for the ring.").
+	void First(RZ_EErrandPlace place, string line, float seconds)
+	{
+		m_eFirst = place;
+		m_sFirst = line;
+		m_fFirstSeconds = seconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasFirst()
+	{
+		return m_eFirst != RZ_EErrandPlace.NONE;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -399,6 +419,9 @@ class RZ_Errand
 	vector m_vPlace;			// the taken way's place
 	float m_fProgress;
 	bool m_bStepDone;
+	vector m_vFirst;			// the way's first place (RZ_ErrandWay.First), zero: none
+	bool m_bFirstDone;
+	float m_fFirstProgress;
 	bool m_bNoisy;				// a shot near it while it ran
 	bool m_bUnasked;			// a call-out, not an ask
 	bool m_bFallout;			// a failed story job's fallout (RZ_Fallout): pays at most m_iCap
