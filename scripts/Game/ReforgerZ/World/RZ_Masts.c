@@ -1694,6 +1694,15 @@ class RZ_Masts
 				return string.Format("Weather's turning over %1. Get under a roof.", m.m_sTown);
 		}
 
+		// A road patrol on a road near you (Factions/RZ_RoadPatrols.c)
+		RZ_RoadPatrols patrols = RZ_RoadPatrols.Get();
+		if (patrols)
+		{
+			string patrol = patrols.WarningNear(ent.GetOrigin(), 1500);
+			if (!patrol.IsEmpty())
+				return patrol;
+		}
+
 		RZ_SupplyLines supply = m_GM.GetSupply();
 		if (supply)
 		{
@@ -1765,6 +1774,14 @@ class RZ_Masts
 					options.Insert(string.Format("On %1, a tired voice: \"Truck's through for %2. Keep the road clear.\"", who, dest));
 				else if (secs >= 0 && secs <= 1800)
 					options.Insert(string.Format("On %1: \"Truck rolls in %2 minutes. Load it and shut up about it.\"", who, RZ_Util.RoundToInt(Math.Max(60, secs) / 60)));
+			}
+
+			// One of its road patrols checking in (Factions/RZ_RoadPatrols.c)
+			if (RZ_RoadPatrols.Get())
+			{
+				string walking = RZ_RoadPatrols.Get().HeardLine(f);
+				if (!walking.IsEmpty())
+					options.Insert(string.Format("On %1, a patrol checking in: %2", who, walking));
 			}
 
 			if (territory && territory.IsActive())

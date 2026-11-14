@@ -3592,6 +3592,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
      m_sCross "{0632E9223A6BCD7B}Prefabs/ReforgerZ/Traces/RZ_Trace_Crosses.et"
      m_sSheets "{D7F80D50B000DC3C}Prefabs/ReforgerZ/Traces/RZ_Trace_Sheets.et"
      m_sLantern "{97A0EBD94A0A8325}Prefabs/ReforgerZ/Traces/RZ_Trace_Lantern_Lit.et"
+     m_sPatrolFight "{1D7D4F3220CAD7F0}Prefabs/ReforgerZ/Traces/RZ_Trace_PatrolFight.et"
     }
    }
    m_DialogueSettings RZ_DialogueSettings "{6B2E1D4C9A7F3051}" {

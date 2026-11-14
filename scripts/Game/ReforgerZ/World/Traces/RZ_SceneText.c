@@ -111,9 +111,25 @@ class RZ_SceneText
 			}
 			case "L5": return Truck(s);
 			case "L6": return "Sandbags on the verge and a HALT sign on its side. Nobody's stood here for days.";
+			case "L9": return PatrolFight(s);
 		}
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! L9: a road patrol met the infected here (Factions/RZ_RoadPatrols.c).
+	protected static string PatrolFight(RZ_Scene s)
+	{
+		switch (s.faction)
+		{
+			case RZ_EFaction.MILITARY: return "Spent cases in a neat spread on the verge, and drag marks into the ditch. A patrol held here.";
+			case RZ_EFaction.BANDITS: return "Cases everywhere, and a red hand chalked on the milestone. A crew made a stand here and won.";
+			case RZ_EFaction.SURVIVORS: return "A few cases, a dropped sack, and the grass trodden flat. Somebody had to fight their way through.";
+			case RZ_EFaction.INSTITUTE: return "Cases on the verge and a torn glove. The sample team's guard earned his pay here.";
+		}
+
+		return "Spent cases on the verge, and the grass trodden flat.";
 	}
 
 	//------------------------------------------------------------------------------------------------

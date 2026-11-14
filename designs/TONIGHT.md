@@ -21,7 +21,7 @@ something your standing shuts you out of:
 | Kind | From | Line |
 |---|---|---|
 | Work | a giver with work for you, the dealer, a duty open at your camp | *"Pavel at the mill has work. He looked like he meant it."* |
-| Something happening | a supply truck due, a world event, a tribe's pack restless, a toll changing hands | *"A truck's due at the north post at nine."* |
+| Something happening | a supply truck due, a road patrol on a road near you ([SITES.md](../docs/SITES.md#road-patrols)), a world event, a tribe's pack restless, a toll changing hands | *"A truck's due at the north post at nine."* |
 | Something to find | a landmark not yet found ([LANDMARKS.md](LANDMARKS.md)), an heirloom's rumour ([HEIRLOOMS.md](HEIRLOOMS.md)), a hunt ([ALPHA_HUNT.md](ALPHA_HUNT.md)) | *"They say the dam's keeper never left."* |
 | Yours | a job you hold that's near, a companion's errand ([COMPANION.md](COMPANION.md)) | used when there's no work line |
 

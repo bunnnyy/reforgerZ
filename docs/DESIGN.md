@@ -1312,6 +1312,14 @@ Code: `Factions/RZ_SupplyLines.c`.
 back. A restart takes a truck off the road with no shortage. Without a faction's truck and
 crew prefabs, or with territory off, that faction's places count as always supplied.
 
+### Road patrols
+
+A faction's people walk the real roads round its holdings (Bastion's fire teams, the Red Hand's
+crews, the Haven's scavengers, Halcyon's sample teams), and now and then a single vehicle patrol
+drives them: data until a player is near, met by standing, leaving a fight's spent cases and, for
+Bastion, a Missing Patrol where one is lost. How they run: [SITES.md](SITES.md#road-patrols); how
+they meet you: [REPUTATION.md](REPUTATION.md#road-patrols).
+
 ### Faction life
 
 Code: `Factions/RZ_FactionLife.c`, `Factions/RZ_FactionVoice.c`.

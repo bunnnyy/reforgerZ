@@ -554,6 +554,19 @@ life's ([DESIGN.md](DESIGN.md#camp-life)); none of it changes who is waved throu
 A cleared pass lasts while the post is up; walk well away without clearing it and the next approach
 starts again.
 
+### Road patrols
+
+✅ A faction's patrol on the road ([SITES.md](SITES.md#road-patrols)) meets you by your standing with
+it. Its leader says his line once as you come within 30 m, and you can talk to him:
+
+| Standing | What happens |
+|---|---|
+| Known or better (not the Wildcard) | A friendly line and road news. **"I'll walk the next stretch with you"**: keep within 40 m for its next eight points and it's +2 Fame, once a patrol and once an hour |
+| Below Known, not Hunted | Bastion: **Show them your papers**. In its kit, the look as at a road post; in your own clothes, a search and you're on your way; Watched, told to turn round. The Red Hand: **Pay for the road** (the road post's toll in Favor; locked if you're short). The Haven and Halcyon: a word, and they go on. Road news for anyone |
+| Hunted | No word: they open fire, as any of the faction's people ([What makes AI shoot you](#what-makes-ai-shoot-you)) |
+
+Nothing else changes with a patrol: no Infamy for walking past one, and no Fame for being met.
+
 ### Surrender
 
 At a Bastion checkpoint, a player with Bastion Infamy (15 or more: Watched or Hunted) who walks to

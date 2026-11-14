@@ -55,7 +55,7 @@ and one way to end it: **research the cure.**
   every new wrong costs Fame too. Bastion checkpoints and Red Hand roadblocks on the roads search you, take a toll
   or let you surrender. A faction's uniform gets you past its people, until you're caught.
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
-  AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
+  AI crews, patrols walking the roads round each faction's holdings (and a rare one in a vehicle), Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
 - **Camps that look lived in**: each faction moves into the building in town that suits it
   (Bastion the school or town hall on the road, the Red Hand the garage at the crossroads, the
@@ -301,7 +301,7 @@ scripts/Game/ReforgerZ/
   Factions/      reputation and its 16 names (and the season record and titles), quartermasters, shops and the shop screen's server
                  side, perks, services, hunter squads, bounties,
                  road posts and camps, leaders, AI hostility, disguises and retaliation,
-                 territory, supply trucks, faction life, camp life (scenery and routines; each site's
+                 territory, supply trucks, road patrols, faction life, camp life (scenery and routines; each site's
                  ground on a grid, its surroundings, its people's posts and routes,
                  its story and its audit),
                  reputation's voice (the word for you, crew names, the picture), the voice bank

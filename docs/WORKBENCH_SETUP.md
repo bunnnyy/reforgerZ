@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **394 prefab fields**: 46 on `RZ_GameModeComponent`, 331 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **367 entries**: 219 prefabs the plugin creates, 39 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 109 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 51 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **401 prefab fields**: 46 on `RZ_GameModeComponent`, 338 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **374 entries**: 223 prefabs the plugin creates, 41 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 110 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 52 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -511,6 +511,7 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | as the Bastion wreck, a civilian lorry (`RZ_Trace_TruckWreck_Haven.et`) | — | World > Traces > Kit > Truck wreck, the Haven | optional | L5; empty = text only. As car A |
 | (existing prefab) | as the Bastion wreck, a white van (`RZ_Trace_TruckWreck_Halcyon.et`) | — | World > Traces > Kit > Truck wreck, Halcyon | optional | L5; empty = text only. As car A |
 | (existing prefab) | sandbags in a half ring, a CHECKPOINT. HALT sign on its side (`RZ_Trace_RoadPostRelic.et`) | — | World > Traces > Kit > Road post relic | optional | L6, where a Bastion road post stood; empty = text only. As car A |
+| (existing prefab) | spent cases and torn ammo packaging on a verge (`RZ_Trace_PatrolFight.et`) | — | World > Traces > Kit > A road patrol's fight | optional | L9, where a road patrol met the infected; empty = text only. As car A |
 | (existing prefab) | one fence-paling cross (`RZ_Trace_Crosses.et`) | — | World > Traces > Kit > Cross | optional | N1, the crosses outside the warning zone, placed up to 7 times in a row; empty = text only. As car A |
 | (existing prefab) | two or three paper sheets on the ground, a decal or a flat mesh (`RZ_Trace_Sheets.et`) | — | World > Traces > Kit > Day 1 sheets | optional | N2, the Day 1 sheets near every barrier; empty = text only. As car A |
 | (existing prefab) | `LampKerosene_01_green.et`'s lit twin, its light on LIT_ON_SPAWN, no switch action (`RZ_Trace_Lantern_Lit.et`) | — | World > Traces > Kit > Lantern, lit | optional | S1, a lantern at the lived-in places nearest players after dark; empty = no lanterns. VERIFY 4 of the Traces spike: it lights on clients that stream it in |
@@ -737,6 +738,17 @@ and the UI files) need none, and eight have no base:
 | `RZ_TruckCrew_Bastion.et` | an AI group of 1-2 on MIL; the first one drives | — | Supply > Bastion crew | optional | the crew |
 | `RZ_TruckCrew_RedHand.et` | an AI group of 1-2 on BAND; the first one drives | — | Supply > Red Hand crew | optional | the crew; the truck crew in Tied Down |
 | `RZ_TruckCrew_Halcyon.et` | an AI group of 1-2 on INST; the first one drives | — | Supply > Halcyon crew | optional | the crew |
+
+#### Road patrols
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_Patrol_Bastion.et` | an AI group of four on MIL: a fire team in Bastion's own armed looks | — | Territory > Road patrols > Bastion patrol | optional | Bastion's foot patrols on the roads (empty = Supply > Bastion crew) |
+| `RZ_Patrol_RedHand.et` | an AI group of four on BAND: a crew in the Red Hand's armed looks | — | Territory > Road patrols > Red Hand patrol | optional | the Red Hand's crews on the roads (empty = Supply > Red Hand crew) |
+| `RZ_Patrol_Haven.et` | an AI group of three on SURV: a scavenging party in the Haven's armed looks | — | Territory > Road patrols > Haven patrol | optional | the Haven's scavenging parties on the roads (empty = Supply > Haven crew) |
+| `RZ_Patrol_Halcyon.et` | an AI group of three on INST: two in hazmat beaks and one armed field guard | — | Territory > Road patrols > Halcyon patrol | optional | Halcyon's sample teams on the roads (empty = Supply > Halcyon crew) |
+| (existing prefab) | a drivable jeep (the base game's M151A2) | — | Territory > Road patrols > Bastion patrol vehicle | optional | Bastion's rare vehicle patrol (empty = Supply > Bastion truck) |
+| (existing prefab) | a drivable pickup or car (empty uses the Red Hand's supply truck, a grey UAZ van) | — | Territory > Road patrols > Red Hand patrol vehicle | optional | the Red Hand's rare vehicle patrol (empty = Supply > Red Hand truck) |
 
 #### Camp life
 
@@ -1632,6 +1644,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Leaders | Leaders | `m_LeaderSettings` | **Enabled**, quartermaster is leader (on), interim posts (1, territory off only), body radius (200 m), replace minutes (120), job minutes (30), danger scale, discovery, kill Infamy, body prefabs |
 | Territory | Territory | `m_TerritorySettings` | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs, **Haven guard** (on: a Haven group at the lab gate in the stand after The Whole of It) |
 | Territory | Supply | `m_SupplySettings` | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
+| ReforgerZ|Territory | Road patrols | `m_RoadPatrolSettings` | **On**, at once (2, plus one every 4 players, at most 5), the gap between a faction's foot patrols (20–35 min of play; twice as long while it's weak), the walk out (1–3 km), walking speed (1.3 m/s), body radius (400 m), the chance of a fight on the way (0.25 × infection), **Vehicles** (on: at most one on the server, 45–60 min between a faction's), drive speed (9 m/s), vehicle body radius (700 m), the four patrol groups and the two vehicles ([SITES.md](SITES.md#road-patrols)) |
 | Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
 | Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (200, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)), **Site grid** (on), **Site read ms** (2), **Pre-read** (on), **Audit threshold** (70), **Solver** (on), **Candidates a piece** (24), **Layers** (on), **Board windows** (on), **Layer pieces** (60) ([SITES.md](SITES.md#settings)) |
 | Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), clue minutes (20), flyers, shout minutes (30), wanderer finds, the clue prefabs (car wreck, door, flyer, table radio, the two bodies, barricade); **Openings** (on), **Group gone weight** (18) and **Fever weight** (12), **Opening scenes** (the reasons' scenes and each background's props, filled by `tools/camp_kit/build.py`; a key with none: nothing there), **Contact** (empty: Puzzles > Civilian), **Opening Fame** (10) |
@@ -2169,6 +2182,28 @@ Home** unless the pack is coming back to a house or has a party walking at that 
 in the log), so a spawned group has no members, and a mission built on one may end by itself early
 (`ended by itself` in the log). None of this is part of the mod: the test files are copied into a throwaway addon folder.
 
+### Road patrols check without Workbench
+
+`tools/runtime_test/run.sh patrols [arland|everon]` checks [road patrols](SITES.md#road-patrols) on
+the site audit's world, which (unlike the full test's) has the map's road network. It boots that
+world with the mod's own game mode settings (`places.py prepare`) and, on Arland, Arland's navmesh
+(`layer.py navmesh`), puts the fake player by a Bastion holding and runs `RZT_RoadPatrols.c`: a foot
+patrol of each faction with a road sets out 1–3 km out and back, dry and off the line; one 2.5 km off
+stays data, one brought within 400 m is put out with its leader tagged; it meets the tester as a
+stranger (Bastion's papers clear him, the Red Hand's toll is asked), a friend (road news and a
+stretch to walk) and as Hunted (fired on); its fight leaves spent cases (L9, on the first road point
+that a trace may stand on; none on these roads and it says so); with a vehicle patrol out
+no second sets out; a Bastion patrol lost on the road starts a Missing Patrol there. Whether its people
+then walk is printed, not checked. Lines: `RZT roadpatrols OK|FAIL ...` and `RZT roadpatrols: N
+checks, N failed`; it closes itself in about two minutes (`RZP done`).
+
+```bash
+SERVER_DIR=~/rz_check/server EXTRA_ADDONS_DIR=<folder holding the dependencies> tools/runtime_test/run.sh patrols
+```
+
+The full runtime test runs the same check, but its world has no road network, so there it prints
+`road patrols are off on this world` and moves on.
+
 ### Behaviour layer test without Workbench
 
 `tools/runtime_test/run.sh layer` shows the [behaviour layer](INFECTED.md#how-they-move-and-hunt) at
@@ -2326,7 +2361,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **211** lines with the tag, all but one in the game scripts (one is the comment in
+There are **213** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2349,11 +2384,13 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (98)
+### Medium risk: big features, with a fallback (102)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `World/RZ_Substations.c:1013` | the map's power-line poles (`PowerLine_*_pole*`) are static entities with their prefab's name, also where a power-line generator placed them, so a broken line's spot stands on a real pole | The break is at the yard's own cabinet (the log says "at the yard (no pole found)") |
+| `Factions/RZ_RoadPatrols.c:566` | a road's points (`BaseRoad.GetPoints`, from `GetRoadsInAABB`) are world positions along it with its two ends included, so a patrol's route runs on the road and roads join where their ends meet | Routes come out short and the holding sends nobody (`Road patrols: ... sends nobody`) |
+| `Factions/RZ_RoadPatrols.c:1106` | a road patrol's group walks to its move waypoint, and a crew seated in its vehicle drives there along the roads | It stands; after 90 s without reaching a point it's sent to the next, and it's taken away when everyone leaves |
 | `Interactions/RZ_Interactions.c:1468` | the repo's `Prefabs/Props/Civilian/RadioSmall_01_Base.et` (vanilla's GUID `{B68D3829D4442F80}`, a full copy of vanilla's with our set added) replaces vanilla's prefab, so every small radio on the map and in compositions, its four colours too, carries **Listen to the radio** and the four options in its own `SCR_TurnOnAction` context, beside vanilla's Turn on/off. The hosting itself ran in the runtime test (a new-GUID copy spawned by the tester: tagged, untagged when the tester left, no exception), but the Linux test server doesn't apply a same-GUID copy from an unpacked addon (no more than `chimeraMenus.conf`), so only Workbench or a packed build shows this | The radio gets its own invisible spot again, a second prompt beside vanilla's (as before). In Workbench, open the radio's prefab: the Resource Browser should show the ReforgerZ copy, and its ActionsManagerComponent our five actions; if Workbench wants an override made its own way, use **Override in ReforgerZ** on vanilla's prefab and add the same set (the table in [Add to prefabs you already have](#add-to-prefabs-you-already-have)) |
 | `Interactions/RZ_Medical.c:15` | vanilla's consumable item component runs `ApplyItemEffect` on the server when a medic finishes vanilla's heal on another character (a bandage, tourniquet, morphine or saline used on them) | A Nurse or Doctor no longer slows a bite when treating someone: no line comes. Find the server-side point of vanilla's heal on another character (`SCR_HealingUserAction`, the health item's `ApplyEffect`) and move the hook there |
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
@@ -2818,6 +2855,9 @@ Warnings worth acting on:
 | `Wreck boots: off (...). Wrecks hold nothing.` | **Cars > Wreck boot prefab** is empty (or **Cars > Enabled** is off): set it to `RZ_WreckBoot.et` |
 | `Wreck boot: ... doesn't fit in the boot (...)` | Printed once: a loot item is too big or heavy for the boot's storage and lies beside the wreck instead. Raise the volume, item size or weight on `RZ_WreckBoot.et`'s storage |
 | `Supply: ... truck at ... has nobody to drive it after 90 s (...)` | Printed once per truck, while it waits in the stronghold's yard. Its crew didn't spawn, wasn't within 30 m of the truck, or couldn't take the driver's seat: check the crew prefab (an AI group on the faction) and that the truck has a driver's seat. The truck is lost as late at its deadline |
+| `Road patrols: off (...)` | Printed at start: **Territory > Road patrols > On** is off, or the map has no territory or no road network (an AI world without roads, as the full runtime test's world). Nobody walks the roads |
+| `Road patrols: <faction> at <town> sends nobody: no road to walk 1000 m on within 300 m of it.` | Printed once a holding: it has no road near it, or its roads run into water, the line or another faction's holding within a kilometre. Other holdings still send theirs |
+| `Road patrols: <title> has nobody at the wheel after 30 s; its people go on foot.` | A vehicle patrol's crew didn't take the driver's seat: check the vehicle prefab has one and the patrol group spawns within 12 m of it. The vehicle is left by the road and taken away with them |
 | `Supply trucks are off. ...` / `Territory is off. ...` / `Long Table: off.` / `Stealth: off (...)` | Expected only if you turned them off |
 | `Stealth: on. ... searching 45 s: off (no move waypoint).` | Set Zombies > Move waypoint, or infected that lose a hidden player don't go and search |
 | `Stealth: some infected take no perception factor (...)` | Printed once, the first time infected near a player have no `PerceptionComponent`: the zombie mod uses its own senses. Stealth's factor does nothing for them, and losing them goes by distance ([DESIGN.md](DESIGN.md#stealth)) |
@@ -4423,6 +4463,19 @@ when it happens)
   is still up, the next requisition still waits, and the fence still says to come back.
 - [ ] A Bastion outpost leader dies and is replaced (Replace minutes at 1): when that outpost is
   later abandoned or taken, the new leader leaves with it.
+- [ ] **Road patrols** ([SITES.md](SITES.md#road-patrols)), with a pad: wait by a road 1-2 km out of a
+  holding (or set the shortest and longest minutes between patrols under **Territory > Road patrols**
+  to 1): a patrol walks by in its faction's
+  looks (Bastion four in step, the Red Hand four, the Haven three with sacks, Halcyon two beaks and a
+  guard). Its leader speaks once as you come within 30 m. Talk to him: below Known with Bastion,
+  **Show them your papers**; with the Red Hand, **Pay for the road** (locked when you're short);
+  Known, road news and **I'll walk the next stretch with you** (stay within 40 m for its next eight
+  points: +2 Fame). Hunted: they fire. Say whether they walk the road or stand, whether the group
+  keeps together, and whether it's taken away when you leave (VERIFY `Factions/RZ_RoadPatrols.c:1106`).
+  A vehicle patrol (Bastion's jeep, the Red Hand's van): its crew boards it and drives the road, and
+  there's never a second one on the server. The log: `Road patrols: <title> sets out from <town>
+  (N points, N m out)`, `... put out at <grid>`, `... meets <player>: friendly|stranger|hostile`,
+  `... is back at <town>`.
 - [ ] A supply truck leaves, is driven by its crew, and arrives. Its whole crew gets in before it
   pulls out of the stronghold's yard, and nobody is left standing there.
 - [ ] A leader answers Talk, Work, News and Standing.

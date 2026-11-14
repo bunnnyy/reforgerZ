@@ -20,7 +20,7 @@
 class RZ_Scene
 {
 	string key;			// "f1", "v3.12"
-	string kind;		// "F1".."F8", "N1", "N2", "V1".."V8", "L1", "L2", "L5", "L6"
+	string kind;		// "F1".."F8", "N1", "N2", "V1".."V8", "L1", "L2", "L5", "L6", "L9"
 	float x;
 	float z;
 	float yaw;			// degrees: the way the pieces face (the cars toward the barrier)
@@ -1004,6 +1004,18 @@ class RZ_Scenes
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! L9: a road patrol met the infected here (Factions/RZ_RoadPatrols.c): spent cases on the verge.
+	void PatrolFight(int faction, vector pos)
+	{
+		RZ_Scene s = Live("L9", RZ_TraceWriters.TownAt(pos), RZ_Marks.Verge(pos, 5, 9), 2, false);
+		if (!s)
+			return;
+
+		s.faction = faction;
+		Add(s, "a road patrol's fight");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! L1: a kill site ended in a place the Haven or Bastion knows: a candle chalked on a post, or
 	//! Bastion's stencil. With nobody knowing, nothing.
 	void KillSiteGone(vector pos, string who)
@@ -1551,6 +1563,7 @@ class RZ_Scenes
 			case "L2": Piece(kit.m_sScorch, at, yaw, prefabs, spots, yaws); return;
 			case "L5": Piece(TruckPrefab(kit, s.faction), at, yaw, prefabs, spots, yaws); return;
 			case "L6": Piece(kit.m_sRoadPostRelic, at, yaw, prefabs, spots, yaws); return;
+			case "L9": Piece(kit.m_sPatrolFight, at, yaw, prefabs, spots, yaws); return;
 		}
 	}
 

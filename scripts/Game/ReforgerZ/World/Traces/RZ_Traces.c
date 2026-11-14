@@ -143,6 +143,9 @@ class RZ_TraceKit
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Road post relic (optional, L6): sandbags in a half ring, a CHECKPOINT. HALT sign on its side. Empty = text only", "et")]
 	ResourceName m_sRoadPostRelic;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "A road patrol's fight (optional, L9): spent cases and torn packaging on the verge. Empty = text only", "et")]
+	ResourceName m_sPatrolFight;
+
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Cross (optional, N1): one fence-paling cross, placed up to 7 times in a row. Empty = text only", "et")]
 	ResourceName m_sCross;
 

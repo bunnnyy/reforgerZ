@@ -577,6 +577,15 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 	protected static const int OPT_THIRD = 2;	// ambushed: tell the post; orders: the open channel
 	protected static const int OPT_SELL = 3;	// ambushed: a quiet word to the crew
 
+	protected static vector s_vForce;			// a road patrol lost here (Factions/RZ_RoadPatrols.c): the job starts at it
+
+	//------------------------------------------------------------------------------------------------
+	//! The next Missing Patrol set up starts where a road patrol was lost (vector.Zero: as usual).
+	static void ForceSpot(vector at)
+	{
+		s_vForce = at;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	void RZ_Mission_MissingPatrol()
 	{
@@ -601,12 +610,20 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickEmptySettlement(gm, 20, 100, this);
+		if (s_vForce != vector.Zero)
+			m_iSettlement = gm.FindNearestSettlement(s_vForce);
+		else
+			m_iSettlement = PickEmptySettlement(gm, 20, 100, this);
+
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
 
-		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 200, s.m_fRadius + 600);
+		if (s_vForce != vector.Zero)
+			m_vPos = RZ_Util.GroundPos(s_vForce);
+		else
+			m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 200, s.m_fRadius + 600);
+
 		array<string> calls = {"Two-Six", "Four-One", "Three-Three", "One-Nine", "Five-Two"};
 		m_sCall = "Patrol " + calls[RZ_Util.PickIndex(RZ_WorldFacts.Get().GetSeed() + m_iSettlement * 7, calls.Count())];
 		Truth(gm, s);
