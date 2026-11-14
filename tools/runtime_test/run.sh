@@ -46,7 +46,8 @@
 #     by the giver doesn't finish it and the hold with a dressing does; a hand-over (the Cut) is done
 #     there and then and only with the thing; a real outside door is found near the town and a
 #     door-like prop is refused in the open ("RZT openings OK|FAIL ...", "RZT openings: N checks");
-#   A fresh spawn (RZT_Fresh.c): as a veteran, the opening has its contact within 15 m and step 1 first, the last life's questline part and jobs aren't the new one's, and the Quests tab lists nothing taken ("RZT fresh OK|FAIL ...", "RZT fresh: N checks");
+#   The door and the favour (RZT_Favour.c): for every background, the door asks who you were and a habit is picked (each habit's effect checked), the favour's fetch is handed at a place, the hand-over waits for its reply (standing by him never counts), and the background's way settles it without a hand-over ("RZT favour OK|FAIL ...", "RZT favour: N checks");
+#   A fresh spawn (RZT_Fresh.c): as a veteran, the opening has its contact within 15 m and the door's favour first, the last life's questline part and jobs aren't the new one's, and the Quests tab lists nothing taken ("RZT fresh OK|FAIL ...", "RZT fresh: N checks");
 #   - starts every registered mission type one at a time, moves the player where the quest tracker
 #     points, then ends it (alternately won and failed) so Setup, Update, rewards and cleanup all run;
 #   - checks every objective's place on the way (RZT_ObjPlace.c): for each mission and questline
@@ -274,6 +275,7 @@ grep -E 'RZT carry(: done| FAIL|: off|: no building)' "$LOG" | sed 's/.*RZT /  /
 grep -E 'RZT openings' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT case' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT fresh' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT favour' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT kitchen' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (epilogue check: .*FAILED|epilogue done|epilogue: )' "$LOG" | sed 's/.*RZT /  /'
@@ -285,7 +287,8 @@ grep -q 'RZT objplace FAIL' "$LOG" && { echo "FAILED: an objective points somewh
 grep -q 'RZT carry FAIL' "$LOG" && { echo "FAILED: carrying for real (the pile, the put-down indoors, the stack)"; exit 1; }
 grep -q 'RZT openings FAIL' "$LOG" && { echo "FAILED: an opening's step (the son, a hand-over, a door: RZT_Openings.c)"; exit 1; }
 grep -q 'RZT case FAIL' "$LOG" && { echo "FAILED: the runner's case (found, carried, kept over a death, handed over by reply: RZT_Case.c)"; exit 1; }
-grep -q 'RZT fresh FAIL' "$LOG" && { echo "FAILED: a fresh spawn (its contact, step 1, a clean Quests tab: RZT_Fresh.c)"; exit 1; }
+grep -q 'RZT fresh FAIL' "$LOG" && { echo "FAILED: a fresh spawn (its contact, the favour first, a clean Quests tab: RZT_Fresh.c)"; exit 1; }
+grep -q 'RZT favour FAIL' "$LOG" && { echo "FAILED: the door and the favour (who you were, the habit, the fetch, the hand-over by reply, the background's way: RZT_Favour.c)"; exit 1; }
 grep -q 'RZT kitchen FAIL' "$LOG" && { echo "FAILED: kitchen work at a kitchen (RZT_Kitchen.c: a kitchen thing at the prompt, the camp's own cook pot)"; exit 1; }
 grep -q 'RZT Power test: .*FAILED' "$LOG" && { echo "FAILED: the power station's looks (the dressing, the generator's sound or the lamps' list)"; exit 1; }
 exit 0

@@ -1507,10 +1507,40 @@ class RZ_Openings
 		else if (stage == RZ_EOpeningStage.FAVOUR)
 		{
 			d = m_Favours.FetchDef(o.m_iFavour);
-			if (!d || !RZ_OpeningFavours.PickPlace(o.m_iFavour, giverAt, place, placeText))
+			bool found = d && RZ_OpeningFavours.PickPlace(o.m_iFavour, giverAt, place, placeText);
+			// Nowhere for your background's favour here: his tin, else his sack, if one of those has a place
+			// (your background's way goes with it: it's for your favour only)
+			if (!found)
+			{
+				array<int> plain = {RZ_EFavour.TIN, RZ_EFavour.SACK};
+				foreach (int other : plain)
+				{
+					if (found || other == o.m_iFavour)
+						continue;
+
+					d = m_Favours.FetchDef(other);
+					found = d && RZ_OpeningFavours.PickPlace(other, giverAt, place, placeText);
+					if (found)
+					{
+						RZ_Log.Info(string.Format("Openings: no place for %1's favour (%2) here, %3 instead", RZ_Util.PlayerName(o.m_iPlayer), typename.EnumToString(RZ_EFavour, o.m_iFavour), typename.EnumToString(RZ_EFavour, other)));
+						o.m_iFavour = other;
+					}
+				}
+			}
+
+			if (!found)
 			{
 				// Nowhere here the words would be true of: no favour, on to the runner
 				RZ_Log.Info(string.Format("Openings: no place for the favour (%1) for %2 at %3, on to the runner", typename.EnumToString(RZ_EFavour, o.m_iFavour), RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(giverAt)));
+				// The door still greets you and asks who you were (beat 1), before the next step's words
+				if (beat && o.m_iStage == 0)
+				{
+					if (!tree)
+						beat.Insert(RZ_OpeningText.GreetPlain(o.m_iReason, o.m_iWho));
+
+					AskWhoYouWere(o, beat);
+				}
+
 				o.m_iStage += 2;
 				StartStage(o, me, tree, beat, sayNow);
 				return;
@@ -2300,6 +2330,10 @@ class RZ_Openings
 		if (Stage(o) != RZ_EOpeningStage.FAVOUR || !RZ_OpeningFavours.HasWay(o.m_sBackground))
 			return false;
 
+		// Your way is through your own background's favour, not the plain one that stood in for it
+		if (o.m_iFavour != RZ_OpeningFavours.For(o.m_sBackground))
+			return false;
+
 		if (!RZ_OpeningFavours.WayIsReply(o.m_sBackground) && !m_Favours.WayDef(o.m_sBackground))
 			return false;
 
@@ -2445,6 +2479,52 @@ class RZ_Openings
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its id (the talk screen's), -1 without one.
+	int OpeningIdOf(int playerId)
+	{
+		RZ_Opening o = Running(playerId);
+		if (!o)
+			return -1;
+
+		return o.m_iId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stage under way (RZ_EOpeningStage), NONE without one.
+	int StageOf(int playerId)
+	{
+		RZ_Opening o = Running(playerId);
+		if (!o)
+			return RZ_EOpeningStage.NONE;
+
+		return Stage(o);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errand of the step under way, null without one.
+	RZ_Errand StepErrand(int playerId)
+	{
+		RZ_Opening o = Running(playerId);
+		RZ_Errands errands = m_GM.GetErrands();
+		if (!o || !errands || o.m_iErrand < 0)
+			return null;
+
+		return errands.FindById(o.m_iErrand);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The next stage now, not a moment from now (the tests').
+	void NextNow(int playerId, IEntity me)
+	{
+		RZ_Opening o = Running(playerId);
+		if (!o || !o.m_bNext)
+			return;
+
+		o.m_bNext = false;
+		Ready(o, me);
 	}
 
 	//------------------------------------------------------------------------------------------------

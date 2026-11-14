@@ -134,7 +134,9 @@ or way isn't offered here.
 | Need | The words | Flags | Things | Picked by |
 |---|---|---|---|---|
 | `opening.start` | outside the door you came out of, someone waiting | BUILDING(any/12) NOT_STEEP(30) (houses down the road are the roll's ranking, not its words) | NPC the contact within 15 m (empty: nobody stands there, the scene's note points at the nearest work) | the openings' place roll |
-| `opening.search` | the house (the chemist's, the garage...) down the road; the next person's house | BUILDING(house or the background's kind/15) NOT_STEEP(30), checked outside its side; the spot inside, on its ground floor | | Down the Road (step 1), the next person (Find *name*); its words by what's there ([below](#a-place-is-what-its-words-say)) |
+| `opening.favour` | where the contact's favour sends you: the chemist's, the garage, his shed, the school, the shop, the church, the house next door | BUILDING(house or the favour's kind/15) NOT_STEEP(30), checked outside its side; the spot inside, on its ground floor | | The door's favour (its fetch); its words by what's there ([below](#a-place-is-what-its-words-say)) |
+| `opening.favour.door` | the neighbour's door: a real outside door, its doorstep | BUILDING(house/6) NOT_STEEP(30), checked outside its side; the spot on the doorstep of the house's real outside door | | The Spare Key (the Police Officer's and the Ex-Con's favour) and its ways |
+| `opening.search` | the house (the chemist's, the garage...) down the road; the next person's house (no chain hands it now) | BUILDING(house or the background's kind/15) NOT_STEEP(30), checked outside its side; the spot inside, on its ground floor | | Down the Road (step 1), the next person (Find *name*); its words by what's there ([below](#a-place-is-what-its-words-say)) |
 | `opening.water` | the well | WATER_SOURCE(8) | | Water, Water for the Fever |
 | `opening.pump` | the petrol station | BUILDING(fuel/20) | | The Pump |
 | `opening.downwind` | the pack's ground | NOT_STEEP(35) | | Downwind, by a lair |

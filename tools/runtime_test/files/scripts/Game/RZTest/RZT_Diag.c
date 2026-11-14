@@ -627,6 +627,11 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 12 && !RZT_Openings.Tick(this, m_aRZTRoute[0]))
 			return;
 
+		// The opening's door and favour (RZT_Favour.c): who you were, the habit, the fetch, the
+		// hand-over by reply, your background's way, for every background
+		if (m_iRZTSec >= 13)
+			RZT_Favour.Tick(this);
+
 		// The runner's case (RZT_Case.c): found, carried, kept over a death, handed to Halcyon by reply
 		if (m_iRZTSec >= 12 && !RZT_Case.Tick(this, m_aRZTRoute[0]))
 			return;

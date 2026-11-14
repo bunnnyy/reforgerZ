@@ -690,6 +690,25 @@ asks for, so it holds with a gamepad or a modified client too; the spawn screen 
 locked. With the lock off, or if a locked pick gets through another way, the player keeps
 its gear for that life but plays as Unemployed, and is told how to unlock it.
 
+### Habits
+
+Code: `Backgrounds/RZ_Habits.c`. One small thing a character is known for, picked at the opening's
+door ([Openings](#openings-how-every-life-starts)): the contact's first talk asks who you were, and
+the reply you pick is the habit. A ReforgerZ effect, not a perk tree; it shows on the Standing page's
+header (*"HABIT: STEADY HANDS (holds at work 10% shorter)"*, [UI.md](UI.md#the-notebook)).
+
+| Habit | Effect |
+|---|---|
+| Steady hands | Holds at work sites 10% shorter (the site's fast hold for you, `RZ_WorkSites.SetFast`) |
+| Light feet | 10% quieter while crouched (your stealth visibility crouched x 0.9, [Stealth](#stealth)) |
+| A good liar | The first persuade of each conversation one step easier (`RZ_DialogueTrees.Difficulty`) |
+
+It belongs to the character that picked it (`RZ_OpeningCase.CharacterStamp`, the one "this
+character" helper, so it follows whatever a character becomes: [designs/PERSISTENCE.md](../designs/PERSISTENCE.md)).
+Today a death starts a new character, who is asked again; a veteran's door (guidance level 3) asks
+nothing and the last habit carries. Saved on the profile (`m_iHabit`, `m_iHabitLife`). More habits,
+earned by doing, are planned ([designs/HABITS.md](../designs/HABITS.md)).
+
 **Personal goals.** Each life gets one goal, flavoured by background (the Hunter heads for
 their cabin, the Ex-Con goes back for an old stash): reach a town 1.2–4 km away (in it or at its
 edge: [arriving](#mission-building-blocks)), survive a while,
@@ -3398,18 +3417,24 @@ them). The talk screen never opens by itself ([DIALOGUE.md](DIALOGUE.md#who-open
 it opens when you talk to them, and then the first step starts in that conversation: their greeting,
 that step's piece of the story, then the step's ask, and the step is yours and tracked. **The chain
 never sends you back:** every step is done where it's done (`m_bEndsThere`), and the next one
-starts from there, at a new place, in one of two ways by your background:
+starts from there, at a new place. **They walk with you:** once the first ask is out and the talk
+screen is shut, the contact comes with you (*"I'm coming with you. ... You lead."*): their body becomes
+an escort ([building blocks](#mission-building-blocks), `RZ_Escort`) of **Guidance > Companion**
+(`RZ_OpeningCompanion.et`, a one-man civilian group) that follows 4 m behind you, stops while infected
+are within 25 m of them or nobody's within 150 m, and can be killed. Each next step starts as soon as
+they're within 30 m of you, said by them as subtitles; not caught up within a minute, it starts
+anyway, on its card. They walk you to the end and say one line there (*"This is it. I'll find a
+corner."*). On the way they say one line, once each, at a thing worth knowing: a door mark within
+12 m (*"A cross means the dead are inside. A circle, someone's still home."*), an infected within
+40 m (*"They hear you before they see you. Keep low."*), a locked building within 10 m, and the
+broadcast a minute and a half in. No escort room (**Contracts > Max escorts**) or no prefab: they stay
+where they stood, each next step starts where you are, on its card, and the favour's hand-over is
+the reply at them where they stand.
 
-| Pattern | Backgrounds | How you move on |
-|---|---|---|
-| **They walk with you** (escort) | Mechanic, Hunter, Lab Technician, Unemployed, Raider, Ex-Con, Radio Operator: steps out and about (a pump, a pack's ground, the remains, the road, a door that owes, a toll, the channel) | Once the first ask is out and the talk screen is shut, the contact comes with you (*"I'm coming with you. ... You lead."*): their body becomes an escort ([building blocks](#mission-building-blocks), `RZ_Escort`) of **Guidance > Companion** (`RZ_OpeningCompanion.et`, a one-man civilian group) that follows 4 m behind you, stops while infected are within 25 m of them or nobody's within 150 m, and can be killed. Each next step starts as soon as they're within 30 m of you, said by them as subtitles; not caught up within a minute, it starts anyway, on its card. They walk you to the end and say one line there (*"This is it. I'll find a corner."*). No escort room (**Contracts > Max escorts**) or no prefab: they stay where they stood, and each next step starts where you are, on its card |
-| **They send you on** (hand-off) | Nurse, Doctor, Elder, Soldier, Police Officer, Drifter (a plan with steps 1 and 2) | When step 1 starts, its giver picks the next person: a house 200–600 m on from step 1's place (the one nearest where the chain ends first), 150 m or more from them, not locked, the spot outside its side facing step 1's place meeting `opening.search`; named, and who they are by your background (*the father with the sick son*, *the man whose friend was bitten*, *the man between two families*, *the one keeping the gate*, *the shopkeeper who kept your station's keys*, else *someone who heard you help*). With the ask they say *"When you're done there, don't come back for me. Go on to Emil, the father with the sick son, at Emil's house in Morton."* Step 1 done, Emil stands there (a body tagged as the first was) and *Find Emil* is tracked ("Find Emil at Emil's house in Morton. Talk to them."); within 25 m he calls you over (*"You're the one Pavel sent? Over here."*), and talking to him gives step 2. Step 2 done, the walk starts where you are. The first giver stays behind (talked to, *"Go on. Emil's waiting for you, not me."*) and goes once nobody's within 150 m. No house fits: step 2 is theirs, *Back to Pavel Holm*, the only way back left |
-
-With neither (levels 2–3, one step and the lead, or the Drifter's second and third asks), each next
-step starts where you are, said by them when they're within 30 m, else only its card. Already talking
-to them when it's due, it comes into the same screen. Without the talk screen, **Talk to** says the same lines as subtitles. Their one
+Already talking to them when a step is due, it comes into the same screen. Without the talk screen,
+**Talk to** says the same lines as subtitles. Their one
 built reply is "What was it you needed?": the live step said again in their words, word for word from the tracker ("Like I said. Go to Halcyon's field station at ..."), then a short line of their own, so a missed ask is never lost (`RZ_Openings.Remind`). Talking to them while a step runs says the same. Two minutes into a wait without
-talking to them, while you're within 30 m, they call once more; leave a step 1 alone for two minutes
+talking to them, while you're within 30 m, they call once more; leave the favour alone for two minutes
 by them and they say it once more (a subtitle). Nobody comes to talk within 45 minutes: the opening
 ends. With nobody outside, or once they're dead, a step starts by itself, tracked: the chain's steps
 are the **only job in the game handed to you rather than asked for**; its errands say so
@@ -3423,61 +3448,59 @@ a talk objective comes before the first step, and before a next person's step (a
 
 | Level | The chain |
 |---|---|
-| 0, brand new | All three steps (about 15 minutes, then the case's walk to the station); the reasons lean to the hiding place |
-| 1, learning | All three; step 1's search is 10 s, not 20 |
-| 2, familiar | The scene and whoever's outside; step 1 (shorter), your background's step 2, then **The Runner** |
-| 3, veteran | The scene as a one-line read and whoever's outside; step 1 (shorter), then The Runner |
+| 0, brand new | The door (who you were), the favour, the runner (about 25 minutes, then the case's walk to the station); the reasons lean to the hiding place |
+| 1, learning | The same |
+| 2, familiar | The same; the shorter forms are planned ([designs/OPENING.md](../designs/OPENING.md)) |
+| 3, veteran | The same, but the door asks nothing: the last character's habit carries |
 
-Every life starts with step 1 from the person at the door: an experienced player's chain is shorter
-after it, never without it (the author's play-test as a veteran: nobody there and the lead tracked
-at once read as "the first mission is already skipped").
+Every life starts with the door's favour from the person at the door (the author's play-test as a
+veteran: nobody there and the lead tracked at once read as "the first mission is already skipped").
 
-Step 3 is **The Runner** ([the case](#the-case)) whenever the case can be found here. When it can't
+The last step is **The Runner** ([the case](#the-case)) whenever the case can be found here. When it can't
 (Guidance > Cold case empty, the cure out, Halcyon with nowhere to take it, or nowhere a runner could
 have fallen), the chain ends as it did: a learning player's walk to where they belong (below), else
 **Where the Work Is** (`opening.lead`), the walk to the nearest place with work: a Haven safehouse,
 or an outpost or stronghold of a faction that doesn't hunt you; done within 40 m of it, an hour to
 get there, one line on arrival ("Someone with a list looks up."), and no Fame. With nobody outside,
-the chain is Where the Work Is alone. All three steps:
+the chain is Where the Work Is alone. The steps:
 
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
-| 1. Down the Road | Search a building 150–450 m from them: a work site's **Search it, quietly** (8 s; 6 s from level 1 up; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot inside it, on its ground floor; done there. One of your background's kinds when one is there (below), else a house, named for what it really is ([PLACES.md](PLACES.md#a-place-is-what-its-words-say)); no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
-| 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold), else The Cut (dress their hand with anything medical you carry: the hand-over reply on their talk screen, done there and then) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
-| 3. The Runner | Take the case from a runner who fell 200–600 m off, by a road or in a yard on the edge of town ([the case](#the-case)); done when it's in your pack, there. Then the lead to Halcyon's field station | the main story: the cure, Halcyon, the factions by name | The line ("That was a shot. Out by the line. Somebody ran for it again.") and Halcyon's case |
-| (else) To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
+| The door | Their first talk asks who you were, in passing (*"You're steady with that bag. Still a nurse, under all that?"*), and three replies answer it; the one you pick is this character's [habit](#habits) | the talk screen, replies, the tracker | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
+| 1. The favour | Their problem, which fits your background: fetch one named thing for them from a place its words are true of (a work site's hold there, the thing standing at it), done there; or your background's own way through it (below) | searching, moving quietly, door marks, the infected, your background's own skill | |
+| 2. The hand-over | Give it to them: the [Errand] reply on their talk screen (*"Here's your battery."*), there and then; standing by them never does it. They walk with you, so it's never a walk back. Skipped when your background's way settled it | hand-overs are replies | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
+| 3. The Runner | Take the case from a runner who fell 200–600 m off, by a road or in a yard on the edge of town ([the case](#the-case)); done when it's in your pack, there. Then the lead to Halcyon's field station | the main story: the cure, Halcyon, the factions by name | The line ("That was a shot. Out by the line. Somebody tried for it.") |
+| (else) To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter and the cure; their send-off says who holds the place |
 
-No step 2 (yours can't run here, no well near and nothing medical on you): straight to The Runner.
-With **Dialogue > Trees** on, the conversations `for opening` add their greeting (by who they are,
-your background and why today) and things to ask on the way
-([DIALOGUE.md](DIALOGUE.md#the-conversations)); without it, a plain greeting by who they are and why
-today opens the first step, when you first talk to them.
+No place here for your background's favour (nothing its words would be true of within reach): a
+plain one stands in, the Raider's tin from the house next door, else the sack from the old shop, and
+your background's way doesn't show with it. No place for those either: the door still asks who you
+were, and the chain goes straight on to The Runner.
 
-**Step 2 by background** (`RZ_OpeningSteps.c`). Each runs on the
-errand engine like the other steps; while it runs, `RZ_ErrandDef.StepCounts` lets the background's
-own system say whether its clock runs. The first that can run here is yours; else water, else The
-Cut. Step 1's building is of your background's kind when one is 150–450 m off. Step 2's place is
-measured from whoever gives it: the next person (handed on) or where the contact walking with you
-stands, so it's a new place, never back where you began. Each step's place
-meets its need ([PLACES.md](PLACES.md#the-needs)) or the step can't run here.
+**The favour by background** (`Guidance/RZ_OpeningFavours.c`). Each is a step on the errand engine
+like the chain's others. The thing's place is a building of the right kind 90–450 m from them
+(the neighbour's, the lad's and the house next door: 35–300 m), its words true of what's there
+([PLACES.md](PLACES.md#a-place-is-what-its-words-say)), checked against `opening.favour` (the neighbour's:
+`opening.favour.door`, a real outside door's doorstep); the hold is on its ground floor. While the
+fetch runs, your background's way is a reply on their talk screen, tagged with it ([Nurse], [Mechanic]...),
+locked with what's missing when you lack what it takes. Picked, a **reply way** settles the favour
+there and then; a **way of its own** hands its step instead of the fetch (the fetch goes quietly),
+done where it's done. Either way there's no hand-over.
 
-| Background | Step 1's building | Step 2 | What it needs to run | Done when |
-|---|---|---|---|---|
-| Nurse | the chemist's, else the old aid post, the vet's farm or the doctor's house | **The Fever**: treat their son, who lies there: a body laid on a mattress (a **Treat his fever** care work site, Props > Duty person) on the ground floor of the nearest house within 60 m, else beside them; the tracker's diamond is on him, not on his father | something medical on you | the 8 s hold at him, with your hands; one medical item is taken then (without one you're told what it needs). Never for standing by his father, never for opening a talk |
-| | | else **Water for the Fever** | a well within 400 m | **Fill what you can carry** at the well (8 s) (it'll be boiled) |
-| Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, lying there as the Fever's son does (inside any building within 60 m, else beside them), 10 minutes before it lapses | an antidote on you | the 8 s hold at him, **Give him the antidote**; the antidote is taken then |
-| | | else **The Clock** with a dressing | something medical | the 8 s hold at him, **Clean and bind the bite**; one medical item is taken then |
-| Mechanic | a garage or petrol station | **The Pump**: fuel from the nearest petrol station within 800 m | a petrol station near | 5 s at the pump with 5 litres in a can |
-| Hunter | a farm | **Downwind**: watch a pack's ground, unseen | 150 m short of the nearest pack's lair within 1.6 km, else a tree line 150–250 m out (four trees within 40 m) | 30 s within 25 m, hidden (built stealth), quiet; back |
-| Police Officer | a police post or hall | **The Station Keys**: the contact gives you the key to a locked building 40–300 m off | locks and the key prefab, a real lock near | inside that building |
-| Ex-Con | — | **The Toll**: walk up to a Red Hand toll and away again, no fight | a Red Hand roadblock or camp gate within 1.5 km; not while the Red Hand hunts you | 10 s within 30 m with no shot within 80 m in the last minute |
-| Lab Technician | a school or clinic | **A Sample**: from what's left of a big one 80–250 m out, on a road's verge, else in a yard by a house: a special that doesn't burst (**Zombies > Special prefabs**) is made and killed there when the step starts, the sample (**Cure > Sample prefab**) beside it; the body is kept from the corpse cleanup until the opening ends | the sample prefab and such a special; not after the cure | at the remains with a sample in your pack |
-| Radio Operator | the hut under a mast | **Open Channel**: answer someone calling on the open channel (**Call on the open channel**, `opening.channel`) | Dialogue > Trees and Radio calls on, a radio on you | answered |
-| Unemployed | a shop | **A Fair Swap**: catch the nearest wanderer on the road within 1.5 km | a wanderer near | 5 s with them (the place follows them): a tin you carry is swapped for 3 Haven Favor (small pay) |
-| Soldier | an old barracks or hall | **Hold the Gate** 15–25 m out for a minute: the gate's noise (heat 12, again every 20 s) draws the infected | ground there that isn't steep | 60 s within 15 m |
-| Raider | — | **The Debt**: collect at a house 60–250 m off (the errands' crate prop at its door) | a house that far off | 10 s at the door: +1 Infamy with the Haven (the word getting round, small) |
-| Elder | — | **Two Families**: hear them out with the contact, persuade 1 (factionless, [Elder] +1: `opening.settle`) | Dialogue > Trees on | the talk settled it (a Short settles it by half, said) |
-| Drifter | — | **Three asks**: up to three in a row of the gate, downwind, the swap, the debt, the two families, water and the cut, shuffled, each that can run here | — | each as above; the second and third come "from" the street's other people |
+| Background | Their problem | The thing, and where (the hold) | Your way through |
+|---|---|---|---|
+| Nurse | Their son's fever | the boy's medicine, from the chemist's, else the old aid post, else the doctor's house (**Search the shelves for it**, 10 s) | **[Nurse]** *"That's not a fever, that's an infection. Hold him still."*: the son lies there (a mattress on a house's ground floor near them, else beside them) and you **Treat his fever** (8 s, one medical item taken); locked without something medical |
+| Doctor | The same | the same | **[Doctor]** the same, *"It's the water he's been drinking."* |
+| Mechanic | Their car won't start | a battery, from the garage or the petrol station (**Find a battery**, 10 s, a toolbox and parts there) | **[Mechanic]** *"Forget the battery. Show me the car."*: **Hotwire it** (12 s) at the car 6–15 m from them (**Guidance > Car wreck prefab**) |
+| Hunter | Something's at their hens | the last box of shells, from their farm's shed, else their old house up the lane (**Find the box of shells**, 8 s) | **[Hunter]** *"Before anyone fetches shells, let me see the tracks."*: **Read the tracks** (8 s, quiet) 15–40 m from them: *"A man? Boots?"* |
+| Police Officer | Their neighbour won't answer | the spare key, under the mat at the house over the way: a real outside door's doorstep (**Look under the mat**, 3 s) | **[Police]** *"Leave the key. Knocking is my job."*: **Knock: it's the police** (4 s) at that door, and the door opens |
+| Ex-Con | The same | the same | **[Ex-Con]** *"Back doors are never as good as front ones."*: **Work the lock, quietly** (10 s, unseen) at that door, and the door opens |
+| Lab Technician | Their insulin's gone warm | the cool box, from the school, else the old aid post or the chemist's (**Find the cool box**, 10 s) | **[Lab Technician]** *"Insulin doesn't need a fridge. It needs cold."*: **Pack it in cold water** (8 s) by them |
+| Radio Operator | They can't raise their brother | a battery for their set, from the shop (**Find a battery**, 8 s) | **[Radio Operator]** *"Never mind your set. I'll raise him on mine."*: settled there and then; locked without a radio on you |
+| Soldier | A lad's taken their rifle | the rifle, from the lad at the lad's house (**Take the rifle off him**, 10 s; the lad stands there) | **[Soldier]** *"Leave the lad to me."*: **Give it here, son** (3 s) at the lad |
+| Raider | They owe the crews a tin | a tin, from the house next door (**Find a tin**, 8 s) | **[Raider]** *"I know who collects on this street. It's forgotten."*: settled there and then |
+| Elder | Two families want the same well | the well rota, from the church's board, else the hall's (**Take the rota off the board**, 3 s, papers there) | **[Elder]** *"Fetch both of them out here. I'll settle it in the street."*: settled there and then |
+| Unemployed, Drifter | Their last sack of potatoes | the sack, from the old shop's back room (**Find the sack**, 8 s) | none |
 
 **Where the walk ends** (only when there's no case) fits who you were:
 
@@ -3494,12 +3517,12 @@ someone there says one line, and you get **Guidance > Opening Fame** (10) with t
 no hall-of-fame helped line, no deeds (the swap's Favor and the debt's Infamy, above, are those
 steps' own).
 
-**The infected keep off a waiting contact.** While the contact waits for you (before step 1 to the
+**The infected keep off a waiting contact.** While the contact waits for you (before the favour to the
 end of step 2), no infected spawn within 150 m of them, and any that wander within 60 m go: out of
 your sight they're removed, in sight (or a tribe's or hunting one) they're sent back home. Your own
 shot still kills them.
 
-**When it ends early.** The contact killed during steps 1–2: the step ends and the chain goes
+**When it ends early.** The contact killed during the favour or its hand-over: the step ends and the chain goes
 straight on to The Runner by itself; without the case, whoever finds you says so and the chain goes
 to the walk to the nearest safehouse (or, without the walk, to Where the Work Is). The Clock lapsing loses the
 bitten friend (they say so) and the chain goes on; any other step that lapses, death or leaving ends
@@ -3512,18 +3535,26 @@ the chain and where it ends), `... called ... over before step N`, `... talked t
 `... went on talking with ... into step N`, `... step N (key) for
 ...`, `... step N done by ... in N s`, `... died`, `Openings: ended for ...: why (step, minutes)`,
 every life's `<player> <background> at <grid>: contact <name> spawned at <n> m`, the fallbacks' `no ...
-place fits`, `no place`, `NO CONTACT (<why>)`, `NO OPENING`, `no step 2 can run`,
-`...'s bitten friend was lost`, `no runner's case for ... at <grid>, the old end instead`, and
+place fits`, `no place`, `NO CONTACT (<why>)`, `NO OPENING`, the favour's `the favour (<FAVOUR>) is at
+<place> (<prefab>, <kind>), <n> m from the contact` or `no place for the favour (<FAVOUR>) for ... at
+<grid>, on to the runner` (a plain one standing in: `no place for <player>'s favour (<FAVOUR>) here, <TIN|SACK>
+instead`), `<player> is <habit> (the habit, <effect>)` or `... keeps the habit <habit>
+(a veteran's door asks nothing)`, `<player> took their background's way (<background>, <key>) at <grid>`
+or `... settled the favour by their background's way (<background>), there and then`, `the neighbour's
+door at <grid> opened (<background>)`, `... handed over to <name> (step N, task N, favour N), done there
+and then`, `...'s bitten friend was lost`, `no runner's case for ... at <grid>, the old end instead`, and
 `ended for ...: found work at ...` or `... took the runner's case`; the case's own lines are under
 [the case](#the-case).
 
 *Simplified:* the earlier-life contact is a wanderer only (never a safehouse occupant), and says
 what they remember, not your old name; "the nearest job" for levels 2–3 is the nearest place that
-gives work, walked to, not a job already picked for you (jobs start from people). Step 2: the Mechanic's is the pump
-only (no car to start); the Nurse's water is fetched, not boiled; the Lab Technician's big one is the
-errands' prop and a sample, not a special's body; the Ex-Con's toll is passed by talking near it
-without a fight, not by a disguise check; the Elder's two families speak through the one contact;
-the Drifter's three people are one contact passing on the street's asks.
+gives work, walked to, not a job already picked for you (jobs start from people). The favour: the
+fetched thing is held for you as data until the hand-over (it isn't an item in your pack); the
+Mechanic's car is the openings' car prop, not a car you could drive; the Hunter's tracks, the
+neighbour's mat and key are words at the place, nothing stands for them; there's no dog in the stack,
+so the Unemployed's and the Drifter's favour is a sack, with no way of their own; the shorter forms by
+level wait ([designs/OPENING.md](../designs/OPENING.md)). The old step 1 (Down the Road) and step 2s
+(`RZ_OpeningSteps.c`) are out of the chain; The Fever's care step is the Nurse's and the Doctor's way.
 
 ### The case
 

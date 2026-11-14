@@ -55,8 +55,8 @@ class RZ_OpeningFavours
 
 		// Mechanic
 		w = Fetch(RZ_EFavour.CAR, "The Battery", "Find a battery that holds a charge at {place}.", RZ_EWork.SEARCH, "Find a battery", 10, RZ_EErrandProp.PARTS);
-		w.Take("She won't turn over. Not a click. It's the battery, it has to be. {place} will have one that still holds a charge.",
-			"I've been trying to start her since the roads shut, as if there's anywhere to go. Humour me. {place}. A battery.");
+		w.Take("It won't turn over. Not a click. It's the battery, it has to be. {place} will have one that still holds a charge.",
+			"I've been trying to start it since the roads shut, as if there's anywhere to go. Humour me. {place}. A battery.");
 		Give(RZ_EFavour.CAR, "Give Him the Battery", "Give {giver} the battery.");
 
 		// Hunter
@@ -81,14 +81,14 @@ class RZ_OpeningFavours
 		w = Fetch(RZ_EFavour.BROTHER, "A Battery for the Set", "Find a battery for his set at {place}.", RZ_EWork.SEARCH, "Find a battery", 8, RZ_EErrandProp.PARTS);
 		w.Take("I can't raise my brother. The set's fine, it's the battery. {place} might have one. He's two towns over, and he worries.",
 			"My brother calls every night at nine. He hasn't. My set's dead. {place} sold batteries, once.");
-		Give(RZ_EFavour.BROTHER, "Give Him the Battery", "Give {giver} the battery for his set.");
+		Give(RZ_EFavour.BROTHER, "Give Him the Battery", "Give {giver} the battery for the set.");
 
 		// Soldier: the lad is there (a work site's person, standing)
 		w = Fetch(RZ_EFavour.RIFLE, "The Rifle", "Take the rifle back from the lad at {place}.", RZ_EWork.HANDS, "Take the rifle off him", 10, RZ_EErrandProp.NONE);
 		w.m_bPerson = true;
 		w.Take("A lad from the end house took my rifle. Says he's going to the line to shoot his way out. He's at {place}. Get it back before he tries.",
 			"The boy's got my rifle and a head full of nonsense. {place}. Get it off him. Gently, if you can.");
-		Give(RZ_EFavour.RIFLE, "Give Him the Rifle", "Give {giver} his rifle.");
+		Give(RZ_EFavour.RIFLE, "Give Him the Rifle", "Give {giver} the rifle.");
 
 		// Raider
 		w = Fetch(RZ_EFavour.TIN, "A Tin", "Find a tin of anything at {place}.", RZ_EWork.SEARCH, "Find a tin", 8, RZ_EErrandProp.CRATE);
@@ -117,14 +117,14 @@ class RZ_OpeningFavours
 		}
 
 		w = WayStep("mechanic", "Hotwire It", "Hotwire his car at {place}.", RZ_EWork.HANDS, "Hotwire it", 12, RZ_EErrandProp.CAR);
-		w.Done("She's running. Listen to her. Where did you learn that? No. Don't tell me.",
+		w.Done("It's running. Listen to that. Where did you learn that? No. Don't tell me.",
 			"Running, and no battery. I'm not going to ask.");
 		w = WayStep("hunter", "The Tracks", "Read the tracks by his hens at {place}.", RZ_EWork.HANDS, "Read the tracks", 8, RZ_EErrandProp.NONE);
 		w.m_bQuiet = true;
 		w.Done("A man? Boots? Then it's not a fox that wants my hens. It's a neighbour. That's worse.",
 			"Size nine, and hungry. I know whose boots those are. I'll have a word.");
 		w = WayStep("police", "Open Up", "Knock at {place} as the police.", RZ_EWork.HANDS, "Knock: it's the police", 4, RZ_EErrandProp.NONE);
-		w.Done("He opened the door. He opened the door! Asleep in his chair, he says. Asleep for a day.",
+		w.Done("He opened the door. He actually opened the door. Asleep in his chair, he says. Asleep for a day.",
 			"He heard 'police' and came running. Habit. Thank you.");
 		w = WayStep("excon", "The Back Door", "Work the back lock at {place}, quietly.", RZ_EWork.HANDS, "Work the lock, quietly", 10, RZ_EErrandProp.NONE);
 		w.m_bQuiet = true;
@@ -577,7 +577,7 @@ class RZ_OpeningFavours
 		switch (favour)
 		{
 			case RZ_EFavour.FEVER: return "Two now, two at bedtime, it says. I'll read it to him. Thank you. I mean it.";
-			case RZ_EFavour.CAR: return "She'll turn over now. Not that there's anywhere to drive to. It's the principle.";
+			case RZ_EFavour.CAR: return "It'll turn over now. Not that there's anywhere to drive to. It's the principle.";
 			case RZ_EFavour.HENS: return "Shells. Now whatever it is had better come back tonight.";
 			case RZ_EFavour.NEIGHBOUR: return "I'll go round now. Whatever's in there, I'd rather know.";
 			case RZ_EFavour.INSULIN: return "Cold. Properly cold. You've bought me a month. Maybe two.";
