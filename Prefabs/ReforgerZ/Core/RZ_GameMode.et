@@ -5469,7 +5469,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
        "{0619993AE6CDBF85}Prefabs/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE.et" "{5C7E23A702959B1C}Prefabs/Characters/HeadGear/Helmet_M1_01/Helmet_CIV_Firefighter.et" "{2E0FAA5F39CBA66C}Prefabs/ReforgerZ/Crafting/RZ_Wire.et" "{267D3FAF0F92499F}Prefabs/ReforgerZ/Crafting/RZ_Nails.et" "{6CB732A4814E2F43}Prefabs/ReforgerZ/Crafting/RZ_Scrap.et" "{F51872C09AA3A89A}Prefabs/ReforgerZ/Crafting/RZ_Cells.et" "{EF604A05A5998102}Prefabs/Characters/Handwear/Gloves_Pilot_US_01/Gloves_Pilot_US_Black.et"
       }
       m_aRare {
-       "{FB66C1EC2E5DB34C}Prefabs/Clothing/Gas_Mask.et" "{CAB1F18E563F8489}Prefabs/Items/Equipment/Backpacks/firefighter oxygen tank.et" "{87FAD1AE2D462BD2}Prefabs/Weapons/Melee/Fire Axe.et" "{C347738A4C9E58EE}Prefabs/Characters/Uniforms/Suit_Pilot_US_01/firefighter_suit.et" "{CB716A41903571AD}prefabs/weapons/Melee/Knife_US.et" "{62D174018D1046F5}Prefabs/Items/Equipment/Canteens/Canteen_Soviet_01_Black.et"
+       "{FB66C1EC2E5DB34C}Prefabs/Clothing/Gas_Mask.et" "{CAB1F18E563F8489}Prefabs/Items/Equipment/Backpacks/firefighter oxygen tank.et" "{87FAD1AE2D462BD2}Prefabs/Weapons/Melee/Fire Axe.et" "{C347738A4C9E58EE}Prefabs/Characters/Uniforms/Suit_Pilot_US_01/firefighter_suit.et" "{CB716A41903571AD}prefabs/weapons/Melee/Knife_US.et" "{62D174018D1046F5}Prefabs/Items/Equipment/Canteens/Canteen_Soviet_01_Black.et" "{01C470CBEFA41D39}Prefabs/ReforgerZ/Crafting/RZ_Fuse.et"
       }
       m_aElectronics {
        "{842711C53E9F890C}Prefabs/Items/Equipment/Misc/Portable_Radio.et"
@@ -5544,6 +5544,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sLurePrefab "{CD06FAC27E299703}Prefabs/ReforgerZ/Crafting/RZ_RadioLure.et"
     m_sPlugsPrefab "{6CEB9445ED635609}Prefabs/ReforgerZ/Interactions/RZ_SparkPlugs.et"
     m_sMapCopyPrefab "{EDDE944F7E4788F2}Prefabs/ReforgerZ/Crafting/RZ_MapCopy.et"
+    m_sFusePrefab "{01C470CBEFA41D39}Prefabs/ReforgerZ/Crafting/RZ_Fuse.et"
     m_sSterilePrefab "{7CAFE5B9FFAE60EA}Prefabs/ReforgerZ/Crafting/RZ_SterileDressing_Swab.et"
     m_sCharcoalPrefab "{86CC36A7C8FC6221}Prefabs/ReforgerZ/Crafting/RZ_Charcoal.et"
     m_sJerkyPrefab "{C22A2F123CD609FC}Prefabs/Items/Food/Meat_01_Dry.et"
@@ -5725,6 +5726,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
      m_sCross "{0632E9223A6BCD7B}Prefabs/ReforgerZ/Traces/RZ_Trace_Crosses.et"
      m_sSheets "{D7F80D50B000DC3C}Prefabs/ReforgerZ/Traces/RZ_Trace_Sheets.et"
      m_sLantern "{97A0EBD94A0A8325}Prefabs/ReforgerZ/Traces/RZ_Trace_Lantern_Lit.et"
+     m_sPatrolFight "{1D7D4F3220CAD7F0}Prefabs/ReforgerZ/Traces/RZ_Trace_PatrolFight.et"
     }
    }
    m_DialogueSettings RZ_DialogueSettings "{6B2E1D4C9A7F3051}" {

@@ -953,14 +953,20 @@ class RZ_Traps
 			if (g.m_Ent)
 			{
 				IEntity root = g.m_Ent.GetRootParent();
-				if (root && root != g.m_Ent)
+				if (root && root != g.m_Ent && !InVehicle(g.m_Ent))
 				{
 					// Picked up: it stops
 					g.m_bRunning = false;
 					continue;
 				}
 
-				g.m_vPos = g.m_Ent.GetOrigin();
+				// On a car's back (loaded straight from the ground into its storage): it runs on there,
+				// and lights and charges where the car stands
+				IEntity where = root;
+				if (!where)
+					where = g.m_Ent;
+
+				g.m_vPos = where.GetOrigin();
 			}
 
 			if (!g.m_bRunning)
@@ -996,6 +1002,14 @@ class RZ_Traps
 				m_GM.NotifyPlayer(playerId, "Charged", "You run a lead off the generator: your radio and torch batteries are full. A charged radio digs a scrambled channel out of the static faster.");
 			}
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A generator kit in a vehicle's storage: its root parent is the vehicle.
+	protected static bool InVehicle(IEntity kit)
+	{
+		IEntity root = kit.GetRootParent(); // VERIFY: an item moved from the ground into a vehicle's cargo storage has the vehicle as its root parent (as an item in a character's pack has the character)
+		return root && root != kit && Vehicle.Cast(root) != null;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -76,6 +76,18 @@ class RZ_Broadcast
 			return;
 
 		m_fTimer = 0;
+		// The loop's relay (World/RZ_LoopRelay.c): cut, it's silent for a night; a swapped tape
+		// plays in its place for an evening
+		if (RZ_LoopRelay.LoopSilent())
+			return;
+
+		string tape = RZ_LoopRelay.LoopOverride();
+		if (!tape.IsEmpty())
+		{
+			m_GM.NotifyAll(TITLE, tape);
+			return;
+		}
+
 		m_GM.NotifyAll(TITLE, GetText());
 	}
 

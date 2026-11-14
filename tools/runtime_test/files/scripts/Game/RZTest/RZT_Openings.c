@@ -185,7 +185,7 @@ class RZT_Openings
 			// Every handed step ends where it's done: none waits to be handed in by walking back
 			int waits = 0;
 			string which = "";
-			array<RZ_OpeningStepDef> defs = {chain.m_Search, chain.m_SearchShort, chain.m_Lead, chain.m_LeadNote, chain.m_TalkFirst, chain.m_TalkNext, chain.m_TalkFind};
+			array<RZ_OpeningStepDef> defs = {chain.m_Lead, chain.m_LeadNote, chain.m_TalkFirst, chain.m_TalkNext};
 			for (int ti = 0; ti < 40; ti++)
 			{
 				RZ_OpeningStepDef td = chain.Def(ti);
@@ -271,6 +271,16 @@ class RZT_Openings
 				return true;
 			}
 
+			// With the talk screen on, only the reply hands it in. The test world has no talk screen, so
+			// it's switched on from here, before the step can be done (its work site is 10-18 m from the
+			// giver, inside the hand-in reach: with the talk screen off, standing there would hand it in,
+			// as the rule allows), and put back after the hand-in check
+			s_bTalkWas = RZ_DialogueSettings.Get().m_bTalkScreen;
+			s_sReplyWas = RZ_UISettings.Get().m_sTalkReplyLayout;
+			RZ_DialogueSettings.Get().m_bTalkScreen = true;
+			if (s_sReplyWas.IsEmpty())
+				RZ_UISettings.Get().m_sTalkReplyLayout = "{00000000000000A1}UI/RZT_Reply.layout";
+
 			RZT_Fake.MoveTo(s_Rules.m_vPlace + Vector(0.8, 0, 0));
 			return false;
 		}
@@ -301,15 +311,8 @@ class RZT_Openings
 		if (s_iSec == 88)
 		{
 			Check(s_Rules.m_bStepDone, "the rules errand's step is done at its place");
-			// Back with the giver: with the talk screen on, only the reply hands it in. The test world
-			// has no talk screen, so it's switched on for this part (the server only reads the flag
-			// and that a reply layout is named) and put back after
-			s_bTalkWas = RZ_DialogueSettings.Get().m_bTalkScreen;
-			s_sReplyWas = RZ_UISettings.Get().m_sTalkReplyLayout;
-			RZ_DialogueSettings.Get().m_bTalkScreen = true;
-			if (s_sReplyWas.IsEmpty())
-				RZ_UISettings.Get().m_sTalkReplyLayout = "{00000000000000A1}UI/RZT_Reply.layout";
-
+			Check(s_Rules.m_eState == RZ_EErrandState.HELD, "the rules errand wasn't handed in by standing at its work site (the talk screen is on)");
+			// Back with the giver: with the talk screen on, only the reply hands it in
 			RZ_NamedPerson back = errands.GetPeople().Get(s_sRulesGiver);
 			if (back)
 				RZT_Fake.MoveTo(back.m_vPos + Vector(1, 0, 0));
@@ -320,14 +323,15 @@ class RZT_Openings
 		if (s_iSec == 106)
 		{
 			Check(RZ_Dialogue.IsOn(), "the talk screen is on for the hand-in check");
-			Check(s_Rules.m_eState == RZ_EErrandState.HELD, "15 s back with the giver did not hand the errand in (the talk screen is on)");
-			if (s_Rules.m_eState == RZ_EErrandState.HELD)
+			bool held = s_Rules.m_eState == RZ_EErrandState.HELD;
+			Check(held, "15 s back with the giver did not hand the errand in (the talk screen is on)");
+			if (held)
 				errands.RZT_ReplyHandIn(s_Rules, RZT_Fake.ID);
 
 			RZ_DialogueSettings.Get().m_bTalkScreen = s_bTalkWas;
 			RZ_UISettings.Get().m_sTalkReplyLayout = s_sReplyWas;
 
-			Check(s_Rules.m_eState == RZ_EErrandState.DONE, "the hand-in reply finished the errand");
+			Check(held && s_Rules.m_eState == RZ_EErrandState.DONE, "the hand-in reply finished the errand (it was still held until the reply)");
 			Print("RZT rules (so far): " + RZT_Rules.Summary());
 			Print(string.Format("RZT openings: %1 checks, %2 failed", s_iChecks, s_iFails));
 			s_bDone = true;

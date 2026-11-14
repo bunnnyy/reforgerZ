@@ -50,7 +50,7 @@ class RZ_LongTableSettings
 	[Attribute("1", desc: "The Long Table on: some seasons, one small family in one farmhouse in an empty part of the map, and its two questlines (docs/DESIGN.md, The Long Table). Off = no house, nothing taken, its questlines never start")]
 	bool m_bEnabled;
 
-	[Attribute("0.75", desc: "Chance that a season has a Long Table (rolled once, at the season's first start)")]
+	[Attribute("1", desc: "Chance that a season has a Long Table (rolled once, at the season's first start): every season by default")]
 	float m_fChance;
 
 	[Attribute("6", desc: "Hunger the family gains per hour of play (0-100, x season speed). It takes someone only above 50, and each one lowers it by 40")]
@@ -70,6 +70,9 @@ class RZ_LongTableSettings
 
 	[Attribute("mag,magazine,ammo,cartridge,bandage,medkit,firstaid,first_aid,morphine,saline,tourniquet", desc: "Trade: what the family takes for a jar (prefab name keywords, lower case: ammunition and medicine). The jar is a food item from Interactions > Search > Loot pool")]
 	string m_sTradeWords;
+
+	[Attribute(desc: "The house's reach: signs, the bell, the voice at supper, the farm laid out, the market, the boy, the injured man, the jars, the dead taken, the door mark, the harvest supper (World/RZ_LongTableReach.c). Empty = the defaults")]
+	ref RZ_LongTableReachSettings m_Reach;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -132,6 +135,7 @@ class RZ_LongTableSave
 	float lostZ;
 	int c1Begun;
 	string offerIdent;
+	bool harvestDone;
 	ref array<string> noticers = {};
 	ref array<string> consumed = {};
 	ref array<ref RZ_TableMemberSave> members = {};
@@ -320,7 +324,9 @@ class RZ_LongTable
 	protected float m_fTellTimer;
 	protected bool m_bPublished;
 	protected bool m_bC1Was;
-	protected bool m_bPurgeDue;							// found out: the Red Hand purges its buyer next round
+	protected bool m_bPurgeDue;
+	protected ref RZ_LongTableReach m_Reach;					// signs, the bell, the voice, the market... (RZ_LongTableReach.c)
+	protected ref array<string> m_aInvited = {};			// identities asked to supper on the road this session							// found out: the Red Hand purges its buyer next round
 
 	// The fight (the guest rule, or a questline's)
 	protected IEntity m_FightGroup;
@@ -337,6 +343,7 @@ class RZ_LongTable
 	{
 		m_GM = gm;
 		m_Settings = settings;
+		m_Reach = new RZ_LongTableReach(gm, this, settings.m_Reach);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -356,6 +363,60 @@ class RZ_LongTable
 	int GetLostRole() { return m_iLostRole; }
 	string GetOfferIdent() { return m_sOfferIdent; }
 	bool WasHeard() { return m_bHeard; }
+	float GetHunger() { return m_fHunger; }
+	bool BodiesUp() { return m_bSpawned; }
+	RZ_LongTableReach GetReach() { return m_Reach; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone heard enough to start asking (the reach's tests and clues).
+	void MarkHeard()
+	{
+		if (!m_bHeard)
+			RZ_Log.Info("Long Table: a player heard the rumour.");
+
+		m_bHeard = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A tell on the road from the reach (the dead taken in the night).
+	void AddRoadTell(vector pos, string text)
+	{
+		AddTell(pos, text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The farm's trade (ammunition or medicine) for a jar, as at the farm.
+	bool TakesTrade(IEntity user)
+	{
+		return RZ_ItemHelper.Has(user, m_Settings.m_sTradeWords);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void TakeTrade(IEntity user)
+	{
+		RZ_ItemHelper.Take(user, m_Settings.m_sTradeWords, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The boots by the door, seen (once a life: a little suspicion).
+	void SeeBoots(int playerId)
+	{
+		RZ_TableMemory mem = Memory(playerId);
+		if (!mem || (mem.m_iFlags & MEM_BOOTS) != 0)
+			return;
+
+		mem.m_iFlags = mem.m_iFlags | MEM_BOOTS;
+		AddSuspicion(2, "the boots by the door");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Asked to supper on the road (the boy, the injured man): the table knows you're coming.
+	void Invite(int playerId)
+	{
+		string ident = m_GM.GetProfile(playerId).m_sIdentity;
+		if (!ident.IsEmpty() && !m_aInvited.Contains(ident))
+			m_aInvited.Insert(ident);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! There is a house this season: open, moving or found out (not broken up).
@@ -633,6 +694,7 @@ class RZ_LongTable
 	{
 		RZ_LongTableSave s = new RZ_LongTableSave();
 		s.rolled = m_bRolled;
+		s.harvestDone = m_Reach.HarvestDone();
 		s.state = m_eState;
 		s.settlement = m_iSettlement;
 		s.x = m_vHouse[0];
@@ -710,6 +772,7 @@ class RZ_LongTable
 	{
 		RZ_LongTableSave s = m_Restored;
 		m_bRolled = s.rolled;
+		m_Reach.SetHarvestDone(s.harvestDone);
 		m_eState = s.state;
 		m_iSettlement = s.settlement;
 		m_vHouse = RZ_Util.GroundPos(Vector(s.x, 0, s.z));
@@ -1183,6 +1246,8 @@ class RZ_LongTable
 			UpdateVisits(dt, ids, players);
 		}
 
+		m_Reach.Tick(dt, ids, players);
+
 		m_fHostTimer += dt;
 		if (m_fHostTimer >= HOST_CHECK)
 		{
@@ -1252,6 +1317,7 @@ class RZ_LongTable
 		}
 
 		CheckSuspicion();
+		m_Reach.DataTick(players);
 
 		// The farm's town fell to the infected: they leave, once a season, while nobody's after them
 		RZ_Settlement s = m_GM.GetSettlement(m_iSettlement);
@@ -1683,7 +1749,8 @@ class RZ_LongTable
 				at = RZ_Mission.LandPointNear(m_vHouse, 6, 18);
 			}
 
-			IEntity e = RZ_Util.SpawnPrefab(prefab, at, Math.RandomFloat(0, 360));
+			// Sunday clothes (World > Long Table > Reach > Family looks), the same look each time
+			IEntity e = RZ_Util.SpawnPrefab(m_Reach.LookFor(prefab, i + 7), at, Math.RandomFloat(0, 360));
 			if (!e)
 				continue;
 
@@ -1906,6 +1973,12 @@ class RZ_LongTable
 	//! "Talk to ..." on one of the family, or a tell on the road (RZ_PuzzleActionHelper.RouteRead).
 	void HandleRead(int playerId, int idx, IEntity owner)
 	{
+		if (idx >= RZ_LongTableReach.IDX_BASE)
+		{
+			m_Reach.HandleRead(playerId, idx, owner);
+			return;
+		}
+
 		if (idx >= CLUE_TELL)
 		{
 			ReadTell(playerId, idx - CLUE_TELL);
@@ -2001,6 +2074,12 @@ class RZ_LongTable
 	//! 2 declare a bite; on the road: 0 accept the invitation, 1 decline.
 	void HandleChoice(int playerId, int idx, int option, IEntity owner, IEntity user)
 	{
+		if (idx >= RZ_LongTableReach.IDX_BASE)
+		{
+			m_Reach.HandleChoice(playerId, idx, option, owner, user);
+			return;
+		}
+
 		RZ_TableMember m = MemberAt(idx);
 		if (!m || !user)
 			return;
@@ -2077,6 +2156,12 @@ class RZ_LongTable
 			AddSuspicion(2, "the boots by the door");
 		}
 
+		// Asked on the road (the boy, the injured man): they knew you'd come
+		string ident = m_GM.GetProfile(playerId).m_sIdentity;
+		if (!ident.IsEmpty() && m_aInvited.Contains(ident))
+			text += " \"You came,\" says the boy. \"I said you would.\"";
+
+		text += m_Reach.MealClue(playerId);
 		text += "\n" + GreeterName() + " tells you the roads. " + RoadNews(user.GetOrigin());
 
 		// Family: a bowl kept back for you, once a real day
@@ -2181,7 +2266,11 @@ class RZ_LongTable
 			return;
 		}
 
-		ResourceName jar = PickFood();
+		// Their own jar (World > Long Table > Reach > Jar), else a food from the loot pool
+		ResourceName jar = m_Reach.JarPrefab();
+		if (jar.IsEmpty())
+			jar = PickFood();
+
 		if (jar.IsEmpty())
 		{
 			m_GM.NotifyPlayer(playerId, FarmTitle(), string.Format("%1 shakes his head. \"Nothing put by this week. Next time.\"", mother));
@@ -2460,6 +2549,11 @@ class RZ_LongTable
 		{
 			line = string.Format("There's smoke past %1 most evenings. Nobody lives out there. Nobody should.", GetTownName());
 		}
+		else if (m_eState == RZ_ETableState.ACTIVE && Math.RandomFloat01() < 0.3)
+		{
+			// Before anyone suspects: the road's good word for them
+			line = string.Format("The farm out past %1 feeds anyone. Supper at half six, a bell for it. I keep meaning to go.", GetTownName());
+		}
 
 		if (line.IsEmpty())
 			return "";
@@ -2494,6 +2588,7 @@ class RZ_LongTable
 		d.m_sWho = who;
 		d.m_fAt = m_fClock;
 		m_aDeaths.Insert(d);
+		m_Reach.OnDeath(pos, who);
 		while (m_aDeaths.Count() > 6)
 		{
 			m_aDeaths.RemoveOrdered(0);

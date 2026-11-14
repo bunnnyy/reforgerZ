@@ -459,6 +459,35 @@ class RZ_WorkSites
 		return place;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! `at` if it meets the place need `work.site` (dry, not steep, not behind a lock), else the
+	//! nearest spot that does within 10, 20 then 40 m, logged; `at` itself when none does.
+	protected static vector Steady(vector at, string label)
+	{
+		RZ_PlaceNeed need = RZ_PlaceNeeds.Get("work.site");
+		if (!need)
+			return at;
+
+		string why;
+		if (RZ_PlaceCheck.Check(at, need, -1, "", why))
+			return at;
+
+		float reach = 10;
+		for (int wider = 0; wider < 3; wider++)
+		{
+			vector moved = RZ_PlaceFind.Near(at, 0, reach, need);
+			if (moved != vector.Zero)
+			{
+				RZ_Log.Info(string.Format("Work sites: \"%1\" moved %2 m from %3 (%4) to meet its place need", label, RZ_Util.RoundToInt(RZ_Util.DistXZ(at, moved)), RZ_SettlementScanner.GridReference(at), why));
+				return RZ_Util.GroundPos(moved);
+			}
+
+			reach = reach * 2;
+		}
+
+		return at;
+	}
+
 	// ================================================================ Owners
 	//------------------------------------------------------------------------------------------------
 	//! Opens (or reopens, by key) a site at `pos`. hold: the hold in seconds (Scaled is applied);
@@ -488,6 +517,11 @@ class RZ_WorkSites
 
 		s.m_fSeconds = Scaled(hold);
 		s.m_vPos = RZ_Util.GroundPos(pos);
+		// On the ground, a spot that misses the work.site need (a slope, the shore) moves to the nearest
+		// that meets it within 40 m (docs/PLACES.md): an owner's point is where the job is, not to the metre
+		if (!keepHeight)
+			s.m_vPos = Steady(s.m_vPos, s.m_sLabel);
+
 		// Indoors (Indoors below): on the building's floor, which the terrain doesn't know
 		if (keepHeight && pos[1] > s.m_vPos[1])
 		{

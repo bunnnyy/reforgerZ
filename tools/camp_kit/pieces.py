@@ -1308,6 +1308,7 @@ TRACES = {
     'm_sCross': ('RZ_Trace_Crosses', [P('WoodenFenceOld_01_pole.et', 0, 0), P('Junk_01_single_planks.et', 0, 0.05, 0, 0.9, 0, 90)]),
     'm_sSheets': ('RZ_Trace_Sheets', [P('Notice_A4_Vertical_V1.et', 0, 0, 20, 0.01, -90), P('Notice_A4_Vertical_V1.et', 0.35, 0.2, 75, 0.01, -90), P('Notice_A4_Vertical_V1.et', -0.3, 0.4, 140, 0.01, -90)]),
     'm_sLantern': ('RZ_Trace_Lantern_Lit', [P('LampKerosene_01_green.et', 0, 0)]),
+    'm_sPatrolFight': ('RZ_Trace_PatrolFight', [P('GarbageAmmunition_USSR_01.et', 0, 0), P('GarbageAmmunition_US_01.et', 1.4, 0.5, 70), P('GarbageAmmunition_USSR_01.et', -1.2, 0.9, 200)]),
 }
 
 # Openings (Guidance > Opening scenes on RZ_GameMode.et, docs/DESIGN.md "Openings"): key -> (composition

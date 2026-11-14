@@ -1122,6 +1122,8 @@ class RZ_ZombieSpawner
 
 			float desired = s.m_iSize * m_Settings.m_fDensityPerSize * (s.m_fInfection / 100) * stage.m_fDensityMult * m_fEventDensityMult;
 			desired += m_GM.GetHeat().GetHeat(s.m_vCenter) / 25;
+			// Lit streets at night keep them off a little (World/RZ_Substations.c; the lamps' heat draws more)
+			desired = desired * RZ_Substations.LitStreetsMult(s.m_vCenter);
 			if (m_iFocusSettlement >= 0)
 			{
 				if (idx == m_iFocusSettlement)

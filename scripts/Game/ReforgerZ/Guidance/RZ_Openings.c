@@ -10,11 +10,11 @@
 //! step's piece of the story and its ask come in that conversation, and the step is handed there
 //! (between steps, "Talk to <name>" again). With nobody outside, or once they're dead, a step
 //! starts by itself, tracked: the only job in the game that does. The chain
-//! (RZ_OpeningChain) is errand steps by your guidance level: close by and quiet, your background's
-//! own system (RZ_OpeningSteps.c), and the walk to where your background belongs, which pays a
-//! little Fame with that faction (levels 0-1); your background's step, then the nearest place with
-//! work (level 2); the nearest place with work only, and someone outside one time in three
-//! (level 3). With nobody outside, the scene's read points you at the work.
+//! (RZ_OpeningChain) is errand steps by your guidance level (docs/DESIGN.md, "Openings"): the door
+//! (who you were), the favour and its hand-over, the line, the runner and his case (levels 0-1);
+//! the same with no question at the door and the line's short form (level 2); the door, the line's
+//! short form and the runner, about five minutes (level 3). Ferda comes after the case
+//! (RZ_OpeningFixer). With nobody outside, the scene's read points you at the work.
 //!
 //! It replaces "a wanderer finds you" for a life with someone outside; the gentle start, the
 //! wind-up radio, the tips and the guidance levels stay. Not in the epilogue week (the place is
@@ -25,7 +25,7 @@
 enum RZ_EOpeningStage
 {
 	NONE,
-	SEARCH,		// step 1: a building close by, quietly
+	SEARCH,		// retired (the old step 1's search); kept so saved plans keep their numbers
 	TASK,		// step 2: your background's own system (the Drifter: up to three asks)
 	WALK,		// step 3: to where your background belongs
 	LEAD,		// the last step with nobody outside (or no case): to the nearest place with work
@@ -145,12 +145,8 @@ class RZ_Openings
 	protected static const float CONTACT_MAX = 2700;	// and once the opening is 45 minutes old, with nobody within 50 m
 	protected static const float SEARCH_MIN = 150;		// step 1's house: this far from the contact...
 	protected static const float SEARCH_MAX = 450;		// ...and no further
-	protected static const float NEXT_MIN = 200;		// the next person (hand-off): this far on from step 1's place...
-	protected static const float NEXT_MAX = 600;		// ...and no further
-	protected static const float NEXT_FROM_FIRST = 150;	// and at least this far from the first giver
 	protected static const float CATCH_UP = 60;		// walking with you: the next step waits this long for them to catch up
 	protected static const float NEXT_CALL = 25;		// the next person calls you over this close
-	protected static const int SEARCH_TRIES = 6;		// buildings tried before giving up on a kind
 	protected static const float SEARCH_OUT = 3;		// the spot: this far out of the building's side facing the contact
 	protected static const float STRANGER_CHANCE = 0.25;	// a stranger instead of someone from before
 	protected static const float EARLIER_CHANCE = 0.35;	// an earlier life's wanderer, when one remembers you
@@ -274,6 +270,21 @@ class RZ_Openings
 	void Close(int playerId, string why)
 	{
 		EndFor(playerId, why);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The runtime test's chain check: the line's step goes as its short form would (the scene itself
+	//! is RZT_Line's check), and the runner is next.
+	void SkipLineForTest(int playerId)
+	{
+		RZ_Opening o = Running(playerId);
+		if (!o || Stage(o) != RZ_EOpeningStage.LINE)
+			return;
+
+		DropStep(o, "done");
+		o.m_Line = null;
+		o.m_bLineShort = true;
+		Next(o);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -513,10 +524,9 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The chain's plan by guidance level, with errands on: every life starts with step 1 (Down the
-	//! Road), shorter from level 1; then 0-1 the background's step and the walk; 2 the background's
-	//! step, then the nearest place with work; 3 that place. Step 2's tasks to try: the
-	//! background's own, or the Drifter's asks.
+	//! The chain's plan, with errands on: the favour, its hand-over, the line and the case. The level
+	//! shortens it as it runs (StartStage, StartLine, AskWhoYouWere): level 2 the line's short form and
+	//! no question at the door; level 3 no favour either.
 	protected void Plan(RZ_Opening o, RZ_Rng rng)
 	{
 		RZ_Errands errands = m_GM.GetErrands();
@@ -1143,16 +1153,6 @@ class RZ_Openings
 			return true;
 		}
 
-		if (o.m_bHandOff && Stage(o) == RZ_EOpeningStage.TASK && o.m_vNext != vector.Zero)
-		{
-			if (HandOn(o, me))
-				return true;
-		}
-
-		// No next person could stand: back to them, the old way (only while one's there to go back to)
-		if (o.m_bHandOff && Stage(o) == RZ_EOpeningStage.TASK && o.m_iAsks == 0 && !o.m_Left && HasContact(o))
-			return false;
-
 		bool near = HasContact(o) && RZ_Util.DistXZ(o.m_Contact.GetOrigin(), me.GetOrigin()) <= SPEAK_RANGE;
 		StartOn(o, me, near);
 		return true;
@@ -1208,67 +1208,6 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Handed on: the next person stands at their place (a body, tagged as the first was) and is
-	//! tracked, "Find <name>", until you talk to them; the first giver stays behind and goes once
-	//! nobody's near. False: no body could stand there.
-	protected bool HandOn(RZ_Opening o, IEntity me)
-	{
-		RZ_Errands errands = m_GM.GetErrands();
-		ResourceName prefab = m_Settings.m_sContactPrefab;
-		if (prefab.IsEmpty())
-			prefab = m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
-
-		RZ_Shared shared = m_GM.GetShared();
-		if (!errands || !errands.IsOn() || prefab.IsEmpty() || !shared || !shared.CanSpawnBody(RZ_BodyBudget.STORY, o.m_vNext))
-			return false;
-
-		IEntity body = RZ_Util.SpawnPrefab(prefab, o.m_vNext, RZ_Compass.Bearing(o.m_vNext, me.GetOrigin()));
-		if (!body)
-			return false;
-
-		shared.AddBody(RZ_BodyBudget.STORY, body);
-		string firstShort = o.m_sShort;
-		o.m_sLeftShort = firstShort;
-		o.m_sLeftSpeaker = o.m_sSpeaker;
-		// The first giver now only sends you on (their tags carry the opening's id negated)
-		RZ_PuzzleObjectComponent.Tag(o.m_Contact, TAG, -o.m_iId, "", "What was it you needed?");
-		RZ_ClueComponent.Tag(o.m_Contact, TAG, -o.m_iId, "Talk to " + firstShort);
-		o.m_Left = o.m_Contact;
-		o.m_iLeftWanderer = o.m_iWanderer;
-		o.m_iWanderer = -1;
-		o.m_Contact = body;
-		o.m_sName = o.m_sNextName;
-		o.m_sShort = o.m_sNextShort;
-		o.m_sWho = o.m_sNextWho;
-		o.m_sSpeaker = o.m_sName + ", " + o.m_sWho;
-		o.m_vNext = vector.Zero;
-		o.m_bNextCalled = false;
-		RZ_PuzzleObjectComponent.Tag(body, TAG, o.m_iId, "", "What was it you needed?");
-		RZ_ClueComponent.Tag(body, TAG, o.m_iId, "Talk to " + o.m_sShort);
-
-		RZ_OpeningTalkDef d = m_Chain.m_TalkFind;
-		vector at = body.GetOrigin();
-		RZ_Errand e = errands.Hand(d, o.m_iPlayer, "opening:" + o.m_iId.ToString(), o.m_sName, o.m_sSpeaker, RZ_EFaction.SURVIVORS, at, at, o.m_sNextPlace, me);
-		if (!e)
-		{
-			Finish(o, "the next person couldn't be handed");
-			return true;
-		}
-
-		o.m_bWaitTalk = true;
-		o.m_fWaitAt = m_fClock;
-		o.m_bCalledAgain = false;
-		o.m_bResolved = false;
-		o.m_iErrand = e.m_iId;
-		RZ_UIFeed feed = m_GM.GetUIFeed();
-		if (feed && feed.GetTracker())
-			feed.GetTracker().Follow(o.m_iPlayer, -(RZ_UIFeed.ERRAND_ID_BASE + e.m_iId), e.Fill(d.m_sTitle));
-
-		RZ_Log.Info(string.Format("Openings: %1 sent %2 on to %3 at %4, %5", firstShort, RZ_Util.PlayerName(o.m_iPlayer), o.m_sName, o.m_sNextPlace, RZ_Util.DirectionText(me.GetOrigin(), at)));
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The giver you were sent on from: their short name, for the next person's words.
 	protected static string LeftShort(RZ_Opening o)
 	{
@@ -1292,63 +1231,6 @@ class RZ_Openings
 		o.m_iLeftWanderer = -1;
 		RZ_Util.DeleteUnit(o.m_Left);
 		o.m_Left = null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Handed on: the next person's place, 200-600 m on from step 1's (toward where the chain ends,
-	//! when it knows), at least 150 m from the first giver: a house, not locked, the spot just outside
-	//! its side facing step 1's place, checked against opening.search. False when there's none.
-	protected bool FindNext(RZ_Opening o, vector from, vector first)
-	{
-		array<IEntity> buildings = {};
-		RZ_BuildingQuery.FindBuildings(from, NEXT_MAX, buildings, 400);
-		array<IEntity> houses = {};
-		foreach (IEntity b : buildings)
-		{
-			if (!b)
-				continue;
-
-			float d = RZ_Util.DistXZ(from, b.GetOrigin());
-			if (d < NEXT_MIN || d > NEXT_MAX || RZ_Util.DistXZ(first, b.GetOrigin()) < NEXT_FROM_FIRST)
-				continue;
-
-			if (RZ_LockedSpots.IsLockedBuilding(b) || !RZ_PlaceCheck.IsHouse(b))
-				continue;
-
-			houses.Insert(b);
-		}
-
-		RZ_PlaceNeed need = RZ_PlaceNeeds.Get("opening.search");
-		for (int i = 0; i < SEARCH_TRIES && !houses.IsEmpty(); i++)
-		{
-			// The one nearest where the chain ends first (on the way), else any
-			int pick = Math.RandomInt(0, houses.Count());
-			if (o.m_vEnd != vector.Zero)
-			{
-				float best = float.MAX;
-				foreach (int k, IEntity h : houses)
-				{
-					float toEnd = RZ_Util.DistXZ(h.GetOrigin(), o.m_vEnd);
-					if (toEnd < best)
-					{
-						best = toEnd;
-						pick = k;
-					}
-				}
-			}
-
-			IEntity house = houses[pick];
-			houses.Remove(pick);
-			vector at = RZ_Util.GroundPos(RZ_DoorGeometry.SidePoint(house, from, SEARCH_OUT));
-			string why;
-			if (!RZ_PlaceCheck.Check(at, need, -1, "house", why))
-				continue;
-
-			o.m_vNext = at;
-			return true;
-		}
-
-		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1448,8 +1330,6 @@ class RZ_Openings
 		}
 
 		string line = RZ_OpeningText.Remind(step, stepNo, o.m_iTask, o.m_sSearch, o.m_Escort != null);
-		if (Stage(o) == RZ_EOpeningStage.SEARCH && o.m_vNext != vector.Zero)
-			line += " " + RZ_OpeningText.ThenOn(o.m_sNextShort, o.m_sNextPlace);
 
 		return line;
 	}
@@ -1565,7 +1445,7 @@ class RZ_Openings
 		else if (stage == RZ_EOpeningStage.FAVOUR)
 		{
 			d = m_Favours.FetchDef(o.m_iFavour);
-			bool found = d && RZ_OpeningFavours.PickPlace(o.m_iFavour, giverAt, place, placeText);
+			bool found = o.m_iLevel < 3 && d && RZ_OpeningFavours.PickPlace(o.m_iFavour, giverAt, place, placeText);
 			// Nowhere for your background's favour here: his tin, else his sack, if one of those has a place
 			// (your background's way goes with it: it's for your favour only)
 			if (!found)
@@ -1573,7 +1453,7 @@ class RZ_Openings
 				array<int> plain = {RZ_EFavour.TIN, RZ_EFavour.SACK};
 				foreach (int other : plain)
 				{
-					if (found || other == o.m_iFavour)
+					if (found || other == o.m_iFavour || o.m_iLevel >= 3)
 						continue;
 
 					d = m_Favours.FetchDef(other);
@@ -1586,9 +1466,18 @@ class RZ_Openings
 				}
 			}
 
+			// A veteran (level 3) skips the favour: the door, then the line's short form and the case
+			// (docs/DESIGN.md, "Openings": the chain by level)
+			bool veteran = o.m_iLevel >= 3;
+			if (veteran)
+			{
+				found = false;
+				RZ_Log.Info(string.Format("Openings: %1 is a veteran: no favour, the door then the runner", RZ_Util.PlayerName(o.m_iPlayer)));
+			}
+
 			if (!found)
 			{
-				// Nowhere here the words would be true of: no favour, on to the runner
+				// Nowhere here the words would be true of (or a veteran): no favour, on to the runner
 				RZ_Log.Info(string.Format("Openings: no place for the favour (%1) for %2 at %3, on to the runner", typename.EnumToString(RZ_EFavour, o.m_iFavour), RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(giverAt)));
 				// The door still greets you and asks who you were (beat 1), before the next step's words
 				if (beat && o.m_iStage == 0)
@@ -1623,25 +1512,6 @@ class RZ_Openings
 			place = giverAt;
 			placeText = o.m_sName;
 		}
-		else if (stage == RZ_EOpeningStage.SEARCH)
-		{
-			d = m_Chain.m_Search;
-			if (o.m_iLevel >= 1)
-				d = m_Chain.m_SearchShort;
-
-			if (!SearchPlace(o, giverAt, place, placeText))
-			{
-				// Nothing down the road that the words would be true of: no step 1 here
-				RZ_Log.Info(string.Format("Openings: no house down the road for %1 at %2, step 1 skipped", RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(giverAt)));
-				o.m_iStage++;
-				StartStage(o, me, tree, beat, sayNow);
-				return;
-			}
-
-			o.m_sSearch = placeText;
-			if (o.m_bHandOff)
-				NextPerson(o, place, giverAt);
-		}
 		else if (stage == RZ_EOpeningStage.TASK)
 		{
 			step = 2;
@@ -1651,11 +1521,7 @@ class RZ_Openings
 			{
 				o.m_iTask = RZ_EOpeningTask.NONE;
 				RZ_Log.Info(string.Format("Openings: no step 2 can run for %1 here (%2)", RZ_Util.PlayerName(o.m_iPlayer), o.m_sBackground));
-				// A familiar player's one step is step 1 instead
-				if (!o.m_aPlan.Contains(RZ_EOpeningStage.SEARCH))
-					o.m_aPlan[o.m_iStage] = RZ_EOpeningStage.SEARCH;
-				else
-					o.m_iStage++;
+				o.m_iStage++;
 
 				StartStage(o, me, tree, beat, sayNow);
 				return;
@@ -1708,8 +1574,6 @@ class RZ_Openings
 			if (stage == RZ_EOpeningStage.FAVOUR && !o.m_bHabitAsked && o.m_iStage == 0)
 				AskWhoYouWere(o, beat);
 
-			if (stage == RZ_EOpeningStage.SEARCH && o.m_vNext != vector.Zero)
-				beat.Insert(RZ_OpeningText.SendOn(o.m_sNextShort, o.m_sNextWho, o.m_sNextPlace));
 
 			if (o.m_bWalks && o.m_iStage == 0)
 				beat.Insert(RZ_OpeningText.ComingWith());
@@ -1874,152 +1738,6 @@ class RZ_Openings
 
 		if (o.m_Contact)
 			m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, "That came from the line. Somebody tried it.", o.m_Contact);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Handed on: who step 1's giver sends you to after it, and where (FindNext); none: the old way
-	//! (back to them for step 2).
-	protected void NextPerson(RZ_Opening o, vector searchAt, vector first)
-	{
-		o.m_vNext = vector.Zero;
-		if (!FindNext(o, searchAt, first))
-		{
-			RZ_Log.Info(string.Format("Openings: no house for the next person for %1 at %2, back to %3 instead", RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(searchAt), o.m_sName));
-			return;
-		}
-
-		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
-		o.m_sNextName = RZ_OpeningText.Name(rng);
-		while (o.m_sNextName == o.m_sName)
-		{
-			o.m_sNextName = RZ_OpeningText.Name(rng);
-		}
-
-		o.m_sNextShort = o.m_sNextName;
-		int space = o.m_sNextName.IndexOf(" ");
-		if (space > 0)
-			o.m_sNextShort = o.m_sNextName.Substring(0, space);
-
-		o.m_sNextWho = RZ_OpeningText.NextWho(o.m_sBackground);
-		string town = o.m_sTown;
-		RZ_Settlement s = m_GM.GetSettlement(m_GM.FindNearestSettlement(o.m_vNext));
-		if (s)
-			town = s.m_sName;
-
-		o.m_sNextPlace = o.m_sNextShort + "'s house in " + town;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Step 1's place for this opening (false: none), and a Doctor's antidote by its door (Cure >
-	//! Antidote prefab), for step 2's clock.
-	protected bool SearchPlace(RZ_Opening o, vector from, out vector place, out string text)
-	{
-		string kind;
-		if (!PickSearch(o.m_sBackground, from, place, text, kind))
-			return false;
-
-		string building = kind;
-		if (building.IsEmpty())
-			building = "house";
-
-		RZ_PlaceNeeds.Verify("opening.search", place, text, -1, building);
-		ResourceName antidote = m_GM.GetAntidotePrefab();
-		if (o.m_sBackground == "doctor" && o.m_aPlan.Contains(RZ_EOpeningStage.TASK) && !antidote.IsEmpty())
-		{
-			// On the floor inside (place is on it), not under it
-			vector doseAt = RZ_Util.GroundPos(place);
-			if (place[1] > doseAt[1])
-				doseAt = place;
-
-			IEntity dose = RZ_Util.SpawnPrefab(antidote, doseAt + Vector(0, 0.3, 0), Math.RandomFloat(0, 360));
-			if (dose)
-				RZ_GameModeComponent.TrackLooseItem(dose);
-		}
-
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Step 1's building (docs/PLACES.md, opening.search): a house 50-250 m from the contact, not
-	//! locked, one of your background's kinds when one is there (the chemist's for a Nurse, a garage for
-	//! a Mechanic), else a house; checked against the need just outside its side facing the contact,
-	//! and the spot itself inside, on its ground floor (RZ_WorkSites.FloorOf): the thing to search
-	//! stands in the building its words name. False when there's none: the words "down the road"
-	//! would be false, so no step 1.
-	//! `kind`: the building's kind ("" for a house). Spawns nothing (the place audit asks it too).
-	bool PickSearch(string background, vector from, out vector place, out string text, out string kind)
-	{
-		kind = "";
-		text = "";
-		place = vector.Zero;
-		array<string> kinds = {};
-		RZ_OpeningText.SearchKinds(background, kinds);
-		array<IEntity> buildings = {};
-		RZ_BuildingQuery.FindBuildings(from, SEARCH_MAX, buildings, 400);
-		array<IEntity> mine = {};
-		array<IEntity> houses = {};
-		foreach (IEntity b : buildings)
-		{
-			if (!b)
-				continue;
-
-			float d = RZ_Util.DistXZ(from, b.GetOrigin());
-			if (d < SEARCH_MIN || d > SEARCH_MAX || RZ_LockedSpots.IsLockedBuilding(b))
-				continue;
-
-			if (!RZ_OpeningRoll.KindOf(b, kinds).IsEmpty())
-				mine.Insert(b);
-			else if (RZ_PlaceCheck.IsHouse(b))
-				houses.Insert(b);
-		}
-
-		IEntity found = TrySearch(mine, kinds, from, place);
-		if (found)
-			kind = RZ_OpeningRoll.KindOf(found, kinds);
-
-		// Never words the building isn't (RZ_PlaceCheck.WordsTrue): else it's a house's words
-		if (found && RZ_PlaceCheck.WordsTrue(kind, found))
-		{
-			text = RZ_OpeningText.SearchPlace(kind, background);
-			RZ_Log.Info(string.Format("Openings: step 1 for %1 is %2 (%3, %4), the spot %5 m from its middle", background, text, RZ_ItemHelper.LowerName(found), kind, RZ_Util.RoundToInt(RZ_Util.DistXZ(found.GetOrigin(), place))));
-			return true;
-		}
-
-		array<string> none = {};
-		if (TrySearch(houses, none, from, place))
-		{
-			text = RZ_OpeningText.SearchPlace("", background);
-			return true;
-		}
-
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Up to SEARCH_TRIES of `list` at random, the first whose spot meets opening.search; null if none.
-	protected IEntity TrySearch(notnull array<IEntity> list, notnull array<string> kinds, vector from, out vector place)
-	{
-		RZ_PlaceNeed need = RZ_PlaceNeeds.Get("opening.search");
-		for (int i = 0; i < SEARCH_TRIES && !list.IsEmpty(); i++)
-		{
-			int pick = Math.RandomInt(0, list.Count());
-			IEntity b = list[pick];
-			list.Remove(pick);
-			string kind = RZ_OpeningRoll.KindOf(b, kinds);
-			if (kind.IsEmpty())
-				kind = "house";
-
-			vector at = RZ_Util.GroundPos(RZ_DoorGeometry.SidePoint(b, from, SEARCH_OUT));
-			string why;
-			vector inside;
-			if (RZ_PlaceCheck.Check(at, need, -1, kind, why) && RZ_WorkSites.FloorOf(b, inside))
-			{
-				place = inside;
-				return b;
-			}
-		}
-
-		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2474,15 +2192,16 @@ class RZ_Openings
 	// ================================================================ Beat 1 and beat 2's other way
 	//------------------------------------------------------------------------------------------------
 	//! Beat 1: the contact asks who you were, in passing, and three replies settle a habit
-	//! (Backgrounds/RZ_Habits.c). A veteran's door asks nothing: the last character's habit carries.
+	//! (Backgrounds/RZ_Habits.c). A familiar or veteran door (level 2+) asks nothing when there's a
+	//! last character's habit to carry: it carries.
 	protected void AskWhoYouWere(RZ_Opening o, notnull array<string> lines)
 	{
 		o.m_bHabitAsked = true;
 		RZ_PlayerProfile profile = m_GM.GetProfile(o.m_iPlayer);
-		if (o.m_iLevel >= 3 && RZ_Habits.Carry(profile))
+		if (o.m_iLevel >= 2 && RZ_Habits.Carry(profile))
 		{
 			o.m_bHabitPicked = true;
-			RZ_Log.Info(string.Format("Openings: %1 keeps the habit %2 (a veteran's door asks nothing)", RZ_Util.PlayerName(o.m_iPlayer), RZ_Habits.Name(RZ_Habits.Of(profile))));
+			RZ_Log.Info(string.Format("Openings: %1 keeps the habit %2 (a familiar or veteran door asks nothing)", RZ_Util.PlayerName(o.m_iPlayer), RZ_Habits.Name(RZ_Habits.Of(profile))));
 			return;
 		}
 

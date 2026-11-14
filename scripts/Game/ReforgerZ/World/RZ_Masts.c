@@ -56,6 +56,33 @@ class RZ_MastSettings
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The cabinet at a mast's foot when the map has none within 25 m: a prop with the generic puzzle object components (as the radio station's console). Empty = Puzzles > Radio mast, then the generic object", "et")]
 	ResourceName m_sCabinetPrefab;
+
+	[Attribute("1", desc: "The loop's relay and Bastion's last call (docs/DESIGN.md, The loop's relay and Bastion's last call): with every mast up, the government loop can be cut or its tape swapped; Bastion calls Command from the tallest mast")]
+	bool m_bRelay;
+
+	[Attribute("72", UIWidgets.Slider, "Real hours after the relay is cut or its tape swapped before it can be reached again", "6 720 6")]
+	float m_fRelayCooldownHours;
+
+	[Attribute("10", UIWidgets.Slider, "Real hours the government loop stays silent once its relay is cut (a night)", "1 48 1")]
+	float m_fSilenceHours;
+
+	[Attribute("4", UIWidgets.Slider, "Real hours a swapped tape plays in the loop's place (an evening)", "1 24 1")]
+	float m_fTapeHours;
+
+	[Attribute("5", UIWidgets.Slider, "Bastion Infamy for cutting the government loop", "0 30 1")]
+	int m_iRelayInfamy;
+
+	[Attribute("2", UIWidgets.Slider, "Haven Fame for cutting the government loop", "0 20 1")]
+	int m_iRelayFame;
+
+	[Attribute("3", UIWidgets.Slider, "Bastion Infamy for swapping the loop's tape", "0 30 1")]
+	int m_iTapeInfamy;
+
+	[Attribute("60", UIWidgets.Slider, "Seconds of the hold that keeps the tallest mast's power on while Bastion calls Command", "10 300 5")]
+	float m_fCallSeconds;
+
+	[Attribute("3", UIWidgets.Slider, "Bastion Fame for holding the power for its call (once a real day per player)", "0 20 1")]
+	int m_iCallFame;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -78,7 +105,8 @@ enum RZ_EMastPart
 	WIRE,
 	RADIO,
 	CELLS,
-	FUEL
+	FUEL,
+	FUSE		// not a mast's part: a substation's fuse (RZ_Substations), counted the same way
 }
 
 //------------------------------------------------------------------------------------------------
@@ -107,6 +135,8 @@ class RZ_MastSave
 	string keeper;			// the man's or the crewman's name
 	int want;				// what the man wants (RZ_EErrandItem)
 	string putUpBy;			// the identity of who put it up
+	string putUpName;		// and their name, as the region's people say it
+	int cutFrom;			// cut from this owner (RZ_EMastOwner + 1; 0 = never cut): who wants it back up
 	ref array<string> paid = {};	// "<identity>" paid for this mast (Fame or Favor), once a season
 }
 
@@ -114,6 +144,7 @@ class RZ_MastSave
 class RZ_MastsSave
 {
 	ref array<ref RZ_MastSave> masts = {};
+	ref RZ_RelaySave relay;		// the loop's relay and Bastion's call (World/RZ_LoopRelay.c)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -133,6 +164,10 @@ class RZ_Mast
 	string m_sKeeper;
 	RZ_EErrandItem m_eWant;
 	string m_sPutUpBy;
+	string m_sPutUpName;		// who climbed it, as the region's people say it
+	vector m_vCabinet;			// the map's own electrical cabinet within 25 m (a spot on its face), else zero: our prop at the foot
+	bool m_bMapCabinet;
+	int m_iCutFrom;				// cut from this owner (RZ_EMastOwner + 1; 0 = not cut): it goes back to them when put up
 	int m_iPutUpPlayer = -1;	// this session's player who put it up (the first to choose)
 	vector m_vLair;				// a tribe's lair below (PACK)
 	bool m_bNearLine;
@@ -143,6 +178,7 @@ class RZ_Mast
 	RZ_PuzzleObjectComponent m_Comp;
 	bool m_bOwnCabinet;			// the cabinet is ours (spawned), not the map's
 	int m_iClimber;				// the player whose climb is open (0 none)
+	int m_iCutBy;				// this session's player who cut it last (0 none)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -224,11 +260,14 @@ class RZ_Masts
 	protected static const float SPACING = 1500;
 	protected static const float STATION_GAP = 800;
 	protected static const float LAIR_RADIUS = 800;
+	protected static const float MAP_CABINET_REACH = 25;	// the map's own cabinet this close to a mast's foot carries its prompt
 	protected static const float LINE_CHATTER = 3000;
 	protected static const float CLIMB_HEAT = 6;
 	protected static const float PACK_NEAR = 1000;
 	protected static const string CLIMB = "mast.climb.";
 	protected static const string BEARING = "mast.bearing.";
+	protected static const string CUTTING = "mast.cut.";
+	protected static const float CUT_HEAT = 8;
 
 	protected static RZ_Masts s_Instance;
 
@@ -236,6 +275,7 @@ class RZ_Masts
 	protected RZ_MastSettings m_Settings;
 	protected ref RZ_MastsSave m_Restored;
 	protected ref array<ref RZ_Mast> m_aMasts = {};
+	protected ref RZ_LoopRelay m_Relay;
 	protected float m_fWarnTimer;
 	protected float m_fListenTimer;
 	protected float m_fChatterTimer;
@@ -259,6 +299,7 @@ class RZ_Masts
 		m_GM = gm;
 		m_Settings = settings;
 		s_Instance = this;
+		m_Relay = new RZ_LoopRelay(gm, settings, this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -300,6 +341,7 @@ class RZ_Masts
 
 	//------------------------------------------------------------------------------------------------
 	bool HasVoice() { return m_bVoice; }
+	RZ_LoopRelay GetRelay() { return m_Relay; }
 	vector VoiceAt() { return m_vVoice; }
 
 	// ================================================================ Save / load
@@ -307,6 +349,8 @@ class RZ_Masts
 	void Restore(RZ_MastsSave saved)
 	{
 		m_Restored = saved;
+		if (saved && saved.relay)
+			m_Relay.Restore(saved.relay);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -329,10 +373,13 @@ class RZ_Masts
 			s.keeper = m.m_sKeeper;
 			s.want = m.m_eWant;
 			s.putUpBy = m.m_sPutUpBy;
+			s.putUpName = m.m_sPutUpName;
+			s.cutFrom = m.m_iCutFrom;
 			s.paid.Copy(m.m_aPaid);
 			data.masts.Insert(s);
 		}
 
+		data.relay = m_Relay.Save();
 		return data;
 	}
 
@@ -365,6 +412,8 @@ class RZ_Masts
 				m.m_sKeeper = s.keeper;
 				m.m_eWant = s.want;
 				m.m_sPutUpBy = s.putUpBy;
+				m.m_sPutUpName = s.putUpName;
+				m.m_iCutFrom = s.cutFrom;
 				if (s.paid)
 					m.m_aPaid.Copy(s.paid);
 
@@ -382,10 +431,15 @@ class RZ_Masts
 		m_Restored = null;
 		foreach (RZ_Mast mast : m_aMasts)
 		{
-			RZ_Log.Info(string.Format("Masts: %1 (%2) at %3, missing %4, trouble %5, %6 (%7).", mast.m_sName, mast.m_iId, RZ_SettlementScanner.GridReference(mast.m_vPos), PartWord(mast.m_ePart), typename.EnumToString(RZ_EMastTrouble, mast.m_eTrouble), StateWord(mast), from));
+			string cab = "our cabinet at its foot";
+			if (mast.m_bMapCabinet)
+				cab = "the map's own cabinet";
+
+			RZ_Log.Info(string.Format("Masts: %1 (%2) at %3, missing %4, trouble %5, %6 (%7), %8.", mast.m_sName, mast.m_iId, RZ_SettlementScanner.GridReference(mast.m_vPos), PartWord(mast.m_ePart), typename.EnumToString(RZ_EMastTrouble, mast.m_eTrouble), StateWord(mast), from, cab));
 		}
 
 		RZ_Log.Info(string.Format("Masts: %1 on this map, %2 up.", m_aMasts.Count(), UpCount()));
+		m_Relay.Setup();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -506,8 +560,35 @@ class RZ_Masts
 			m.m_sShort = "the mast" + m.m_sName.Substring(above, m.m_sName.Length() - above);
 
 		m.m_vLair = LairNear(m.m_vPos);
+		FindMapCabinet(m);
 		RZ_Perimeter perimeter = m_GM.GetPerimeter();
 		m.m_bNearLine = perimeter && perimeter.IsNearLineWithin(m.m_vPos, LINE_CHATTER);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The map's own electrical cabinet or control box within 25 m of the mast's foot (the power
+	//! grid's finder, MODE_CABINET): the mast's prompt is a spot on its face, and nothing of ours
+	//! stands there. None (or cabinets off on the grid): our prop at the foot, as before.
+	protected void FindMapCabinet(RZ_Mast m)
+	{
+		m.m_bMapCabinet = false;
+		m.m_vCabinet = vector.Zero;
+		RZ_PowerGrid grid = m_GM.GetPowerGrid();
+		if (!grid || !grid.CanUseCabinetsPublic() || !m_GM.GetInteractions() || m_GM.GetInteractions().GetSpotPrefab().IsEmpty())
+			return;
+
+		int score;
+		IEntity box = RZ_PowerSite.FindBest(m.m_vPos, MAP_CABINET_REACH, RZ_PowerSite.MODE_CABINET, score);
+		if (!box)
+			return;
+
+		RZ_PowerPlacement p = new RZ_PowerPlacement();
+		RZ_PowerSite.Place(box, box.GetOrigin(), m.m_vPos, true, 2, p);
+		if (!p.m_bSpot)
+			return;
+
+		m.m_vCabinet = p.m_vPos;
+		m.m_bMapCabinet = true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -537,6 +618,7 @@ class RZ_Masts
 			case RZ_EMastPart.RADIO: return "a radio set";
 			case RZ_EMastPart.CELLS: return "two torch cells";
 			case RZ_EMastPart.FUEL: return "a can of fuel";
+			case RZ_EMastPart.FUSE: return "a fuse";
 		}
 
 		return "a part";
@@ -569,6 +651,7 @@ class RZ_Masts
 			case RZ_EMastPart.RADIO: words.Insert("radio_"); words.Insert("anprc"); words.Insert("r148"); words.Insert("radiosmall"); break;
 			case RZ_EMastPart.CELLS: words.Insert("rz_cells"); words.Insert("cells"); break;
 			case RZ_EMastPart.FUEL: words.Insert("jerrycan"); words.Insert("canister"); words.Insert("fuelcan"); break;
+			case RZ_EMastPart.FUSE: words.Insert("rz_fuse"); words.Insert("fuse_"); break;
 		}
 	}
 
@@ -624,7 +707,7 @@ class RZ_Masts
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static int TakePart(IEntity character, RZ_EMastPart part, int count)
+	static int TakePart(IEntity character, RZ_EMastPart part, int count)
 	{
 		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
 		if (!inv)
@@ -723,6 +806,9 @@ class RZ_Masts
 			if (m.m_bPromised)
 				text = text + " You promised it to the Red Hand.";
 
+			if (m.m_iCutFrom > 0)
+				text = text + string.Format(" Its cable's been cut clean through. It was %1, and they want it back up.", OwnerWord(m.m_iCutFrom - 1));
+
 			return text;
 		}
 
@@ -790,6 +876,18 @@ class RZ_Masts
 			locks.Insert(wait);
 		}
 
+		// Anyone may cut an up mast's cable (World/RZ_Substations.c, sabotage): its holder takes it badly
+		if (m.m_eOwner != RZ_EMastOwner.NOBODY)
+		{
+			string cutWhy = "";
+			if (m.m_iClimber > 0 && m.m_iClimber != playerId)
+				cutWhy = "Someone's up it.";
+
+			acts.Insert("cut");
+			labels.Insert("Cut its cable");
+			locks.Insert(cutWhy);
+		}
+
 		if (m_bVoice)
 		{
 			string bearingWhy = "";
@@ -800,6 +898,9 @@ class RZ_Masts
 			labels.Insert("Take a bearing on the voice");
 			locks.Insert(bearingWhy);
 		}
+
+		// The loop's relay and Bastion's last call (World/RZ_LoopRelay.c)
+		m_Relay.Rows(m, playerId, acts, labels, locks);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -825,6 +926,15 @@ class RZ_Masts
 			OpenBearing(m, playerId);
 			return;
 		}
+
+		if (act == "cut")
+		{
+			OpenCut(m, playerId);
+			return;
+		}
+
+		if (m_Relay.Act(m, act, playerId))
+			return;
 
 		if (act.IndexOf("give:") == 0)
 			Give(m, playerId, act.Substring(5, act.Length() - 5));
@@ -943,6 +1053,20 @@ class RZ_Masts
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where a mast's cabinet stands (its prompt and holds).
+	vector CabinetPos(RZ_Mast m)
+	{
+		return CabinetAt(m);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A pack lairing below the mast is drawn to it (the climb, Bastion's call).
+	void WakeBelow(RZ_Mast m)
+	{
+		DrawPack(m);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected vector CabinetAt(RZ_Mast m)
 	{
 		if (m.m_Cabinet)
@@ -974,6 +1098,8 @@ class RZ_Masts
 		if (p)
 			m.m_sPutUpBy = p.m_sIdentity;
 
+		m.m_sPutUpName = RZ_Names.Public(playerId);
+
 		// The climb is heard; a pack below comes at night
 		if (m_GM.GetHeat())
 			m_GM.GetHeat().AddHeat(m.m_vPos, CLIMB_HEAT);
@@ -996,6 +1122,12 @@ class RZ_Masts
 			return;
 		}
 
+		if (m.m_iCutFrom > 0)
+		{
+			PutBack(m, playerId);
+			return;
+		}
+
 		UpdateLabels(m);
 	}
 
@@ -1015,6 +1147,135 @@ class RZ_Masts
 				return;
 			}
 		}
+	}
+
+	// ================================================================ A cut cable
+	//------------------------------------------------------------------------------------------------
+	protected void OpenCut(RZ_Mast m, int playerId)
+	{
+		if (!m.m_bUp || m.m_eOwner == RZ_EMastOwner.NOBODY)
+			return;
+
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (!sites || !RZ_WorkSites.Available())
+		{
+			Cut(m, playerId);
+			return;
+		}
+
+		float hold = 8;
+		RZ_SubstationSettings grid = GridSettings();
+		if (grid)
+			hold = grid.m_fCutSeconds;
+
+		string key = CUTTING + m.m_iId.ToString();
+		sites.Close(key);
+		sites.Open(key, RZ_EWork.HANDS, "Cut its cable", hold, CabinetAt(m), playerId);
+		sites.SetAtPiece(key, CabinetAt(m), 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_SubstationSettings GridSettings()
+	{
+		RZ_Substations subs = RZ_Substations.Get();
+		if (!subs)
+			return null;
+
+		return subs.GetSettings();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sabotage (World/RZ_Substations.c): the mast's cable cut. It's down again with a new part
+	//! missing, whoever held it takes it badly (Infamy) and wants it back up; the Red Hand pay for a
+	//! rival's. False if it wasn't up and held.
+	bool Cut(RZ_Mast m, int playerId)
+	{
+		if (!m.m_bUp || m.m_eOwner == RZ_EMastOwner.NOBODY)
+			return false;
+
+		RZ_EMastOwner was = m.m_eOwner;
+		m.m_bUp = false;
+		m.m_eOwner = RZ_EMastOwner.NOBODY;
+		m.m_bPromised = false;
+		m.m_iCutFrom = was + 1;
+		m.m_iCutBy = playerId;
+		m.m_iPutUpPlayer = -1;
+		m.m_ePart = (m.m_ePart + 1 + Math.RandomInt(0, 4)) % 5;
+		if (m_GM.GetHeat())
+			m_GM.GetHeat().AddHeat(m.m_vPos, CUT_HEAT);
+
+		int f = FactionOf(was);
+		RZ_SubstationSettings grid = GridSettings();
+		if (f >= 0 && grid && grid.m_iCutInfamy > 0)
+			m_GM.AddInfamy(playerId, f, grid.m_iCutInfamy, "cut " + m.m_sShort);
+
+		// A Lights Out job pays for this cut itself (Missions/RZ_PowerJobs.c); else the book's tip
+		RZ_Substations subs = RZ_Substations.Get();
+		bool contracted = subs && subs.IsContracted("mast:" + m.m_iId.ToString());
+		if (f >= 0 && f != RZ_EFaction.BANDITS && !contracted)
+			RZ_Substations.PayCutter(m_GM, playerId, m.m_sShort);
+
+		RZ_Log.Info(string.Format("Masts: %1 cut %2 (it was %3); it now needs %4.", RZ_Names.Public(playerId), m.m_sName, OwnerWord(was), PartWord(m.m_ePart)));
+		CallForRepair(m, f);
+		UpdateLabels(m);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whoever held a cut mast asks on their own channel for someone to put it back (the region's
+	//! players with a radio).
+	protected void CallForRepair(RZ_Mast m, int f)
+	{
+		array<int> ids = {};
+		GetGame().GetPlayerManager().GetPlayers(ids);
+		foreach (int id : ids)
+		{
+			IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(id);
+			if (!ent || RZ_Util.DistXZ(ent.GetOrigin(), m.m_vPos) > m_Settings.m_fRegion)
+				continue;
+
+			if (!RZ_Radio.HasRadio(m_GM, id, ent))
+				continue;
+
+			if (f >= 0)
+				m_GM.Say(id, RZ_FactionVoice.ChannelTitle(f), f, string.Format("Somebody's cut %1. It wants %2 and a climb. Whoever puts it back up, we'll remember.", m.m_sShort, PartWord(m.m_ePart)));
+			else
+				m_GM.Say(id, "Radio: the open channel", -1, string.Format("%1's gone quiet. Somebody cut it. It wants %2.", Capitalize(m.m_sShort), PartWord(m.m_ePart)));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A cut mast put back up: it's its old holder's again, and they pay for it (the job they asked for).
+	protected void PutBack(RZ_Mast m, int playerId)
+	{
+		RZ_EMastOwner owner = m.m_iCutFrom - 1;
+		m.m_iCutFrom = 0;
+		m.m_eOwner = owner;
+		int f = FactionOf(owner);
+		if (f >= 0 && f != RZ_EFaction.BANDITS)
+			m_GM.AddFame(playerId, f, m_Settings.m_iHandFame, false, 0, string.Format("put %1 back up for us", m.m_sShort));
+
+		if (f == RZ_EFaction.BANDITS)
+			m_GM.AddFavor(playerId, RZ_EFaction.BANDITS, m_Settings.m_iHandFame);
+
+		RZ_Log.Info(string.Format("Masts: %1 put %2 back up; it's %3 again.", RZ_Names.Public(playerId), m.m_sName, OwnerWord(owner)));
+		if (f >= 0)
+			m_GM.Say(playerId, RZ_FactionVoice.ChannelTitle(f), f, string.Format("That's %1 back. Good work. We said we'd remember.", m.m_sShort));
+		else
+			m_GM.Say(playerId, Speaker(m), -1, "The hiss comes back clean. Everyone's again.");
+
+		UpdateLabels(m);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test only: cut a mast for a player.
+	bool TestCut(int index, int playerId)
+	{
+		RZ_Mast m = GetMast(index);
+		if (!m)
+			return false;
+
+		return Cut(m, playerId);
 	}
 
 	// ================================================================ Whose it is
@@ -1292,7 +1553,12 @@ class RZ_Masts
 
 		if (!m.m_Cabinet)
 		{
-			m.m_Cabinet = RZ_Util.SpawnPrefab(CabinetPrefab(), m.m_vPos, Math.RandomFloat(0, 360));
+			if (m.m_bMapCabinet)
+				m.m_Cabinet = RZ_Util.SpawnPrefab(m_GM.GetInteractions().GetSpotPrefab(), m.m_vCabinet, 0);
+			else
+				m.m_Cabinet = RZ_Util.SpawnPrefab(CabinetPrefab(), m.m_vPos, Math.RandomFloat(0, 360));
+
+			m.m_bOwnCabinet = m.m_Cabinet != null && !m.m_bMapCabinet;
 			if (m.m_Cabinet)
 			{
 				m.m_Comp = RZ_PuzzleObjectComponent.Tag(m.m_Cabinet, TAG, m.m_iId, "", "");
@@ -1384,6 +1650,15 @@ class RZ_Masts
 				PutUp(m, by);
 		}
 
+		string cutting = CUTTING + m.m_iId.ToString();
+		if (sites.IsDone(cutting))
+		{
+			int cutter = sites.DoneBy(cutting);
+			sites.Close(cutting);
+			if (cutter > 0)
+				Cut(m, cutter);
+		}
+
 		string bearing = BEARING + m.m_iId.ToString();
 		if (sites.IsDone(bearing))
 		{
@@ -1392,6 +1667,9 @@ class RZ_Masts
 			if (who > 0)
 				TookBearing(m, who);
 		}
+
+		if (m.m_iId == m_Relay.RelayIndex() || m.m_iId == m_Relay.TallestIndex())
+			m_Relay.TickHolds(m);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1470,6 +1748,15 @@ class RZ_Masts
 				return string.Format("Weather's turning over %1. Get under a roof.", m.m_sTown);
 		}
 
+		// A road patrol on a road near you (Factions/RZ_RoadPatrols.c)
+		RZ_RoadPatrols patrols = RZ_RoadPatrols.Get();
+		if (patrols)
+		{
+			string patrol = patrols.WarningNear(ent.GetOrigin(), 1500);
+			if (!patrol.IsEmpty())
+				return patrol;
+		}
+
 		RZ_SupplyLines supply = m_GM.GetSupply();
 		if (supply)
 		{
@@ -1541,6 +1828,14 @@ class RZ_Masts
 					options.Insert(string.Format("On %1, a tired voice: \"Truck's through for %2. Keep the road clear.\"", who, dest));
 				else if (secs >= 0 && secs <= 1800)
 					options.Insert(string.Format("On %1: \"Truck rolls in %2 minutes. Load it and shut up about it.\"", who, RZ_Util.RoundToInt(Math.Max(60, secs) / 60)));
+			}
+
+			// One of its road patrols checking in (Factions/RZ_RoadPatrols.c)
+			if (RZ_RoadPatrols.Get())
+			{
+				string walking = RZ_RoadPatrols.Get().HeardLine(f);
+				if (!walking.IsEmpty())
+					options.Insert(string.Format("On %1, a patrol checking in: %2", who, walking));
 			}
 
 			if (territory && territory.IsActive())
@@ -1774,6 +2069,67 @@ class RZ_Masts
 		IEntity can = RZ_Util.SpawnPrefab("{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et", ent.GetOrigin(), 0);
 		if (can && !RZ_Util.InsertIntoInventory(ent, can))
 			RZ_Util.DeleteUnit(can);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What faction f's people say in person about a mast of theirs whose region takes in `pos`
+	//! (RZ_FactionLife.TalkExtra: a leader's or a named person's talk): the mast and who climbed it.
+	//! "" when they hold none over here.
+	string RegionLine(int f, vector pos)
+	{
+		if (!IsOn() || f < 0)
+			return "";
+
+		foreach (RZ_Mast m : m_aMasts)
+		{
+			if (!m.m_bUp || FactionOf(m.m_eOwner) != f || RZ_Util.DistXZ(m.m_vPos, pos) > m_Settings.m_fRegion)
+				continue;
+
+			string who = m.m_sPutUpName;
+			if (who.IsEmpty())
+				who = "Somebody nobody here knew";
+
+			if (f == RZ_EFaction.BANDITS)
+				return string.Format("%1 climbed %2 and sold it to the book. Anyone round %3 listening without a word with us is listening to our set for free.", who, m.m_sShort, m.m_sTown);
+
+			if (f == RZ_EFaction.MILITARY)
+				return string.Format("That's our set on %1 now. %2 climbed it for us. The warnings come in clean round %3.", m.m_sShort, who, m.m_sTown);
+
+			if (f == RZ_EFaction.INSTITUTE)
+				return string.Format("Our relay on %1 picks up the whole valley. %2 put it up for us. We log everything.", m.m_sShort, who);
+
+			return string.Format("%1 got %2 working for us. When something's coming round %3, we hear it first now.", who, m.m_sShort, m.m_sTown);
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line for faction f's open channel about a mast it holds (its people talking about it), ""
+	//! if it holds none (RZ_FactionLife.BuildChatter).
+	string HeldLine(int f)
+	{
+		if (!IsOn())
+			return "";
+
+		foreach (RZ_Mast m : m_aMasts)
+		{
+			if (!m.m_bUp || FactionOf(m.m_eOwner) != f)
+				continue;
+
+			if (f == RZ_EFaction.BANDITS)
+				return string.Format("%1's ours and it's paying. Anyone listening without a word in the book, we hear you listening.", Capitalize(m.m_sShort));
+
+			if (f == RZ_EFaction.MILITARY)
+				return string.Format("Our set on %1's clean tonight. Whoever climbed it for us, we haven't forgotten.", m.m_sShort);
+
+			if (f == RZ_EFaction.INSTITUTE)
+				return string.Format("Halcyon, all staff. Our relay on %1 is holding. Log anything it picks up.", m.m_sShort);
+
+			return string.Format("We've got %1 now. Somebody climbed it for us. If you hear trouble, say so on here.", m.m_sShort);
+		}
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------

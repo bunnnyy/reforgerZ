@@ -644,6 +644,19 @@ class RZ_FactionLife
 		if (!need.IsEmpty() && Math.RandomFloat01() < 0.7)
 			text = need;
 
+		// A mast of theirs over this region: who climbed it (World/RZ_Masts.c), now and then
+		if (RZ_Masts.Get() && Math.RandomFloat01() < 0.35)
+		{
+			string mast = RZ_Masts.Get().RegionLine(f, pos);
+			if (!mast.IsEmpty())
+			{
+				if (!text.IsEmpty())
+					text += " ";
+
+				text += mast;
+			}
+		}
+
 		if (Math.RandomFloat01() < 0.25)
 		{
 			string moment = MomentReference(f);
@@ -1206,6 +1219,14 @@ class RZ_FactionLife
 				labPlace = lab.m_sName;
 
 			options.Insert(RZ_FactionVoice.ChatterSamples(RZ_Util.RoundToInt(m_GM.GetCure().m_fProgress), labPlace));
+		}
+
+		// A mast it holds (World/RZ_Masts.c): its people talk about it now and then
+		if (RZ_Masts.Get() && Math.RandomFloat01() < 0.25)
+		{
+			string held = RZ_Masts.Get().HeldLine(f);
+			if (!held.IsEmpty())
+				options.Insert(held);
 		}
 
 		if (options.IsEmpty())

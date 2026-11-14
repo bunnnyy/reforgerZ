@@ -143,7 +143,7 @@ class RZT_Kitchen
 			sites.PlaceOf(KEY_PIECE, where, look, onPiece);
 			if (!onPiece)
 				Fail("at the camp: the site isn't at the cook pot");
-			else if (!look.IsEmpty() || sites.PropOf(KEY_PIECE))
+			else if (!look.IsEmpty() || sites.RZT_LookProp(KEY_PIECE))
 				Fail(string.Format("at the camp: %1 was put out beside the camp's own cook pot", RZ_Util.PrettyPrefabName(look)));
 			else
 				Print("RZT kitchen: at the camp, the work is at its own cook pot and nothing more is put out");
@@ -168,5 +168,20 @@ modded class RZ_WorkSites
 	{
 		RZT_Kitchen.Step(this);
 		super.Tick(dt, ids, players);
+	}
+}
+
+modded class RZ_WorkSites
+{
+	//------------------------------------------------------------------------------------------------
+	//! The site's look as put out (its before prop), not its prompt's box: the box always stands once
+	//! a player is near, and is no prop of ours beside the camp's pot
+	IEntity RZT_LookProp(string key)
+	{
+		RZ_WorkSite s = Find(key);
+		if (!s)
+			return null;
+
+		return s.m_BeforeProp;
 	}
 }

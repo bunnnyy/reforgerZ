@@ -204,6 +204,7 @@ takes them, a system uses them, they're worn, or the fence buys them):
 | Item | From | Where (common / rare) | What it does |
 |---|---|---|---|
 | Wire, nails, empty tin, scrap metal, salt, torch cells, writing pad, bleach | ReforgerZ (`Prefabs/ReforgerZ/Crafting/`) | houses, shops, farms, garages, police, bodies, wrecks' boots, each where it belongs | the bench's and stove's inputs ([DESIGN.md](DESIGN.md#light-crafting)): tripwires, rattles, spears, spike traps and tablets can now be made too |
+| A fuse | ReforgerZ (`Prefabs/ReforgerZ/Crafting/RZ_Fuse.et`) | garages (rare) | a substation's fuse, fitted before its breaker closes ([DESIGN.md](DESIGN.md#the-grid-region-by-region)); the bench makes two from wire and scrap |
 | Portable radio | BanditGear | house, shop, garage (electronics) | plays music; a radio for the lure |
 | Sandals, dirty sneakers, black and dirty wool gloves, black leather gloves, black tracksuit, second jeans, black cargo trousers, dirty sweatshirt, trench coats, a sweatshirt hood, a black hood | BanditGear | house, shop, farm, body (common; trench coats rare) | worn; gloves lower the bite chance; trousers and shirts cut up into rags |
 | Bandit jackets, a three-hole balaclava | BanditGear | body (rare) | worn; "bandit" counts as Red Hand clothing for the disguise |

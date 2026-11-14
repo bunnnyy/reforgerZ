@@ -1,7 +1,7 @@
 # Habits: who you become
 
 **Designed, not built.** Approved by the author on 2026-11-14. It grows the three habits of
-[OPENING.md](OPENING.md) (beat 1) into a small set earned by doing, and is written for
+the opening's door ([DESIGN.md](../docs/DESIGN.md#habits)) into a small set earned by doing, and is written for
 [PERSISTENCE.md](PERSISTENCE.md): a character keeps them until reset.
 
 The review's gap: character growth is thin; reputation was the only thing you built, and it reset at
@@ -21,7 +21,7 @@ shown on the Standing page.
 | Known face | 15 errands or duties done for one faction | that faction's people greet you by name, and one price there is 5% less |
 | Cold nerve | 5 times you held still Hidden with infected within 15 m | your stealth bar fills 10% slower |
 
-- **The opening** gives one of the first three at the door, as OPENING.md says; it counts as earned.
+- **The opening** gives one of the first three at the door, as built ([DESIGN.md](../docs/DESIGN.md#habits)); it counts as earned.
 - **At most three habits** at a time. Earning a fourth asks which to let go (a reply on the Standing
   page, with a pad). Every number is a cap, never stacked with a perk of the same kind past +15%.
 - **They fade if you stop.** A habit not used in 5 real days of play fades (Standing page: *"Your
@@ -38,7 +38,7 @@ hands: 14 of 20 holds."*). A habit earned is a notice and a line from whoever's 
 1. The counters (on systems that already log these: work sites, stealth, talk checks, medical, the
    pot, walking, errands), the habit list, the cap of three, fading.
 2. The effects, each in the system it touches; the Standing page.
-3. OPENING.md's door habit goes through this.
+3. The opening's door habit goes through this.
 
 ## Settled with the author (2026-11-14)
 

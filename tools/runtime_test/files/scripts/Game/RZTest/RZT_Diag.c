@@ -632,6 +632,24 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 12 && !RZT_Masts.Tick(this))
 			return;
 
+		// The loop's relay and Bastion's last call (RZT_Relay.c), with every mast put up
+		if (m_iRZTSec >= 12 && !RZT_Relay.Tick(this))
+			return;
+
+		// The grid past the station (RZT_Grid.c): substations, a break and a splice, the stakes, a cut
+		if (m_iRZTSec >= 12 && !RZT_Grid.Tick(this))
+			return;
+
+		// Road patrols (RZT_RoadPatrols.c): on the real roads, data far off, put out near, met by
+		// standing, one vehicle at a time, a fight's trace, a lost patrol's Missing Patrol
+		if (m_iRZTSec >= 12 && !RZT_RoadPatrols.Tick(this))
+			return;
+
+		// The power and radio leftovers (RZT_PowerRest.c): the map's cabinet, the region's talk, the
+		// fuse, Lights Out and Lights Back, the cold room, the Red Hand at the call, Await Relief's nights
+		if (m_iRZTSec >= 12 && !RZT_PowerRest.Tick(this))
+			return;
+
 		// The openings' play-test faults (RZT_Openings.c), before the missions move the tester about
 		if (m_iRZTSec >= 12 && !RZT_Openings.Tick(this, m_aRZTRoute[0]))
 			return;
@@ -645,12 +663,27 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 12 && !RZT_Case.Tick(this, m_aRZTRoute[0]))
 			return;
 
+		// The papers in the case's lid (RZT_Papers.c): gained once, offered as jobs, handed to their
+		// owners (a major's participant) or to a rival (the page in the open)
+		if (m_iRZTSec >= 12 && !RZT_Papers.Tick(this))
+			return;
+
 		// The opening's line (RZT_Line.c): a road above it, the runner shot in the warning zone, the line said
 		if (m_iRZTSec >= 12 && !RZT_Line.Tick(this))
 			return;
 
 		// The opening's fixer (RZT_Ferda.c): Ferda comes for the case; each way through him; his note
 		if (m_iRZTSec >= 12 && !RZT_Ferda.Tick(this, m_aRZTRoute[0]))
+			return;
+
+		// The whole opening by level (RZT_OpeningChain.c): the door, the favour, the line's short form,
+		// the runner, Ferda by level, the case delivered to Halcyon
+		if (m_iRZTSec >= 12)
+			RZT_OpeningChain.Tick(this);
+
+		// The Long Table and its reach (RZT_LongTable.c, stepped from the house's own tick): nothing
+		// else moves the tester until it's done
+		if (m_iRZTSec >= 12 && !RZT_Table.s_bDone)
 			return;
 
 		if (m_iRZTSec > 5 && m_iRZTSec % 3 == 0 && !m_bRZTMissionsDone)

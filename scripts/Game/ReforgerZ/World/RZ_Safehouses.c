@@ -1155,7 +1155,8 @@ class RZ_Safehouses
 			float speed = m_GM.GetSeasonSpeed();
 			foreach (int i, RZ_Safehouse h : m_aSafehouses)
 			{
-				h.m_fUpkeepTimer = h.m_fUpkeepTimer + dt * speed;
+				// The Haven's cold room: in a town with the grid's power the stores keep, and last longer
+				h.m_fUpkeepTimer = h.m_fUpkeepTimer + dt * speed * RZ_Substations.ColdRoomMult(h.m_vPos);
 				if (h.m_fUpkeepTimer >= m_Settings.m_fUpkeepMinutes * 60)
 				{
 					h.m_fUpkeepTimer = 0;

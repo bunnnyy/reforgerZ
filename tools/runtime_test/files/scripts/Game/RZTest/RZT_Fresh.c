@@ -4,7 +4,8 @@
 // - The last life's jobs aren't this one's: a questline part from the last life doesn't make the
 //   questline visible to the new one, and no running job keeps the player as participant or offer.
 // - The opening: its contact stands within 15 m of where the player comes out, and its first
-//   stage is the door's favour, not the lead to the nearest work.
+//   stage is the door's favour (a veteran's skips it once talked to: RZT_OpeningChain), not the lead
+//   to the nearest work.
 // - The Quests tab: no job of any kind is listed as taken.
 // Lines: "RZT fresh OK|FAIL <what>" and "RZT fresh: N checks, M failed".
 
@@ -63,10 +64,30 @@ class RZT_Fresh
 		run.Did(gm, id, RZ_EQuestApproach.NONE, "the last life was there");
 		Check(run.PlayerTookPartThisLife(gm, id), "a part this life counts as this life's (" + run.m_Line.m_sTitle + ")");
 		Check(q.IsVisibleTo(run, id), "the questline is in the journal of the life that took part");
+		// A new life as the game makes one: the life count goes up, and the mission manager takes the
+		// player off every running job (RZ_MissionManager.OnNewLife), the stage's mission included.
+		// Only this run's stage mission is touched here, and put back after, so the route goes on
 		profile.m_iLives = lives + 1;
+		RZ_Mission stage = gm.GetMissions().FindById(run.m_iMissionId);
+		bool wasIn = false;
+		bool wasOffered = false;
+		if (stage)
+		{
+			wasIn = stage.m_aParticipants.Contains(id);
+			wasOffered = stage.m_aOfferedTo.Contains(id);
+			stage.m_aParticipants.RemoveItem(id);
+			stage.m_aOfferedTo.RemoveItem(id);
+		}
+
 		Check(!run.PlayerTookPartThisLife(gm, id), "a new life doesn't inherit the last one's part");
 		Check(!q.IsVisibleTo(run, id), "the questline isn't in the new life's journal");
 		Check(run.PlayerTookPart(gm, id), "the story still remembers the player by identity");
+		if (stage && wasIn)
+			stage.m_aParticipants.Insert(id);
+
+		if (stage && wasOffered)
+			stage.m_aOfferedTo.Insert(id);
+
 		profile.m_iLives = lives;
 		if (run.m_aParts.Count() > partsBefore)
 			run.m_aParts.Remove(run.m_aParts.Count() - 1);
@@ -162,7 +183,7 @@ class RZT_Fresh
 
 		Check(contact != null, "a veteran's opening has its contact standing");
 		Check(contact && dist <= 15, string.Format("the contact stands within 15 m (%1 m)", dist.ToString(4, 1)));
-		Check(first == RZ_EOpeningStage.FAVOUR, string.Format("the first step is the door's favour (stage %1), not the lead to work", first));
+		Check(first == RZ_EOpeningStage.FAVOUR, string.Format("the chain starts at the door's favour (stage %1; a veteran's skips it once talked to), not the lead to work", first));
 
 		// 4. The Quests tab: nothing taken but what the opening hands
 		RZ_QuestTracker tracker = null;

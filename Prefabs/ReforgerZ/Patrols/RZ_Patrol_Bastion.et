@@ -1,0 +1,8 @@
+SCR_AIGroup : "{3BF36BDEEB33AEC9}Prefabs/Groups/BLUFOR/Group_US_SentryTeam.et" {
+ ID "0000000000000001"
+ coords 0 0 0
+ m_faction "MIL"
+ m_aUnitPrefabSlots {
+  "{868452B27B88421E}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Lead.et" "{20BAAB10425B9523}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Patrol.et" "{2BB4043E2C03EAB3}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Helmet.et" "{F65038399151D9BC}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Boonie.et"
+ }
+}

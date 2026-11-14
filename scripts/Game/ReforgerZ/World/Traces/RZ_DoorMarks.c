@@ -40,7 +40,8 @@ enum RZ_EDoorSymbol
 	SCRATCH_IN,		// the infected: someone turned in there
 	SMEARS,			// the infected: the slow ones lay against it
 	THUMB,			// the Red Hand: someone the Haven put out sleeps here (an exile, RZ_TraceWatch)
-	WORDS			// residents: whatever they needed to say
+	WORDS,			// residents: whatever they needed to say
+	PLATE			// the Long Table: a plate and a fork, scratched small; someone lone here was asked to supper (World/RZ_LongTableReach.c)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -126,7 +127,7 @@ class RZ_DoorMark
 		if (symbol == RZ_EDoorSymbol.BEAK)
 			return RZ_EDoorAuthor.HALCYON;
 
-		if (symbol == RZ_EDoorSymbol.WORDS)
+		if (symbol == RZ_EDoorSymbol.WORDS || symbol == RZ_EDoorSymbol.PLATE)
 			return RZ_EDoorAuthor.RESIDENTS;
 
 		return RZ_EDoorAuthor.INFECTED;

@@ -1,0 +1,8 @@
+SCR_AIGroup : "{6E725D44CA973C24}Prefabs/Groups/INDFOR/Group_FIA_SentryTeam.et" {
+ ID "0000000000000001"
+ coords 0 0 0
+ m_faction "SURV"
+ m_aUnitPrefabSlots {
+  "{8AEA25DDC12B9FE3}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Hunter.et" "{6FC65ABF84F4A422}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Worker.et" "{F7D8023C72A66D9E}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Farmhand.et"
+ }
+}

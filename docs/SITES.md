@@ -1036,6 +1036,51 @@ Routes are worked out on the site's grid and its road segments: points on ground
 A walk out stops where its next point (and a turn of 25° or 50° either way) fails the check; with
 fewer than 3 points it isn't kept, and its job falls back to the wire's walk.
 
+### Road patrols
+
+Code: `Factions/RZ_RoadPatrols.c`, `Dialogue/RZ_TalkPatrol.c`. Settings: **Territory > Road patrols**.
+Beyond the site's own walks, a faction's people walk the real roads round its holdings, and now and
+then a vehicle drives them.
+
+| | What | Who |
+|---|---|---|
+| **Foot patrols** | Out of a holding along the map's road network, 1–3 km, and back the same way | Bastion: a fire team of four checking papers. The Red Hand: a crew of four charging for the road. The Haven: a scavenging party of three. Halcyon: a sample team, two in hazmat and one armed guard (the **Patrols** groups, `Prefabs/ReforgerZ/Patrols/`; empty: the faction's supply crew) |
+| **A vehicle patrol, rare** | Bastion's jeep (the base game's M151A2) or the Red Hand's vehicle (its supply truck unless set) drives the roads out of a holding toward another of its holdings, at most 6 km, and back | **At most one on the server at a time**, and a faction's no more than every 45–60 minutes of play |
+
+- **The route.** From the road point nearest the holding (within 300 m), along one road to its end,
+  then onto a road that starts or passes within 20 m of it (a T-junction) and hasn't been walked yet:
+  toward the other holding for a vehicle, else at random. Points every 25 m (70 m driving). It stops
+  where the next point is in water, near the line, off the mainland or within 250 m of another
+  faction's holding. Up to six tries (a vehicle's first toward its holding, the rest at random);
+  all shorter than 1 km and the holding sends nobody (logged once, with what stopped it).
+- **Data until someone's near.** It's a point moving along its route at 1.3 m/s (9 m/s driving). Its
+  people (and vehicle) are put out within 400 m of a player (700 m for a vehicle) and taken away 100 m
+  past that (150 m), in the wanderers' share of the body budget. With a body, the group is sent to
+  its next point (a vehicle the one after) and its position read back; 90 s without reaching one and
+  it's sent to the next. A vehicle's crew boards it first (the driver first, as a supply truck's);
+  nobody at the wheel after 30 s and they go on foot.
+- **How many.** Two at once with anyone online, one more for every four players, at most five (the
+  vehicle counted). Each faction sets out every 20–35 minutes of play, twice as long while its
+  strength or morale is under 35. The Haven and Halcyon don't set out at night. A holding sends one
+  at a time.
+- **Meeting one.** Its leader speaks once to each player who comes within 30 m and can be talked to;
+  what he does goes by standing ([REPUTATION.md](REPUTATION.md#road-patrols)).
+- **A fight on the way.** On its way out, at the point nearest the most infected town (within that
+  town's radius and 500 m), a foot patrol walking as data meets the infected with a chance of 0.25 ×
+  the town's infection: spent cases on the verge there, a live trace
+  ([TRACES.md](TRACES.md#live-traces), L9).
+- **Lost.** Everyone in it dead: spent cases where it fell, and a Bastion patrol becomes a
+  [Missing Patrol](MISSIONS.md) at that spot. A player at the wheel of the vehicle ends the patrol;
+  the vehicle is theirs. A patrol out four hours is called in.
+- **Heard.** An up mast's warnings name a patrol on a road within 1.5 km of you, and its overheard
+  traffic has a patrol checking in ([DESIGN.md](DESIGN.md#the-masts)).
+- **Checked on the server** (`run.sh patrols`, Arland): routes of 1.0–2.2 km on the roads for all four
+  factions (a holding hemmed in by another's ground can send nobody: the Red Hand's at Outskirts on one
+  boot), data far off and put out near, the leader tagged, the meetings by standing, the fight's
+  trace, the vehicle cap and the Missing Patrol. *Not shown there:* the people walking their road (on
+  the test server the group stood still) and a crew driving its vehicle; both are VERIFY and the PC's
+  play-test.
+
 ### Everyday movement
 
 | Movement | How |

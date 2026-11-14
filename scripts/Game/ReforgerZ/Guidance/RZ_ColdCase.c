@@ -94,7 +94,7 @@ class RZ_ColdCaseComponent : ScriptComponent
 		else
 			text += "\n\nThe case is cold to the touch.";
 
-		return text;
+		return text + RZ_CasePapers.ReadText();
 	}
 }
 

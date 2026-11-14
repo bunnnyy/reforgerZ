@@ -55,7 +55,7 @@ and one way to end it: **research the cure.**
   every new wrong costs Fame too. Bastion checkpoints and Red Hand roadblocks on the roads search you, take a toll
   or let you surrender. A faction's uniform gets you past its people, until you're caught.
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
-  AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
+  AI crews, patrols walking the roads round each faction's holdings (and a rare one in a vehicle), Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
 - **Camps that look lived in**: each faction moves into the building in town that suits it
   (Bastion the school or town hall on the road, the Red Hand the garage at the crossroads, the
@@ -107,7 +107,7 @@ and one way to end it: **research the cure.**
   story still open can end inside the week (loose ends, names brought home, towns taken back, the
   last broadcast, your own line on the Names board), and on the last day your character can walk
   out at the north road, one name at a time.
-- **164 missions** (plus about 90 questline stages): faction contracts (a few about what a faction would rather not say), world
+- **166 missions** (plus about 90 questline stages): faction contracts (a few about what a faction would rather not say), world
   events, puzzle missions, unarmed stealth jobs, missions at the quarantine line, morally grey
   Haven and Red Hand work and leaders' off-book jobs. **Jobs only by interaction:** every job
   starts from a person you ask or a thing you use (the radio only says who's asking, and world
@@ -151,9 +151,10 @@ and one way to end it: **research the cure.**
   after the cure and two stories don't use the same safehouse at once. Contracts pick their towns
   by who holds them, the origin story, the last orders and the Red Hand's pit are the same all
   season, and a contract waits while the questline that tells its story runs.
-- **The Long Table**: some seasons, a small family in a farmhouse past the emptiest village. They
+- **The Long Table**: every season, a small family in a farmhouse past the emptiest village. They
   set a place for whoever comes, the host on the road is the friendliest man in the Zone, and
-  people who take that road don't always arrive. Eat with them, trade, find out, tell someone or
+  people who take that road don't always arrive. Their bell rings at dusk, their signs say SUPPER.
+  ALL WELCOME., their jars turn up in the loot, and the dead near the farm are gone by morning. Eat with them, trade, find out, tell someone or
   end it yourself ([LORE.md](docs/LORE.md#the-long-table)).
 - **People who talk back** ([DIALOGUE.md](docs/DIALOGUE.md)): with **Dialogue > Trees** on (off
   by default until it's play-tested), the people you talk to have topics in their own voices, with
@@ -184,12 +185,14 @@ and one way to end it: **research the cure.**
   map's own masts, each missing a part, with an old radio man, a Red Hand crewman or a pack at its
   foot. Climb it with the part and say whose voice it is (a faction's, everyone's, or the Red Hand's
   to sell): its region hears warnings, overhears factions' traffic, and with two up a trapped man's
-  voice can be found by taking bearings.
+  voice can be found by taking bearings. Past the power station, substations light the rest of the
+  map region by region (a fuse, then the breaker), lines break and are spliced, and the Red Hand pay
+  to have a rival's lights cut (Lights Out) while the dark towns ask for them back (Lights Back).
 - **Loot the world**: a few things lie loose in every building, on worktops and floors and suited
   to it (medicine in a pharmacy, tools in a garage), and you pick them up the game's way; picked-over
   towns are thin; bodies looted like any body, car wrecks' boots to open like any storage; treating each other is the
   game's own, and a Nurse or Doctor also slows a bite; locked doors that keep the infected out (they bang on them)
-  and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting (nineteen recipes at the bench and the stove, with junk to find for them; a lockpick for locked doors),
+  and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting (twenty recipes at the bench and the stove, with junk to find for them; a lockpick for locked doors),
   traps, fire (a full fuel can in your hands at the door), water and secure radio channels.
 - **Teaches itself**: no tutorial pop-ups, just a note where you wake, a wind-up radio and
   people who tell you things.
@@ -264,7 +267,7 @@ scripts/Game/ReforgerZ/
                  deer herds in the country and their meat, the things players build cleared
                  when unused (fireplaces, tents),
                  town memory, the power grid (where its station is, the control at it, its
-                 dressing and generator sound, the power panel's server side and its breakers), the radio station, the masts (put up, given
+                 dressing and generator sound, the power panel's server side and its breakers; the substations past it, broken lines, tolls and sabotage), the radio station, the masts (put up, given
                  away, their warnings, listening in and a trapped voice's bearings), the world facts (what content
                  reads: season flags, canon, claims and soft holds, text tokens) and its world
                  memory (reasons, signals, the town log, world records, the truth deck) with its
@@ -300,7 +303,7 @@ scripts/Game/ReforgerZ/
   Factions/      reputation and its 16 names (and the season record and titles), quartermasters, shops and the shop screen's server
                  side, perks, services, hunter squads, bounties,
                  road posts and camps, leaders, AI hostility, disguises and retaliation,
-                 territory, supply trucks, faction life, camp life (scenery and routines; each site's
+                 territory, supply trucks, road patrols, faction life, camp life (scenery and routines; each site's
                  ground on a grid, its surroundings, its people's posts and routes,
                  its story and its audit),
                  reputation's voice (the word for you, crew names, the picture), the voice bank

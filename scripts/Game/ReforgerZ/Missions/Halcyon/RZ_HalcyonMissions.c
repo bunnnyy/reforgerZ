@@ -273,9 +273,16 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 		if (!s)
 			return false;
 
-		m_vPos = s.m_vCenter;
+		// Each well on dry mainland, off the line (the place need "mission", docs/PLACES.md): a town at
+		// the map's edge has none and isn't sampled
+		RZ_PlaceNeed need = RZ_PlaceNeeds.Get("mission");
+		vector first = RZ_PlaceFind.Near(s.m_vCenter, 0, s.m_fRadius * 0.4, need, m_iSettlement);
+		if (first == vector.Zero)
+			return false;
+
+		m_vPos = first;
 		m_fParticipationRadius = 0;
-		AddPoint(LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.4));
+		AddPoint(first);
 
 		array<int> used = {m_iSettlement};
 		int guard = 0;
@@ -288,7 +295,9 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 				continue;
 
 			used.Insert(idx);
-			AddPoint(LandPointNear(other.m_vCenter, 0, other.m_fRadius * 0.4));
+			vector well = RZ_PlaceFind.Near(other.m_vCenter, 0, other.m_fRadius * 0.4, need, idx);
+			if (well != vector.Zero)
+				AddPoint(well);
 		}
 
 		if (m_aPoints.Count() < 3)

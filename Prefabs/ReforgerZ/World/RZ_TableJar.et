@@ -1,0 +1,19 @@
+GenericEntity : "{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et" {
+ ID "4B6E2D9F1C3A5E77"
+ components {
+  B_FoodWaterGadgetComponent "{64E345AB440DEB9E}" {
+   m_iFoodValue 0.45
+   m_iThirstValue 0.05
+   m_fSicknessChance 0
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "A jar of preserves"
+     Description "Wrapped in newspaper. On the lid, in pencil, a day and nothing else. Meat, put up in its own fat. It keeps."
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -280,7 +280,7 @@ class RZT_Favour
 	//! Where the check's openings start: the middle of the nearest town (size 2 or more, not on an
 	//! island: an opening's start is always among houses, RZ_OpeningRoll), on the ground; the
 	//! nearest settlement if there's no town; the tester's own spot if there's none.
-	protected static vector Door(RZ_GameModeComponent gm, IEntity me)
+	static vector Door(RZ_GameModeComponent gm, IEntity me)
 	{
 		RZ_Settlement best = Town(gm, me);
 		if (!best)

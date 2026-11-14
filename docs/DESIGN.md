@@ -606,6 +606,76 @@ heard, not seen (the map's own sets at a power plant don't move); windows don't 
 **UI > Power breaker layout** empty the control keeps its old world prompts and the breakers are
 done in one go with the generator ([fallbacks](UI.md#the-power-panel)).
 
+### The grid, region by region
+
+Code: `World/RZ_Substations.c` (owned by the power grid); settings: **World > Power grid >
+Substations**. The station lights its own region (above); past it, the map's own power
+infrastructure carries it further, one region at a time.
+
+- **The substations.** Near each town outside the station's region (the bigger towns first), the
+  map's own substation building, transformer yard or lone transformer (the station's own finder,
+  `RZ_PowerSite`), on dry mainland, off the line, 2 km apart, at most **6**. Each powers the towns
+  within **1.5 km** of it that aren't the station's. A map with none (no transformer anywhere past
+  the region) has no substations, and the station alone, as before. Named by what it is: "the
+  substation in Levie", "the transformer yard outside Tyrone".
+- **Switching one on.** Its control is the map's own electrical cabinet in the yard (an invisible
+  spot on its face) when there is one within 45 m, else the station's control prefab beside it.
+  **Look at the substation** opens its object menu, in two steps at the cabinet: **Fit a fuse** (a 5 s
+  hold; it takes a fuse: the bench makes two from wire and scrap metal, and garages have them, rare),
+  then **Close the breaker** (a 12 s hold). Its towns
+  have power while it's switched on, its line to them is whole and the station runs: the lights
+  hook, the street lamps, town memory's power flag, as the station's own region. The station stopping
+  darkens them all; a substation stays switched on through it.
+- **Lines that break.** While the station runs and players are online, a live substation's lines
+  break now and then (**Breaks an hour**, 0.25; twice that in a storm, half again where the infected
+  are stirred round the yard). One of its towns goes dark. The break is at one of the map's own
+  power poles near the middle of the line (by prefab name: `PowerLine_*_pole*`), else at the yard's
+  own cabinet. Who says so: the open channel, to players with a radio round the town (*"Lights are
+  out in Levie. Line's down somewhere between us and the substation..."*). **Look at the line** at
+  the pole: **Splice the line** (a 15 s hold; a length of wire). The kind of break is in the menu's
+  text: wear, the storm, the infected.
+- **The Red Hand's toll.** With a Red Hand holding within 3 km of the yard, three breaks in ten are
+  the crews cutting the line (**Toll share**, 0.3). A crewman sits under the pole; the Red Hand's
+  channel tells the town's radios: *"The lights in Levie are on the book now. Two tins and our man
+  at the line puts them back."* At the line: **Pay him two tins to put it back**, or splice it
+  yourself (+3 Red Hand Infamy, and the channel notices).
+- **What the factions get from it** (small, capped, gone with the power):
+
+| Faction | While its place has power |
+|---|---|
+| Halcyon | The lab works ×1.2 faster while its town is lit (**Lab multiplier**, capped at 1.5) |
+| The Haven | +1 morale an hour while a town it holds is lit, at most +6 a real day (the kitchens); and **the cold room**: a safehouse in a lit town eats its stores at 0.8 the speed (**Cold room**, 0.5 to 1), so its food lasts longer |
+| Bastion | The same (its radios reach its posts) |
+| The Red Hand | The tolls on a town's line (above), and its pay for sabotage (below) |
+
+- **Lit towns at night.** In a lit town at night the infected are 15% fewer (**Lit spawn**, 0.85: lit
+  streets keep them off a little), but every lit town makes 1 heat a minute at its middle, so packs
+  come from further.
+- **Sabotage.** At a switched-on substation, **Cut the breaker** (an 8 s hold, loud: 8 heat): its towns
+  go dark, and whoever cuts it pockets the fuse, so putting it back takes a new one. At an up mast that's somebody's ([The masts](#the-masts)),
+  **Cut its cable**: it's down again with a new part missing, and whoever held it asks on its channel
+  for someone to put it back; whoever does gets 5 Fame with them (Favor with the Red Hand) and the mast
+  is theirs again. Either cut costs **8 Infamy** with each faction whose town or mast it darkens, and
+  the Red Hand pay **10 Favor** for a rival's (once a real day a player; their channel says so).
+- **The jobs.** A Red Hand giver offers **Lights Out** (Known; 8 Fame, 20 Favor) against a lit
+  substation a rival's towns are on, else a mast a rival holds; the job's pay replaces the Red Hand's
+  tip for that cut, and the cut's Infamy is the cut's own. A substation cut on purpose is offered back
+  as **Lights Back** by the faction holding its towns (Stranger; 8 Fame, 10 Favor): fit a fuse, close
+  the breaker. A cut mast's put-back stays its holder's ask on the channel (above). Both are in
+  [MISSIONS.md](MISSIONS.md#the-grids-jobs).
+- **Generators you carry** are the placed kit's ([Barricades, traps and
+  generators](#barricades-traps-and-generators)): a portable or found generator lights where it
+  stands for 30 minutes a fuel item, and hums (6 heat a minute). Started on the ground and loaded
+  straight into a car's storage, it runs on in the back: it lights and charges where the car stands.
+- **Saved:** each substation's switch, its fuse, whether it was cut on purpose, its broken line (where,
+  what kind, the crewman), and today's Red Hand pay.
+
+*Simplified:* the break's pole has no sagging wire of its own (the pole is the map's, the spot on it
+ours); a substation lights whole towns, not streets; Bastion's radios are morale, not their own
+system; the cold room is the safehouse's food, not medicine or samples (nothing in the Zone spoils
+by itself); a generator in a car's back runs only if it was started first and loaded from the ground
+(picked up into a pack, it stops, as before).
+
 ### The radio station
 
 One broadcast point per map: a placed `RZ_RadioStationMarkerEntity`, else a real radio mast
@@ -617,8 +687,7 @@ every 10 minutes server-wide (5 with power). **Cosmetic and social only:** no Fa
 
 ### The masts
 
-Code: `World/RZ_Masts.c`, `Dialogue/RZ_TalkMasts.c`. **World > Masts** (on). The grid and the loop's
-relay wait in [designs/POWER_AND_RADIO.md](../designs/POWER_AND_RADIO.md).
+Code: `World/RZ_Masts.c`, `Dialogue/RZ_TalkMasts.c`. **World > Masts** (on).
 
 Three to five of the map's own masts and aerials, each over a region (2.5 km round it). A mast is a
 place you put up, and **whoever puts it up says whose voice it is**: it isn't more radio range.
@@ -626,8 +695,10 @@ place you put up, and **whoever puts it up says whose voice it is**: it isn't mo
 **Where.** The radio station's finder's masts and aerials within 1.5 km of a town, on dry mainland,
 off the line, 1.5 km apart and 800 m from the radio station; too few (under three), the highest
 ground by the bigger towns. Named for what's there and the town below ("the radio mast above
-Arleville"). Saved with the season. At its foot stands one prop, **Look at the mast** (the console
-the radio station uses, or **Cabinet prefab**), which opens the object menu: the tag's words (what's
+Arleville"). Saved with the season. Its prompt, **Look at the mast**, is on the map's own electrical
+cabinet or control box within 25 m of its foot when there is one (an invisible spot on its face, as a
+substation's; with the power grid's **Use cabinets**), else on one prop at its foot (the console the
+radio station uses, or **Cabinet prefab**). It opens the object menu: the tag's words (what's
 missing, who's at its foot, whose it is) and the rows below. Without the object menu, its first four
 rows are the prop's prompts. It exists while a player is within 300 m.
 
@@ -671,9 +742,52 @@ done. The mast is up; the one who climbed it sees the land round it (the map's f
 | Finding a voice | with two masts up, every 90 minutes a trapped man calls from a spot in an up mast's region, for 30 minutes. Each up mast's menu offers **Take a bearing on the voice** (a 10 s hold); a bearing from a second mast fixes him, and a **Distress Call** starts at that spot ([MISSIONS.md](MISSIONS.md)) |
 
 Every line is a voice on the radio (**Radio: the mast above ...**, **Radio: overheard**, **Radio:
-past the line**), never a card. *Simplified:* the prop at the foot is always ours (the map's own
-cabinet isn't used yet); a cut mast and its job to put it back and all masts up opening the
-loop's relay wait in the design.
+past the line**), never a card.
+
+- **A cut cable** ([sabotage](#the-grid-region-by-region)): an up mast's **Cut its cable** takes it down with a new part missing; its old holder asks for it back, and whoever puts it back up gives it back to them (5 Fame; Favor with the Red Hand).
+- **Its people talk about it in person.** Talk to a leader or a named person of the faction a mast
+  serves, inside its region, and a third of the time they mention it and who climbed it (*"That's our
+  set on the mast above Levie now. Pavel Novak climbed it for us."*), with their other news.
+- **Its holder talks about it.** On the open channel ([faction chatter](#radios-open-and-secure)), a quarter of the time a faction has a line to say, it's about a mast it holds ("Our set on the mast above Levie's clean tonight. Whoever climbed it for us, we haven't forgotten.").
+
+### The loop's relay and Bastion's last call
+
+Code: `World/RZ_LoopRelay.c` (owned by the masts). **World > Masts > Relay** (on).
+
+**The relay.** One mast carries the government broadcast's loop: the one nearest the radio station
+(else the first), picked at setup and saved. Its menu offers **Cut the loop** and four **Swap the
+tape** rows, open only **with every mast up**, and shut again for **Relay cooldown** (72 real hours)
+after either is done:
+
+| | Hold | What happens |
+|---|---|---|
+| **Cut the loop** | the cut's hold (8 s) | The loop is silent for the whole server for **Silence hours** (10, a night). 5 Bastion Infamy, 2 Haven Fame for whoever cut it (through the caps); a headline; `relay.cut` counted |
+| **Swap the tape** | 12 s | One of four tapes ("This isn't the government. Nobody's coming. Look after the ones next to you.", "... The lab's still working. Hold on a while yet.", "... Stay off the roads after dark ...", "... We're still here. Say it to someone tonight.") airs to everyone at once, then plays in the loop's place for **Tape hours** (4, an evening); then the loop's own words come back. 3 Bastion Infamy; a headline; `relay.tape` counted |
+
+Either way every faction says something on its open channel (the Haven glad of the quiet, Bastion's
+"nobody stands down", the Red Hand's joke, Halcyon logging the time), and its morale moves a little
+(cut: Haven +2, Bastion −3, the Red Hand +2, Halcyon −1; tape: Haven +1, Bastion −2, the Red Hand
++1), recovering as morale does. The broadcast's own words and tone stay [its own](#the-government-broadcast):
+the relay only silences it or plays a tape in its place for a while.
+
+**Bastion's last call.** At the tallest mast (the highest ground, picked at setup), up and open or
+Bastion's, someone Known with Bastion can **Hold the power for Bastion's call**: a 60 s hold
+(**Call seconds**). As it starts, Bastion's radio officer says he's calling Command, the set's hum
+makes 10 heat, and a pack lairing within 800 m below is drawn to the mast. When it's held to the
+end: *"Command, Command, this is Task Force Bastion. We are holding. Requesting relief. Over."* Nothing
+but the hiss, for a long time. *"Bastion out."* Nobody ever answers: the Zone is sealed. Once a real day for
+the whole server; 3 Bastion Fame for the holder (once a real day each), Bastion morale −1, and the
+world fact `bastion.last_call` counted. While [Await Relief](QUESTLINES.md#await-relief) runs, the
+officer adds that it goes in the CO's log, and the muster reads the nights
+([QUESTLINES.md](QUESTLINES.md#await-relief)).
+
+**The Red Hand at the call.** With a Red Hand holding within 4 km of the tallest mast, a crew comes
+up the hill for the set as the power's held (**Missions > Red Hand group**): spawned 180 to 260 m out,
+sent to the cabinet, set to fight; Bastion's officer says so (*"Engines on the hill road. That's the
+Red Hand..."*). They go home three minutes after the call ends, or when they're all down. Without the
+group prefab, or with no Red Hand holding near, only what's below comes.
+
+Every line is a voice on the radio.
 
 ### The government broadcast
 
@@ -681,6 +795,7 @@ A looping flavour message to everyone every 25 minutes, and in the notebook at e
 Its tone follows the season mood, the one ladder every voice reads ([WRITING.md](WRITING.md#the-season-mood);
 [LORE.md](LORE.md), "The outside world: silent, watching"; its lines:
 [WRITING.md](WRITING.md#the-government-broadcast)).
+The loop can be cut for a night, or carry someone's tape for an evening, at its relay ([The loop's relay](#the-loops-relay-and-bastions-last-call)).
 Its day count ("Day 14") is 11 plus the real days since the season started, so a season of
 about 45 days runs from Day 11 to about Day 56; without the server's clock, a day is 8 hours
 played. Notes, journals, the radio station and Bastion's orders use the same count.
@@ -1211,6 +1326,14 @@ Code: `Factions/RZ_SupplyLines.c`.
 back. A restart takes a truck off the road with no shortage. Without a faction's truck and
 crew prefabs, or with territory off, that faction's places count as always supplied.
 
+### Road patrols
+
+A faction's people walk the real roads round its holdings (Bastion's fire teams, the Red Hand's
+crews, the Haven's scavengers, Halcyon's sample teams), and now and then a single vehicle patrol
+drives them: data until a player is near, met by standing, leaving a fight's spent cases and, for
+Bastion, a Missing Patrol where one is lost. How they run: [SITES.md](SITES.md#road-patrols); how
+they meet you: [REPUTATION.md](REPUTATION.md#road-patrols).
+
 ### Faction life
 
 Code: `Factions/RZ_FactionLife.c`, `Factions/RZ_FactionVoice.c`.
@@ -1239,13 +1362,13 @@ Capped, background and cheap. Needs, morale, truces and feuds are in
 ### The Long Table
 
 Code: `World/RZ_LongTable.c`; settings: **World > Long Table**. One small cannibal family in one
-farmhouse, some seasons. Who they are is in [LORE.md](LORE.md#the-long-table); how players deal
+farmhouse, every season ([its reach](#its-reach)). Who they are is in [LORE.md](LORE.md#the-long-table); how players deal
 with them (no reputation tree, the dealings, the guest rule, shooting them, what each faction does
 when they're found out) is in [REPUTATION.md](REPUTATION.md#the-long-table); their two
 questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table) and [MISSIONS.md](MISSIONS.md#questlines).
 
 - **Not a faction.** No territory, strength, morale, truck, leader seat or stronghold, and never a
-  stronghold. One house a season at most: **Chance** (0.75) is rolled once, at the season's first
+  stronghold. One house a season at most: **Chance** (1: every season) is rolled once, at the season's first
   start (a wipe rolls again). Off, there's no house, nothing is taken and its questlines never start.
 - **Where.** The small settlement (size 1) with the fewest towns within 1.6 km, infection under 40,
   at least 2 km from every holding, leader seat, quartermaster, safehouse and the lab, off the
@@ -1316,9 +1439,45 @@ questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table) and [MISSIONS.md
   (`MouthsFarm`, `LivesAt`): it was the farm the mouths were sent to.
 - **Next season** is wiped like everything else, and rolls again.
 
+#### Its reach
+
+Code: `World/RZ_LongTableReach.c`; settings: **World > Long Table > Reach** (on). How far the house
+is felt, while it stays four to seven people: everything below is a line, data, or a prop or a
+body near players only, and nothing in it takes anyone (the takings above are unchanged). There's
+a house **every season** now (**Chance** 1), unless the map has nowhere for one. The **hungrier**
+they are (0 fed, 1 starving) the more of everything, as each row says.
+
+| What | When and where | What you get |
+|---|---|---|
+| **Supper signs** | At road junctions 150 m to 2 km from the farm (where a road's end meets another road), nearest first, at most six; 2 shown, up to 6 when starving. A board while a player is within 160 m; found again when the house moves | **Read the board**: "SUPPER. ALL WELCOME." and the way to the farm |
+| **The dinner bell** | 18:30 every evening (19:15 when hunger is 70 or more); heard within 2.5 km (+1 km when starving, 4 km at the harvest) | A line ("A handbell, far off..."); the kit's bell sound at the farm (**World > Traces > Kit > Bell**) when someone's in reach |
+| **A voice at supper** | 18:45 every evening, on the open channel, to everyone with a radio | Grace, and the name of the last one who never arrived; at the harvest, the invitation |
+| **The farm laid out** | While the family's bodies are up and a player is within 300 m | The long table 6-13 m out from the farm's door, along it, where its measured box fits; eight chairs, a bowl at each, jars down the middle, a name card at the end chair (**Read the name card**: the last one who never arrived); a shoe cabinet by the door (**Look at the boots**: too many sizes, a little suspicion once a life); a cupboard and jars on the farm's ground floor; two lanterns on the table from 19:00 to 05:30 (the kit's lit lantern first); chimney smoke 16:00-22:00 |
+| **Their own looks** | Every body of theirs | Sunday clothes (four looks on Puzzles > Civilian, written by `tools/people_looks.py`: brown, grey and black suits, a collar and cap); **Family looks** overrides them |
+| **The host at the market** | Each 10 minutes of play, a 4-16% chance (by hunger) he goes for an hour to the nearest Haven safehouse or Red Hand holding within 5 km. A body there while a player is within 150 m | **Buy a jar of preserves** (one piece of ammunition or medicine, as at the farm) or **Ask where they're from** ("We keep pigs. Kept.") |
+| **The boy at the well** | In a town 0.8-2.5 km from the farm (3.5 km when starving), a lone player on foot, a 15% chance each half minute, once a session each | He asks if you're hungry; **Say you'll come to supper** (the table knows you're coming: "You came. I said you would.") or **Send him home** |
+| **The injured man at dusk** | 19:00-21:30, a lone player on foot within 40 m of a road, 0.4-2 km from the farm and out of town, a 20-40% chance each half minute, once a session each. The son (else another of them) lies 30 m ahead | **Help him up and walk him home** (he's better at once, and asks you to supper) or **Leave him** (he isn't limping; a little suspicion) |
+| **The jars** | Loot within 3 km of the farm: a house has their jar 6-14% of the time (by hunger); the host's market and the farm's own trade sell it | **A jar of preserves** (Reach > Jar: Metabolism's food, a day on the lid). Halcyon's people test it (**[Errand] Have a jar of preserves tested**, on the talk screen to whoever carries one): "Not pork." +15 suspicion, the rumour heard, and The House That Went Quiet may start |
+| **The dead go missing** | Someone who died to the infected within 2.5 km of the farm (4 km when starving), at most six a night | At 05:30, a tell where they lay: drag marks toward the farm |
+| **Their door mark** | Each 10 minutes of play when hunger is 50 or more, once a real day: a house door in the nearest town 2-5 km off (never within 2 km: the farm leaves no marks near it, [TRACES.md](TRACES.md#the-long-table-absence)) | A plate and a fork, scratched small ([TRACES.md](TRACES.md#the-symbols)) |
+| **Wanderers talk** | Before anyone suspects, 30% of a wanderer's road news | "The farm out past ... feeds anyone. Supper at half six, a bell for it." |
+| **The harvest supper** | Once a season, on broadcast day **Harvest day** (30), from 17:00 to 23:00 | A headline, smoke seen from 4 km, the bell rung long and the voice asking everyone. At the table that night, a Doctor, Nurse, Hunter or Lab Technician knows the bone: +15 suspicion, the rumour heard, and the questline may start |
+
+Log lines: `Long Table: the bell rang (heard by N, reach N m)`, `grace on the open channel (N heard
+it)`, `N junctions for supper signs within 2000 m of the farm`, `the farm laid out for supper (N
+things)` (or `no room for the long table...`), `the host goes to market at ...`, `the boy asks a
+traveller to supper`, `a man lies hurt on the road at dusk`, `N of the dead taken in the night`, `a
+plate and a fork on a door in ...`, `Halcyon tested a jar`, `the harvest supper begins` / `is over`.
+
 *Simplified:* the takings and the family are data; a taken wanderer just isn't on the roads any
-more, and routes are straight lines. The family's people stand where they're spawned. The jar is
-any food item in the loot pool.
+more, and routes are straight lines. The family's people stand where they're spawned, and the boy,
+the host and the injured man vanish when they go home. The jar looks like an MRE (Metabolism's
+mesh). The supper sign is the base game's chalkboard (its words are its prompt). The dead taken at
+dawn are the deaths the house hears of (the infected's, a wanderer's), not any body on the map.
+Nobody new is taken because of the reach, so the wanderers' good word doesn't take more of them
+than the takings above. Not built: their jars in the Haven kitchens' stock, and laying the farm out
+by hand with the site builder (it's laid out by code, near players only). The injured man needs a
+road (a map without a road network never shows him).
 
 ## Haven safehouses
 
@@ -1514,6 +1673,10 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
 - **The thing.** At the step's place stands its **before** look (a marked pit, a pile of planks, a
   crate, a toolbox), with one world prompt on an invisible box: the step's own words (*Dig the
   latrine*, *Board up the doors*, *Fill and stack the sandbags*).
+- **Where it stands.** On the ground, a spot that misses the place need `work.site` (steeper than
+  25°, wet, behind a lock: [PLACES.md](PLACES.md#the-needs)) moves to the nearest spot that meets it
+  within 10, 20 then 40 m, logged; the owner's point, marker and tracker line follow it. Indoors spots
+  stay where they're put.
 - **Several at one spot.** An owner with several things to do at one spot gathers their sites
   (`Gather`): one box stands for them, the spot's name its prompt (*The far door*); a press opens
   the object menu with each as a row ([UI.md](UI.md#default-first-then-menus), "One spot, one
@@ -3179,7 +3342,7 @@ isn't saved and doesn't count toward the replacement timer.
 
 ### Light crafting
 
-At a workbench, fifteen built-in recipes, and more can be added as data (twenty-four in all at most). A
+At a workbench, sixteen built-in recipes, and more can be added as data (twenty-four in all at most). A
 recipe whose output prefab isn't set is hidden. A recipe takes its time at the bench (5 to 20 s;
 moving away stops it) and some make noise (heat). Its inputs are checked when you start and again
 when the work is done, each carried item counting for one input only; then each is taken from your
@@ -3204,6 +3367,7 @@ rags (a tool may be in your hands).
 | Radio lure | a radio, torch cells | a radio lure: thrown, it hisses static for over a minute (eight bursts, 9 s apart, 25 heat each) and the infected come to it |
 | Salvaged spark plugs | 2 scrap metal, wire; a wrench (kept) | spark plugs, the car part ([Cars](#cars-found-rare-and-hard-to-fix)) |
 | Hand-drawn map | a writing pad | a paper map you can open (it shows what the base game's map shows; copying what you've explored onto it is planned with the map's fog) |
+| Fuses | wire, scrap metal | 2 fuses: a substation's fuse, fitted before its breaker closes ([The grid, region by region](#the-grid-region-by-region)); garages have them too, rare |
 
 The inputs are found by name (Interactions > Crafting's keywords), so the mods' items count where
 their names fit. The junk the new recipes take lies in houses, shops, farms, garages, police posts,
@@ -3271,7 +3435,7 @@ any map fireplace with vanilla's fireplace component. Its fire is read through v
 | Planks (barricade) | 3 | 60 min | Boards up a real doorway: set within 3 m of a building's outside door, the boards go up in it, facing out (nowhere else: *"There's no door here to board up."*). Infected against it make noise; 8 hits break it. The town counts as Barricaded |
 | Tin-can tripwire | 3 | 60 min | Rattles (20 heat) when something walks through; the owner hears it within 400 m |
 | Spike trap | 2 | 60 min | Kills an infected that walks onto it, three times. Players aren't hurt |
-| Generator | 1 running | 30 min per fuel item | 6 heat a minute; lights hook within 40 m; a radio within 30 m hears every open channel; standing near it charges your radio and torch |
+| Generator | 1 running | 30 min per fuel item | 6 heat a minute; lights hook within 40 m; a radio within 30 m hears every open channel; standing near it charges your radio and torch. Started on the ground and loaded straight into a car's storage, it runs on in the back, lighting and charging where the car stands; picked up into a pack, it stops |
 
 None of these are saved.
 
@@ -3373,10 +3537,9 @@ and for the first five minutes cards come at most one every 45 s; the rules and 
 
 ### Openings: how every life starts
 
-Built of the new opening ([designs/OPENING.md](../designs/OPENING.md)): the door's question and
-[habits](#habits), the favours by background, [the line](#the-line) and [the case](#the-case), which
-leads into Proof, and [the fixer](#the-fixer) who comes for the case. Planned there: the shorter
-forms by level of the first beats.
+The opening is five beats in the world: the door's question and [habits](#habits), the favours by
+background, [the line](#the-line), [the case](#the-case), which leads into Proof, and [the
+fixer](#the-fixer) who comes for the case; shorter for those who know it (the chain by level, below).
 
 Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningScenes.c`, `RZ_OpeningChain.c`,
 `RZ_OpeningSteps.c`, `RZ_OpeningText.c`, `RZ_OpeningLine.c`, `RZ_OpeningFixer.c`, `Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
@@ -3533,10 +3696,10 @@ a talk objective comes before the first step, and before a next person's step (a
 
 | Level | The chain |
 |---|---|
-| 0, brand new | The door (who you were), the favour, the line, the runner (about 30 minutes, then the case's walk to the station); the reasons lean to the hiding place |
+| 0, brand new | The door (who you were), the favour, the line, the runner (about 30 minutes, then the case's walk to the station), then Ferda; the reasons lean to the hiding place |
 | 1, learning | The same |
-| 2, familiar | The same, but the line is its short form (the runner is found already down); the other shorter forms are planned ([designs/OPENING.md](../designs/OPENING.md)) |
-| 3, veteran | As familiar, and the door asks nothing: the last character's habit carries |
+| 2, familiar | The door asks nothing when there's a last character's habit to carry (else it asks), the favour, the line's short form (the runner is found already down), the runner, Ferda as one scene where you are |
+| 3, veteran | The door (as familiar), no favour, the line's short form, the runner, Ferda's note on a door: about five minutes |
 
 Every life starts with the door's favour from the person at the door (the author's play-test as a
 veteran: nobody there and the lead tracked at once read as "the first mission is already skipped").
@@ -3625,7 +3788,7 @@ place fits`, `no place`, `NO CONTACT (<why>)`, `NO OPENING`, the favour's `the f
 <place> (<prefab>, <kind>), <n> m from the contact` or `no place for the favour (<FAVOUR>) for ... at
 <grid>, on to the runner` (a plain one standing in: `no place for <player>'s favour (<FAVOUR>) here, <TIN|SACK>
 instead`), `<player> is <habit> (the habit, <effect>)` or `... keeps the habit <habit>
-(a veteran's door asks nothing)`, `<player> took their background's way (<background>, <key>) at <grid>`
+(a familiar or veteran door asks nothing)`, `<player> is a veteran: no favour, the door then the runner`, `<player> took their background's way (<background>, <key>) at <grid>`
 or `... settled the favour by their background's way (<background>), there and then`, `the neighbour's
 door at <grid> opened (<background>)`, `... handed over to <name> (step N, task N, favour N), done there
 and then`, `...'s bitten friend was lost`, `no runner's case for ... at <grid>, the old end instead`, and
@@ -3638,14 +3801,14 @@ gives work, walked to, not a job already picked for you (jobs start from people)
 fetched thing is held for you as data until the hand-over (it isn't an item in your pack); the
 Mechanic's car is the openings' car prop, not a car you could drive; the Hunter's tracks, the
 neighbour's mat and key are words at the place, nothing stands for them; there's no dog in the stack,
-so the Unemployed's and the Drifter's favour is a sack, with no way of their own; the shorter forms by
-level wait ([designs/OPENING.md](../designs/OPENING.md)). The old step 1 (Down the Road) and step 2s
-(`RZ_OpeningSteps.c`) are out of the chain; The Fever's care step is the Nurse's and the Doctor's way.
+so the Unemployed's and the Drifter's favour is a sack, with no way of their own. The old step 1
+(Down the Road) is gone; the old step 2s (`RZ_OpeningSteps.c`) stay as step definitions no chain
+hands, and The Fever's care step is the Nurse's and the Doctor's way.
 
 ### The line
 
 Code: `Guidance/RZ_OpeningLine.c` (the scene), `Guidance/RZ_Openings.c` (the stage). The opening's
-beat 3 ([designs/OPENING.md](../designs/OPENING.md)): favour done, the contact wants out.
+beat 3: favour done, the contact wants out.
 
 **Where.** When the stage starts, a viewpoint is looked for from where the contact stands: a point on
 a road (the need `opening.line`, [PLACES.md](PLACES.md#the-needs)) 150–250 m outside the
@@ -3694,7 +3857,7 @@ road points out when none fitted.
 ### The case
 
 Code: `Guidance/RZ_OpeningCase.c`, `Guidance/RZ_ColdCase.c`. The opening's last step and the main
-story's door: the first part of [designs/OPENING.md](../designs/OPENING.md) that's built.
+story's door.
 
 **The runner.** After the line ([above](#the-line)), the runner's step (`opening.case.seen`, **The
 Runner**) is at the man you saw shot: the case lies by his body. In the line's short form (and on any
@@ -3729,7 +3892,7 @@ Warm, it still counts; the station says so.
 | Bastion's | **[Errand] Hand the runner's case in** | "Then it's evidence." +5 Bastion Fame (small). Halcyon's field lead hands you **The Case at the Post** |
 
 Kept: the lead stays, and while anyone keeps a case, Halcyon asks after it on its channel once a
-season day.
+season day. The papers folded in its lid lead to the other three majors ([below](#the-papers-in-the-lid)).
 
 **The stages it opens**, each a handed errand, tracked at once, ten real hours each:
 
@@ -3750,16 +3913,57 @@ cold|warm)`, `the season's first live case is in: live tissue for Halcyon's rout
 `<player>'s second case this season counts for nothing`, `<stage> for <player> at <place>`,
 `<player> read the clinic's first file (The Date on the Tag)`, `<player> took the case back (...)`,
 `<player> died with the case; it's kept for the next spawn`, `the kept case given back to <player>`,
-and the finale's `live tissue, the runner's case`.
+the papers' ([below](#the-papers-in-the-lid)) and the finale's `live tissue, the runner's case`.
 
 *Simplified:* in the line's short form the runner is already dead when you come; the case's tag is read in the reader, and in the pack only its fixed description shows;
 Get It Back and The Case at the Post take it from a spot inside the holding, not from a real lock-up
 or shelf.
 
+### The papers in the lid
+
+Code: `Guidance/RZ_CasePapers.c`. How the case starts the other three majors, concretely, from the
+opening.
+
+The runner was a courier trying to get proof out past the line, and the case wasn't all he carried.
+Folded into its lid are **three papers that aren't Halcyon's**, each the page a stronghold would
+rather burn ([QUESTLINES.md](QUESTLINES.md#the-majors)):
+
+| Paper | What it looks like | Its owner | Its major |
+|---|---|---|---|
+| **The Day 3 orders** | an order sheet with Command's stamp, dated Day 3 | Bastion | [Await Relief](QUESTLINES.md#await-relief) |
+| **The page from the book** | a page torn from a ledger: names, amounts, a red thumbprint | the Red Hand | [The Book Has to Balance](QUESTLINES.md#the-book-has-to-balance) |
+| **The list of names** | a list of names in pencil, some crossed out | the Haven | [Every Name](QUESTLINES.md#every-name) |
+
+- **Taken with the case**, once a character (`RZ_OpeningCase.CharacterStamp`): reading the case on
+  the ground names them. They're quest items kept as data on the profile (`m_aPapers`), so a death
+  never loses them.
+- **At the case's hand-over** (to Halcyon, sold to the Red Hand or Ferda, handed in to Bastion) the
+  papers stay with you, and whoever took the case has a pointed word about each (Halcyon: *"And that's
+  not ours. That's Bastion's: Command's stamp, Day 3. I'd keep it away from the adjutant, or take it
+  straight to him."*).
+- **Then each paper is a reply at any faction's people**, one per paper (the case's own reply stays first):
+
+| Where | The reply | What happens |
+|---|---|---|
+| Its owner's people | **[Errand] Hand over <the paper>** | They take it (+3 Fame with them, small). You're a participant of their major this character (`RZ_QuestRun.Did`), and they say where it stands: its act by name, and its place when it has one. A major that isn't running yet: *"When the houses sit, you'll be at the table."*, and you join it when it starts |
+| Anyone else's | **[Errand] I'll take <the paper> to <its owner>** | A job you took, tracked at once: **The Day 3 Orders**, **A Page of the Book** or **The List**, to the owner's stronghold (else their nearest holding). Only the hand-over reply ends it ([MISSION_RULES.md](MISSION_RULES.md), rule 19); a real day before it lapses |
+| Anyone else's, with that job held | **[Trade] Give them <the paper> instead** | Their line (the Haven reads it at supper, Bastion files it as evidence, the Red Hand writes it in the book, Halcyon keeps it with the things nobody's supposed to know); +3 Fame with them, +3 Infamy with its owner. **The page is in the open**: `majors.pages_open` goes up by one ([QUESTLINES.md](QUESTLINES.md#the-majors)), once a season for each of the three papers however many characters give one away (`papers.<major>.open`), so the same page never counts twice |
+
+Kept, a paper just stays with you; nothing nags.
+
+**Log lines:** `Papers: <player> has the three papers from the case's lid`, `Papers: <player> took the
+job of carrying <paper> to <owner> at <place>`, `Papers: <player> handed <paper> to <owner>`,
+`Papers: <player> gave <paper> to <faction> instead`, `Papers: <player> joins <major> now it's begun
+(they handed in <paper> earlier)`, and the majors' own `Majors: a page in the open: <paper> from the
+runner's case, given to <faction>`.
+
+*Simplified:* the papers are data, not items you can drop or hand to another player; a paper given
+to its owner before its major runs joins you to it when it starts, without a word then.
+
 ### The fixer
 
 Code: `Guidance/RZ_OpeningFixer.c` (the visit, its replies, what follows), `Dialogue/RZ_TalkOpenings.c`
-(`RZ_TalkFixer`). Beat 5 of the new opening ([designs/OPENING.md](../designs/OPENING.md)): the
+(`RZ_TalkFixer`). Beat 5 of the opening: the
 Red Hand wants the runner's case back, and you pick a side in the street you started from.
 
 **He comes.** Once the case is in your pack, **Ferda Kroupa**, who collects for the Red Hand's book
@@ -3829,9 +4033,9 @@ never disappears.
 | Level | Counted lives | What they get |
 |---|---|---|
 | 0, brand new | 0 | Everything: every tip in full, the gentle start, an opening with all three steps leaning to the hiding place (a wanderer comes looking when nobody's outside), the radio every 12 min |
-| 1, learning | 1–2 | Every tip in full, an opening with all three steps (a shorter first), wanderer gossip every time |
-| 2, familiar | 3–7 | Most tips; an opening with step 1, one step of your background's and The Runner; gossip now and then |
-| 3, veteran | 8+ | The floor: an opening's one-line read, step 1 and The Runner (always with someone at the door), the open channels (every 42 min), and critical tips as one short line |
+| 1, learning | 1–2 | Every tip in full, the whole opening (the door's question, the favour, the line, the runner, Ferda's visit), wanderer gossip every time |
+| 2, familiar | 3–7 | Most tips; the opening without the door's question (the last habit carries), the line's short form and Ferda as one scene; gossip now and then |
+| 3, veteran | 8+ | The floor: an opening's one-line read, the door, the line's short form, the runner and Ferda's note (always with someone at the door; about five minutes), the open channels (every 42 min), and critical tips as one short line |
 
 A player who comes back after 30+ real days gets two levels more guidance for two lives.
 For play-tests, a server admin's `/level 0` to `/level 3` (or the talk screen's **[Admin] My guidance

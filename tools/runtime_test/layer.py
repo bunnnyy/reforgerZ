@@ -3,6 +3,7 @@
 
     python3 layer.py prepare <addon dir> <world .ent>   # tribe slots, Bacon's faction, the navmesh, the fake player in the lookups
     python3 layer.py summary <console.log>              # the results table (exit 1 if a check failed)
+    python3 layer.py navmesh <addon dir> <world .ent>   # only the navmesh and the perception manager (run.sh patrols)
 
 Nothing here is part of the mod: prepare edits only the throwaway addon copy.
 """
@@ -574,10 +575,21 @@ def summary(log):
     return 0
 
 
+def navmesh(addon, world):
+    """Only the map's navmesh and a perception manager, so AI groups can walk (the road patrols check)."""
+    path = os.path.join(addon, world)
+    text = open(path, encoding="utf-8").read()
+    text, n = re.subn(r'SCR_AIWorld RZSitesAIWorld : "[^"]+" \{\n coords [^\n]+\n\}', lambda m: AI_WORLD, text)
+    assert n == 1, "no AI world in the world"
+    open(path, "w", encoding="utf-8").write(text)
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
     if cmd == "prepare":
         prepare(sys.argv[2], sys.argv[3])
+    elif cmd == "navmesh":
+        navmesh(sys.argv[2], sys.argv[3])
     elif cmd == "summary":
         sys.exit(summary(sys.argv[2]))
     else:

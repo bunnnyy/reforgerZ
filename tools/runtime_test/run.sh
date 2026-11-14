@@ -5,6 +5,7 @@
 #   SERVER_DIR=... tools/runtime_test/run.sh sites [arland] [everon] [cain]   # the site audit only (default arland)
 #   SERVER_DIR=... tools/runtime_test/run.sh tasks [arland] [everon] [cain]   # the task place audit only (default arland)
 #   SERVER_DIR=... EXTRA_ADDONS_DIR=... tools/runtime_test/run.sh layer   # the behaviour layer test only (needs Bacon Zombies)
+#   SERVER_DIR=... tools/runtime_test/run.sh patrols [arland|everon]   # the road patrols check only, on the site audit's world (it has roads); 3 to 10 minutes
 #   EXTRA_ADDONS_DIR=...                                   # a folder holding the Workshop dependencies in addon.gproj
 #
 # The behaviour layer test (docs/WORKBENCH_SETUP.md, "Behaviour layer test without Workbench"): "layer"
@@ -46,12 +47,19 @@
 #     by the giver doesn't finish it and the hold with a dressing does; a hand-over (the Cut) is done
 #     there and then and only with the thing; a real outside door is found near the town and a
 #     door-like prop is refused in the open ("RZT openings OK|FAIL ...", "RZT openings: N checks");
+#   The loop's relay and Bastion's call (RZT_Relay.c): every mast put up, the relay's rows open, a cut silences the loop and shuts the relay, a swapped tape plays then reverts, Bastion's call runs once a real day with no answer, a held mast is talked about ("RZT relay OK|FAIL ...");
 #   The masts (RZT_Masts.c): found on dry mainland, a crew's promise binds one, one put up with its part clears the fog and is kept open, another handed to the Haven, something to overhear, a trapped voice found by bearings at two masts starts a Distress Call there ("RZT masts OK|FAIL ...", "RZT masts: N checks");
+#   The grid past the station (RZT_Grid.c): substations on the map's yards, a town lit only when switched on and the station runs, a break and its splice, a Red Hand toll's crewman, the lab's and morale's caps, a cut breaker, a mast's cable cut and put back
+#   Road patrols (RZT_RoadPatrols.c): a foot patrol of each faction on the real roads 1-3 km out and back, data 2.5 km off and put out within 400 m with its leader tagged, met by standing (a stranger's papers or toll, a friend's news and stretch, the Hunted fired on), one vehicle patrol at a time, a fight's spent cases (L9), a lost Bastion patrol's Missing Patrol ("RZT roadpatrols OK|FAIL ...", "RZT roadpatrols: N checks");
+#   The power and radio leftovers (RZT_PowerRest.c): masts on the map's own cabinet counted, a held mast talked about in its region, a cut breaker takes its fuse, Lights Out against a rival's mast (the book's tip held back), Lights Back's two steps, the cold room in a lit town, the Red Hand at Bastion's call, the call's night for Await Relief
 #   The map's fog (RZT_Fog.c): where the tester stands is seen, walking 600 m reveals new ground, a paper map in his pack reveals its far town, the fog survives the save's JSON round trip, the payload is small ("RZT fog OK|FAIL ...", "RZT fog: N checks");
 #   The door and the favour (RZT_Favour.c): for every background, the door asks who you were and a habit is picked (each habit's effect checked), the favour's fetch is handed at a place, the hand-over waits for its reply (standing by him never counts), and the background's way settles it without a hand-over ("RZT favour OK|FAIL ...", "RZT favour: N checks");
+#   The papers in the case's lid (RZT_Papers.c): gained once a character, each offered as a job at another faction's people, handed to its owner by reply (a participant of its major, or waiting for it), given to a rival instead (the page in the open, once).
 #   The fixer (RZT_Ferda.c): Ferda Kroupa comes for the case (two men, tracked on him, the Red Hand's people leave the sale to him), the street rallied (its door job at a real doorway, three jobs, then RALLIED), the hand-over (sold, Get It Back next) and the warning, the story about Bastion as the good liar (TALKED, no standing), slipping away (SLIPPED), a fight (FOUGHT), his note on a real door's step, a veteran's note only ("RZT ferda OK|FAIL ...", "RZT ferda: N checks");
+#   The opening by level (RZT_OpeningChain.c): a fresh Nurse at levels 1, 2 and 3 runs the whole chain: the door asks or not, the favour or none, the line or its short form, the runner, Ferda's visit, one scene or his note, and the case delivered to Halcyon by the reply.
+#   The Long Table (RZT_LongTable.c): the family stands at the farm in its own looks with the tester 60 m off, the farm laid out, a supper sign at a junction, the bell and the voice, a death near the farm taken at dawn, a jar in loot, the door mark, the host on the road, the injured man at dusk, the boy in a town, the harvest supper ("RZT table OK|FAIL ...", "RZT table: done");
 #   The line (RZT_Line.c): a road above the line near a town (150-250 m outside the warning zone, 600 m to 2 km off), the scene played with the tester at it: the loudspeakers, a runner who breaks from cover (or is laid down), shot in the warning zone not the kill zone, dead there with the case by him, the line said, the tester never shot and never in the zones ("RZT line OK|FAIL ...", "RZT line: N checks");
-#   A fresh spawn (RZT_Fresh.c): as a veteran, the opening has its contact within 15 m and the door's favour first, the last life's questline part and jobs aren't the new one's, and the Quests tab lists nothing taken ("RZT fresh OK|FAIL ...", "RZT fresh: N checks");
+#   A fresh spawn (RZT_Fresh.c): as a veteran, the opening has its contact within 15 m and the chain starting at the door, not the lead to work, the last life's questline part and jobs aren't the new one's, and the Quests tab lists nothing taken ("RZT fresh OK|FAIL ...", "RZT fresh: N checks");
 #   - starts every registered mission type one at a time, moves the player where the quest tracker
 #     points, then ends it (alternately won and failed) so Setup, Update, rewards and cleanup all run;
 #   - checks every objective's place on the way (RZT_ObjPlace.c): for each mission and questline
@@ -89,6 +97,7 @@ MODE=full
 if [ "${1:-}" = "sites" ]; then MODE=sites; shift; fi
 if [ "${1:-}" = "tasks" ]; then MODE=tasks; shift; fi
 if [ "${1:-}" = "layer" ]; then MODE=layer; shift; fi
+if [ "${1:-}" = "patrols" ]; then MODE=patrols; shift; fi
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 HERE="$ROOT/tools/runtime_test"
 WORK="${WORK_DIR:-$HOME/rz_check}"
@@ -111,6 +120,7 @@ fi
 [ "$MODE" = sites ] && ADDON="$WORK/sites_addons/ReforgerZ"
 [ "$MODE" = tasks ] && ADDON="$WORK/tasks_addons/ReforgerZ"
 [ "$MODE" = layer ] && ADDON="$WORK/layer_addons/ReforgerZ"
+[ "$MODE" = patrols ] && ADDON="$WORK/patrols_addons/ReforgerZ"
 rm -rf "$ADDON" "$PROFILE/profile/ReforgerZ" && mkdir -p "$ADDON"
 cp "$ROOT/addon.gproj" "$ADDON/"
 . "$ROOT/tools/strip_missing_deps.sh"
@@ -121,6 +131,11 @@ cp -r "$ROOT/scripts" "$ROOT/Configs" "$ADDON/"
 if [ "$MODE" = tasks ]; then
 	cp -r "$ROOT/Prefabs" "$HERE/sites/Worlds" "$HERE/sites/Missions" "$ADDON/"
 	cp -r "$HERE/tasks/." "$ADDON/"
+elif [ "$MODE" = patrols ]; then
+	cp -r "$ROOT/Prefabs" "$HERE/sites/Worlds" "$HERE/sites/Missions" "$ADDON/"
+	cp -r "$HERE/patrols/." "$ADDON/"
+	mkdir -p "$ADDON/scripts/Game/RZTest"
+	cp "$HERE/files/scripts/Game/RZTest/RZT_Fake.c" "$HERE/files/scripts/Game/RZTest/RZT_RoadPatrols.c" "$ADDON/scripts/Game/RZTest/"
 elif [ "$MODE" = layer ]; then
 	cp -r "$ROOT/Prefabs" "$HERE/sites/Worlds" "$HERE/sites/Missions" "$ADDON/"
 	cp -r "$HERE/layer/." "$ADDON/"
@@ -162,6 +177,36 @@ if [ "$MODE" = tasks ]; then
 		[ -n "$UNDER" ] && [ "$UNDER" != "0" ] && { echo "FAILED: $UNDER kinds of task under the threshold"; FAIL=1; }
 		"$PY" "$HERE/places.py" draw "$LOG" "$WORK/task_places_$MAP.html"
 	done
+	exit $FAIL
+fi
+
+if [ "$MODE" = patrols ]; then
+	"$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
+	case "${1:-arland}" in
+		arland) NAME=RZSites_Arland;;
+		everon) NAME=RZSites_Everon;;
+		*) echo "Unknown map ${1} (arland or everon)"; exit 2;;
+	esac
+	"$PY" "$HERE/places.py" prepare "$ADDON" "Worlds/$NAME/$NAME.ent" || exit 2
+	# Arland's navmesh, so the patrol's people can walk (Everon's world keeps its own AI world: moves may fail there)
+	[ "$NAME" = RZSites_Arland ] && { "$PY" "$HERE/layer.py" navmesh "$ADDON" "Worlds/$NAME/$NAME.ent" || exit 2; }
+	WRAP=""
+	if command -v unshare > /dev/null 2>&1 && unshare -n true > /dev/null 2>&1; then
+		WRAP="unshare -n"
+	fi
+	PPROFILE="$WORK/patrols_profile"
+	rm -rf "$PPROFILE"
+	( cd "$SERVER" && $WRAP timeout "${TIMEOUT:-2400}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$PPROFILE" \
+		-server "{7A1C2E3F4B5D6E90}Missions/$NAME.conf" -logStats 0 -maxFPS 30 -noBackend > /dev/null 2>&1 )
+	LOG="$(ls -td "$PPROFILE"/logs/logs_* | head -1)/console.log"
+	echo "Log: $LOG"
+	FAIL=0
+	EXC="$(grep -c 'Virtual Machine Exception' "$LOG")"
+	echo "Script exceptions: $EXC"
+	[ "$EXC" != "0" ] && { FAIL=1; grep -A6 'Virtual Machine Exception' "$LOG" | grep -E 'Reason|Function|scripts/' | sort | uniq -c | head -10; }
+	grep -E 'Road patrols:|RZT roadpatrols|RZP ' "$LOG" | sed 's/^.*SCRIPT *: //' | head -80
+	grep -q "RZP done" "$LOG" || { echo "The test didn't finish (see the log)"; FAIL=1; }
+	grep -q 'RZT roadpatrols FAIL' "$LOG" && FAIL=1
 	exit $FAIL
 fi
 
@@ -249,10 +294,17 @@ cp "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Work_Stove.et* "$ROOT"/Prefabs/ReforgerZ/Wo
 # The runner's cold case (Guidance > Cold case), for the case check (RZT_Case.c)
 mkdir -p "$ADDON/Prefabs/ReforgerZ/Guidance"
 cp "$ROOT"/Prefabs/ReforgerZ/Guidance/RZ_ColdCase.et* "$ADDON/Prefabs/ReforgerZ/Guidance/"
+# The Long Table's jar and the family's looks (World > Long Table > Reach), for the table check (RZT_LongTable.c)
+cp "$ROOT"/Prefabs/ReforgerZ/World/RZ_TableJar.et* "$ADDON/Prefabs/ReforgerZ/World/"
+mkdir -p "$ADDON/Prefabs/ReforgerZ/People/LongTable"
+cp "$ROOT"/Prefabs/ReforgerZ/People/LongTable/RZ_Table_*.et* "$ADDON/Prefabs/ReforgerZ/People/LongTable/"
 # The crafting items and the recipes' outputs (RZT_Craft.c sets them on the test world's Crafting)
 mkdir -p "$ADDON/Prefabs/ReforgerZ/Crafting" "$ADDON/Prefabs/ReforgerZ/Interactions"
 cp "$ROOT"/Prefabs/ReforgerZ/Crafting/RZ_*.et* "$ADDON/Prefabs/ReforgerZ/Crafting/"
 cp "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_Planks.et* "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_SparkPlugs.et* "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_Tablets.et* "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_TinRattle.et* "$ADDON/Prefabs/ReforgerZ/Interactions/"
+# The road patrols' groups (Territory > Road patrols names them by default), for the road patrols check (RZT_RoadPatrols.c)
+mkdir -p "$ADDON/Prefabs/ReforgerZ/Patrols"
+cp "$ROOT"/Prefabs/ReforgerZ/Patrols/RZ_Patrol_*.et* "$ADDON/Prefabs/ReforgerZ/Patrols/"
 "$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
 "$PY" "$HERE/sites.py" prepare "$ADDON" Worlds/RZTest/RZTest.ent || exit 2
 
@@ -282,15 +334,22 @@ grep -E 'RZT Power test: ' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT carry(: done| FAIL|: off|: no building)' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT openings' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT case' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT papers' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT line' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT ferda' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT chain' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT fresh' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT favour' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT kitchen' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT fog' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT masts' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT relay' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT grid' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT roadpatrols' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT power' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT patrol' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT craft' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT table' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (epilogue check: .*FAILED|epilogue done|epilogue: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E '\[ReforgerZ\] Sites audit: [0-9]+ sites,' "$LOG" | sed 's/.*\[ReforgerZ\] /  /'
@@ -301,14 +360,21 @@ grep -q 'RZT objplace FAIL' "$LOG" && { echo "FAILED: an objective points somewh
 grep -q 'RZT carry FAIL' "$LOG" && { echo "FAILED: carrying for real (the pile, the put-down indoors, the stack)"; exit 1; }
 grep -q 'RZT openings FAIL' "$LOG" && { echo "FAILED: an opening's step (the son, a hand-over, a door: RZT_Openings.c)"; exit 1; }
 grep -q 'RZT case FAIL' "$LOG" && { echo "FAILED: the runner's case (found, carried, kept over a death, handed over by reply: RZT_Case.c)"; exit 1; }
+grep -q 'RZT papers FAIL' "$LOG" && { echo "FAILED: the papers in the case's lid (gained once, offered as jobs, handed to their owners or a rival: RZT_Papers.c)"; exit 1; }
 grep -q 'RZT line FAIL' "$LOG" && { echo "FAILED: the opening's line (a road above it, the runner shot in the warning zone, the line said, the tester never shot: RZT_Line.c)"; exit 1; }
 grep -q 'RZT ferda FAIL' "$LOG" && { echo "FAILED: the opening's fixer (he comes for the case, each way through him, his note on a real door: RZT_Ferda.c)"; exit 1; }
-grep -q 'RZT fresh FAIL' "$LOG" && { echo "FAILED: a fresh spawn (its contact, the favour first, a clean Quests tab: RZT_Fresh.c)"; exit 1; }
+grep -q 'RZT chain FAIL' "$LOG" && { echo "FAILED: the opening by level (RZT_OpeningChain.c: the door, the favour, the line's short form, the runner, Ferda by level, the case at Halcyon)"; exit 1; }
+grep -q 'RZT fresh FAIL' "$LOG" && { echo "FAILED: a fresh spawn (its contact, the chain from the door, a clean Quests tab: RZT_Fresh.c)"; exit 1; }
 grep -q 'RZT fog FAIL' "$LOG" && { echo "FAILED: the map's fog (RZT_Fog.c: walking reveals, a found map, the save, the payload)"; exit 1; }
 grep -q 'RZT masts FAIL' "$LOG" && { echo "FAILED: the masts (RZT_Masts.c: found, put up, given, overheard, a voice found by bearings)"; exit 1; }
+grep -q 'RZT relay FAIL' "$LOG" && { echo "FAILED: the loop's relay or Bastion's call (RZT_Relay.c)"; exit 1; }
+grep -q 'RZT grid FAIL' "$LOG" && { echo "FAILED: the grid past the station (RZT_Grid.c: substations, a break and a splice, the stakes' caps, a cut)"; exit 1; }
+grep -q 'RZT roadpatrols FAIL' "$LOG" && { echo "FAILED: road patrols (RZT_RoadPatrols.c: on the roads, put out near, met by standing, one vehicle, a fight's trace, a lost patrol)"; exit 1; }
+grep -q 'RZT power FAIL' "$LOG" && { echo "FAILED: the power and radio leftovers (RZT_PowerRest.c: the region's talk, the fuse, Lights Out and Lights Back, the cold room, the call)"; exit 1; }
 grep -q 'RZT favour FAIL' "$LOG" && { echo "FAILED: the door and the favour (who you were, the habit, the fetch, the hand-over by reply, the background's way: RZT_Favour.c)"; exit 1; }
 grep -q 'RZT kitchen FAIL' "$LOG" && { echo "FAILED: kitchen work at a kitchen (RZT_Kitchen.c: a kitchen thing at the prompt, the camp's own cook pot)"; exit 1; }
 grep -q 'RZT patrol FAIL' "$LOG" && { echo "FAILED: a patrol's finds or its marker (RZT_Patrol.c: each find's thing there, a door find at a real doorway, the marker on the walker)"; exit 1; }
 grep -q 'RZT craft FAIL' "$LOG" && { echo "FAILED: a new recipe or the lockpick (RZT_Craft.c)"; exit 1; }
+grep -q 'RZT table FAIL' "$LOG" && { echo "FAILED: the Long Table's farm or its reach (RZT_LongTable.c: the family at the farm, a sign, the dead taken, jars, the host, the injured man, the boy, the harvest)"; exit 1; }
 grep -q 'RZT Power test: .*FAILED' "$LOG" && { echo "FAILED: the power station's looks (the dressing, the generator's sound or the lamps' list)"; exit 1; }
 exit 0

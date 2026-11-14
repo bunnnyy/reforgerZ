@@ -708,8 +708,20 @@ class RZ_QM_WeeksDriver : RZ_QM_HalcyonScene
 		// He sits where he left the van on Day 3: the edge of town, on the side toward the site
 		vector site = LoadPos(run, "site");
 		float toSite = RZ_Compass.Bearing(town.m_vCenter, site);
-		m_vPos = LandPointNear(RZ_Compass.PointAt(town.m_vCenter, toSite, town.m_fRadius + 30), 0, 15);
+		// On dry mainland, off the line (the place need "mission", docs/PLACES.md): a town's edge
+		// toward the site can be the shore, so he sits a little further round it
+		vector edge = RZ_Compass.PointAt(town.m_vCenter, toSite, town.m_fRadius + 30);
 		m_iSettlement = run.Flag("site_town", -1);
+		m_vPos = RZ_PlaceFind.Near(edge, 0, 15, RZ_PlaceNeeds.Get("mission"), m_iSettlement);
+		if (m_vPos == vector.Zero)
+			m_vPos = RZ_PlaceFind.Near(edge, 0, 120, RZ_PlaceNeeds.Get("mission"), m_iSettlement);
+
+		if (m_vPos == vector.Zero)
+			m_vPos = RZ_PlaceFind.Near(town.m_vCenter, 0, town.m_fRadius + 60, RZ_PlaceNeeds.Get("mission"), m_iSettlement);
+
+		if (m_vPos == vector.Zero)
+			m_vPos = LandPointNear(edge, 0, 15);
+
 		wanderers.Hold(m_iDriver, m_iId);
 		m_bHeld = true;
 
