@@ -888,6 +888,7 @@ and the UI files) need none, and eight have no base:
 | `RZ_Notebook.et` | a gadget on vanilla's Item_Base with the notebook's mesh (Notebook_01_Single.xob, marble black); display name Notebook, weight 0.1 kg, slot type SLOT_GADGETS_STORAGE, held like the MX991 flashlight | `RZ_NotebookGadgetComponent`; `RZ_ReadNotebookAction`, `RZ_DeadNameAction`, 2 × `RZ_EpiNotebookAction` (Kind SEASON, ANONYMOUS) | UI > Notebook prefab | optional | given to every new life and put on a free quick slot; taken into the hand (N, the quick slot, the inventory's Equip) it opens the notebook, and goes back when it closes. Built as text in the repo. Its gadget component needs Gadget anim variable MX991 (without one the character can't take it into the hand); the item animation attributes the MX991 graph, AllowInspection on |
 | (existing prefab) | vanilla's compass ({7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et) | — | UI > Compass prefab | optional | every new life carries one (unless the loadout has a compass) |
 | (existing prefab) | vanilla's folded paper map ({13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et) | — | UI > Map prefab | optional | every new life carries one (unless the loadout has a paper map) |
+| (existing prefab) | vanilla's MRE ({EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et) | — | UI > Meal prefab | optional | every new life carries one meal (set in `RZ_GameMode.et`) |
 | (existing prefab) | the Standing page layout (UI/LAYOUTS.md) | — | UI > Standing page | optional | the notebook's Standing tab (empty = Nothing here yet) |
 | (existing prefab) | the Journal page layout (UI/LAYOUTS.md) | — | UI > Journal page | optional | the Journal tab (empty = Nothing here yet) |
 | (existing prefab) | the Radio page layout (UI/LAYOUTS.md) | — | UI > Radio page | optional | the Radio tab (empty = Nothing here yet) |
@@ -3896,7 +3897,7 @@ when it happens)
   *"That came from the line. Somebody tried it."*, the runner found already down. Log lines as in
   [DESIGN.md](DESIGN.md#the-line): paste the `Openings: the line ...` ones.
 - [ ] **The fixer** ([DESIGN.md](DESIGN.md#the-fixer)), with a pad, as a brand-new character on Everon.
-  Take the runner's case and go back to the street you started from: 2 to 4 minutes later Ferda
+  Take the runner's case and go on your way: 3 minutes later, wherever you are, Ferda
   Kroupa and two men stand at the end of the street (are they Red Hand to look at? do they stand
   well, not in a wall?); he asks the contact first, then *Ferda Kroupa* is tracked on him. Talk to
   him: his greeting, then **[Trade] Hand it over**, the story about Bastion (locked unless you're

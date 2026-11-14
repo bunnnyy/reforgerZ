@@ -3964,12 +3964,11 @@ to its owner before its major runs joins you to it when it starts, without a wor
 
 Code: `Guidance/RZ_OpeningFixer.c` (the visit, its replies, what follows), `Dialogue/RZ_TalkOpenings.c`
 (`RZ_TalkFixer`). Beat 5 of the opening: the
-Red Hand wants the runner's case back, and you pick a side in the street you started from.
+Red Hand wants the runner's case back, and you pick a side where he finds you.
 
 **He comes.** Once the case is in your pack, **Ferda Kroupa**, who collects for the Red Hand's book
-([LORE.md](LORE.md#the-red-hand)), is on his way: 2 to 4 minutes after you're back within 250 m of
-where you started (the clock waits while you're away), and at the latest 7 minutes after the case,
-wherever you are. He and two of the crews stand 18–30 m from you (the Red Hand's occupant look, else
+([LORE.md](LORE.md#the-red-hand)), is on his way: 3 minutes after the case, wherever you are (the
+author: nobody goes back to the street they started from; the case's road is elsewhere). He and two of the crews stand 18–30 m from you (the Red Hand's occupant look, else
 **Puzzles > Civilian**; bodies in the story budget, only near you). He asks the contact first when
 the contact is within 60 m (*"Pavel, isn't it. The runner on the line road owed the book, and he had
 something on him. Somebody from this street picked it up."* / *"Ask him. I've enough to answer
@@ -4091,6 +4090,8 @@ chain (its last step is the walk to where they belong).
 - Every new life gets a **compass** (vanilla's Adrianov, **UI > Compass prefab**) and a **paper map**
   (vanilla's folded map, **UI > Map prefab**) a few seconds after spawn, unless its loadout already
   has one; one that doesn't fit lies at your feet.
+- Every new life also gets **one meal** (vanilla's MRE, **UI > Meal prefab**) at the same time, on
+  top of whatever its loadout carries, in case food is slow to find (the author's call).
 - Every new life gets a **wind-up radio** (unless they carry one). It picks up the **open
   channels**: the Haven ("If you can hear this, *town* is open. Bring water if you can. Bring
   yourself either way."), Bastion's net and the Red Hand's taunts. About every 12 minutes for a

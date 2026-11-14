@@ -169,7 +169,8 @@ class RZ_UIFeed
 
 	//------------------------------------------------------------------------------------------------
 	//! Every new life gets vanilla's compass and folded paper map (UI > Compass prefab, Map prefab),
-	//! unless its loadout already has one of each; one that doesn't fit lies at their feet.
+	//! unless its loadout already has one of each, and one meal (UI > Meal prefab); one that doesn't
+	//! fit lies at their feet.
 	protected void GiveMapAndCompass(int playerId)
 	{
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
@@ -182,6 +183,10 @@ class RZ_UIFeed
 
 		if (!settings.m_sMapPrefab.IsEmpty() && !CarriesWith(ent, SCR_MapGadgetComponent))
 			GiveLoose(ent, settings.m_sMapPrefab);
+
+		// One meal, in case food is slow to find (on top of whatever the loadout carries)
+		if (!settings.m_sMealPrefab.IsEmpty())
+			GiveLoose(ent, settings.m_sMealPrefab);
 	}
 
 	//------------------------------------------------------------------------------------------------

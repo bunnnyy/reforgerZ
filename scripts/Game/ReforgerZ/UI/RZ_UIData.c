@@ -230,6 +230,9 @@ class RZ_UISettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The compass every new life is given (vanilla Compass_Adrianov.et), unless the loadout already has one. Empty = none", "et")]
 	ResourceName m_sCompassPrefab;
 
+	[Attribute("{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et", UIWidgets.ResourcePickerThumbnail, "One meal every new life is given, in case food is slow to find (vanilla MRE.et). Empty = none", "et")]
+	ResourceName m_sMealPrefab;
+
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The paper map every new life is given (vanilla PaperMap_01_folded.et), unless the loadout already has one. Empty = none", "et")]
 	ResourceName m_sMapPrefab;
 
