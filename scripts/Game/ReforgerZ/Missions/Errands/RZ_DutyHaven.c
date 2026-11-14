@@ -295,7 +295,7 @@ class RZ_DutyHaven
 		array<string> bowls = {"Nineteen bowls washed. The list has twenty names.", "Nineteen bowls washed. One was filled, and carried out, and came back full.", "Nineteen bowls. And the bread bin is short a loaf nobody signed for."};
 		array<string> talk = {"The children say someone promised to bring back a bird's egg.", "The children have been told to play outside today, and not to ask.", "The children say somebody said goodbye to the dog."};
 		RZ_DutyScript.Into(scene.m_aBeats);
-		RZ_DutyBeat look = RZ_DutyScript.T("looks", string.Format("The list on the door has twenty names. The kitchen fed nineteen. Find out who, and why. Five places, and time for three of them.", who), RZ_DutyBeat.AT_HERE);
+		RZ_DutyBeat look = RZ_DutyScript.T("looks", string.Format("The list on the board has twenty names. The kitchen fed nineteen. Find out who, and why. Five places, and time for three of them.", who), RZ_DutyBeat.AT_HERE);
 		look.m_iPicks = 3;
 		RZ_DutyScript.O("Look along the coat pegs", pegs[truth], "out:6");
 		RZ_DutyScript.O("Read the gate book", gate[truth], "out:12");

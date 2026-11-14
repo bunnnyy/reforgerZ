@@ -3833,7 +3833,7 @@ class RZ_Errands
 				return;
 
 			m_mLastRadio.Set(ident, m_fClock);
-			m_GM.Say(playerId, "Radio: the Haven's channel", RZ_EFaction.SURVIVORS, string.Format("If you're near %1, %2 the %3 could use a hand. Only if you're passing.", h.m_sName, p.m_sName, p.m_sRole));
+			m_GM.NotifyPlayer(playerId, "On the Haven's channel", string.Format("If you're near %1, %2 the %3 could use a hand. Only if you're passing.", h.m_sName, p.m_sName, p.m_sRole));
 			RZ_Log.Info(string.Format("Errands: radio ask to %1 for %2 at %3", RZ_Util.PlayerName(playerId), p.m_sName, h.m_sName));
 			return;
 		}

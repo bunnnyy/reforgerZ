@@ -19,7 +19,9 @@ A reason that starts "pending:" names work under way that clears it: counted apa
 doesn't fail --strict, and it's listed every run so it isn't forgotten.
 
 Rules checked here (their numbers are MISSION_RULES.md's):
-    3  a door spawned: a prefab built on a base-game door (BuildingParts/Doors), or such a door named in code
+    3  a door spawned: a prefab built on a base-game door (BuildingParts/Doors), or such a door named in code;
+       or a beat whose words put you at a door, set at a spot that isn't a real door (AT_NEAR, AT_OUT,
+       AT_FAR, AT_HERE, AT_GATE: a patch of ground) instead of AT_NEAR_DOOR, AT_FAR_DOOR or a set doorstep
     9  a person's marker on a stored spot: RZ_ObjPlace.Spot(...) given a giver's or a person's position
    10  a woman's name or word in a line the game shows (everyone met is a man: the stack has no female
        body); the allowlist names each woman who is only mentioned, never met (a dead wife, a voice)
@@ -31,6 +33,9 @@ Rules checked here (their numbers are MISSION_RULES.md's):
    26  a step of an opening that only sends you back
    27  an input action with no gamepad binding, or one the scripts listen for that isn't defined
     1  a building's name in a task's words in a file that never asks for that kind of building
+   29  a notice card where someone present could say it: NotifyPlayer in task code, in a function that
+       has a speaker in reach (an escort or squad, a giver's or a person's body, a stranger, a scene's
+       person); what's right as a card (a system line, nobody there to say it) goes in the allowlist
 No dependencies beyond Python 3. Reads tools/strings_inventory.py for the objective lines.
 """
 import argparse
@@ -57,6 +62,7 @@ RULES = {
     24: "a kind of job the tracker never lists",
     26: "an opening step that only sends you back",
     27: "an input action without a gamepad binding",
+    29: "a notice card where someone present could say it",
 }
 
 # Task code: where missions, errands, duties, questlines, openings and events live
@@ -443,6 +449,47 @@ def check_things(hits):
                 break
 
 
+# ---------------------------------------------------------------- 29: people say it; a notice is the last resort
+NOTICE = re.compile(r"\bNotifyPlayer(?:As)?\s*\(")
+SPEAKER = re.compile(r"m_Escort\b|\bGetPerson\s*\(|\bBodyOf\s*\(|\bm_Body\b|\bm_Person\b|\bSayLead\s*\(|"
+                     r"\bm_sGiverTitle\b|\bGiverAt\s*\(|\bSpeakerFinder\b|\bm_Contact\b|\bm_Companion\b")
+FUNC = re.compile(r"^\t(?:override\s+|protected\s+|static\s+|private\s+)*[\w<>, ]+\s+\w+\s*\([^;]*$")
+
+
+def check_notices(hits):
+    for path in script_files():
+        if not is_task_file(path):
+            continue
+        lines = read(path)
+        starts = [i for i, l in enumerate(lines) if FUNC.match(l)] + [len(lines)]
+        for k in range(len(starts) - 1):
+            a, b = starts[k], starts[k + 1]
+            body = [strip_comment(l) for l in lines[a:b]]
+            if not any(SPEAKER.search(l) for l in body):
+                continue
+            for j, l in enumerate(body):
+                if NOTICE.search(l):
+                    hits.append(Hit(29, path, a + j + 1, lines[a + j], "a speaker is in reach in this function"))
+
+
+# ---------------------------------------------------------------- 3: a door beat at a patch of ground
+DOOR_WORDS = re.compile(r"\b(door|doorstep|doorway|porch)\b", re.I)
+GROUND_AT = re.compile(r"RZ_DutyBeat\.AT_(NEAR|OUT|FAR|HERE|GATE)\b")
+
+
+def check_door_beats(hits):
+    for path in script_files():
+        if "/Errands/" not in path.replace(os.sep, "/"):
+            continue
+        for i, raw in enumerate(read(path)):
+            line = strip_comment(raw)
+            if "RZ_DutyBeat" not in line and "RZ_DutyScript.T(" not in line:
+                continue
+            m = GROUND_AT.search(line)
+            if m and DOOR_WORDS.search(line):
+                hits.append(Hit(3, path, i + 1, raw, "a door in the words, a patch of ground for the place"))
+
+
 # ---------------------------------------------------------------- the allowlist
 def load_allow():
     rules = []
@@ -470,7 +517,7 @@ def main():
 
     hits = []
     for check in (check_things, check_objectives, check_walk_up, check_doors, check_carry, check_markers, check_roles,
-                  check_tracker, check_openings, check_inputs, check_building_words):
+                  check_tracker, check_openings, check_inputs, check_building_words, check_notices, check_door_beats):
         check(hits)
 
     allow = load_allow()

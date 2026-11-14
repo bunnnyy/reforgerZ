@@ -170,7 +170,7 @@ class RZ_DutyFinds
 					o = b.Opt("Mark the house for the report", "Marked. Someone else can knock another day.");
 					o.Fx("report,hook");
 					beats.Insert(b);
-					b = new RZ_DutyBeat("hiding", "A voice through the door, low: \"Don't write us down. They'll move us on. Please.\"", RZ_DutyBeat.AT_SAME);
+					b = new RZ_DutyBeat("hiding", "Don't write us down. They'll move us on. Please.", RZ_DutyBeat.AT_SAME);
 					b.m_sIf = "door";
 					b.m_fTimeout = FIND_TIMEOUT;
 					b.m_bFind = true;

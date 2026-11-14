@@ -254,12 +254,12 @@ class RZ_DutyPosts
 	static void Names(RZ_GameModeComponent gm, RZ_Errand e, RZ_DutyScene scene, int count)
 	{
 		RZ_Rng rng = Seed(e, 5);
-		array<string> kin = {"mother", "husband", "sister", "son", "wife", "brother"};
+		array<string> kin = {"father", "son", "brother"};	// they open the door: men (docs/MISSION_RULES.md, rule 10)
 		for (int i = 0; i < count; i++)
 		{
 			string who = Name(rng);
 			string relation = kin[rng.Next() % kin.Count()];
-			RZ_DutyBeat b = new RZ_DutyBeat("name" + i.ToString(), string.Format("The door of %1. The %2 is inside, and doesn't know yet.", who, relation), RZ_DutyBeat.AT_GATE);
+			RZ_DutyBeat b = new RZ_DutyBeat("name" + i.ToString(), string.Format("The door of %1. The %2 is inside, and doesn't know yet.", who, relation), RZ_DutyBeat.AT_NEAR_DOOR);
 			b.m_bAlone = true;
 			RZ_DutyOption o = b.Opt("Knock, and tell them all of it", "You tell it all, how and where. They hold the door frame. They thank you, which is the worst part.");
 			o.Fx("record,later").Later("", string.Format("The %1 of %2 asked for you at the burying. You told them straight. They wanted you to stand with them.", relation, who));
@@ -349,7 +349,7 @@ class RZ_DutyPosts
 		b.m_bAlone = true;
 		b.Opt("Read the chart at the third bed", string.Format("%1. Thirty-four, bitten four days ago. Nothing marks the chart out, except a note in another hand: the night technician's brother.", kin)).Work(RZ_EWork.CARE, 3);
 		scene.m_aBeats.Insert(b);
-		b = new RZ_DutyBeat("list", "The list, on its board by the door. One line is empty. Whoever you write there is who the trial tries to save.", RZ_DutyBeat.AT_HERE);
+		b = new RZ_DutyBeat("list", "The list, on its board. One line is empty. Whoever you write there is who the trial tries to save.", RZ_DutyBeat.AT_HERE);
 		b.m_bAlone = true;
 		RZ_DutyOption o = b.Opt("Write in the one most likely to live", string.Format("%1, in block capitals. A life, very likely. A page of nothing for the trial.", young));
 		o.Work(RZ_EWork.WRITE, 5).Fx("record,rumour,morale+").Later("", string.Format("%1 is on Halcyon's list. %2 and %3 are not. The one who chose picked the one who'd live.", young, old, kin)).Told("You chose the one who'd live. The director calls that sentiment. The ward calls it something else.");

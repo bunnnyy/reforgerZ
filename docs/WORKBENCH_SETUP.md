@@ -1707,7 +1707,8 @@ prompt whose words name a pot, the wood or the washing line without a look of th
 in one objective line, a hand-in by walking up to someone, a spawned door, carrying done as a hold, a
 person's marker on a stored spot, a woman's name or word in a line the game shows (everyone met is a man; women only mentioned are in the allowlist), a building named
 where nothing asks for one, a kind of job the tracker can't list, an opening step that only sends you
-back, and an input action without a pad binding. Python 3 only, about ten seconds. Run it before
+back, an input action without a pad binding, a duty beat whose words put you at a door set on a patch
+of ground, and a notice card in task code where someone present could say it (rule 29). Python 3 only, about ten seconds. Run it before
 every commit that adds or changes a task; with `--strict` it must end `mission_rules: OK`.
 
 ```bash
@@ -1841,6 +1842,16 @@ pot* opened beside the nearest building must stand with a kitchen thing (the sto
 or the pot), never a cardboard box; then one at the nearest cook pot a camp has laid out must stand at
 it with nothing more put out. Lines `RZT kitchen: ...`, the sum `RZT kitchen: done, N failures`, and
 `RZT kitchen FAIL ...` for each miss (the run fails on any).
+
+**A patrol's finds and its marker** (`RZT_Patrol.c`, [ERRANDS.md](ERRANDS.md#things-that-happen)):
+six minutes in, the finds asked for at eight stops 180 m round the tester: each one returned must be
+within its reach (120 m) of its stop, a door, house or loose-step find must have its prompt within
+1.5 m of a real doorway, every other find must have its thing (its look), and each must have a step
+for the tracker and a line for the lead. Then an escort walking a route must give its objective at
+itself as it walks, not at the route's end. Lines `RZT patrol: find <kind> at <grid>, N m from the
+stop; called "..."; goal "..."`, `RZT patrol: finds at N of 8 stops, N with none that fits`,
+`RZT patrol: walking, the marker is N m from him and N m from the route's end`, the sum `RZT patrol:
+done, N failures`, and `RZT patrol FAIL ...` for each miss (the run fails on any).
 
 **Carrying** (`RZT_Carry.c`, [DESIGN.md](DESIGN.md#carrying)): four minutes in, the tester carries
 three crates from the open into the nearest building with a ground floor (each hold done for him):
@@ -2823,7 +2834,11 @@ or road in near: the giver's own door (<grid>).`, a sorting's places `Duty sorti
 N stands at <grid>.` (or `... thing for errand N dropped: no clear, level spot in 10 tries.`) and the
 line at a gate `Duty sorting: the line for errand N stands at <how> (<grid>).`, and a house marked by a patrol, `Errands: found hook hiding at <grid>
 from a duty`; a cull, `Duty squad: cull at <grid>, N strays (errand N).`; a duty's people, `Duty
-squad: the patrol out with <player> from <grid>, N points (errand N).`; a contract
+squad: the patrol out with <player> from <grid>, N points (errand N).`; what the lead says,
+`Duty squad: <lead> says to <player>: <line>`; a patrol's find, `Duty finds: <kind> at <grid>, N m from the patrol's
+stop at <grid> (errand N).`, or `Duty finds: no <kind> by the patrol's stop at <grid>: its thing can't stand there,
+left out.` (each kind tried in turn); a find further off, `Duty squad: <lead> walks over to wait by the find at
+<grid> (errand N).`; a contract
 a giver made because they were asked, `Mission N '<title>' made on asking: <player> asked <faction>.`, after
 `Reach: made on asking N '<title>', D m from the giver` (its distance; offer reach, [MISSIONS.md](MISSIONS.md#who-gets-offered-what)); while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
@@ -3023,11 +3038,17 @@ session, tick off:
   place's real way in, queued along the road outside facing in, the barrier at the gate and the wash
   and holding room just inside; the log says where (`Duty sorting: the line for errand N stands at
   ...`). Without UI > Object row layout: the old prompts side by side come back.
-- [ ] Things that happen ([ERRANDS.md](ERRANDS.md#things-that-happen)): on a patrol's short leg, at
-  least one point stops the patrol with *"something off the path"*. Go to it: its line is said, and
-  one prompt stands there, the spot's name; press it and pick from two or three rows, then hold
-  the prompt; what follows is said and the patrol moves on. Walk off three steps: the list again.
-  Take the shady one (the watch, the truck's share) within 20 m of them: *"You were seen, and it was
+- [ ] Things that happen ([ERRANDS.md](ERRANDS.md#things-that-happen)): on a patrol's short leg, with
+  a pad: the tracker's marker rides on the lead (*Lance Corporal ...*) as he walks, not at the gate.
+  At least one point stops the patrol and the lead **says** what's there over his head (a subtitle
+  with his name and arrow, no card): *"Grave at the field edge. Fresh. Read me the name."* The
+  marker moves to the thing, and the thing is really there: a grave mound, a radio in a house,
+  remains in the grass, a red box on a doorstep, or a real door (a mark beside it, or a house with
+  a trodden path), never empty ground or a field (`Duty finds:` lines). A find further off: they walk
+  over and wait in sight of it. Its one prompt stands on the thing; press it and the menu shows what
+  you see, pick a row, hold it; the lead answers out loud and the patrol moves on. Walk off three
+  steps: the list again. Knock at a house: the voice comes from the door. Take the shady one (the
+  watch, the box's contents) within 20 m of them: *"You were seen, and it was
   undone"*, Infamy, and the giver says so. Take it further off: nothing is said. Report a find: the
   hand-in pays 1 more Favor. After a chore, sometimes one more prompt pair comes up where you
   worked (the pot a ladle short); the step is done only when you've chosen.
