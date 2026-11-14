@@ -148,6 +148,7 @@ class RZ_RoadPatrols
 
 	protected static const float START_REACH = 300;		// the road point it starts from is this close to its holding
 	protected static const float JOIN = 20;				// road ends this close are joined
+	protected static const int ROUTE_TRIES = 6;			// other ways out tried when the first runs out short
 	protected static const float FOOT_SPACING = 25;		// route points a walk this far apart
 	protected static const float DRIVE_SPACING = 70;	// and a drive
 	protected static const float RIVAL_CLEAR = 250;		// never this close to another faction's holding
@@ -169,6 +170,7 @@ class RZ_RoadPatrols
 	protected ref map<string, float> m_mWalkThanked = new map<string, float>();
 	protected ref array<int> m_aNoRoad = {};			// holdings with no road to walk (logged once)
 	protected float m_fClock;
+	protected string m_sWhyShort;						// why the last route came out short (for the log)
 	protected int m_iNextId = 1;
 	protected bool m_bReady;
 	protected bool m_bLoggedOff;
@@ -424,13 +426,22 @@ class RZ_RoadPatrols
 		}
 
 		array<vector> outward = {};
-		if (!BuildRoute(from.m_vPos, wanted, target, hasTarget, f, spacing, outward))
+		bool built = BuildRoute(from.m_vPos, wanted, target, hasTarget, f, spacing, outward, false);
+
+		// Roads end, or run into water or someone else's ground: other ways out are tried (a vehicle
+		// whose way toward the other holding runs out early just drives the roads instead)
+		for (int attempt = 0; attempt < ROUTE_TRIES && !built; attempt++)
+		{
+			built = BuildRoute(from.m_vPos, wanted, vector.Zero, false, f, spacing, outward, true);
+		}
+
+		if (!built)
 		{
 			if (!m_aNoRoad.Contains(from.m_iId) && !vehicle)
 			{
 				m_aNoRoad.Insert(from.m_iId);
-				RZ_Log.Info(string.Format("Road patrols: %1 at %2 sends nobody: no road to walk %3 m on within %4 m of it.",
-					RZ_Factions.GetShortName(f), from.m_sName, RZ_Util.RoundToInt(m_Settings.m_fRouteMin), RZ_Util.RoundToInt(START_REACH)));
+				RZ_Log.Info(string.Format("Road patrols: %1 at %2 sends nobody: no road to walk %3 m on within %4 m of it (%5).",
+					RZ_Factions.GetShortName(f), from.m_sName, RZ_Util.RoundToInt(m_Settings.m_fRouteMin), RZ_Util.RoundToInt(START_REACH), m_sWhyShort));
 			}
 
 			return null;
@@ -500,7 +511,7 @@ class RZ_RoadPatrols
 	protected string LeaderName(int f, int seed)
 	{
 		RZ_Rng rng = new RZ_Rng(Math.AbsInt(seed) + 17);
-		string name = RZ_NoteText.ManName(rng);
+		string name = RZ_NoteText.ManName(rng) + " " + RZ_NoteText.Surname(rng);
 		switch (f)
 		{
 			case RZ_EFaction.MILITARY: return "Corporal " + name;
@@ -538,11 +549,12 @@ class RZ_RoadPatrols
 	// ================================================================ Routes on the roads
 	//------------------------------------------------------------------------------------------------
 	//! Out along the real roads from the point nearest `from` (within START_REACH): along one road to
-	//! its end, then onto a road that starts there (toward `target` when there is one, else at random,
-	//! roads not walked yet first), until it's `wanted` metres long. Never into water, near the line,
+	//! its end, then onto a road that starts there or passes it (a T-junction) and hasn't been walked yet (toward `target` when
+	//! there is one, else at random), until it's `wanted` metres long. The first road's way is the longer
+	//! side, or either at random with `anyWay`. Never into water, near the line,
 	//! off the mainland or within RIVAL_CLEAR of another faction's holding. False if it's shorter than
 	//! the shortest walk.
-	bool BuildRoute(vector from, float wanted, vector target, bool hasTarget, int f, float spacing, notnull array<vector> result)
+	bool BuildRoute(vector from, float wanted, vector target, bool hasTarget, int f, float spacing, notnull array<vector> result, bool anyWay)
 	{
 		result.Clear();
 		RoadNetworkManager roads = RZ_Perimeter.GetRoadNetwork();
@@ -582,7 +594,10 @@ class RZ_RoadPatrols
 		}
 
 		if (line < 0)
+		{
+			m_sWhyShort = string.Format("%1 roads within %2 m, none within %3 m of it", lines.Count(), RZ_Util.RoundToInt(r), RZ_Util.RoundToInt(START_REACH));
 			return false;
+		}
 
 		// Which way along the first road: toward the target, else the longer side
 		array<vector> first = lines[line];
@@ -590,6 +605,11 @@ class RZ_RoadPatrols
 		if (hasTarget)
 		{
 			if (RZ_Util.DistXZ(first[0], target) < RZ_Util.DistXZ(first[first.Count() - 1], target))
+				dir = -1;
+		}
+		else if (anyWay)
+		{
+			if (Math.RandomFloat01() < 0.5)
 				dir = -1;
 		}
 		else if (idx > first.Count() / 2)
@@ -601,6 +621,7 @@ class RZ_RoadPatrols
 		result.Insert(RZ_Util.GroundPos(first[idx]));
 		float length = 0;
 		int guard = 0;
+		string stop = "the walk was long enough";
 		while (length < wanted && guard < 5000)
 		{
 			guard++;
@@ -619,27 +640,43 @@ class RZ_RoadPatrols
 						continue;
 
 					int last = other.Count() - 1;
+
+					// Where it meets this road's end: one of its ends, or a point along it (a T-junction)
+					int at = -1;
+					float meet = JOIN;
+					foreach (int ki, vector kp : other)
+					{
+						float km = RZ_Util.DistXZ(kp, end);
+						if (km <= meet)
+						{
+							meet = km;
+							at = ki;
+						}
+					}
+
+					if (at < 0)
+						continue;
+
 					for (int side = 0; side < 2; side++)
 					{
-						int at = 0;
 						int go = 1;
 						int far = last;
 						if (side == 1)
 						{
-							at = last;
 							go = -1;
 							far = 0;
 						}
 
-						if (RZ_Util.DistXZ(other[at], end) > JOIN)
+						// Nowhere to go that way from the meeting point
+						if (at + go < 0 || at + go > last)
+							continue;
+
+						if (used.Contains(oi))
 							continue;
 
 						float score = Math.RandomFloat(0, 100);
 						if (hasTarget)
 							score = RZ_Util.DistXZ(other[far], target);
-
-						if (used.Contains(oi))
-							score += 100000;
 
 						if (score < pickScore)
 						{
@@ -652,7 +689,10 @@ class RZ_RoadPatrols
 				}
 
 				if (pickLine < 0)
+				{
+					stop = "a road ended with no road on from it";
 					break;
+				}
 
 				line = pickLine;
 				idx = pickIdx;
@@ -665,7 +705,10 @@ class RZ_RoadPatrols
 
 			vector p = RZ_Util.GroundPos(pts2[next]);
 			if (!Allowed(p, f))
+			{
+				stop = "the road ran into " + Barrier(p, f);
 				break;
+			}
 
 			length += RZ_Util.DistXZ(pts2[idx], pts2[next]);
 			idx = next;
@@ -678,11 +721,34 @@ class RZ_RoadPatrols
 
 		if (length < m_Settings.m_fRouteMin || result.Count() < 3)
 		{
+			m_sWhyShort = string.Format("%1 m on %2 roads: %3", RZ_Util.RoundToInt(length), used.Count(), stop);
 			result.Clear();
 			return false;
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What stopped a road at p: "water", "the line", "the coast" (off the mainland) or "<faction>'s ground".
+	protected string Barrier(vector p, int f)
+	{
+		if (RZ_Util.IsWater(p))
+			return "water";
+
+		if (RZ_Perimeter.IsNearLineAt(p))
+			return "the line";
+
+		if (!RZ_Mainland.OnMainland(p))
+			return "the coast";
+
+		foreach (RZ_Holding h : m_GM.GetTerritory().GetHoldings())
+		{
+			if (h && h.m_eFaction != f && RZ_Util.DistXZ(h.m_vPos, p) < RIVAL_CLEAR)
+				return RZ_Factions.GetShortName(h.m_eFaction) + "'s ground at " + h.m_sName;
+		}
+
+		return "nothing";
 	}
 
 	//------------------------------------------------------------------------------------------------

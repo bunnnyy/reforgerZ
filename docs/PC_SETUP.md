@@ -204,6 +204,13 @@ applies) and takes 17 to 30 minutes; it prints its results table at the end:
 SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" EXTRA_ADDONS_DIR="<Documents>/My Games/ArmaReforger/addons" tools/runtime_test/run.sh layer
 ```
 
+The road patrols check ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#road-patrols-check-without-workbench))
+boots the site audit's Arland world the same way and closes itself in about two minutes:
+
+```bash
+SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" EXTRA_ADDONS_DIR="<Documents>/My Games/ArmaReforger/addons" tools/runtime_test/run.sh patrols
+```
+
 The text lint needs only Python and takes a second
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint)): `py tools/voice_lint.py`; so does the mission rules check, in about ten seconds ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#mission-rules-check)): `py tools/mission_rules.py --strict`. The compile check
 runs the dialogue lint first (`python3`, else `py -3`), and fails if a conversation pack is stale:

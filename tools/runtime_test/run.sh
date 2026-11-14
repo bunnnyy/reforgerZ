@@ -5,6 +5,7 @@
 #   SERVER_DIR=... tools/runtime_test/run.sh sites [arland] [everon] [cain]   # the site audit only (default arland)
 #   SERVER_DIR=... tools/runtime_test/run.sh tasks [arland] [everon] [cain]   # the task place audit only (default arland)
 #   SERVER_DIR=... EXTRA_ADDONS_DIR=... tools/runtime_test/run.sh layer   # the behaviour layer test only (needs Bacon Zombies)
+#   SERVER_DIR=... tools/runtime_test/run.sh patrols [arland|everon]   # the road patrols check only, on the site audit's world (it has roads); 3 to 10 minutes
 #   EXTRA_ADDONS_DIR=...                                   # a folder holding the Workshop dependencies in addon.gproj
 #
 # The behaviour layer test (docs/WORKBENCH_SETUP.md, "Behaviour layer test without Workbench"): "layer"
@@ -90,6 +91,7 @@ MODE=full
 if [ "${1:-}" = "sites" ]; then MODE=sites; shift; fi
 if [ "${1:-}" = "tasks" ]; then MODE=tasks; shift; fi
 if [ "${1:-}" = "layer" ]; then MODE=layer; shift; fi
+if [ "${1:-}" = "patrols" ]; then MODE=patrols; shift; fi
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 HERE="$ROOT/tools/runtime_test"
 WORK="${WORK_DIR:-$HOME/rz_check}"
@@ -112,6 +114,7 @@ fi
 [ "$MODE" = sites ] && ADDON="$WORK/sites_addons/ReforgerZ"
 [ "$MODE" = tasks ] && ADDON="$WORK/tasks_addons/ReforgerZ"
 [ "$MODE" = layer ] && ADDON="$WORK/layer_addons/ReforgerZ"
+[ "$MODE" = patrols ] && ADDON="$WORK/patrols_addons/ReforgerZ"
 rm -rf "$ADDON" "$PROFILE/profile/ReforgerZ" && mkdir -p "$ADDON"
 cp "$ROOT/addon.gproj" "$ADDON/"
 . "$ROOT/tools/strip_missing_deps.sh"
@@ -122,6 +125,11 @@ cp -r "$ROOT/scripts" "$ROOT/Configs" "$ADDON/"
 if [ "$MODE" = tasks ]; then
 	cp -r "$ROOT/Prefabs" "$HERE/sites/Worlds" "$HERE/sites/Missions" "$ADDON/"
 	cp -r "$HERE/tasks/." "$ADDON/"
+elif [ "$MODE" = patrols ]; then
+	cp -r "$ROOT/Prefabs" "$HERE/sites/Worlds" "$HERE/sites/Missions" "$ADDON/"
+	cp -r "$HERE/patrols/." "$ADDON/"
+	mkdir -p "$ADDON/scripts/Game/RZTest"
+	cp "$HERE/files/scripts/Game/RZTest/RZT_Fake.c" "$HERE/files/scripts/Game/RZTest/RZT_RoadPatrols.c" "$ADDON/scripts/Game/RZTest/"
 elif [ "$MODE" = layer ]; then
 	cp -r "$ROOT/Prefabs" "$HERE/sites/Worlds" "$HERE/sites/Missions" "$ADDON/"
 	cp -r "$HERE/layer/." "$ADDON/"
@@ -163,6 +171,36 @@ if [ "$MODE" = tasks ]; then
 		[ -n "$UNDER" ] && [ "$UNDER" != "0" ] && { echo "FAILED: $UNDER kinds of task under the threshold"; FAIL=1; }
 		"$PY" "$HERE/places.py" draw "$LOG" "$WORK/task_places_$MAP.html"
 	done
+	exit $FAIL
+fi
+
+if [ "$MODE" = patrols ]; then
+	"$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
+	case "${1:-arland}" in
+		arland) NAME=RZSites_Arland;;
+		everon) NAME=RZSites_Everon;;
+		*) echo "Unknown map ${1} (arland or everon)"; exit 2;;
+	esac
+	"$PY" "$HERE/places.py" prepare "$ADDON" "Worlds/$NAME/$NAME.ent" || exit 2
+	# Arland's navmesh, so the patrol's people can walk (Everon's world keeps its own AI world: moves may fail there)
+	[ "$NAME" = RZSites_Arland ] && { "$PY" "$HERE/layer.py" navmesh "$ADDON" "Worlds/$NAME/$NAME.ent" || exit 2; }
+	WRAP=""
+	if command -v unshare > /dev/null 2>&1 && unshare -n true > /dev/null 2>&1; then
+		WRAP="unshare -n"
+	fi
+	PPROFILE="$WORK/patrols_profile"
+	rm -rf "$PPROFILE"
+	( cd "$SERVER" && $WRAP timeout "${TIMEOUT:-2400}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$PPROFILE" \
+		-server "{7A1C2E3F4B5D6E90}Missions/$NAME.conf" -logStats 0 -maxFPS 30 -noBackend > /dev/null 2>&1 )
+	LOG="$(ls -td "$PPROFILE"/logs/logs_* | head -1)/console.log"
+	echo "Log: $LOG"
+	FAIL=0
+	EXC="$(grep -c 'Virtual Machine Exception' "$LOG")"
+	echo "Script exceptions: $EXC"
+	[ "$EXC" != "0" ] && { FAIL=1; grep -A6 'Virtual Machine Exception' "$LOG" | grep -E 'Reason|Function|scripts/' | sort | uniq -c | head -10; }
+	grep -E 'Road patrols:|RZT roadpatrols|RZP ' "$LOG" | sed 's/^.*SCRIPT *: //' | head -80
+	grep -q "RZP done" "$LOG" || { echo "The test didn't finish (see the log)"; FAIL=1; }
+	grep -q 'RZT roadpatrols FAIL' "$LOG" && FAIL=1
 	exit $FAIL
 fi
 

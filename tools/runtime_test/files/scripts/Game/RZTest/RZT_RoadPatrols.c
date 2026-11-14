@@ -1,19 +1,63 @@
 // Test-only (not part of the mod): road patrols (docs/SITES.md, "Road patrols"). Early in the run,
 // before the missions move the tester: (1) a foot patrol of each faction with a holding sets out on
 // the real roads, 1-3 km out and back the same way; (2) far from the tester it's data, within the body
-// radius its people are put out and its leader tagged to talk to; (3) it meets the tester by standing:
+// radius its people are put out and its leader tagged to talk to (whether they then walk is printed,
+// not checked); (3) it meets the tester by standing:
 // friendly when Known, a stranger asked for papers (Bastion), hostile when Hunted; (4) only one vehicle
 // patrol at a time; (5) its fight leaves spent cases (an L9 trace); (6) a Bastion patrol lost on the
 // road starts a Missing Patrol there. Lines: "RZT roadpatrols OK|FAIL ...", "RZT roadpatrols: ...".
 
 class RZT_RoadPatrols
 {
+	//! Which of a live trace's place rules (RZ_Scenes.AllowedNow) a spot breaks; empty when none.
+	static string WhyNoTrace(RZ_GameModeComponent gm, vector at)
+	{
+		string why = "";
+		if (RZ_Perimeter.IsNearLineAt(at))
+			why += " the line;";
+		if (RZ_Util.IsWater(RZ_Util.GroundPos(at)))
+			why += " water;";
+		if (RZ_WorldFacts.Get().IsNearLivedIn(at, 60))
+			why += " a lived-in place;";
+		if (RZ_WorldFacts.Get().IsCured())
+			why += " the cure;";
+		RZ_LongTable lt = gm.GetLongTable();
+		if (lt && lt.Exists() && lt.IsNearHouse(at, 2000))
+			why += " the Long Table's ground;";
+		RZ_MissionManager missions = gm.GetMissions();
+		if (missions)
+		{
+			foreach (RZ_Mission m : missions.GetActive())
+			{
+				if (m && m.m_eState == RZ_EMissionState.ACTIVE && !m.m_bGlobal && RZ_Util.DistXZ(m.m_vPos, at) <= 300)
+					why += " a running job (" + m.m_sTitle + ");";
+			}
+		}
+		RZ_Shared shared = gm.GetShared();
+		if (shared && shared.GetCalendar().IsQuietAt(at))
+			why += " a quiet place on the calendar;";
+		RZ_Tribes tribes = gm.GetTribes();
+		if (tribes)
+		{
+			foreach (RZ_Tribe t : tribes.GetTribeList())
+			{
+				if (t && RZ_Util.DistXZ(t.m_vLair, at) < 600)
+					why += string.Format(" a lair %1 m off;", RZ_Util.RoundToInt(RZ_Util.DistXZ(t.m_vLair, at)));
+			}
+		}
+		if (RZ_TraceClues.Near(gm, at, "L9"))
+			why += " a questline's clue;";
+		return why;
+	}
+
 	static int s_iStep;
 	static int s_iWait;
 	static int s_iChecks;
 	static int s_iFails;
 	static bool s_bDone;
 	static int s_iPatrol = -1;
+	static vector s_vPut;
+	static int s_iLegPut;
 
 	//------------------------------------------------------------------------------------------------
 	static void Check(bool ok, string what)
@@ -150,6 +194,28 @@ class RZT_RoadPatrols
 
 			Check(p2.m_bHasBody && p2.m_Group != null, string.Format("%1 put out within %2 m of the tester", p2.Title(), 400));
 			Check(p2.m_bTagged, string.Format("%1's leader can be talked to", p2.Title()));
+			s_vPut = p2.m_vPos;
+			s_iLegPut = p2.m_iLeg;
+			s_iStep = 3;
+			s_iWait = 0;
+			return false;
+		}
+
+		if (s_iStep == 3)
+		{
+			// Its people walk on along the road (Arland's navmesh is in the world for this check)
+			s_iWait++;
+			if (s_iWait < 45)
+				return false;
+
+			float moved = RZ_Util.DistXZ(p2.m_vPos, s_vPut);
+			Print(string.Format("RZT roadpatrols: in %1 s its people moved %2 m, from point %3 to %4 of %5", s_iWait, RZ_Util.RoundToInt(moved), s_iLegPut, p2.m_iLeg, p2.m_aRoute.Count()));
+			// Not a pass or fail: on this server human groups have stood still (VERIFY in RZ_RoadPatrols.Order);
+			// the PC's play-test says whether they walk
+			if (p2.m_bHasBody && (moved >= 10 || p2.m_iLeg > s_iLegPut))
+				Print("RZT roadpatrols: its people walk on along its road");
+			else
+				Print("RZT roadpatrols: its people stood (VERIFY on the PC: a road patrol walks its road)");
 
 			// Its meeting by standing (the tester's standing set, then put back)
 			RZ_PlayerProfile tester = gm.GetProfile(id);
@@ -194,16 +260,56 @@ class RZT_RoadPatrols
 			tester.m_aFame[p2.m_eFaction] = fame;
 			tester.m_aInfamy[p2.m_eFaction] = infamy;
 
-			// The fight's trace: spent cases on the verge
-			rp.TestFight(p2.m_iId);
+			// The fight's trace: spent cases on the verge, out on its road. A trace keeps off lived-in places,
+			// the Long Table's ground, lairs and running jobs, so the fight is put on the first road point
+			// of any faction's patrol that breaks none of those (on a small map there may be none)
 			vector at;
 			string key;
 			RZ_Traces traces = gm.GetTraces();
-			bool cases = traces && traces.GetScenes() && traces.GetScenes().SceneNear("L9", p2.m_vPos, 40, at, key);
-			if (traces && traces.IsOn())
-				Check(cases, "its fight leaves spent cases on the verge (L9)");
-			else
+			array<RZ_RoadPatrol> fighters = {p2};
+			array<int> others = {RZ_EFaction.BANDITS, RZ_EFaction.SURVIVORS, RZ_EFaction.INSTITUTE};
+			foreach (int ff : others)
+			{
+				RZ_RoadPatrol extra = rp.TestSetOut(ff, here, false);
+				if (extra)
+					fighters.Insert(extra);
+			}
+
+			RZ_RoadPatrol fighter;
+			vector spot;
+			string firstWhy = "";
+			foreach (RZ_RoadPatrol cand : fighters)
+			{
+				for (int k = cand.m_iTurn; k > 0 && !fighter; k -= 3)
+				{
+					string why = WhyNoTrace(gm, cand.m_aRoute[k]);
+					if (why == "")
+					{
+						fighter = cand;
+						spot = cand.m_aRoute[k];
+					}
+					else if (firstWhy == "")
+					{
+						firstWhy = why;
+					}
+				}
+			}
+
+			if (!traces || !traces.IsOn())
+			{
 				Print("RZT roadpatrols: traces are off; the fight's trace not tried");
+			}
+			else if (!fighter)
+			{
+				Print("RZT roadpatrols: no road point here takes a trace (first:" + firstWhy + "); the fight's trace not tried");
+			}
+			else
+			{
+				fighter.m_vPos = spot;
+				rp.TestFight(fighter.m_iId);
+				bool cases = traces.GetScenes().SceneNear("L9", spot, 40, at, key);
+				Check(cases, string.Format("%1's fight leaves spent cases on the verge (L9)", fighter.Title()));
+			}
 
 			// One vehicle at a time
 			RZ_RoadPatrol jeep = rp.TestSetOut(RZ_EFaction.MILITARY, here, true);

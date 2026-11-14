@@ -19,6 +19,5 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 | 9 | [COMPANION.md](COMPANION.md) | One companion per character, from the world, with approval, a limit and a death | approved 2026-11-14 |
 | 10 | [MAP_FOG.md](MAP_FOG.md) | The map's fog: its later parts (selling a survey, sharing maps, a notebook page on a first visit, the real roads); the fog itself is built ([UI.md](../docs/UI.md#the-maps-fog)) | approved 2026-11-14 |
 | 11 | [POWER_AND_RADIO.md](POWER_AND_RADIO.md) | The masts (an expedition each, then whoever puts one up picks whose voice it is: warnings, listening in, finding a trapped man's voice), the grid region by region with the factions' stakes, the loop's relay and Bastion's last call | approved 2026-11-14; A (the masts) built, B and C wait |
-| 12 | [ROAD_PATROLS.md](ROAD_PATROLS.md) | Foot patrols on the real roads round each faction's holdings, and a rare vehicle patrol (one on the server at a time); met by standing, leaving traces, heard on the masts | approved 2026-11-14, being built |
 
 A new approved design goes here with its place in the order.

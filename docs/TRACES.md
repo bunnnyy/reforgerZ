@@ -341,6 +341,7 @@ makes at most one of a kind a town a season day.
 | L6 | **Bastion fading**: sandbags and a HALT sign on its side | A Bastion road post pulled; and no new Bastion marks under 0.25 presence | Where the post stood | 2 days |
 | L7 | **Red hands spreading** | [Above](#where-marks-come-from) | Shops and garages first | As door marks |
 | L8 | **Halcyon's beaks** | Halcyon's sample jobs ([above](#where-marks-come-from)), and a ringed beak by a nest under study: while Specimen from the Nest runs, once a job, on the door nearest the nest | As door marks | As door marks |
+| L9 | **A road patrol's fight**: spent cases on the verge, and by its faction a neat spread and drag marks (Bastion), a red hand on the milestone, a dropped sack (the Haven) or a torn glove (Halcyon) | A road patrol met the infected on its way, or was lost there ([SITES.md](SITES.md#road-patrols)) | The verge where it happened | 2 days |
 
 ### Sites' stories
 
