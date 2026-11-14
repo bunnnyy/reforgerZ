@@ -34,6 +34,6 @@ Three items, one locker, per character. No item doubles, nothing is made. A deat
 1. The data store and the three slots, opened with vanilla's storage at a camp.
 2. Choosing and moving the camp; shut when you fall; the Red Hand's rent.
 
-## Open questions for the author
+## Settled with the author (2026-11-14)
 
-Settled (2026-11-14): three items.
+- Three items.

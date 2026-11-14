@@ -33,7 +33,3 @@ makes anything up or spawns anything.
 1. The picker over what already exists (givers, events, trucks, tribes, held jobs); the card and the
    notebook page; picking tracks.
 2. The find lines as landmarks and heirlooms land.
-
-## Open questions for the author
-
-None.

@@ -40,6 +40,6 @@ hands: 14 of 20 holds."*). A habit earned is a notice and a line from whoever's 
 2. The effects, each in the system it touches; the Standing page.
 3. OPENING.md's door habit goes through this.
 
-## Open questions for the author
+## Settled with the author (2026-11-14)
 
-Settled (2026-11-14): three at a time.
+- Three habits at a time.
