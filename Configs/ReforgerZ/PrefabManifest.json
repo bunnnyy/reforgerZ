@@ -4721,7 +4721,7 @@
    "slotLabel": "Guidance > Radio prefab",
    "required": false,
    "minimum": false,
-   "use": "given to every new life",
+   "use": "given to every new character",
    "notes": "The two View radio actions: one in the \"default\" context, one in \"knob_toggle\" with In hand on (beside vanilla's Turn on/off)."
   },
   {
@@ -6352,7 +6352,7 @@
    "slotLabel": "UI > Notebook prefab",
    "required": false,
    "minimum": false,
-   "use": "given to every new life and put on a free quick slot; taken into the hand (N, the quick slot, the inventory's Equip) it opens the notebook, and goes back when it closes",
+   "use": "given at every spawn unless carried, and put on a free quick slot; taken into the hand (N, the quick slot, the inventory's Equip) it opens the notebook, and goes back when it closes",
    "notes": "Built as text in the repo. Its gadget component needs Gadget anim variable MX991 (without one the character can't take it into the hand); the item animation attributes the MX991 graph, AllowInspection on"
   },
   {
@@ -6406,7 +6406,7 @@
    "slotLabel": "UI > Map prefab",
    "required": false,
    "minimum": false,
-   "use": "every new life carries one (unless the loadout has a paper map)",
+   "use": "every spawn carries one (unless the character has a paper map)",
    "notes": ""
   },
   {

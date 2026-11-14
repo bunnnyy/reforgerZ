@@ -90,7 +90,7 @@ hard edges are each faction's in [LORE.md](LORE.md#the-factions-as-people).
 - **Haven gossip** is about food, never blame: *"The safehouse in Levie has gone to half portions.
   The children eat first."* When a hungry house takes from a fed one, it's *'borrowed'*, in single quotes.
   The Haven's dark side is always said sideways, never announced.
-- **Whoever's outside an opening's door** ([DESIGN.md](DESIGN.md#openings-how-every-life-starts))
+- **Whoever's outside an opening's door** ([DESIGN.md](DESIGN.md#openings-how-every-character-starts))
   talks like a neighbour on a doorstep: plain, relieved, a little embarrassed, never an institution.
   Nobody is new, so they never say you're new and never explain the Zone: the story comes one piece a
   step, in their own life (*"My brother tried the river road. The loudspeaker said his name. Then it
@@ -104,8 +104,8 @@ hard edges are each faction's in [LORE.md](LORE.md#the-factions-as-people).
     (*"I came back for my watch, and here you are."*); after the fever they wrote on your door.
   - **A stranger** says what they saw and why they stayed, nothing about you they couldn't know
     (*"That was my chalk on your door. I heard you through it for three nights."*).
-  - **A wanderer from an earlier life** opens with *"You look like someone I knew."* and reads what
-    they remember (a kindness, a wrong, only the face) without naming the old life or its deeds.
+  - **A wanderer from an earlier character** opens with *"You look like someone I knew."* and reads what
+    they remember (a kindness, a wrong, only the face) without naming the old character or its deeds.
   - **What you read by the door** is a note in someone's hand, with one domestic detail (*"Back by
     dark. Don't eat the peaches."*); the veteran's version is its one line. The fever changes nothing
     in the rules, so its words never promise immunity.
@@ -363,11 +363,11 @@ optional condition in the conversation syntax (`cure>=50`), a weight and the tex
   Nobody left to laugh at."* The toll sign is in a new hand once the book burns or its debts die, and
   its joke stops (*"A new sign, in someone else's hand: TOLL 10. No joke under it this time."*).
   Bastion's *"No reply."* on the nightly call is plain, always: it's a fact.
-- **The wanderers' greeting** (`wanderer`, Trees on): what they remember of you this life first
+- **The wanderers' greeting** (`wanderer`, Trees on): what they remember of you this character first
   (saved, helped, wronged: a wronged one never jokes with you), else the manner of your Haven standing;
   the Deserter reads Bastion's reversed (`wanderer_deserter`: who Bastion hunts, he warms to).
-- **A new life on a locked route:** a leader of your route says *"Somebody said you're with us."* (a
-  `route` line with `fresh`: this life under an hour of play).
+- **A new character on a locked route:** a leader of your route says *"Somebody said you're with us."* (a
+  `route` line with `fresh`: this character under an hour of play).
 - **The epilogue week's opener** is built from parts so every ending has plenty of plain lines: what
   the ending is to the speaker's faction (eight endings: each route, the Independent, the slow cure,
   handed over, no cure), then where you stood (on the route that won, on another, on none), then, one
@@ -385,7 +385,7 @@ Conversation lines ([DIALOGUE.md](DIALOGUE.md)) follow everything on this page, 
 - **Lines** follow [Talk](#talk): one to three says a node, spoken straight to you, in the
   faction's voice, coloured by the speaker's traits; no he, she, him or her for a seeded speaker.
 - **A first meeting** is a `say? !met :: ...` on the greet: `met` is true once you've talked to that
-  speaker this life, for every speaker ([DIALOGUE.md](DIALOGUE.md#no-filler-greeting)). A greet's plain
+  speaker this character, for every speaker ([DIALOGUE.md](DIALOGUE.md#no-filler-greeting)). A greet's plain
   `say` is never shown when the screen opens on its own; only its `say?` lines that hold are.
 - **Choices** are what you say ([Talk](#talk), rule 4), without quotation marks, 40 characters or
   fewer where the lint allows (labels 60). No choice is labelled good or evil, and every option costs

@@ -4,10 +4,10 @@
 //! takes anyone below the floor: it refuses instead. The health comes back the vanilla way.
 //! Every health cost tells the bite detector to forget the old reading (ForgetBiteHealth), so
 //! the drop never counts as a bite. Any new health-taking action must go through here.
-//! Once per life per key (a giver remembers who already gave), so it can't be farmed.
+//! Once per character per key (a giver remembers who already gave), so it can't be farmed.
 class RZ_HealthCost
 {
-	protected static ref map<string, int> s_mGiven;	// "key|identity" -> the life it was given in
+	protected static ref map<string, int> s_mGiven;	// "key|identity" -> the character it was given in
 
 	//------------------------------------------------------------------------------------------------
 	//! Health as a share of full health (0..1), -1 if it can't be read.
@@ -22,7 +22,7 @@ class RZ_HealthCost
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Already paid this life for `key`?
+	//! Already paid as this character for `key`?
 	static bool AlreadyGiven(RZ_GameModeComponent gm, int playerId, string key)
 	{
 		if (!s_mGiven)

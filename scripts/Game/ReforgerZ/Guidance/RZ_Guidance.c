@@ -19,10 +19,10 @@
 [BaseContainerProps()]
 class RZ_GuidanceSettings
 {
-	[Attribute("1", desc: "New-player guidance on: tips, the first-life goal, the gentle start")]
+	[Attribute("1", desc: "New-player guidance on: tips, the first-character goal, the gentle start")]
 	bool m_bEnabled;
 
-	[Attribute("10", desc: "Minutes a life must last to count as experience")]
+	[Attribute("10", desc: "Minutes a character must last to count as experience")]
 	float m_fMeaningfulMinutes;
 
 	[Attribute("1", desc: "Counted lives for level 1 (learning). Below this a player is brand new (level 0)")]
@@ -40,7 +40,7 @@ class RZ_GuidanceSettings
 	[Attribute("0.5", desc: "Zombie density near a brand-new player during the gentle start (1 = off)")]
 	float m_fGentleMult;
 
-	[Attribute("15", desc: "Minutes of each brand-new life with the gentle density")]
+	[Attribute("15", desc: "Minutes of a brand-new player's first character with the gentle density")]
 	float m_fGentleMinutes;
 
 	[Attribute("90", desc: "Seconds between two tips to the same player (critical tips don't wait)")]
@@ -49,7 +49,7 @@ class RZ_GuidanceSettings
 	[Attribute("45", desc: "Heat around a player that counts as too loud (the 'loud' tip)")]
 	float m_fLoudHeat;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Wind-up radio item put in every new life's inventory (or at their feet). Its prefab name must contain 'radio' or it needs a radio component, so RZ_Radio counts it. Empty = none given", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Wind-up radio item put in every new character's inventory (or at their feet). Its prefab name must contain 'radio' or it needs a radio component, so RZ_Radio counts it. Empty = none given", "et")]
 	ResourceName m_sRadioPrefab;
 
 	[Attribute("12", desc: "Minutes between open-channel radio messages for a brand-new player (x1.5, x2.5, x3.5 with experience). 0 = off")]
@@ -85,7 +85,7 @@ class RZ_GuidanceSettings
 	[Attribute("1", desc: "A Courier or Scavenger wanderer comes looking for brand-new players in their first 15 minutes")]
 	bool m_bWandererFinds;
 
-	[Attribute("1", desc: "Openings: every life starts at a random place that fits its background (never a chosen one), coming out of where it hid, with someone who speaks first and a chain on the errands (docs/DESIGN.md, Openings). It replaces the wanderer who finds you. Off: the spawn point the spawn screen picks at random, and nothing by it")]
+	[Attribute("1", desc: "Openings: every character starts at a random place that fits its background (never a chosen one), coming out of where it hid, with someone who speaks first and a chain on the errands (docs/DESIGN.md, Openings). It replaces the wanderer who finds you. Off: the spawn point the spawn screen picks at random, and nothing by it")]
 	bool m_bOpenings;
 
 	[Attribute("18", UIWidgets.Slider, "Openings: weight of 'your group is gone' among the reasons you come out today (the hiding place takes what's left of 100; halved for a brand-new player)", "0 50 1")]
@@ -109,7 +109,7 @@ class RZ_GuidanceSettings
 	[Attribute("10", UIWidgets.Slider, "Openings: Fame with the faction the chain ends with, at the end of its walk (small pay: never season Fame)", "0 20 1")]
 	int m_iOpeningFame;
 
-	[Attribute("90", desc: "Seconds after a new life before any tip that isn't critical (the spawn is quiet: docs/UI.md, Notices)")]
+	[Attribute("90", desc: "Seconds after a spawn before any tip that isn't critical (the spawn is quiet: docs/UI.md, Notices)")]
 	float m_fTipQuietSeconds;
 
 	[Attribute(desc: "Tips: one line from the nearest plausible speaker when something happens. Empty = the built-in table (RZ_GuidanceTips)")]

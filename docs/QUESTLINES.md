@@ -145,7 +145,7 @@ rifle count* for 20 Red Hand Favor); at the muster *Buy the clerk's copy* (30 Fa
 and *Walk the chair's clerk to the radio*; at the last roll *Answer Here for a struck-off man* (the
 count +1 at the ending). The last call reads the captain's R numbers when the cure is Bastion's,
 airs at the next 20:30 as radio once the coda has run, and the walk at the 05:30 after it; Sedlak's
-box at the roll counts the tags brought home in the week. A per-life roster flag and a rank text are
+box at the roll counts the tags brought home in the week. A per-character roster flag and a rank text are
 kept ([DESIGN.md](DESIGN.md#the-majors)).
 
 **Every night before it, too:** at the tallest mast, players hold the power while Bastion's radio
@@ -331,7 +331,7 @@ it (`book.last` 1–4). Questlines hear the stand through `OnFinalStandStart` an
 
 - **Sets** a flag in `code style`. Flags are the server's for the season. Where a choice is the
   player's own (they'll be remembered for it), it says *(you)*: that belongs to the character
-  and ends with the life, like reputation.
+  and ends with the character, like reputation.
 - **Uses** names the existing mission or building block a stage reuses. A stage that needs an
   optional prefab offers that approach only when the prefab is set, as missions do.
 - **Endings:** what the player gets, and what the world gets.
@@ -1045,8 +1045,8 @@ ask the Haven's friends). ★ Police: anything you learn counts as proof.
 | **Walked away** | Nothing | The host stops meeting you on the road |
 
 **Built** ✅ (`Missions/Questlines/LongTable/RZ_Quest_PlaceAtTable.c`). Changes from the design:
-- It's personal: only the character the offer was made to does its stages, and only in that life.
-  The host makes the offer on the third meal of a life.
+- It's personal: only the character the offer was made to does its stages, and only in that character.
+  The host makes the offer on the third meal of a character.
 - Stages 2 to 4 wait 20 minutes of play or 6 real hours first; Grace is in the evening (17:00 to
   22:00).
 - *The dead:* a wanderer or a truck crew who died to the infected in the last hour, within 4 km;

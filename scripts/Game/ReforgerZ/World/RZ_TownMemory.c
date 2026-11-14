@@ -29,7 +29,7 @@ class RZ_TownMemorySettings
 	[Attribute("60", desc: "Real minutes for one burned building to stop counting (towns recover)")]
 	float m_fBurnFadeMinutes;
 
-	[Attribute("10", desc: "Journals: a life must last this many minutes to leave one")]
+	[Attribute("10", desc: "Journals: a character must have this many minutes of play for its death to leave one")]
 	float m_fJournalMinutes;
 }
 

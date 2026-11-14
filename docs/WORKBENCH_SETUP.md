@@ -769,7 +769,7 @@ and the UI files) need none, and eight have no base:
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_WindupRadio.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction`, `RZ_RadioCallAction`, `RZ_ViewRadioAction`; `RZ_ViewRadioAction` (In hand on) | Guidance > Radio prefab | optional | given to every new life. The two View radio actions: one in the "default" context, one in "knob_toggle" with In hand on (beside vanilla's Turn on/off) |
+| `RZ_WindupRadio.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction`, `RZ_RadioCallAction`, `RZ_ViewRadioAction`; `RZ_ViewRadioAction` (In hand on) | Guidance > Radio prefab | optional | given to every new character. The two View radio actions: one in the "default" context, one in "knob_toggle" with In hand on (beside vanilla's Turn on/off) |
 | `RZ_OpeningCompanion.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction`, `RZ_RadioCallAction`, `RZ_ViewRadioAction`; `RZ_ViewRadioAction` (In hand on) | Guidance > Companion | optional | the opening's contact who walks with you (a one-man civilian AI group with the puzzle components; written as text: open it once in Workbench). Empty: they hand you on to the next person instead |
 | `RZ_CarWreck.et` | a wrecked car prop | — | Guidance > Car wreck prefab | optional | an opening's clue when your group is gone: their car in the ditch |
 | `RZ_Flyer.et` | a poster prop | the clue set | Guidance > Flyer prefab | optional | an opening's clue when your group is gone (the flyer they went after), safehouse flyers |
@@ -885,10 +885,10 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | the MapIcon layout (UI/LAYOUTS.md) | — | UI > Map icon layout | optional | the ReforgerZ icons on the map, per player (empty = vanilla text markers for events and the lab). Also add RZ_MapIconsUI to the map configuration's components (Setting up the UI) |
 | (existing prefab) | the SpawnRow layout (UI/LAYOUTS.md) | — | UI > Spawn row layout | optional | our spawn screen, the background picker, in place of vanilla's deploy menu (empty = vanilla's deploy menu). Needs the RZ_SpawnMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the MapLegend layout (UI/LAYOUTS.md) | — | UI > Map legend layout | optional | the map key in the full-screen map's bottom-left, shown zoomed out (empty = no legend; needs the map icon layout) |
-| `RZ_Notebook.et` | a gadget on vanilla's Item_Base with the notebook's mesh (Notebook_01_Single.xob, marble black); display name Notebook, weight 0.1 kg, slot type SLOT_GADGETS_STORAGE, held like the MX991 flashlight | `RZ_NotebookGadgetComponent`; `RZ_ReadNotebookAction`, `RZ_DeadNameAction`, 2 × `RZ_EpiNotebookAction` (Kind SEASON, ANONYMOUS) | UI > Notebook prefab | optional | given to every new life and put on a free quick slot; taken into the hand (N, the quick slot, the inventory's Equip) it opens the notebook, and goes back when it closes. Built as text in the repo. Its gadget component needs Gadget anim variable MX991 (without one the character can't take it into the hand); the item animation attributes the MX991 graph, AllowInspection on |
+| `RZ_Notebook.et` | a gadget on vanilla's Item_Base with the notebook's mesh (Notebook_01_Single.xob, marble black); display name Notebook, weight 0.1 kg, slot type SLOT_GADGETS_STORAGE, held like the MX991 flashlight | `RZ_NotebookGadgetComponent`; `RZ_ReadNotebookAction`, `RZ_DeadNameAction`, 2 × `RZ_EpiNotebookAction` (Kind SEASON, ANONYMOUS) | UI > Notebook prefab | optional | given at every spawn unless carried, and put on a free quick slot; taken into the hand (N, the quick slot, the inventory's Equip) it opens the notebook, and goes back when it closes. Built as text in the repo. Its gadget component needs Gadget anim variable MX991 (without one the character can't take it into the hand); the item animation attributes the MX991 graph, AllowInspection on |
 | (existing prefab) | vanilla's compass ({7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et) | — | UI > Compass prefab | optional | every spawn carries one (unless the character has a compass) |
 | (existing prefab) | vanilla's MRE ({EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et) | — | UI > Meal prefab | optional | every new character carries one meal; coming round gets none |
-| (existing prefab) | vanilla's folded paper map ({13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et) | — | UI > Map prefab | optional | every new life carries one (unless the loadout has a paper map) |
+| (existing prefab) | vanilla's folded paper map ({13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et) | — | UI > Map prefab | optional | every spawn carries one (unless the character has a paper map) |
 | (existing prefab) | the Standing page layout (UI/LAYOUTS.md) | — | UI > Standing page | optional | the notebook's Standing tab (empty = Nothing here yet) |
 | (existing prefab) | the Journal page layout (UI/LAYOUTS.md) | — | UI > Journal page | optional | the Journal tab (empty = Nothing here yet) |
 | (existing prefab) | the Radio page layout (UI/LAYOUTS.md) | — | UI > Radio page | optional | the Radio tab (empty = Nothing here yet) |
@@ -1041,7 +1041,7 @@ on every quartermaster are how players reach stronghold leaders and council head
 
 Each `RZ_FactionShopAction` sells one thing: **Faction**, **Required tier** (Stranger, Known,
 Trusted or Champion), **Favor cost**, **Item prefab** (an item or crate, put in the buyer's
-inventory, or beside the quartermaster when it doesn't fit), **Display name** and **Once per life** (off; on: each player can buy it once a life). The action is always shown (or, with the shop screen on, is a
+inventory, or beside the quartermaster when it doesn't fit), **Display name** and **Once per character** (off; on: each player can buy it once a character). The action is always shown (or, with the shop screen on, is a
 row on it); the server checks tier and Favor when it's used. The four quartermaster prefabs carry
 `RZ_ShopOpenAction` (**Trade**, first in the list), which opens the shop screen while **UI > Shop
 item layout** is set; then the Buy, Requisition and service actions hide from the action menu. A
@@ -1095,7 +1095,7 @@ wrong-weapon tell. Halcyon's must match the coat and the beak (a hood or mask wi
 and should not match ordinary dust masks. Keep those keywords rare in loot and on the infected's
 loadouts: kit marks make a dead man's and the turned's kit fail; a restart keeps the worn ones and turns the rest into kit of unknown origin (−1 at the look).
 For the one clean way in, give the Red Hand quartermaster two `RZ_FactionShopAction`s at Trusted,
-40 Favor each, **Once per life** on: a Bastion green set and a Halcyon coat and beak (a bag with the
+40 Favor each, **Once per character** on: a Bastion green set and a Halcyon coat and beak (a bag with the
 pieces in it); anything the Red Hand sells is bought fair. Bastion's and Halcyon's own shop kit is signed out to its buyer. Road
 posts need territory, the road network and a crew: their own slot, else the territory guard
 (else the Red Hand group). Check the **contraband keywords** against your Red Hand stock.
@@ -2110,7 +2110,7 @@ and handed in at a house, an epilogue deck card (Take a Name to the Board) true 
 home, and the Last Entry; the chair's grey choice through its hold and a say at
 the station; a town with crawlers cleared and taken back, the ridges and the Long Table's week
 closed; processing, the broadcast's tally, the tester (a stranger to the route's faction) told to wait
-on processing's first day by the route's terms, then walking out at the barrier the day after (then a new life);
+on processing's first day by the route's terms, then walking out at the barrier the day after (then he spawns again);
 and the wipe's lines, the names not brought home, `last_season.json`'s beats, every closing item at
 its end (`RZT epilogue check:
 <name>: OK|FAILED (...)`, then `RZT epilogue done: N checks OK, N FAILED`). Steps the test world can't
@@ -2127,13 +2127,13 @@ tab's lines and the stand's groups by Bastion's stance (`RZT majors check:
 <name>: OK|FAILED (...)`, then `RZT majors done: N checks OK, N FAILED`).
 
 Last, it walks the player through every
-settlement, the safehouses and the lab, into the Perimeter, to death and a second life. It logs
+settlement, the safehouses and the lab, into the Perimeter, to death and coming round. It logs
 every notice the player is sent, and prints the script exceptions (there should be none), how many
 mission types started and which didn't, the objective places checked and every wrong one (it fails
 on one), and how far each questline got. It takes 60 to 90 minutes.
 Until the Perimeter test the line leaves the fake player alone: a spot the test moves him to may lie
-in the line's band (The Blind Spot's does by design), and a death there would end the life a
-questline was following (A Place at the Table fizzles when its guest's life ends). It logs
+in the line's band (The Blind Spot's does by design), and a death there would move him off the
+route a questline was following (he comes round at a camp). It logs
 `RZT perimeter: ...` once per visit instead. In the Perimeter test itself the line shoots him
 (`Tester was shot at the quarantine line`, then `RZT fake player already dead (the Perimeter got him)`):
 that's the line working. If the fake player dies outside the Perimeter test anyway, it says where
@@ -2386,7 +2386,7 @@ grep -rn "VERIFY" scripts/
 ```
 
 There are **225** lines with the tag, all but one in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
+`Core/RZ_Util.c` that explains them; 47 are in `UI/`: [the UI's](#the-ui-45), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
@@ -2396,7 +2396,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-39)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-45)
 come last.
 
 ### High risk: the core loop (2)
@@ -2465,7 +2465,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_Stealth.c:200` | on the dedicated server, a player's character reports the stance the player is in | Every player counts as standing: speed, light, weather and noise still count. Check the HUD's visibility as you go prone |
 | `UI/RZ_LoadoutLock.c:50` | the server asks `SCR_LoadoutManager.CanAssignLoadout_S` before it assigns the loadout a player picks (1.9's `SCR_PlayerLoadoutComponent.Rpc_RequestLoadout_S` does) | A locked pick is assigned; the spawn check below still refuses it |
 | `Zombies/RZ_InfectedBodies.c:175` | a physics trace from a player's eyes (`TraceMove`, world and entities) is stopped by buildings, walls and trees, and 16 of them a server tick cost little (crawler spawns use it: no body within 300 m of a player who could see the spot) | If traces never hit, crawlers spawn only behind terrain or beyond 300 m, so towns fill thinner near players (watch `/tribes`: towns well under their base). If they show in the frame time, lower `TRACES_PER_TICK` in `RZ_InfectedBodies` (a spot counts as seen once they're used up) |
-| `UI/RZ_LoadoutLock.c:67` | the server asks `SCR_BaseGameMode.CanPlayerSpawn_S` for every spawn request, with the prefab the client asked for (1.9's respawn system does) | A locked loadout can spawn: the player keeps its gear for that life but plays as the default background (`ResolveBackground`, the log line below). Check with a fresh profile: pick Soldier, press spawn (mouse and gamepad); it must refuse |
+| `UI/RZ_LoadoutLock.c:67` | the server asks `SCR_BaseGameMode.CanPlayerSpawn_S` for every spawn request, with the prefab the client asked for (1.9's respawn system does) | A locked loadout can spawn: the player keeps its gear for that character but plays as the default background (`ResolveBackground`, the log line below). Check with a fresh profile: pick Soldier, press spawn (mouse and gamepad); it must refuse |
 | `Core/RZ_Util.c:529` | a smart-action waypoint set from script (`SetSmartActionEntity`) sends a ReforgerZ faction group to the sentinel it's given (the seat itself, found by its tag on the spawned piece), and vanilla's sit, lean and observation behaviours run for our groups in a mod world | People walk to the piece and stand by it: empty **Camp life > Smart action waypoint** and they loiter beside the pieces instead |
 | `Core/RZ_Util.c:664` | an empty group prefab (vanilla `Group_Base.et`) stays alive until a member joins, takes the character's faction, and a spawned lone character joins it and takes its waypoints | Lone occupants and single guards stand where they spawn, as before: empty **Camp life > Group prefab**. Guards that are AI groups still take jobs |
 | `Zombies/Behaviour/RZ_CrawlerLife.c:227` | a crawler group's agent switched off with `DeactivateAI` (lying up by day) stays in its group and wakes with `ActivateAI` (lab B12: awake in 0.2 s, moving in 6.5 s), and a sleeping body hit by a player is woken by the player near it | Sleeping crawlers drop out of their groups or don't wake: set **Behaviour > Sleep lying crawlers** off (they stand hunched instead) |
@@ -2583,7 +2583,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PowerLooks.c:102` | the power station's generator: `RZ_PowerGeneratorSound.et` (no mesh, vanilla's diesel generator sounds on a `StaticSoundComponent`), spawned by the server, plays on every client that streams it in and stops when the server deletes it, as vanilla's placed generators do | No sound at a running station: empty **World > Power grid > Generator sound prefab**; the panel and the notices still say it runs |
 | `UI/RZ_PowerLampsClient.c:185` | street lamps: `StreetLampComponent.SetBroken(true)` on a client puts that lamp out there (its light and its glow), and `SetBroken(false)` lets it light itself at night again | Lamps stay lit in dark towns, or stay out after the main switch: turn **World > Power grid > Street lamps** off, and every lamp is left as the map has it |
 
-### The UI (46)
+### The UI (45)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -3029,7 +3029,7 @@ records.` and `Shared: N callbacks waiting, N season records.`
 quest items given back, and reset; and `Missions: <player> began a new character, off N job(s) the
 last one held` at a reset.
 
-Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one each new character: `Openings: started
+Openings ([DESIGN.md](DESIGN.md#openings-how-every-character-starts)), one each new character: `Openings: started
 for <player>: <background>, <kind> in <town> (<grid>), level N, <hiding|group|fever>, <before|stranger|earlier|nobody>:
 <who>, chain favour, give, case to <place>`, `Openings: <name> called <player> over before step N`, `Openings: the favour (<FAVOUR>) is at <words> (<prefab>, <kind>), N m from the contact` (the building the favour sends you into, and the words its kind gave) or `Openings: no place for the favour (<FAVOUR>) for <player> at <grid>, on to the runner`, `Openings: no place for <player>'s favour (<FAVOUR>) here, <TIN|SACK> instead`, `Openings: <player> is <habit> (the habit, <effect>)` or `Openings: <player> keeps the habit <habit> (a familiar or veteran door asks nothing)`, `<player> is a veteran: no favour, the door then the runner`, `Openings: <player> took their background's way (<background>, <key>) at <grid>` or `Openings: <player> settled the favour by their background's way (<background>), there and then`, `Openings: the neighbour's door at <grid> opened (<background>)`, `Openings: <player> handed over to <name> (step N, task N, favour N), done there and then`, `Openings: <name> talked to by <player> before
 step N`, `Openings: <name> went on talking with <player> into step N`,
@@ -3042,7 +3042,7 @@ the spawn point instead: <why doors were refused, e.g. a pack's lair x22>`, `Ope
 (every new character), `Openings: <player> <background> at <grid>: NO CONTACT (<why: no body prefab, or the engine
 refused the spawn>), the scene's read instead`, `Openings: the story budget is full near <grid>; the contact
 stands all the same`, `Openings: <player> <background>: NO OPENING (no place was rolled for this spawn)` and
-`Missions: <player> began a new life, off N job(s) the last one held`; a lead's end is `Openings: ended for <player>: found work at <place> (step 3, N min)`.
+`Missions: <player> began a new character, off N job(s) the last one held`; a lead's end is `Openings: ended for <player>: found work at <place> (step 3, N min)`.
 The case ([DESIGN.md](DESIGN.md#the-case)): `Openings: no runner's case for <player> at <grid>, the old end
 instead`, `Openings: the runner and his case put out for <player> at <grid>`, `Openings: ended for <player>:
 took the runner's case`, `Openings: the case's lead for <player>: <place> (<direction>)`, `Openings: <player>
@@ -3104,7 +3104,7 @@ Borrowed kit's rest: `Disguise: <player> gave <faction> a cover detail (<key>)` 
 have (<key>): a lie`), `Disguise: a kit mark put back on <player>'s <faction> after the restart`,
 `Disguise: the last week's lines (N caught this season, best-dressed ...)`. Borrowed kit and the parley ([REPUTATION.md](REPUTATION.md#borrowed-kit)): `Disguise: <player> look
 by <faction> at <place>: N of D (pass|caught) <tags>`, `Disguise: <player> caught by <faction> (catch N
-this life)`, `Disguise: <player> exposed to <faction> (<why>)`, `Story: <title> trick pass|refused by
+this character)`, `Disguise: <player> exposed to <faction> (<why>)`, `Story: <title> trick pass|refused by
 <identity>`; while passing, `Disguise: again look at <player> by <faction> at <place>`, `Disguise:
 <player> owed a look by <faction>: it comes in 10 s`, `Disguise: roll call for <player> by <faction> at
 <place>`, `Disguise: <player> seen putting on <faction>'s kit`, `Disguise: <player> walked off while
@@ -3160,9 +3160,9 @@ person (no civilian prefab)`, `Callbacks: <title> at the door for <player>`, `St
 <grid>`, `Story: <title> record <key> (<subject>) = <value>`,
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
 `Story: colleague <name> is <truth>`, `Story: colleague <name> trail found by <player> (<how>)`,
-`Story: <title> left by <player>`, `Story: <title> pays <identity> at their next join, life N (N Fame, N Favor)`,
+`Story: <title> left by <player>`, `Story: <title> pays <identity> at their next join, character N (N Fame, N Favor)`,
 `Story: <title> owes <identity> nothing (not eligible as it ended)`, `Errands: '<title>' owed <player> on
-life N; they're on life N: not paid`,
+character N; they're on character N: not paid`,
 `Story: <player> hid a bite at house N`, every real hour `Story | per player-hour: Fame N, Favor N | by
 job: ... | picks: ... | food on trades N | fallout: started N, paid N Favor`,
 `Story: crash at <grid> is <truth>`, `Story: <title> group '<what>' at <grid> (N on the server)`,
@@ -3716,7 +3716,7 @@ when it happens)
   dusk a Haven-Known player hears the Haven name a hungry pack with its place; a Bastion-Known one hears
   a new contact (`Contact Papa-one, ...`). Never "alpha", "tribe" or "crawler". The notebook's Journal
   lists each pack you know of by its place, with the names you've heard and the level (Heard of, Read,
-  Mapped); walk to a lair by day and it's Mapped. A new life knows nothing again.
+  Mapped); walk to a lair by day and it's Mapped. A new character knows nothing again.
 - [ ] **Ways to learn:** the new quartermaster services ("Ask about the roads", "Read the contact board",
   "Buy the map of the crews", "Buy Halcyon's tag frequencies", "Ask for the range map", "Borrow the call
   box"), on the Services tab or as actions, each with its tier and Favor; a Soldier spawns with the board
@@ -3725,7 +3725,7 @@ when it happens)
 - [ ] **Marks:** walk the road into a pack's ground near a Haven house: *"Haven chalk on a post: QUARRY LOT.
   NOT AFTER 7. Written on day N."*, and the range is Read.
 - [ ] **Your dead run:** die to a pack's body in the open after 10 minutes alive: your group is told, your
-  next life's journal says who you run with now, and road news describes you (named only with **Your
+  next character's journal says who you run with now, and road news describes you (named only with **Your
   dead run** on Named). The notebook item's action "If I die: say my name, or don't" (and `/mydead
   hidden`) keeps the name out even on Named. Put down that pack's young near you: an ID card line.
 - [ ] **The packs' contracts** ([MISSIONS.md](MISSIONS.md#the-packs-contracts)): each is offered only in
@@ -3823,7 +3823,7 @@ when it happens)
   leader on the talk screen has **About the season** and **Where should I look?**; without the screen,
   the quartermaster's *Ask about the season* action.
 - [ ] Bitten, ask for the dose at the route's outlet: cured on the spot, the price taken (Bastion: a
-  firearm or 15 Favor), a second this life refused, an empty outlet says when the next comes.
+  firearm or 15 Favor), a second this character refused, an empty outlet says when the next comes.
 - [ ] Fire a shot by the queue with nothing infected near: +2 Infamy and the guards' grudge; kill one
   of its people: +15 Haven Infamy, and the queue's line has the gap until the next step.
 - [ ] The chair's *"Whose names do we read tonight?"*: answer *All of them*, have a second player
@@ -3880,7 +3880,7 @@ when it happens)
   hall) and *Radio*. For the next five minutes, cards come at most one every 45 s; a card that
   waited 45 s is gone (into the notebook). Get bitten in the first seconds: the bite card shows at
   once. Owed errand pay at a join is one *While you were away* entry, no card.
-- [ ] **A fresh life, as a veteran** (the author has played many lives, so this is the usual case on the
+- [ ] **A fresh character, as a veteran** (the author has played many lives, so this is the usual case on the
   PC). Die and respawn: someone stands at the door every time, the door asks nothing (your last
   habit carries), there's no favour, the runner is found already down and Ferda leaves a note: about
   five minutes in all (log: `Openings: <you> <background> at
@@ -3888,8 +3888,8 @@ when it happens)
   seen), and his first ask is the runner's case, never *Where the Work Is* straight away. As a
   familiar player (3–7 counted lives) the door asks nothing, the favour runs, the line is its short
   form and Ferda comes as one scene. The
-  Quests tab lists only that step: none of the last life's questlines, majors or jobs, and no "Quest
-  started" card for them (log: `Missions: <you> began a new life, off N job(s) the last one held`).
+  Quests tab lists only that step: none of the last character's questlines, majors or jobs, and no "Quest
+  started" card for them (log: `Missions: <you> began a new character, off N job(s) the last one held`).
 - [ ] **The case** ([DESIGN.md](DESIGN.md#the-case)), with a pad. Open `Prefabs/ReforgerZ/Guidance/RZ_ColdCase.et`
   once so its id registers (on the cloud's test server it can't go into a pack until it is: the
   test used a stand-in), and check **Guidance > Cold case** came through. At the end of any opening:
@@ -3901,7 +3901,7 @@ when it happens)
   nothing happens. Talk to anyone of Halcyon's: **[Errand] Hand over the runner's case** is first;
   pick it: the director (or whoever) speaks of the date on the tag, the case leaves your pack, +10
   Halcyon Fame, and before 25% cure *The Date on the Tag* is tracked to the clinic (its file inside,
-  a 10 s search). Another life: sell it at a Red Hand person (**[Trade] Sell the runner's case**,
+  a 10 s search). Another character: sell it at a Red Hand person (**[Trade] Sell the runner's case**,
   +15 Favor): *Get It Back* at their holding, an 8 s unseen take, and it's back in your pack, warm.
   Again at Bastion: *The Case at the Post*. Die carrying it: it isn't on the body, and the respawned
   character has it in the pack ("You still have the runner's case."). Keep it a game day: Halcyon's
@@ -3944,7 +3944,7 @@ when it happens)
   Hand toll his men ask after you. As a familiar character he comes half a minute after the case,
   as a veteran only his note. Log lines as in [DESIGN.md](DESIGN.md#the-fixer): paste the
   `Openings: Ferda ...` ones.
-- [ ] **Openings** ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), with a pad. The spawn
+- [ ] **Openings** ([DESIGN.md](DESIGN.md#openings-how-every-character-starts)), with a pad. The spawn
   screen has no place picker: under Start, only the kind of place the picked background starts at
   ("A clinic, or a house near one"); left and right do nothing. Deploy as a Nurse: you stand 2 m out
   of an open door of a clinic or a house in a town nobody holds, facing out, the world already
@@ -3988,16 +3988,16 @@ when it happens)
   With **Contracts > Max escorts** full or **Companion** empty, he stays and each next step starts where
   you are, on its card; the hand-over is the reply at him where he stands. As a veteran (**Guidance**'s counted
   lives for level 3 lowered to your count) the door asks nothing and the habit of
-  the last life carries (log: `keeps the habit`). With the talk screen off (**UI > Talk reply layout**
+  the last character carries (log: `keeps the habit`). With the talk screen off (**UI > Talk reply layout**
   empty), **Talk to** says the same lines as subtitles, in order. Take the case: the chain ends and
   *The Case* is tracked. Time the whole chain (about 25 minutes) and note the log's minutes. Respawn:
   the next start is a different town (2 km from the last two). Shoot the contact during the favour: a
   line from "Someone in a doorway" and the walk to the nearest safehouse. Nobody waves you over for an
   errand while it runs. By the open door: your background's own things (the nurse's blanket and drum,
-  the soldier's sandbags and lantern). Why today: over a few lives you also come out of a door because
+  the soldier's sandbags and lantern). Why today: over a few characters you also come out of a door because
   your group is gone (four bedrolls, a note under a stone, a car in the ditch or Halcyon's flyer) or the
   fever broke (chalk on the door, a dead soldier or a dead raider); the card says which. One time in
-  four the one outside is a stranger ("someone who saw them go"); after a few lives, a wanderer you
+  four the one outside is a stranger ("someone who saw them go"); after a few characters, a wanderer you
   met before may be the one outside ("You look like someone I knew.") and is back on the road once you
   leave. Turn **Puzzles > Civilian** and **Contact** empty: nobody outside, the read hands you the
   work, and a brand-new player's wanderer comes looking.
@@ -4042,7 +4042,7 @@ when it happens)
   the Chapel*: a farmhouse): each is there. The log has no `Place check:` warning; report any.
   Before the session, `run.sh tasks everon` should print `0 kinds under the threshold`. On a fresh
   season the start's `Mainland:` line names the islands and their towns; open the map and check no
-  holding, safehouse, the lab or a job's marker is on one, and no life starts there.
+  holding, safehouse, the lab or a job's marker is on one, and no character starts there.
 - [ ] Tips come from context, one at a time, none in the first 90 s: bleed (a bandage line), stand
   by a quartermaster (a Favor line), stay out at dusk; never two at once.
 - [ ] **The quest tracker** ([UI.md](UI.md#the-quest-tracker); the mockup `UI/Previews/tracker.png`,
@@ -4155,7 +4155,7 @@ when it happens)
   house's services (Hand over food faint "you have nothing to eat" with none on you, Tell them
   you've been bitten faint unless you are, the board opens the board menu), and at Halcyon **Ask
   for the trial dose** faint with "for the bitten only" until you're bitten and the bite has taken,
-  then it runs as built, then "once a life: you've had yours". No **Check standing and work**
+  then it runs as built, then "once a character: you've had yours". No **Check standing and work**
   anywhere. A safehouse medic: **Talk to the medic** only, Ask the medic to patch you up and Tell
   them you've been bitten as replies. Empty **UI > Talk reply layout**: the old prompts are back
   (Trade, Talk to whoever's in charge, the object menu's asks, the trial dose).
@@ -4262,7 +4262,7 @@ when it happens)
 - [ ] Trees on, the Long Table's host on the road: say they're expecting you back by dark, then stay
   near the road past 20:30: the next meeting opens with "Still expected, are you?".
 - [ ] Walk up to a Bastion holding's gate, a Red Hand roadblock and a safehouse door: each says one
-  line about you within 25 m, only the first time this life or after your name or best deed with them
+  line about you within 25 m, only the first time as this character or after your name or best deed with them
   changed; a second player within 30 m hears it too once you're notorious with them (notoriety 3). In
   another faction's colours you earned, the guard remarks on them once.
 - [ ] Mid-parley, have a second player fire within 150 m of the gate: the parley pauses 20 s and the
@@ -4347,12 +4347,12 @@ when it happens)
   background; B opens the pause menu, and closing it brings the screen back. Text reads from a couch.
 - [ ] On the spawn screen a locked background shows LOCKED and how to unlock it, and A on it says
   so and sends nothing; the server refuses it anyway (the log says `asked to spawn with locked
-  loadout` if a client sends one). After one life as Nurse, its gear lists the Nurse's real gear.
+  loadout` if a client sends one). After one character as Nurse, its gear lists the Nurse's real gear.
   With a respawn timer, Deploy counts down and then works. With **UI > Spawn row layout** empty,
   vanilla's deploy menu is back.
 - [ ] **The death brief** ([UI.md](UI.md#the-death-brief)). Die three ways (to the infected, to a
   faction's guard, by a fall): once the spawn screen is up, one card opens over it with your name,
-  "Nurse, life N", the day and town, and *How it ended* right for each (The infected; Killed by
+  "Nurse, death N", the day and town, and *How it ended* right for each (The infected; Killed by
   Task Force Bastion; Nobody saw how), *Lived* about right, *Travelled* about right, and the
   infected you shot counted. Get bitten and turn: *Turned*. With a pad only: A closes it and the
   spawn screen is there, **without deploying**; B closes it **without the pause menu**; Space and a
@@ -4403,9 +4403,9 @@ when it happens)
   Standing page's Haven row says MIXED BAG; opened, it shows "COUNTS AS STRANGER", what's left to
   forgive, and Next ("KNOWN: work off 4 Infamy" or the like).
 - [ ] The forgiveness budget (set **Reputation > Forgiveness budget** to 10): at Watched, an amends
-  contract takes Infamy off; the next pays Fame instead with "has forgiven you all it will this
-  life"; paying at the quartermaster is refused with the same line; Ask what they think of you says
-  "0 of 10 left to forgive". A new life starts with the whole budget again.
+  contract takes Infamy off; the next pays Fame instead with "has forgiven you all it will for this
+  character"; paying at the quartermaster is refused with the same line; Ask what they think of you says
+  "0 of 10 left to forgive". A new character starts with the whole budget again.
 - [ ] The credit rule: at Champion (75+ Fame), shoot one of theirs: Fame drops by the Infamy gained,
   and a drop to Trusted says "Your credit ran out".
 - [ ] The Wildcard tier (about 50 Fame and 45 Infamy with Bastion, then the Red Hand): a Bastion
@@ -4451,7 +4451,7 @@ when it happens)
 - [ ] Boards of record: after Await Relief's call, a Bastion road post's speaker adds the roster board;
   pay a Red Hand toll and the roadblock's speaker shows the tally; a safehouse's Ask how things are
   shows the council's pinned notes once the house rule is set.
-- [ ] Quiet success: Cargo's driver, Threaten him, with 40+ Red Hand Infamy this life: he talks and the
+- [ ] Quiet success: Cargo's driver, Threaten him, with 40+ Red Hand Infamy this character: he talks and the
   next stage's camp isn't on guard; with none, the built line ("you can guess who he's running to
   tell").
 - [ ] Notice lanes ([DESIGN.md](DESIGN.md#notice-lanes)): walk past two leaders who have work for
@@ -4504,7 +4504,7 @@ when it happens)
   2 OF 2" from 150 m (on a pad too, nothing to press), and it goes when you pass, are caught or walk
   200 m off. "Give a name that vouches for you." offers only the names you really have; pick one,
   then the look ("gave Bastion a cover detail"); a second claim line at that speaker isn't offered
-  this life. Carry a mission item from a job against Bastion: "[Something of theirs on you -1]". After
+  this character. Carry a mission item from a job against Bastion: "[Something of theirs on you -1]". After
   the 90% lock, a look by another route's faction: "[Sworn to another side -1]". Wear marked kit,
   restart the server, log in: "kit mark put back", and the look still fails. Leave a dead man's
   jacket in a crate instead, restart, put it on: the look shows "[Unknown origin -1]". The notebook's Standing
@@ -4719,10 +4719,10 @@ when it happens)
   supper, then tell a Haven council head (the house is found out: headline, Haven morale −8), and
   walk the family out at dusk unarmed. On another season tell Bastion and get the boy out before
   the guns, or keep it to yourself and talk the father out.
-- [ ] A Place at the Table: eat three times in one life (not Trusted with the Haven): the host makes
+- [ ] A Place at the Table: eat three times in one character (not Trusted with the Haven): the host makes
   his offer. Do the dead (the traveller in the ditch), send the dying man the wrong way (he's a
   bitten wanderer on the roads after), walk the stray to a safehouse instead (Undercover: The House
-  That Went Quiet begins at "Who to tell"). On another life, bring the stray and sit at grace:
+  That Went Quiet begins at "Who to tell"). On another character, bring the stray and sit at grace:
   family, then found out (+40 Haven, +20 Bastion Infamy, your name in the headline).
 - [ ] With **Post minutes** at 1, a road post goes up on a road ahead of you. At a Bastion
   checkpoint: Known, you're waved through; a stranger is searched at the barrier (a suppressor is
@@ -4745,7 +4745,7 @@ when it happens)
 - [ ] Halcyon Champion: take the booster, get bitten: it doesn't take, once. The medic heals and
   washes out a fresh bite.
 - [ ] Pay amends twice to Bastion: the second costs more; Infamy never goes below 15 by paying.
-- [ ] Reach Red Hand Trusted: a red armband appears in your pack, once per life.
+- [ ] Reach Red Hand Trusted: a red armband appears in your pack, once per character.
 - [ ] Let a faction lose an outpost: a wanderer headed there turns aside and talks about it.
 
 **Camp life** ([DESIGN.md](DESIGN.md#camp-life); the kits filled, set the game clock with the
@@ -4929,7 +4929,7 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
 - [ ] A safehouse empties (or `house` dead go up): its bear gets a ring and an arrow; a candle's number
   goes up. Finish Walk Him Out: hatching in that town.
 - [ ] Restart: the first-days marks are the same doors with the same words; live marks are still there.
-- [ ] Die after a 2-hour life within 3 km of a safehouse: a grave (or its line) where you fell, with your
+- [ ] Die with 2 hours on the character within 3 km of a safehouse: a grave (or its line) where you fell, with your
   description (your name only on **Named**). Die briefly in a town far from any house: no grave.
 - [ ] Errands' old mark: its line reads at your level and is in the journal; no old mark in the
   Long Table's ground (no marks at all within 2 km of its farm but residents' Day 1–3 words).
@@ -5003,7 +5003,7 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   prompts are at its own Turn on.
 - [ ] As a Nurse or Doctor, treat a bitten player (the infection has taken) with a bandage from
   your hands, vanilla's way: both of you get a line that the bite was cleaned properly, and their
-  time left grows by about 15%; a second treatment that life does nothing more. There's no
+  time left grows by about 15%; a second treatment that character does nothing more. There's no
   "Treat their wounds" prompt (VERIFY `Interactions/RZ_Medical.c:15`).
 - [ ] A wanderer can be talked to and remembers you.
 - [ ] Bodies: kill a few infected near you. There's no "Search the body" prompt; open a body's
@@ -5217,7 +5217,7 @@ on the talk screen says why something wasn't dealt)
 - [ ] A held errand whose fact stops holding (the truck comes in, the fault is fixed by someone
   else) ends with the giver's line and no pay.
 - [ ] Errand Fame stops at 39 with a faction and at 10 a season day; at 15+ Infamy an errand pays
-  2 Infamy off instead (8 a life at most, never below 15).
+  2 Infamy off instead (8 a character at most, never below 15).
 - [ ] A wanderer's **Need a hand?** (the Doctor near dusk: Before Dark; a Kill on Sight player:
   Wanted Poster; otherwise Barter Chain may start).
 - [ ] A card (Sleeve Down after a bite near a big house; His Effects after a lost truck) comes once
@@ -5374,14 +5374,14 @@ on the talk screen says why something wasn't dealt)
   (`Errands: ...'s pay waits for the truck`), and comes when it arrives.
 - [ ] His Effects: the effects go in your pack at the wreck; a friend picking them up spoils it (+3
   Infamy); selling them at the fence pays 3 and 10 Red Hand Favor; the card comes again for another
-  dead man, at most 3 a life.
+  dead man, at most 3 a character.
 - [ ] Strangers: one appears 60–90 m off, out of sight (no pop-in), and goes once you can't see them;
   a junction of two busy roads deals one; robbing a dead one's pockets (within 3 m) is +8 Haven Infamy.
 - [ ] A local you helped walks up as you pass their house (once a real day), appearing 15–25 m off
   where you weren't looking, and leaves once you look away; their labels show only while you (or
   someone who knows them) are within 100 m.
 - [ ] A lie found out: a Paranoid leader of that faction offers you no in-person job for 2 hours of
-  play; on your next life, that faction's next errand opens with "The last one who said that lied".
+  play; on your next character, that faction's next errand opens with "The last one who said that lied".
 - [ ] A major's act opening logs `Story: reason major.<key> posted`, and its margin card opens with the
   act's line.
 - [ ] Tricks: a trick within 25 m of a leader's seat is refused; in a story job, a hidden participant
@@ -5455,7 +5455,7 @@ on the talk screen says why something wasn't dealt)
   Only the contract pays: no "riding shotgun" or drive-in Fame from the truck, and an escort whose
   teammate shot near the truck isn't paid.
 - [ ] Blood Drive takes a quarter of your health (check it shows), refuses under 70% and a second
-  time in the same life.
+  time in the same character.
 - [ ] Patient Zero: each town's body appears only when you're near; a Lab Tech reads a grid in it.
 - [ ] Take the Lab during a final stand: 90 s in the clean room ends the stand, research shows 90%,
   and the Red Hand antidote stock goes up by two.
@@ -5508,7 +5508,7 @@ on the talk screen says why something wasn't dealt)
   brought something for the pot."*, once. A callback: bring Boarded Up's family out; some hours of play
   later near the house, the line arrives.
 - [ ] Strangers: fire a shot beside a stranger with no infected near: `Errands: stranger <kind> shot at
-  by <player>`, +4 Infamy, and they're gone. A new character on a first life gets no call-outs until 10
+  by <player>`, +4 Infamy, and they're gone. A brand-new player's first character gets no call-outs until 10
   minutes after reaching a safehouse. A radio ask never comes within 5 minutes of a contract offer.
 - [ ] Errand props: with **Missions > Errands > Props** set, His Effects' wreck shows the effects,
   The Truck Didn't Come's wreck a crate, Last Orders' seat the papers and Filter Parts' pump house the

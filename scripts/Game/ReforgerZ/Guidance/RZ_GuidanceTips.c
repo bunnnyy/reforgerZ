@@ -18,10 +18,10 @@ class RZ_GuidanceTip
 	[Attribute("2", UIWidgets.Slider, "Said in full up to this guidance level (0 brand new, 1 learning, 2 familiar, 3 veteran)", "0 3 1")]
 	int m_iMaxLevel;
 
-	[Attribute("0", desc: "Once per player (until a refresher brings guidance back), not once per life")]
+	[Attribute("0", desc: "Once per player (until a refresher brings guidance back), not once per character")]
 	bool m_bOnce;
 
-	[Attribute("20", desc: "Minutes before the same player can hear it again in a later life")]
+	[Attribute("20", desc: "Minutes before the same player can hear it again as a later character")]
 	float m_fCooldownMinutes;
 
 	[Attribute("", UIWidgets.EditBoxMultiline, "A Haven leader or safehouse occupant says")]

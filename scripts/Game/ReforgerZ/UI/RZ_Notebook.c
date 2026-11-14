@@ -744,7 +744,7 @@ class RZ_StandingPage : RZ_NotebookPage
 			string tag = RZ_UIText.Str(f, 0);
 			if (tag == "H")
 			{
-				string who = string.Format("%1 - %2 - LIFE %3", RZ_UIText.Str(f, 1), RZ_UIText.Str(f, 2), RZ_UIText.Str(f, 3));
+				string who = string.Format("%1 - %2 - DEATHS %3", RZ_UIText.Str(f, 1), RZ_UIText.Str(f, 2), RZ_UIText.Str(f, 3));
 				who.ToUpper();
 				// The whole picture after it, as said (RZ_RepNamesPage.Header)
 				string picture = RZ_UIText.Str(f, 4);

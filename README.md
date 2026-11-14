@@ -55,7 +55,7 @@ and one way to end it: **research the cure.**
   Fame and Infamy unlock quartermaster shops and perks (artillery on a horde, a fence, a bounty
   board, an immunity booster), or bring hunter squads, bounties and AI that shoots *you* and
   nobody else. Each of the 16 Fame x Infamy cells has a name ("Merciful Thug", "Useful Trouble"),
-  shown with what it counts as; each faction forgives at most 30 Infamy a life, and at 75 Fame
+  shown with what it counts as; each faction forgives at most 30 Infamy a character, and at 75 Fame
   every new wrong costs Fame too. Bastion checkpoints and Red Hand roadblocks on the roads search you, take a toll
   or let you surrender. A faction's uniform gets you past its people, until you're caught.
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
@@ -163,7 +163,7 @@ and one way to end it: **research the cure.**
 - **People who talk back** ([DIALOGUE.md](docs/DIALOGUE.md)): with **Dialogue > Trees** on (off
   by default until it's play-tested), the people you talk to have topics in their own voices, with
   what each answer needs shown before you choose (persuade, a threat that always costs, a price, your
-  background) and no dice; they remember how you spoke to them this life. Anyone with work for you
+  background) and no dice; they remember how you spoke to them this character. Anyone with work for you
   shows it first, one reply a job tagged [Quest], [Job] or [Errand], explained and taken in the same
   conversation (with a card when it starts and ends); work you can't take yet shows locked with what
   it needs. Around that, they talk about what's on their mind, and what they've heard is what's really going on
@@ -207,7 +207,7 @@ and one way to end it: **research the cure.**
   colour that come a few at a time by importance (one card at spawn, the rest into the notebook),
   a small quest tracker top left with the tracked job's objectives, each pointing where its own step is done, a you-are-here
   arrow on the map, a notebook (standing, quests, radio, a journal of
-  past jobs and what you know, the season with the hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
+  past jobs and what you know, the season with the hall of fame) opened with N, the pause menu or the notebook every character carries, a talk screen
   for everyone who talks (one Talk prompt a person, their lines typed out a box at a time, small
   nametags over the people near you), a repair screen for the cars, a shop screen at the quartermasters, a
   crafting screen at workbenches, a panel at the power station (a breaker board to set from the card

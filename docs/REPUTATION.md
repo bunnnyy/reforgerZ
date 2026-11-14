@@ -24,12 +24,12 @@ faction keys `SURV`, `MIL`, `BAND` and `INST`. Only the display names differ.
 
 ## Fame and Infamy
 
-Each faction tracks **Fame 0–100** and **Infamy 0–100** for your current life.
+Each faction tracks **Fame 0–100** and **Infamy 0–100** for your current character.
 
 - Helping a faction gives Fame with it, and usually Infamy with its rival.
 - Hurting a faction (killing its people, stealing, sabotage, siding against it) gives Infamy.
 - Neither goes down on its own. You work Infamy off with **amends** ✅, all from one budget
-  of 30 per faction per life ([Working off Infamy](#working-off-infamy)).
+  of 30 per faction per character ([Working off Infamy](#working-off-infamy)).
 
 ### Standing tiers
 
@@ -77,12 +77,12 @@ their own (**Reputation > Names**, on; off shows the tier words only).
   classes; players see "counts as" instead. Requirements always say tiers ("Trusted with Bastion").
 - **Notoriety** (0-3) is the higher of your Fame band and Infamy band with a faction: how well its
   people know your name. It's in the standing feed; the voices and the disguise look will read it.
-- **Earned this life.** The profile keeps two totals per faction for this life: every Fame gain, and
+- **Earned by this character.** The profile keeps two totals per faction for this character: every Fame gain, and
   every direct Infamy gain (rival shares left out). **Earned Fame** is the lower of current Fame and
   Fame gained; **Feared** the lower of current Infamy and direct Infamy gained. A background's start
   and Word gets around count for neither, and amends lower both. The Fear check reads them
   ([DESIGN.md](DESIGN.md#checks-and-ways)), so a fresh Ex-Con has nothing to threaten Bastion with.
-- **Deeds.** The life keeps, per faction, its best deed (the biggest single Fame gain with a phrase)
+- **Deeds.** The character keeps, per faction, its best deed (the biggest single Fame gain with a phrase)
   and its worst (the biggest direct Infamy gain), how many of their people you killed and how many
   jobs you did for them; the season keeps the same by identity ([DESIGN.md](DESIGN.md#deeds)).
   Phrases come from contracts ("brought medicine to Levie"; "did a job for us near Morton" for one
@@ -117,7 +117,7 @@ cells *hostile*, or *owed* when they still owe you a hearing ([the parley](#the-
 A Pragmatist, or an Independent or Rogue leader who holds nothing against you, reads *hostile* as
 *wary*.
 
-**The word for you**, to your face, this life (`RZ_RepVoice.Word`, the `{word}` token):
+**The word for you**, to your face, this character (`RZ_RepVoice.Word`, the `{word}` token):
 
 | Manner | The Haven | Bastion | The Red Hand | Halcyon |
 |---|---|---|---|---|
@@ -142,13 +142,13 @@ unless they're hostile. Names don't change.
 | Independent | nobody's | unaffiliated | freelance | an uncontrolled variable |
 
 **Red Hand crew names** are what the crews hold on you: leverage, not an honour. The first of these
-this life, while you're Known or better with the Red Hand, becomes your name, and a notice tells
+this character, while you're Known or better with the Red Hand, becomes your name, and a notice tells
 you; until then you're "new face" (**Reputation > Crew names**, on).
 
 | Did | Name |
 |---|---|
 | Survived the cut dose | Lucky |
-| Bitten twice in one life | Snack |
+| Bitten twice as one character | Snack |
 | Ran a Bastion checkpoint and reached a Red Hand roadblock the same season day | Legs |
 | Paid a toll with exactly the Favor you had | Skint |
 | Had three things taken at one Bastion search | Pockets |
@@ -171,7 +171,7 @@ lair" (the Haven), "put the heavy down" (Bastion), "evicted the boss up the hill
 **What they make of you.** With Trees on, a leader's **What do you make of me?** (reached inside
 their own topic, "Ask if you're welcome here." and the like: [DIALOGUE.md](DIALOGUE.md#hubs-work-comes-out-of-talk)) is one template
 per faction in four variants (both deeds, best only, worst only, neither), then what the leader
-remembers of this life, then the rule in brackets:
+remembers of this character, then the rule in brackets:
 
 | Faction | Both deeds | Neither |
 |---|---|---|
@@ -183,11 +183,11 @@ remembers of this life, then the rule in brackets:
 "(The Haven: Useful Trouble - counts as Known. Fame 46, Infamy 22. 30 of 30 left to forgive.)"
 
 **The opening.** With Trees on, a leader greets someone they've met with one line, the first that
-exists: the **crossing opener**, once a life per leader, at a seat of the faction a major was about
+exists: the **crossing opener**, once a character per leader, at a seat of the faction a major was about
 when you were one of those who decided its ending (*"The Closed Book. That was you. The book's got a
-line about it, in red."*); at a Haven seat, once a life, kin of a fallen Champion are greeted as family; a **local deed** at this seat ("You're the one who brought medicine to Levie.", written when
-you finish that leader's personal job); this life's memory (saved: "Here's the one I owe. Sit
-down."; crossed: "You. I remember."); the **name from an earlier life**, once per leader per life
+line about it, in red."*); at a Haven seat, once a character, kin of a fallen Champion are greeted as family; a **local deed** at this seat ("You're the one who brought medicine to Levie.", written when
+you finish that leader's personal job); this character's memory (saved: "Here's the one I owe. Sit
+down."; crossed: "You. I remember."); the **name from an earlier character**, once per leader per character
 ("There was a Lukas who crossed me once. Different face. Same name. Should I be worried?"); a
 **route line** the first visit each real day once routes are open or you've locked
 ([WRITING.md](WRITING.md#the-race-and-the-lock)); then, unless they're hostile, one time in four
@@ -206,7 +206,7 @@ you. They still owe you a hearing at a gate.)" when they're owed. With a leader 
 30 m, the leader says it (a subtitle); else it's the faction's notice. Without a line, the plain notice.
 
 **Gate barks** (**Reputation > Gate barks**, on). At a holding's gate, a road post or a safehouse door,
-within 25 m, the place says one line about you, only on a change: your first visit this life, or a new
+within 25 m, the place says one line about you, only on a change: your first visit as this character, or a new
 name or best deed with that faction since the last bark there (*"Here's the one who carried a family
 into Levie. Mind the step."*; *"Known again. Something's changed about you."*). From the place, never
 a body, so it never gives away a lookout you can't see; never while you're in someone else's kit,
@@ -217,7 +217,7 @@ the gate hear it too, once per 10 minutes per place for everyone (*"Someone at t
 <place> for <player>`.
 
 **On the standing page** (`Factions/RZ_RepNamesPage.c`) the header carries the whole picture after
-your name, background and life (*"MARA - NURSE - LIFE 2   "Word is you're the Haven's Champion and
+your name, background and deaths (*"MARA - NURSE - DEATHS 2   "Word is you're the Haven's Champion and
 Bastion's Bad News. I'll believe the better half.""*). A faction's open row has the word as a
 sentence (*"The crews call you Lucky."*, *"Bastion has you down as civilian,
 cleared."*; "The crews don't call you anything yet." before a crew name) under *How they see you*,
@@ -276,21 +276,21 @@ the name: "Don't know the face. Know the name. It's in the file as Useful Troubl
 ### The season record
 
 ✅ Code: `Factions/RZ_RepNamesSeason.c` (`RZ_RepSeason`). The name a player made this season, by
-identity across every life, wiped with the season. Sampled every 30 s for players online; saved in
+identity across every character, wiped with the season. Sampled every 30 s for players online; saved in
 its own file, `$profile:ReforgerZ/season_record.json`, at the 2-minute save when changed, and dropped
 when the season number changes. Nothing in it opens anything.
 
 | Kept | Per |
 |---|---|
-| The best and the worst cell reached (by access rank, then the cell's place on the grid) and the life the best was reached in | faction |
-| The deed that stood at the best and at the worst (the life's best deed and worst deed then) | faction |
-| Kills, jobs and Infamy worked off, summed across lives; the last Infamy seen | faction |
+| The best and the worst cell reached (by access rank, then the cell's place on the grid) and the character the best was reached in | faction |
+| The deed that stood at the best and at the worst (the character's best deed and worst deed then) | faction |
+| Kills, jobs and Infamy worked off, summed across characters; the last Infamy seen | faction |
 | The cell at the 90% lock | faction |
 | The route at the lock and when it was taken; one war deed (`NoteWar`); the latest crew name; the name as first recorded | player |
 
 **Titles.** A player's title with a faction is the name of the best cell they reached this season
-("Necessary Evil"), whichever life reached it. Conversations read it as `title:bastion=...` and
-`{title:bastion}`, and `seasoned:bastion` is true when an earlier life stood out with them (Known or
+("Necessary Evil"), whichever character reached it. Conversations read it as `title:bastion=...` and
+`{title:bastion}`, and `seasoned:bastion` is true when an earlier character stood out with them (Known or
 better at its best, or Watched or worse at its worst).
 
 **What the ending reads:** `TitleFor`, `SeasonCell`, `SeasonDeed`, `SeasonPicture` ("Necessary Evil
@@ -299,7 +299,7 @@ to Bastion": the title with the faction you stood highest with), `RouteAtLock`, 
 Infamy seen with them is under 15). Log line: `Reputation: season record: <player> locked to <route>`.
 
 `SeasonDeed` is the deed that stood at the best (or worst) cell; `BiggestDeed` the biggest across
-every life this season (the season's deeds store). Square with the Red Hand also means no unpaid line
+every character this season (the season's deeds store). Square with the Red Hand also means no unpaid line
 in its book (a dose on credit, the finale's price door) until the epilogue's *Pay into the book* marks
 it paid. The epilogue reads it for titles ([EPILOGUE.md](EPILOGUE.md#at-the-cure)).
 
@@ -325,7 +325,7 @@ cure goes to with nobody in the room, next season's rules), through flags on `Ad
 
 Every faction pays in its own **Favor**, earned from its missions and spent at its
 quartermaster. Reputation decides **what** you can buy; Favor decides **how much**. Favor
-is per life, like reputation.
+is per character, like reputation.
 
 ### Rivals
 
@@ -378,7 +378,7 @@ before.
 
 **Safe Harbour.** While a Haven Champion is inside any safehouse (within 60 m of it), no hunter
 squad is sent after them, and a squad already hunting them loses the trail: it walks 400 m away
-and gives up within 2 minutes (the player is told once a life). Bounty notices give only a
+and gives up within 2 minutes (the player is told once a character). Bounty notices give only a
 vague area: a town 1.5–3 km from where they really are.
 
 **Remembered.** When a Haven Champion's character ends (a reset: a death no longer ends one), a
@@ -437,10 +437,10 @@ the same vanilla player group; a poster in no group excludes only themselves.
 
 | Tier | Shop (lab stores) | Perk / service |
 |---|---|---|
-| Stranger | The **trial dose** for anyone bitten (free, once per life, 80% cure ✅) | — |
+| Stranger | The **trial dose** for anyone bitten (free, once per character, 80% cure ✅) | — |
 | Known | Antiseptic, painkillers, sample containers, **stabilisers** (from a small stock; double price until 50% research ✅) | **The range map** ✅ from 25%: the packs' ground Halcyon has read or tagged ([INFECTED.md](INFECTED.md#knowing)) |
 | Trusted | Antidotes (only while the lab has doses in stock ✅), stim kits, gas masks | **Sample scanner** ✅: special infected within 300 m are revealed every minute. **The medic** ✅: 20 Favor to be patched up, and a fresh bite washed out. **The call box** ✅ from 50% ([INFECTED.md](INFECTED.md#the-cure)). Tag readings in the journal |
-| Champion | The **immunity booster** ✅ (80 Favor, once per life: the next bite doesn't take) | **Lab access** ✅: your samples count 25% more |
+| Champion | The **immunity booster** ✅ (80 Favor, once per character: the next bite doesn't take) | **Lab access** ✅: your samples count 25% more |
 
 The medic and the booster are services at Halcyon's quartermaster, not items. The medic is the
 safehouse medic's treatment (a full heal; a fresh bite is cleaned as if declared at a safehouse);
@@ -455,7 +455,7 @@ visit the medic; calling one out isn't built.
   a player they Hunt, toward where they were. It's hostile to that player within 800 m. At most
   two squads are after one player at a time, and four on the server. A squad only appears where
   no player within 700 m has a clear line over the terrain to it (six tries; else none this round). When that player dies, their squads stand down
-  (walk off, or vanish if nobody is near): a new life starts with nobody on its trail.
+  (walk off, or vanish if nobody is near): a new character starts with nobody on its trail.
 - **Bounties** ✅: Kill on Sight with any faction puts a public bounty on you, announced every
   10 minutes with a rough location (one notice, however many factions want you). One bounty is paid per death, only to the player who killed
   you (50 Favor and a little Fame), and only for a player kill: dying to the infected, a fall or
@@ -498,23 +498,23 @@ players they like.
 ## Working off Infamy
 
 Infamy never fades on its own. ✅ **One forgiveness budget:** each faction forgives at most **30
-Infamy per life** (**Reputation > Forgiveness budget**), whatever the route. Every route goes through
+Infamy per character** (**Reputation > Forgiveness budget**), whatever the route. Every route goes through
 one call, `Forgive()`: the stronghold leader's temper first (a Merciful leader makes each amount
 count ×1.2, never the total), then what's left of the budget:
 
 | Way | What it takes | How much | Limits besides the budget |
 |---|---|---|---|
 | **Amends contracts** | Watched with the giver: the contract works Infamy off instead of paying Fame ([MISSIONS.md](MISSIONS.md)) | the contract's Fame, as Infamy off | — |
-| **Paying** | "Pay to make amends" at any quartermaster, in that faction's own Favor | 5 Infamy for 15 Favor; each payment this life costs ×1.5 more | at most 15 of the 30, once every 30 minutes, never below 15 (the Watched line). Kill on Sight: refused |
+| **Paying** | "Pay to make amends" at any quartermaster, in that faction's own Favor | 5 Infamy for 15 Favor; each payment this character costs ×1.5 more | at most 15 of the 30, once every 30 minutes, never below 15 (the Watched line). Kill on Sight: refused |
 | **Surrender** | Bastion only, at one of its checkpoints ([below](#checkpoints-roadblocks-and-camps)) | 8 Bastion Infamy | once an hour, by identity |
-| **Errand amends** | At 15+ Infamy with the faction, an errand pays amends instead of Fame; the amends family (Make It Right, the Latrine, Clean Slate) is for the Watched ([ERRANDS.md](ERRANDS.md#pay-nothing-for-free)) | 2 Infamy | at most 8 a life per faction from errands, never below 15 |
+| **Errand amends** | At 15+ Infamy with the faction, an errand pays amends instead of Fame; the amends family (Make It Right, the Latrine, Clean Slate) is for the Watched ([ERRANDS.md](ERRANDS.md#pay-nothing-for-free)) | 2 Infamy | at most 8 a character per faction from errands, never below 15 |
 | **Settling up** | "Settle up" at any quartermaster: spent Fame for Infamy (**Reputation > Settling up**) | 5 Infamy for 10 Fame, the stronghold leader's temper counting as on amends | at most 10 a real day per faction; closed with a faction whose route is fighting yours after the 90% lock. Spent Fame is gone: it can drop your band and your tier (the Fame comes off first, so the tier notice reads both) |
 | **Parley amends** | The owed, at a gate ([below](#the-parley-and-the-knock)): one amends contract reserved for 60 minutes though they're Hunted | the contract's Fame, as Infamy off | one offer per parley |
-| **Make it right** | A leader who won't deal with you on attitude (−2 or below, not Hunted), with Dialogue > Trees: *What would it take to fix this?* reserves that faction's amends contract for an hour ([DIALOGUE.md](DIALOGUE.md#make-it-right)) | the contract's Fame, as Infamy off (when Watched or worse) | done, that leader's regard goes to 0 and their crossed memory of you (this life) is cleared, once a season per leader |
+| **Make it right** | A leader who won't deal with you on attitude (−2 or below, not Hunted), with Dialogue > Trees: *What would it take to fix this?* reserves that faction's amends contract for an hour ([DIALOGUE.md](DIALOGUE.md#make-it-right)) | the contract's Fame, as Infamy off (when Watched or worse) | done, that leader's regard goes to 0 and their crossed memory of you (this character) is cleared, once a season per leader |
 
 **When the budget is spent:**
 - An amends contract pays its Fame as ordinary Fame, rival shares and all: "Bastion has forgiven you
-  all it will this life. The work counts as Fame instead."
+  all it will for this character. The work counts as Fame instead."
 - Surrender is a search and the hold, with no Infamy off.
 - Paying is refused with the same line.
 
@@ -610,8 +610,8 @@ Every "fired on for a few minutes" here is the same timed grudge as
 
 Code: `Factions/RZ_Parley.c`, on the checkpoints' tick. ✅ (**Reputation > Parley**)
 
-**The owed:** Hunted or Kill on Sight with a faction, with Earned Fame 15+ with it this life and a
-best deed with it this life. At a Bastion checkpoint or camp gate, a Red Hand roadblock or camp gate,
+**The owed:** Hunted or Kill on Sight with a faction, with Earned Fame 15+ with it as this character and a
+best deed with it as this character. At a Bastion checkpoint or camp gate, a Red Hand roadblock or camp gate,
 or Halcyon's lab or field-station gate, an owed player gets one hearing instead of a bullet:
 
 1. **The shout** at 150 m: "Stop there. Empty hands, or not at all."
@@ -648,7 +648,7 @@ numbers (a surrender's Infamy, the toll paid) stay cards ([UI.md](UI.md#subtitle
 ## Reputation clues
 
 Something other players can see ✅. At **Trusted** the Red Hand gives you a **red armband** and
-the Haven an **amber ribbon** (once per life, into your pack, or at your feet if it's full).
+the Haven an **amber ribbon** (once per character, into your pack, or at your feet if it's full).
 Wearing it is up to you; worn, anyone can read whose you are. The armband's name carries the Red
 Hand disguise keyword, so it counts as one piece of the Red Hand's [kit](#borrowed-kit). Both need
 their prefabs set; without them nothing is given. *Simplified:* it's an item to wear, not worn
@@ -794,24 +794,24 @@ questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table). ✅ all (`World
 **Not a fifth faction.** They're four to seven people with nothing to sell that a player should
 want. A Fame ladder would make eating people a way up, and a shop would be loot paid for in
 people. So there's no Fame, Infamy or Favor with them, no tiers, no shop, no perks, and no bit
-in the hostility mask. They remember each character (for this life) in three words: *guest* (ate
+in the hostility mask. They remember each character in three words: *guest* (ate
 with them), *family* (A Place at the Table) or *crossed* (refused the host, was set on, shot one of
 them, or took proof to someone). The crossed get nothing at the farm but a shut door.
 
 | Dealing | What happens |
 |---|---|
-| **Eat with them** ("Sit down and eat", on any of the grown-ups) | A bowl at the long table, grace (the name read is the last one who never arrived) and true road news (a truck on the road or about to leave, a hungry safehouse, where the infected are stirred up). Once a visit; the first meal of a life shows the boots by the door. Family also take a jar away: one food item from the loot pool, once a real day. Safe, except under the guest rule |
+| **Eat with them** ("Sit down and eat", on any of the grown-ups) | A bowl at the long table, grace (the name read is the last one who never arrived) and true road news (a truck on the road or about to leave, a hungry safehouse, where the infected are stirred up). Once a visit; the first meal of a character shows the boots by the door. Family also take a jar away: one food item from the loot pool, once a real day. Safe, except under the guest rule |
 | **Trade** ("Trade for a jar") | One piece of ammunition or medicine (Long Table > Trade keywords) for a jar: their jar of preserves (Reach > Jar; else a food item from the loot pool), a day written on the lid. Once a visit. The host sells the same at a market some days ([DESIGN.md](DESIGN.md#its-reach)) |
 | **Have a jar tested** (at Halcyon's people, whoever carries one) | The jar goes; "Not pork." +15 suspicion, and the questline may start ([DESIGN.md](DESIGN.md#its-reach)) |
 | **Declare your bite** | Infected: a blessing, and they'll never set on you while you're infected. Not: "Good. Then sit." |
 | **Expose them** | Proof to a faction's leader ([C1](QUESTLINES.md#c1-the-house-that-went-quiet), stage 4): +10 Fame with that faction (the Red Hand +4; +5 more for [C2](QUESTLINES.md#c2-a-place-at-the-table)'s undercover guest) |
 | **Break them up** | One of C1's endings, C2's fight at the table, or any fight they lose |
 
-On the third meal of a life the host makes his offer (C2), to anyone not Trusted with the Haven.
+On the third meal of a character the host makes his offer (C2), to anyone not Trusted with the Haven.
 
 **The guest rule.** A player who ate with them on this visit and is still within 30 m of the house
 between 20:30 and 05:00 (from a minute after the meal), with no other player within 100 m and not
-infected, is set on by the family: a fight ([DESIGN.md](DESIGN.md#the-long-table)). Once a life,
+infected, is set on by the family: a fight ([DESIGN.md](DESIGN.md#the-long-table)). Once a character,
 and never for family; for someone who refused the host's stray, at any time of day, meal or not.
 Anyone else, at any other time, is a guest. Without the fight prefab it's a narrow escape. Either
 way the house is crossed with them, and suspicion rises 15.
@@ -916,7 +916,7 @@ contracts or the cure.
 
 **Claims.** Walking up to a road post's barrier in full kit (**Claim in full kit**), or talking to a
 post's speaker in their colours; at an outpost's gate while Watched; a mission's trick
-(`RZ_Ways.PassAs`, once per player per person per job, one mission trick per life per faction per
+(`RZ_Ways.PassAs`, once per player per person per job, one mission trick per character per faction per
 season day). The Hunted and Kill on Sight can't claim. At 150 m you're shown what they'll see as one
 notice: "[Full kit +2] [Background +1] [They know your face −1] Pass as one of them: 2 of 2."
 
@@ -924,15 +924,15 @@ notice: "[Full kit +2] [Background +1] [They know your face −1] Pass as one of
 
 | Plus | Minus (each) |
 |---|---|
-| Their colours +1, full kit +2 | They know your face: Watched or Uneasy, or a leader of theirs met this life |
-| A matching background +1: Soldier or Police (Bastion), Ex-Con or Raider (Red Hand), Lab Tech or Doctor (Halcyon) | Caught by them earlier this life |
+| Their colours +1, full kit +2 | They know your face: Watched or Uneasy, or a leader of theirs met this character |
+| A matching background +1: Soldier or Police (Bastion), Ex-Con or Raider (Red Hand), Lab Tech or Doctor (Halcyon) | Caught by them earlier as this character |
 | One cover detail +1: Bastion's **word at the wire** (changes daily, read on Bastion's secure net when a Radio Operator cracks it), a crew name (Red Hand), a name you've heard (a leader of theirs you've met, or a dead man's from Bastion's nightly call), a dead researcher's notebook number (Halcyon, one look), a mission's paper | On the bounty notices (Kill on Sight with anyone) |
 | Dark or fog +1 (your light level as stealth reads it, else 20:30–05:00) | Each look already passed at this place; each tell; each point-out (two at most); under half health; the infection showing |
 | | **Word's round** there; **seen putting it on** (below); running; a gun in your hands (both VERIFY); a red armband the Red Hand gave someone else |
 | | **Something of theirs on you**: a mission item from a job against them (its rival) in your inventory; **sworn to another side**: after the 90% lock, every faction whose route you didn't choose, by identity, until the cure |
 
 Instant fail: the infection showing at Halcyon's look ("They see bites for a living."), three
-catches this life ("Your description is on the board at every post."), blown, kit that remembers
+catches this character ("Your description is on the board at every post."), blown, kit that remembers
 whose it was ([below](#whose-kit-it-was)), and a dead man's name given at his own post.
 **Claim lines** (in conversations, [DIALOGUE.md](DIALOGUE.md#claims-in-someone-elses-kit)): Bastion's
 word at the wire is a choice of three (a wrong one fails at once). Other cover details are spoken as
@@ -941,7 +941,7 @@ dead man's name heard on the nightly call (`cover:dead`), your crew name (`cover
 researcher's notebook number (`cover:notebook`), a mission's paper (`cover:paper`, when a stage hands
 one: `RZ_DisguiseClaims.SetPaper`). A spoken detail counts at your next look with them for 10 minutes
 and names that very detail (so a dead man's name given at his own post still fails); one you don't
-have is a lie, caught at once. **One claim line per speaker per life.** Without a conversation the
+have is a lie, caught at once. **One claim line per speaker per character.** Without a conversation the
 best detail you have counts at the look, as before.
 
 **Passing.** At a barrier: cleared for that post while it stands. At a gate: 10 minutes inside. While
@@ -969,7 +969,7 @@ score with them counts as 0, and you can't threaten their people.
   3 m of the victim as an excuse: within 35 m of their people it's a catch, else you're exposed.
 
 **Caught** (face to face: a failed look, a leader of theirs within 15 m, inside a stronghold's or
-the lab's wire): blown with them for 60 minutes of play; one of 3 catches per faction per life;
+the lab's wire): blown with them for 60 minutes of play; one of 3 catches per faction per character;
 +3 Infamy (never doubled, at most 6 an hour, and on its own it never takes you from below 15 to 15);
 the kit taken (**Confiscation**; VERIFY deleting worn items); held for a moment (a short stand-down,
 never over one of their fights, which carries on). Then Bastion searches you, the Red Hand takes the
@@ -1021,7 +1021,7 @@ it carries its new mark instead.
 | A dead man's | Worn by one of their people when he died (any death retaliation sees; VERIFY the clothes stay on the body) | Fails: *"Kral? Kral went on the nail on Day 12. Hands on the barrier."* The Red Hand's passes only if bought fair | Put on: *"The name tape says KRAL."* Taken at any Bastion search |
 | Off the turned | Worn by an infected whose kill the spawner counts (VERIFY) | Fails: *"That's off one of ours. Where is he?"* | Put on: *"Bastion green, burnt at the cuff. Off one of the turned."* Only good as armour |
 | Signed for | Their kit, sold by their own quartermaster: signed out to the buyer | Someone else's fails: *"Signed out to Mara. You're not Mara."* The buyer's own is issued kit | Taken at any Bastion search; the buyer is told it came back |
-| Bought fair | Anything the Red Hand's quartermaster sells | Clean kit | The clean way in: the Red Hand's Trusted shelf, one Bastion set and one Halcyon set a life, 40 Favor each (shop actions with **Once per life**) |
+| Bought fair | Anything the Red Hand's quartermaster sells | Clean kit | The clean way in: the Red Hand's Trusted shelf, one Bastion set and one Halcyon set a character, 40 Favor each (shop actions with **Once per character**) |
 | Given | The Red Hand's armband and the Haven's ribbon, to whoever reached Trusted | A red armband the Red Hand gave someone else: −1 at its look | A ribbon given to someone else: Haven people won't talk to you ("Where did you get that ribbon?"; VERIFY a worn piece's parent is the character) |
 
 **The nail list** (saved). Every Bastion, Red Hand or Halcyon person retaliation sees die gets a
@@ -1063,7 +1063,7 @@ THROUGH"), owner-only, sent only when it changes; it goes once the look is done,
 you're 200 m on. The notices still carry the tags. On the notebook's Standing page, Bastion's, the
 Red Hand's and Halcyon's rows carry a kit tell (dim, yellow once they know your face or caught you,
 red while you're blown), and the open row's **In their kit** says whether they know your face,
-catches this life (of 3), blown minutes left, their tells, and what their enemies do to their
+catches this character (of 3), blown minutes left, their tells, and what their enemies do to their
 colours.
 
 #### Other people's stories, the stand and the majors
@@ -1113,19 +1113,19 @@ rule that stops it, and what the log shows ([WORKBENCH_SETUP.md](WORKBENCH_SETUP
 | A friend buys kit for you | Signed out to them: an instant fail, taken at a Bastion search | `signed out to them`, `search took` |
 | Guess the word at the wire | The word counts only once you've heard it on the secure net (or been told) | `heard the word at the wire` |
 | Farm standing | No Fame or Favor ever comes from a disguise; Infamy is always yours | the look's line |
-| Retry until it works | The check is fixed and shown first. Catches count: three a life, then no claim | `caught by ... (catch N this life)` |
+| Retry until it works | The check is fixed and shown first. Catches count: three a character, then no claim | `caught by ... (catch N this character)` |
 | Stay inside | A gate pass is 10 minutes, each again look is one step harder, roll call at the shift change, leaders within 15 m | `again look at`, `roll call for` |
 | Friends take turns | Word gets round at the holding, for everyone | `word gets round at` |
 | Grief a friend's plan | Only catches and kills spread word, one per holding, restarted and never queued. A point-out is −1, twice at most, and a wrong one costs the pointer regard | `word gets round ... restarted`, `pointed out to` |
 | Shoot guards from inside a horde | A hit always gives you away; only an infected within 3 m excuses it | `exposed to`, `caught by` |
 | A Hunted team's opening volley | The Hunted can't claim: they're seen through | `can't claim: Hunted` |
-| Log out before a look | Passes, owed looks and looks passed are kept by identity; catches and blown time are saved with the life | `owed a look` |
+| Log out before a look | Passes, owed looks and looks passed are kept by identity; catches and blown time are saved with the character | `owed a look` |
 | Swap kits to reset | Blown time, catches and word round belong to you and the place, not the kit | the look's tags (`[Caught before -1]`) |
 | Walk behind a friend at a barrier | Everyone is checked on their own unless signed through, and the voucher answers for them | `signed ... through`, `voucher ... answers` |
 | Hide in a searched car | "We search the whole car" comes before any look: nobody in a searched car claims | `searched with the whole car` |
 | Get intel from lines | A pass says nothing their open channel doesn't | the look's line |
 | Say a name you never heard | A cover choice shows only when you have the detail; said without it, it's a lie, caught at once | `a cover detail they don't have` |
-| Try every cover line on one speaker | One claim line per speaker per life | `gave ... a cover detail` |
+| Try every cover line on one speaker | One claim line per speaker per character | `gave ... a cover detail` |
 | Carry their stolen papers through their gate | Something of theirs from a job against them is −1 at their look | the look's `[Something of theirs on you -1]` |
 | Farm the cards | Card pay is the errands' small-pay ledger, each card once a season; The Name on the Tape and Notebook 31 are never dealt to whoever killed the dead, once per name; Spot the Tells needs two different players caught over 2 days | `Errands: <card> taken by` |
 | Use colours as a licence to kill | Colours are refusals and timed grudges, never standing bits: retaliation still counts every kill | retaliation's lines |
@@ -1174,11 +1174,11 @@ opens at Known, and in Bastion's its checkpoints keep a curfew ([DESIGN.md](DESI
 
 ## How it maps to code
 
-- `RZ_PlayerProfile`: Fame, Infamy and Favor per faction for the current life, plus the
-  persistent Champion list and background unlocks. Per life also: Fame gained and direct Infamy
+- `RZ_PlayerProfile`: Fame, Infamy and Favor per faction for the current character, plus the
+  persistent Champion list and background unlocks. Per character also: Fame gained and direct Infamy
   gained (`EarnedFame`, `Feared`), the budget used (`m_aForgiven`, `ForgiveLeft`), threats used, the
-  name last told, and the life's deeds (`Core/RZ_Deeds.c`). Borrowed kit's catches and blown time
-  (`m_aCatches`, `m_aBlownUntil`, per life), and the parley's and settling's server times. Borrowed
+  name last told, and the character's deeds (`Core/RZ_Deeds.c`). Borrowed kit's catches and blown time
+  (`m_aCatches`, `m_aBlownUntil`, per character), and the parley's and settling's server times. Borrowed
   kit's nail list, Bastion's board and the season's counts are `RZ_DisguiseSave` in the world save.
 - `RZ_Reputation`: the tier table, access ranks, standing checks, the rival table, display names.
   `RZ_RepNames` (`Factions/RZ_RepNames.c`): the 16 names (`RZ_ERep`, append-only), "counts as", the

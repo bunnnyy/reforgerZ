@@ -100,7 +100,7 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
 - **Spawn points:** 6 at a time in random towns, each just outside a house, and one is moved to a
   new town every 20 minutes. Nobody picks one: the spawn screen asks for one at random, and with openings on the
   new character is moved on to a place rolled for its background
-  ([Openings](#openings-how-every-life-starts)). No safehouse is a spawn point.
+  ([Openings](#openings-how-every-character-starts)). No safehouse is a spawn point.
 - **Missions are announced** with distance and direction ("1.2 km NE"). Messages arrive a few at
   a time, the most important first, as styled notice cards or vanilla hints without the UI; the
   notebook's Radio tab keeps the radio, mission and world ones ([UI.md](UI.md#notices)).
@@ -388,7 +388,7 @@ and odds**; the world-level breakthroughs (spread, timers, the final stand) are 
 | Treatment | Where | Does |
 |---|---|---|
 | **Antidote** | Halcyon's quartermaster (Trusted), from the lab's stock; the Red Hand's stolen doses; very rare finds | Cures |
-| **Trial dose** | Halcyon's quartermaster: **Ask for the trial dose** in its talk (greyed with what it needs until it applies), or "Volunteer for the trial dose" without the talk screen: anyone bitten, free, once per life | Cures 80% of the time; otherwise the time left is halved. +3 Halcyon Fame either way. Refused to people Halcyon hunts |
+| **Trial dose** | Halcyon's quartermaster: **Ask for the trial dose** in its talk (greyed with what it needs until it applies), or "Volunteer for the trial dose" without the talk screen: anyone bitten, free, once per character | Cures 80% of the time; otherwise the time left is halved. +3 Halcyon Fame either way. Refused to people Halcyon hunts |
 | **Stabiliser** | Halcyon's quartermaster (Known), from a small stock; rare in pharmacies and hospitals | Pauses the infection for 20 minutes, once per life |
 | **Declaring the bite** | Any safehouse | Once per life: time left ×1.15 (Shelter), ×1.25 (Community), ×1.4 (Settlement), ×1.5 (Town). A fresh bite is cleaned instead; one cleaned already uses nothing ([details](REPUTATION.md)) |
 | Doctor wanderer, Nurse or Doctor player | On the roads (the wanderer); a Nurse or Doctor treating you with vanilla's medical items ([Treating each other](#treating-each-other)) | ×1.25 / ×1.15 of the time left, once per life each |
@@ -408,13 +408,13 @@ Players Known with Halcyon hear when a dose is ready.
 
 ### Low-grade meds
 
-Buy time, never a cure (except a lucky cut dose). **Each works once per life**, and between them
-they add **30 minutes at most** (a stabiliser doesn't count). Used like the antidote: drop it and
+Buy time, never a cure (except a lucky cut dose). **Each works once per life**: a death clears them
+with the bite, as it clears the bite itself. Between them they add **30 minutes at most** (a stabiliser doesn't count). Used like the antidote: drop it and
 "Take" it, or from the inventory as a consumable. Each has a guidance tip on first use.
 
 From the inventory, the antidote and the meds only work on yourself, and only while your HUD shows
 a bite (meds: once it has taken), so a healthy player can't use one up. The server still refuses a
-med already taken this life; from the inventory that dose is lost (from the ground it isn't).
+med already taken since your last death; from the inventory that dose is lost (from the ground it isn't).
 
 | Med | Where | Does | Side effect (10 min) |
 |---|---|---|---|
@@ -919,7 +919,7 @@ You pick a background on our spawn screen for each new character (a character la
 [A character who lasts](#a-character-who-lasts)), which replaces vanilla's deploy menu (each background is a
 loadout); it shows its perk, flaw, starting gear, starting standing and whether it's locked, and
 the kind of place it starts at, never where ([UI.md](UI.md#the-spawn-screen),
-[Openings](#openings-how-every-life-starts)). Gear comes from the
+[Openings](#openings-how-every-character-starts)). Gear comes from the
 loadout; the perk and flaw change ReforgerZ systems, so they work with any other mods.
 Starting standing is Fame (+) or Infamy (−) ([REPUTATION.md](REPUTATION.md)).
 
@@ -939,16 +939,16 @@ Starting standing is Fame (+) or Infamy (−) ([REPUTATION.md](REPUTATION.md)).
 | **Elder** (Champion with the Haven) | Trusted by the Haven from the start | 30% louder | Haven +40 (Trusted) |
 | **Drifter** (10 Legacy points) | Known with every faction | No gear | +15 with all four |
 
-The last five are unlocked through **Legacy**, which carries across lives. The server won't
+The last five are unlocked through **Legacy**, which carries across characters. The server won't
 assign or spawn a locked background (**UI > Lock loadouts**, on by default), whatever the client
 asks for, so it holds with a gamepad or a modified client too; the spawn screen also shows it as
 locked. With the lock off, or if a locked pick gets through another way, the player keeps
-its gear for that life but plays as Unemployed, and is told how to unlock it.
+its gear for that character but plays as Unemployed, and is told how to unlock it.
 
 ### Habits
 
 Code: `Backgrounds/RZ_Habits.c`. One small thing a character is known for, picked at the opening's
-door ([Openings](#openings-how-every-life-starts)): the contact's first talk asks who you were, and
+door ([Openings](#openings-how-every-character-starts)): the contact's first talk asks who you were, and
 the reply you pick is the habit. A ReforgerZ effect, not a perk tree; it shows on the Standing page's
 header (*"HABIT: STEADY HANDS (holds at work 10% shorter)"*, [UI.md](UI.md#the-notebook)).
 
@@ -964,11 +964,11 @@ Today a death starts a new character, who is asked again; a veteran's door (guid
 nothing and the last habit carries. Saved on the profile (`m_iHabit`, `m_iHabitLife`). More habits,
 earned by doing, are planned ([designs/HABITS.md](../designs/HABITS.md)).
 
-**Personal goals.** Each life gets one goal, flavoured by background (the Hunter heads for
+**Personal goals.** Each character gets one goal, flavoured by background (the Hunter heads for
 their cabin, the Ex-Con goes back for an old stash): reach a town 1.2–4 km away (in it or at its
 edge: [arriving](#mission-building-blocks)), survive a while,
 deliver samples, take part in missions, or become Trusted with a faction. Completing it gives a
-**Legacy** point and 10 Haven Fame, never loot, so a fresh life can't farm crates. A player's first life that lasts 10 minutes is always
+**Legacy** point and 10 Haven Fame, never loot, so a fresh character can't farm crates. A player's first character that lasts 10 minutes is always
 **Find the Haven**: reach a safehouse ([New-player guidance](#new-player-guidance)), unless its
 opening runs the whole chain, whose walk takes you where your background belongs.
 
@@ -1527,7 +1527,7 @@ they are (0 fed, 1 starving) the more of everything, as each row says.
 | **Supper signs** | At road junctions 150 m to 2 km from the farm (where a road's end meets another road), nearest first, at most six; 2 shown, up to 6 when starving. A board while a player is within 160 m; found again when the house moves | **Read the board**: "SUPPER. ALL WELCOME." and the way to the farm |
 | **The dinner bell** | 18:30 every evening (19:15 when hunger is 70 or more); heard within 2.5 km (+1 km when starving, 4 km at the harvest) | A line ("A handbell, far off..."); the kit's bell sound at the farm (**World > Traces > Kit > Bell**) when someone's in reach |
 | **A voice at supper** | 18:45 every evening, on the open channel, to everyone with a radio | Grace, and the name of the last one who never arrived; at the harvest, the invitation |
-| **The farm laid out** | While the family's bodies are up and a player is within 300 m | The long table 6-13 m out from the farm's door, along it, where its measured box fits; eight chairs, a bowl at each, jars down the middle, a name card at the end chair (**Read the name card**: the last one who never arrived); a shoe cabinet by the door (**Look at the boots**: too many sizes, a little suspicion once a life); a cupboard and jars on the farm's ground floor; two lanterns on the table from 19:00 to 05:30 (the kit's lit lantern first); chimney smoke 16:00-22:00 |
+| **The farm laid out** | While the family's bodies are up and a player is within 300 m | The long table 6-13 m out from the farm's door, along it, where its measured box fits; eight chairs, a bowl at each, jars down the middle, a name card at the end chair (**Read the name card**: the last one who never arrived); a shoe cabinet by the door (**Look at the boots**: too many sizes, a little suspicion once a character); a cupboard and jars on the farm's ground floor; two lanterns on the table from 19:00 to 05:30 (the kit's lit lantern first); chimney smoke 16:00-22:00 |
 | **Their own looks** | Every body of theirs | Sunday clothes (four looks on Puzzles > Civilian, written by `tools/people_looks.py`: brown, grey and black suits, a collar and cap); **Family looks** overrides them |
 | **The host at the market** | Each 10 minutes of play, a 4-16% chance (by hunger) he goes for an hour to the nearest Haven safehouse or Red Hand holding within 5 km. A body there while a player is within 150 m | **Buy a jar of preserves** (one piece of ammunition or medicine, as at the farm) or **Ask where they're from** ("We keep pigs. Kept.") |
 | **The boy at the well** | In a town 0.8-2.5 km from the farm (3.5 km when starving), a lone player on foot, a 15% chance each half minute, once a session each | He asks if you're hungry; **Say you'll come to supper** (the table knows you're coming: "You came. I said you would.") or **Send him home** |
@@ -1709,7 +1709,7 @@ Two kinds: **world events**, news on the radio for everyone and never a job, and
 offered in person only, to players who qualify. **Jobs only by interaction:** every job starts from
 a person you talk to or a thing you use, never from the radio, a timer, a spawn or walking past (the
 openings' steps are the one exception: with someone outside, only their "Talk to ..." objective is
-tracked before you talk to them, [Openings](#openings-how-every-life-starts)). The radio only says who to ask
+tracked before you talk to them, [Openings](#openings-how-every-character-starts)). The radio only says who to ask
 (`RZ_MissionManager.TellOfWork`, a Radio-tab entry); asking the giver offers the job
 (`RZ_Mission.Hire`), and only players it was offered to, and their group, are paid. How each kind
 starts, every mission, its requirements and its status are in
@@ -1728,7 +1728,7 @@ Contracts** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 | **Escort** (`RZ_Escort`) | People who walk a route or follow one player. Data until a player is within 300 m, then an AI group (it walks to move waypoints) or a standing figure. They only move while a player is within 150 m and no infected is within 25 m of them; the mission can stop and resume them. If the player they follow leaves or dies, they follow the nearest player within 20 m instead (or wait for one). An AI body that dies fails the job. At most 3 escorts at once | Refugee Column, Rescue the Pilot, Escort the Scientist, Secure the Shipment, Struck Off, Bust Out, Desertion Route, Learning the Drones, The Pit's Debtor; questline stages in The Three Weeks and The Other Two Also the people who go out with a player on a duty: a patrol, a hunter ([ERRANDS.md](ERRANDS.md#with-their-people)) |
 | **Live capture** (`RZ_LiveCapture`) | A cage trap and a special, both spawned only when a player is near. Lure it into the cage and drop the door within 4 m, or wound it to a third of its health and get within 3 m to tie it. Hold it for 30 s while it fights (heat), then a transport case (the mission item) to deliver before it wakes (12 min). A case lost with a carrier who left is put back where they were, still sedated (up to 3 times). It leaves the world without a kill, so no sample. Killing it fails. At most 2 at once | Live Capture, Private Collection; The Three Weeks (Dr Wolff) |
 | **Vehicle zone** (`RZ_VehicleZone`, `RZ_ConvoyWatch`) | A specific vehicle, or any vehicle whose prefab name has a keyword (or is one of a list), driven into a zone by a player. Works with vehicles a mission spawns, fixed cars and supply trucks. The convoy watch asks the supply system for a faction's next truck to an outpost and reports whether it arrived, was robbed, destroyed, stolen or late | Recover the Bus, Car Theft, Mobile Lab, Tied Down and the Cargo questline (one van, `RZ_CargoVan`); Convoy Escort, Hijack the Convoy; questline stages in The Three Weeks and The Other Two |
-| **Health cost** (`RZ_HealthCost`) | Takes a share of a player's health (the bite detector's health accessor against the hit zone's maximum), refuses below a floor, once per life per giver. The bite detector forgets its last reading afterwards, so the drop never counts as a bite | Blood Drive |
+| **Health cost** (`RZ_HealthCost`) | Takes a share of a player's health (the bite detector's health accessor against the hit zone's maximum), refuses below a floor, once per character per giver. The bite detector forgets its last reading afterwards, so the drop never counts as a bite | Blood Drive |
 | **Arriving** (`RZ_Arrive`) | The one rule for a step done by getting somewhere, so nobody has to find the exact metre. A spot (a job's points, an errand's or an opening's place, a chain's step, a puzzle's "go here", a meeting, the walk back to an errand's giver) counts within the **Arrive radius** (15 m), or within the step's own radius if that's wider. A place with a size counts inside it or within the **Arrive margin** (25 m) of its edge: a town by its radius, a building known only by its centre within the margin of it. In a vehicle, where the vehicle is counts. Checked on the server on each caller's own tick; the radius is kept to 5–40 m and the margin to 0–50 m, so nothing finishes from across a river. Steps done by an interaction (talk, use, pick up, hand over, read) keep it: getting there may finish at the radius, the interaction doesn't. Steps that stand for working at a thing you can see keep their own short reach: a corpse pile to burn (5 m), a charge to wire (3 m), a body's tags or a nest's tissue (4 m), a lock to cut, a well, a truck to repair, a wreck's box, a grave or a clue prop to stand at, a stranger's car to push (those that are work, with work sites on, are a hold at the thing instead: [Work site](#work-site)). Holding an area (the hold base, a questline's hold) is not arriving and keeps its own radius | every "go to" step: visit points, the step chain, the vehicle zone, errands and the openings' chain, puzzles, personal goals, the steps named in [MISSIONS.md](MISSIONS.md#who-gets-offered-what) |
 | **Work site** (`RZ_WorkSites`) | A step done with your hands at a visible thing: its before look and one hold prompt (5–20 s, vanilla's bar), checked on the server; done, the after look stands there ([below](#work-site)) | errands, the openings and strangers ([ERRANDS.md](ERRANDS.md#work-sites)); Install Sensors, Water Survey, Burn the Bodies (and The Authors' burning), Convoy Escort's engine, Specimen from the Nest, The Armory's well, Blow the Bridge's charges, Bust Out's chain, the Red Hand van's padlock (Tied Down, Cargo); The Well Story's sample |
 | **Carrying** (`RZ_Carries`) | A task whose words say carry, stack or bring in: the things stand in a pile, you pick each up (slowed, in your arms), walk it where the words say and put it down there, stacked ([below](#carrying)) | the duty Wood and water's crates, Chairs for the Reading ([ERRANDS.md](ERRANDS.md#work-sites)) |
@@ -1941,7 +1941,7 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
   Trick, a switch or a hidden bite in a story job voids its Infamy work-off for that player (they're
   paid Fame instead, as when the budget's spent). **Offline participants**: a story job done pays
   anyone who took part (a step, or 5 minutes in the area), isn't online when it ends and was eligible
-  for it then, at their next join, and only to the same life (the errands' ledger keeps it; not for a
+  for it then, at their next join, and only to the same character (the errands' ledger keeps it; not for a
   switch, a leaver or a leader's in-person job). It pays as online pay does, without the background
   bonus: the base x the leader's multipliers, amends through `Forgive()` with clean hands, the job's
   own rival Infamy (then no rival table) and any Infamy the decider's choice put on those with them.
@@ -1986,7 +1986,7 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
 - **Lies in a job** go to the one lie store ([Lies and witnesses](#lies-and-witnesses)): covering a
   collection (found at the next collection there), saying a colleague turned or walking a deserter to
   the Haven (found by a visit), selling a distress call to the crew (found when Tied Down frees a
-  truck), a Nurse hiding a bite at a house's door (found within a season day; the life record "hid a bite" names the house, and that house's people make his checks one step harder for the rest of the life: its errands' talk and Protection Racket's persuade, `RZ_StoryKit.HouseHarder`), the commander's stove
+  truck), a Nurse hiding a bite at a house's door (found within a season day; the character record "hid a bite" names the house, and that house's people make his checks one step harder for the rest of the character: its errands' talk and Protection Racket's persuade, `RZ_StoryKit.HouseHarder`), the commander's stove
   (found by the rumour round).
 - **Season counts the story jobs keep** (season flags): Bastion's civilians sheltered
   (`bastion.sheltered`, read on the call to those who brought them), and Struck Off's men walked home
@@ -2114,9 +2114,9 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
   and every errand refuse it: *"These are Levie's. Take them back to Levie."* *Simplified:* the tag
   is a server-side list of the items (like the fence's bought list), forgotten at a restart (VERIFY:
   an item keeps its entity through inventory moves, a body and a car's boot).
-- **Caught lying** (`RZ_StoryKit.LieFound`, from the lie store): on the life the lie was told in, that
+- **Caught lying** (`RZ_StoryKit.LieFound`, from the lie store): on the character the lie was told in, that
   faction's **Paranoid** leaders won't give you their in-person jobs for 2 hours of your play
-  (`sulk.<identity>.<life>.<faction>` in the season flags); on a dead life, that faction's next errand
+  (`sulk.<identity>.<character>.<faction>` in the season flags); on a character that's gone, that faction's next errand
   opens with *"The last one who said that lied"* ([ERRANDS.md](ERRANDS.md#the-dealer)).
 - **Tricks in jobs** ([borrowed kit](REPUTATION.md#borrowed-kit) owns the look): a trick never works
   within 25 m of a leader's seat of the kit's faction (*"Not here. Not this close to the one in
@@ -2237,8 +2237,8 @@ time and the world, and how players did each stage decides where it goes and how
   rumour wanderers and leaders repeat for some hours, a wanderer who remembers everyone who
   took part, and standing for everyone who took part (Fame ±10, Infamy up to 15; optionally only
   those who took one approach). Players who are offline lose Fame and take Infamy on their saved
-  profile; Fame they earned waits in the errands' ledger for that life's next join, paid through
-  `AddFame` then (another life: not paid).
+  profile; Fame they earned waits in the errands' ledger for that character's next join, paid through
+  `AddFame` then (another character: not paid).
 - **How many.** At most **Max active** questlines at once (2), never two for the same faction
   (a group that isn't one of the four factions has its own slot). Every 30 minutes or so with
   players online, half the time, a questline that can start does. One that reached an ending
@@ -2495,7 +2495,7 @@ clean room changes holder; `OpenChannel(faction, lines, gap)` reads lines on a f
 channel one at a time (the director's two minutes); `SecureLine(faction, text, hours)` puts a line
 on a faction's secure net for Radio Operators; `AtTime(faction, hour, text, key)` airs a one-off line
 at a set game hour (Bastion's last call at 20:30, the walk at the next 05:30); `Mute(faction)` silences
-a faction's open channel for one night; the per-life "on the roster" flag and Bastion's rank text
+a faction's open channel for one night; the per-character "on the roster" flag and Bastion's rank text
 (*"Corporal Novak"*, by standing). `More()` adds each act's remaining approaches to its scene
 ([QUESTLINES.md](QUESTLINES.md#the-majors)), and `AtEnding` applies their effects once, at the major's
 ending. With no cure on the last day the codas end as radio (the Haven's Gate at the chair's house,
@@ -2730,7 +2730,7 @@ rule uses:
 | Clock | What it is | Used for |
 |---|---|---|
 | **Season days** | The first three stages' set lengths ÷ 30 of minutes played: 480 minutes (8 hours with someone online) with the built-in stages, about one real day at the 45-day pacing, ÷ the season speed. Counted only while someone plays (`RZ_Director.GetPlayedMinutes`, saved; an older save starts from the stages' set lengths). `RZ_SeasonClock.Days()` (a fraction), `Day()` (from 1), `DaysSince` | World rhythms: how long reasons, signals and callbacks last, the contracts lane of the season budget, pinned life records |
-| **Played time** | The life's `m_fLifeSeconds` | Personal pacing: when a callback comes |
+| **Played time** | The character's `m_fLifeSeconds` (all its deaths together) | Personal pacing: when a callback comes |
 | **Real time** | `RZ_SeasonClock.Now()`, unix seconds | Anti-abuse limits (a failed threat's bar), the epilogue week (a callback's 24 hours) |
 | **The game clock** | `RZ_GameTime`: the hour, night and dusk, and `RealMinutesFor(hours)` / `RealMinutesUntil(hour)` turning game-clock windows into real minutes | Evenings (the set-piece calendar), windows |
 
@@ -2753,28 +2753,28 @@ pick it. Tags show costs and requirements, never outcomes.
 |---|---|
 | Your access rank with the listener's faction (mixed tiers one lower, as built) | Stranger, Uneasy 0 · Known, Tolerated, Wildcard 1 · Trusted, Respected 2 · Champion 3 |
 | A background the option lists | +1 |
-| From dialogue (remembered help, or a vouch) | at most +1: dialogue's trees pass regard 2 or more, or the built helped or saved memory of this life ([DIALOGUE.md](DIALOGUE.md#checks-and-tags)), or a vouch from someone they trust standing by ([DIALOGUE.md](DIALOGUE.md#several-players)) |
-| A lie found out, or a questline you worked against them (the life records `lied.<f>`, `crossed.<f>`) | −1 each (nothing writes them yet) |
+| From dialogue (remembered help, or a vouch) | at most +1: dialogue's trees pass regard 2 or more, or the built helped or saved memory of this character ([DIALOGUE.md](DIALOGUE.md#checks-and-tags)), or a vouch from someone they trust standing by ([DIALOGUE.md](DIALOGUE.md#several-players)) |
+| A lie found out, or a questline you worked against them (the character records `lied.<f>`, `crossed.<f>`) | −1 each (nothing writes them yet) |
 
 Hunted or worse: they won't be persuaded. People with no faction read your score with the Haven, at
 most 2. The built `RZ_QuestApproach.PersuadeScore`, which questline stages use, is untouched.
 
 **Fear** (the one threat score, `RZ_Checks.FearScore`): the higher of your **Feared band** (Infamy
-earned this life with the listener's faction: 15–39 gives 1, 40+ gives 2) and your **backing**
+earned this character with the listener's faction: 15–39 gives 1, 40+ gives 2) and your **backing**
 (Earned Fame with the giver, when the giver isn't the listener: 15–39 gives 1, 40+ gives 2), +1 for a
 listed background (Ex-Con, Raider, Soldier by default). Carrying a gun adds nothing. People with no
 faction read your highest earned Infamy with anyone, at most 2. ([REPUTATION.md](REPUTATION.md#reputations)
 explains Earned Fame and Feared.)
 
 **A threat** (`RZ_Checks.Threaten`): Fear against the difficulty, and always +3 Infamy with the
-listener's faction (a scene may name up to 8) and the life record "pressed". Refused without a check:
+listener's faction (a scene may name up to 8) and the character record "pressed". Refused without a check:
 a stronghold leader; a person already threatened this season, by anyone; a speaker this player
-failed to threaten in the last real day; and past three threats a life with that faction
-(**Reputation > Threats per life**), which still costs the Infamy. A refused threat bars that speaker
+failed to threaten in the last real day; and past three threats a character with that faction
+(**Reputation > Threats per character**), which still costs the Infamy. A refused threat bars that speaker
 for a real day. Saved in the season flags (`threat.<person>`, `threatbar.<ident>.<person>`).
 Also refused while you're passing in the listener's kit. At a leader or a leader's people
 (`FearDifficulty`): a Ruthless listener is one harder, a Paranoid one one easier, and a faction you
-worked against in a questline ending one harder (the life record `crossed.<f>`), never under 1.
+worked against in a questline ending one harder (the character record `crossed.<f>`), never under 1.
 Free-standing talk threats are never made at a safehouse or inside a stronghold's or the lab's wire
 (`ThreatRefusedAt`); a threat a mission writes into its own scene stays. The Ledger's and Debt
 Collection's threats now run this check (+3 Infamy whatever happens; refused, they don't give in).
@@ -2814,7 +2814,7 @@ or who refused you won't talk to you for the rest of the job; who took which app
 (`RZ_EQuestApproach`) has **PRESS, TRADE, TRICK and LEAVE** appended once, in that order, so saved
 questline runs keep their numbers; built threat stages keep recording FORCE. **A trick**
 (`PassAs`): a claim in someone's kit judged by the look at the mission's difficulty with its paper as
-the cover detail, once per player per person per job and one mission trick per life per faction per
+the cover detail, once per player per person per job and one mission trick per character per faction per
 season day; recorded as TRICK.
 
 ### Deeds
@@ -2823,7 +2823,7 @@ Code: `Core/RZ_Deeds.c`. One store, two scopes:
 
 | Scope | Keyed by | Holds | Ends |
 |---|---|---|---|
-| **Life** | the character (on the profile) | per faction: the best deed (the phrase of the biggest single Fame gain, with its season day), the worst (the biggest direct Infamy gain), their people killed, contracts done; up to 32 life records ("pressed"), bad ones pinned 3 season days | with the life |
+| **Life** | the character (on the profile) | per faction: the best deed (the phrase of the biggest single Fame gain, with its season day), the worst (the biggest direct Infamy gain), their people killed, contracts done; up to 32 life records ("pressed"), bad ones pinned 3 season days | with the character |
 | **Season** | identity (`RZ_SeasonDeeds`) | per faction: the best and worst reputation cell, the biggest deeds, kills, jobs, the Infamy forgiven; a ledger of the last 24 jobs (what, for whom, against whom) | with the wipe |
 
 A bigger deed replaces a smaller one; an equal one keeps the first. The worst deed reads as the kill
@@ -2834,7 +2834,7 @@ the checkpoint at Morton"), and each paid contract's phrase (`RZ_Mission.m_sDeed
 "brought medicine to Levie"; the rest by class, `RZ_RepDeeds`, and every questline's and major's
 ending). Reputation's voice says them back ([REPUTATION.md](REPUTATION.md#what-people-call-you)).
 
-**Callback deeds** (life scope, `RZ_Deeds.Callback`): twelve weighted slots for choices that involved
+**Callback deeds** (character scope, `RZ_Deeds.Callback`): twelve weighted slots for choices that involved
 a person, a house or a leader. **Heavy** (3): a questline's or major's ending (its words), a one-choice
 job about a person's life or freedom (*"decided whether he lives near Morton"*). **Medium** (2): the
 other one-choice jobs (*"decided which house gets the food near Levie"*). **Light** (1): an errand
@@ -2843,8 +2843,8 @@ oldest goes; light deeds hold at most four slots, and a new deed never pushes ou
 day of small kindnesses can't wash the record clean. A leader brings one up plainly, one time in
 three after the openers that come first, at most once a visit (a real day per seat): *"You're the one
 who decided where the kids go near Levie."* (`RZ_RepVoice.Opening`, Trees on). Memory outlives deeds:
-leaders' memory runs across lives (earlier ones at half, and the name from an earlier life,
-[REPUTATION.md](REPUTATION.md#what-people-call-you)); the deeds end with the life. *Simplified:* a deed
+leaders' memory runs across characters (earlier ones at half, and the name from an earlier character,
+[REPUTATION.md](REPUTATION.md#what-people-call-you)); the deeds end with the character. *Simplified:* a deed
 doesn't open a side quest by itself; errands' threads and callbacks and missions' fallout do
 ([ERRANDS.md](ERRANDS.md)).
 
@@ -2895,9 +2895,9 @@ would expose it. **Found out by events first**, never by hidden dice:
 | The owner's tick | The owning system checks (`Lies().Test(key, subject)`): the next upkeep, the next collection |
 | Rumour | Only a claim nothing in the world can test: 15% at the next half-hour round and once more a real day later (+10 for a Talker), then it's buried |
 
-Found out, on the life it was told in: the speaker's regard *lied*, Infamy with the faction (2–5; a
-mission may name more), the life record `lied.<f>` (the liar count, −1 at Trust), and a voucher answers
-for it (+5). The life gone, the lie is buried with it. A lie never pays more than the truth: at most
+Found out, on the character it was told in: the speaker's regard *lied*, Infamy with the faction (2–5; a
+mission may name more), the character record `lied.<f>` (the liar count, −1 at Trust), and a voucher answers
+for it (+5). The character gone, the lie is buried with it. A lie never pays more than the truth: at most
 60% and no Fame (each caller's rule). The checks run on the errands' 30 s tick, errands on or not.
 
 **The witness rule** (`RZ_Witness.Seen`): "if seen" always means the act faction's people near the
@@ -2915,7 +2915,7 @@ Code: `Core/RZ_Callbacks.c`. One queue for missions' echoes, errands' follow-ups
 "later". A callback is words only: no check bonuses, discounts or gifts.
 
 - **A character's:** `Queue(player, title, text, subject, hours, boardNote)`: due 2–6 hours of that
-  life's play later (or the hours given), told while the character is within 1 km of the subject, at
+  character's play later (or the hours given), told while the character is within 1 km of the subject, at
   most one per hour of play. 10 waiting per player.
 - **The system pool:** `QueueWorld(title, text, subject, days)`: told to the first player near the
   subject once the season days have passed. 100 waiting.
@@ -3021,7 +3021,7 @@ Code: `World/RZ_TownMemory.c`.
     after the restart), so towns recover.
 - **Hooks** for other mods: `GetLootLevel`, `ReportSearched`, `ReportBarricaded`,
   `ReportBuildingBurned`, `ReportBuildingCount` (unused so far).
-- **Journals of the dead.** A life that lasted 10 minutes leaves one line (where, background,
+- **Journals of the dead.** A death of a character with 10 minutes or more of play leaves one line (where, background,
   how long, the day, a personal line). The last six are saved; they turn up in the session news
   and in wanderers' talk. Never an object.
 
@@ -3587,7 +3587,7 @@ horde somewhere else. Players within 1.2 km hear it.
   channel layout** set: on the wind-up radio held up in hand (vanilla's inspection, beside its
   Turn on/off) or lying on the ground, and as a house radio's fourth option. Every channel with
   what's on it now (a house set on weak batteries pulls in two open channels), the secure ones
-  scrambled or cracked, and the log of what you heard this life, filtered by channel. It only
+  scrambled or cracked, and the log of what you heard since you last spawned, filtered by channel. It only
   shows; it doesn't tune or crack anything.
 
 *Simplified:* spots stand at the middle of the thing's bounds (door spots on the door leaf, a wreck's boot at its rear). Carrying
@@ -3605,7 +3605,7 @@ Every line is in a speaker's voice ([WRITING.md](WRITING.md#the-voices)).
 
 ### The welcome: one card, then quiet
 
-A new life gets **one card**: the background's name and where you wake, in a line or two (the
+A new character gets **one card**: the background's name and where you wake, in a line or two (the
 opening's line, `RZ_OpeningText.SpawnLine`: "A farmhouse cellar in Morton. Day 11. The last bottle
 is empty, so you open the door."; without one, "You come to east of Levie."). Everything else at
 spawn goes quietly into the notebook: the perk, flaw and goal, the outbreak,
@@ -3614,7 +3614,7 @@ owed while you were away in one entry. For the first 30 s nothing else is a card
 and for the first five minutes cards come at most one every 45 s; the rules and settings are in
 [UI.md](UI.md#notices).
 
-### Openings: how every life starts
+### Openings: how every character starts
 
 The opening is five beats in the world: the door's question and [habits](#habits), the favours by
 background, [the line](#the-line), [the case](#the-case), which leads into Proof, and [the
@@ -3631,7 +3631,7 @@ first of the steps that teach the Zone and tell its story, then hand you to the 
 background belongs with. Nobody is new: everyone has been trapped since the roads shut. How their
 lines are written is in [WRITING.md](WRITING.md#the-voices).
 
-**Where you start.** Rolled on the server for each life; nobody picks it, and there are no chosen
+**Where you start.** Rolled on the server for each character; nobody picks it, and there are no chosen
 starts. The spawn screen asks for one of the spawn points at random; the spawn point handler
 (`SCR_SpawnPointSpawnHandlerComponent`, modded) moves the new character to the rolled place before
 it's handed over, and the world streams in there.
@@ -3682,7 +3682,7 @@ A brand-new player's two weights are halved, so they lean to the hiding place. T
 story's: it changes nothing about your infection.
 
 **The scene.** The door you came out of stands open behind you. In front of it to one side, one of
-the reason's three compositions (never the one you had last life: the hiding place's cellar, pantry
+the reason's three compositions (never the one you had last character: the hiding place's cellar, pantry
 or bolthole; the group's bedrolls for four, map table or packs; the fever's barricade, sickbed or
 vigil chair); on the other side your background's own things (the nurse's blanket, bucket and
 sterilising drum, the mechanic's tyre and drum, the hunter's skull board and log, the radio
@@ -3716,9 +3716,9 @@ NO CONTACT (<why>)`; a contact that stands logs `... contact <name> spawned at <
 |---|---|---|
 | Someone from before | about three in four | who they were to you, by your background (below); the hiding place: "Look at you. Alive. I'd stopped knocking on that door."; your group gone: the one who came back; the fever: who wrote on the door |
 | A stranger | about one in four | a stranger who heard the door; someone who saw them go; the stranger who wrote on the door |
-| An earlier life's | 35%, when a wanderer remembers an earlier life of yours and hasn't met this one ([life-stamped memory](REPUTATION.md#face-and-name)) | that wanderer, by name and role ("Old Marek, a trader who thinks they know you"): "You look like someone I knew." Their greeting reads what they remember: a kindness, a wrong, or only the face |
+| An earlier character's | 35%, when a wanderer remembers an earlier character of yours and hasn't met this one ([character-stamped memory](REPUTATION.md#face-and-name)) | that wanderer, by name and role ("Old Marek, a trader who thinks they know you"): "You look like someone I knew." Their greeting reads what they remember: a kindness, a wrong, or only the face |
 
-An earlier life's wanderer is held off the road while they stand here (`RZ_Wanderers.Hold`) and goes
+An earlier character's wanderer is held off the road while they stand here (`RZ_Wanderers.Hold`) and goes
 back on it from where they stood once they leave; killed, they're gone from the roads. With nobody
 outside (no body prefab at all, or the engine refused the spawn), the scene's read
 carries the one step there is: under the calendar, in your own handwriting, "Work at *place*. Ask
@@ -3856,7 +3856,7 @@ shot still kills them.
 straight on to The Runner by itself; without the case, whoever finds you says so and the chain goes
 to the walk to the nearest safehouse (or, without the walk, to Where the Work Is). The Clock lapsing loses the
 bitten friend (they say so) and the chain goes on; any other step that lapses, death or leaving ends
-it. Nobody waves you over for errands while it runs. One opening per life, runtime only
+it. Nobody waves you over for errands while it runs. One opening per character, runtime only
 (a restart ends it). None in the epilogue week (the place is still rolled). The contact leaves once
 nobody is within 150 m after the walk starts, or 45 minutes on with nobody within 50 m.
 
@@ -3864,7 +3864,7 @@ nobody is within 150 m after the walk starts, or 45 minutes on with nobody withi
 the chain and where it ends), `... called ... over before step N`, `... talked to by ... before step N`,
 `... went on talking with ... into step N`, `... step N (key) for
 ...`, `... step N done by ... in N s`, `... died`, `Openings: ended for ...: why (step, minutes)`,
-every life's `<player> <background> at <grid>: contact <name> spawned at <n> m`, the fallbacks' `no ...
+every character's `<player> <background> at <grid>: contact <name> spawned at <n> m`, the fallbacks' `no ...
 place fits`, `no place`, `NO CONTACT (<why>)`, `NO OPENING`, the favour's `the favour (<FAVOUR>) is at
 <place> (<prefab>, <kind>), <n> m from the contact` or `no place for the favour (<FAVOUR>) for ... at
 <grid>, on to the runner` (a plain one standing in: `no place for <player>'s favour (<FAVOUR>) here, <TIN|SACK>
@@ -3876,7 +3876,7 @@ and then`, `...'s bitten friend was lost`, `no runner's case for ... at <grid>, 
 `ended for ...: found work at ...` or `... took the runner's case`; the case's own lines are under
 [the case](#the-case).
 
-*Simplified:* the earlier-life contact is a wanderer only (never a safehouse occupant), and says
+*Simplified:* the earlier-character contact is a wanderer only (never a safehouse occupant), and says
 what they remember, not your old name; "the nearest job" for levels 2–3 is the nearest place that
 gives work, walked to, not a job already picked for you (jobs start from people). The favour: the
 fetched thing is held for you as data until the hand-over (it isn't an item in your pack); the
@@ -4123,15 +4123,15 @@ For play-tests, a server admin's `/level 0` to `/level 3` (or the talk screen's 
 level** row, which steps it on) sets their own level from their next character: their counted
 characters become that level's first, the refresher is cleared and the character they're playing
 doesn't count. A death doesn't start one: reset the character on the Standing page.
-The [opening](#openings-how-every-life-starts) sets its chain by level; the wanderer who comes
+The [opening](#openings-how-every-character-starts) sets its chain by level; the wanderer who comes
 looking is for a brand-new character with nobody outside.
 
 ### Contextual tips
 
 When something happens, the nearest plausible person says **one line**: a faction leader within
 40 m or someone at a safehouse; else a wanderer within 60 m; else a voice on your radio; else a
-plain hint. Each tip comes at most once per life, with a cooldown across lives and 90 s between
-tips (critical ones don't wait), and none that isn't critical in a life's first 90 s
+plain hint. Each tip comes at most once per character, with a cooldown across characters and 90 s between
+tips (critical ones don't wait), and none that isn't critical in a spawn's first 90 s
 (**Guidance > Tips wait after spawn**): tips come from what's happening to you, one at a time, never
 a stack at spawn. The table is data (**Guidance > Tips**, defaults in
 `RZ_GuidanceTips.c`); more can be fired with `RZ_Guidance.Report(playerId, id)`.
@@ -4162,10 +4162,10 @@ a stack at spawn. The table is data (**Guidance > Tips**, defaults in
 | hold | the first time someone near you is about to decide a job (the 5 s hold) | |
 | hungry | **hook only:** waits for the hunger mod (or a bridge) to call `Report(playerId, "hungry", place)` | |
 
-### Gentle start and first-life goal
+### Gentle start and first-character goal
 
-For the first 15 minutes of a brand-new player's life, zombie spawns near them run at half
-density. Their first counted life gets the goal **Find the Haven**, unless its opening runs the whole
+For the first 15 minutes of a brand-new player's first character, zombie spawns near them run at half
+density. Their first counted character gets the goal **Find the Haven**, unless its opening runs the whole
 chain (its last step is the walk to where they belong).
 
 ### The wind-up radio and faction voices
@@ -4187,7 +4187,7 @@ chain (its last step is the walk to where they belong).
 
 ### A wanderer finds you
 
-Two to seven minutes into a brand-new player's life with nobody outside its door, the nearest Courier or
+Two to seven minutes into a brand-new player's first character with nobody outside its door, the nearest Courier or
 Scavenger comes looking for them, waves, and waits 5 minutes. Their talk includes faction gossip.
 
 ## Cure research and the season's end
@@ -4550,9 +4550,9 @@ Saved to `hall_of_fame.json`, which no wipe touches. **Season > Hall of fame** (
 | Most samples delivered | samples handed in at the lab or an annex |
 | Held the final stand | at the lab when the final stand is won (everyone there is listed); with the finale, the controller's holders and the bystanders who held the lab half the stand, never a rival side |
 | Most people rescued | a rescue brings people in (to a safehouse or onto the roads), for each rescuer |
-| Longest life | a life's clock, checked every minute (lives over 10 minutes) |
+| Longest character | a character's clock (all its deaths together), checked every minute (characters over 10 minutes) |
 | Most missions | each mission a player is paid for |
-| Champion of each faction | the most Fame anyone reached with that faction in one life |
+| Champion of each faction | the most Fame anyone reached with that faction in one character |
 
 It's kept for **this season** and **all time**, plus a few lines for each of the last 10 seasons.
 With the finale the season's lines open with who controls the cure and the season's Fame leader:
@@ -4631,7 +4631,7 @@ set-piece calendar, the season's deeds; notice lanes and marks aren't saved), an
 (its record, beats, closing work and outlet stocks), the bounty board's postings, who last killed
 whom, the Requisition cooldown and the fence's hour (by identity and real time), and errand pay
 waiting for a truck. A save from another map is ignored. A profile that never spawned and holds nothing
-lasting (no lives, Legacy, unlocks or guidance) isn't saved, and an event for a player id that
+lasting (no characters, Legacy, unlocks or guidance) isn't saved, and an event for a player id that
 left before the server knew them (a wound described after a disconnect) gets a blank profile
 that is never stored, so no junk `local_` profiles pile up. Player bodies, inventories and vehicles use
 vanilla persistence ([MOD_STACK.md](MOD_STACK.md)). The season's number, clock and rules and the

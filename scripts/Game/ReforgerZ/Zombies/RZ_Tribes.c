@@ -90,7 +90,7 @@ class RZ_TribeSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Outdoor prefabs (look, optional): a tribe from the woods. Empty: civilian", "et")]
 	ref array<ResourceName> m_aOutdoorPrefabs;
 
-	[Attribute("1", UIWidgets.ComboBox, "Your dead run: a character a tribe's bodies kill in the open (after a life of 10 minutes or more) comes back as one of its young at the next dusk. Off: player deaths feed it but make no young. Described: public lines use a description. Named: the character's name", "", ParamEnumArray.FromEnum(RZ_EDeadRun))]
+	[Attribute("1", UIWidgets.ComboBox, "Your dead run: a character a tribe's bodies kill in the open (with 10 minutes or more of play as that character) comes back as one of its young at the next dusk. Off: player deaths feed it but make no young. Described: public lines use a description. Named: the character's name", "", ParamEnumArray.FromEnum(RZ_EDeadRun))]
 	RZ_EDeadRun m_eYourDeadRun;
 
 	[Attribute("1", desc: "People: each faction's words, voices and marks for the packs, what each character knows of them and the ways to learn it, skills by background, the packs' contracts and events, your dead run's named young and ID cards, the fat moat, the moat rule, the call box, the final stand's waves from the lab's neighbours, and the last week's run-down (docs/INFECTED.md, People). Off: tribes as in phase 3")]

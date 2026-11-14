@@ -120,7 +120,7 @@ rewrite them; it wraps them:
   screen](UI.md#the-shop-screen), while it's used), **Ask for whoever's in charge** (*Who's in charge
   here? I'd like a word.*; the seat's leader takes the conversation over in the same screen, topics
   and all, saying only what they have to say; nobody in the chair, or held, and they say so), **Ask for the trial dose** on Halcyon's (greyed with what it
-  needs until it applies: "for the bitten only", "the bite hasn't taken yet", "once a life: you've
+  needs until it applies: "for the bitten only", "the bite hasn't taken yet", "you've
   had yours", "not for you"), and the Haven house's services (Ask how things are, Hand over food,
   Listen to the safehouse radio, Ask the medic to patch you up, Tell them you've been bitten, Ask for
   something for the fever, the notice board). A leader's own asks there (work, news, standing, the
@@ -203,7 +203,7 @@ adapters in `Dialogue/RZ_TalkSpeakers.c` and `RZ_TalkStaff.c`, `RZ_Mission.LockR
   | A faction's quartermaster | The same list (the seat leader's own job while they're in the chair); the safehouse radio only names the Haven's, with "ask the quartermaster here" |
   | A safehouse's or a holding's named person, a wanderer | The errand they have for you, named (looked at without dealing it: the one named is the one dealt when you pick it, while it's true); yours already: *[Errand] About Water for Morton.* or, its step done, *[Errand] It's done: Water for Morton.* |
   | A mission's or a stage's person | Their choices move the job you're on (first in the list), each locked with what it needs (`ChoiceLock`: *Ask for Jonas Weber's number (Needs Known with Halcyon)*, a scene's rank, items and Favor, "Done already"); a hand-over is tagged by the job's kind (*[Quest] Hand over Bastion's rations*) and locked without the thing on you ("Needs the page on you") |
-  | A stranger, an opening's contact | Their ask's ways and their step, as built (both are errands handed in person); an opening's hand-over (the favour's thing: *[Errand] Here's your battery.*) is a reply of its own, first in the list; only picking it hands the thing over, and it's done there and then, the next step said into the same talk (`RZ_TalkOpening`, `RZ_Openings.HandOver`, `RZ_Errands.FinishNow`). At the door their first talk asks who you were and three replies answer it, each tagged with the habit it gives (*[Steady hands] I keep my hands steady. That's all I've got.*: `RZ_Openings.TakeHabit`); while the favour's fetch runs, your background's way through it is a reply tagged with your background (*[Mechanic] Forget the battery. Show me the car.*), locked with what's missing (`RZ_Openings.TakeWay`) ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) |
+  | A stranger, an opening's contact | Their ask's ways and their step, as built (both are errands handed in person); an opening's hand-over (the favour's thing: *[Errand] Here's your battery.*) is a reply of its own, first in the list; only picking it hands the thing over, and it's done there and then, the next step said into the same talk (`RZ_TalkOpening`, `RZ_Openings.HandOver`, `RZ_Errands.FinishNow`). At the door their first talk asks who you were and three replies answer it, each tagged with the habit it gives (*[Steady hands] I keep my hands steady. That's all I've got.*: `RZ_Openings.TakeHabit`); while the favour's fetch runs, your background's way through it is a reply tagged with your background (*[Mechanic] Forget the battery. Show me the car.*), locked with what's missing (`RZ_Openings.TakeWay`) ([DESIGN.md](DESIGN.md#openings-how-every-character-starts)) |
 
 - **Handing things in is a reply you pick, never the talk opening.** With the talk screen on, a done errand is handed in with the giver's
   *[Errand] It's done: ...* reply, not by walking up to them or opening the talk; something carried back must be on you
@@ -271,10 +271,10 @@ something to say first. Code: `RZ_Dialogue.Start` (`RZ_TalkSession.m_bQuiet`, `R
 - **Back at the hub** after a topic, nothing is said unless the pick said something new: the greeting
   isn't repeated. A topic's own start node isn't a greeting: you picked it, so its lines are said in
   full.
-- **`met` for every speaker.** `met` is true once you've talked to that speaker this life: a
+- **`met` for every speaker.** `met` is true once you've talked to that speaker this character: a
   leader's and a wanderer's built memory, and for everyone else (occupants, residents, named people,
   strangers, posts, the table, an opening's contact) the talk memory's note `<speaker key>|met`, left
-  when the screen opens (`RZ_DialogueTrees.MarkMet`; the notes are per character, so a new life meets
+  when the screen opens (`RZ_DialogueTrees.MarkMet`; the notes are per character, so a new character meets
   everyone again). It's read as it was when the conversation opened, so `say? !met :: <intro>` shows
   once, on the first conversation, and stays a first meeting to the end of it.
 - With nothing to say and nobody there (a leader away from their seat), no screen opens, as before.
@@ -325,7 +325,7 @@ With Trees on, Talk opens a **hub**:
   (quest, ask, world, reaction, flavour; flavour rotates on the speaker and the day). They take their place in
   the list by rank ([The order of the replies](#the-order-of-the-replies)), a page at a time on the
   screen ([above](#the-talk-screen)). A topic with nothing new is grey (no "heard" tag). `once`
-  topics go for this life at that speaker, `daily` ones for a real day.
+  topics go for this character at that speaker, `daily` ones for a real day.
 - **While they wait on your answer** (a job just explained, an errand's ways on offer), the hub shows
   only that answer's replies, no topics; a choice that put the job to you lands there, wherever it was
   going (`RZ_TalkSpeaker.Asking`).
@@ -417,7 +417,7 @@ behind it.
 | The open channel ([below](#the-radio)) | `radio:open`, `radio` | `radio:open` | none |
 | A cracked secure net ([below](#the-radio)) | `radio:bastion`, `radio:redhand`, `radio:halcyon`, `radio:secure` | `radio:open` | none |
 | Ferda Kroupa, the opening's fixer, and the neighbour you can warn ([DESIGN.md](DESIGN.md#the-fixer)) | no conversations (`RZ_TalkFixer`; they talk only to the player the visit is for) | none | His ways through the visit, first in the list: **[Trade] Hand it over**, the story about Bastion (tagged with the habit or background that makes him believe it, locked otherwise), **[Street] Wait here. I'll talk to the street first.**, later **[Street] The street's with me.**; the neighbour's **[Errand] He'll be back for more. Bolt your doors.** |
-| An opening's contact: someone from before, a stranger, or a wanderer from an earlier life ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) | `opening` (they talk only to the player they waited for) | `opening:<id>` | What was it you needed? (the live step again, word for word, then their own short line). They call you over and "Talk to *their name*" is tracked; when you talk to them, the step that waited for you starts: its piece of the story and its ask are the built greeting |
+| An opening's contact: someone from before, a stranger, or a wanderer from an earlier character ([DESIGN.md](DESIGN.md#openings-how-every-character-starts)) | `opening` (they talk only to the player they waited for) | `opening:<id>` | What was it you needed? (the live step again, word for word, then their own short line). They call you over and "Talk to *their name*" is tracked; when you talk to them, the step that waited for you starts: its piece of the story and its ask are the built greeting |
 
 | A duty's person (below): a trader at the Haven's swap table, a passer-by at the Red Hand's toll, an arrival at Bastion's gate, one of The Round's sick | `duty:<duty>:<key>` (`duty:swap:ring`, `duty:toll:courier`, `duty:gate:nurse`, `duty:round:fever`), `duty:<duty>`, `duty` | `duty:<errand>:<duty>:<key>` | none: a conversation's `call:slot:N` is the beat's option N |
 | A contract's or questline stage's people | `quest:<questline>` (`quest:every_name`), `quest`; `mission` for a contract's | `mission:<id>:<index>` | their built choices, as built: a conversation picks one with `call:slot:N`, so the stage resolves (and starts anything physical) as built |
@@ -460,8 +460,8 @@ costs, never what comes of it**; the one tag about what a reply is, its job's ki
 |---|---|---|
 | Background (`if bg:...`) | [Doctor] | Shown only to that background. Not a roll: the line is simply theirs |
 | Standing (`if tier:...`) | [Trusted - Haven] | Shown only when true |
-| `persuade <faction> <difficulty>` | [Persuade - Haven - 1 of 2] | **Trust**: your access rank with the faction (mixed tiers one lower), +1 for a listed background, +1 at most from dialogue (regard 2 or more, or the built helped or saved memory of this life), −1 for a found-out lie or crossed lines. Hunted or worse: dim, "they won't hear it from you". Factionless speakers read your Haven rank, at most 2; the Long Table's rank counts 0 |
-| `threaten <faction> <difficulty>` | [Fear 1 of 2 - +3 Infamy] (": Hunted" when it would make you Hunted) | **Fear**, with the threat's rules: +3 Infamy and regard *threatened* whatever happens, once per person by anyone for the season ("Already scared. Of someone else."), three a life per faction, a refused threat barred a real day; a threatened leader or wanderer remembers being crossed (this life). Never on stronghold leaders, the Kid, the Long Table, in safehouses (the lint refuses it, and the engine refuses it on a stronghold leader), or during a parley |
+| `persuade <faction> <difficulty>` | [Persuade - Haven - 1 of 2] | **Trust**: your access rank with the faction (mixed tiers one lower), +1 for a listed background, +1 at most from dialogue (regard 2 or more, or the built helped or saved memory of this character), −1 for a found-out lie or crossed lines. Hunted or worse: dim, "they won't hear it from you". Factionless speakers read your Haven rank, at most 2; the Long Table's rank counts 0 |
+| `threaten <faction> <difficulty>` | [Fear 1 of 2 - +3 Infamy] (": Hunted" when it would make you Hunted) | **Fear**, with the threat's rules: +3 Infamy and regard *threatened* whatever happens, once per person by anyone for the season ("Already scared. Of someone else."), three a character per faction, a refused threat barred a real day; a threatened leader or wanderer remembers being crossed (this character). Never on stronghold leaders, the Kid, the Long Table, in safehouses (the lint refuses it, and the engine refuses it on a stronghold leader), or during a parley |
 | `lie <faction> <difficulty>` | [Lie - 1 of 2], or [Lie - they'd see through it] | A **tell** catches it first, whatever the score: the bite showing, another faction's colours on you, or something else you already told this speaker. Without one, Trust against the difficulty (+1 under a vouch). The lie's difficulty is +1 at a Paranoid leader, +1 where this speaker has caught you lying this life, −1 for an Ex-Con or a Raider (all shown in the tag), and, never shown, ±1 for the speaker's own credulity, seeded by who they are and the season (a lie is the one check that's a gamble). Believed: a false claim in the [lie store](DESIGN.md#lies-and-witnesses), found out later by its rumour rounds (the speaker's regard *lied*, +2 Infamy). Caught now: regard *lied*, +2 Infamy and the liar count (−1 at Trust this life), and no more lies at that speaker for a real day ("they caught you lying today"). The reply opens with "They believe you. For now." or "They don't believe a word of it." A choice's `truth <conditions>` makes it true while they hold: then it's no lie, with no tag and no check. A caught or found-out lie is said at that speaker's next greeting (`nmem:lied`) |
 | `look <faction> <difficulty>` | [Full kit +2] [Watched -1] [Look - Bastion - 2 of 2], or [Look - Bastion - they'd see through it] | **The look** ([REPUTATION.md](REPUTATION.md#borrowed-kit)): a claim to be one of them, its score shown before you pick. Dim with the reason when you can't claim at all (Hunted, not in their kit, your own colours, too many tells, caught three times, blown). A leader of theirs or anyone inside their wire sees through it: caught. Passed: you pass (at a road post while it stands, elsewhere 10 minutes); caught: the built catch ([Claims](#claims-in-someone-elses-kit)) |
 | `callout <lie key>` (a choice option) | [Evidence] | Shown only to a player who was told that lie and knows the truth ([Lies you're told](#lies-youre-told)) |
@@ -499,7 +499,7 @@ system's caps.
 | `regard` | `regard:thanks` | Regard ([Memory](#memory)). *thanks* only on a choice with a cost or a deed |
 | `favor` | `favor:haven+2` | Favor, at most 10 a conversation, and all talk shares **Dialogue > Talk Favor a day** (20 a faction a player). Past it: "That's all I've got today." |
 | `take` | `take:food*2` | Takes food by the built keywords |
-| `claim` | `claim:alone` | Something you told this speaker (kept 6 a speaker, this life) |
+| `claim` | `claim:alone` | Something you told this speaker (kept 6 a speaker, this character) |
 | `learn` | `learn:haven.list`, `learn:bastion.word:6h` | Something you now know (`knows:` keys): for the season, or a **passing fact** for that many real hours (32 at most) |
 | `rumour` | `rumour:"..."@6` | Gossip on the roads (the world's rumours) |
 | `call` | `call:slot:2`, `call:hand_in:2`, `call:toll`, `call:post_wave`, `call:standing` | Built behaviour, unchanged: the person's own reply N; the N food the same choice's `cost item:food*N` took go into this safehouse's stores, paid as a delivery (the lint pairs the two, same N; nothing more is taken); the Red Hand toll at this roadblock (Known or better, as built); this post lets you through once while it stands; what they make of you, in their voice |
@@ -542,12 +542,12 @@ in conditions alike.
 | Promises (`promise:`, `kept:`, `broke:`) | each key | player | open: 3 at most; kept or broken: 3 real days |
 | Callbacks (`later:`, `due:`) | each key | player | 10 at most (the oldest goes), each 3 real days |
 | Talk Favor today | each faction | player | the real day |
-| Face (they know you) | each faction | character | the life. Set when you talk to their people |
-| Claims | each speaker | character | the life, 6 a speaker |
-| Seen nodes, passed persuades, once and daily topics, character flags, speaker notes | per key | character | the life |
-| Local deeds ("You're the one who...") | each seat | character | the life ([REPUTATION.md](REPUTATION.md#what-people-call-you)) |
+| Face (they know you) | each faction | character | the character. Set when you talk to their people |
+| Claims | each speaker | character | the character, 6 a speaker |
+| Seen nodes, passed persuades, once and daily topics, character flags, speaker notes | per key | character | the character |
+| Local deeds ("You're the one who...") | each seat | character | the character ([REPUTATION.md](REPUTATION.md#what-people-call-you)) |
 
-A new life is a new face: everything kept per character is cleared when the profile's life count
+A new character is a new face: everything kept per character is cleared when the profile's character count
 changes.
 
 **Regard words:** *thanks* +1 (only with a real cost or deed), *kept* +1, *broke* −1,
@@ -559,8 +559,8 @@ found-out lie, a false call-out or point-out, a vouch for a liar.
 toward zero), so talk moves it by at most ±2 and it fades. Regard 2 or more is persuade's +1.
 Prices still read only the built memory, so talk can't farm discounts. The Long Table keeps no
 regard. Errands write regard only on named people's keys (a house's people, a holding's), never on
-leaders ([ERRANDS.md](ERRANDS.md#givers)). The **liar count** is the life's record: a caught or
-found-out lie with a faction is −1 at Trust with it for the rest of the life.
+leaders ([ERRANDS.md](ERRANDS.md#givers)). The **liar count** is the character's record: a caught or
+found-out lie with a faction is −1 at Trust with it for the rest of the character.
 
 ## Several players
 
@@ -682,7 +682,7 @@ The look itself (kit, colours, cover details, catches, word gets round) is reput
 - **People react to kit without any claim** (`kit:own`, `kit:in_kit`): "Kit suits you."; "Where did
   you get that jacket? Don't answer. I'd have to write it down." The true answer costs nothing.
 - **A claim needs intent.** You're claiming only when you pick a `look` choice ("One of yours. Let me
-  through."), its score and tags shown before you pick. **Once per speaker per life:** a second claim at
+  through."), its score and tags shown before you pick. **Once per speaker per character:** a second claim at
   the same person gets *"You told me that already."* A road post asks "Which unit?" when you walk
   up in their kit (`post.bastion.claim`, `post.redhand.claim`); a pass waves you through that post
   (`call:post_wave`), a catch is the built one (+3 Infamy, the kit taken, blown 60 minutes).
@@ -710,7 +710,7 @@ The look itself (kit, colours, cover details, catches, word gets round) is reput
 - **Cover details spoken** are choices: `do cover:name|dead|crew|notebook|paper`, shown with
   `if cover:<key>` (you have it), the words as `{cover:<key>}` ("Kral", "Magpie", "31"). One you have
   counts at your next look with them; one you don't is a lie, caught at once, so a node after it
-  checks `jump caught -> ...`. `claimed`: you've spoken a claim line to this speaker this life (one a
+  checks `jump caught -> ...`. `claimed`: you've spoken a claim line to this speaker this character (one a
   life). `{cover}` alone says your best cover detail for the speaker's faction. What a detail is worth
   is reputation's ([REPUTATION.md](REPUTATION.md#borrowed-kit)).
 - **Claims the look decides:** your own crew name at the Red Hand's post (*"They call me {crew}."*) and
@@ -733,7 +733,7 @@ get it (they have the [parley](REPUTATION.md#the-parley-and-the-knock)).
   Medicine Run, Bastion's Burn the Bodies, the Red Hand's Fence the Goods, Halcyon's Field Samples), in
   the leader's voice (*"A job, done properly, signed for. Then the file gets a new page."*).
 - When the job succeeds with you in it, that leader's regard for you goes to 0 and their crossed memory
-  of you (this life) is cleared: *"That's done, then. We start again. Don't make me regret it."*
+  of you (this character) is cleared: *"That's done, then. We start again. Don't make me regret it."*
 - **Once a season per leader** (*"We did this once. I don't do it twice in a season."*); a second ask
   while the job is open is dim.
 - The Infamy the job works off goes through `Forgive()`, inside the one budget, as every amends
@@ -749,7 +749,7 @@ attention calls out instead: a subtitle with their name ([UI.md](UI.md#subtitles
 their nametag as you come near, and, where it's a step of a job, the tracker and the map's diamond
 on them. The same holds for everyone who calls you: a named person who waves you over (*"You there. Have
 you got a minute?"*, [ERRANDS.md](ERRANDS.md#being-asked)), a stranger's call-out, a leader who catches your
-eye, an opening's contact ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)).
+eye, an opening's contact ([DESIGN.md](DESIGN.md#openings-how-every-character-starts)).
 
 **Call-outs** (**Dialogue > Opens**, on, with Trees; `RZ_DialogueOpens`). A greet written with
 `opens approach <metres>` (40 at most) calls out to a player who walks up within that distance while
@@ -759,8 +759,8 @@ same greet puts its question on the screen (calling out doesn't use the greet up
 | Who | At | When |
 |---|---|---|
 | A road post's speaker (Bastion, the Red Hand) | 35 m | you're in their kit below Known, not caught, not passing |
-| A stranger | 10 m | once a life per stranger: *"Hey. You. Sorry. Have you got a minute?"* |
-| The Long Table's host on the road | 12 m | once a life, unless the family has crossed you |
+| A stranger | 10 m | once a character per stranger: *"Hey. You. Sorry. Have you got a minute?"* |
+| The Long Table's host on the road | 12 m | once a character, unless the family has crossed you |
 
 Checked every 5 s for bodies already spawned near players. Never while you're talking or in a
 vehicle, never twice in 10 minutes from the same person, and each is an unasked contact inside the
@@ -774,7 +774,7 @@ one), no choices, no effects. With Trees on, on the server tick, a player passin
 someone with a bark whose `when` holds hears it, owner-only, as that person's subtitle. Only bodies
 already spawned near players are read (a 6 m query round each player).
 
-- One bark a player a minute; one per speaker per player every 10 minutes; `once` barks once a life
+- One bark a player a minute; one per speaker per player every 10 minutes; `once` barks once a character
   per speaker.
 - None while you're talking to anyone, and none from someone who refuses you.
 - A bark never names a player who is in someone else's kit, and says nothing the player couldn't see.
@@ -891,7 +891,7 @@ is off.
 | `regard`, `face`, `seen`, `claim`, `knows` | `regard>=2`, `face:bastion`, `seen:haven.leader.list/told`, `claim:alone`, `knows:haven.list` | memory |
 | `item`, `armed`, `bite_shown`, `stage` | `item:food*2`, `stage:weakness` | you carry food; a firearm; the HUD shows a bite; the infection stage |
 | Time and season | `night`, `dusk`, `hour>=17`, `day>=5`, `outbreak:collapse`, `cure>=50`, `epilogue`, `mood:grim` | the world facts; the season mood ([WRITING.md](WRITING.md#the-season-mood)) |
-| The speaker | `trait:greedy`, `loyalty:rogue`, `attitude>=1`, `stronghold`, `role:toll_man`, `met`, `helped`, `saved`, `crossed` | the leader's record; the built memory bits of this life (a leader's or wanderer's); `met` works for every speaker and is read as it was when the conversation opened ([No filler greeting](#no-filler-greeting)) |
+| The speaker | `trait:greedy`, `loyalty:rogue`, `attitude>=1`, `stronghold`, `role:toll_man`, `met`, `helped`, `saved`, `crossed` | the leader's record; the built memory bits of this character (a leader's or wanderer's); `met` works for every speaker and is read as it was when the conversation opened ([No filler greeting](#no-filler-greeting)) |
 | Place | `house:short`, `house:fed`, `house:died`, `house:medic`, `town:held=redhand`, `town:infection>=60`, `need:food` | the speaker's house, the nearest town, the faction's need |
 | Wanderers | `wbitten`, `kidlost` | this wanderer is bitten; the Kid is lost and nobody is walking them |
 | The Long Table | `table:guest`, `table:family`, `table:crossed` | its three words, as built |
@@ -903,7 +903,7 @@ is off.
 | Kit | `kit:own`, `kit:in_kit`, `kit:full`, `kit:other`, `kit:any`, `passing`, `caught` | the speaker faction's kit as your own colours; their kit below Known; their full kit; another faction's colours; any; passing as them now; blown with them |
 | The finale | `finale:soon`, `finale:pitch`, `finale:open`, `finale:locked`, `finale:voice` | research 75–90 before the gate; 80 or more; the routes are open; you're locked to a route; this wanderer is the Independent's voice (the Doctor, else the Courier) |
 | The lock | `route:none`, `any`, `in`, `out`, `independent`, `unsided`, `won`, `lost`, `route:bastion`... (`haven`, `bastion`, `redhand`, `halcyon`, `indep`), `lockdays<2` | your route at the 90% lock ([FINALE.md](FINALE.md#the-lock)): in is the speaker faction's route, out another faction's; in, out and independent until the cure; unsided while routes are open; won and lost after the cure; real days since you locked |
-| The season record | `title:bastion=necessary_evil`, `seasoned:bastion` | the name your best life made with them this season; an earlier life stood out with them ([REPUTATION.md](REPUTATION.md#the-season-record)) |
+| The season record | `title:bastion=necessary_evil`, `seasoned:bastion` | the name your best character made with them this season; an earlier character stood out with them ([REPUTATION.md](REPUTATION.md#the-season-record)) |
 | Reputation | `owed:bastion`, `setword:bastion` | Hunted and still owed a hearing (the parley); a word a major or questline set |
 | Factions | `truce:redhand`, `feud:bastion` | the speaker's faction and that one have a truce or a feud now |
 | Where | `radio` | on the open channel |
@@ -1046,7 +1046,7 @@ always` (an ordinary lie, believable and never true).
 | Bastion leaders | The board on the wall (the roster: nobody is coming, they're all they have; [Soldier], [Police]; being signed on); whether Command ever answers |
 | Red Hand leaders | The book (the first line, Rudi, persuade to see your own page, which reads it out in the book's voice); why the hand is red |
 | Halcyon leaders | Why they're called the beaks ([Lab Technician], [Doctor], [Nurse]: the notebooks); how close the cure is (the other two); a field lead on the volunteers ("They're comfortable": a lie, with [Lab Technician], [Doctor], a persuade and an [Evidence] call-out to the room at the back) |
-| Every leader | The name, not the face (a new life greeted by the season's title, once); a lie found out, said at the next greeting, once; what a brief left out, told or kept (a giver's lie you found, at any leader of that faction for a week: `leaders/briefs.rzd`, [DESIGN.md](DESIGN.md#story-blocks)) |
+| Every leader | The name, not the face (a new character greeted by the season's title, once); a lie found out, said at the next greeting, once; what a brief left out, told or kept (a giver's lie you found, at any leader of that faction for a week: `leaders/briefs.rzd`, [DESIGN.md](DESIGN.md#story-blocks)) |
 | Haven leaders at a sitting | Every Name's first and second sittings: a persuade to sway the speaker's vote to an option on the table (one sway a sitting) |
 | The wanderers' hub (`wanderers/hubs.rzd`) | A first meeting greet for each of the 8 roles (who they are, what they do on the roads); six roles' own trouble, carrying Need a hand?; what they passed on the road (the news, with the Red Hand blamed for a fire: a lie) |
 | The 8 wanderer roles | The Trader's prices; the Doctor's work ([Doctor], [Nurse]); where the Scavenger has been (persuade: is it true); why the Deserter left ([Soldier], [Police]); the Preacher's bells; the Courier's letters (and the one that can't be delivered, across the line); what still runs ([Mechanic]); the Kid's name; the Scavenger's clean chemist's (a lie for a tin, [Hunter] or [Police] see through it, [Evidence] once the Doctor tells you, and a callback greet 6 hours on); the Doctor on the chemist's and on Halcyon's back room (the truths); what Bastion makes of you, as the Deserter reads it |

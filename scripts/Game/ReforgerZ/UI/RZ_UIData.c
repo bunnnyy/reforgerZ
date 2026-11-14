@@ -101,19 +101,19 @@ class RZ_UISettings
 	[Attribute("45", desc: "Seconds a notice that isn't urgent waits for a card; then it goes to the notebook only (or is dropped if the notebook doesn't list it)")]
 	float m_fNoticeWait;
 
-	[Attribute("30", desc: "Quiet start: for this many seconds after a new life only the spawn card and urgent notices are cards; everything else goes quietly into the notebook")]
+	[Attribute("30", desc: "Quiet start: for this many seconds after a spawn only the spawn card and urgent notices are cards; everything else goes quietly into the notebook")]
 	float m_fNoticeCalm;
 
-	[Attribute("300", desc: "First minutes: for this many seconds after a new life, cards that aren't urgent come at most one per First minutes gap")]
+	[Attribute("300", desc: "First minutes: for this many seconds after a spawn, cards that aren't urgent come at most one per First minutes gap")]
 	float m_fNoticeEarly;
 
-	[Attribute("45", desc: "First minutes gap: seconds between two cards in the first minutes after a new life (urgent cards don't wait)")]
+	[Attribute("45", desc: "First minutes gap: seconds between two cards in the first minutes after a spawn (urgent cards don't wait)")]
 	float m_fNoticeEarlyGap;
 
 	[Attribute("12", desc: "Notices waiting at most; past it the least important goes to the notebook only (or is dropped if it isn't listed there)")]
 	int m_iNoticeQueue;
 
-	[Attribute("60", desc: "Radio tab: radio, mission and world notices kept on the client for this life")]
+	[Attribute("60", desc: "Radio tab: radio, mission and world notices kept on the client since the last spawn")]
 	int m_iRadioLogSize;
 
 	[Attribute("1", desc: "Show the infection timer (golden window, stages)")]
@@ -224,16 +224,16 @@ class RZ_UISettings
 	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: The season page layout (UI/LAYOUTS.md): the majors, in the epilogue the season as the Zone tells it, then the hall of fame", "layout")]
 	ResourceName m_sSeasonPage;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The notebook item every new life is given (Prefabs/ReforgerZ/UI/RZ_Notebook.et): taken into the hand it opens the notebook, the pad's way in besides the pause menu. Empty = none", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The notebook item every spawn is given (unless the character carries one) (Prefabs/ReforgerZ/UI/RZ_Notebook.et): taken into the hand it opens the notebook, the pad's way in besides the pause menu. Empty = none", "et")]
 	ResourceName m_sNotebookPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The compass every new life is given (vanilla Compass_Adrianov.et), unless the loadout already has one. Empty = none", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The compass every spawn is given (vanilla Compass_Adrianov.et), unless the loadout already has one. Empty = none", "et")]
 	ResourceName m_sCompassPrefab;
 
-	[Attribute("{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et", UIWidgets.ResourcePickerThumbnail, "One meal every new life is given, in case food is slow to find (vanilla MRE.et). Empty = none", "et")]
+	[Attribute("{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et", UIWidgets.ResourcePickerThumbnail, "One meal every new character is given (not at coming round), in case food is slow to find (vanilla MRE.et). Empty = none", "et")]
 	ResourceName m_sMealPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The paper map every new life is given (vanilla PaperMap_01_folded.et), unless the loadout already has one. Empty = none", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The paper map every spawn is given (vanilla PaperMap_01_folded.et), unless the loadout already has one. Empty = none", "et")]
 	ResourceName m_sMapPrefab;
 
 	protected static ref RZ_UISettings s_Defaults;

@@ -400,8 +400,8 @@ class RZ_FactionShopAction : ScriptedUserAction
 		RZ_WorldFacts facts = gm.GetFacts();
 		if (m_bOncePerLife && facts && facts.Flag(OnceKey(gm, playerId)) > 0)
 		{
-			refusal = string.Format("One %1 a life. You've had yours.", m_sDisplayName);
-			need = "Once a life: you've had it";
+			refusal = string.Format("One %1 to a customer. You've had yours.", m_sDisplayName);
+			need = "Once only: you've had it";
 			state = STATE_LOCKED;
 			return -1;
 		}

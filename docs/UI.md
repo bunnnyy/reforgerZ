@@ -183,11 +183,11 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | The notebook | — | One menu with five tabs, the five rows below, in this order ([below](#the-notebook)) | `RZ_NotebookMenu` | Frame and pages built as text, not checked in play |
 | Notebook: Standing | `standing.png` (the old four-column page; the page is now design G2) | In the header, the whole picture after your name ([REPUTATION.md](REPUTATION.md#what-people-call-you)). One row per faction, stacked down the page with the faction's colour as a left bar, mostly icons: the emblem and name; **what they call you**, large (the reputation's name, or the tier word with Reputation > Names off; the tier icon beside it, both in the tier's colour); Favor (a coin and the number); the leaders you've met (a bust and how many, or NONE); what they need (its icon and word, or NONE); and a kit tell (a jacket, only for Bastion, the Red Hand and Halcyon with borrowed kit on: dim while they don't know you, yellow once they know your face or caught you, red while you're blown). No Fame or Infamy numbers, bars or grid. Up/down or the mouse only **highlights** a row (a bone wash and border); a click, A or Enter **opens** it (or closes it again). At most one row is open, filling the free space while the others shrink to their strip; with none open (the start) the four share the page. The open row has four blocks: *How they see you* (their word as a sentence, what the name counts as, what's left to forgive while there's Infamy, a line when they hunt you, and **Next**: the next name up with what earns it, "TRUSTED: 12 more Fame" or "KNOWN: work off 8 Infamy", none at the top), *Leaders you've met* (names and titles, then the nearest one's verdict), *What they need* (the need and its line) and *In their kit* (whether they know your face, catches, blown time, their tells, what their enemies do to their colours: the payload's `K` records). The other rows stay one line, so all four names are always on screen. Under the rows, **between the factions**: the truces and feuds on one line | `RZ_StandingPage` | Page built, not checked in play |
 | Notebook: Quests | `tracker.png` (right) | Every job you have (only jobs offered to you in person: [MISSIONS.md](MISSIONS.md#who-gets-offered-what)), in three groups: the season's story, questlines and jobs, errands; in each the ones you've taken first, then the ones offered. Each row: the type icon, the name, the rough area of its current objective, and TRACKED. The selected job's detail: the faction, who gave it and the area on one line, a short brief in the giver's voice, its **objectives** New Vegas style, the reward as far as you know it, and what you've found. **A** tracks it or untracks it ([below](#notebook-quests)) | `RZ_QuestsPage` | Page built as text, not checked in play |
-| Notebook: Radio | `radio_log.png` | What you heard and were told this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice, the mission and world notices, the world events (news, never jobs) and the work you heard of with who to ask; six filters (All, Open channel, Secure, Broadcast, Missions, World) | `RZ_RadioPage` | Page built, not checked in play; the channel list is static |
+| Notebook: Radio | `radio_log.png` | What you heard and were told since you last spawned, newest first: the broadcast, open channels and cracked secure channels, each in its voice, the mission and world notices, the world events (news, never jobs) and the work you heard of with who to ask; six filters (All, Open channel, Secure, Broadcast, Missions, World) | `RZ_RadioPage` | Page built, not checked in play; the channel list is static |
 | Notebook: Journal | `journal.png` (the mockup still shows the old job list) | Two groups. **PAST JOBS**: every job you had that ended, newest first (the last 40, kept on your profile): its type icon, name, who gave it and where, DONE, FAILED or ABANDONED in its colour, the season day, and one line of how it ended. **WHAT YOU KNOW**: what you know that isn't a job, as before: the packs you know of, Read on doors, the finale's page, and with Dialogue > Trees a **Promises** row and a **What you know** row ([DIALOGUE.md](DIALOGUE.md#promises-and-callbacks)). Under the list, the lab's line ([below](#notebook-journal)) | `RZ_JournalPage` | Page built as text, not checked in play |
 | Notebook: The season | — | One page that scrolls: the four majors as they stand (act, rule or stance, leans, any last call) and each ending told; in the epilogue, *As the Zone tells it* (the cure line and the beats you've met, all of them in processing) and *And you* with what's unfinished ([QUESTLINES.md](QUESTLINES.md#the-seasons-lines-and-the-season-tab), [EPILOGUE.md](EPILOGUE.md#carriers)); then the hall of fame: this season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_SeasonPage` | Page built as text (one scroll since the hall merged in), not checked in play; no mockup |
 | The spawn screen | `background_picker.png` | Our own screen in place of vanilla's deploy menu: the 13 backgrounds as a list, the picked one's name, perk, flaw, starting gear, starting standing, locked or available (with how to unlock), Legacy toward the Drifter, the kind of place you start at (never a picker), and Deploy ([below](#the-spawn-screen)) | `RZ_SpawnMenu`, `RZ_LoadoutLock.c` | Built as text (layouts too); **UI > Spawn row layout** set; seen in Workbench play with the keyboard (pick, deploy, a locked background); pad not yet |
-| The death brief | — | At a death, one card over the spawn screen: the name, the background and which death of the character, the day and place, how it ended, how long you lived, and a few of the life's numbers, then one closing line; A, Space, a click or B gives way to the spawn screen ([below](#the-death-brief)) | `RZ_DeathBrief`, `RZ_DeathBriefMenu` | Built as text (layout too), preset added; not checked in play; no mockup |
+| The death brief | — | At a death, one card over the spawn screen: the name, the background and which death of the character, the day and place, how it ended, how long you lived, and a few of the character's numbers, then one closing line; A, Space, a click or B gives way to the spawn screen ([below](#the-death-brief)) | `RZ_DeathBrief`, `RZ_DeathBriefMenu` | Built as text (layout too), preset added; not checked in play; no mockup |
 | Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), a box to write one with a Pin it up button, and seven ready-made notes for a pad. Opened when you read the board, with **UI > Board menus** on (the default) | `RZ_NoticeBoardMenu` | Layout built, not checked in play; no mockup |
 | Talk | `talk.png` (still shows the old reading bar) | New Vegas style, in two steps: their line on its own in a subtitle band, typed out a box at a time with a bouncing ▼ and "2 / 4", then your replies on their own in an outlined box, with what each needs; their name top right ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play; the boxes, typing and paging by moving compile, not played |
 | Nametags | — | A small tag over each person within 8 m you can talk to and can see: name, role, who they're with in their colour; three at most ([below](#nametags)) | `RZ_NametagClient` | `NametagPanel` built as text in the HUD layout, compiles, not checked in play |
@@ -246,12 +246,12 @@ tab.
 
 Notice cards are for what matters now. Everything else goes **quietly into the notebook** (the
 Radio tab) without a card, and the line under the cards counts it, "+3 in your notebook", until you
-next open the notebook or start a new life.
+next open the notebook or spawn again.
 
-**At spawn: one card, then quiet.** A new life shows **one card**: who you are and where, in a line
+**At spawn: one card, then quiet.** A new character shows **one card**: who you are and where, in a line
 or two (the background's name, then where you wake: "A farmhouse cellar in Morton. Day 11. The last
 bottle is empty, so you open the door.", from the opening, or "You come to east of Levie."; a locked background adds
-"Soldier is locked. You're Survivor this life."). The rest goes into the notebook, no card each:
+"Soldier is locked. You're Survivor this character."). The rest goes into the notebook, no card each:
 
 | What | Where it goes |
 |---|---|
@@ -265,7 +265,7 @@ bottle is empty, so you open the door.", from the opening, or "You come to east 
 | Anything else in the **quiet start** (the leaders' greets, standing, the Perimeter, disguise, traces, a mission offer) | The Radio tab (World), no card |
 | Tips | Not before **Guidance > Tips wait after spawn** (90 s), then only from context (below) |
 
-**The quiet start** (**UI > Quiet start**, 30 s): after a new life only the spawn card and urgent
+**The quiet start** (**UI > Quiet start**, 30 s): after a spawn only the spawn card and urgent
 notices are cards; every other notice is logged in the notebook and counted under the cards
 (`RZ_GameModeComponent.QueueHint`). **The first minutes** (**UI > First minutes**, 300 s): cards
 that aren't urgent come at most one per **First minutes gap** (45 s). After that, at most **UI >
@@ -289,7 +289,7 @@ important first, then oldest first. Each card comes in with vanilla's own hint s
 - At most **Notices waiting** (12) wait; past that the least important one the Radio tab lists goes
   to the notebook only (or, if none is listed, the least important is dropped).
 - There's no separate notification log: the notebook's Radio tab keeps the last **Radio tab
-  entries** (60) radio, mission, world and quiet notices of this life. Filters (X or F, or click the
+  entries** (60) radio, mission, world and quiet notices of this character. Filters (X or F, or click the
   chip): **All, Open channel, Secure, Broadcast, Missions, World.** Missions: work you heard of
   and who to ask, offers made to you, "this is the place", done, failed, refused. World: world events, the quiet entries and what came in the quiet
   start.
@@ -312,7 +312,7 @@ thanks, "Errand failed: ..." (late, lapsed, what you carried gone, you died) or 
 **Tips from context.** The guidance tips ([DESIGN.md](DESIGN.md#new-player-guidance)) stay, one at a
 time: each fires when its moment comes (you're bleeding, a quartermaster is close, it's getting
 dark, you're too loud, you're near the line), at most one every **Tip gap** (90 s), and none that
-isn't critical in a life's first **Tips wait after spawn** (90 s).
+isn't critical in a spawn's first **Tips wait after spawn** (90 s).
 
 How a notice's importance is known: the server tags about twenty call sites
 (`NotifyPlayerAs`/`NotifyAllAs` with `RZ_ENoticeTag`: MISSION, EVENT, WORLD, URGENT, HIGH, LOW, QUIET, SPAWN, HEARD, START;
@@ -396,7 +396,7 @@ none of their start cards, and every running job drops the player from its parti
 (`RZ_MissionManager.OnNewLife`: `Missions: <player> began a new character, off N job(s) the last one
 held`); what the story remembers of the player stays by identity. A save from before characters
 lasted loads its last life as the character, so its parts still count. An opening's
-chain ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) is tracked by itself as each step
+chain ([DESIGN.md](DESIGN.md#openings-how-every-character-starts)) is tracked by itself as each step
 starts (`RZ_QuestTracker.Follow`), whatever was tracked before.
 
 **On the map** the tracked job's current objective is the only job shown, to you alone: a diamond
@@ -467,7 +467,7 @@ waiting."*), the place, and RESULT where a job's REWARDS go. Nothing to press bu
 asks the server for no detail.
 
 **How it's kept** (`Missions/RZ_JobHistory.c`): per player on the server, on the profile (saved with
-it), the newest **40**, across lives. A mission adds its row when it ends (`RZ_MissionManager.Finish`:
+it), the newest **40**, across characters. A mission adds its row when it ends (`RZ_MissionManager.Finish`:
 done, failed, or abandoned when you stepped out, it was called off, or someone else saw to a job
 offered to you alone), a questline at its end (`RZ_Questlines.EndRun`: an ending is done, going quiet
 abandoned, for everyone who took part, online or not), an errand when a held one ends
@@ -529,7 +529,7 @@ focus column. Its click closes the pause menu and opens the notebook. No layout 
 needed.
 
 **The notebook item** (`Prefabs/ReforgerZ/UI/RZ_Notebook.et`, `RZ_NotebookItem.c`): a small
-notebook every new life is given a few seconds after spawn (**UI > Notebook prefab**; one that
+notebook every spawn is given a few seconds after it (unless the character carries one) (**UI > Notebook prefab**; one that
 doesn't fit lies at your feet). It's a vanilla gadget, as the map and the compass are: vanilla's
 `Item_Base` with the notebook's mesh, a gadget component (`RZ_NotebookGadgetComponent`) held in the
 left hand like the MX991 flashlight (**Gadget anim variable** MX991 and the MX991's hold), and
@@ -574,7 +574,7 @@ too ([INFECTED.md](INFECTED.md#knowing)). On the map each is a range ring ([belo
 **Read on doors.** Once your character has read a door mark ([TRACES.md](TRACES.md#reading-a-door)), the
 journal has one row of kind DOORS (the puzzle icon, `mission_puzzle`; its id `-300000`): the title
 "Read on doors", "N read" where a job's time left goes, the newest line as its brief; its detail lists
-the last 12 lines, newest first, each with the town and the day. It goes with the life.
+the last 12 lines, newest first, each with the town and the day. It goes with the character.
 
 **The finale page.** While the cure's routes are open ([FINALE.md](FINALE.md#the-gate)), the journal
 has one row of kind FINALE (the lab icon, `marker_lab`; its id `-400000`): the title "The finale",
@@ -1374,7 +1374,7 @@ line, `RZ_Background.m_sGear`), its starting standing ("The Haven +10 Fame"), ho
 when it's locked, and your Legacy toward the Drifter. Under it, **Start**: only the kind of place
 the picked background starts at ("A clinic, or a house near one"), never where. Nobody picks a
 start: the screen asks for one of the open spawn points at random, and the server's opening rolls
-the real place ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)). Then **Deploy**, which counts down while the respawn timer holds you
+the real place ([DESIGN.md](DESIGN.md#openings-how-every-character-starts)). Then **Deploy**, which counts down while the respawn timer holds you
 ("DEPLOY IN 0:08") and is dim while the pick is locked. A line under Start says why nothing
 happened, if it didn't.
 
@@ -1432,14 +1432,14 @@ run from the character's start, not the last death):
 | Line | Value | From |
 |---|---|---|
 | How it ended | Turned; The infected; Killed by *a player's public name* (or "another survivor"); Killed by Task Force Bastion, the Red Hand or Halcyon; Killed by other survivors (guards, wanderers, farm people); Your own doing; Nobody saw how | turned: the game mode's `TurnPlayer`; a player: the killer the bounties use; otherwise the faction of whoever dealt the last blow (the damage manager's instigator), and with nothing recorded, an infected within 6 m of the body |
-| Lived | "41 minutes, Day 3" or "2 hours 5 min, Days 3 to 4" | the life's played time (`m_fLifeSeconds`) and the season days it spanned |
+| Lived | "41 minutes, Day 3" or "2 hours 5 min, Days 3 to 4" | the character's played time, all its deaths together (`m_fLifeSeconds`) and the season days it spanned |
 | Infected put down | a count, or None | `m_iLifeInfected`: each infected death counts for the nearest living player within 120 m |
-| People killed | a count | the life's kills of faction people (`m_aKills`, the tally reputation keeps) |
-| Jobs done | a count, or None | contracts and jobs finished this life (`m_iLifeMissions`) |
+| People killed | a count | the character's kills of faction people (`m_aKills`, the tally reputation keeps) |
+| Jobs done | a count, or None | contracts and jobs finished as this character (`m_iLifeMissions`) |
 | Travelled | "800 m", "3.4 km" | `m_fLifeMetres`: the ground covered each server tick, on foot or in a car (a jump over 300 m in one tick, a respawn or a teleport, doesn't count) |
-| Standing | "+35 Fame with the Haven" | the faction this life gained the most Fame with (`m_aFameGained`) |
+| Standing | "+35 Fame with the Haven" | the faction this character gained the most Fame with (`m_aFameGained`) |
 
-The closing lines: a life under 10 minutes, *"Not long. It rarely is, out here, for anyone who comes out of hiding."*; otherwise one per
+The closing lines: a character under 10 minutes, *"Not long. It rarely is, out here, for anyone who comes out of hiding."*; otherwise one per
 way it ended (turned, the infected, a player, a faction, other survivors, your own doing, nobody saw).
 
 | | Keyboard and mouse | Gamepad |
@@ -1453,7 +1453,7 @@ the spawn screen and its respawn timer run under it, and it closes by itself if 
 `RZ_DeathBrief.OnDied` builds the brief once and sends it as its own payload kind (30, kept apart
 from `RZ_UIFeed`'s list) to that player only: `H|name|who|day and place`, then
 `L|label|value` per line, then `C|closing line`. The two new counters are on the profile (saved,
-reset with every new life); the game mode's tick adds the ground covered and `OnZombiesKilled`
+reset with every new character); the game mode's tick adds the ground covered and `OnZombiesKilled`
 credits the infected. The client holds the brief until a respawn screen is open (ours, vanilla's
 deploy menu or role selection; at most 20 s), then opens the `RZ_DeathBriefMenu` preset on top of
 it. The spawn screen and vanilla's menus only take input while they're on top, so the press that
@@ -1542,7 +1542,7 @@ stays seen). Code: `World/RZ_MapFog.c` (the server), `UI/RZ_MapFogDraw.c` (the d
 | **The grid** | The map's grid still reads through: light lines every 100 m and, a little stronger, every km, drawn over the fog on world multiples like the map's own; a step under 24 px on screen isn't drawn (zoomed out, only the km lines) |
 | **Walking** | Reveals **Reveal radius** (150 m) round you each time you enter a new square |
 | **High ground** | **High radius** (400 m) while you stand **Tower height** (6 m) above the ground under you (a tower, a roof), or your ground is **Hill rise** (35 m) above the average of the land 400 m round; looked at as you move and every 10 s standing still |
-| **A found map** | A paper map put out as loot (not the one every life starts with) reveals its town, the settlement's radius plus 150 m and at least **Town radius** (500 m), once you carry it (looked for every 5 s); a line on the notice card says so |
+| **A found map** | A paper map put out as loot (not the one every spawn is given) reveals its town, the settlement's radius plus 150 m and at least **Town radius** (500 m), once you carry it (looked for every 5 s); a line on the notice card says so |
 | **A notice board** | Reading a safehouse's board reveals its town the same way |
 | **Asking about the roads** | The Haven's service (Known) also reveals a strip **Road strip** (200 m) wide from where you stand to the place of the job you track |
 | **Friends' camps** | Every 30 s, a faction you're Known with shares **Camp radius** (300 m) round each of its holdings; the Haven, round its safehouses too |
@@ -1696,7 +1696,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_TraceLightsClient` | client, from the HUD's update | Traces' lit windows (S2) near the player, from the game mode's replicated list: a small warm point light each within 150 m ([TRACES.md](TRACES.md#sound-and-light)); nothing unless **World > Traces > Lit windows** is on |
 | `RZ_NotebookMenu` and its pages (`RZ_NotebookPage`), `RZ_NoticeBoardMenu` | client (`ChimeraMenuBase`) | Ask for their data on open (each page when it's shown), redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them ([The notebook](#the-notebook)) |
 | `RZ_Notebook`, `RZ_PauseNotebook`, `RZ_NotebookItem` (`RZ_NotebookGadgetComponent`, `RZ_ReadNotebookAction`) | client | Open the notebook: N (through the item in the hand), the pause menu's button, the notebook item (a gadget) and its **Read the notebook** |
-| `RZ_DeathBrief`, `RZ_DeathBriefMenu` | server, client (`ChimeraMenuBase`) | The death brief: this life's two new counters (infected put down, ground covered), the brief built once at a death and sent to that player; the card over the spawn screen ([above](#the-death-brief)) |
+| `RZ_DeathBrief`, `RZ_DeathBriefMenu` | server, client (`ChimeraMenuBase`) | The death brief: the character's two counters (infected put down, ground covered), the brief built once at a death and sent to that player; the card over the spawn screen ([above](#the-death-brief)) |
 | `RZ_SpawnMenu`, `SCR_PlayerDeployMenuHandlerComponent` (modded, `RZ_SpawnMenu.c`) | client (`ChimeraMenuBase`) | The spawn screen in place of vanilla's deploy menu: the backgrounds, the kind of place you start at, Deploy through the vanilla loadout and spawn requests ([above](#the-spawn-screen)) |
 | `SCR_BasePlayerLoadout`, `SCR_LoadoutManager`, `SCR_BaseGameMode` (modded, `RZ_LoadoutLock.c`) | server (the client only marks the loadout unavailable in vanilla's deploy menu) | Never assigns or spawns a locked background's loadout |
 | `RZ_MapIconsUI` | client (map component) | The icon layer on the map, you-are-here, and the map key in its corner ([The map](#the-map)) |

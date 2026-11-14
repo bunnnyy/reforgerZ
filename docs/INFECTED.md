@@ -92,7 +92,7 @@ players.
   the [agent budget](#the-agent-budget) counts every member instead.
 - **Zombie-free settlements** while a mission needs one (The Silent Village), and **quiet spots**
   round an opening's waiting contact: no spawns within 150 m, strays within 60 m removed out of
-  sight or sent home ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)).
+  sight or sent home ([DESIGN.md](DESIGN.md#openings-how-every-character-starts)).
 - **Kills:** each one takes 1.5 infection off its town ([DESIGN.md](DESIGN.md#the-director-outbreak-stages-and-spread)).
 
 ## Towns: the crawlers
@@ -998,7 +998,7 @@ Code: `Zombies/RZ_TribeWays.c`.
   stopped) takes 15 more. Gone under 10. A habit place ahead of a target
   makes an [ambush](#how-they-move-and-hunt) likelier.
 - **Marks.** Kill a tribe's alpha or a guard (the nearest player within 100 m), or burn its lair, and
-  it knows your character (this life): strength 100, -25 a counted night, 4 a tribe, only inside its
+  it knows your character: strength 100, -25 a counted night, 4 a tribe, only inside its
   range. You're told once: *"They know you at the quarry by Morton now."* Its scouts see you from 1.5
   times as far, and at night its hunt goes for you first, heat or not (never into one of its fear
   places); it never switches.
@@ -1452,7 +1452,7 @@ sounds](#signs-and-sounds)); its words are always the text.
 
 ### Knowing
 
-Per character, like the outposts you've seen: lost with the life, saved in `state.json`.
+Per character, like the outposts you've seen: lost with the character, saved in `state.json`.
 
 | Level | How you get it | What the journal shows |
 |---|---|---|

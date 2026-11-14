@@ -441,7 +441,7 @@ Code: `Missions/RedHand/RZ_RedHandLoreMissions.c`.
 | 5 | Lost Colleague | Known | ★ Lab Tech +1 to persuade; ★ Nurse or Doctor reads the bite | Find a missing researcher. The truth (per name): hiding hurt, turned, or walked out to a Haven house within 3 km (his camp's note points there) | Research +2. Hiding: say nothing, or tell the field lead. Turned: put him down; his notebook whole (+2), or its last pages torn out (+1, 60%). Walked out: persuade him back, press him (+4 Haven Infamy), trade the house 4 food for his notes (+1), take his tag and say he turned (60%, a lie a Halcyon-Known visitor finds out: +10 Infamy), or leave him be (no pay) | ✅ *story key `colleague`; record `colleague.fate`. **Sold** (10%, ×3 in The Missing Courier; a Red Hand holding within 5 km): a crew's chit in his camp, his brother at the nearest house, his notes on the fence's table: bribe the fence (25 Red Hand Favor), lift them at night unseen, or [Known · Red Hand] buy them back for 5 food (+1 research each); or leave them with the crew (no pay, a Red Hand route asset). Hiding: [Nurse or Doctor] patch him up and he walks back himself (Halcyon morale +1). Turned: the notebook can go to a Haven medic instead (no research, nobody pays, infection −3 in his town, a Haven route asset). Walked out and left be: the house's water fault is fixed, he takes to the roads as a Doctor if a place is free, an Independent route asset. **The search:** a step chain from his field station (the nearest Halcyon station or the lab): his cold box, then his pack with his grid; the job's spot is the cold box until then. Shortcuts: ★ Radio Op within 1.5 km hears his set and his grid; a scavenger by the cold box sells the last sighting for a tin; a Haven trader in the nearest lived-in town saw "a man with a lab badge" (and, walked out or sold, where he went or who with). Hiding, say nothing or tell: you walk him in (an escort to his station or the lab within 3 km, the job's clock at least 20 minutes; Contracts > Escort scientist); no escort free, or nowhere near, Halcyon sends a stretcher. Dead on the way, or time up while he hid: fallout Notebook 31* |
 | 6 | Research Data | Known | | Recover a hard drive from an overrun clinic or pharmacy | **Choice:** Halcyon research, or sell it to Bastion (Halcyon Infamy) | ✅ *the building is found by prefab name; the drive lies loose inside (on its furniture or floor, like [loot in houses](DESIGN.md#loot-in-houses)), put out once someone is within 60 m; a town with none: on the ground where a courier fell near the middle. **Story job** (its key `researchdata`, per town): research as they said; a trial log with Haven names (a house within 5 km); already copied (the lab gets +1, Bastion pays half). The orderly sweeping the glass: [Known · Halcyon] or a tin and he brings the drive; trials: give the names to the house (it ends: 8 Haven Favor, +5 Halcyon Infamy, a callback at the door, a Haven asset). Record `researchdata.names` (and who benefits' `went_to`)* |
 | 7 | Install Sensors | Known | ★ Radio Op/Lab Tech: twice as fast | Place 3 sensors in infested towns | Fame; twice the specials there for 2 hours | ✅ *hold **Set up the sensor** at each spot (15 s; Radio Op/Lab Tech 8 s): the parts become a set on a crate* |
-| 8 | Blood Drive | Known | 🔒 not infected | Donate blood at the lab (costs health) | Fame, small research | ✅ *a quarter of your health, refused under 70%, once per life; amends* |
+| 8 | Blood Drive | Known | 🔒 not infected | Donate blood at the lab (costs health) | Fame, small research | ✅ *a quarter of your health, refused under 70%, once per character; amends* |
 | 9 | Cold Chain | Known, cure 50%+ | ★ Nurse/Doctor: 25 min, not 15 | Get an antidote batch to a Haven clinic before it spoils | Fame with Halcyon and the Haven | ✅ *the clock starts when it's picked up; the clinic is a Haven drop at a safehouse. **Story job** (key `coldchain`, per house): a batch as they said; two doses short; an unnumbered trial batch (★ Lab Tech, ★ Nurse/Doctor read it). The porter: [Known · Halcyon] or 2 tins and he packs it properly (25 minutes for anyone). At the clinic: hand it over; short: tell them (+3 Halcyon Infamy, 5 Haven Favor, a callback, a Haven asset); trial: tell the nurse (he refuses it: Halcyon and the Haven's Fame pay nothing, 5 Haven Favor, an Independent asset). Record `coldchain.batch`* |
 | 10 | Escort the Scientist | Trusted | | Escort a scientist to take readings at 3 sites | Fame, research | ✅ *he follows whoever leads him; 20 s within 15 m of each site. **Story job** (key `scientist`, per town): readings as they said; he looks for his brother (a house within 5 km of the last site; ★ Elder); he times the drones (★ Radio Op). The lab's driver: [Known · Halcyon] or 2 tins and he takes the last site (two to walk). Done: hand them in; brother: leave him with him (half pay, no research, the house +1, a callback, an Independent asset); the line: burn the drone times (research +1, nobody pays) or copy them for the crew (10 Red Hand Favor, +5 Halcyon Infamy); readings: the water readings to the house too (5 Haven Favor, research +1). Record `scientist.fate`* |
 | 11 | Specimen from the Nest | Trusted | | Get a sample from inside a hive without destroying it | Big research | ✅ *hold **Cut the tissue** at the hive's edge (15 s; it hears you the whole time), then carry it to the lab. Needs the nest prefab* |
@@ -799,7 +799,7 @@ leader), the brother and the one gone missing, the farm. Code:
 *Simplified:* the council heads and the chair are the real leaders, talked to as usual; the brother,
 the brother, the stores, the lookouts, the tally man and the copies are props, and the farm's
 people are only in the text (at the Long Table's farm, the family are the house's own people).
-Choices the design marks *(you)* are kept as season-wide flags and in who took part, not per life.
+Choices the design marks *(you)* are kept as season-wide flags and in who took part, not per character.
 
 ### The Price of the Door (the Haven, or the Red Hand)
 
@@ -1098,7 +1098,7 @@ brother and the two other suspects, the trail's towns. Code:
 
 *Simplified:* the people are standing props with talk and choice actions; only the thief's friends
 and the pit crew are AI. The crew name is in the headline and the rumour, and isn't kept for the
-rest of the life. H2's `door.debt_yours` only adds a fourth line to the page's text: the world flag
+rest of the character. H2's `door.debt_yours` only adds a fourth line to the page's text: the world flag
 doesn't say whose debt it is. H3's `walk.cut_dose` adds the cut dose to the Haven name's debt (text). B1's `orders.mocked` lets anyone Known give the page back.
 
 ### Cargo (the Red Hand, or the Haven)
@@ -1206,8 +1206,8 @@ town with you: they wait there. The jars are in the text, not in the cellar.
 ### A Place at the Table (the Long Table)
 
 C2 in [QUESTLINES.md](QUESTLINES.md#c2-a-place-at-the-table): four stages, four endings. Personal:
-the host makes his offer at the gate on the third meal of a life, to anyone not Trusted with the
-Haven, and only that character can do its stages, in that life. Needs Puzzles > Note and Civilian
+the host makes his offer at the gate on the third meal of a character, to anyone not Trusted with the
+Haven, and only that character can do its stages, in that character. Needs Puzzles > Note and Civilian
 (or the generic object). No stage pays. Code: `Missions/Questlines/LongTable/RZ_Quest_PlaceAtTable.c`.
 
 | # | Stage | Kind | Approaches | Leads to | Status |

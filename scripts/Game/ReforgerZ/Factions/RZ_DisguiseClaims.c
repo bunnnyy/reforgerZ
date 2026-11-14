@@ -20,7 +20,7 @@
 //------------------------------------------------------------------------------------------------
 class RZ_DisguiseClaims
 {
-	static const string KEY_NAME = "name";			// a leader of theirs you've met this life
+	static const string KEY_NAME = "name";			// a leader of theirs you've met as this character
 	static const string KEY_DEAD = "dead";			// a dead man's name heard on Bastion's nightly call
 	static const string KEY_CREW = "crew";			// your crew name (the Red Hand)
 	static const string KEY_NOTEBOOK = "notebook";	// a dead researcher's notebook number (Halcyon)

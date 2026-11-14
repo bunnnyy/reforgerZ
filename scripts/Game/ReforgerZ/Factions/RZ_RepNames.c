@@ -56,7 +56,7 @@ class RZ_ReputationSettings
 	[Attribute("1", desc: "Reputation names: the standing card, the change notices and Ask what they think show the 16 names (Mixed Bag, Wildcard, Merciful Thug...) with what each counts as. Off = the tier words only. A name never opens anything (docs/REPUTATION.md, Reputations)")]
 	bool m_bNames;
 
-	[Attribute("30", UIWidgets.Slider, "Forgiveness budget: Infamy each faction forgives per life, whatever the route (amends contracts, paying, surrender). Counted after the stronghold leader's temper. 0 = no budget", "0 100 1")]
+	[Attribute("30", UIWidgets.Slider, "Forgiveness budget: Infamy each faction forgives per character, whatever the route (amends contracts, paying, surrender). Counted after the stronghold leader's temper. 0 = no budget", "0 100 1")]
 	int m_iForgiveBudget;
 
 	[Attribute("1", desc: "The credit runs out: while your Fame with a faction is at the line below or more, every Infamy gain with it also costs the same Fame")]
@@ -74,7 +74,7 @@ class RZ_ReputationSettings
 	[Attribute("2", UIWidgets.Slider, "Red Hand toll multiplier for the Wildcard tier", "1 4 0.5")]
 	float m_fWildcardTollMult;
 
-	[Attribute("3", UIWidgets.Slider, "Threats per life per faction (the Fear check); after that a threat is always refused and still costs its Infamy", "0 10 1")]
+	[Attribute("3", UIWidgets.Slider, "Threats per character per faction (the Fear check); after that a threat is always refused and still costs its Infamy", "0 10 1")]
 	int m_iThreatsPerLife;
 
 	[Attribute("30", UIWidgets.Slider, "Change notice: seconds a new name waits before it's told (a quick swing back says nothing)", "0 120 5")]
@@ -83,7 +83,7 @@ class RZ_ReputationSettings
 	[Attribute("5", UIWidgets.Slider, "Change notice: minutes between name notices per faction (a tier change is always told)", "0 30 1")]
 	float m_fChangeGapMinutes;
 
-	[Attribute("1", desc: "Red Hand crew names: the first thing the crews hold on you this life (Known or better) becomes what they call you: Lucky, Snack, Legs, Skint, Pockets, Sorry (docs/REPUTATION.md, The word for you)")]
+	[Attribute("1", desc: "Red Hand crew names: the first thing the crews hold on you as this character (Known or better) becomes what they call you: Lucky, Snack, Legs, Skint, Pockets, Sorry (docs/REPUTATION.md, The word for you)")]
 	bool m_bCrewNames;
 
 	[Attribute("1", desc: "Life-stamped memory: leaders and wanderers count what they remember of an earlier life at half (rounded toward zero), and met doesn't carry. Off = memory by identity, as before")]
@@ -122,7 +122,7 @@ class RZ_ReputationSettings
 	[Attribute("10", UIWidgets.Slider, "Settling up: at most this much Infamy a real day per faction", "1 30 1")]
 	int m_iSettleDayCap;
 
-	[Attribute("1", desc: "Gate barks: a holding's gate, a road post or a safehouse door says one line about what it makes of you within 25 m, on your first visit this life or a new name or best deed there (never in someone else's kit, never Hostile)")]
+	[Attribute("1", desc: "Gate barks: a holding's gate, a road post or a safehouse door says one line about what it makes of you within 25 m, on your first visit as this character or a new name or best deed there (never in someone else's kit, never Hostile)")]
 	bool m_bGateBarks;
 
 	[Attribute("1", desc: "Others hear: at notoriety 3, in your own colours, other players within 30 m of the gate hear the bark too, once per 10 minutes per place, under the names policy")]

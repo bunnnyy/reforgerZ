@@ -195,21 +195,21 @@ class RZ_Background
 		outList.Insert(b);
 
 		// ---- Unlockable (Legacy). See docs/REPUTATION.md.
-		b = MakeLocked("soldier", "Soldier", "Reach Champion with Task Force Bastion in any life.",
+		b = MakeLocked("soldier", "Soldier", "Reach Champion with Task Force Bastion with any character.",
 			"Starts with a service rifle and armour. Bastion knows you.",
 			"The Red Hand starts out watching you.");
 		b.m_iRepMilitary = 20;
 		b.m_iRepBandits = -15;
 		outList.Insert(b);
 
-		b = MakeLocked("doctor", "Doctor", "Reach Champion with Halcyon in any life.",
+		b = MakeLocked("doctor", "Doctor", "Reach Champion with Halcyon with any character.",
 			"Can treat bites: an infection takes two and a half times as long to kill you. Treats other players fastest. Halcyon knows you.",
 			"Starts unarmed.");
 		b.m_fInfectionTimeMult = 2.5;
 		b.m_iRepInstitute = 20;
 		outList.Insert(b);
 
-		b = MakeLocked("raider", "Raider", "Reach Champion with the Red Hand in any life.",
+		b = MakeLocked("raider", "Raider", "Reach Champion with the Red Hand with any character.",
 			"The Red Hand trusts you: its black market is open from the start.",
 			"The Haven and Bastion start out watching you.");
 		b.m_iRepBandits = 40;
@@ -217,7 +217,7 @@ class RZ_Background
 		b.m_iRepMilitary = -15;
 		outList.Insert(b);
 
-		b = MakeLocked("elder", "Elder", "Reach Champion with the Haven in any life.",
+		b = MakeLocked("elder", "Elder", "Reach Champion with the Haven with any character.",
 			"The Haven trusts you from the start.",
 			"Old and slow: draws 30% more zombie attention.");
 		b.m_iRepSurvivors = 40;

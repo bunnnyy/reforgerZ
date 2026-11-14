@@ -3071,7 +3071,7 @@ class RZ_Errands
 
 		if (o.life != profile.m_iCharacter)
 		{
-			RZ_Log.Info(string.Format("Errands: '%1' owed %2 on life %3; they're on life %4: not paid", o.title, RZ_Util.PlayerName(pid), o.life, profile.m_iCharacter));
+			RZ_Log.Info(string.Format("Errands: '%1' owed %2 on character %3; they're on character %4: not paid", o.title, RZ_Util.PlayerName(pid), o.life, profile.m_iCharacter));
 			return "";
 		}
 

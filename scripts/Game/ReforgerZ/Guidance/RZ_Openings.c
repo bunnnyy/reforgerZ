@@ -130,8 +130,8 @@ class RZ_Openings
 	static const string FLAG_END = "opening.end";		// the ending faction + 1 (1 the Haven ... 4 Halcyon)
 	static const string FLAG_TASK = "opening.task";		// step 2's task (RZ_EOpeningTask)
 	static const string FLAG_WHY = "opening.why";		// why today (RZ_EOpeningReason: 1 hiding, 2 group gone, 3 fever)
-	static const string FLAG_WHO = "opening.who";		// who's outside (RZ_EOpeningWho: 1 from before, 2 stranger, 3 an earlier life's)
-	static const string FLAG_EARLIER = "opening.earlier";	// an earlier life's: what they remember (1 helped, 2 wronged, 3 only met)
+	static const string FLAG_WHO = "opening.who";		// who's outside (RZ_EOpeningWho: 1 from before, 2 stranger, 3 an earlier character's)
+	static const string FLAG_EARLIER = "opening.earlier";	// an earlier character's: what they remember (1 helped, 2 wronged, 3 only met)
 	static const string FLAG_FIRST = "opening.first";	// 1 while the first step runs (their greeting)
 
 	protected static const float POLL = 1;

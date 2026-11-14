@@ -175,8 +175,8 @@ class RZT_Fog
 			Check(false, "the tester has a profile");
 		}
 
-		// Places as rumours: no safehouse he hasn't seen has its pin in his map's list
-		if (fog.RumoursOn() && gm.GetUIFeed() && gm.GetSafehouses())
+		// Unseen places aren't on the map: no safehouse he hasn't seen has its pin in his map's list
+		if (fog.IsOn() && gm.GetUIFeed() && gm.GetSafehouses())
 		{
 			string mapList = gm.GetUIFeed().BuildPayload(id, RZ_UIFeed.PAYLOAD_MAP);
 			int unseen = 0;
@@ -194,7 +194,7 @@ class RZT_Fog
 					pinned++;
 			}
 
-			Check(pinned == 0 && (unseen == 0 || mapList.Contains("somewhere here")), string.Format("unseen safehouses are rumours, not pins (%1 unseen, %2 pinned)", unseen, pinned));
+			Check(pinned == 0 && !mapList.Contains("somewhere here"), string.Format("unseen safehouses aren't on the map (%1 unseen, %2 pinned)", unseen, pinned));
 		}
 
 		int size = fog.Build(id).Length();

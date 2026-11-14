@@ -252,7 +252,7 @@ class RZ_EpilogueSave
 	ref array<string> outletKeys = {};
 	ref array<int> outletStock = {};
 	ref array<int> outletUnix = {};
-	ref array<string> dosed = {};			// "ident|life": one outlet dose per life
+	ref array<string> dosed = {};			// "ident|character": one outlet dose per character
 	ref array<string> crate = {};			// identities who had the open crate's one
 	ref array<string> owed = {};			// identities with a line in the book from a dose
 	ref array<string> bookPaid = {};

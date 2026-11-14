@@ -71,8 +71,8 @@ A restart before the commit builds it again from the live world. **Your three li
 (and whether you chose its terms), a major you decided, and Champion or Wanted with a faction. Line 1
 comes at the commit, line 2 from the first leader you ask about yourself (*Me*), line 3 from a
 wanderer who remembers you (*"I know you. ..."*). **Wanted** means Kill on Sight for 4 or more hours
-played in that life before the cure (`RZ_EpiRecord` counts it all season). **Titles**: a leader's
-*Me* starts with the identity's best life this season with that faction (`RZ_RepSeason.TitleFor`)
+played in that character before the cure (`RZ_EpiRecord` counts it all season). **Titles**: a leader's
+*Me* starts with the identity's best character this season with that faction (`RZ_RepSeason.TitleFor`)
 and the town whose log holds it highest: *"Don't know the face. Know the name. The Good Hand from
 Levie."* *Simplified:* the three lines don't yet read the deeds store's truths, a questline ending you
 decided, a frozen hall record, your rescues or your dead characters.
@@ -85,7 +85,7 @@ it, not at a kitchen table.
 
 **The fuller record** (`RZ_EpiRecord`, all season, saved): per faction the trucks delivered and lost,
 the outposts taken and lost, the leaders lost (a count and the last three names); per outpost its
-owners this season (three, in order); the wanderers who died; each identity's longest life. Each
+owners this season (three, in order); the wanderers who died; each identity's longest character. Each
 counter keeps the day it started: a counter that started after the season's first day is told without
 its numbers. *The season* tab's *As the Zone tells it* lists the record after the cure line.
 
@@ -223,7 +223,7 @@ left. Come back in about 20 minutes."* Outlets read standing, never clothes.
 | | pay when you can | the board | 15 now, and a line in the book | 4 | as above |
 | | the first pan to the houses | the nearest Haven house to the crossroads, and the board | free at the house; the board at the boss's price | 2 / 4 | as above |
 | | the book first | the board | free, and a line in the book | 4 | as above |
-| Halcyon | the authors / volunteers / numbers first | the lab gate's table: *Ask for a dose* | 10 Halcyon Favor; free for the Trusted (authors), a trial dose this life (volunteers), a bite under 20 minutes old (numbers) | 3, 1 every 30 min | Hunted by Halcyon |
+| Halcyon | the authors / volunteers / numbers first | the lab gate's table: *Ask for a dose* | 10 Halcyon Favor; free for the Trusted (authors), a trial dose as this character (volunteers), a bite under 20 minutes old (numbers) | 3, 1 every 30 min | Hunted by Halcyon |
 | | published | the lab, and every house with a medic: *Ask for a home batch* | 10 Favor; a home batch cures 4 times in 5, else halves the time left | 3 / 2 | as above |
 | Independent | open | a crate at the queue: *Take one* | free, once per identity for the week | 3, 1 an hour | nobody |
 | | one side | that faction's outlet under its stronghold leader's terms, changed by the condition | the exiles served; Bastion 15 Favor, no firearm; the Red Hand one tin for all; Halcyon's home batches free at every house | | |
@@ -313,10 +313,10 @@ hours waits. **Processing is the hard stop.** Log: `Epilogue: last call <item>`,
 | **Quiet the Ridges** | The tribes' last week ([INFECTED.md](INFECTED.md#the-last-week)); the item watches the packs calling at the cure | Closes when the last of them is gone; the hall line names the last to call |
 | **Take Back a Town** | A town with 6 or more crawlers at the cure and none now (crawlers don't refill in the week): a candle beat, the town log's best slot (*taken back*, salience 3), word from the houses; who was there is kept | Each town is its own small finish |
 | **The Long Table's last week** | Only if it was never exposed. Found out as built closes it live. At processing the family packs: a handcart at the farm with covered baskets (*Look at the basket*: +15 suspicion, once each); at the next 05:30 (or 6 hours as data) they go to the queue, *"At the back, people with covered baskets."* | Found, or gone to the queue |
-| **The Walk Out** | Processing only, at the north road only, outward, one name at a time: an unarmed person who walks up hears *"Name?"* instead of being turned back (the Perimeter's change). *Give your name* (2 hours into this life, once per identity a season, nothing infected within 40 m) retires the character: no death, no grave, no journal, the inventory gone; back to the spawn screen (VERIFY). A wanted poster becomes *WALKED OUT. NOT PAID.* The queue walks at 05:30 and 17:30; each house chalks *GONE HOME* | Names put down in phase B are read at the wipe, and someone in the queue answers for them |
-| **Settle Accounts** | The parley, reopened at the cure ([REPUTATION.md](REPUTATION.md)); *Pay into the book* at the crossroads (15 Red Hand Favor: your line marked paid, 5 Infamy worked off through `Forgive()`); wanted posters change when a life leaves Kill on Sight | **Square** with all four (Infamy under 15 with each, no unpaid line) is checked at processing and at the wipe |
+| **The Walk Out** | Processing only, at the north road only, outward, one name at a time: an unarmed person who walks up hears *"Name?"* instead of being turned back (the Perimeter's change). *Give your name* (2 hours into this character, once per identity a season, nothing infected within 40 m) retires the character: no death, no grave, no journal, the inventory gone; back to the spawn screen (VERIFY). A wanted poster becomes *WALKED OUT. NOT PAID.* The queue walks at 05:30 and 17:30; each house chalks *GONE HOME* | Names put down in phase B are read at the wipe, and someone in the queue answers for them |
+| **Settle Accounts** | The parley, reopened at the cure ([REPUTATION.md](REPUTATION.md)); *Pay into the book* at the crossroads (15 Red Hand Favor: your line marked paid, 5 Infamy worked off through `Forgive()`); wanted posters change when a character leaves Kill on Sight | **Square** with all four (Infamy under 15 with each, no unpaid line) is checked at processing and at the wipe |
 | **The Last Broadcast** | At the radio station: everyone who did any closing work has one say (*the names*, *the three weeks* with `weeks.public`, *the truth* with two pages in the open, *keep it plain*); a Radio Operator's counts twice in the tally shown | The tally closes at processing (ties and nobody: the plain line); it airs on every open channel on the hour and in full on the last dusk; morale from the lane (the names: Haven +2; the three weeks: Halcyon −2, Haven +1; the truth: everyone −1, the Red Hand −2) |
-| **Personal Goals** | A life's goal in the week is its background's **last goal**: Nurse (be there for someone's dose, or two cups), Mechanic (a car at the queue), Hunter (a name home, or a cup), Police Officer (a name home), Ex-Con (leave something at the queue), Lab Technician (a notebook into the record, or a say), Radio Operator (a say), Unemployed (two pieces of closing work) | As built goals pay: a Legacy point and 10 Haven Fame, once per identity and background |
+| **Personal Goals** | A character's goal in the week is its background's **last goal**: Nurse (be there for someone's dose, or two cups), Mechanic (a car at the queue), Hunter (a name home, or a cup), Police Officer (a name home), Ex-Con (leave something at the queue), Lab Technician (a notebook into the record, or a say), Radio Operator (a say), Unemployed (two pieces of closing work) | As built goals pay: a Legacy point and 10 Haven Fame, once per identity and background |
 | **The Last Entry** | At the Names board, *Write your line*: one per identity, rewritable to the wipe; a pad writes *"Day 52. Still here."* (each press the next line), a keyboard `/lastentry <text>` at the board (80 characters, filtered); signed with your name, *a survivor* if anonymous. In processing the Haven's clerk reads three at supper | Open to the wipe; with **Archive last entries** on, an admin picks up to 5 for the season block |
 
 **The closing work's rest** (`RZ_EpilogueRest.c`):
@@ -354,7 +354,7 @@ Officer's goals don't read their goal's town or truth.
 
 ## The hall of fame and the season block
 
-**The hall freezes** at the cure: no record counts after it, lives running stop counting. The week
+**The hall freezes** at the cure: no record counts after it, characters running stop counting. The week
 adds only lines to the season block, at the event or at the wipe, each under the names policy:
 each Loose End's ending, *"Brought home: 9 names. The first on the wall: ..."*, *"The ridges went
 quiet on Day 52. The last to call was the lot at ..."*, *"Towns taken back after the cure: 3 (...)"*,
@@ -389,7 +389,7 @@ beat, or removes a last entry; logged.
 | **A late cure** | A cure under **Season > Minimum epilogue hours** (56) before an After-weeks wipe pushes the wipe back to the cure plus the minimum, and says so (also in *whichever comes first*) |
 | **A restart mid-week** | The record, beats, items, names, entries, outlet stocks, choices and the phase are saved; marks, people and tables come back near players |
 | **Shipping mid-season** | The season counters (a house's dead and rescued this season, the fuller record) start when this ships; a record counter that started late is told without numbers. Graves come from the named dead recorded since then |
-| **A death in the week** | A notable life (2 hours or more, not by their own hand) leaves a fresh grave by the road (*"... THIS WEEK."*), a since-the-cure beat; with 6 graves standing, the least notable one goes |
+| **A death in the week** | A notable character (2 hours or more, not by their own hand) leaves a fresh grave by the road (*"... THIS WEEK."*), a since-the-cure beat; with 6 graves standing, the least notable one goes |
 | **The Unsigned last day in full** | Every two real hours (× Test scale) the broadcast's long-stall line, *"Day 52. The perimeter will be maintained. This message will repeat."*, alongside the wipe warnings; the majors' no-cure codas ([QUESTLINES.md](QUESTLINES.md#the-majors)) |
 
 ## Admin tools and the test

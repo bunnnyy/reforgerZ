@@ -1121,7 +1121,7 @@ class RZ_Infection
 			return "the bite hasn't taken yet";
 
 		if (p.m_bTrialDoseTaken)
-			return "once a life: you've had yours";
+			return "you've had yours";
 
 		return "";
 	}

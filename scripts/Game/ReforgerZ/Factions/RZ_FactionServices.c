@@ -68,7 +68,7 @@ class RZ_ServiceSettings
 	[Attribute("2", desc: "Bounty board: real hours a posting stays up; unclaimed, half the cost comes back")]
 	float m_fBountyHours;
 
-	[Attribute("80", desc: "Halcyon Champion: the immunity booster's price in Halcyon Favor (once per life)")]
+	[Attribute("80", desc: "Halcyon Champion: the immunity booster's price in Halcyon Favor (once per character)")]
 	int m_iBoosterCost;
 
 	[Attribute("20", desc: "Halcyon Trusted: the medic's price in Halcyon Favor")]
@@ -77,7 +77,7 @@ class RZ_ServiceSettings
 	[Attribute("15", desc: "Amends: Favor (the faction's own) for the first payment")]
 	int m_iAmendsCost;
 
-	[Attribute("1.5", desc: "Amends: each further payment to the same faction this life costs this much more")]
+	[Attribute("1.5", desc: "Amends: each further payment to the same faction as this character costs this much more")]
 	float m_fAmendsGrowth;
 
 	[Attribute("5", desc: "Amends: Infamy worked off per payment (before the stronghold leader's temper)")]

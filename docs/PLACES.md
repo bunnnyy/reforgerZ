@@ -40,7 +40,7 @@ put the player in a forest on a rocky slope by Camurac. The root, found by the a
    one with a door among those, so a start was often a farm or a lone house with nothing 50–250 m off.
    On Arland every start was (39 of 39); on Everon 16 of 39.
 3. **The fallback start stood anywhere.** When the roll finds nowhere (a territory roll that holds
-   most towns, the line, a pack's lair), the life starts at a spawn point, which was a random point
+   most towns, the line, a pack's lair), the character starts at a spawn point, which was a random point
    within 80% of a town's radius: woods and fields as often as a street (Everon: 53 of 88 had no
    house within 60 m).
 

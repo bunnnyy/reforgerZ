@@ -589,7 +589,7 @@ class RZ_Disguise
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "They know your face": Watched or Uneasy with them, or a leader of theirs met undisguised this life.
+	//! "They know your face": Watched or Uneasy with them, or a leader of theirs met undisguised as this character.
 	bool KnowsFace(int playerId, int f)
 	{
 		RZ_ETier tier = m_GM.GetTier(playerId, f);
@@ -937,7 +937,7 @@ class RZ_Disguise
 			m_GM.NotifyPlayerAs(playerId, RZ_Factions.GetName(f), gunsText, RZ_ENoticeTag.URGENT);
 			m_Marks.OnCaught(playerId, f, "on the road", kitText, named);
 			Public(f);
-			RZ_Log.Info(string.Format("Disguise: %1 caught by %2 at a hostile post: straight to the guns (catch %3 this life)", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), catches));
+			RZ_Log.Info(string.Format("Disguise: %1 caught by %2 at a hostile post: straight to the guns (catch %3 this character)", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), catches));
 			return;
 		}
 
@@ -979,7 +979,7 @@ class RZ_Disguise
 			Public(f);
 
 		RunningJoke(f);
-		RZ_Log.Info(string.Format("Disguise: %1 caught by %2 (catch %3 this life)", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), catches));
+		RZ_Log.Info(string.Format("Disguise: %1 caught by %2 (catch %3 this character)", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), catches));
 	}
 
 	//------------------------------------------------------------------------------------------------

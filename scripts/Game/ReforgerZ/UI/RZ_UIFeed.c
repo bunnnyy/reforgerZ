@@ -592,7 +592,7 @@ class RZ_UIFeed
 			bgName = bg.m_sName;
 
 		RZ_UILine head = new RZ_UILine("H");
-		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iCharacter).Add(RZ_RepNamesPage.Header(m_GM, playerId)).Add(RZ_Habits.StandingLine(p)).End();
+		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iDeaths).Add(RZ_RepNamesPage.Header(m_GM, playerId)).Add(RZ_Habits.StandingLine(p)).End();
 		IEntity standingEnt = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		vector standingAt = vector.Zero;
 		if (standingEnt)

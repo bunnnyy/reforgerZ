@@ -374,7 +374,7 @@ class RZ_StoryKit
 			}
 
 			errands.AddOwed(ident, o);
-			RZ_Log.Info(string.Format("Story: %1 pays %2 at their next join, life %3 (%4 Fame, %5 Favor)", m.m_sTitle, ident, p.m_iCharacter, fame, favor));
+			RZ_Log.Info(string.Format("Story: %1 pays %2 at their next join, character %3 (%4 Fame, %5 Favor)", m.m_sTitle, ident, p.m_iCharacter, fame, favor));
 		}
 	}
 

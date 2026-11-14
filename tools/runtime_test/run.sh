@@ -322,6 +322,12 @@ $WRAP timeout "${1:-5400}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$
 LOG="$(ls -td "$PROFILE"/logs/logs_* | head -1)/console.log"
 
 echo "Log: $LOG"
+# A harness or game script that doesn't compile stops the server at once: say so and fail
+if grep -q "Can't compile \"Game\" script module" "$LOG"; then
+	echo "FAIL: the Game scripts didn't compile (the test harness's included):"
+	grep -E 'SCRIPT +\(E\).*(RZTest|ReforgerZ)' "$LOG" | head -10
+	exit 1
+fi
 [ -n "$RZ_STRIP_NOTE" ] && echo "Ran${RZ_STRIP_NOTE#;}"
 echo "Script exceptions: $(grep -c 'Virtual Machine Exception' "$LOG")"
 grep -A6 'Virtual Machine Exception' "$LOG" | grep -E 'Reason|Function|scripts/' | sort | uniq -c | head -20

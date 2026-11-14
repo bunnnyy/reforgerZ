@@ -52,7 +52,7 @@ for the play-test. [The audit](#the-audit) below is the last full pass.
 | # | Rule | Where it lives | How it's kept | Status |
 |---|---|---|---|---|
 | 19 | **Handing over is a reply you pick.** Nothing completes when you walk up, or when you open the talk screen. | [ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain) | the [Errand] reply, locked with what's missing; `mission_rules.py` (a distance check to a person that completes); runtime `RZT rules FAIL walk-up` | held: every errand, handed ones too, hands in by its reply while the talk screen is on; a handed step ends where it's done and a hand-over counts only by its reply (runtime `RZT openings`); walking back hands in only with the talk screen off |
-| 20 | **The next step is told in words,** by the giver, the next person or the one walking with you. | [DESIGN.md](DESIGN.md#openings-how-every-life-starts) | the openings' chain | held |
+| 20 | **The next step is told in words,** by the giver, the next person or the one walking with you. | [DESIGN.md](DESIGN.md#openings-how-every-character-starts) | the openings' chain | held |
 | 21 | **Ask again and they repeat it.** A giver tells you your current task when asked. | [DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies) | the talk replies | held |
 | 22 | **No pitch for work that isn't there.** A giver with nothing says so. | [DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies) | the talk replies | held |
 

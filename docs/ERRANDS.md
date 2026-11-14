@@ -151,7 +151,7 @@ the contract cap. Steps run on the 5 s tick; checks, faults and call-outs every 
 **Asked** errands skip the gaps, but not safety: no shot within 60 m in the last minute, no infected
 within 30 m, not in a vehicle, not Hunted by the giver's faction, fewer than 2 held.
 
-**Unasked** (a call-out) also needs: alive 3 minutes in this life (a first life finding the Haven:
+**Unasked** (a call-out) also needs: 3 minutes of play as this character (a first character finding the Haven:
 10 minutes after it gets there), not in a bite's Final stage, no
 open offer, 8 minutes since the last unasked offer, not within 300 m of a running mission's spot,
 600 m of the set piece holding the evening ([the calendar](DESIGN.md#the-set-piece-calendar)), 1 km
@@ -169,7 +169,7 @@ giver has the role, ×1.2 if they remember you well (regard 2+), ×0.8 if uneasy
 was one of your last three, ×1.5 for a card; **nearness**, ×1.2 when its own place (its subject, else
 the giver) is within 600 m of you, ×0.85 past 1.2 km; **freshness**, ×1.2 when something fresh happened at
 its subject (a death, a bite, a fire, shells in the last 2 played hours); and ×0.8 for a real day from a
-faction a dead life of yours lied to (below). The pick is weighted among the top three. At most 12
+faction an earlier character of yours lied to (below). The pick is weighted among the top three. At most 12
 errands live on the server.
 
 **Errand reach.** Most players run: an errand whose subject (the person, lair, house or body it's
@@ -182,10 +182,10 @@ that person's own place), so it stays theirs. The ways' own places are picked ne
 **The context cache** (`Missions/Errands/RZ_ErrandsDealer.c`, `RZ_ErrandContext`): per online player,
 remade every 30 s: the settlement you're in and who holds it, a holding within 600 m, a pack's range
 within 1.5 km, a road people use, in a car, a fight (a shot within 60 m in a minute), near a running job
-or set piece, minutes into the life, your tiers and your finale route. The score and locals read it;
+or set piece, minutes into the character, your tiers and your finale route. The score and locals read it;
 the admin view prints it.
 
-**"The last one who said that lied."** A lie found out on a dead life (the lie store's events): that
+**"The last one who said that lied."** A lie found out on an earlier character (the lie store's events): that
 faction's next errand for your identity opens with the line, and its givers' errands score ×0.8 for a
 real day.
 
@@ -408,7 +408,7 @@ Through the one small-pay ledger, per identity for the season (`RZ_ErrandLedger`
   fame's Fame lines and the best deed): never above **39** with that faction (errands can make you
   Known, never Trusted), and at most **10** errand Fame per faction per season day. No rival shares.
 - **Infamy decides the kind.** At 15+ Infamy with the paying faction, an errand pays **amends**
-  instead of Fame: 2 Infamy off through `Forgive()`, at most **8 a life per faction** from errands,
+  instead of Fame: 2 Infamy off through `Forgive()`, at most **8 a character per faction** from errands,
   never below 15 (inside reputation's 30; [REPUTATION.md](REPUTATION.md#working-off-infamy)). The
   amends family (Make It Right, the Latrine, Clean Slate) pays only that while you're Watched.
   Hunted or worse: nothing.
@@ -428,7 +428,7 @@ Through the one small-pay ledger, per identity for the season (`RZ_ErrandLedger`
 |---|---|---|
 | **In kind** | a Bastion post (a Red Hand camp), one errand in three paying 4+ Favor, never while that faction needs food or supplies | a ration (a magazine) off its own shelf in place of 3 Favor, in your pack, **tagged** as the giver's goods: food delivery, the fence and every errand refuse it for pay (*"These are Levie's. Take them back to Levie."*, [mission goods](DESIGN.md#story-blocks)). Needs **Props > Pay ration** (**Pay magazine**); empty, Favor only |
 | **A meal** | a house errand paying 4 Favor or less, at a house fed above one upkeep | supper: the house −1 food, 15% of your health back, 2 Haven Favor, in place of the Favor |
-| **When the truck comes** | a post whose faction needs supplies | the Favor waits for its next truck there (a real day at most) and goes to the life that earned it, if it's online when the truck comes in |
+| **When the truck comes** | a post whose faction needs supplies | the Favor waits for its next truck there (a real day at most) and goes to the character that earned it, if it's online when the truck comes in |
 | **Carried items** | a way marked carried (His Effects' effects, The Name on the Tag's ID) | the step puts an item in your pack (a card's own where it has one: **Props > Soldier's ID**, **Forged papers**; else **Props > Carried**, else the mission item: it can't be equipped, no mission's drop takes it). Only you or a helper can hand it in; taken by anyone else, the errand is spoiled and the thief takes +3 Infamy with the giver's people; lost, it's over |
 
 **Headlines**: errands put out at most **2** a real day (**Headlines a day**).
@@ -930,7 +930,7 @@ and the refusals in [Being asked](#being-asked)):
 | **The Trader's Detour** | lost, a Trader | his destination's town at 60+ infection, or a mission there | Scout his road ahead (20 s): 4 Haven Favor; he remembers you helped |
 | **The Deserter's Way Round** | line, the Deserter | he likes you, a Bastion road post within 1.5 km | Meet him past the post (10 s): 4 Haven Favor; helped. Turn him in at the post: 2 Bastion Fame, a rumour, a world record |
 | **Nothing Goes Out** | line, a Bastion named person | the perimeter sealed, a sealed checkpoint within 1.65 km, Bastion morale under 50 | Leave his letter under a stone at the warning point, 150 m short (5 s), read or not: 3 Favor; the world record `errand.letter_at_line` with its epilogue line (carrier: a prop) |
-| **His Effects** | dead, any faction's named person (Bastion: The Locker; others: The Wreck's Name) | that faction's truck lost within 1.5 km in a season day (never to whoever robbed it), else Traces' truck wreck (L5, a driver's papers) or fallen post (V7, a soldier's tags) within 1.5 km; once per dead man, 3 times a life (not once a season) | The effects are a **carried item**: gathered at the wreck (15 s), only you or a helper can hand them in. Bring his things back: 5 Favor, 1 Fame; Bastion's boxes "for when the gates open" as an epilogue line. [Known: Red Hand] sell them at the fence: the jacket 3 and the photo frame 10 Red Hand Favor, a record "sold"; seen by the giver's people (the witness rule), +5 Infamy with them. A kit piece off a man you killed is refused (*"You'd know. You were there."*, +3 Infamy with his faction) |
+| **His Effects** | dead, any faction's named person (Bastion: The Locker; others: The Wreck's Name) | that faction's truck lost within 1.5 km in a season day (never to whoever robbed it), else Traces' truck wreck (L5, a driver's papers) or fallen post (V7, a soldier's tags) within 1.5 km; once per dead man, 3 times a character (not once a season) | The effects are a **carried item**: gathered at the wreck (15 s), only you or a helper can hand them in. Bring his things back: 5 Favor, 1 Fame; Bastion's boxes "for when the gates open" as an epilogue line. [Known: Red Hand] sell them at the fence: the jacket 3 and the photo frame 10 Red Hand Favor, a record "sold"; seen by the giver's people (the witness rule), +5 Infamy with them. A kit piece off a man you killed is refused (*"You'd know. You were there."*, +3 Infamy with his faction) |
 | **The Name on the Tag** | dead, the clerk | a death within 1.5 km in a season day (the background and how long they lasted, never the name), or the fallout of a Distress Call or Survivors Trapped whose people died | Leave the satchel on a cairn where they fell (10 s): 4 Favor. Or pin the line to the board. A fallout's **named body** at the job's site: take the ID (10 s, a carried item) and carry it in yourself: 4 Favor from the faction it names (a Red Hand crewman's: thanks only, crews don't bury their dead). A world record with an epilogue line (carrier: the board) |
 | **Not for the Crew** | crews, a Red Hand named person | a bite within 1 km in the last played hour, a Halcyon station within 1.5 km, before the cure | Walk him to the station: 4 Halcyon Favor, a world record. Your own antidote: 6 Red Hand Favor. Tell the book-keeper: 2 Red Hand Fame |
 | **Wildcard Money** | crews, a Red Hand named person | Wildcard or Tolerated with the Red Hand; another Red Hand holding within 1.5 km | Carry the cut there: 6 Favor; skim a little: 8 Favor; give it to a hungry house within 1.5 km: +2 food there, 2 Haven Fame, +8 Red Hand Infamy |
@@ -1069,7 +1069,7 @@ still meets nobody; a stopped car is the exception), from facts the server alrea
 **Never:** another player outside your vanilla group within 300 m; within 2 km of the Long Table's
 farm; driving; a shot within 60 m in 60 s or infected within 30 m; a running mission's 300 m, a set
 piece's 600 m on its evening, the lab's 1 km during the final stand; a storm (in rain, only approaches
-and fires); the first 5 minutes of a life; within 600 m of a lair, inside the infected's ground by day
+and fires); the first 5 minutes of a character; within 600 m of a lair, inside the infected's ground by day
 while their party is out, or at night away from a fire or a held place; a spot that gave anyone a
 stranger in the last 2 real hours, or you one in a real day. **The ceiling** only ever stops one: one
 per player every 15–25 minutes, 6 on the server (the body budget's strangers). The routine's Why must
@@ -1133,7 +1133,7 @@ did for them (helped, saved, lied to, crossed, sold, promised).
 - **Pinned** locals (saved, promised, sold) are kept to the season's end: 30 a server, 4 a house.
   **Unpinned** ones: 20; past that, the oldest nobody has met for 3 real days goes first.
 - **Shown** on one of the house's plain occupants after its two named people (never a leader's or a
-  named person's body), as **Talk to {name}**: their line about what you did, to you only. A new life
+  named person's body), as **Talk to {name}**: their line about what you did, to you only. A new character
   is greeted with *"You've a look of someone."*; someone who never met them as a stranger.
 - **They live and die with the house.** When a house loses people, its locals are among them as often
   as their share, and the news (*"didn't come down to breakfast"*) goes only to the players who knew
@@ -1200,7 +1200,7 @@ found by events (a visit, a road, a rumour round, the next real reading).
 
 ## Handed errands: the openings' chain
 
-An opening's steps ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) are errands another
+An opening's steps ([DESIGN.md](DESIGN.md#openings-how-every-character-starts)) are errands another
 system hands a player, already taken (`RZ_Errands.Hand`, code in `Guidance/RZ_OpeningChain.c`,
 `RZ_OpeningFavours.c` and `RZ_OpeningSteps.c`). They
 are the **only errands, and the only jobs, handed to the player rather than asked for**:
@@ -1209,7 +1209,7 @@ someone outside, the first step is handed in a conversation the player opens: be
 objective** is handed and tracked, and talking to the contact ends it and hands the step there
 (nobody outside, or the contact dead: the step is handed at once). Every step is done where it's
 done (`m_bEndsThere`): none sends you back. The next starts there, said by the contact walking with
-you ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)). The chain is the door's favour, its
+you ([DESIGN.md](DESIGN.md#openings-how-every-character-starts)). The chain is the door's favour, its
 hand-over, the line and the runner. The old step 2s below stay as step definitions (The Fever is the
 Nurse's and the Doctor's way through the favour) but no chain hands them; the old step 1 and the two
 step 2s that ran through talk (Open Channel, Two Families) are gone.
@@ -1217,7 +1217,7 @@ step 2s that ran through talk (Open Channel, Two Families) are gone.
 | Step | Key | Way | The step |
 |---|---|---|---|
 | ✅ Outside the Door, Back to *the contact* (the talk objectives) | `opening.talk`, `opening.talk.next` | talk | "Talk to *the contact*.": never done by being there (`StepCounts` false), only by opening talk with them, when it ends quietly (no past job); 45 minutes before it lapses, which ends the opening |
-| ✅ The favour (The Medicine, The Battery, The Last Box, The Spare Key, The Cool Box, A Battery for the Set, The Rifle, A Tin, The Rota, The Last Sack) | `opening.favour.<n>` | do | one named thing fetched for the contact at a place its words are true of, 90–450 m off (the neighbour's door, the lad's house, the house next door: 35–300 m): a work site's hold on its ground floor (the neighbour's: on the real door's doorstep), the thing (or a toolbox, a crate, papers) standing there; done there. Its thing is held for you until the hand-over; 45 minutes before it lapses ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) |
+| ✅ The favour (The Medicine, The Battery, The Last Box, The Spare Key, The Cool Box, A Battery for the Set, The Rifle, A Tin, The Rota, The Last Sack) | `opening.favour.<n>` | do | one named thing fetched for the contact at a place its words are true of, 90–450 m off (the neighbour's door, the lad's house, the house next door: 35–300 m): a work site's hold on its ground floor (the neighbour's: on the real door's doorstep), the thing (or a toolbox, a crate, papers) standing there; done there. Its thing is held for you until the hand-over; 45 minutes before it lapses ([DESIGN.md](DESIGN.md#openings-how-every-character-starts)) |
 | ✅ Give Him the *thing* | `opening.favour.give.<n>` | give | done only by the hand-over reply on the contact's talk screen (*[Errand] Here's your battery.*), there and then (`RZ_Errands.FinishNow`); standing by him never counts (`StepCounts` false). He walks with you, so the step's place follows him |
 | ✅ Your background's way (Hotwire It, The Tracks, Open Up, The Back Door, Kept Cold, Give It Here; the Nurse's and the Doctor's is The Fever) | `opening.favour.way.<background>`, `opening.fever` | do | handed instead of the fetch when its tagged reply is picked ([Mechanic] *Forget the battery. Show me the car.*): a hold at its place, done there; no hand-over follows. The Radio Operator's, the Raider's and the Elder's ways are replies that settle the favour there and then |
 | ✅ Water | `opening.water` | do | the nearest well or water tower: hold **Fill what you can carry** at the cans by it (8 s; off: 15 s there), done there |
@@ -1273,7 +1273,7 @@ after someone who walks.
 
 - **Not saved:** a duty's table and its people, like every held errand.
 - **Saved** (state.json, wiped with the season): each identity's ledger (cards done, cooldowns, the
-  hour's Favor, cards today, errand Fame today, amends this life, the last three families, errands
+  hour's Favor, cards today, errand Fame today, amends this character, the last three families, errands
   done, the work done for each faction (the ladder's second rung), the houses whose errands are half as likely for you, the twist count, the threads), the safehouses' named
   people, the locals, each house's count of errands done there and the Haven's reading day of each lot
   (Fresh Chalk). Held errands,

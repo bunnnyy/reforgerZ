@@ -162,7 +162,7 @@ access rank does: **Known** or better counts ([REPUTATION.md](REPUTATION.md)).
   level, newest layer first, once per door per session (a low notice titled **On a door**).
 - **Three layers** open in the reader instead (one paragraph a layer) with **UI > Reader** on.
 - **The journal.** The last 12 door lines read, with the town and the day, under **Read on doors** in the
-  notebook's Journal tab ([UI.md](UI.md#the-notebook)). Lost with the life.
+  notebook's Journal tab ([UI.md](UI.md#the-notebook)). Lost at a death.
 
 ## Where marks come from
 
