@@ -29,6 +29,11 @@ class RZ_PlayerProfile
 	bool m_bCaseHeld;					// died carrying it: it comes back in the next spawn's pack
 	float m_fCaseWarm;					// and how warm it was then (0 cold, 1 warm)
 
+	// The map's fog (World/RZ_MapFog.c): one bit per square seen, kept across deaths (per character
+	// once characters last: designs/PERSISTENCE.md); m_sFogGrid is the grid it was kept for
+	ref array<int> m_aFog = {};
+	string m_sFogGrid;
+
 	// The quest tracker (UI/RZ_Quests.c): the job this player follows, kept across relogs
 	int m_iTrackedId;					// its journal row id, 0 = none
 	string m_sTrackedTitle;				// its title, to find it again after a restart

@@ -182,6 +182,7 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	static const int DUTY_ROW = 37;			// the duty a giver offers beside their pressing errand (RZ_Errands.TalkDuty)
 	static const int ADMIN_TALKRESET = 36;	// /talkdebug reset: this person's scenes undecided again
 	static const int ADMIN_SITES = 38;		// /sites: the site builder (World/HandBuilt/RZ_SiteBuilder.c)
+	static const int ADMIN_FOG = 39;		// /fog all or /fog reset: your whole map clear, or fogged again if it is (World/RZ_MapFog.c)
 
 	protected IEntity m_Owner;
 
@@ -558,6 +559,9 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 
 		if (gm.GetCampLife())
 			replies.Insert(AdminReply(ADMIN_SITES, "[Admin] Site builder"));
+
+		if (gm.GetMapFog() && gm.GetMapFog().IsOn())
+			replies.Insert(AdminReply(ADMIN_FOG, "[Admin] Clear my map's fog (again: fog it)"));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -738,7 +742,7 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	//! The admin replies (none of them changes the game). True if replyId was one.
 	protected bool PickAdmin(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
 	{
-		if (replyId != ADMIN_TREES && replyId != ADMIN_TRIBES && replyId != ADMIN_REP && replyId != ADMIN_TRACES && replyId != ADMIN_TALKTEST && replyId != ADMIN_TALKRESET && replyId != ADMIN_SITES)
+		if (replyId != ADMIN_TREES && replyId != ADMIN_TRIBES && replyId != ADMIN_REP && replyId != ADMIN_TRACES && replyId != ADMIN_TALKTEST && replyId != ADMIN_TALKRESET && replyId != ADMIN_SITES && replyId != ADMIN_FOG)
 			return false;
 
 		if (!RZ_NoticeBoard.IsAdmin(playerId))
@@ -758,6 +762,8 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 			gm.GetTraces().Command(playerId, "");
 		else if (replyId == ADMIN_SITES)
 			RZ_SiteBuilder.Open(playerId);
+		else if (replyId == ADMIN_FOG && gm.GetMapFog())
+			gm.GetMapFog().Command(playerId, "toggle");
 
 		return true;
 	}

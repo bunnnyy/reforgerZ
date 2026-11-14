@@ -204,7 +204,7 @@ and one way to end it: **research the cure.**
   and the options you can't use yet locked with a word saying why (the game's own
   inventory, looting, healing, doors and fuel first, a menu for anything with options, a single
   prompt only for what's done in a hurry),
-  spoken lines as subtitles that say who is talking and from where (radio voices in their own box), notes on a paper reader, and on the map only what you know (of the jobs, only the tracked one's objective), with its key in the corner. Gamepad
+  spoken lines as subtitles that say who is talking and from where (radio voices in their own box), notes on a paper reader, and on the map only what you know (of the jobs, only the tracked one's objective; under a fog of war, only the ground this character has seen, and places as rumours until then), with its key in the corner. Gamepad
   and console as well as keyboard and mouse: every screen works with a pad, nothing needs typing
   or a chat command, and no text is under 18 px for a TV (the HUD and notice cards show in Workbench play,
   and the spawn screen, the map key and the map icons with the keyboard, pad not yet; the notebook, talk,
@@ -255,7 +255,7 @@ scripts/Game/ReforgerZ/
                  seasons (the winner's rules, rule sets, the wipe cycle), AI groups' move
                  orders (one held waypoint each); the shared engine: the clocks, deeds, the
                  callback queue, names in public text; the photo tour (Workbench play only)
-  World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
+  World/         settlements, the map's fog (what each character has seen), the Perimeter, safehouses and their notice boards, wanderers,
                  deer herds in the country and their meat, the things players build cleared
                  when unused (fireplaces, tents),
                  town memory, the power grid (where its station is, the control at it, its
@@ -327,7 +327,7 @@ scripts/Game/ReforgerZ/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen and the nametags, the reader,
                  the car repair, shop, crafting and cooking screens (and the item picture), the radio screen, the object menu and the status strip, the power panel, the street lamps (dark but where there's power), the screen guard, the notice board, the spawn screen and loadout lock, the
-                 death brief, the map's icon layer and key, notice styles, notice lanes (the interruption budget), chat commands
+                 death brief, the map's icon layer, its fog and key, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugins: ReforgerZ: Create prefabs, Write prefab checklist
                  (RZ_CreatePrefabsPlugin.c); the PC's helpers for building prefabs as text:

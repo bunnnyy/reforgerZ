@@ -740,6 +740,7 @@ class RZ_TribePeople
 		if (near.IsEmpty())
 		{
 			m_GM.NotifyPlayer(playerId, "The roads", "Quiet, round here. Nothing out in the woods we know of.");
+			RoadToJob(playerId, from);
 			return true;
 		}
 
@@ -755,7 +756,26 @@ class RZ_TribePeople
 			text += voice;
 
 		m_GM.NotifyPlayer(playerId, "The roads", text.Trim());
+		RoadToJob(playerId, from);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Asking about the roads also shows the way to the job you follow: the map's fog lifts in a
+	//! strip from where you stand to its place (World/RZ_MapFog.c).
+	protected void RoadToJob(int playerId, vector from)
+	{
+		RZ_MapFog fog = m_GM.GetMapFog();
+		if (!fog || !fog.IsOn() || !m_GM.GetUIFeed())
+			return;
+
+		vector at;
+		bool rough;
+		float radius;
+		if (!m_GM.GetUIFeed().GetTracker().ObjectivePlace(playerId, at, rough, radius))
+			return;
+
+		fog.RevealStrip(playerId, from, at, m_GM.GetMapFogSettings().m_fRoadWidth);
 	}
 
 	//------------------------------------------------------------------------------------------------

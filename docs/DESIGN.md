@@ -77,7 +77,7 @@ from Early Outbreak to Aftermath, and the only way to win is together: research 
 
 ## Settlements, spawn points and the map
 
-Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameModeComponent.c`, `Core/RZ_MapMarkers.c`, `UI/RZ_MapIcons.c`.
+Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameModeComponent.c`, `Core/RZ_MapMarkers.c`, `UI/RZ_MapIcons.c`. What the map shows each player (its icons, and the fog over ground they haven't seen) is in [UI.md](UI.md#the-maps-fog).
 
 - **Settlements** come from the map's city, town and village labels plus clusters of buildings
   (a 300 m grid cell with 8 or more buildings). A cluster takes the name of the nearest local

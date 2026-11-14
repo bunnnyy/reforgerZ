@@ -411,6 +411,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("1", desc: "Show world events and the lab on the map as vanilla text markers, when the icon layer isn't set up (UI > Map icon layout). Turn off if markers misbehave", category: "ReforgerZ|Map")]
 	protected bool m_bMapMarkers;
 
+	[Attribute(desc: "Map fog: the map shows only what this character has seen; places as rumours until seen (docs/UI.md, The map's fog)", category: "ReforgerZ|Map")]
+	protected ref RZ_MapFogSettings m_MapFogSettings;
+
 	// ---------------------------------------------------------------- UI
 	[Attribute(desc: "UI: styled notice cards (off = the vanilla hint), the infection timer, noise meter, radio log size, icon imageset and row layouts (docs/UI.md, UI/LAYOUTS.md)", category: "ReforgerZ|UI")]
 	protected ref RZ_UISettings m_UISettings;
@@ -493,6 +496,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_CampLife m_CampLife;
 	protected ref RZ_LongTable m_LongTable;
 	protected ref RZ_Traces m_Traces;
+	protected ref RZ_MapFog m_MapFog;
 	protected ref RZ_Land m_Land;
 	protected ref RZ_Tribes m_Tribes;
 	protected bool m_bClockSet;			// the day length and the saved time of day were applied
@@ -585,6 +589,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Shared)
 			m_Shared.Forget(playerId);
+
+		if (m_MapFog)
+			m_MapFog.Forget(playerId);
 
 		if (m_Epilogue)
 			m_Epilogue.Forget(playerId);
@@ -760,6 +767,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_SharedSettings)
 			m_SharedSettings = RZ_SharedSettings.Cast(RZ_Util.NewWithDefaults("RZ_SharedSettings"));
 
+		if (!m_MapFogSettings)
+			m_MapFogSettings = RZ_MapFogSettings.Cast(RZ_Util.NewWithDefaults("RZ_MapFogSettings"));
+
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
 			m_aBackgrounds = new array<ref RZ_Background>();
@@ -823,6 +833,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Interactions = new RZ_Interactions(this, m_InteractionSettings, m_SearchSettings, m_LootSettings, m_CarSettings, m_CraftSettings, m_TrapSettings, m_RadioCrackSettings);
 		m_Errands = new RZ_Errands(this, m_ErrandSettings);
 		m_Traces = new RZ_Traces(this, m_TraceSettings);
+		// The map's fog: what each character has seen (docs/UI.md, The map's fog)
+		m_MapFog = new RZ_MapFog(this, m_MapFogSettings);
 
 		// A wipe that came due last run (the wipe cycle) or one by hand is carried out now:
 		// backup, then fresh
@@ -1181,6 +1193,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_LongTable GetLongTable() { return m_LongTable; }
 	//! Traces (docs/TRACES.md): door marks, their reading, the player traces. Server only.
 	RZ_Traces GetTraces() { return m_Traces; }
+	RZ_MapFog GetMapFog() { return m_MapFog; }
+	RZ_MapFogSettings GetMapFogSettings() { return m_MapFogSettings; }
 	//! World > Traces, on every machine (the clients' decals read the kit).
 	RZ_TraceSettings GetTraceSettings() { return m_TraceSettings; }
 	//! The land grid (docs/DESIGN.md, The land grid). Check IsReady(): off by default, and read over
@@ -1971,6 +1985,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Behaviour.Tick(ids, players);
 		// Traces: a town's doors on entry, a door read after 2 s standing at it
 		m_Traces.SecondTick(ids, players);
+		// The map's fog: the ground each player sees as they go
+		if (m_MapFog)
+			m_MapFog.SecondTick(ids, players);
 
 		// The land grid's first reading, a few squares a second (nothing once it's read)
 		m_Land.Step();
