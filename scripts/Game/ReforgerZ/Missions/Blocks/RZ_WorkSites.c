@@ -276,6 +276,7 @@ class RZ_WorkSites
 	protected ref RZ_Carries m_Carries;
 	protected ref array<ref RZ_WorkSite> m_aSites = {};
 	protected ref array<ref RZ_WorkChoice> m_aChoices = {};
+	protected ref map<string, ref RZ_HandsOnGame> m_mHands = new map<string, ref RZ_HandsOnGame>();	// choices shown up close (RZ_HandsOn) instead of as a list
 	protected int m_iNextId = 1;
 	protected float m_fClock;
 	protected float m_fSpawnTimer;
@@ -808,6 +809,33 @@ class RZ_WorkSites
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The choice `key` opens up close in the hands-on view (Interactions/RZ_HandsOn.c) for players
+	//! whose client can show it; the list stays for the rest. Null takes it off.
+	void SetHandsOn(string key, RZ_HandsOnGame game)
+	{
+		if (game)
+			m_mHands.Set(key, game);
+		else
+			m_mHands.Remove(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! As if the player had picked site `siteKey` from the choice's list: its prompt waits for their
+	//! hold (the hands-on view's buttons that are work done with the body, like taking someone up).
+	void ArmChoice(string key, string siteKey, int playerId)
+	{
+		RZ_WorkChoice c = FindChoice(key);
+		RZ_WorkSite s = Find(siteKey);
+		if (!c || !s || s.m_bDone || s.m_bClosed)
+			return;
+
+		c.m_sArmed = siteKey;
+		c.m_iArmedBy = playerId;
+		c.m_fArmedAt = m_fClock;
+		PushChoice(c);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The choice is put away now (its sites are the owner's to close).
 	void Scatter(string key)
 	{
@@ -927,6 +955,14 @@ class RZ_WorkSites
 			if (gm)
 				gm.NotifyPlayer(playerId, c.m_sTitle, "This isn't your job. Whoever took it has to do it.");
 
+			return;
+		}
+
+		// Up close, where the game has a view of it and this player's client can show one
+		RZ_HandsOnGame hands = m_mHands.Get(c.m_sKey);
+		if (hands && RZ_HandsOn.CanShow(playerId))
+		{
+			RZ_HandsOn.Open(playerId, hands);
 			return;
 		}
 
@@ -1065,6 +1101,13 @@ class RZ_WorkSites
 	//------------------------------------------------------------------------------------------------
 	protected void DropChoice(RZ_WorkChoice c)
 	{
+		RZ_HandsOnGame hands = m_mHands.Get(c.m_sKey);
+		if (hands)
+		{
+			RZ_HandsOn.CloseGame(hands);
+			m_mHands.Remove(c.m_sKey);
+		}
+
 		DeleteChoiceBox(c);
 		m_aChoices.RemoveItem(c);
 	}

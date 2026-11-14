@@ -203,6 +203,10 @@ class RZ_DutyScene
 	int m_iSeen;					// shady choices that were seen
 	IEntity m_Person;				// the open beat's person to talk to (m_sTalk), only while it's open
 	IEntity m_Thing;				// the open beat's thing on show (m_sThing), only while it's open
+	ref array<string> m_aLog = {};	// what's been said out here, oldest first (the hands-on view's "What you found")
+	ref array<int> m_aLogTones = {};
+	ref RZ_BeatHandsOn m_Hands;		// the open beat up close (Missions/Errands/RZ_BeatHandsOn.c)
+	float m_fHandsAt = -100;		// when a choice was last made up close: the next beat at the spot opens up close too
 	ResourceName m_sDress;			// what stands beside the scene's first beat until it's over (the lock-up's pen)
 	ref map<string, int> m_mStock = new map<string, int>();	// a line's stocks by count (fill:water=4, use:water)
 	int m_iCarry;					// carrying something by its rules (1 time, 2 no running or drops): the cold chain
@@ -247,7 +251,7 @@ class RZ_DutyScenes
 	protected static const float SEEN_SQUAD = 20;		// their people see what your hands do within this
 	protected static const float SEEN_HOME = 25;		// and so does the place
 	protected static const float DOORSTEP = 1.5;		// a door beat stands this far out from the doorway
-	protected static const float SAME_SPOT = 3;			// an option set out no further than this is still at the beat's spot (round a bed)
+	static const float SAME_SPOT = 3;			// an option set out no further than this is still at the beat's spot (round a bed)
 	protected static const float OPTION_STEP = 0.9;		// between a beat's options, side by side
 	static const float FACE_ARC = 140;					// degrees an open side's options spread over
 	static const int TAG_PERSON = -18;					// RZ_PuzzleObjectComponent mission id: a duty's person to talk to (object index: the errand)
@@ -666,7 +670,10 @@ class RZ_DutyScenes
 		{
 			s.m_bSaid = true;
 			if (!b.m_sLine.IsEmpty())
+			{
 				m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, b.m_sLine);
+				Log(s, b.m_sLine, RZ_HandsOn.TONE_PLAIN);
+			}
 		}
 
 		// No work sites here: the first thing you could do is what's done, by standing there
@@ -1043,11 +1050,92 @@ class RZ_DutyScenes
 		if (together.Count() > 1)
 			sites.Gather(SpotKey(s), SpotName(s, b), together, middle * (1.0 / together.Count()), b.m_sLine, yaw);
 
+		// Its prompt opens it up close (not where someone stands to be talked to: that's the talk)
+		s.m_Hands = null;
+		if (together.Count() > 1 && b.m_sTalk.IsEmpty())
+		{
+			s.m_Hands = new RZ_BeatHandsOn(this, s, s.m_iBeat);
+			sites.SetHandsOn(SpotKey(s), s.m_Hands);
+		}
+
 		// Someone to talk to a step behind the options; what's on show a step in front
 		vector back = Vector(Math.Sin(rad), 0, Math.Cos(rad));
 		PlacePerson(s, b, b.m_vAt - back * PERSON_OFF, yaw);
 		PlaceThing(s, b, b.m_vAt + back, yaw);
 		PlaceDress(s, b.m_vAt + axis * DRESS_OFF, yaw);
+		// The last choice was made up close and this beat is where you stand: it opens up close
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(s.m_iPlayer);
+		if (s.m_Hands && me && s.m_fClock - s.m_fHandsAt <= 4 && RZ_Util.DistXZ(me.GetOrigin(), b.m_vAt) <= 5 && RZ_HandsOn.CanShow(s.m_iPlayer))
+			RZ_HandsOn.Open(s.m_iPlayer, s.m_Hands);
+	}
+
+	// ================================================================ Up close (RZ_BeatHandsOn)
+	//------------------------------------------------------------------------------------------------
+	//! The open beat, or null.
+	RZ_DutyBeat OpenBeatOf(RZ_DutyScene s, int beat)
+	{
+		if (!s.m_bOpen || s.m_bDone || beat != s.m_iBeat || beat < 0 || beat >= s.m_aBeats.Count())
+			return null;
+
+		return s.m_aBeats[beat];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What stands for the beat: its person, its thing on show, else its first option's prop.
+	IEntity BeatEntity(RZ_DutyScene s)
+	{
+		if (s.m_Person)
+			return s.m_Person;
+
+		if (s.m_Thing)
+			return s.m_Thing;
+
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (!sites)
+			return null;
+
+		return sites.PropOf(Key(s, 0));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Option `option` of beat `beat` chosen up close: the same as its prompt's hold (the view's own
+	//! hold stood for it).
+	void HandsChoose(RZ_DutyScene s, int beat, int option, int playerId)
+	{
+		RZ_DutyBeat b = OpenBeatOf(s, beat);
+		if (!b || playerId != s.m_iPlayer || option < 0 || option >= b.m_aOptions.Count())
+			return;
+
+		RZ_DutyOption o = b.m_aOptions[option];
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (o.m_bDone || !me)
+			return;
+
+		if (o.m_iItems > 0 && RZ_Errands.CountItems(me, o.m_eItem) < o.m_iItems)
+		{
+			Log(s, string.Format("You haven't got that on you: %1.", RZ_Errands.ItemNeed(o.m_eItem, o.m_iItems)), RZ_HandsOn.TONE_PLAIN);
+			return;
+		}
+
+		s.m_fHandsAt = s.m_fClock;
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (sites)
+			sites.Close(Key(s, option));
+
+		Choose(s, b, o, me);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line into the scene's log (the view shows the last ten).
+	protected void Log(RZ_DutyScene s, string line, int tone)
+	{
+		if (line.IsEmpty())
+			return;
+
+		s.m_aLog.Insert(line);
+		s.m_aLogTones.Insert(tone);
+		if (s.m_Hands)
+			RZ_HandsOn.Refresh(s.m_Hands);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1159,7 +1247,14 @@ class RZ_DutyScenes
 			s.m_aTold.Insert(o.m_sTold);
 
 		if (!said.IsEmpty())
+		{
 			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, said);
+			int tone = RZ_HandsOn.TONE_PLAIN;
+			if (seen)
+				tone = RZ_HandsOn.TONE_BAD;
+
+			Log(s, said, tone);
+		}
 
 		RZ_Log.Info(string.Format("Duty scene: errand %1, %2 at %3: %4 (seen %5).", s.m_iErrand, RZ_Util.PlayerName(s.m_iPlayer), b.m_sKey, o.m_sLabel, seen));
 		// A beat with several picks (places to look) stays until they're used up; then only what

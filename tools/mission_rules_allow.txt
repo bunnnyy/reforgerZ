@@ -9,6 +9,8 @@
 
 # 3: doors
 3 RZ_BoardedDoorway.et BuildingParts/Doors  # never in the open: a trap's barricade goes up in a real doorway within 3 m (RZ_Traps), a BOARDS work look only within 1.2 m of one (RZ_DoorGeometry.DoorPropFits), else it's left out
+3 RZ_Dress_GateLeaf_Bastion.et Door_NetFence_05_gate_tall_wide  # a camp's own chain-link gate leaf in its own fence (docs/SITES.md, the open gate), never a building's door
+3 RZ_Dress_GateLeaf_Halcyon.et Door_NetFence_05_gate_tall_wide  # the same
 
 # 10: a woman's name or word in a shown line (everyone met is a man): women only mentioned, never met
 10 gate.rzd say My mother said to come to the soldiers if anything happe  # the boy's mother, back home; never met

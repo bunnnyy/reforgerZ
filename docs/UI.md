@@ -1164,6 +1164,28 @@ prompts from then on) and shows the prompts; when the server is at its cap of op
 client shows the prompts for a minute. A dedicated server never hides a prompt, so a client
 without the menu can use any of them.
 
+### The hands-on view
+
+A game's thing up close, in the world (`Interactions/RZ_HandsOn.c` on the server, `UI/RZ_HandsOnMenu.c`,
+layout `RZ_HandsOnMenu.layout` written by `tools/ui_gen/hands_on_layout.py`, preset `RZ_HandsOnMenu`).
+A duty's prompt on a subject (a person in the line, a body, a tray, a crate, a beat's bed or bag) opens
+it instead of the object menu's list, for a client that can show it:
+
+| Part | What it does |
+|---|---|
+| The camera | Comes in on the real person or prop from the side you stand on, the thing a little left of the middle (the panel is on the right). No new animations: the world and the camera do it |
+| The places to look | Glowing rings with a label, kept over their place each frame: a person's forearm, eyes and brow on their bones; a body's arms, neck and tag, a tray's seal, lamp and label, a crate's top, seal and chit on the prop's real box; a beat's looks set out across the thing as you see it. Open amber, seen in what they showed (green clean, amber odd, red bad), grey when there are no looks left |
+| A look | Eases the camera onto the place, a short hold fills under its label (1.2 s), then what was seen shows at the place, with a red flash for a bad find and an amber one for an odd one. A place seen already shows again in a moment and costs nothing |
+| The panel | The title, looks left, what's free to see and the rules, **What you found** (everything said about it: the tell as you walked up, every look, running out of looks, a beat's lines; the last ten), and up to three buttons (the game's calls: take them up, pass, the fire...) |
+
+Pad: D-pad or left stick between the places, **A** looks, **X / Y / R3** the buttons, **B** closes. Keys:
+arrows, Enter, R / F / V, Esc. Mouse: click a place or a button (each lights under the cursor), the X.
+
+It's one prop of the game, never the whole game: you still walk to each subject, take it up with your
+hands and carry it to its place. The server holds the truth and checks every look. It closes when you
+walk more than 6 m off. **Fallback:** a client that can't open it says so and gets the object menu's
+list (and from there world prompts), as before.
+
 ### The status strip and locked rows
 
 Two pieces the object menu and the cooking screen share: a row of readout tiles saying what state a

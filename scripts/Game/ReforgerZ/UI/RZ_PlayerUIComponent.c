@@ -457,6 +457,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 		{
 			RZ_SiteHud.OnPayload(payload);
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_HANDS)
+		{
+			RZ_HandsOnMenu.OnPayload(this, payload);
+		}
 		else if (kind == RZ_UIFeed.PAYLOAD_TRACKER)
 		{
 			m_sTracker = payload;
@@ -897,6 +901,25 @@ class RZ_PlayerUIComponent : ScriptComponent
 		int playerId = OwnerPlayerId();
 		if (playerId > 0)
 			RZ_SiteBuilder.ClientAct(playerId, act, id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The hands-on view: a look, a button, closed or can't show (Interactions/RZ_HandsOn.c).
+	void SendHandsAct(string act, string arg)
+	{
+		if (Replication.IsServer())
+			RpcAsk_HandsAct(act, arg);
+		else
+			Rpc(RpcAsk_HandsAct, act, arg);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_HandsAct(string act, string arg)
+	{
+		int playerId = OwnerPlayerId();
+		if (playerId > 0)
+			RZ_HandsOn.ClientAct(playerId, act, arg);
 	}
 
 	//------------------------------------------------------------------------------------------------

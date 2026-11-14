@@ -620,8 +620,12 @@ with your hands**, never on a screen (`RZ_DutyGames`, `RZ_DutyGame`; the rule is
 the result. The server holds the truth and judges.
 
 **How it plays, in three lines.** Three or four subjects wait in a row at the place (bodies, people,
-trays). Each has **one prompt, its name** (*A courier*, *Tag 114*): it opens the
-[object menu](UI.md#the-object-menu) with its three places to look, a 2 s hold each once picked
+trays). Each has **one prompt, its name** (*A courier*, *Tag 114*): it opens it up close in the
+[hands-on view](UI.md#the-hands-on-view) (`RZ_DutyHandsOn`): the camera on the person, body, tray or
+crate, its three places glowing where they are on it (a look is a short hold there, and one seen
+shows again for nothing), everything said about it in the panel's **What you found**, and **Take
+them by the arm** as its button (the prompt then waits for the 3 s hold). A client that can't show
+the view gets the [object menu](UI.md#the-object-menu) with its three places to look, a 2 s hold each once picked
 (*Look at the arms*, *Look at the neck*, *Check the papers against the tag*), and taking it up
 (*Take them by the arm*, 3 s), under its tell, what you've seen of it, the looks left and the
 rules. You have fewer looks than there are places (subjects + 2), so the tells say where to spend
@@ -703,6 +707,13 @@ repeat soon. Two things the beats can do that a patrol's finds don't:
 - **Places to look, and fewer looks than places.** A beat can have several things to do, each at
   its own spot a few metres out, with only so many allowed before it moves on (the roll call: five
   places, three looks).
+- **Up close.** A beat whose things to do stand at one spot (an arrival at the decon line, a bag at
+  the incinerator, a bed on the ward, a kit, a thing off the tarp) opens in the
+  [hands-on view](UI.md#the-hands-on-view) (`RZ_BeatHandsOn`) on what stands there: its looks are
+  glowing places set out across it, its calls the panel's buttons (places too, when there are more
+  than three), and every line said out here in **What you found**. Choosing up close is the same as
+  the prompt's hold; the next beat at the same spot opens up close by itself. A beat with someone to
+  talk to stays the talk.
 - **A call that's scored.** The beat that follows asks what you make of it; the right answer is in
   what you saw. The scene pays by the share of calls got right, and Fame only when every one was.
 

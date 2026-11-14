@@ -878,9 +878,12 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	protected void DrawTabs()
 	{
-		array<string> names = {"All", "Haven", "Bastion", "Red Hand", "Halcyon"};
 		for (int t = 0; t < TABS; t++)
 		{
+			string tabName = "All";
+			if (t > 0)
+				tabName = RZ_Factions.GetShortName(t - 1);
+
 			int n = 0;
 			foreach (array<string> site : m_aSites)
 			{
@@ -889,7 +892,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			}
 
 			string idx = t.ToString();
-			RZ_UIW.SetText(m_wRoot, "TabText" + idx, string.Format("%1 (%2)", names[t], n));
+			RZ_UIW.SetText(m_wRoot, "TabText" + idx, string.Format("%1 (%2)", tabName, n));
 			RZ_UIW.Show(m_wRoot, "TabLine" + idx, t == s_iTab);
 			Color c = Lin(154, 151, 143);
 			if (t == s_iTab)
