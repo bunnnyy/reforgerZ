@@ -3409,6 +3409,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A voice from a place with nobody to see (behind a door, under a floor): the arrow points there.
+	void SayAt(int playerId, string speaker, int faction, string text, vector at)
+	{
+		SayFrom(playerId, speaker, faction, text, null, at);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Say, from a place when there's no body (`at`, vector.Zero for none).
 	protected void SayFrom(int playerId, string speaker, int faction, string text, IEntity who, vector at)
 	{

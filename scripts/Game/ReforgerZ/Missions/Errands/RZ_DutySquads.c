@@ -24,6 +24,11 @@ class RZ_DutySquad
 	bool m_bCull;						// a cull: at its point the strays come, and they stand until it's clear
 	float m_fCullAt = -1;				// the squads' clock when they came
 	int m_iFinds;						// points that held something to go and look at
+	int m_iFaction = -1;
+	string m_sLead;						// who leads them, by name: "Lance Corporal Petr Novak"
+	string m_sLeadTitle;				// what he's said under: "Lance Corporal Petr Novak, Bastion patrol"
+	vector m_vWait;						// where they walk over to wait by a find off the round
+	bool m_bDetour;						// walking over to wait there
 }
 
 //------------------------------------------------------------------------------------------------
@@ -31,6 +36,9 @@ class RZ_DutySquads
 {
 	protected static const float POINT_RANGE = 25;		// the squad is at a point
 	protected static const float WITH_RANGE = 40;		// the player is with them
+	protected static const float EARSHOT = 60;			// the lead is heard this far; further, a notice
+	protected static const float DETOUR_FROM = 35;		// a find further than this from them: they walk over to wait by it
+	protected static const float WAIT_OFF = 15;			// and wait this far short of it
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Errands m_Dealer;
@@ -135,6 +143,7 @@ class RZ_DutySquads
 		RZ_DutySquad s = new RZ_DutySquad();
 		s.m_iErrand = e.m_iId;
 		s.m_iPlayer = e.m_iAsker;
+		s.m_iFaction = e.m_iFaction;
 		s.m_sTitle = title;
 		s.m_vHome = home;
 		s.m_Escort = escort;
@@ -157,10 +166,31 @@ class RZ_DutySquads
 			escort.Follow(e.m_iAsker);
 		}
 
+		LeadFor(s, e);
 		escort.Go();
 		m_aSquads.Insert(s);
 		RZ_Log.Info(string.Format("Duty squad: %1 out with %2 from %3, %4 points (errand %5).", name, RZ_Util.PlayerName(e.m_iAsker), RZ_SettlementScanner.GridReference(home), s.m_aPoints.Count(), e.m_iId));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A name for who leads them (always a man: docs/MISSION_RULES.md, rule 10), with a rank in
+	//! Bastion, and the title his lines are said under.
+	protected void LeadFor(RZ_DutySquad s, RZ_Errand e)
+	{
+		RZ_Rng rng = new RZ_Rng(e.m_iId * 7919 + 13);
+		string name = RZ_NoteText.FullName(rng);
+		string what = "patrol";
+		if (s.m_iMode == RZ_DutySquad.MODE_FOLLOW)
+			what = "hunter";
+
+		if (e.m_iFaction == RZ_EFaction.MILITARY)
+			name = "Lance Corporal " + name;
+
+		s.m_sLead = name;
+		s.m_sLeadTitle = name;
+		if (RZ_Factions.IsValid(e.m_iFaction))
+			s.m_sLeadTitle = string.Format("%1, %2 %3", name, RZ_Factions.GetShortName(e.m_iFaction), what);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -246,7 +276,93 @@ class RZ_DutySquads
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! On the errands' tick: the escorts move, and a round says what it finds at each point.
+	//! The lead says it (docs/MISSION_RULES.md, rule 29): from his body when he's out and the player
+	//! is within earshot, from where the squad walks when they're data; a notice only when he's
+	//! out of earshot or gone.
+	protected void SayLead(RZ_DutySquad s, string line)
+	{
+		if (line.IsEmpty())
+			return;
+
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(s.m_iPlayer);
+		vector at = s.m_Escort.NowAt();
+		if (me && !s.m_Escort.IsDead() && RZ_Util.DistXZ(me.GetOrigin(), at) <= EARSHOT)
+		{
+			IEntity body = s.m_Escort.GetPerson();
+			if (body)
+				m_GM.Say(s.m_iPlayer, s.m_sLeadTitle, s.m_iFaction, line, body);
+			else
+				m_GM.SayAt(s.m_iPlayer, s.m_sLeadTitle, s.m_iFaction, line, at);
+
+			RZ_Log.Info(string.Format("Duty squad: %1 says to %2: %3", s.m_sLead, RZ_Util.PlayerName(s.m_iPlayer), line));
+			return;
+		}
+
+		m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Their name, said where they speak and in the tracker: "Lance Corporal Petr Novak".
+	string LeadOf(int errandId)
+	{
+		RZ_DutySquad s = Find(errandId);
+		if (!s)
+			return "";
+
+		return s.m_sLead;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A find's choice is answered by the lead, when this errand has a squad. False: it has none.
+	bool Answer(int errandId, string line)
+	{
+		RZ_DutySquad s = Find(errandId);
+		if (!s)
+			return false;
+
+		SayLead(s, line);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The squad's own steps for the tracker (docs/UI.md, "The quest tracker"): walking the round,
+	//! the marker rides on the lead's body; stopped at a find, it stands on the thing to look at,
+	//! with walking on after it. False: no squad, or one that follows the player (its errand's own
+	//! steps say where).
+	bool Objectives(RZ_Errand e, notnull RZ_ObjList list, RZ_DutyScenes scenes)
+	{
+		RZ_DutySquad s = Find(e.m_iId);
+		if (!s || s.m_iMode != RZ_DutySquad.MODE_ROUND || s.m_Escort.IsDead())
+			return false;
+
+		vector lead = s.m_Escort.NowAt();
+		vector findAt;
+		string goal;
+		if (s.m_bHeld && s.m_fCullAt < 0 && scenes && scenes.OpenFind(e.m_iId, findAt, goal))
+		{
+			list.Add(e.Fill(goal), RZ_EObjState.CURRENT, RZ_ObjPlace.Spot(findAt, 3));
+			list.Add(string.Format("Walk on with %1", s.m_sLead), RZ_EObjState.NEXT, RZ_ObjPlace.Spot(lead));
+			return true;
+		}
+
+		if (s.m_bHeld && s.m_fCullAt >= 0)
+		{
+			list.Add(string.Format("Stand with %1 until it's clear", s.m_sLead), RZ_EObjState.CURRENT, RZ_ObjPlace.Spot(lead));
+			return true;
+		}
+
+		if (s.m_iReached < s.m_aPoints.Count())
+		{
+			list.Add(string.Format("Walk the round with %1: point %2 of %3", s.m_sLead, s.m_iReached + 1, s.m_aPoints.Count()), RZ_EObjState.CURRENT, RZ_ObjPlace.Spot(lead));
+			return true;
+		}
+
+		list.Add(string.Format("Come back in with %1", s.m_sLead), RZ_EObjState.CURRENT, RZ_ObjPlace.Spot(lead));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On the errands' tick: the escorts move, and a round stops where it finds something.
 	void Tick(float dt, array<int> ids, array<IEntity> players)
 	{
 		m_fClock += dt;
@@ -258,10 +374,18 @@ class RZ_DutySquads
 				if (!s.m_bLostSaid)
 				{
 					s.m_bLostSaid = true;
+					// Nobody of theirs is left to say it
 					m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, string.Format("%1 didn't make it. Go back and say so.", RZ_Util.Capitalize(s.m_Escort.m_sName)));
 				}
 
 				continue;
+			}
+
+			// Walking over to wait by a find off the round: they stop when they're there
+			if (s.m_bDetour && s.m_Escort.IsNear(s.m_vWait, 8))
+			{
+				s.m_bDetour = false;
+				s.m_Escort.Stop();
 			}
 
 			// A cull's stand: until none of them is left near, or three minutes
@@ -274,7 +398,7 @@ class RZ_DutySquads
 				s.m_fCullAt = -1;
 				s.m_bHeld = false;
 				s.m_Escort.Resume();
-				m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, "Clear. Count your people, and take them home.");
+				SayLead(s, "Clear. Count your people, and we take them home.");
 				continue;
 			}
 
@@ -285,8 +409,9 @@ class RZ_DutySquads
 					continue;
 
 				s.m_bHeld = false;
+				s.m_bDetour = false;
 				s.m_Escort.Resume();
-				m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, string.Format("%1 move on.", RZ_Util.Capitalize(s.m_Escort.m_sName)));
+				SayLead(s, "Right. On we go.");
 			}
 
 			if (s.m_iMode != RZ_DutySquad.MODE_ROUND || s.m_iReached >= s.m_aPoints.Count())
@@ -304,23 +429,23 @@ class RZ_DutySquads
 				s.m_fCullAt = m_fClock;
 				s.m_Escort.Stop();
 				if (came > 0)
-					m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, string.Format("Here. %1 of them, coming in off the field. Stand with your people until it's clear.", came));
+					SayLead(s, string.Format("Here they come. %1 of them, off the field. Stand with us until it's clear.", came));
 				else
-					m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, "Here. Nothing shows itself. Stand a while, and be sure of it.");
+					SayLead(s, "Nothing showing itself. We stand a while, and we make sure.");
 
 				RZ_Log.Info(string.Format("Duty squad: cull at %1, %2 strays (errand %3).", RZ_SettlementScanner.GridReference(point), came, s.m_iErrand));
 				continue;
 			}
 
 			// Something off the path, for the player to go and see to: at two points in three, and
-			// always at one of them
+			// always at one of them; only where its thing really stands near (RZ_DutyFinds)
 			RZ_Errand e = m_Dealer.FindById(s.m_iErrand);
 			bool last = s.m_iReached >= s.m_aPoints.Count();
 			if (e && (Math.RandomFloat01() < 0.66 || (last && s.m_iFinds == 0)))
 			{
 				array<ref RZ_DutyBeat> beats = {};
-				RZ_DutyFinds.Patrol(m_GM, e, point, beats);
-				if (!beats.IsEmpty())
+				string call;
+				if (RZ_DutyFinds.Patrol(m_GM, e, point, s.m_sLead, beats, call))
 				{
 					RZ_DutyScene scene = m_Dealer.GetScenes().Ensure(e, s.m_sTitle, s.m_vHome, true);
 					scene.m_vLast = point;
@@ -332,53 +457,73 @@ class RZ_DutySquads
 					s.m_iFinds++;
 					s.m_bHeld = true;
 					s.m_Escort.Stop();
-					m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, string.Format("Point %1 of %2. %3 stop. There's something off the path here: go and look. They'll wait, and they can see you within 20 m.", s.m_iReached, s.m_aPoints.Count(), RZ_Util.Capitalize(s.m_Escort.m_sName)));
+					Detour(s, beats[0].m_vAt);
+					SayLead(s, call);
 					continue;
 				}
 			}
 
-			string left = "Then home.";
 			if (s.m_iReached < s.m_aPoints.Count())
-				left = "On to the next.";
-
-			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, string.Format("Point %1 of %2. %3 %4", s.m_iReached, s.m_aPoints.Count(), Found(point), left));
+				SayLead(s, Found(point) + " On to the next.");
+			else
+				SayLead(s, Found(point) + " That's the round. Home.");
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! What stands at a patrol's point, from the world as it is there: the infected near it, the
-	//! nearest town and how sick it is, the weather, the hour, the outbreak's stage.
+	//! A find further off than the stop: the squad walks over to wait in sight of it (the round bent
+	//! to pass it), then on round from there.
+	protected void Detour(RZ_DutySquad s, vector find)
+	{
+		if (RZ_Util.DistXZ(find, s.m_Escort.NowAt()) <= DETOUR_FROM)
+			return;
+
+		vector wait = RZ_DutyScenes.Toward(find, s.m_Escort.NowAt(), WAIT_OFF);
+		array<vector> route = {wait};
+		for (int i = s.m_iReached; i < s.m_aPoints.Count(); i++)
+		{
+			route.Insert(s.m_aPoints[i]);
+		}
+
+		route.Insert(s.m_vHome);
+		s.m_Escort.SetRoute(route);
+		s.m_Escort.Resume();
+		s.m_vWait = wait;
+		s.m_bDetour = true;
+		RZ_Log.Info(string.Format("Duty squad: %1 walks over to wait by the find at %2 (errand %3).", s.m_sLead, RZ_SettlementScanner.GridReference(wait), s.m_iErrand));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the lead says about a point where they stop for nothing, from the world as it is there:
+	//! the infected near it, the nearest town and how sick it is, the weather, the hour, the stage.
 	protected string Found(vector at)
 	{
 		array<string> so = {};
 		RZ_WorldFacts facts = m_GM.GetFacts();
 		int near = m_GM.GetSpawner().CountZombiesNear(at, 80, 4);
 		if (near >= 3)
-			so.Insert("Several of the infected, close, in the open. Written down, and walked round.");
+			so.Insert("Several of them, close, in the open. Write it down, and we go round.");
 		else if (near > 0)
-			so.Insert("One of the infected, standing. It hasn't seen anyone yet.");
+			so.Insert("One of them, standing over there. Hasn't seen us. Let's keep it that way.");
 
 		RZ_Settlement town = m_GM.GetSettlement(m_GM.FindNearestSettlement(at));
 		if (town && town.m_fInfection >= 60)
-			so.Insert(string.Format("The noise off %1 carries this far. Nobody says anything about it.", town.m_sName));
+			so.Insert(string.Format("Hear that? That's %1. Carries this far now.", town.m_sName));
 		else if (town && town.m_fInfection < 20)
-			so.Insert(string.Format("Quiet towards %1. A door stands open that was shut yesterday.", town.m_sName));
+			so.Insert(string.Format("Quiet towards %1. A door's open that was shut yesterday.", town.m_sName));
 
 		if (m_GM.GetEnvironment() && m_GM.GetEnvironment().IsRaining())
-			so.Insert("Fresh tracks in the mud, two sets, going the other way.");
+			so.Insert("Fresh tracks in the mud. Two sets, going the other way.");
 
 		if (facts && facts.IsNight())
-			so.Insert("A light, far off, where no light should be. It goes out.");
+			so.Insert("A light, far off, where no light should be. There. It's gone.");
 		else if (facts && facts.IsDusk())
-			so.Insert("Smoke on the skyline, thin. Someone is cooking, or was.");
-
-		if (facts && facts.Stage() >= RZ_EOutbreakStage.OVERRUN)
-			so.Insert("A cart on its side, picked clean, and a shoe.");
+			so.Insert("Smoke on the skyline. Someone's cooking, or was.");
 
 		if (so.IsEmpty())
 		{
-			so.Insert("Nothing moving. The marker is where it was left.");
-			so.Insert("A fence post down. It gets stood up again.");
+			so.Insert("Nothing moving. Marker's where we left it.");
+			so.Insert("Fence post down. Stand it up, would you.");
 			so.Insert("Crows on something in the field. Not worth the walk.");
 		}
 

@@ -219,28 +219,40 @@ class RZ_Escort
 
 	//------------------------------------------------------------------------------------------------
 	//! Where the escort's objective is done (docs/MISSIONS.md, "Objectives"): before they set off,
-	//! where they wait (go to them); walking a route, its end; following a player, `dest` (where the
-	//! mission takes them; zero: with them, where they are). Null once they're there or dead.
+	//! where they wait (go to them); walking a route, with them, where they are now (the marker
+	//! rides on the lead's body: docs/MISSION_RULES.md, rule 9); following a player, `dest` (where
+	//! the mission takes them; zero: with them). Null once they're there or dead.
 	RZ_ObjPlace ObjPlace(vector dest = vector.Zero)
 	{
 		if (m_eState == RZ_EEscortState.DEAD || m_eState == RZ_EEscortState.ARRIVED)
 			return null;
 
 		if (!m_bStarted)
-			return RZ_ObjPlace.Spot(m_vPos);
+			return RZ_ObjPlace.Spot(NowAt());
 
 		if (m_iFollow > 0)
 		{
 			if (dest != vector.Zero)
 				return RZ_ObjPlace.Spot(dest, m_fArriveRadius);
 
-			return RZ_ObjPlace.Spot(m_vPos);
+			return RZ_ObjPlace.Spot(NowAt());
 		}
 
-		if (!m_aRoute.IsEmpty())
-			return RZ_ObjPlace.Spot(m_aRoute[m_aRoute.Count() - 1], m_fArriveRadius);
+		return RZ_ObjPlace.Spot(NowAt());
+	}
 
-		return RZ_ObjPlace.Spot(m_vPos);
+	//------------------------------------------------------------------------------------------------
+	//! Where they are this moment: the lead's body when they're out, else where the data walks.
+	vector NowAt()
+	{
+		IEntity person = GetPerson();
+		if (person)
+			return person.GetOrigin();
+
+		if (HasBody())
+			return RZ_Util.GetUnitPosition(m_Body);
+
+		return m_vPos;
 	}
 
 	//------------------------------------------------------------------------------------------------
