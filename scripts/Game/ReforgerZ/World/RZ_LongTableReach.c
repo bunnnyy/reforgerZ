@@ -469,7 +469,8 @@ class RZ_LongTableReach
 
 	//------------------------------------------------------------------------------------------------
 	//! A plate and a fork, scratched small by the door of someone lone they've asked to supper: a
-	//! house in the nearest town but theirs, once a real day.
+	//! house in the nearest town 2-5 km off (never within 2 km: the farm leaves no marks near it,
+	//! docs/TRACES.md), once a real day.
 	protected void TryDoorMark()
 	{
 		int now = RZ_Guidance.UnixNow();
@@ -490,7 +491,7 @@ class RZ_LongTableReach
 				continue;
 
 			float d = RZ_Util.DistXZ(s.m_vCenter, farm);
-			if (d < 600 || d > 4000 || d >= bestDist)
+			if (d < 2000 || d > 5000 || d >= bestDist)
 				continue;
 
 			best = i;
@@ -1082,7 +1083,7 @@ class RZ_LongTableReach
 			m_Table.Notice(playerId);
 			RZ_PuzzleObjectComponent.Tag(m_BoyBody, RZ_LongTable.TAG, IDX_BOY, "", "Say you'll come to supper|Send him home");
 			RZ_ClueComponent.Tag(m_BoyBody, RZ_LongTable.TAG, IDX_BOY, "Talk to the boy");
-			m_GM.Say(playerId, "A boy", -1, "\"Are you hungry? Father sets a place for everyone. The farm past " + m_Table.GetTownName() + ". Supper's at half six.\"", m_BoyBody);
+			m_GM.Say(playerId, "A boy", -1, "Are you hungry? Father sets a place for everyone. The farm past " + m_Table.GetTownName() + ". Supper's at half six.", m_BoyBody);
 			RZ_Log.Info("Long Table: the boy asks a traveller to supper.");
 			return;
 		}
@@ -1156,7 +1157,7 @@ class RZ_LongTableReach
 			m_sInjuredName = name;
 			RZ_PuzzleObjectComponent.Tag(m_InjuredBody, RZ_LongTable.TAG, IDX_INJURED, "", "Help him up and walk him home|Leave him");
 			RZ_ClueComponent.Tag(m_InjuredBody, RZ_LongTable.TAG, IDX_INJURED, "Talk to " + name);
-			m_GM.Say(playerId, name, -1, "A man on the verge, one leg out wrong, calls out: \"Here! Over here. I've done my ankle. I'm only up the road, the farm past " + m_Table.GetTownName() + ". Help me home?\"", m_InjuredBody);
+			m_GM.Say(playerId, name, -1, "Over here. I've done my ankle. I'm only up the road, the farm past " + m_Table.GetTownName() + ". Help me home?", m_InjuredBody);
 			RZ_Log.Info("Long Table: a man lies hurt on the road at dusk.");
 			return;
 		}
@@ -1241,18 +1242,18 @@ class RZ_LongTableReach
 
 		if (idx == IDX_MARKET && m_MarketBody)
 		{
-			m_GM.Say(playerId, m_Table.NameOf(RZ_ETableRole.HOST), -1, "\"Preserves. Father puts them up himself. A day on every lid, so you know how fresh. Cartridges or something for a cut, whatever you can spare.\"", m_MarketBody);
+			m_GM.Say(playerId, m_Table.NameOf(RZ_ETableRole.HOST), -1, "Preserves. Father puts them up himself. A day on every lid, so you know how fresh. Cartridges or something for a cut, whatever you can spare.", m_MarketBody);
 			return;
 		}
 
 		if (idx == IDX_BOY && m_BoyBody)
 		{
-			m_GM.Say(playerId, "The boy", -1, "\"Father says nobody should eat alone. There's always a bowl.\" He looks at your boots. \"Those are good boots.\"", m_BoyBody);
+			m_GM.Say(playerId, "The boy", -1, "Father says nobody should eat alone. There's always a bowl. Those are good boots.", m_BoyBody);
 			return;
 		}
 
 		if (idx == IDX_INJURED && m_InjuredBody)
-			m_GM.Say(playerId, m_sInjuredName, -1, "\"It's only up the road. They'll have the kettle on. Please.\"", m_InjuredBody);
+			m_GM.Say(playerId, m_sInjuredName, -1, "It's only up the road. They'll have the kettle on. Please.", m_InjuredBody);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1268,13 +1269,13 @@ class RZ_LongTableReach
 			string host = m_Table.NameOf(RZ_ETableRole.HOST);
 			if (option == 1)
 			{
-				m_GM.Say(playerId, host, -1, string.Format("\"The farm past %1. We keep pigs.\" He smiles. \"Kept.\"", m_Table.GetTownName()), m_MarketBody);
+				m_GM.Say(playerId, host, -1, string.Format("The farm past %1. We keep pigs. Kept.", m_Table.GetTownName()), m_MarketBody);
 				return;
 			}
 
 			if (!m_Table.TakesTrade(user))
 			{
-				m_GM.Say(playerId, host, -1, "\"Cartridges, or something for a cut. Whatever you can spare.\"", m_MarketBody);
+				m_GM.Say(playerId, host, -1, "Cartridges, or something for a cut. Whatever you can spare.", m_MarketBody);
 				return;
 			}
 
@@ -1282,7 +1283,7 @@ class RZ_LongTableReach
 				return;
 
 			m_Table.TakeTrade(user);
-			m_GM.Say(playerId, host, -1, string.Format("He wraps a jar in newspaper. On the lid, in pencil: \"%1\". \"It keeps.\"", RZ_NoteText.Day(BroadcastDay())), m_MarketBody);
+			m_GM.Say(playerId, host, -1, string.Format("There. A day on the lid, %1. It keeps.", RZ_NoteText.Day(BroadcastDay())), m_MarketBody);
 			return;
 		}
 
@@ -1292,9 +1293,9 @@ class RZ_LongTableReach
 				m_Table.Invite(playerId);
 
 			if (option == 0)
-				m_GM.Say(playerId, "The boy", -1, "He grins and runs off ahead, toward the farm. Over his shoulder: \"Half six! Don't be late. Father worries.\"", m_BoyBody);
+				m_GM.Say(playerId, "The boy", -1, "Half six, then. Don't be late. Father worries.", m_BoyBody);
 			else
-				m_GM.Say(playerId, "The boy", -1, "\"Suit yourself.\" He doesn't move until you've gone.", m_BoyBody);
+				m_GM.Say(playerId, "The boy", -1, "Suit yourself.", m_BoyBody);
 
 			BoyHome();
 			return;
@@ -1305,12 +1306,12 @@ class RZ_LongTableReach
 			string son = m_sInjuredName;
 			if (option == 0)
 			{
-				m_GM.Say(playerId, son, -1, string.Format("He's up on his own before you've got an arm under him. \"Better already. You're kind. Come and eat with us, the farm past %1, %2. We owe you a bowl.\" He walks off ahead, hardly limping.", m_Table.GetTownName(), RZ_Util.DirectionText(user.GetOrigin(), m_Table.GetHousePos())), m_InjuredBody);
+				m_GM.Say(playerId, son, -1, string.Format("Better already. You're kind. Come and eat with us, the farm past %1, %2. We owe you a bowl.", m_Table.GetTownName(), RZ_Util.DirectionText(user.GetOrigin(), m_Table.GetHousePos())), m_InjuredBody);
 				m_Table.Invite(playerId);
 			}
 			else
 			{
-				m_GM.Say(playerId, son, -1, "\"Right. Right.\" When you look back he's standing, watching you go. He isn't limping.", m_InjuredBody);
+				m_GM.Say(playerId, son, -1, "Fine. I can manage.", m_InjuredBody);
 				m_Table.AddSuspicion(3, "the injured man walked off");
 			}
 

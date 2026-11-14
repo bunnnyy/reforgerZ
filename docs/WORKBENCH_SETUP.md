@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **381 prefab fields**: 46 on `RZ_GameModeComponent`, 318 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **364 entries**: 218 prefabs the plugin creates, 39 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 50 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **393 prefab fields**: 46 on `RZ_GameModeComponent`, 330 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **367 entries**: 219 prefabs the plugin creates, 39 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 109 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 50 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -902,6 +902,14 @@ and the UI files) need none, and eight have no base:
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | (existing prefab) | variants of a faction person slot's prefab in other clothes (Prefabs/ReforgerZ/People/<faction>/, written by tools/people_looks.py): character looks inherit the slot's character, group looks inherit its group and list character looks as members | — | Each faction person slot's Looks list (Territory, Haven, Checkpoints, Supply, Leaders, Factions) | optional | each body of the slot wears one of them, the same one for the same person (docs/DESIGN.md, People's looks); empty = the slot's own prefab. Manual: generated as text, not by Create prefabs. Edit tools/people_looks.py and run it, then check the looks in Workbench |
+
+#### Long Table
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_TableJar.et` | Metabolism's MRE as the family's jar of preserves: food, a day on the lid (B_FoodWaterGadgetComponent) | — | World > Long Table > Reach > Jar | optional | the family's jar: loot near the farm, the host's market, the farm's trade, Halcyon's test |
+| (existing prefab) | a board that stands at a road junction (the base game chalkboard by default; a hand-painted board from a prop mod suits better) | — | World > Long Table > Reach > Supper sign | optional | SUPPER. ALL WELCOME. at junctions near the farm (empty = no signs) |
+| (existing prefab) | base-game props, set by default: the long table, a chair, a bowl, the name card, a shoe cabinet, a cupboard, jars, a lantern, chimney smoke | — | World > Long Table > Reach (the farm laid out) | optional | the farm laid out for supper, near players only (each empty = left out) |
 <!-- /manifest:prefabs -->
 
 ### Stand-in bases
@@ -1097,13 +1105,13 @@ players. A faction without a truck and crew counts its places as always supplied
 **Territory > Outpost quartermaster** puts a shop (and Bastion's Requisition) at each outpost,
 using the four quartermasters. Supply trucks also need **Zombies > Move waypoint**.
 
-**The Long Table** has no prefabs of its own. Its people are **Puzzles > Civilian** (or the generic
+**The Long Table**'s only prefabs are its jar (**Long Table > Reach > Jar**, `Prefabs/ReforgerZ/World/RZ_TableJar.et`: open it once so its id registers) and its four Sunday looks (`Prefabs/ReforgerZ/People/LongTable/`, written by `tools/people_looks.py`). Its people are **Puzzles > Civilian** (or the generic
 object), its tell on the road is the **Note**, its fights are **Missions > Events > Rival group**
 (else **Missions > Survivor group**), Bastion's guns are **Missions > Explosion**, and the jar and
 family's bowl are food items from **Search > Loot pool** (by the Haven's food keywords). Without a
 person prefab the house is data only (nothing to deal with, no host on the road) and its
 questlines don't start; without a fight prefab the guest rule is a narrow escape and "by your own
-hand" can only be talked; without food in the pool there are no jars. Check **Long Table > Trade
+hand" can only be talked; without the jar and food in the pool there are no jars. The reach's props (**Reach**: the supper sign, the long table, chairs, bowls, the name card, the shoe cabinet, the cupboard, jars, lanterns, chimney smoke) are base-game prefabs set by default; any left empty is left out ([DESIGN.md](DESIGN.md#its-reach)). Check **Long Table > Trade
 keywords** against your ammunition and medicine. Its two questlines' stage people need the generic
 object's set, like the wanderers.
 
@@ -1897,6 +1905,17 @@ bench|stove: N made from N inputs[, the tool kept]`, `RZT craft: the lockpick op
 quietly`, the sum `RZT craft: done, N failures`, and `RZT craft FAIL ...` for each miss (the run
 fails on any).
 
+**The Long Table and its reach** (`RZT_LongTable.c`, [DESIGN.md](DESIGN.md#its-reach)): 90 s in, a
+house is made sure of. With the tester 60 m off the farm, its people must stand there (two or more)
+and the farm be laid out; their look is picked for the mod's civilian and spawns (the test world's
+civilian is vanilla, so the bodies themselves wear it); a supper sign stands at the nearest junction
+with the tester beside it (the test world has no road network: not tried there); the evening is
+crossed for the bell and the voice; a death 600 m off is kept and taken at dawn (a tell); 300 houses
+near the farm roll their jar at least once; the door mark is written (when a town 2-5 km off has a
+house door); the host meets the tester on the road; the injured man lies on a road at dusk; the boy
+comes in a town 0.9-3.3 km off; the harvest supper begins on its day. Lines `RZT table OK|FAIL ...`
+and `RZT table: done, N checks OK, N failures` (the run fails on any FAIL).
+
 **Carrying** (`RZT_Carry.c`, [DESIGN.md](DESIGN.md#carrying)): four minutes in, the tester carries
 three crates from the open into the nearest building with a ground floor (each hold done for him):
 at the pile its crate and the others beside it stand; carrying, a put-down prompt opens inside, on
@@ -2259,7 +2278,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **207** lines with the tag, all but one in the game scripts (one is the comment in
+There are **209** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2386,10 +2405,12 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1475` | a quartermaster or the medic moved and turned with `SetWorldTransform` on the server stays at their hand-placed spot, facing its way, on every client | They stand where they spawned; the quartermaster turns to serve as before |
 | `World/HandBuilt/RZ_HandSpots.c:402` | a short flat trace through a spot inside a wall, a crate or a tent's side reports a hit (the spot turns red), and the excluded marker cone doesn't | A spot in a wall isn't flagged; the author sees it in play |
 
-### Low risk: contained or cosmetic (53)
+### Low risk: contained or cosmetic (55)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `World/RZ_LongTableReach.c:698` | the farm building's world box (`GetWorldBounds`) tops out at its roof, so the chimney smoke (**Long Table > Reach > Chimney smoke**) stands over the house, not inside it or high above | The smoke is in the wrong place: empty the slot |
+| `World/RZ_LongTableReach.c:809` | the bowls, jars and lanterns at 0.82 m sit on TableLong_01's top, not sunk into it or floating | Adjust the 0.82 (`top` in `SetTable` and `Lanterns`) |
 | `World/RZ_MapFog.c:119` | the map's fog's grid from `BaseWorld.GetBoundBox()` covers the terrain (the log's `Map fog: <w> x <h> squares`) | A box larger than the map only adds squares nobody walks; a smaller one leaves its edge never fogged |
 | `World/RZ_MapFog.c:512` | a paper map in a character's inventory has the character as its root parent, so a found map is seen as carried | A found map never reveals its town; walking and boards still do |
 | `Interactions/RZ_Crafting.c:579` | what you wear or hold is never a recipe's input: worn clothes sit in the character's loadout storage, what's in the hands in its weapon storage, a worn watch or compass in an equipment storage the character owns, and a pocket's or a pack's things in the clothing's own storage | A worn shirt or trousers could be cut up into rags, or a worn item used for a bandage: take it off and say so |
@@ -2814,7 +2835,7 @@ or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squ
 `Long Table: ... never arrived (hunger N, suspicion N, N taken).`, `Long Table: a player heard the rumour.`,
 `Long Table: suspicion N (...).`, `Long Table: a fight at the farm (...)` and `... the fight is over (...)`,
 `Long Table: found out (to N).`, `Long Table: the farm past ... is moving (quiet for a real day).` and
-`... opens again past ...`, `Long Table: broken up (N).`,
+`... opens again past ...`, `Long Table: broken up (N).`, the reach's lines (`Long Table: the bell rang (...)`, `grace on the open channel (...)`, `N junctions for supper signs ...`, `the farm laid out for supper (N things)`, `the host goes to market at ...`, `the boy asks a traveller to supper`, `a man lies hurt on the road at dusk`, `N of the dead taken in the night`, `a plate and a fork on a door in ...`, `Halcyon tested a jar`, `the harvest supper begins`: [DESIGN.md](DESIGN.md#its-reach)),
 `Object menu: <title> for player N.` (a prop's or place's object menu opened), `Power grid: <the station>
 at grid G (picked|marker|save), N towns in its region, <step>. Control on the cabinet there; dressing beside it, the generator heard from N place(s).` (or `by a door`,
 `against a wall`, `beside it`, `as placed`: where the control stands; *as placed* after a pick means no
@@ -4476,6 +4497,18 @@ when it happens)
   family sets on you once (a fight with the rival group, else a narrow escape); with a friend
   within 100 m, or bitten, nothing happens. Walk within 1.5 km alone: the host steps out once a
   session. Restart: the farm, its people and what it remembers of you are back.
+- [ ] The Long Table's reach ([DESIGN.md](DESIGN.md#its-reach); open `RZ_TableJar.et` and the four
+  `People/LongTable/` looks once first). At the farm: the family in Sunday clothes, the long table
+  out front set for eight with bowls, jars and the name card (read it), the shoe cabinet by the door
+  (look at the boots), the cupboard inside, lanterns lit after 19:00, chimney smoke 16:00-22:00 (does
+  it stand over the roof? VERIFY `RZ_LongTableReach.c:698`; do the bowls sit on the table? `:809`).
+  On Everon, walk the roads near the farm: a SUPPER. ALL WELCOME. board at junctions, facing the farm.
+  At 18:30 within 2.5 km: the bell line (and the kit's bell sound if set); at 18:45 with a radio:
+  grace and a name. At dusk alone on a road 0.4-2 km out: the injured man (help him, then eat: the
+  boy says he knew you'd come). In a town 1-3 km off: the boy. Loot houses within 3 km: a jar of
+  preserves now and then; take it to a Halcyon person: **[Errand] Have a jar of preserves tested**.
+  Set **Harvest day** to today's broadcast day: the headline and the long bell at 17:00, and as a
+  Doctor or Hunter at the table that night, the bone. With a pad, and read on a TV.
 - [ ] The House That Went Quiet (**Wait scale** 0.1; set the world flag `table.suspicion_add` to 30
   from a test, then talk to wanderers until one mentions the missing): the trail's three spots lead
   to the farm gate; at the guest stage decline and lie up on the rise unseen; take the proof at

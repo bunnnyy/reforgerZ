@@ -123,7 +123,17 @@ modded class RZ_LongTable
 		{
 			case 0:
 			{
-				if (!RZT_Ensure())
+				// A house this season, whatever the roll said (as RZT_Prep's RZT_Ensure, which compiles after this)
+				if (m_Settings && m_Settings.m_bEnabled && !Exists())
+				{
+					Found();
+					Publish();
+				}
+
+				if (m_eState == RZ_ETableState.QUIET)
+					Relocate();
+
+				if (!IsOpen())
 				{
 					Print("RZT table: no Long Table this run (off, or no place on this map); not tried");
 					RZT_Table.Finish();
@@ -149,7 +159,24 @@ modded class RZ_LongTable
 				else
 					RZT_Table.Fail(string.Format("only %1 of the family at the farm with the tester 60 m off", n));
 
-				if (looked == n && n > 0)
+				// Their looks are built on the mod's own civilian; the test world sets a vanilla one
+				ResourceName civ = m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
+				if (!civ.Contains("RZ_Civilian.et"))
+				{
+					// Then the look itself: picked for the mod's civilian, and it spawns
+					ResourceName look = reach.LookFor("{D5006C19E40CE491}Prefabs/ReforgerZ/Puzzles/RZ_Civilian.et", 3);
+					IEntity probe;
+					if (look.Contains("RZ_Table_"))
+						probe = RZ_Util.SpawnPrefab(look, RZ_Mission.LandPointNear(farm, 20, 30));
+
+					if (probe)
+						RZT_Table.Ok(string.Format("their look %1 is picked for the mod's civilian and spawns", RZ_Util.PrettyPrefabName(look)));
+					else
+						RZT_Table.Fail(string.Format("the family's look didn't spawn (%1)", look));
+
+					RZ_Util.DeleteUnit(probe);
+				}
+				else if (looked == n && n > 0)
 					RZT_Table.Ok(string.Format("in their own looks (%1 of %2)", looked, n));
 				else
 					RZT_Table.Fail(string.Format("%1 of %2 in the family's looks", looked, n));
