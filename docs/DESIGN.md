@@ -673,8 +673,8 @@ every 10 minutes server-wide (5 with power). **Cosmetic and social only:** no Fa
 
 ### The masts
 
-Code: `World/RZ_Masts.c`, `Dialogue/RZ_TalkMasts.c`. **World > Masts** (on). The grid and the loop's
-relay wait in [designs/POWER_AND_RADIO.md](../designs/POWER_AND_RADIO.md).
+Code: `World/RZ_Masts.c`, `Dialogue/RZ_TalkMasts.c`. **World > Masts** (on). What waits (the map's own
+cabinet, a sabotage contract from a giver) is in [designs/POWER_AND_RADIO.md](../designs/POWER_AND_RADIO.md).
 
 Three to five of the map's own masts and aerials, each over a region (2.5 km round it). A mast is a
 place you put up, and **whoever puts it up says whose voice it is**: it isn't more radio range.
@@ -728,10 +728,43 @@ done. The mast is up; the one who climbed it sees the land round it (the map's f
 
 Every line is a voice on the radio (**Radio: the mast above ...**, **Radio: overheard**, **Radio:
 past the line**), never a card. *Simplified:* the prop at the foot is always ours (the map's own
-cabinet isn't used yet); a cut mast and its job to put it back and all masts up opening the
-loop's relay wait in the design.
+cabinet isn't used yet).
 
 - **A cut cable** ([sabotage](#the-grid-region-by-region)): an up mast's **Cut its cable** takes it down with a new part missing; its old holder asks for it back, and whoever puts it back up gives it back to them (5 Fame; Favor with the Red Hand).
+- **Its holder talks about it.** On the open channel ([faction chatter](#radios-open-and-secure)), a quarter of the time a faction has a line to say, it's about a mast it holds ("Our set on the mast above Levie's clean tonight. Whoever climbed it for us, we haven't forgotten.").
+
+### The loop's relay and Bastion's last call
+
+Code: `World/RZ_LoopRelay.c` (owned by the masts). **World > Masts > Relay** (on).
+
+**The relay.** One mast carries the government broadcast's loop: the one nearest the radio station
+(else the first), picked at setup and saved. Its menu offers **Cut the loop** and four **Swap the
+tape** rows, open only **with every mast up**, and shut again for **Relay cooldown** (72 real hours)
+after either is done:
+
+| | Hold | What happens |
+|---|---|---|
+| **Cut the loop** | the cut's hold (8 s) | The loop is silent for the whole server for **Silence hours** (10, a night). 5 Bastion Infamy, 2 Haven Fame for whoever cut it (through the caps); a headline; `relay.cut` counted |
+| **Swap the tape** | 12 s | One of four tapes ("This isn't the government. Nobody's coming. Look after the ones next to you.", "... The lab's still working. Hold on a while yet.", "... Stay off the roads after dark ...", "... We're still here. Say it to someone tonight.") airs to everyone at once, then plays in the loop's place for **Tape hours** (4, an evening); then the loop's own words come back. 3 Bastion Infamy; a headline; `relay.tape` counted |
+
+Either way every faction says something on its open channel (the Haven glad of the quiet, Bastion's
+"nobody stands down", the Red Hand's joke, Halcyon logging the time), and its morale moves a little
+(cut: Haven +2, Bastion −3, the Red Hand +2, Halcyon −1; tape: Haven +1, Bastion −2, the Red Hand
++1), recovering as morale does. The broadcast's own words and tone stay [its own](#the-government-broadcast):
+the relay only silences it or plays a tape in its place for a while.
+
+**Bastion's last call.** At the tallest mast (the highest ground, picked at setup), up and open or
+Bastion's, someone Known with Bastion can **Hold the power for Bastion's call**: a 60 s hold
+(**Call seconds**). As it starts, Bastion's radio officer says he's calling Command, the set's hum
+makes 10 heat, and a pack lairing within 800 m below is drawn to the mast. When it's held to the
+end: *"Command, Command, this is Task Force Bastion. We are holding. Requesting relief. Over."* Nothing
+but the hiss, for a long time. *"Bastion out."* Nobody ever answers: the Zone is sealed. Once a real day for
+the whole server; 3 Bastion Fame for the holder (once a real day each), Bastion morale −1, and the
+world fact `bastion.last_call` counted. While [Await Relief](QUESTLINES.md#await-relief) runs, the
+officer adds that it goes in the CO's log.
+
+Every line is a voice on the radio. *Simplified:* the Red Hand don't come for a held call (only
+what's below does); no act of Await Relief reads `bastion.last_call` yet.
 
 ### The government broadcast
 
@@ -739,6 +772,7 @@ A looping flavour message to everyone every 25 minutes, and in the notebook at e
 Its tone follows the season mood, the one ladder every voice reads ([WRITING.md](WRITING.md#the-season-mood);
 [LORE.md](LORE.md), "The outside world: silent, watching"; its lines:
 [WRITING.md](WRITING.md#the-government-broadcast)).
+The loop can be cut for a night, or carry someone's tape for an evening, at its relay ([The loop's relay](#the-loops-relay-and-bastions-last-call)).
 Its day count ("Day 14") is 11 plus the real days since the season started, so a season of
 about 45 days runs from Day 11 to about Day 56; without the server's clock, a day is 8 hours
 played. Notes, journals, the radio station and Bastion's orders use the same count.

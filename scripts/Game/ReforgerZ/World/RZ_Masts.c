@@ -56,6 +56,33 @@ class RZ_MastSettings
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The cabinet at a mast's foot when the map has none within 25 m: a prop with the generic puzzle object components (as the radio station's console). Empty = Puzzles > Radio mast, then the generic object", "et")]
 	ResourceName m_sCabinetPrefab;
+
+	[Attribute("1", desc: "The loop's relay and Bastion's last call (docs/DESIGN.md, The loop's relay and Bastion's last call): with every mast up, the government loop can be cut or its tape swapped; Bastion calls Command from the tallest mast")]
+	bool m_bRelay;
+
+	[Attribute("72", UIWidgets.Slider, "Real hours after the relay is cut or its tape swapped before it can be reached again", "6 720 6")]
+	float m_fRelayCooldownHours;
+
+	[Attribute("10", UIWidgets.Slider, "Real hours the government loop stays silent once its relay is cut (a night)", "1 48 1")]
+	float m_fSilenceHours;
+
+	[Attribute("4", UIWidgets.Slider, "Real hours a swapped tape plays in the loop's place (an evening)", "1 24 1")]
+	float m_fTapeHours;
+
+	[Attribute("5", UIWidgets.Slider, "Bastion Infamy for cutting the government loop", "0 30 1")]
+	int m_iRelayInfamy;
+
+	[Attribute("2", UIWidgets.Slider, "Haven Fame for cutting the government loop", "0 20 1")]
+	int m_iRelayFame;
+
+	[Attribute("3", UIWidgets.Slider, "Bastion Infamy for swapping the loop's tape", "0 30 1")]
+	int m_iTapeInfamy;
+
+	[Attribute("60", UIWidgets.Slider, "Seconds of the hold that keeps the tallest mast's power on while Bastion calls Command", "10 300 5")]
+	float m_fCallSeconds;
+
+	[Attribute("3", UIWidgets.Slider, "Bastion Fame for holding the power for its call (once a real day per player)", "0 20 1")]
+	int m_iCallFame;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -115,6 +142,7 @@ class RZ_MastSave
 class RZ_MastsSave
 {
 	ref array<ref RZ_MastSave> masts = {};
+	ref RZ_RelaySave relay;		// the loop's relay and Bastion's call (World/RZ_LoopRelay.c)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -240,6 +268,7 @@ class RZ_Masts
 	protected RZ_MastSettings m_Settings;
 	protected ref RZ_MastsSave m_Restored;
 	protected ref array<ref RZ_Mast> m_aMasts = {};
+	protected ref RZ_LoopRelay m_Relay;
 	protected float m_fWarnTimer;
 	protected float m_fListenTimer;
 	protected float m_fChatterTimer;
@@ -263,6 +292,7 @@ class RZ_Masts
 		m_GM = gm;
 		m_Settings = settings;
 		s_Instance = this;
+		m_Relay = new RZ_LoopRelay(gm, settings, this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -311,6 +341,8 @@ class RZ_Masts
 	void Restore(RZ_MastsSave saved)
 	{
 		m_Restored = saved;
+		if (saved && saved.relay)
+			m_Relay.Restore(saved.relay);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -338,6 +370,7 @@ class RZ_Masts
 			data.masts.Insert(s);
 		}
 
+		data.relay = m_Relay.Save();
 		return data;
 	}
 
@@ -392,6 +425,7 @@ class RZ_Masts
 		}
 
 		RZ_Log.Info(string.Format("Masts: %1 on this map, %2 up.", m_aMasts.Count(), UpCount()));
+		m_Relay.Setup();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -821,6 +855,9 @@ class RZ_Masts
 			labels.Insert("Take a bearing on the voice");
 			locks.Insert(bearingWhy);
 		}
+
+		// The loop's relay and Bastion's last call (World/RZ_LoopRelay.c)
+		m_Relay.Rows(m, playerId, acts, labels, locks);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -852,6 +889,9 @@ class RZ_Masts
 			OpenCut(m, playerId);
 			return;
 		}
+
+		if (m_Relay.Act(m, act, playerId))
+			return;
 
 		if (act.IndexOf("give:") == 0)
 			Give(m, playerId, act.Substring(5, act.Length() - 5));
@@ -967,6 +1007,20 @@ class RZ_Masts
 		// At the cabinet itself: nothing more is put out
 		sites.SetAtPiece(key, CabinetAt(m), 0);
 		RZ_Log.Info(string.Format("Masts: %1 climbs %2.", RZ_Names.Public(playerId), m.m_sName));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a mast's cabinet stands (its prompt and holds).
+	vector CabinetPos(RZ_Mast m)
+	{
+		return CabinetAt(m);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A pack lairing below the mast is drawn to it (the climb, Bastion's call).
+	void WakeBelow(RZ_Mast m)
+	{
+		DrawPack(m);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1559,6 +1613,9 @@ class RZ_Masts
 			if (who > 0)
 				TookBearing(m, who);
 		}
+
+		if (m.m_iId == m_Relay.RelayIndex() || m.m_iId == m_Relay.TallestIndex())
+			m_Relay.TickHolds(m);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1941,6 +1998,34 @@ class RZ_Masts
 		IEntity can = RZ_Util.SpawnPrefab("{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et", ent.GetOrigin(), 0);
 		if (can && !RZ_Util.InsertIntoInventory(ent, can))
 			RZ_Util.DeleteUnit(can);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line for faction f's open channel about a mast it holds (its people talking about it), ""
+	//! if it holds none (RZ_FactionLife.BuildChatter).
+	string HeldLine(int f)
+	{
+		if (!IsOn())
+			return "";
+
+		foreach (RZ_Mast m : m_aMasts)
+		{
+			if (!m.m_bUp || FactionOf(m.m_eOwner) != f)
+				continue;
+
+			if (f == RZ_EFaction.BANDITS)
+				return string.Format("%1's ours and it's paying. Anyone listening without a word in the book, we hear you listening.", Capitalize(m.m_sShort));
+
+			if (f == RZ_EFaction.MILITARY)
+				return string.Format("Our set on %1's clean tonight. Whoever climbed it for us, we haven't forgotten.", m.m_sShort);
+
+			if (f == RZ_EFaction.INSTITUTE)
+				return string.Format("Halcyon, all staff. Our relay on %1 is holding. Log anything it picks up.", m.m_sShort);
+
+			return string.Format("We've got %1 now. Somebody climbed it for us. If you hear trouble, say so on here.", m.m_sShort);
+		}
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -7990,7 +7990,16 @@
     "m_fVoiceMinutes": "90",
     "m_fVoiceLastsMinutes": "30",
     "m_iHandFame": "5",
-    "m_iSellFavor": "15"
+    "m_iSellFavor": "15",
+    "m_bRelay": "1",
+    "m_fRelayCooldownHours": "72",
+    "m_fSilenceHours": "10",
+    "m_fTapeHours": "4",
+    "m_iRelayInfamy": "5",
+    "m_iRelayFame": "2",
+    "m_iTapeInfamy": "3",
+    "m_fCallSeconds": "60",
+    "m_iCallFame": "3"
    }
   },
   {

@@ -632,6 +632,10 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 12 && !RZT_Masts.Tick(this))
 			return;
 
+		// The loop's relay and Bastion's last call (RZT_Relay.c), with every mast put up
+		if (m_iRZTSec >= 12 && !RZT_Relay.Tick(this))
+			return;
+
 		// The grid past the station (RZT_Grid.c): substations, a break and a splice, the stakes, a cut
 		if (m_iRZTSec >= 12 && !RZT_Grid.Tick(this))
 			return;

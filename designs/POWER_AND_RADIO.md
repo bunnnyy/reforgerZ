@@ -1,6 +1,7 @@
 # Power and radio: the masts, the grid and the loop
 
-**Designed, not built** (the rest of it). Approved by the author on 2026-11-14: every power and radio idea, with the
+**Designed, not built** (what's left of it; the masts, the grid, the loop's relay and Bastion's last
+call are built: [DESIGN.md](../docs/DESIGN.md#the-masts)). Approved by the author on 2026-11-14: every power and radio idea, with the
 relay network reworked so it isn't "more radio range" ("just expanding the radio kind of sucks, not
 worth the effort"). It builds on what's built: one power station a map
 ([DESIGN.md](../docs/DESIGN.md#the-power-grid)), one radio station
@@ -22,8 +23,7 @@ finding a trapped man's voice by bearings. What waits from A:
 | | |
 |---|---|
 | The map's own cabinet | the prompt on the map's electrical cabinet within 25 m of the mast when there is one, our prop only when there isn't |
-| A faction's foothold | its people in the region mentioning the mast and who climbed it (beyond the deed) |
-| All masts up | opens C's loop's relay |
+| A faction's foothold | its people in the region (not only on its channel) mentioning the mast and who climbed it |
 
 ## B. The grid
 
@@ -41,13 +41,15 @@ What waits from B:
 
 ## C. The loop's relay and Bastion's last call
 
-| Idea | How it plays |
+**Built** ([DESIGN.md](../docs/DESIGN.md#the-loops-relay-and-bastions-last-call)). What waits from C:
+
+| | |
 |---|---|
-| **The loop's relay** | With every mast up, the one that carries the government loop can be reached. Cut it: "Aid is on its way" goes silent for the whole server for a night. Or swap the tape: your own words go out for one evening. Rare, and every faction says something about it. |
-| **Bastion's last call** | A Bastion duty: hold the tallest mast's power while the radio officer calls Command. He calls; the band hisses; nobody answers. Ties to Await Relief. |
+| The Red Hand at the call | a crew coming for the set while Bastion calls (today only what's below comes) |
+| Await Relief reads the nights | an act of the major reading `bastion.last_call` (today the officer only says they're logged) |
 
 ## Order of work
 
-1. **A's rest:** the map's own cabinet, the foothold's talk (with B's sabotage: the cut mast).
+1. **A's rest:** the map's own cabinet, the foothold's talk in the region.
 2. **B's rest:** the fuse as its own part, a sabotage contract from a giver, the cold room, a generator on a car.
-3. **C:** the loop's relay, Bastion's last call.
+3. **C's rest:** the Red Hand at the call, Await Relief reading the nights.

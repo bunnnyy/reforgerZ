@@ -1208,6 +1208,14 @@ class RZ_FactionLife
 			options.Insert(RZ_FactionVoice.ChatterSamples(RZ_Util.RoundToInt(m_GM.GetCure().m_fProgress), labPlace));
 		}
 
+		// A mast it holds (World/RZ_Masts.c): its people talk about it now and then
+		if (RZ_Masts.Get() && Math.RandomFloat01() < 0.25)
+		{
+			string held = RZ_Masts.Get().HeldLine(f);
+			if (!held.IsEmpty())
+				options.Insert(held);
+		}
+
 		if (options.IsEmpty())
 			return "";
 
