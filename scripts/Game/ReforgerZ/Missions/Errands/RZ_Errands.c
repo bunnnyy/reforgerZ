@@ -1246,6 +1246,10 @@ class RZ_Errands
 
 		sites.SetLooks(key, w.m_aLookChain);
 
+		// Things handed over at the place (a battery to fit): the hold is locked without them on you
+		if (w.m_bGiveThere && w.m_iItems > 0)
+			sites.SetNeeds(key, w.m_eItem, w.m_iItems);
+
 		// Kitchen work at the place's own kitchen: a camp's cook pot (a kit's, or the cook spot of a
 		// hand-built site) near the place; else its own look, the table with the pot on it
 		if (w.m_bKitchen)
@@ -1950,7 +1954,8 @@ class RZ_Errands
 					return string.Format("Needs %1 with %2", RZ_Reputation.GetTierName(w.m_iMinTier), RZ_Factions.GetShortName(tf));
 			}
 
-			if (w.m_iItems > 0 && !w.m_bGiveThere && user && CountItems(user, w.m_eItem) < w.m_iItems)
+			// Also things handed over at the place (a battery to fit there): you take the way with them on you
+			if (w.m_iItems > 0 && user && CountItems(user, w.m_eItem) < w.m_iItems)
 				return "Needs " + ItemNeed(w.m_eItem, w.m_iItems);
 
 			if (w.m_iFavorCost > 0 && RZ_Factions.IsValid(f) && m_GM.GetProfile(playerId).GetFavor(f) < w.m_iFavorCost)
@@ -2417,7 +2422,7 @@ class RZ_Errands
 				return "Not from you. Maybe from someone the house knows.";
 		}
 
-		if (w.m_iItems > 0 && !w.m_bGiveThere && CountItems(user, w.m_eItem) < w.m_iItems)
+		if (w.m_iItems > 0 && CountItems(user, w.m_eItem) < w.m_iItems)
 			return "You've nothing on you I can use for that. " + RZ_Util.Capitalize(ItemNeed(w.m_eItem, w.m_iItems)) + ", it needs.";
 
 		if (w.m_iFavorCost > 0 && !m_GM.SpendFavor(playerId, f, w.m_iFavorCost))

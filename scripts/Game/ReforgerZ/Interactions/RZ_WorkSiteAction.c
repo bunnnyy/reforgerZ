@@ -43,6 +43,12 @@ class RZ_WorkSiteComponent : ScriptComponent
 	[RplProp()]
 	protected bool m_bMenu;			// a choice's prompt: a press opens the object menu, no hold (RZ_WorkSites.Gather)
 
+	[RplProp()]
+	protected int m_iNeedItem;		// RZ_EErrandItem the hold needs on you (a battery to fit), with m_iNeedCount
+
+	[RplProp()]
+	protected int m_iNeedCount;
+
 	//------------------------------------------------------------------------------------------------
 	//! Server only.
 	void Set(int site, string label, float seconds, float fastSeconds, string fast, int only, int look, bool menu = false)
@@ -56,6 +62,32 @@ class RZ_WorkSiteComponent : ScriptComponent
 		m_sFast = fast;
 		m_iOnly = only;
 		Replication.BumpMe(); // needs an RplComponent on the prefab
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server only. What the hold needs on you: without it the prompt is locked, with why.
+	void SetNeed(RZ_EErrandItem item, int count)
+	{
+		if (m_iNeedItem == item && m_iNeedCount == count)
+			return;
+
+		m_iNeedItem = item;
+		m_iNeedCount = count;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "" when `user` has what the hold needs (or it needs nothing), else why not ("Needs 1 battery").
+	string Missing(IEntity user)
+	{
+		if (m_iNeedCount <= 0 || m_bMenu)
+			return "";
+
+		RZ_EErrandItem item = m_iNeedItem;
+		if (RZ_Errands.CountItems(user, item) >= m_iNeedCount)
+			return "";
+
+		return "Needs " + RZ_Errands.ItemNeed(item, m_iNeedCount);
 	}
 
 	int GetSite() { return m_iSite; }
@@ -131,6 +163,22 @@ class RZ_WorkSiteAction : ScriptedUserAction
 			return false;
 
 		return c.IsFor(PlayerOf(user));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Locked without what the hold needs on you (a battery to fit): the prompt says so.
+	override bool CanBePerformedScript(IEntity user)
+	{
+		RZ_WorkSiteComponent c = Comp();
+		if (!c)
+			return true;
+
+		string missing = c.Missing(user);
+		if (missing.IsEmpty())
+			return true;
+
+		SetCannotPerformReason(missing);
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

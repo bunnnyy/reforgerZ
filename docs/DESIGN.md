@@ -1524,6 +1524,9 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
 - **The hold.** Hold the prompt (vanilla's hold-progress bar, [UI.md](UI.md#the-hold-prompt)) for the
   work's time, 5 to 20 s (a step that used to take 2 minutes or more there: 20 s; a background's way
   that was quicker stays quicker). Move more than 1.5 m or get hurt and the bar starts again.
+- **What it needs on you.** A hold that uses something you bring (an errand's thing handed over at
+  the place: a battery to fit) is locked without it, the prompt saying *Needs 1 battery*; the server
+  checks again when the bar fills, and without it nothing is done or packed away (`SetNeeds`).
 - **Working, and standing still.** While the bar runs you work at the thing and can't walk, as
   with vanilla's building (`Interactions/RZ_WorkHold.c`, on the holder's own machine, with the
   calls vanilla's own hold actions make):

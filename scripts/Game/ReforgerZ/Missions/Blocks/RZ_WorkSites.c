@@ -676,6 +676,13 @@ class RZ_WorkSites
 
 		s.m_eNeed = item;
 		s.m_iNeed = count;
+		// The hold's prompt is locked without them, on every machine
+		if (s.m_Box)
+		{
+			RZ_WorkSiteComponent comp = RZ_WorkSiteComponent.Cast(s.m_Box.FindComponent(RZ_WorkSiteComponent));
+			if (comp)
+				comp.SetNeed(item, count);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1115,10 +1122,12 @@ class RZ_WorkSites
 				only = c.m_iArmedBy;
 
 			comp.Set(one.m_iId, one.m_sLabel, one.m_fSeconds, one.m_fFastSeconds, one.FastText(), only, LookFor(one.m_eKind));
+			comp.SetNeed(one.m_eNeed, one.m_iNeed);
 			return;
 		}
 
 		comp.Set(c.m_iId, c.m_sTitle, 0, 0, "", c.m_iOnly, 0, true);
+		comp.SetNeed(RZ_EErrandItem.NONE, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1266,6 +1275,15 @@ class RZ_WorkSites
 			return;
 
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		// What the hold needs on you (a battery to fit): without it nothing is done or packed away
+		if (s.m_iNeed > 0 && RZ_Errands.CountItems(user, s.m_eNeed) < s.m_iNeed)
+		{
+			if (gm)
+				gm.NotifyPlayer(playerId, s.m_sLabel, string.Format("You haven't got that on you: %1.", RZ_Errands.ItemNeed(s.m_eNeed, s.m_iNeed)));
+
+			return;
+		}
+
 		if (s.m_iOnly > 0 && playerId != s.m_iOnly)
 		{
 			if (gm)
@@ -1792,6 +1810,7 @@ class RZ_WorkSites
 		}
 
 		comp.Set(s.m_iId, s.m_sLabel, s.m_fSeconds, s.m_fFastSeconds, s.FastText(), s.m_iOnly, LookFor(s.m_eKind));
+		comp.SetNeed(s.m_eNeed, s.m_iNeed);
 	}
 
 	//------------------------------------------------------------------------------------------------

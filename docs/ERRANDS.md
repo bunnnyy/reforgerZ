@@ -119,7 +119,8 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
   two tins" is *[Errand] I'll hand over two tins.*, with [Errand] and its tags in front, and "Not now"
   is *Not now. Ask me again another time.* ([WRITING.md](WRITING.md#talk)). A way you can't take shows
   locked with what it needs (`RZ_Errands.WayLock`: *Needs Mechanic*, *Needs Trusted with Haven*,
-  *Needs 2 food*, *Needs 8 Haven Favor*); a Trust check or a threat isn't a lock, its tag shows the
+  *Needs 2 food*, *Needs 8 Haven Favor*), things handed over at the place too (*Needs 1 battery*:
+  you take the way with them on you, and the work there is locked without them); a Trust check or a threat isn't a lock, its tag shows the
   score. While the ways show, the giver's topics wait (they're waiting on your answer). The labels
   above stay the world prompt's.
 - **Errands and jobs are separate** (the author's rule). Errands and duties count only against
