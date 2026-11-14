@@ -3154,7 +3154,11 @@ use are never locked: nothing within 80 m of a safehouse, the lab or an outpost,
 quartermaster, or 150 m of a stronghold (the same places that can't burn). **Nothing within 25 m of
 a running mission's props is locked either** (its position, its props, items and drops, the current
 chain step, a capture's cage): its buildings open while it runs and lock again when it ends. The
-one exception is a lock that is part of the mission (the Locked Bunker's keypad).
+one exception is a lock that is part of the mission (the Locked Bunker's keypad). Nor within 25 m of
+a running opening's places (the house you start in, the favour's thing, the task's building, the
+next person) or of an errand's places while it's on offer or held (its place and first place, what
+it's about, its giver): no spawn or job sends you to a locked door (the author's rule;
+`RZ_Openings.IsNearPlace`, `RZ_Errands.IsNearPlace`).
 
 | State | How it gets there | What it means |
 |---|---|---|

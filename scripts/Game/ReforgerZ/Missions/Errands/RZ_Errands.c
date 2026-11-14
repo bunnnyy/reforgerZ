@@ -2059,6 +2059,30 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Within `radius` of an errand's places while it's on offer or held: its place, its first
+	//! place, what it's about, where its giver waits. No lock there (RZ_Search.HasLock).
+	bool IsNearPlace(vector pos, float radius)
+	{
+		foreach (RZ_Errand e : m_aErrands)
+		{
+			if (e.m_eState != RZ_EErrandState.HELD && e.m_eState != RZ_EErrandState.OFFERED)
+				continue;
+
+			if (Near(e.m_vPlace, pos, radius) || Near(e.m_vFirst, pos, radius) || Near(e.m_vSubject, pos, radius)
+				|| Near(e.m_vSubject2, pos, radius) || Near(e.m_vGiver, pos, radius))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool Near(vector spot, vector pos, float radius)
+	{
+		return spot != vector.Zero && RZ_Util.DistXZ(spot, pos) <= radius;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The errand this player holds from this giver, -1 none (the talk screen's tracked-job replies).
 	int HeldIdFor(int playerId, string giverKey)
 	{
