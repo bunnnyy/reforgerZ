@@ -166,12 +166,13 @@ class RZ_OpeningText
 
 	//------------------------------------------------------------------------------------------------
 	//! Who the contact was to you, by your background (the design's someone from before): a few
-	//! words after their name in their title ("Vera Holm, a patient's mother").
+	//! words after their name in their title ("Pavel Holm, a patient's father"); a man, as every
+	//! contact's body is (Name).
 	static string Who(string bg)
 	{
 		switch (bg)
 		{
-			case "nurse": return "a patient's mother";
+			case "nurse": return "a patient's father";
 			case "doctor": return "a nurse from your ward";
 			case "mechanic": return "a regular at the garage";
 			case "hunter": return "the farmer whose land you hunted";
@@ -182,7 +183,7 @@ class RZ_OpeningText
 			case "unemployed": return "the neighbour who lent you money";
 			case "soldier": return "a private from your unit";
 			case "raider": return "someone you robbed";
-			case "elder": return "a mother from your street";
+			case "elder": return "a father from your street";
 		}
 
 		return "a face you half know";
@@ -192,8 +193,10 @@ class RZ_OpeningText
 	//! A contact's name from the season's names (none of LORE's people).
 	static string Name(RZ_Rng rng)
 	{
-		array<string> first = {"Vera", "Pavel", "Henri", "Jana", "Lucie", "Emil", "Ruth", "Anton", "Irena", "Elise",
-			"Karel", "Nadia", "Oskar", "Milan", "Sabine", "Jakub", "Ilse", "Bruno", "Dana", "Leon", "Agata", "Petra"};
+		// Men's names: every contact's body is a man's (the base game's civilians), so the name, the
+		// words about them ("a patient's father") and the body agree
+		array<string> first = {"Pavel", "Henri", "Emil", "Anton", "Karel", "Oskar", "Milan", "Jakub", "Bruno", "Leon",
+			"Arno", "Viktor", "Lukas", "Kamil", "Vilem", "Felix", "Jonas", "Gustav", "Otto", "Stefan", "Hugo", "Erik"};
 		array<string> last = {"Holm", "Novak", "Brandt", "Kowal", "Duval", "Mercer", "Horak", "Petit", "Vogel", "Sorel",
 			"Kral", "Weber", "Dvorak", "Benes", "Fournier", "Hale", "Moreau", "Lindqvist"};
 		return rng.Pick(first) + " " + rng.Pick(last);
@@ -329,7 +332,7 @@ class RZ_OpeningText
 			{
 				case RZ_EOpeningTask.WATER: return "Water. The well. Whatever you can carry.";
 				case RZ_EOpeningTask.CUT: return "My hand. Anything clean you've got.";
-				case RZ_EOpeningTask.FEVER: return "The boy. Whatever's in your bag.";
+				case RZ_EOpeningTask.FEVER: return "My son. He's lying just there. Whatever's in your bag.";
 				case RZ_EOpeningTask.BOILED: return "Water for the fever. I've got the fire going.";
 				case RZ_EOpeningTask.PUMP: return "A can of fuel from the pump. Just the one.";
 				case RZ_EOpeningTask.DOWNWIND: return "Watch where they go about. Don't let them see you.";
@@ -339,8 +342,8 @@ class RZ_OpeningText
 				case RZ_EOpeningTask.CHANNEL: return "Call on the open channel. Somebody's asking.";
 				case RZ_EOpeningTask.SWAP: return "Catch the one on the road. See what they'll swap.";
 				case RZ_EOpeningTask.GATE: return "The gate. One minute.";
-				case RZ_EOpeningTask.CLOCK: return "The antidote. Now, while it still works.";
-				case RZ_EOpeningTask.CLOCK_MED: return "Keep him going. A dressing, anything.";
+				case RZ_EOpeningTask.CLOCK: return "The antidote. He's lying just there. Now, while it still works.";
+				case RZ_EOpeningTask.CLOCK_MED: return "Keep him going. He's lying just there. A dressing, anything.";
 				case RZ_EOpeningTask.DEBT: return "The house that owes. Ask them.";
 				case RZ_EOpeningTask.SETTLE: return "The two families. Sit with me and hear it.";
 			}
@@ -401,9 +404,9 @@ class RZ_OpeningText
 	{
 		switch (bg)
 		{
-			case "nurse": return "the mother with the sick boy";
+			case "nurse": return "the father with the sick son";
 			case "doctor": return "the man whose friend was bitten";
-			case "elder": return "the woman between two families";
+			case "elder": return "the man between two families";
 			case "soldier": return "the one keeping the gate";
 			case "police": return "the shopkeeper who kept your station's keys";
 		}
@@ -439,16 +442,11 @@ class RZ_OpeningText
 	//! The Drifter's next ask
 
 	//------------------------------------------------------------------------------------------------
-	//! The hand-over reply's label (RZ_TalkOpening; tagged [Errand]).
+	//! The hand-over reply's label (RZ_TalkOpening; tagged [Errand]): the cut, on their own hand.
 	static string HandOver(int task)
 	{
-		switch (task)
-		{
-			case RZ_EOpeningTask.CUT: return "Hold still. Let me dress that hand.";
-			case RZ_EOpeningTask.FEVER: return "Show me the boy. I've got something.";
-			case RZ_EOpeningTask.CLOCK: return "Here's the antidote. Roll his sleeve up.";
-			case RZ_EOpeningTask.CLOCK_MED: return "Let me clean it and bind it. That buys time.";
-		}
+		if (task == RZ_EOpeningTask.CUT)
+			return "Hold still. Let me dress that hand.";
 
 		return "Here it is.";
 	}
@@ -457,9 +455,6 @@ class RZ_OpeningText
 	//! Why the hand-over is locked: what you don't carry.
 	static string HandOverNeed(int task)
 	{
-		if (task == RZ_EOpeningTask.CLOCK)
-			return "Needs the antidote";
-
 		return "Needs a dressing, or anything medical";
 	}
 
@@ -473,13 +468,8 @@ class RZ_OpeningText
 	//! What they say as you hand it over.
 	static string HandedOver(int task)
 	{
-		switch (task)
-		{
-			case RZ_EOpeningTask.CUT: return "Mind the edge. There. You always did hold on harder than you needed to.";
-			case RZ_EOpeningTask.FEVER: return "He's through there, on the kitchen floor. You knelt down like it was a waiting room and not my kitchen. I'll hold his hand.";
-			case RZ_EOpeningTask.CLOCK: return "He didn't even flinch. Just closed his eyes. Is that good?";
-			case RZ_EOpeningTask.CLOCK_MED: return "Tight as that? All right. All right. I'll watch him.";
-		}
+		if (task == RZ_EOpeningTask.CUT)
+			return "Mind the edge. There. You always did hold on harder than you needed to.";
 
 		return "Thank you.";
 	}
@@ -489,7 +479,7 @@ class RZ_OpeningText
 	static string NextAsk(int asksDone)
 	{
 		if (asksDone == 1)
-			return "That's one. The woman at the end house heard you were about. She's got a thing too.";
+			return "That's one. The man at the end house heard you were about. He's got a thing too.";
 
 		return "Last one, I promise. The man with the cart asked. Everyone asks, once they've seen you'll do it.";
 	}

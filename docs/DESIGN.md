@@ -3271,7 +3271,7 @@ while it's still true:
 
 | Reason | Clue | True while | It says |
 |---|---|---|---|
-| The hiding place | The scratched door (**Guidance > Door prefab**) | the line is sealed | the roads out end in concrete; we tried the north road; nobody gets out |
+| The hiding place | The scratched door: a real outside door of a building 6–80 m from yours, read at an invisible readable spot on its leaf (**Interactions > Door spot**); no door near, no clue. No door is ever spawned for it | the line is sealed | the roads out end in concrete; we tried the north road; nobody gets out |
 | | The radio still talking (**Table radio prefab**, else the wind-up radio) | always | the broadcast, then the Haven's open channel and its town |
 | Your group is gone | Their car in the ditch (**Car wreck prefab**), the note on its dashboard | there's a safehouse | "Gone to the safehouse in *town*.", an arrow |
 | | Halcyon's flyer, the one they went after (**Flyer prefab**) | there's a lab, not after the cure | samples wanted at the lab |
@@ -3304,17 +3304,20 @@ Someone from before, by your background:
 
 | Background | Who they were | Background | Who they were |
 |---|---|---|---|
-| Nurse | a patient's mother | Radio Operator | a voice from the night band |
+| Nurse | a patient's father | Radio Operator | a voice from the night band |
 | Doctor | a nurse from your ward | Unemployed | the neighbour who lent you money |
 | Mechanic | a regular at the garage | Soldier | a private from your unit |
 | Hunter | the farmer whose land you hunted | Raider | someone you robbed |
-| Police Officer | a shopkeeper on your beat | Elder | a mother from your street |
+| Police Officer | a shopkeeper on your beat | Elder | a father from your street |
 | Ex-Con | your old cellmate | Drifter | a face you half know |
 | Lab Technician | a junior from the institute | | |
 
+Every contact, and the next person they send you to, is a man, as the base game's civilian bodies
+are: their names are men's and the words about them say father, man, he.
+
 **They call you over; you talk to them.** Four seconds after the spawn they call to you, a subtitle
 with their name (*"Hey. Over here. It's me."*), and your first objective is tracked at once: *Talk
-to Vera Holm.* (their name; the errand *Outside the Door*, on the HUD tracker and as the map's diamond on
+to Pavel Holm.* (their name; the errand *Outside the Door*, on the HUD tracker and as the map's diamond on
 them). The talk screen never opens by itself ([DIALOGUE.md](DIALOGUE.md#who-opens-a-conversation)):
 it opens when you talk to them, and then the first step starts in that conversation: their greeting,
 that step's piece of the story, then the step's ask, and the step is yours and tracked. **The chain
@@ -3324,7 +3327,7 @@ starts from there, at a new place, in one of two ways by your background:
 | Pattern | Backgrounds | How you move on |
 |---|---|---|
 | **They walk with you** (escort) | Mechanic, Hunter, Lab Technician, Unemployed, Raider, Ex-Con, Radio Operator: steps out and about (a pump, a pack's ground, the remains, the road, a door that owes, a toll, the channel) | Once the first ask is out and the talk screen is shut, the contact comes with you (*"I'm coming with you. ... You lead."*): their body becomes an escort ([building blocks](#mission-building-blocks), `RZ_Escort`) of **Guidance > Companion** (`RZ_OpeningCompanion.et`, a one-man civilian group) that follows 4 m behind you, stops while infected are within 25 m of them or nobody's within 150 m, and can be killed. Each next step starts as soon as they're within 30 m of you, said by them as subtitles; not caught up within a minute, it starts anyway, on its card. They walk you to the end and say one line there (*"This is it. I'll find a corner."*). No escort room (**Contracts > Max escorts**) or no prefab: they stay where they stood, and each next step starts where you are, on its card |
-| **They send you on** (hand-off) | Nurse, Doctor, Elder, Soldier, Police Officer, Drifter (a plan with steps 1 and 2) | When step 1 starts, its giver picks the next person: a house 200–600 m on from step 1's place (the one nearest where the chain ends first), 150 m or more from them, not locked, the spot outside its side facing step 1's place meeting `opening.search`; named, and who they are by your background (*the mother with the sick boy*, *the man whose friend was bitten*, *the woman between two families*, *the one keeping the gate*, *the shopkeeper who kept your station's keys*, else *someone who heard you help*). With the ask they say *"When you're done there, don't come back for me. Go on to Ruth, the mother with the sick boy, at Ruth's house in Morton."* Step 1 done, Ruth stands there (a body tagged as the first was) and *Find Ruth* is tracked ("Find Ruth at Ruth's house in Morton. Talk to them."); within 25 m she calls you over (*"You're the one Vera sent? Over here."*), and talking to her gives step 2. Step 2 done, the walk starts where you are. The first giver stays behind (talked to, *"Go on. Ruth's waiting for you, not me."*) and goes once nobody's within 150 m. No house fits: step 2 is theirs, *Back to Vera Holm*, the only way back left |
+| **They send you on** (hand-off) | Nurse, Doctor, Elder, Soldier, Police Officer, Drifter (a plan with steps 1 and 2) | When step 1 starts, its giver picks the next person: a house 200–600 m on from step 1's place (the one nearest where the chain ends first), 150 m or more from them, not locked, the spot outside its side facing step 1's place meeting `opening.search`; named, and who they are by your background (*the father with the sick son*, *the man whose friend was bitten*, *the man between two families*, *the one keeping the gate*, *the shopkeeper who kept your station's keys*, else *someone who heard you help*). With the ask they say *"When you're done there, don't come back for me. Go on to Emil, the father with the sick son, at Emil's house in Morton."* Step 1 done, Emil stands there (a body tagged as the first was) and *Find Emil* is tracked ("Find Emil at Emil's house in Morton. Talk to them."); within 25 m he calls you over (*"You're the one Pavel sent? Over here."*), and talking to him gives step 2. Step 2 done, the walk starts where you are. The first giver stays behind (talked to, *"Go on. Emil's waiting for you, not me."*) and goes once nobody's within 150 m. No house fits: step 2 is theirs, *Back to Pavel Holm*, the only way back left |
 
 With neither (levels 2–3, one step and the lead, or the Drifter's second and third asks), each next
 step starts where you are, said by them when they're within 30 m, else only its card. Already talking
@@ -3356,7 +3359,7 @@ there, one line on arrival ("Someone with a list looks up."), and no Fame. All t
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
 | 1. Down the Road | Search a building 150–450 m from them: a work site's **Search it, quietly** (8 s; 6 s for a learning player, level 1; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot inside it, on its ground floor; done there. One of your background's kinds when one is there (below), else a house, named for what it really is ([PLACES.md](PLACES.md#a-place-is-what-its-words-say)); no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
-| 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold), else The Cut (dress their hand with anything medical you carry: the hand-over reply on their talk screen) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
+| 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold), else The Cut (dress their hand with anything medical you carry: the hand-over reply on their talk screen, done there and then) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
 | 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
 No step 2 (yours can't run here, no well near and nothing medical on you): straight to the walk.
@@ -3375,10 +3378,10 @@ meets its need ([PLACES.md](PLACES.md#the-needs)) or the step can't run here.
 
 | Background | Step 1's building | Step 2 | What it needs to run | Done when |
 |---|---|---|---|---|
-| Nurse | the chemist's, else the old aid post, the vet's farm or the doctor's house | **The Fever**: treat their boy | something medical on you | you pick the hand-over reply on their talk screen (*[Errand] Show me the boy. I've got something.*, first in the list, locked "Needs a dressing, or anything medical" without it); one medical item is taken then, never just for opening the talk |
+| Nurse | the chemist's, else the old aid post, the vet's farm or the doctor's house | **The Fever**: treat their son, who lies there: a body laid on a mattress (a **Treat his fever** care work site, Props > Duty person) on the ground floor of the nearest house within 60 m, else beside them; the tracker's diamond is on him, not on his father | something medical on you | the 8 s hold at him, with your hands; one medical item is taken then (without one you're told what it needs). Never for standing by his father, never for opening a talk |
 | | | else **Water for the Fever** | a well within 400 m | **Fill what you can carry** at the well (8 s) (it'll be boiled) |
-| Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, 10 minutes before it lapses | an antidote on you | the hand-over reply (*[Errand] Here's the antidote. Roll his sleeve up.*, locked "Needs the antidote"); the antidote is taken then |
-| | | else **The Clock** with a dressing | something medical | the hand-over reply (*[Errand] Let me clean it and bind it. That buys time.*); one medical item is taken then |
+| Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, lying there as the Fever's son does (inside any building within 60 m, else beside them), 10 minutes before it lapses | an antidote on you | the 8 s hold at him, **Give him the antidote**; the antidote is taken then |
+| | | else **The Clock** with a dressing | something medical | the 8 s hold at him, **Clean and bind the bite**; one medical item is taken then |
 | Mechanic | a garage or petrol station | **The Pump**: fuel from the nearest petrol station within 800 m | a petrol station near | 5 s at the pump with 5 litres in a can |
 | Hunter | a farm | **Downwind**: watch a pack's ground, unseen | 150 m short of the nearest pack's lair within 1.6 km, else a tree line 150–250 m out (four trees within 40 m) | 30 s within 25 m, hidden (built stealth), quiet; back |
 | Police Officer | a police post or hall | **The Station Keys**: the contact gives you the key to a locked building 40–300 m off | locks and the key prefab, a real lock near | inside that building |

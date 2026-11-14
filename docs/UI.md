@@ -646,7 +646,7 @@ channel**. Nobody opens it on you by looking at them or walking up: someone who 
 as a [subtitle](#subtitles-and-the-reader) with their name (a stranger, a road post, an opening's
 contact; [DIALOGUE.md](DIALOGUE.md#who-opens-a-conversation)), their nametag shows as you come near,
 and where it's a step of a job the [tracker](#the-quest-tracker) and the map's diamond point at them
-("Talk to Vera Holm.").
+("Talk to Pavel Holm.").
 
 **One Talk prompt per person.** Everyone who talks has exactly one prompt, **Talk to ...**, and
 everything else they offer is a reply on their hub (vanilla's own actions on them stay). For the

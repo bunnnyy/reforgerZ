@@ -4640,24 +4640,6 @@
    "notes": ""
   },
   {
-   "id": "ScratchedDoor",
-   "kind": "create",
-   "system": "New-player guidance",
-   "path": "Prefabs/ReforgerZ/Guidance/RZ_ScratchedDoor.et",
-   "basePrefab": "{88416A0C54AAA9F3}Prefabs/Structures/BuildingParts/Doors/Door_Shed_02_EXT_COV_B_weathered.et",
-   "baseFind": "",
-   "baseHint": "a door or wall panel prop",
-   "components": [{"cls": "RZ_ClueComponent", "values": [], "name": ""}],
-   "actions": [{"cls": "RZ_ReadClueAction", "values": [], "name": "Read"}],
-   "slots": ["m_GuidanceSettings.m_sDoorPrefab"],
-   "listSlot": false,
-   "slotLabel": "Guidance > Door prefab",
-   "required": false,
-   "minimum": false,
-   "use": "an opening's clue in the hiding place: the scratched door",
-   "notes": ""
-  },
-  {
    "id": "Flyer",
    "kind": "create",
    "system": "New-player guidance",
