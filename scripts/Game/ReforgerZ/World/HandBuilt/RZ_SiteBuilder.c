@@ -10,6 +10,12 @@
 //! item) standing within the site's radius of its centre that this session's game master placed,
 //! plus the objects the builder put out to be edited (the save it loaded, or the automated pieces it
 //! started from) that are still there. Camp life's own pieces, loot and people are never saved.
+//!
+//! Role spots (RZ_HandSpots, docs/SITES.md "Role spots"): while a site is built the menu puts them
+//! down at the builder's feet, facing their way, each marked by a small Game Master object (Camp
+//! life > Spot marker) that can be moved or deleted in Game Master; the save reads them from their
+//! markers. The menu shows the site's checklist, and the builder's client draws the site's edge and
+//! the spots, green, red or yellow (RZ_SiteBuilderMarks).
 
 //------------------------------------------------------------------------------------------------
 //! One admin's builder: what the menu shows and the site they're building.
@@ -26,6 +32,11 @@ class RZ_SiteBuilderSession
 	string m_sSig;					// what stood there when it was last loaded or saved
 	string m_sArmed;				// a row pressed once that needs a second press ("save", "restore", "delete")
 	string m_sThen;					// after the unsaved-changes question: "go:<id>", "build:<id>:<how>", "stop"
+	ref array<ref RZ_HandSpot> m_aSpots = {};		// the role spots put down there (RZ_HandSpots)
+	ref array<IEntity> m_aMarks = {};				// each spot's marker (null: none), Game Master can move it
+	ref array<bool> m_aMarked = {};					// a marker was put out for the spot (gone since: it was deleted)
+	ref array<ref RZ_HandSpot> m_aSuggest = {};		// where the automated layout had each kind of spot
+	int m_iSpotType;								// the type the place row puts down (RZ_HandSpots.Types)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -370,7 +381,13 @@ class RZ_SiteBuilder
 			sum += (p[0] * 3.1 + p[1] * 7.7 + p[2] * 1.3 + a[0] * 0.37 + a[1] * 0.11 + a[2] * 0.53) * (Math.Mod(i, 7) + 1);
 		}
 
-		return string.Format("%1|%2", now.Count(), sum.ToString(-1, 1));
+		SyncSpots(s);
+		foreach (int k, RZ_HandSpot sp : s.m_aSpots)
+		{
+			sum += (sp.m_vPos[0] * 2.3 + sp.m_vPos[2] * 5.9 + sp.m_fYaw * 0.29) * (Math.Mod(k, 5) + 2);
+		}
+
+		return string.Format("%1|%2|%3", now.Count(), s.m_aSpots.Count(), sum.ToString(-1, 1));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -445,6 +462,15 @@ class RZ_SiteBuilder
 		{
 			RZ_SiteEntry e = shown[i];
 			string label = Name(e) + " · " + StateText(StateOf(e));
+			RZ_HandBuiltSite listed = RZ_HandBuilt.Get().ForPlace(e.m_eKind, e.m_vPos);
+			if (listed)
+			{
+				int listMissing;
+				label += " · spots " + RZ_HandSpots.Short(e.m_eFaction, e.m_eKind, listed.m_aSpots, listMissing);
+				if (listed.m_bPinned)
+					label += " · PINNED";
+			}
+
 			if (s.m_Building && s.m_Building.m_sId == e.m_sId)
 				label += " · BUILDING NOW";
 
@@ -472,6 +498,21 @@ class RZ_SiteBuilder
 				saveLabel = string.Format("Save: press again to replace the save from %1", saved.m_sSaved);
 
 			Row(acts, labels, locks, "save", saveLabel, "");
+			array<string> types = {};
+			RZ_HandSpots.Types(types);
+			string type = types[s.m_iSpotType % types.Count()];
+			Row(acts, labels, locks, "spot_place", "Put a spot at your feet: " + RZ_HandSpots.Label(type), "");
+			Row(acts, labels, locks, "spot_next", "Spot type: " + RZ_HandSpots.Label(type) + ". Next type", "");
+			Row(acts, labels, locks, "spot_back", "Previous spot type", "");
+			string removeLock = "";
+			string removeLabel = "Take up the nearest spot";
+			int nearest = NearestSpot(s);
+			if (nearest < 0)
+				removeLock = "No spots put down yet.";
+			else
+				removeLabel = string.Format("Take up the nearest spot (%1, %2 m)", RZ_HandSpots.Label(s.m_aSpots[nearest].m_sType), RZ_Util.RoundToInt(RZ_Util.DistXZ(PlayerPos(s.m_iPlayer), s.m_aSpots[nearest].m_vPos)));
+
+			Row(acts, labels, locks, "spot_remove", removeLabel, removeLock);
 			Row(acts, labels, locks, "stop", "Stop building", "");
 		}
 		else if (saved)
@@ -495,6 +536,14 @@ class RZ_SiteBuilder
 				useLabel = "In use: AUTOMATED. Switch to hand-built";
 
 			Row(acts, labels, locks, "use", useLabel, "");
+			if (site.m_eKind != RZ_ECampPlace.ROAD_POST)
+			{
+				string pinLabel = "Keep this site here every season: OFF. Switch on";
+				if (saved.m_bPinned)
+					pinLabel = "Keep this site here every season: ON. Switch off";
+
+				Row(acts, labels, locks, "pin", pinLabel, "");
+			}
 		}
 
 		if (store.BackupCount(site.m_sId) > 0)
@@ -563,6 +612,35 @@ class RZ_SiteBuilder
 		}
 
 		text += string.Format("\n%1 m from you. Everything you place within %2 m of its centre belongs to it.", RZ_Util.RoundToInt(RZ_Util.DistXZ(PlayerPos(s.m_iPlayer), site.m_vPos)), RZ_Util.RoundToInt(site.m_fRadius));
+		if (saved && saved.m_bPinned)
+			text += " PINNED: it stands here every season.";
+
+		// The checklist: what's being built, else the save's
+		array<ref RZ_HandSpot> spots;
+		bool buildingHere = s.m_Building && s.m_Building.m_sId == site.m_sId;
+		if (buildingHere)
+		{
+			SyncSpots(s);
+			spots = s.m_aSpots;
+		}
+		else if (saved)
+		{
+			spots = saved.m_aSpots;
+		}
+
+		if (buildingHere || saved)
+		{
+			int missing;
+			text += "\n" + RZ_HandSpots.Text(site.m_eFaction, site.m_eKind, spots, missing);
+			if (buildingHere)
+			{
+				int bad = Problems(s);
+				if (bad > 0)
+					text += string.Format("\n%1 spots are red: %2", bad, FirstProblem(s));
+
+				SendMarks(s);
+			}
+		}
 		if (s.m_Building && s.m_Building.m_sId == site.m_sId)
 		{
 			array<IEntity> now = {};
@@ -699,6 +777,28 @@ class RZ_SiteBuilder
 		else if (act == "use")
 		{
 			SwitchUse(s);
+		}
+		else if (act == "pin")
+		{
+			SwitchPin(s);
+		}
+		else if (act == "spot_place")
+		{
+			PlaceSpot(s);
+		}
+		else if (act == "spot_next")
+		{
+			s.m_iSpotType++;
+		}
+		else if (act == "spot_back")
+		{
+			array<string> types = {};
+			RZ_HandSpots.Types(types);
+			s.m_iSpotType = (s.m_iSpotType + types.Count() - 1) % types.Count();
+		}
+		else if (act == "spot_remove")
+		{
+			RemoveSpot(s, NearestSpot(s));
 		}
 		else if (act == "restore")
 		{
@@ -866,11 +966,19 @@ class RZ_SiteBuilder
 		if (how == "auto")
 			keep = s.m_aPut;
 
+		s.m_aSuggest.Clear();
+		camp.Suggestions(site.m_sId, site.m_vPos, site.m_fRadius, s.m_aSuggest);
+		ClearSpots(s);
 		int pieces = camp.StartBuilding(site.m_sId, site.m_vPos, site.m_fRadius, keep);
 		int loaded = 0;
 		RZ_HandBuiltSite saved = RZ_HandBuilt.Get().ForPlace(site.m_eKind, site.m_vPos);
 		if (how == "saved" && saved)
 		{
+			foreach (RZ_HandSpot sp : saved.m_aSpots)
+			{
+				AddSpot(s, sp.m_sType, sp.m_vPos, sp.m_fYaw, sp.m_iSeats);
+			}
+
 			foreach (RZ_HandBuiltObject o : saved.m_aObjects)
 			{
 				IEntity e = RZ_HandBuilt.Spawn(o);
@@ -883,6 +991,7 @@ class RZ_SiteBuilder
 		}
 
 		s.m_sSig = Sig(s);
+		SendMarks(s);
 		string what = "empty";
 		if (how == "auto")
 			what = string.Format("from the automated layout (%1 pieces)", pieces);
@@ -926,9 +1035,31 @@ class RZ_SiteBuilder
 			hs.m_bUse = before.m_bUse;
 
 		hs.m_sSaved = RZ_HandBuilt.Now();
+		hs.m_iFaction = site.m_eFaction;
+		if (before)
+			hs.m_bPinned = before.m_bPinned;
+
 		foreach (IEntity e : now)
 		{
 			hs.m_aObjects.Insert(RZ_HandBuilt.Read(e));
+		}
+
+		SyncSpots(s);
+		int spotsOutside = 0;
+		foreach (RZ_HandSpot sp : s.m_aSpots)
+		{
+			if (RZ_Util.DistXZ(sp.m_vPos, site.m_vPos) > site.m_fRadius)
+			{
+				spotsOutside++;
+				continue;
+			}
+
+			RZ_HandSpot kept = new RZ_HandSpot();
+			kept.m_sType = sp.m_sType;
+			kept.m_vPos = sp.m_vPos;
+			kept.m_fYaw = sp.m_fYaw;
+			kept.m_iSeats = sp.m_iSeats;
+			hs.m_aSpots.Insert(kept);
 		}
 
 		if (!store.Save(hs))
@@ -938,10 +1069,23 @@ class RZ_SiteBuilder
 		}
 
 		s.m_sSig = Sig(s);
+		int missing;
+		string check = RZ_HandSpots.Short(site.m_eFaction, site.m_eKind, hs.m_aSpots, missing);
+		int bad = Problems(s);
 		RZ_Log.Info(string.Format("Hand-built: saved %1 (%2): %3 objects to %4/%5/%6.txt; %7 outside its radius not saved.", site.m_sTitle, hs.m_sId, now.Count(), RZ_HandBuilt.DIR, store.GetWorld(), hs.m_sId, outside));
-		string said = string.Format("Saved: %1 objects.", now.Count());
+		RZ_Log.Info(string.Format("Hand-built: %1 (%2) role spots: %3 saved, %4 outside not saved, %5 red; needs %6.", site.m_sTitle, hs.m_sId, hs.m_aSpots.Count(), spotsOutside, bad, check));
+		string said = string.Format("Saved: %1 objects, %2 spots.", now.Count(), hs.m_aSpots.Count());
 		if (outside > 0)
 			said += string.Format(" %1 outside the site weren't saved.", outside);
+
+		if (spotsOutside > 0)
+			said += string.Format(" %1 spots outside the site weren't saved.", spotsOutside);
+
+		if (bad > 0)
+			said += string.Format(" %1 spots are red: %2.", bad, FirstProblem(s));
+
+		if (missing > 0)
+			said += " Still needs: " + check + ". Its people fall back where a spot is missing.";
 
 		if (!hs.m_bUse)
 			said += " It's not in use: switch it on to see it in play.";
@@ -974,6 +1118,12 @@ class RZ_SiteBuilder
 		}
 
 		s.m_aPut.Clear();
+		ClearSpots(s);
+		s.m_aSuggest.Clear();
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(s.m_iPlayer);
+		if (ui)
+			ui.SendPayload(RZ_UIFeed.PAYLOAD_SITEMARKS, "");
+
 		s.m_Building = null;
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		gm.GetCampLife().StopBuilding(site.m_sId, site.m_vPos, site.m_fRadius);
@@ -1006,6 +1156,218 @@ class RZ_SiteBuilder
 			return;
 
 		gm.GetCampLife().StopBuilding(site.m_sId, site.m_vPos, site.m_fRadius);
+	}
+
+	// ================================================================ Role spots
+	//------------------------------------------------------------------------------------------------
+	//! A spot put down (its marker with it, when Camp life > Spot marker is set).
+	protected static void AddSpot(RZ_SiteBuilderSession s, string type, vector pos, float yaw, int seats)
+	{
+		RZ_HandSpot sp = new RZ_HandSpot();
+		sp.m_sType = type;
+		sp.m_vPos = pos;
+		sp.m_fYaw = yaw;
+		sp.m_iSeats = seats;
+		if (type == "meal" && seats <= 1)
+			sp.m_iSeats = RZ_HandSpots.MEAL_SEATS;
+
+		IEntity mark;
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		ResourceName prefab;
+		if (gm && gm.GetCampLife() && gm.GetCampLife().GetSettings())
+			prefab = gm.GetCampLife().GetSettings().m_sSpotMarker;
+
+		if (!prefab.IsEmpty())
+			mark = RZ_Util.SpawnPrefab(prefab, pos, yaw); // VERIFY: an editable prop spawned by the server can be selected, moved and deleted in Game Master
+
+		s.m_aSpots.Insert(sp);
+		s.m_aMarks.Insert(mark);
+		s.m_aMarked.Insert(mark != null);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The place row: a spot of the chosen type at the builder's feet, facing the way they face.
+	protected static void PlaceSpot(RZ_SiteBuilderSession s)
+	{
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(s.m_iPlayer);
+		if (!user || !s.m_Building)
+			return;
+
+		array<string> types = {};
+		RZ_HandSpots.Types(types);
+		string type = types[s.m_iSpotType % types.Count()];
+		vector pos = RZ_HandSpots.OnFloor(user.GetOrigin());
+		float yaw = user.GetYawPitchRoll()[0];
+		AddSpot(s, type, pos, yaw, 1);
+		RZ_Log.Info(string.Format("Site builder: %1 put a %2 spot at %3 in %4.", RZ_Util.PlayerName(s.m_iPlayer), type, RZ_SettlementScanner.GridReference(pos), s.m_Building.m_sId));
+		Say(s, RZ_HandSpots.Label(type) + " put down. Move its marker in Game Master if it should stand elsewhere.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void RemoveSpot(RZ_SiteBuilderSession s, int idx)
+	{
+		if (idx < 0 || idx >= s.m_aSpots.Count())
+			return;
+
+		Remove(s.m_aMarks[idx]);
+		s.m_aSpots.Remove(idx);
+		s.m_aMarks.Remove(idx);
+		s.m_aMarked.Remove(idx);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void ClearSpots(RZ_SiteBuilderSession s)
+	{
+		foreach (IEntity mark : s.m_aMarks)
+		{
+			Remove(mark);
+		}
+
+		s.m_aSpots.Clear();
+		s.m_aMarks.Clear();
+		s.m_aMarked.Clear();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The spots follow their markers: moved in Game Master, the spot moves; deleted, the spot goes.
+	static void SyncSpots(RZ_SiteBuilderSession s)
+	{
+		for (int i = s.m_aSpots.Count() - 1; i >= 0; i--)
+		{
+			IEntity mark = s.m_aMarks[i];
+			if (!mark)
+			{
+				if (s.m_aMarked[i])
+				{
+					s.m_aSpots.Remove(i);
+					s.m_aMarks.Remove(i);
+					s.m_aMarked.Remove(i);
+				}
+
+				continue;
+			}
+
+			s.m_aSpots[i].m_vPos = mark.GetOrigin();
+			s.m_aSpots[i].m_fYaw = mark.GetYawPitchRoll()[0];
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static int NearestSpot(RZ_SiteBuilderSession s)
+	{
+		SyncSpots(s);
+		vector me = PlayerPos(s.m_iPlayer);
+		int best = -1;
+		float bestDist = float.MAX;
+		foreach (int i, RZ_HandSpot sp : s.m_aSpots)
+		{
+			float d = RZ_Util.DistXZ(sp.m_vPos, me);
+			if (d < bestDist)
+			{
+				bestDist = d;
+				best = i;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many spots stand wrong (outside, in a wall, on another, in the way in).
+	protected static int Problems(RZ_SiteBuilderSession s)
+	{
+		if (!s.m_Building)
+			return 0;
+
+		int n = 0;
+		foreach (int i, RZ_HandSpot sp : s.m_aSpots)
+		{
+			if (!RZ_HandSpots.Problem(sp, s.m_Building.m_vPos, s.m_Building.m_fRadius, s.m_aSpots, s.m_aMarks[i]).IsEmpty())
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first wrong spot, in words: "Seat, 6 m east of you: in a wall or a prop".
+	protected static string FirstProblem(RZ_SiteBuilderSession s)
+	{
+		vector me = PlayerPos(s.m_iPlayer);
+		foreach (int i, RZ_HandSpot sp : s.m_aSpots)
+		{
+			string why = RZ_HandSpots.Problem(sp, s.m_Building.m_vPos, s.m_Building.m_fRadius, s.m_aSpots, s.m_aMarks[i]);
+			if (why.IsEmpty())
+				continue;
+
+			return string.Format("%1, %2 m %3 of you: %4", RZ_HandSpots.Label(sp.m_sType), RZ_Util.RoundToInt(RZ_Util.DistXZ(me, sp.m_vPos)), RZ_Util.DirectionText(me, sp.m_vPos), why);
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The builder's client draws the site's edge and its spots: green, red, and yellow where a missing
+	//! spot is suggested (RZ_SiteBuilderMarks).
+	protected static void SendMarks(RZ_SiteBuilderSession s)
+	{
+		RZ_SiteEntry site = s.m_Building;
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(s.m_iPlayer);
+		if (!site || !ui)
+			return;
+
+		vector c = RZ_Util.GroundPos(site.m_vPos);
+		string payload = string.Format("R|%1|%2|%3|%4", c[0], c[1], c[2], site.m_fRadius);
+		foreach (int i, RZ_HandSpot sp : s.m_aSpots)
+		{
+			int state = 0;
+			if (!RZ_HandSpots.Problem(sp, site.m_vPos, site.m_fRadius, s.m_aSpots, s.m_aMarks[i]).IsEmpty())
+				state = 1;
+
+			payload += string.Format(";S|%1|%2|%3|%4|%5", sp.m_sType, sp.m_vPos[0], sp.m_vPos[1], sp.m_vPos[2], state);
+		}
+
+		// One suggestion for each kind of spot still short of what the site needs
+		array<ref RZ_HandNeed> needs = {};
+		int missing;
+		RZ_HandSpots.Check(site.m_eFaction, site.m_eKind, s.m_aSpots, needs, missing);
+		foreach (RZ_HandNeed n : needs)
+		{
+			if (n.m_iHave >= n.m_iWant)
+				continue;
+
+			foreach (RZ_HandSpot sug : s.m_aSuggest)
+			{
+				if (sug.m_sType != n.m_sType || RZ_Util.DistXZ(sug.m_vPos, site.m_vPos) > site.m_fRadius)
+					continue;
+
+				payload += string.Format(";S|%1|%2|%3|%4|2", sug.m_sType, sug.m_vPos[0], sug.m_vPos[1], sug.m_vPos[2]);
+				break;
+			}
+		}
+
+		ui.SendPayload(RZ_UIFeed.PAYLOAD_SITEMARKS, payload);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pins the site here every season (the season's roll places it first), or lets it go.
+	protected static void SwitchPin(RZ_SiteBuilderSession s)
+	{
+		RZ_SiteEntry site = SiteById(s.m_sSelected);
+		if (!site)
+			return;
+
+		RZ_HandBuilt store = RZ_HandBuilt.Get();
+		RZ_HandBuiltSite saved = store.ForPlace(site.m_eKind, site.m_vPos);
+		if (!saved)
+			return;
+
+		store.SetPinned(saved.m_sId, !saved.m_bPinned, site.m_eFaction);
+		RZ_Log.Info(string.Format("Hand-built: %1 (%2) pinned %3.", site.m_sTitle, saved.m_sId, saved.m_bPinned));
+		if (saved.m_bPinned)
+			Say(s, "Pinned: from the next season (or a fresh save) the site stands here every time. Ship it with the tool to keep it in the mod.");
+		else
+			Say(s, "Not pinned: the season places this site again; the save is used while it stands here.");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -282,6 +282,15 @@ class RZ_CampLifeSettings
 
 	[Attribute("1", desc: "Road post run: Bastion and the Red Hand walk to their nearest road post (within 1.5 km) and back once a day, one at a time on the server, within the extras' cap")]
 	bool m_bRoadPostRun;
+
+	[Attribute("{237F141902888302}Prefabs/ReforgerZ/World/HandBuilt/RZ_HandSpot.et", UIWidgets.ResourcePickerThumbnail, "Hand-built sites: a role spot in play (docs/SITES.md, Role spots): an invisible point with one smart action for each of camp life's tags (sit, lean, work, watch, gather, cook, wash, chop). Empty: hand-placed spots are read as positions only (people stand there, nobody sits)", "et")]
+	ResourceName m_sHandSpot;
+
+	[Attribute("{DA6496B7DC1880E6}Prefabs/ReforgerZ/World/HandBuilt/RZ_HandSpot_Meal.et", UIWidgets.ResourcePickerThumbnail, "Hand-built sites: the canteen table's spot in play: eight seats round a point (put a table there). Empty: the Hand spot, one seat", "et")]
+	ResourceName m_sHandSpotMeal;
+
+	[Attribute("{D08B33729A0C2743}PrefabsEditable/Auto/Props/Infrastructure/ConeTraffic/E_ConeTraffic_01_red.et", UIWidgets.ResourcePickerThumbnail, "Hand-built sites: what marks a role spot while it's built (the site builder): something small Game Master can move. Empty: the spots show as coloured shapes only", "et")]
+	ResourceName m_sSpotMarker;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -961,6 +970,10 @@ class RZ_CampLife
 	//! calls this before it spawns the bodies; Enter reuses the building it found.
 	vector HomeFor(string key, RZ_EFaction faction, RZ_ECampPlace kind, vector pos)
 	{
+		vector hand;
+		if (m_Settings.m_bDressing && HandHome(kind, pos, hand))
+			return hand;
+
 		if (!m_Settings.m_bDressing || !m_Settings.m_bBuildings || kind == RZ_ECampPlace.ROAD_POST)
 			return pos;
 
@@ -1310,15 +1323,224 @@ class RZ_CampLife
 			p.m_aPieces.Insert(cp);
 		}
 
+		int spots = LayHandSpots(p, site);
 		array<IEntity> qms = {};
 		Quartermasters(p, qms);
 		foreach (IEntity qm : qms)
 		{
-			TurnToServe(p, qm);
+			if (!PlaceKeeper(p, qm, RZ_HandSpots.First(site.m_aSpots, "qm")))
+				TurnToServe(p, qm);
 		}
 
-		RZ_Log.Info(string.Format("Camp life: %1: hand-built (%2 objects, saved %3), automated layout off.", what, site.m_aObjects.Count(), site.m_sSaved));
+		RZ_HandSpot medicSpot = RZ_HandSpots.First(site.m_aSpots, "medic");
+		foreach (RZ_CampWorker k : p.m_aWorkers)
+		{
+			if (medicSpot && k.m_iRole == ROLE_KEEPER && k.m_Unit && !k.m_Unit.FindComponent(RZ_QuartermasterComponent))
+				PlaceKeeper(p, k.m_Unit, medicSpot);
+		}
+
+		int missing;
+		string check = RZ_HandSpots.Short(p.m_eFaction, p.m_eKind, site.m_aSpots, missing);
+		RZ_Log.Info(string.Format("Camp life: %1: hand-built (%2 objects, %3 role spots, saved %4), automated layout off; its spots: %5.", what, site.m_aObjects.Count(), spots, site.m_sSaved, check));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The save's role spots (docs/SITES.md, "Role spots") become the place's pieces and posts: the
+	//! routine sits, works, keeps watch, cooks, washes, chops and sleeps at them as at its own pieces'
+	//! smart actions; the gate, the watch posts, the stores door and the walk points are its posts and
+	//! routes; the canteen is home. A need with no spot falls back as at a bare place (a seat, walking
+	//! the camp). How many spots it laid.
+	protected int LayHandSpots(RZ_CampPlace p, RZ_HandBuiltSite site)
+	{
+		if (site.m_aSpots.IsEmpty())
+			return 0;
+
+		int n = 0;
+		foreach (RZ_HandSpot sp : site.m_aSpots)
+		{
+			if (!RZ_HandSpots.IsPiece(sp.m_sType))
+				continue;
+
+			ResourceName prefab = m_Settings.m_sHandSpot;
+			if (sp.m_sType == "meal" && !m_Settings.m_sHandSpotMeal.IsEmpty())
+				prefab = m_Settings.m_sHandSpotMeal;
+
+			if (prefab.IsEmpty())
+				continue;
+
+			RZ_CampPiece cp = new RZ_CampPiece();
+			cp.m_sPending = prefab;
+			cp.m_vPos = RZ_HandSpots.OnFloor(sp.m_vPos);
+			cp.m_fYaw = sp.m_fYaw;
+			cp.m_eUse = RZ_HandSpots.UseOf(sp.m_sType);
+			cp.m_sTag = UseTag(cp.m_eUse);
+			cp.m_iSeats = RZ_HandSpots.SeatsOf(sp);
+			if (sp.m_sType == "meal" && prefab == m_Settings.m_sHandSpot)
+				cp.m_iSeats = 1;
+
+			cp.m_sName = RZ_HandSpots.NameOf(sp.m_sType);
+			p.m_aPieces.Insert(cp);
+			n++;
+		}
+
+		// Home: the canteen, else where the seats are; named people stay near it
+		RZ_HandSpot meal = RZ_HandSpots.First(site.m_aSpots, "meal");
+		if (!meal)
+			meal = RZ_HandSpots.First(site.m_aSpots, "sit");
+
+		if (meal)
+			p.m_vHome = RZ_Util.GroundPos(meal.m_vPos);
+
+		// Posts and walks
+		RZ_SitePeople people = new RZ_SitePeople();
+		people.m_vMid = site.m_vCentre;
+		people.m_vGate = site.m_vCentre;
+		people.m_vDoor = site.m_vCentre;
+		RZ_HandSpot gate = RZ_HandSpots.First(site.m_aSpots, "gate");
+		if (gate)
+		{
+			people.m_vGate = gate.m_vPos;
+			people.m_fGateOut = gate.m_fYaw;
+		}
+
+		RZ_HandSpot stores = RZ_HandSpots.First(site.m_aSpots, "stores");
+		if (stores)
+			people.m_vDoor = stores.m_vPos;
+
+		RZ_SiteRoute walk = new RZ_SiteRoute();
+		walk.m_iKind = RZ_SiteRoute.APPROACH;
+		foreach (RZ_HandSpot hs : site.m_aSpots)
+		{
+			if (hs.m_sType == "gate" || hs.m_sType == "watch")
+			{
+				RZ_SitePost post = new RZ_SitePost();
+				post.m_iKind = RZ_SitePost.LOOKOUT;
+				if (hs.m_sType == "gate")
+					post.m_iKind = RZ_SitePost.GATE;
+
+				post.m_vPos = hs.m_vPos;
+				post.m_fFacing = hs.m_fYaw;
+				post.m_bPiece = true;
+				post.m_bSeesGate = true;
+				if (post.m_iKind == RZ_SitePost.GATE)
+					people.m_aPosts.InsertAt(post, 0);
+				else
+					people.m_aPosts.Insert(post);
+			}
+			else if (hs.m_sType == "stores")
+			{
+				RZ_SitePost door = new RZ_SitePost();
+				door.m_iKind = RZ_SitePost.DOOR;
+				door.m_vPos = hs.m_vPos;
+				door.m_fFacing = hs.m_fYaw;
+				people.m_aPosts.Insert(door);
+			}
+			else if (hs.m_sType == "route")
+			{
+				walk.m_aPoints.Insert(hs.m_vPos);
+				walk.m_aStop.Insert(false);
+			}
+		}
+
+		if (walk.m_aPoints.Count() >= 2)
+		{
+			walk.m_aStop[walk.m_aStop.Count() - 1] = true;
+			walk.m_fOut = RZ_Util.DistXZ(people.m_vGate, walk.m_aPoints[walk.m_aPoints.Count() - 1]);
+			people.m_aRoutes.Insert(walk);
+
+			// Halcyon's courier and the friendly side take the same walk
+			RZ_SiteRoute friendly = new RZ_SiteRoute();
+			friendly.m_iKind = RZ_SiteRoute.FRIENDLY;
+			friendly.m_aPoints.Copy(walk.m_aPoints);
+			friendly.m_aStop.Copy(walk.m_aStop);
+			friendly.m_fOut = walk.m_fOut;
+			people.m_aRoutes.Insert(friendly);
+		}
+
+		p.m_People = people;
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A quartermaster or the medic stood at their hand-placed spot, facing its way. False: no spot.
+	protected bool PlaceKeeper(RZ_CampPlace p, IEntity person, RZ_HandSpot spot)
+	{
+		if (!person || !spot)
+			return false;
+
+		vector mat[4];
+		Math3D.AnglesToMatrix(Vector(spot.m_fYaw, 0, 0), mat);
+		mat[3] = RZ_Util.GroundPos(spot.m_vPos);
+		person.SetWorldTransform(mat); // VERIFY: an AI character standing with no job moved and turned with SetWorldTransform on the server stays there, facing that way, on every client
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A hand-built site's own home (its leader's place, else its canteen), for HomeFor; false: none.
+	protected bool HandHome(RZ_ECampPlace kind, vector pos, out vector home)
+	{
+		RZ_HandBuiltSite site = RZ_HandBuilt.Get().ForPlace(kind, pos);
+		if (!site || !site.m_bUse)
+			return false;
+
+		RZ_HandSpot spot = RZ_HandSpots.First(site.m_aSpots, "leader");
+		if (!spot)
+			spot = RZ_HandSpots.First(site.m_aSpots, "meal");
+
+		if (!spot)
+			return false;
+
+		home = RZ_Util.GroundPos(spot.m_vPos);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The pieces and posts of the place's site, as the site builder's suggestions for missing spots:
+	//! where the automated layout has a piece of each use (and its gate, door and quartermasters).
+	void Suggestions(string siteId, vector centre, float radius, notnull array<ref RZ_HandSpot> result)
+	{
+		foreach (RZ_CampPlace p : m_aPlaces)
+		{
+			if (HandIdOf(p) != siteId && RZ_Util.DistXZ(p.m_vPos, centre) > radius)
+				continue;
+
+			foreach (RZ_CampPiece piece : p.m_aPieces)
+			{
+				if (piece.m_bHandObj || piece.m_sName.IndexOf("HandSpot_") == 0)
+					continue;
+
+				string type = RZ_HandSpots.TypeOfPiece(piece.m_eUse, piece.m_sName);
+				if (!type.IsEmpty())
+					Suggest(result, type, piece.m_vPos, piece.m_fYaw);
+			}
+
+			if (p.m_People)
+			{
+				Suggest(result, "gate", p.m_People.m_vGate, p.m_People.m_fGateOut);
+				Suggest(result, "stores", p.m_People.m_vDoor, 0);
+			}
+
+			array<IEntity> qms = {};
+			Quartermasters(p, qms);
+			foreach (IEntity qm : qms)
+			{
+				Suggest(result, "qm", qm.GetOrigin(), qm.GetYawPitchRoll()[0]);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Suggest(notnull array<ref RZ_HandSpot> result, string type, vector pos, float yaw)
+	{
+		if (pos == vector.Zero)
+			return;
+
+		RZ_HandSpot sp = new RZ_HandSpot();
+		sp.m_sType = type;
+		sp.m_vPos = pos;
+		sp.m_fYaw = yaw;
+		result.Insert(sp);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -4519,7 +4741,51 @@ class RZ_CampLife
 		}
 
 		RZ_Log.Info(string.Format("Camp life jobs: %1 (phase %2), %3 people: %4; %5 at a seat, %6 walking the camp, %7 standing at a spot, %8 on the move, %9 standing still (no AI or group)",
-			p.m_sTitle, phase, people, list, how[HOW_SEAT], how[HOW_WALK], how[HOW_SPOT], how[HOW_MOVE], how[HOW_NONE]) + "; " + PlanText(p, postJobs, postArgs) + ".");
+			p.m_sTitle, phase, people, list, how[HOW_SEAT], how[HOW_WALK], how[HOW_SPOT], how[HOW_MOVE], how[HOW_NONE]) + "; " + PlanText(p, postJobs, postArgs) + HandText(p) + ".");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! At a hand-built site: "; hand-placed spots: 5 of 9 in use (sit 3, cook 1, watch 1)".
+	protected string HandText(RZ_CampPlace p)
+	{
+		if (!p.m_bHand)
+			return "";
+
+		int spots = 0;
+		int used = 0;
+		map<string, int> byType = new map<string, int>();
+		foreach (RZ_CampWorker w : p.m_aWorkers)
+		{
+			if (!IsWorking(w) || w.m_iPiece < 0 || w.m_iPiece >= p.m_aPieces.Count())
+				continue;
+
+			string name = p.m_aPieces[w.m_iPiece].m_sName;
+			if (name.IndexOf("HandSpot_") != 0)
+				continue;
+
+			string type = name.Substring(9, name.Length() - 9);
+			int had = 0;
+			byType.Find(type, had);
+			byType.Set(type, had + 1);
+			used++;
+		}
+
+		foreach (RZ_CampPiece piece : p.m_aPieces)
+		{
+			if (piece.m_sName.IndexOf("HandSpot_") == 0)
+				spots++;
+		}
+
+		string list = "";
+		foreach (string t, int n : byType)
+		{
+			if (!list.IsEmpty())
+				list += ", ";
+
+			list += string.Format("%1 %2", t, n);
+		}
+
+		return string.Format("; hand-placed spots: %1 people at %2 spots (%3)", used, spots, list);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -6080,6 +6346,8 @@ class RZ_CampLife
 		}
 
 		bool stores = p.m_Site != null && p.m_People != null;
+		if (p.m_bHand)
+			stores = p.m_People != null && p.m_People.CountPosts(RZ_SitePost.DOOR) > 0;
 		if (!latrine && !stores)
 			return;
 

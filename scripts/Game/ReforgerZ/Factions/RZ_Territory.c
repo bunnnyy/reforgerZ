@@ -423,6 +423,21 @@ class RZ_Territory
 			fixedOne.m_bFixed = true;
 		}
 
+		// Pinned hand-built outposts (docs/SITES.md, "Pinning a site"): placed first, like markers, and
+		// fixed; the season's roll fills the rest
+		array<RZ_HandBuiltSite> pinned = {};
+		RZ_HandBuilt.Get().Pinned("out", pinned);
+		foreach (RZ_HandBuiltSite pin : pinned)
+		{
+			if (!RZ_Factions.IsValid(pin.m_iFaction) || IsHoldingNear(pin.m_vCentre, 150))
+				continue;
+
+			vector ppos = RZ_Util.GroundPos(pin.m_vCentre);
+			RZ_Holding pinnedOne = AddOutpost(pin.m_iFaction, m_GM.FindNearestSettlement(ppos), ppos, PlaceName(ppos), TakeSaved(saved, pin.m_iFaction, false, ppos));
+			pinnedOne.m_bFixed = true;
+			RZ_Log.Info(string.Format("Territory: pinned hand-built outpost %1 (%2) at %3.", pinnedOne.GetTitle(), pin.m_sId, RZ_SettlementScanner.GridReference(ppos)));
+		}
+
 		string source = "saved";
 		if (!saved.IsEmpty())
 		{
@@ -563,6 +578,23 @@ class RZ_Territory
 		{
 			pos = m_GM.GetLabPosition();
 			found = true;
+		}
+
+		if (!found)
+		{
+			// A pinned hand-built stronghold of the faction (docs/SITES.md, "Pinning a site")
+			array<RZ_HandBuiltSite> pins = {};
+			RZ_HandBuilt.Get().Pinned("hold", pins);
+			foreach (RZ_HandBuiltSite pin : pins)
+			{
+				if (pin.m_iFaction != f)
+					continue;
+
+				pos = pin.m_vCentre;
+				found = true;
+				RZ_Log.Info(string.Format("Territory: pinned hand-built stronghold (%1) at %2.", pin.m_sId, RZ_SettlementScanner.GridReference(pos)));
+				break;
+			}
 		}
 
 		RZ_Safehouses houses = m_GM.GetSafehouses();

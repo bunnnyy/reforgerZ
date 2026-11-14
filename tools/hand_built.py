@@ -25,6 +25,9 @@ KINDS = {"hold", "out", "safe", "post"}
 PREFAB = re.compile(r"^\{[0-9A-F]{16}\}[^\s\"]+\.et$")
 ID = re.compile(r"^(hold|out|safe|post)_-?\d+_-?\d+$")
 SLACK = 1.05  # an object may stand this much past the radius (the builder measures on the ground plane)
+# Role spots' types, as RZ_HandSpots.Types lists them (docs/SITES.md, "Role spots")
+SPOT_TYPES = ("sit", "meal", "lean", "work", "water", "watch", "gate", "cook", "wash", "chop", "sleep",
+              "medic", "stores", "latrine", "qm", "leader", "route")
 
 
 def default_roots():
@@ -60,6 +63,9 @@ class Site:
         self.saved = ""
         self.deleted = False
         self.objs = []  # (prefab, x, y, z, yaw, pitch, roll, scale)
+        self.spots = []  # (type, x, y, z, yaw, seats): role spots (RZ_HandSpots)
+        self.faction = -1
+        self.pinned = False
         self.source = ""
 
 
@@ -91,6 +97,16 @@ def read_save(path, world, errors):
                     s.radius = float(rest)
                 elif word == "centre":
                     s.centre = tuple(float(v) for v in parts[:3])
+                elif word == "faction":
+                    s.faction = int(rest)
+                elif word == "pin":
+                    s.pinned = rest == "1"
+                elif word == "spot":
+                    if len(parts) < 5:
+                        errors.append(f"{path}:{n}: a spot line needs a type and 4 numbers")
+                        continue
+                    seats = int(parts[5]) if len(parts) >= 6 else 1
+                    s.spots.append((parts[0], *[float(v) for v in parts[1:5]], seats))
                 elif word == "obj":
                     if len(parts) < 8:
                         errors.append(f"{path}:{n}: an obj line needs a prefab and 7 numbers")
@@ -123,7 +139,17 @@ def check(s, errors, warnings):
             errors.append(f"{where}: {prefab.split('/')[-1]} stands {d:.0f} m from the centre, outside the site's {s.radius:.0f} m")
         if o[7] <= 0 or o[7] > 20:
             warnings.append(f"{where}: {prefab.split('/')[-1]} has scale {o[7]}")
-    if not s.objs:
+    for sp in s.spots:
+        if sp[0] not in SPOT_TYPES:
+            errors.append(f"{where}: spot type '{sp[0]}' isn't one of {', '.join(SPOT_TYPES)}")
+        d = ((sp[1] - cx) ** 2 + (sp[3] - cz) ** 2) ** 0.5
+        if s.radius > 0 and d > s.radius * SLACK:
+            errors.append(f"{where}: a {sp[0]} spot stands {d:.0f} m from the centre, outside the site's {s.radius:.0f} m")
+    if s.pinned and s.kind == "post":
+        warnings.append(f"{where}: a road post can't be pinned (posts come and go near players); the pin is ignored")
+    if s.pinned and s.faction < 0:
+        errors.append(f"{where}: pinned, but it doesn't say whose site it is (faction): save it again in the site builder")
+    if not s.objs and not s.spots:
         warnings.append(f"{where}: {s.title or s.id} has no objects (an empty site: camp life lays nothing there)")
 
 
@@ -134,7 +160,7 @@ def read_pack(errors):
         return sites
     text = open(PACK, encoding="utf-8").read()
     cur = None
-    for m in re.finditer(r'hb\.(Site|Obj)\((.*?)\);', text):
+    for m in re.finditer(r'hb\.(Site|Obj|Owner|Spot)\((.*?)\);', text):
         args = split_args(m.group(2))
         if m.group(1) == "Site":
             cur = Site(args[0])
@@ -144,6 +170,11 @@ def read_pack(errors):
             cur.use = args[8] == "true"
             cur.saved = args[9]
             sites.append(cur)
+        elif cur is not None and m.group(1) == "Owner":
+            cur.faction = int(args[0])
+            cur.pinned = args[1] == "true"
+        elif cur is not None and m.group(1) == "Spot":
+            cur.spots.append((args[0], *[float(v) for v in args[1:5]], int(args[5])))
         elif cur is not None:
             cur.objs.append((args[0], *[float(v) for v in args[1:8]]))
     return sites
@@ -191,11 +222,15 @@ def write_pack(sites):
     lines.append("\t}")
     for i, s in enumerate(sites):
         use = "true" if s.use else "false"
-        lines += ["", f"\t// {s.world}: {s.title} ({len(s.objs)} objects, saved {s.saved})",
+        lines += ["", f"\t// {s.world}: {s.title} ({len(s.objs)} objects, {len(s.spots)} role spots, saved {s.saved})",
                   f"\tprotected static void Site{i}(RZ_HandBuilt hb)", "\t{",
                   f"\t\thb.Site({lit(s.world)}, {lit(s.id)}, {lit(s.title)}, {lit(s.kind)}, {num(s.centre[0])}, {num(s.centre[1])}, {num(s.centre[2])}, {num(s.radius)}, {use}, {lit(s.saved)});"]
+        pinned = "true" if s.pinned else "false"
+        lines.append(f"\t\thb.Owner({s.faction}, {pinned});")
         for o in s.objs:
             lines.append(f"\t\thb.Obj({lit(o[0])}, " + ", ".join(num(v) for v in o[1:8]) + ");")
+        for sp in s.spots:
+            lines.append(f"\t\thb.Spot({lit(sp[0])}, " + ", ".join(num(v) for v in sp[1:5]) + f", {sp[5]});")
         lines.append("\t}")
     lines.append("}")
     with open(PACK, "w", encoding="utf-8", newline="\n") as f:
@@ -265,9 +300,11 @@ def main():
 
     worlds = sorted({s.world for s in sites})
     objs = sum(len(s.objs) for s in sites)
+    spots = sum(len(s.spots) for s in sites)
+    pinned = sum(1 for s in sites if s.pinned)
     in_use = sum(1 for s in sites if s.use)
     print(f"hand_built: {len(saves)} saves read from {len(roots)} folder(s); the pack: {len(sites)} sites ({in_use} in use), "
-          f"{objs} objects on {', '.join(worlds) or 'no map'}; {added} new, {replaced} replaced, {dropped} deleted.")
+          f"{objs} objects, {spots} role spots, {pinned} pinned, on {', '.join(worlds) or 'no map'}; {added} new, {replaced} replaced, {dropped} deleted.")
     if errors:
         print(f"hand_built: {len(errors)} errors; nothing written.")
         return 1

@@ -121,3 +121,78 @@ class RZ_SiteBuilderCamera
 		cam.SetWorldTransform(t); // VERIFY: setting the manual camera's world transform moves Game Master's camera there (its components may keep their own position)
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! The client end of the site's guides while it's built (docs/SITES.md, "Role spots"): its edge as
+//! a white ring on the ground, each role spot as a post with a ball on top, green where it's right,
+//! red where something's wrong (outside, in a wall, on another spot, in the way in), yellow where a
+//! missing spot is suggested (where the automated layout had one). The menu says the same in words.
+//! Payload: "R|x|y|z|radius" then ";S|type|x|y|z|state" records (state 0 green, 1 red, 2 yellow).
+class RZ_SiteBuilderMarks
+{
+	protected static ref array<ref Shape> s_aShapes;
+	protected static const int RING_STEPS = 48;
+
+	//------------------------------------------------------------------------------------------------
+	static void OnPayload(string payload)
+	{
+		if (!s_aShapes)
+			s_aShapes = {};
+
+		s_aShapes.Clear();
+		if (payload.IsEmpty())
+			return;
+
+		array<string> records = {};
+		payload.Split(";", records, true);
+		foreach (string rec : records)
+		{
+			array<string> f = {};
+			rec.Split("|", f, false);
+			if (f.Count() >= 5 && f[0] == "R")
+				Ring(Vector(f[1].ToFloat(), f[2].ToFloat(), f[3].ToFloat()), f[4].ToFloat());
+			else if (f.Count() >= 6 && f[0] == "S")
+				Post(Vector(f[2].ToFloat(), f[3].ToFloat(), f[4].ToFloat()), f[5].ToInt());
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Ring(vector centre, float radius)
+	{
+		int white = ARGB(255, 255, 255, 255);
+		vector last = Edge(centre, radius, 0);
+		for (int i = 1; i <= RING_STEPS; i++)
+		{
+			vector next = Edge(centre, radius, 360 * i / RING_STEPS);
+			vector pts[2];
+			pts[0] = last;
+			pts[1] = next;
+			s_aShapes.Insert(Shape.CreateLines(white, ShapeFlags.NOZBUFFER, pts, 2)); // VERIFY: debug shapes made on a game client draw in the world for that player (Game Master's camera too), not only in Workbench
+			last = next;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static vector Edge(vector centre, float radius, float deg)
+	{
+		vector at = centre + Vector(Math.Sin(deg * Math.DEG2RAD) * radius, 0, Math.Cos(deg * Math.DEG2RAD) * radius);
+		return RZ_Util.GroundPos(at) + Vector(0, 0.3, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Post(vector at, int state)
+	{
+		int colour = ARGB(255, 40, 220, 60);
+		if (state == 1)
+			colour = ARGB(255, 235, 40, 40);
+		else if (state == 2)
+			colour = ARGB(255, 245, 210, 40);
+
+		vector foot = RZ_Util.GroundPos(at);
+		vector pts[2];
+		pts[0] = foot;
+		pts[1] = foot + Vector(0, 2.2, 0);
+		s_aShapes.Insert(Shape.CreateLines(colour, ShapeFlags.NOZBUFFER, pts, 2));
+		s_aShapes.Insert(Shape.CreateSphere(colour, ShapeFlags.NOZBUFFER | ShapeFlags.NOOUTLINE, foot + Vector(0, 2.2, 0), 0.25));
+	}
+}
