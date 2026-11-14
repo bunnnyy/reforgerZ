@@ -36,4 +36,4 @@ Three items, one locker, per character. No item doubles, nothing is made. A deat
 
 ## Open questions for the author
 
-1. Three items, or fewer (two) so a death still stings?
+Settled (2026-11-14): three items.

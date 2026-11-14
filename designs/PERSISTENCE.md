@@ -80,12 +80,9 @@ what you can't bear to lose ([LOCKER.md](LOCKER.md)).
 
 | Cost | How much | Why |
 |---|---|---|
-| Loot | everything carried, on the body | the main cost |
-| **Shaken** | 15 real minutes: stamina recovers 25% slower, no sprint the first 2 minutes | a death isn't a free teleport home |
-| **The camp's due** | 5 Favor with the camp's faction (Red Hand: 10, written in the book); none if you have none, it waits as owed and is taken from the next Favor you earn | being carried in is a favour |
-| A longer timer | the respawn timer grows 30 s for each death in the last real hour, at most +2 minutes | dying on purpose is slow |
+| Loot | everything carried, on the body (quest items come back with you) | the whole cost: coming round is free (the author, 2026-11-14) |
 
-All capped, all recover. No Fame or Infamy changes for dying.
+No other cost: no debuff, no Favor owed, no longer timer than vanilla's. No Fame or Infamy changes for dying.
 
 ## Reset character
 
@@ -149,7 +146,7 @@ current life as character 1.
 
 | Worry | Answer |
 |---|---|
-| Dying to get home fast | You lose everything carried, come round Shaken, owe the camp, and the timer grows |
+| Dying to get home fast | You lose everything you carry; with nothing on you it's a free trip, which the author accepts |
 | Dying to save a quest item from a robbery | It can only be taken while you're alive anyway; dying doesn't change who has it |
 | Dying to clear a bite | You lose your kit, and the bitten aren't carried in: a random start |
 | Dying in a stand or the finale | You come round at a camp that takes you in, never inside the stand's area; the stand's own rules stand |
@@ -166,7 +163,7 @@ current life as character 1.
 4. Reset character on the spawn screen and the Standing page; the name carried; the wipe.
 5. Docs rewritten (DESIGN, REPUTATION, UI, MISSION_RULES rule 24), this file trimmed.
 
-## Open questions for the author
+## Settled with the author (2026-11-14)
 
-1. Does a wipe reset characters (as written), or may a character outlive a season?
-2. Is the camp's due (5 Favor, 10 with the Red Hand) the right price, or should coming round be free?
+- A wipe resets every character; Legacy carries.
+- Coming round is free: losing what you carry is the whole cost.

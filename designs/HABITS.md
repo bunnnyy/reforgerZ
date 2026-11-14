@@ -42,4 +42,4 @@ hands: 14 of 20 holds."*). A habit earned is a notice and a line from whoever's 
 
 ## Open questions for the author
 
-1. Three habits at a time, or more?
+Settled (2026-11-14): three at a time.
