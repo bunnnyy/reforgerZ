@@ -379,7 +379,13 @@ one on the tracker, within 2 s of the talk. When the tracked job ends, the newes
 taken is tracked. Picking the tracked job again stops tracking it, and then nothing is tracked
 until you take a new job. The choice is saved on your profile (`m_iTrackedId`, with the title to
 find it again after a restart), so it survives a relog. A job you haven't taken is tracked only if
-you picked it yourself; a major the whole Zone shares is a job only once you took part. An opening's
+you picked it yourself; a major the whole Zone shares is a job only once you took part. **A new life
+is a new character:** taking part counts for the life that did it (`RZ_QuestRun.PlayerTookPartThisLife`,
+each part stamped with the life), so a fresh character's Quests tab lists none of the last one's
+questlines or majors and gets none of their start cards, and every running job drops the player from
+its participants and offers at the new life (`RZ_MissionManager.OnNewLife`: `Missions: <player> began
+a new life, off N job(s) the last one held`); what the story remembers of the player stays by identity.
+A save from before lives were stamped counts its old parts as no life's. An opening's
 chain ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) is tracked by itself as each step
 starts (`RZ_QuestTracker.Follow`), whatever was tracked before.
 

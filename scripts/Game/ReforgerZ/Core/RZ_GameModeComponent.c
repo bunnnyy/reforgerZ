@@ -1757,6 +1757,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			m_Shared.OnNewLife(playerId, profile);
 
 		profile.StartNewLife(bg);
+		// The last character's jobs aren't this one's (a fresh Quests tab: only the opening's step)
+		if (m_Missions)
+			m_Missions.OnNewLife(playerId);
+
 		// Experience and refresher first: the first life that counts gets "Find the Haven"
 		m_Guidance.BeginLife(playerId, profile);
 		// The opening at the place rolled for this spawn: the scene, someone from before, the chain
