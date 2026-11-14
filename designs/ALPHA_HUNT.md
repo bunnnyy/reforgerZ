@@ -45,6 +45,16 @@ hunt lasts 3 season days; then the faction stops asking.
 1. The hunt as a contract on an existing tribe leader, its two objectives, the fight at the lair.
 2. The four factions' reasons and ends; the tag as an heirloom.
 
-## Open questions for the author
+## Settled with the author (2026-11-14)
 
-1. Should a hunted leader know he's hunted (move his lair sooner), or is that too much?
+Whether a hunted leader knows he's hunted depends on how the hunt goes, not on a switch:
+
+| What the hunters do | He learns | He does |
+|---|---|---|
+| Follow his trail quietly (tracks, kill sites, unseen) | nothing | keeps his lair and his rounds |
+| Kill his pack's bodies near his ground, or are seen by one | that he's hunted | doubles his guard at the lair for a day |
+| Fight and lose, or flee from his lair | that they're weak | stays, and his pack hunts the trail back toward them that night |
+| Hurt him and get away | that they're dangerous | moves his lair sooner (the tribes' move, as built, brought forward) |
+
+A leader with a history of moving (INFECTED.md, alpha histories) moves sooner still; one that has
+never moved stays.

@@ -52,7 +52,7 @@ does counts as yours.
 2. Talk, the help a day, approval and the limit.
 3. The other sources; the season's story and the wall.
 
-## Open questions for the author
+## Settled with the author (2026-11-14)
 
-1. Can a companion be another faction's man walking into a camp that hates his faction, or does
-   he stay outside?
+- A companion of another faction never walks into a camp that hates his faction: he waits outside, at a
+  spot in sight of the gate, and says why once.

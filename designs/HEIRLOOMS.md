@@ -73,6 +73,6 @@ items as base-game props with names, the season record, the hall of fame, corpse
 3. The effects and the replies, each capped; the ends.
 4. The rest of the eighteen; landmarks get theirs ([LANDMARKS.md](LANDMARKS.md)).
 
-## Open questions for the author
+## Settled with the author (2026-11-14)
 
-1. Should a held heirloom show on the map to everyone (a race) or only by rumour (as written)?
+- A held heirloom is known only by rumour, never shown on the map.
