@@ -1959,6 +1959,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		// Retaliation: who fired, and when (a hit on a faction's AI is matched to it)
 		m_Hostility.OnPlayerShot(playerID, shooter.GetOrigin());
+		// Ferda's men, if the opening's fixer is in the street (Guidance/RZ_OpeningFixer.c)
+		if (m_Guidance && m_Guidance.GetOpenings())
+			m_Guidance.GetOpenings().OnPlayerShot(playerID, shooter.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------

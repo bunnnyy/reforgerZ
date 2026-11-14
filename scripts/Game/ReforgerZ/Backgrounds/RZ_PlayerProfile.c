@@ -38,6 +38,13 @@ class RZ_PlayerProfile
 	int m_iHabit;						// RZ_EPlayerHabit
 	int m_iHabitLife = -1;				// the character it belongs to (RZ_OpeningCase.CharacterStamp)
 
+	// The fixer (Guidance/RZ_OpeningFixer.c): what this character did when Ferda Kroupa came for the case
+	int m_iFerdaWay;					// RZ_EFerdaWay
+	int m_iFerdaLife = -1;				// the character it belongs to (RZ_OpeningCase.CharacterStamp)
+	int m_iFerdaDay;					// the season day of his visit
+	string m_sFerdaTown;				// the street he came to
+	int m_iFerdaAfter;					// what came after (RZ_OpeningFixer.AFTER_*: the radio, his note, the toll, his voice)
+
 	// The quest tracker (UI/RZ_Quests.c): the job this player follows, kept across relogs
 	int m_iTrackedId;					// its journal row id, 0 = none
 	string m_sTrackedTitle;				// its title, to find it again after a restart

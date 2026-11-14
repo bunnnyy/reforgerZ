@@ -169,6 +169,7 @@ class RZ_Openings
 	protected ref RZ_OpeningScenes m_Scenes;
 	protected ref RZ_OpeningCase m_Case;
 	protected ref RZ_OpeningFavours m_Favours;
+	protected ref RZ_OpeningFixer m_Fixer;
 	protected ref array<ref RZ_Opening> m_aOpenings = {};
 	protected ref map<int, ref RZ_OpeningPlace> m_mPending = new map<int, ref RZ_OpeningPlace>();
 	protected ref map<int, bool> m_mMoved = new map<int, bool>();
@@ -190,6 +191,7 @@ class RZ_Openings
 		m_Scenes = new RZ_OpeningScenes(gm, guide, settings);
 		m_Case = new RZ_OpeningCase(gm);
 		m_Favours = new RZ_OpeningFavours(m_Chain);
+		m_Fixer = new RZ_OpeningFixer(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -197,6 +199,20 @@ class RZ_Openings
 	RZ_OpeningCase GetCase()
 	{
 		return m_Case;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The fixer (beat 5): Ferda Kroupa's visit after the case, and what follows it.
+	RZ_OpeningFixer GetFixer()
+	{
+		return m_Fixer;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player fired (RZ_GameModeComponent): near Ferda's men, it's a fight.
+	void OnPlayerShot(int playerId, vector pos)
+	{
+		m_Fixer.OnPlayerShot(playerId, pos);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -859,6 +875,7 @@ class RZ_Openings
 		m_aPlayers.Clear();
 		RZ_Util.GetAlivePlayers(m_aIds, m_aPlayers);
 		m_Case.Tick(POLL, m_aIds, m_aPlayers);
+		m_Fixer.Tick(POLL, m_aIds, m_aPlayers);
 		if (m_aOpenings.IsEmpty())
 			return;
 
@@ -2105,6 +2122,8 @@ class RZ_Openings
 				giverAt = o.m_Contact.GetOrigin();
 
 			m_Case.Begin(o.m_iPlayer, me, o.m_sName, o.m_sSpeaker, giverAt);
+			// Beat 5: the book wants it back (RZ_OpeningFixer)
+			m_Fixer.Schedule(o.m_iPlayer, o.m_Place.m_vPos, o.m_sTown, o.m_Contact, o.m_sName, o.m_sSpeaker, o.m_iLevel);
 			Finish(o, "took the runner's case");
 			return;
 		}
