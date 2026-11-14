@@ -60,7 +60,7 @@ class RZ_Medical
 
 	//------------------------------------------------------------------------------------------------
 	//! A Nurse or Doctor treated a player whose infection has taken: the time left x Medic slows a
-	//! bite, once per life (a profile flag, m_bMedicSlowed, cleared by StartNewLife and saved, so a
+	//! bite, once per life (a profile flag, m_bMedicSlowed, cleared with the bite at a death (RZ_PlayerProfile.OnDeath) and saved, so a
 	//! restart can't grant it twice).
 	void SlowBite(int helper, int patient)
 	{

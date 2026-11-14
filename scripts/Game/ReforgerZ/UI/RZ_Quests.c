@@ -437,7 +437,7 @@ class RZ_QuestTracker
 		if (!run.m_Line.IsMajor())
 			return true;
 
-		return run.PlayerTookPartThisLife(gm, playerId) || m.m_aParticipants.Contains(playerId);
+		return run.PlayerTookPartThisCharacter(gm, playerId) || m.m_aParticipants.Contains(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -493,7 +493,7 @@ class RZ_QuestTracker
 				if (!q.IsVisibleTo(run, playerId))
 					continue;
 
-				bool took = run.PlayerTookPartThisLife(m_GM, playerId);
+				bool took = run.PlayerTookPartThisCharacter(m_GM, playerId);
 				RZ_Mission stageMission = null;
 				if (mm)
 					stageMission = mm.FindById(run.m_iMissionId);

@@ -700,13 +700,45 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A player died: their errands lapse quietly ("Heard what happened. We'll manage.").
+	//! A player died: the character goes on, and so do their errands (their timers keep running;
+	//! docs/DESIGN.md, "A character who lasts"). A duty run under way ends unpaid, and an offer not
+	//! yet taken lapses. A carried item comes back with them (Backgrounds/RZ_Character.c).
 	void OnPlayerDied(int playerId)
 	{
 		foreach (RZ_Errand e : m_aErrands)
 		{
-			if (e.m_iAsker == playerId && e.m_eState != RZ_EErrandState.DONE)
+			if (e.m_iAsker != playerId || e.m_eState == RZ_EErrandState.DONE)
+				continue;
+
+			if (e.m_eState == RZ_EErrandState.OFFERED || (e.m_Def && e.m_Def.m_bDuty))
 				End(e, "died");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errand with this id is held by this player (a held quest item's job still runs).
+	bool HeldBy(int errandId, int playerId)
+	{
+		foreach (RZ_Errand e : m_aErrands)
+		{
+			if (e.m_iId == errandId)
+				return e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.HELD;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A carried item came back in the respawned character's pack: the errand follows the new one.
+	void CarriedComesBack(int errandId, IEntity item)
+	{
+		foreach (RZ_Errand e : m_aErrands)
+		{
+			if (e.m_iId == errandId)
+			{
+				e.m_Carried = item;
+				return;
+			}
 		}
 	}
 
@@ -2547,8 +2579,8 @@ class RZ_Errands
 				no = "only after the cure";
 			else if (d.m_bCard && !d.m_bAfterCure && d.m_iPerLife <= 0 && ledger.cards.Contains(d.m_sKey))
 				no = "done this season";
-			else if (d.m_iPerLife > 0 && PerLifeCount(ledger, d, profile.m_iLives) >= d.m_iPerLife)
-				no = "enough of these this life";
+			else if (d.m_iPerLife > 0 && PerLifeCount(ledger, d, profile.m_iCharacter) >= d.m_iPerLife)
+				no = "enough of these this character";
 			else if (d.m_bCard && !d.m_bAfterCure && ledger.cardsToday >= m_Settings.m_iCardsPerDay)
 				no = "two cards today";
 			else if (d.m_bDuty && ledger.CoolUntil(DutyKey(d)) > now)
@@ -2989,9 +3021,9 @@ class RZ_Errands
 		if (!RZ_Factions.IsValid(f))
 			return "";
 
-		if (o.life != profile.m_iLives)
+		if (o.life != profile.m_iCharacter)
 		{
-			RZ_Log.Info(string.Format("Errands: '%1' owed %2 on life %3; they're on life %4: not paid", o.title, RZ_Util.PlayerName(pid), o.life, profile.m_iLives));
+			RZ_Log.Info(string.Format("Errands: '%1' owed %2 on life %3; they're on life %4: not paid", o.title, RZ_Util.PlayerName(pid), o.life, profile.m_iCharacter));
 			return "";
 		}
 
@@ -3224,7 +3256,7 @@ class RZ_Errands
 		e.m_Def = d;
 		e.m_iAsker = playerId;
 		e.m_sIdent = profile.m_sIdentity;
-		e.m_iLife = profile.m_iLives;
+		e.m_iLife = profile.m_iCharacter;
 		e.m_sGiver = p.m_sKey;
 		e.m_sGiverName = p.m_sName;
 		e.m_sGiverTitle = p.m_sTitle;
@@ -3499,9 +3531,9 @@ class RZ_Errands
 		bool amends = w.m_bAmends || infamy >= AMENDS_FLOOR;
 		if (amends && !helper)
 		{
-			if (ledger.amendsLife != profile.m_iLives)
+			if (ledger.amendsLife != profile.m_iCharacter)
 			{
-				ledger.amendsLife = profile.m_iLives;
+				ledger.amendsLife = profile.m_iCharacter;
 				for (int a = 0; a < ledger.amendsDone.Count(); a++)
 				{
 					ledger.amendsDone[a] = 0;
@@ -4149,7 +4181,7 @@ class RZ_Errands
 		e.m_Def = d;
 		e.m_iAsker = playerId;
 		e.m_sIdent = profile.m_sIdentity;
-		e.m_iLife = profile.m_iLives;
+		e.m_iLife = profile.m_iCharacter;
 		e.m_sGiver = giverKey;
 		e.m_sGiverName = giverName;
 		e.m_sGiverTitle = giverTitle;

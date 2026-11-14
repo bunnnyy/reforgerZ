@@ -371,6 +371,28 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A character who goes on and found no camp to take them in (Backgrounds/RZ_Character.c): a
+	//! start rolled by the openings' place rules, without an opening. True if it moved them.
+	bool RandomStart(int playerId, IEntity character)
+	{
+		m_mPending.Remove(playerId);
+		m_mMoved.Remove(playerId);
+		if (!m_Roll || playerId <= 0 || !character)
+			return false;
+
+		RZ_Background bg = m_GM.LifeBackground(playerId);
+		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+		array<vector> ends = {};
+		RZ_OpeningPlace place = m_Roll.Roll(bg.m_sId, RZ_Guidance.LEVEL_VETERAN, profile, ends);
+		if (!place)
+			return false;
+
+		RZ_OpeningRoll.Move(character, place);
+		RZ_OpeningRoll.NoteStart(profile, place.m_vPos);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The spawn handler moved this player's new character (it preloads the world there).
 	bool Moved(int playerId)
 	{
@@ -382,7 +404,7 @@ class RZ_Openings
 	//! the scene, the contact and the timers. Nothing without a place rolled for this spawn.
 	void OnSpawned(int playerId, IEntity ent, RZ_PlayerProfile profile, RZ_Background bg)
 	{
-		EndFor(playerId, "a new life");
+		EndFor(playerId, "a new character");
 		RZ_OpeningPlace place;
 		m_mPending.Find(playerId, place);
 		m_mPending.Remove(playerId);
@@ -413,7 +435,7 @@ class RZ_Openings
 		o.m_iId = m_iNextId;
 		m_iNextId++;
 		o.m_iPlayer = playerId;
-		o.m_iLife = profile.m_iLives;
+		o.m_iLife = profile.m_iCharacter;
 		o.m_sBackground = bg.m_sId;
 		o.m_iLevel = m_Guide.GetLevel(profile);
 		o.m_Place = place;
@@ -629,7 +651,7 @@ class RZ_Openings
 	protected int EarlierWanderer(RZ_PlayerProfile profile)
 	{
 		RZ_Wanderers wanderers = m_GM.GetWanderers();
-		if (!wanderers || profile.m_iLives <= 1)
+		if (!wanderers || profile.m_iCharacter <= 1)
 			return -1;
 
 		RZ_WorldFacts facts = m_GM.GetFacts();
@@ -916,7 +938,7 @@ class RZ_Openings
 	{
 		int idx = m_aIds.Find(o.m_iPlayer);
 		RZ_PlayerProfile profile = m_GM.FindProfile(o.m_iPlayer);
-		if (idx < 0 || !profile || profile.m_iLives != o.m_iLife)
+		if (idx < 0 || !profile || profile.m_iCharacter != o.m_iLife)
 		{
 			Finish(o, "died or left");
 			return;

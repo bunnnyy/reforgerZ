@@ -187,7 +187,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Notebook: Journal | `journal.png` (the mockup still shows the old job list) | Two groups. **PAST JOBS**: every job you had that ended, newest first (the last 40, kept on your profile): its type icon, name, who gave it and where, DONE, FAILED or ABANDONED in its colour, the season day, and one line of how it ended. **WHAT YOU KNOW**: what you know that isn't a job, as before: the packs you know of, Read on doors, the finale's page, and with Dialogue > Trees a **Promises** row and a **What you know** row ([DIALOGUE.md](DIALOGUE.md#promises-and-callbacks)). Under the list, the lab's line ([below](#notebook-journal)) | `RZ_JournalPage` | Page built as text, not checked in play |
 | Notebook: The season | — | One page that scrolls: the four majors as they stand (act, rule or stance, leans, any last call) and each ending told; in the epilogue, *As the Zone tells it* (the cure line and the beats you've met, all of them in processing) and *And you* with what's unfinished ([QUESTLINES.md](QUESTLINES.md#the-seasons-lines-and-the-season-tab), [EPILOGUE.md](EPILOGUE.md#carriers)); then the hall of fame: this season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_SeasonPage` | Page built as text (one scroll since the hall merged in), not checked in play; no mockup |
 | The spawn screen | `background_picker.png` | Our own screen in place of vanilla's deploy menu: the 13 backgrounds as a list, the picked one's name, perk, flaw, starting gear, starting standing, locked or available (with how to unlock), Legacy toward the Drifter, the kind of place you start at (never a picker), and Deploy ([below](#the-spawn-screen)) | `RZ_SpawnMenu`, `RZ_LoadoutLock.c` | Built as text (layouts too); **UI > Spawn row layout** set; seen in Workbench play with the keyboard (pick, deploy, a locked background); pad not yet |
-| The death brief | — | At a death, one card over the spawn screen: the name, the background and which life, the day and place, how it ended, how long you lived, and a few of the life's numbers, then one closing line; A, Space, a click or B gives way to the spawn screen ([below](#the-death-brief)) | `RZ_DeathBrief`, `RZ_DeathBriefMenu` | Built as text (layout too), preset added; not checked in play; no mockup |
+| The death brief | — | At a death, one card over the spawn screen: the name, the background and which death of the character, the day and place, how it ended, how long you lived, and a few of the life's numbers, then one closing line; A, Space, a click or B gives way to the spawn screen ([below](#the-death-brief)) | `RZ_DeathBrief`, `RZ_DeathBriefMenu` | Built as text (layout too), preset added; not checked in play; no mockup |
 | Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), a box to write one with a Pin it up button, and seven ready-made notes for a pad. Opened when you read the board, with **UI > Board menus** on (the default) | `RZ_NoticeBoardMenu` | Layout built, not checked in play; no mockup |
 | Talk | `talk.png` (still shows the old reading bar) | New Vegas style, in two steps: their line on its own in a subtitle band, typed out a box at a time with a bouncing ▼ and "2 / 4", then your replies on their own in an outlined box, with what each needs; their name top right ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play; the boxes, typing and paging by moving compile, not played |
 | Nametags | — | A small tag over each person within 8 m you can talk to and can see: name, role, who they're with in their colour; three at most ([below](#nametags)) | `RZ_NametagClient` | `NametagPanel` built as text in the HUD layout, compiles, not checked in play |
@@ -197,7 +197,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Shop | `shop.png` | A quartermaster's stock in tabs, each item with its Favor price and the standing it needs, a picture of the selected item and a details panel with Buy ([below](#the-shop-screen)) | `RZ_ShopMenu` | Layouts built as text, not checked in play |
 | Crafting | `crafting.png` | A workbench's recipes as a list, and for the picked one a picture of what it makes with its description, each input against what you carry (have or missing), how long and how loud, and Craft ([below](#the-crafting-screen)) | `RZ_CraftMenu` | Layouts built as text, preset and **UI > Craft row layout** set; seen in the layout preview, not checked in play |
 | Cooking | — (the crafting screen's) | A stove's list (boiled water, the home remedy, the stove recipes), in the crafting screen with the stove's words and a button named for what it does: Boil, Brew, Cook ([below](#the-cooking-screen)) | `RZ_CraftMenu` | Built as text (the crafting screen's layouts); **UI > Cook row layout** not set yet, not checked in play |
-| Radio | `radio_screen.png` | Every channel the radio hears as a tile, all on screen, and under them the picked channel's lines this life, a page at a time; nothing scrolls ([below](#the-radio-screen)) | `RZ_RadioMenu` | Layouts built as text, preset added; not checked in play |
+| Radio | `radio_screen.png` | Every channel the radio hears as a tile, all on screen, and under them the picked channel's lines so far, a page at a time; nothing scrolls ([below](#the-radio-screen)) | `RZ_RadioMenu` | Layouts built as text, preset added; not checked in play |
 | Object menu | — | A prop's or a place's name, what you see, and its options as a list, with a countdown while work is under way ([below](#the-object-menu)) | `RZ_ObjectMenu` | Layouts built as text, not checked in play; no mockup |
 | Power panel | `power_panel.png` | The power station's control: its name and state, what you see, the card inside the door, a board of six breakers to close in the card's order with a READY lamp, the spin-up's countdown or the service gauge, and the step's button ([below](#the-power-panel)) | `RZ_PowerMenu` | Layouts built as text, preset and **UI > Power breaker layout** set, not checked in play; the mockup drawn from the layout tree |
 | The map | `map_legend.png` (the old line-icon style; the markers are now design A) | The markers on the vanilla map, per player (a faction-coloured disc with its emblem, a near-black ring, a badge for what the place is), the tracked job's current objective (an amber diamond, or a search area) and no other job, and the map key: a compact legend in the bottom-left, shown zoomed out and fading as you zoom in ([below](#the-map)) | `RZ_MapIconsUI` | Icon layout and **UI > Map legend layout** set; the old icons and legend seen in Workbench play with the keyboard (it fades as you zoom in, I hides it); the design A markers and key not checked in play yet (they need the atlas imported again); pad not yet |
@@ -383,13 +383,15 @@ one on the tracker, within 2 s of the talk. When the tracked job ends, the newes
 taken is tracked. Picking the tracked job again stops tracking it, and then nothing is tracked
 until you take a new job. The choice is saved on your profile (`m_iTrackedId`, with the title to
 find it again after a restart), so it survives a relog. A job you haven't taken is tracked only if
-you picked it yourself; a major the whole Zone shares is a job only once you took part. **A new life
-is a new character:** taking part counts for the life that did it (`RZ_QuestRun.PlayerTookPartThisLife`,
-each part stamped with the life), so a fresh character's Quests tab lists none of the last one's
-questlines or majors and gets none of their start cards, and every running job drops the player from
-its participants and offers at the new life (`RZ_MissionManager.OnNewLife`: `Missions: <player> began
-a new life, off N job(s) the last one held`); what the story remembers of the player stays by identity.
-A save from before lives were stamped counts its old parts as no life's. An opening's
+you picked it yourself; a major the whole Zone shares is a job only once you took part. **A character
+lasts across deaths** ([DESIGN.md](DESIGN.md#a-character-who-lasts)): the Quests tab and the tracked
+job are the same after a death. Taking part counts for the character that did it
+(`RZ_QuestRun.PlayerTookPartThisCharacter`, each part stamped with the character), so after a
+**reset** a fresh character's Quests tab lists none of the last one's questlines or majors and gets
+none of their start cards, and every running job drops the player from its participants and offers
+(`RZ_MissionManager.OnNewLife`: `Missions: <player> began a new character, off N job(s) the last one
+held`); what the story remembers of the player stays by identity. A save from before characters
+lasted loads its last life as the character, so its parts still count. An opening's
 chain ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) is tracked by itself as each step
 starts (`RZ_QuestTracker.Follow`), whatever was tracked before.
 
@@ -490,7 +492,9 @@ The Standing page's header ends with the character's habit, when it has one (*"H
   journal's and the Quests tab's lists, highlight the next faction's row on the Standing page,
   and scroll the other tabs' lists; A or Enter selects the journal row with the focus, on the
   Quests tab tracks or untracks the job with the focus (Y or T too), and on the Standing page opens
-  the highlighted row or closes it; X or F (or a click on the chip) cycles the Radio filter; B or
+  the highlighted row or closes it; on the Standing page Y (T or Space) is **Reset character**: the
+  first press asks, a second within 10 seconds resets (one a real day,
+  [DESIGN.md](DESIGN.md#a-character-who-lasts)); X or F (or a click on the chip) cycles the Radio filter; B or
   Esc closes.
 - The footer shows the open tab's prompts (`RZ_NotebookPage.Prompts`, made again on each tab
   switch): Standing choose and open, Quests choose and track / untrack, Radio filter, Journal
@@ -1067,7 +1071,7 @@ Under the tiles, the picked channel's name and its lines, newest first, **four t
 time, the channel's icon, the channel and who spoke in its colour, and the line itself (two rows
 of text at most: a longer one is cut with "..."; the notebook's Radio tab has the whole of it). What's
 on the air on it right now is the first line, marked NOW and ON THE AIR NOW, unless it's the
-newest line you heard. A channel with no lines says why: "Nothing heard on it this life.",
+newest line you heard. A channel with no lines says why: "Nothing heard on it yet.",
 "Chopped into pieces. A Radio Operator could put it back together." (scrambled) or "Too faint for
 this set. With power it would come in." With more than one page, "PAGE 1 / 3" shows bottom right
 between a **<** and a **>** button.
@@ -1328,7 +1332,10 @@ show the control prefab's **Use** and **Choose**.
 As in `background_picker.html`: our own screen opens where vanilla's deploy menu and role selection
 would, after the welcome screen and after every death. There's no faction or group step: the
 faction is forced to `SURV` (`SCR_MenuSpawnLogic`'s **Forced faction**). On the left, the 13
-backgrounds in the game mode's order, a locked one dim with a lock and LOCKED. On the right, the
+backgrounds in the game mode's order, a locked one dim with a lock and LOCKED. While a character
+goes on ([DESIGN.md](DESIGN.md#a-character-who-lasts)) every background but theirs shows LOCKED with
+*"Your character goes on as someone else. Reset your character (the notebook's Standing page) to start
+as this."*, and the server refuses any other loadout; after a reset all of them open again. On the right, the
 picked one: its name in large type, AVAILABLE or LOCKED, its perk and flaw, its **starting gear**
 (what that loadout really spawned with the last time anyone took it, noted by the server up to
 ten things a few seconds after the spawn, by prefab name; until then the background's own gear
@@ -1375,7 +1382,7 @@ the default background; the refusal itself is still to be checked in play.
 
 ### The death brief
 
-When you die, one card of the life that just ended opens over the spawn screen (or vanilla's deploy
+When you die, one card of the death opens over the spawn screen (or vanilla's deploy
 menu). Clean and short: a 1,040 × 700 dark panel with a bone rule along its top, the world dimmed
 behind it.
 
@@ -1383,12 +1390,13 @@ behind it.
 |---|---|
 | Kicker (bold 22, dim, upper case) | the season day and where you fell: "DAY 14, NEAR MORTON" (the nearest settlement, else the grid) |
 | Name (bold 48, bone, upper case) | your player name |
-| Who (26, dim) | the background and which life it was: "Nurse, life 3" |
+| Who (26, dim) | the background and which death of this character it was: "Nurse, death 3" (the character goes on: [DESIGN.md](DESIGN.md#a-character-who-lasts)) |
 | The lines (26: labels dim, values bold bone) | at most seven, in this order: **How it ended**; **Lived**; **Infected put down**; **People killed** (only when there were any); **Jobs done**; **Travelled**; **Standing** (only with Fame gained) |
 | Closing (26, bone) | one line in the narrator's plain voice, by how it ended ([WRITING.md](WRITING.md#tone)): no joke, nothing about the body |
 | Footer | the Continue prompt by device, and **CONTINUE** at the bottom right |
 
-What each line says, and where it comes from (all this life's, server-side):
+What each line says, and where it comes from (all this character's so far, server-side: the numbers
+run from the character's start, not the last death):
 
 | Line | Value | From |
 |---|---|---|

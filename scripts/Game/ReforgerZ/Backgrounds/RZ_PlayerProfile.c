@@ -1,5 +1,7 @@
-//! Server-side record of a player. Lifetime stats persist across lives.
-//! Per-life values (background, Fame/Infamy/Favor, infection) reset on every new spawn.
+//! Server-side record of a player. A character lasts across deaths until the player resets it
+//! (docs/DESIGN.md, "A character who lasts"): its background, Fame/Infamy/Favor, deeds and quests stay
+//! through a death (OnDeath clears only the bite); StartCharacter begins a new one (a reset, a wipe,
+//! the first spawn). Lifetime stats and Legacy persist across characters.
 //!
 //! Saved as plain members by RZ_Persistence, so keep everything here to
 //! simple types and arrays of simple types.
@@ -7,7 +9,21 @@ class RZ_PlayerProfile
 {
 	// Persistent
 	string m_sIdentity;
-	int m_iLives;
+	int m_iCharacter;				// the character number: +1 at each new character (a reset, a wipe, the first spawn), never at a death
+	int m_iLives;					// old saves' life number: read once into m_iCharacter (EnsureArrays), then 0
+	int m_iDeaths;					// deaths of this character (the death brief's "death 4")
+	bool m_bResetPending;			// Reset character was confirmed: the next spawn is a new character
+	int m_iResetUnix;				// real time of the last reset (one a real day)
+	bool m_bDiedBitten;				// the last death was bitten: nobody carries a bitten body in (a random start)
+	float m_fDiedX;					// where the last death was (coming round picks the camp nearest it)
+	float m_fDiedZ;
+	ref array<string> m_aInCamps = {};	// camps that took this character in (RZ_Character.CampKey) ...
+	ref array<int> m_aInUnix = {};		// ... and when, in real time (three an hour at most per camp)
+	// Quest items held through a death (Backgrounds/RZ_Character.c): put back in the pack on coming
+	// round. One entry is the same index in each array
+	ref array<string> m_aQiPrefab = {};
+	ref array<int> m_aQiMission = {};	// RZ_MissionItemComponent's id (an errand's is -1000 - its id), -2147 none
+	ref array<string> m_aQiGoods = {};	// RZ_MissionGoods' owner, "" none
 	int m_iMissionsCompleted;
 	int m_iSamplesDelivered;
 	int m_iLegacy;					// personal objectives completed over all lives (meta progression)
@@ -158,9 +174,50 @@ class RZ_PlayerProfile
 	bool m_bObjDone;
 
 	//------------------------------------------------------------------------------------------------
-	void StartNewLife(RZ_Background bg)
+	//! A death (Backgrounds/RZ_Character.c): the character goes on. Only the bite goes with the body
+	//! that died, and the meds' once-a-bite flags with it; everything else stays.
+	void OnDeath(bool bitten, vector at)
 	{
-		m_iLives++;
+		m_iDeaths++;
+		m_bDiedBitten = bitten;
+		m_fDiedX = at[0];
+		m_fDiedZ = at[2];
+		ClearInfection();
+		m_iMedsUsed = 0;
+		m_fMedExtension = 0;
+		m_iSideEffect = -1;
+		m_fSideEffectLeft = 0;
+		m_fSymptomsHiddenLeft = 0;
+		m_bBiteDeclared = false;
+		m_bDeclareSlowed = false;
+		m_bBiteCaught = false;
+		m_bDoctorTreated = false;
+		m_bMedicSlowed = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This player has a character who goes on (not their first spawn, not after a reset).
+	bool HasCharacter()
+	{
+		return m_iCharacter > 0 && !m_bResetPending && !m_sBackgroundId.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A new character (the first spawn, a reset, a wipe's fresh state): everything the last one
+	//! was resets; Legacy, unlocks and the lifetime numbers stay.
+	void StartCharacter(RZ_Background bg)
+	{
+		m_iCharacter++;
+		m_iDeaths = 0;
+		m_bResetPending = false;
+		m_bDiedBitten = false;
+		m_aInCamps.Clear();
+		m_aInUnix.Clear();
+		m_aQiPrefab.Clear();
+		m_aQiMission.Clear();
+		m_aQiGoods.Clear();
+		m_aFog.Clear();
+		m_sFogGrid = "";
 		m_sBackgroundId = bg.m_sId;
 		m_fInfectionLeft = -1;
 		ClearInfection();
@@ -246,13 +303,32 @@ class RZ_PlayerProfile
 	bool IsBlank()
 	{
 		EnsureArrays();
-		return m_iLives == 0 && m_iLegacy == 0 && m_iGuideLives == 0 && m_iMissionsCompleted == 0 && m_iSamplesDelivered == 0 && m_aUnlocked.IsEmpty() && m_aChampionOf.IsEmpty();
+		return m_iCharacter == 0 && m_iLegacy == 0 && m_iGuideLives == 0 && m_iMissionsCompleted == 0 && m_iSamplesDelivered == 0 && m_aUnlocked.IsEmpty() && m_aChampionOf.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Old saves or a fresh `new` may have short arrays; pad them so indexing is safe.
 	void EnsureArrays()
 	{
+		// A save from before characters lasted: its current life is the character (its stamps match)
+		if (m_iCharacter == 0 && m_iLives > 0)
+		{
+			m_iCharacter = m_iLives;
+			m_iLives = 0;
+		}
+
+		if (!m_aInCamps)
+			m_aInCamps = new array<string>();
+		if (!m_aInUnix)
+			m_aInUnix = new array<int>();
+		if (!m_aQiPrefab)
+			m_aQiPrefab = new array<string>();
+		if (!m_aQiMission)
+			m_aQiMission = new array<int>();
+		if (!m_aQiGoods)
+			m_aQiGoods = new array<string>();
+		if (!m_aFog)
+			m_aFog = new array<int>();
 		if (!m_aFame)
 			m_aFame = new array<int>();
 		if (!m_aInfamy)

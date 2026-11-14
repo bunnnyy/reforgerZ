@@ -723,7 +723,7 @@ class RZ_Questline
 
 		if (fame > 0 && gm.GetErrands())
 		{
-			RZ_ErrandOwed o = RZ_ErrandOwed.Make(faction, fame, 0, "A long story ends", profile.m_iLives);
+			RZ_ErrandOwed o = RZ_ErrandOwed.Make(faction, fame, 0, "A long story ends", profile.m_iCharacter);
 			o.deed = deed;
 			gm.GetErrands().AddOwed(ident, o);
 		}

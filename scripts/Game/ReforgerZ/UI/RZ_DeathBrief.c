@@ -3,7 +3,7 @@
 //! long they lived, and a handful of this life's numbers, then one closing line. A, Space, a click
 //! or B gives way to the spawn screen underneath; it never holds up the respawn.
 //!
-//! Server: the life's numbers are on the profile (reset by StartNewLife). Two are counted here, on
+//! Server: the character's numbers are on the profile (reset by StartCharacter, kept through a death). Two are counted here, on
 //! hooks in the game mode: the infected put down near the player and the ground covered. At the
 //! death (Factions/RZ_FactionPerks.c, OnPlayerDied) the brief is built once and sent to the dying
 //! player's machine only, with **UI > Death brief** on.
@@ -224,9 +224,10 @@ class RZ_DeathBrief
 		if (name.IsEmpty())
 			name = "You";
 
-		string who = string.Format("Life %1", p.m_iLives);
+		// Built before the death is counted (Backgrounds/RZ_Character.c): this is death m_iDeaths + 1
+		string who = string.Format("Death %1", p.m_iDeaths + 1);
 		if (bg)
-			who = string.Format("%1, life %2", bg.m_sName, p.m_iLives);
+			who = string.Format("%1, death %2", bg.m_sName, p.m_iDeaths + 1);
 
 		string place = RZ_SettlementScanner.GridReference(at);
 		RZ_Settlement s = gm.GetSettlement(gm.FindNearestSettlement(at));

@@ -483,7 +483,7 @@ class RZ_Mission
 		if (m_iQuestRun >= 0 && gm.GetQuestlines())
 		{
 			RZ_QuestRun run = gm.GetQuestlines().FindRun(m_iQuestRun);
-			if (run && run.PlayerTookPartThisLife(gm, playerId))
+			if (run && run.PlayerTookPartThisCharacter(gm, playerId))
 				return true;
 
 			// A finale route's stage: the players locked to that route (their desk was the asking)

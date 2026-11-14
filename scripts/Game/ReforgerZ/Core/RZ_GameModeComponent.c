@@ -1709,6 +1709,15 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! spawn decides). For the openings' place roll, before the spawn is finished.
 	RZ_Background LifeBackground(int playerId)
 	{
+		// A character who goes on stays who they are, whatever the spawn screen picked
+		RZ_PlayerProfile kept = GetProfile(playerId);
+		if (kept && kept.HasCharacter())
+		{
+			RZ_Background own = GetBackground(kept.m_sBackgroundId);
+			if (own)
+				return own;
+		}
+
 		RZ_Background bg = ResolveBackground(playerId);
 		if (bg.m_bLocked && !GetProfile(playerId).HasUnlocked(bg.m_sUnlockId))
 			return GetDefaultBackground();
@@ -1751,13 +1760,40 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_aBackgrounds || playerId <= 0)
 			return false;
 
+		RZ_PlayerProfile profile = GetProfile(playerId);
 		foreach (RZ_Background bg : m_aBackgrounds)
 		{
-			if (bg.m_sLoadoutName == loadoutName)
-				return bg.m_bLocked && !GetProfile(playerId).HasUnlocked(bg.m_sUnlockId);
+			if (bg.m_sLoadoutName != loadoutName)
+				continue;
+
+			// A character who goes on can only come round as who they are (Backgrounds/RZ_Character.c)
+			if (profile.HasCharacter() && bg.m_sId != profile.m_sBackgroundId)
+				return true;
+
+			return bg.m_bLocked && !profile.HasUnlocked(bg.m_sUnlockId);
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A character who goes on after a death (Backgrounds/RZ_Character.c): no new background, no
+	//! opening, no new goal; the kit trimmed, the quest items back, a word from whoever carried them in.
+	protected void ComeRound(int playerId, IEntity controlledEntity, RZ_PlayerProfile profile)
+	{
+		RZ_Background bg = GetBackground(profile.m_sBackgroundId);
+		if (!bg)
+			bg = GetDefaultBackground();
+
+		string line = RZ_Character.ComeRound(this, playerId, controlledEntity, profile, bg);
+		m_BiteDetector.Reset(playerId);
+		m_Stealth.Forget(playerId);
+		m_Infection.OnPlayerSpawned(playerId);
+		m_UIFeed.OnPlayerSpawned(playerId);
+		m_UIFeed.RecordGearSoon(playerId, GetPickedLoadoutName(playerId));
+		RegisterGunfire(controlledEntity);
+		m_Interactions.OnPlayerSpawned(playerId);
+		NotifyPlayerAs(playerId, bg.m_sName, line, RZ_ENoticeTag.SPAWN);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1768,9 +1804,18 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!controlledEntity)
 			return;
 
-		RZ_Background bg = ResolveBackground(playerId);
 		RZ_PlayerProfile profile = GetProfile(playerId);
+		profile.EnsureArrays();
 		OnLegacyChanged(playerId); // older profiles may already have 10 Legacy
+		// A character who goes on comes round: same background, standing, quests and memory; only what
+		// they carried is gone (docs/DESIGN.md, "A character who lasts")
+		if (profile.HasCharacter())
+		{
+			ComeRound(playerId, controlledEntity, profile);
+			return;
+		}
+
+		RZ_Background bg = ResolveBackground(playerId);
 
 		// Locked backgrounds need an unlock. The loadout's gear stays (we can't take it back
 		// cleanly), but the perks, flaws and standing are the default background's. Said on the
@@ -1783,16 +1828,33 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 				why = "You haven't unlocked it yet.";
 
 			RZ_Background fallback = GetDefaultBackground();
-			lockedLine = string.Format("%1 is locked. You're %2 this life.", bg.m_sName, fallback.m_sName);
-			NotifyPlayerAs(playerId, bg.m_sName + " is locked", string.Format("%1\nYou are playing as %2 this life.", why, fallback.m_sName), RZ_ENoticeTag.QUIET);
+			lockedLine = string.Format("%1 is locked. You're %2 this character.", bg.m_sName, fallback.m_sName);
+			NotifyPlayerAs(playerId, bg.m_sName + " is locked", string.Format("%1\nYou are playing as %2 this character.", why, fallback.m_sName), RZ_ENoticeTag.QUIET);
 			bg = fallback;
 		}
 
-		// The old character's waiting callbacks become board notes before the new life starts
+		// The old character's waiting callbacks become board notes before the new character starts
 		if (m_Shared)
 			m_Shared.OnNewLife(playerId, profile);
 
-		profile.StartNewLife(bg);
+		// A reset: the factions that hunted the last character know the name (Watched with them)
+		array<int> hunted = {};
+		if (profile.m_iCharacter > 0)
+		{
+			for (int hf = 0; hf < RZ_Factions.COUNT; hf++)
+			{
+				if (RZ_Reputation.IsHunted(GetTier(playerId, hf)))
+					hunted.Insert(hf);
+			}
+		}
+
+		bool haveChampion = profile.m_iCharacter > 0 && RZ_Reputation.IsAtLeast(GetTier(playerId, RZ_EFaction.SURVIVORS), RZ_ETier.CHAMPION);
+		profile.StartCharacter(bg);
+		RZ_Character.CarryTheName(profile, hunted);
+		if (haveChampion && m_Safehouses)
+			m_Safehouses.OnChampionFallen(playerId, controlledEntity.GetOrigin());
+
+		RZ_Log.Info(string.Format("Character: %1 begins character %2 as %3", RZ_Util.PlayerName(playerId), profile.m_iCharacter, bg.m_sName));
 		// The last character's jobs aren't this one's (a fresh Quests tab: only the opening's step)
 		if (m_Missions)
 			m_Missions.OnNewLife(playerId);
@@ -2252,7 +2314,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! The budget is spent: "The Haven has forgiven you all it will this life."
 	string ForgiveSpentText(RZ_EFaction f)
 	{
-		return RZ_Util.Capitalize(RZ_Factions.GetNameInText(f)) + " has forgiven you all it will this life.";
+		return RZ_Util.Capitalize(RZ_Factions.GetNameInText(f)) + " has forgiven you all it will this character.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2679,7 +2741,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		{
 			if (bg.m_sUnlockId == unlockId)
 			{
-				NotifyPlayerAs(playerId, "Background unlocked", string.Format("%1 is now available for your next life. Pick the '%2' loadout.", bg.m_sName, bg.m_sLoadoutName), RZ_ENoticeTag.HIGH);
+				NotifyPlayerAs(playerId, "Background unlocked", string.Format("%1 is now available for your next character. Pick the '%2' loadout.", bg.m_sName, bg.m_sLoadoutName), RZ_ENoticeTag.HIGH);
 				return;
 			}
 		}

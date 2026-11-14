@@ -33,7 +33,7 @@ class RZ_HealthCost
 		if (!s_mGiven.Find(key + "|" + profile.m_sIdentity, life))
 			return false;
 
-		return life == profile.m_iLives;
+		return life == profile.m_iCharacter;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ class RZ_HealthCost
 			s_mGiven = new map<string, int>();
 
 		RZ_PlayerProfile profile = gm.GetProfile(playerId);
-		s_mGiven.Set(key + "|" + profile.m_sIdentity, profile.m_iLives);
+		s_mGiven.Set(key + "|" + profile.m_sIdentity, profile.m_iCharacter);
 		return "";
 	}
 }

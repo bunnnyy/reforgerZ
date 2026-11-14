@@ -185,7 +185,7 @@ class RZ_RepSeason
 		e = new RZ_RepSeasonEntry();
 		e.ident = ident;
 		e.name = RZ_Names.Public(playerId);
-		e.life = m_GM.GetProfile(playerId).m_iLives;
+		e.life = m_GM.GetProfile(playerId).m_iCharacter;
 		m_mEntries.Set(ident, e);
 		m_bDirty = true;
 		return e;
@@ -217,7 +217,7 @@ class RZ_RepSeason
 
 		p.EnsureArrays();
 		RZ_RepSeasonEntry e = EntryFor(p.m_sIdentity, playerId);
-		if (e.life != p.m_iLives)
+		if (e.life != p.m_iCharacter)
 		{
 			// A new life: what the last one tallied stays in the base
 			for (int b = 0; b < RZ_Factions.COUNT; b++)
@@ -230,7 +230,7 @@ class RZ_RepSeason
 				e.offNow[b] = 0;
 			}
 
-			e.life = p.m_iLives;
+			e.life = p.m_iCharacter;
 			m_bDirty = true;
 		}
 
@@ -260,7 +260,7 @@ class RZ_RepSeason
 		{
 			e.bestRank[f] = rank;
 			e.bestCell[f] = cell;
-			e.bestLife[f] = p.m_iLives;
+			e.bestLife[f] = p.m_iCharacter;
 			m_bDirty = true;
 		}
 
@@ -272,7 +272,7 @@ class RZ_RepSeason
 		}
 
 		// The deeds that stood at the best and the worst: the latest of the life that reached them
-		if (e.bestLife[f] == p.m_iLives && !p.m_aBestDeed[f].IsEmpty() && p.m_aBestDeed[f] != e.bestDeed[f])
+		if (e.bestLife[f] == p.m_iCharacter && !p.m_aBestDeed[f].IsEmpty() && p.m_aBestDeed[f] != e.bestDeed[f])
 		{
 			e.bestDeed[f] = p.m_aBestDeed[f];
 			m_bDirty = true;

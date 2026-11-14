@@ -147,7 +147,7 @@ modded class RZ_Errands
 		e.m_Def = d;
 		e.m_iAsker = playerId;
 		e.m_sIdent = profile.m_sIdentity;
-		e.m_iLife = profile.m_iLives;
+		e.m_iLife = profile.m_iCharacter;
 		e.m_sGiver = giverKey;
 		e.m_sGiverName = giver.m_sName;
 		e.m_sGiverTitle = giver.m_sTitle;

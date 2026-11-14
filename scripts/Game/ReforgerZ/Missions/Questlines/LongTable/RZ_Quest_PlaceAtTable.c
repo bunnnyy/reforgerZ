@@ -79,7 +79,7 @@ class RZ_Quest_PlaceAtTable : RZ_Questline
 	static int Guest(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		int playerId = gm.GetQuestlines().OnlineId(run.Text("ident"));
-		if (playerId <= 0 || gm.GetProfile(playerId).m_iLives != run.Flag("life"))
+		if (playerId <= 0 || gm.GetProfile(playerId).m_iCharacter != run.Flag("life"))
 			return -1;
 
 		return playerId;
@@ -94,7 +94,7 @@ class RZ_Quest_PlaceAtTable : RZ_Questline
 			return true;
 
 		RZ_PlayerProfile profile = gm.FindProfileByIdentity(run.Text("ident"));
-		return !profile || profile.m_iLives != run.Flag("life");
+		return !profile || profile.m_iCharacter != run.Flag("life");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ class RZ_Quest_PlaceAtTable : RZ_Questline
 			return string.Format("Everyone knows about the farm past %1 now. Nobody meets anyone on the road there any more.", town);
 
 		RZ_PlayerProfile profile = gm.FindProfileByIdentity(run.Text("ident"));
-		if (!profile || profile.m_iLives != run.Flag("life"))
+		if (!profile || profile.m_iCharacter != run.Flag("life"))
 			return string.Format("The farm past %1 set a place for you a few nights running. Then they stopped.", town);
 
 		return string.Format("%1 stopped meeting you on the road. There's still a place set at the farm past %2, for somebody.", run.Text("host"), town);
@@ -164,7 +164,7 @@ class RZ_Quest_PlaceAtTable : RZ_Questline
 
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		run.SetText("ident", ident);
-		run.SetFlag("life", gm.GetProfile(playerId).m_iLives);
+		run.SetFlag("life", gm.GetProfile(playerId).m_iCharacter);
 		run.SetText("guest", RZ_Names.Public(playerId));
 		run.SetText("stray", RZ_LongTable.ManName(rng));
 		run.SetText("stray_town", t.GetTownName());
@@ -374,7 +374,7 @@ class RZ_QM_PlaceBase : RZ_QM_TableBase
 			return false;
 
 		RZ_PlayerProfile profile = gm.GetProfile(playerId);
-		return profile.m_sIdentity == QText(gm, "ident") && profile.m_iLives == QFlag(gm, "life");
+		return profile.m_sIdentity == QText(gm, "ident") && profile.m_iCharacter == QFlag(gm, "life");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -594,6 +594,34 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Reset character from the Standing page: the first press asks, a second within the window
+	//! resets (the server keeps the window: Backgrounds/RZ_Character.c).
+	void AskReset()
+	{
+		if (Replication.IsServer())
+			RpcAsk_Reset();
+		else
+			Rpc(RpcAsk_Reset);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_Reset()
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int playerId = OwnerPlayerId();
+		if (!gm || playerId <= 0)
+			return;
+
+		float now = RZ_UIW.Now();
+		if (now - m_fTrackAskAt < 0.3)
+			return;
+
+		m_fTrackAskAt = now;
+		RZ_Character.AskReset(gm, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! kind: RZ_UIFeed.PAYLOAD_*
 	void Ask(int kind)
 	{

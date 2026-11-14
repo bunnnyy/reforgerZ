@@ -2033,10 +2033,18 @@ after arriving, 15 s back with the giver doesn't hand it in while the talk scree
 hand-in reply does, so `RZT rules:` counts at least one thing and one hand-in "by reply"; a real outside door is found near the town, a boarded
 doorway fits in it and is refused in the open; and the contacts' names and the Nurse's words are
 printed (`RZT openings OK|FAIL <what>`, then `RZT openings: N checks, N failed`; the run fails on
-FAIL). Just before, **a fresh spawn** (`RZT_Fresh.c`), as a veteran (level 3, where the author's
-play-test went wrong): every running job drops the new life; its opening has its contact standing
+FAIL). Just before, **a character who lasts** (`RZT_Persist.c`, about 40 s in): on the fake player, a
+death keeps the character number, Fame, the habit and the fog, counts a death and clears the bite,
+and a job's goods in the pack are held as data and off the body; a bitten death is never carried in;
+Known with the Haven, a death by its safehouse comes round at that camp, near where they fell;
+hunted by every faction, no camp takes them in; the held item comes back in the pack; on a profile of
+its own a confirmed reset ends the character and starts a new one (number +1, no deaths), Watched with
+a faction the last one was hunted by; an old save's life number becomes its character (`RZT persist
+OK|FAIL <what>`, `RZT persist: N checks, N failed`; the run fails on FAIL). **A fresh spawn**
+(`RZT_Fresh.c`), as a veteran (level 3, where the author's play-test went wrong): every running job
+drops the new character; its opening has its contact standing
 within 15 m and the chain starting at the door (its favour, which a veteran's skips once talked to: the opening by level, below), not the lead to work; the Quests tab lists no taken job; and later,
-once a questline runs, a part from the last life doesn't put it in the new life's journal while the
+once a questline runs, a part from the last character doesn't put it in the new character's journal while the
 story still remembers the player (`RZT fresh OK|FAIL <what>`, `RZT fresh: N checks, N failed`; the run
 fails on FAIL). Then **the door and the favour** (`RZT_Favour.c`), for every background, each opening
 started from the middle of the nearest town: the first talk asks who you were (the background's
@@ -2377,7 +2385,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **214** lines with the tag, all but one in the game scripts (one is the comment in
+There are **217** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2400,10 +2408,13 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (102)
+### Medium risk: big features, with a fallback (105)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `Backgrounds/RZ_Character.c:87` | a quest item still in a dead body's storage deletes cleanly (`TryDeleteItem`, else the entity), as the runner's case does, so nobody loots it | The body keeps a copy as well as the one given back: a quest item twice |
+| `Backgrounds/RZ_Character.c:462` | a character just spawned at a camp loses its loadout's weapons, ammunition and the rest from its storages (`TryDeleteItem`, else the entity) | It comes round armed as the loadout was: no harm but the rule |
+| `Backgrounds/RZ_Character.c:514` | worn clothes, vest, helmet and pack sit in the character's `EquipedLoadoutStorageComponent`, so they stay at coming round | Clothes taken off a respawned character: it comes round in underwear (then turn the trim off by giving the background its gear again) |
 | `World/RZ_Substations.c:1122` | the map's power-line poles (`PowerLine_*_pole*`) are static entities with their prefab's name, also where a power-line generator placed them, so a broken line's spot stands on a real pole | The break is at the yard's own cabinet (the log says "at the yard (no pole found)") |
 | `Factions/RZ_RoadPatrols.c:566` | a road's points (`BaseRoad.GetPoints`, from `GetRoadsInAABB`) are world positions along it with its two ends included, so a patrol's route runs on the road and roads join where their ends meet | Routes come out short and the holding sends nobody (`Road patrols: ... sends nobody`) |
 | `Factions/RZ_RoadPatrols.c:1106` | a road patrol's group walks to its move waypoint, and a crew seated in its vehicle drives there along the roads | It stands; after 90 s without reaching a point it's sent to the next, and it's taken away when everyone leaves |
@@ -2996,12 +3007,17 @@ The shared engine and reputation names ([DESIGN.md](DESIGN.md#the-shared-engine)
 to forgive (...)` (the forgiveness budget), `Reputation: <player> <faction> credit rule, -N Fame for the
 Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player> threatened <person>
 (pass|short|refused)`, `Callbacks: queued for ...` and `Callbacks: told ...`, `Note at <safehouse>, unsigned:
-...` (a callback whose character died), `Budget: <lane> morale|strength N for <faction> clipped to N (...)`,
+...` (a callback whose character was reset), `Budget: <lane> morale|strength N for <faction> clipped to N (...)`,
 `Calendar: <key> holds evening N`, `... waits (...)` and `... released`, `World memory: reason ...` and
 `World memory: town ...`; on a restart, `World memory: N reasons, N signals, N town logs, N world
 records.` and `Shared: N callbacks waiting, N season records.`
 
-Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one life each: `Openings: started
+**A character who lasts:** the `Character:` lines in [DESIGN.md](DESIGN.md#a-character-who-lasts)
+("Log lines"): one at each new character, death, coming round (a camp, or a random start with why),
+quest items given back, and reset; and `Missions: <player> began a new character, off N job(s) the
+last one held` at a reset.
+
+Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one each new character: `Openings: started
 for <player>: <background>, <kind> in <town> (<grid>), level N, <hiding|group|fever>, <before|stranger|earlier|nobody>:
 <who>, chain favour, give, case to <place>`, `Openings: <name> called <player> over before step N`, `Openings: the favour (<FAVOUR>) is at <words> (<prefab>, <kind>), N m from the contact` (the building the favour sends you into, and the words its kind gave) or `Openings: no place for the favour (<FAVOUR>) for <player> at <grid>, on to the runner`, `Openings: no place for <player>'s favour (<FAVOUR>) here, <TIN|SACK> instead`, `Openings: <player> is <habit> (the habit, <effect>)` or `Openings: <player> keeps the habit <habit> (a familiar or veteran door asks nothing)`, `<player> is a veteran: no favour, the door then the runner`, `Openings: <player> took their background's way (<background>, <key>) at <grid>` or `Openings: <player> settled the favour by their background's way (<background>), there and then`, `Openings: the neighbour's door at <grid> opened (<background>)`, `Openings: <player> handed over to <name> (step N, task N, favour N), done there and then`, `Openings: <name> talked to by <player> before
 step N`, `Openings: <name> went on talking with <player> into step N`,
@@ -3011,7 +3027,7 @@ step N`, `Openings: <name> went on talking with <player> into step N`,
 for <player>: <why> (step N, N min)`; the fallbacks' `Openings: no
 <background> place fits for <player>, a house instead`, `Openings: no place for <player> (<background>),
 the spawn point instead: <why doors were refused, e.g. a pack's lair x22>`, `Openings: <player> <background> at <grid>: contact <name> spawned at <n> m`
-(every life), `Openings: <player> <background> at <grid>: NO CONTACT (<why: no body prefab, or the engine
+(every new character), `Openings: <player> <background> at <grid>: NO CONTACT (<why: no body prefab, or the engine
 refused the spawn>), the scene's read instead`, `Openings: the story budget is full near <grid>; the contact
 stands all the same`, `Openings: <player> <background>: NO OPENING (no place was rolled for this spawn)` and
 `Missions: <player> began a new life, off N job(s) the last one held`; a lead's end is `Openings: ended for <player>: found work at <place> (step 3, N min)`.
@@ -3173,6 +3189,15 @@ session, tick off:
 **Start**
 - [ ] It compiles; every log line in section 7 appears with sensible numbers.
 - [ ] Each background spawns with its loadout and its perk and flaw (try Nurse and Ex-Con).
+- [ ] **A character who lasts** ([DESIGN.md](DESIGN.md#a-character-who-lasts)), with a pad: take an
+  errand that gives you something to carry and a questline stage, note your Fame, then die (a fall
+  will do). The death brief says "<background>, death 1". You come round at the nearest holding or
+  safehouse that takes you in, a person there says so, you wear your clothes with one bandage, one
+  bottle and your background's tool (no weapon), and the carried item is back in your pack; the
+  errand, the stage and your Fame are as they were. The spawn screen shows every other background
+  LOCKED. Die bitten: a random start, no opening. Get Hunted by everyone (an admin standing change):
+  a random start. On the Standing page press Y twice: the character dies, the spawn screen opens every
+  background, and the opening runs again (`Character:` lines, section 7 via DESIGN).
 - [ ] The government broadcast and the session news appear on first spawn.
 
 **Core loop**

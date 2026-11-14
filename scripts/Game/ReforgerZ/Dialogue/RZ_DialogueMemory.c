@@ -264,13 +264,13 @@ class RZ_DialogueMemory
 		{
 			p = new RZ_DMemPlayer();
 			p.ident = profile.m_sIdentity;
-			p.life = profile.m_iLives;
+			p.life = profile.m_iCharacter;
 			m_mPlayers.Set(p.ident, p);
 		}
 
-		if (p.life != profile.m_iLives)
+		if (p.life != profile.m_iCharacter)
 		{
-			p.life = profile.m_iLives;
+			p.life = profile.m_iCharacter;
 			BreakOpen(playerId, p, "You died with it unkept.");
 			p.faces = 0;
 			p.seen.Clear();

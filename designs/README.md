@@ -8,7 +8,7 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 
 | # | Design | What | Status |
 |---|---|---|---|
-| 1 | [PERSISTENCE.md](PERSISTENCE.md) | A character lasts across deaths until reset: quests, reputation and quest items kept, loot lost, coming round at the nearest camp that takes you in | approved 2026-11-14, not started; the rest assume it |
+| 1 | [PERSISTENCE.md](PERSISTENCE.md) | What still waits of a character who lasts (built: [DESIGN.md](../docs/DESIGN.md#a-character-who-lasts)): a mission's own item followed, coming round at a hand-built site's spots, a bandage and bottle given, escorts waiting, bounties' cooldown, the wall's numbers, a goal after a goal | approved 2026-11-14; the character who lasts is built |
 | 2 | [TONIGHT.md](TONIGHT.md) | Three true things near you at every respawn and join | approved 2026-11-14 |
 | 3 | [HABITS.md](HABITS.md) | Eight small habits earned by doing, three at a time, fading if unused | approved 2026-11-14 |
 | 4 | [LOCKER.md](LOCKER.md) | Three of your own items kept at one camp across deaths | approved 2026-11-14 |

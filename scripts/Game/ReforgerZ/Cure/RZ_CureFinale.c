@@ -2417,7 +2417,7 @@ class RZ_CureFinale
 			return;
 
 		if ((fame > 0 || favor > 0) && m_GM.GetErrands())
-			m_GM.GetErrands().AddOwed(ident, RZ_ErrandOwed.Make(f, Math.Max(0, fame), Math.Max(0, favor), "The cure", profile.m_iLives));
+			m_GM.GetErrands().AddOwed(ident, RZ_ErrandOwed.Make(f, Math.Max(0, fame), Math.Max(0, favor), "The cure", profile.m_iCharacter));
 
 		if (infamy > 0)
 			profile.AddInfamy(ef, infamy, true);

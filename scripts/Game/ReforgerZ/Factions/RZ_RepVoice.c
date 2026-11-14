@@ -327,7 +327,7 @@ class RZ_RepVoice
 
 		RZ_PlayerProfile p = gm.GetProfile(playerId);
 		string manner = "";
-		if (w.MemoryLife(p.m_sIdentity) == p.m_iLives)
+		if (w.MemoryLife(p.m_sIdentity) == p.m_iCharacter)
 		{
 			int mem = w.GetMemory(p.m_sIdentity);
 			if ((mem & RZ_Wanderers.MEM_SAVED) != 0)
@@ -589,7 +589,7 @@ class RZ_RepVoice
 		if (leader && gm.GetLeaders())
 		{
 			string ident = p.m_sIdentity;
-			if (leader.MemoryLife(ident) == p.m_iLives)
+			if (leader.MemoryLife(ident) == p.m_iCharacter)
 			{
 				int mem = leader.GetMemory(ident);
 				if ((mem & RZ_Leaders.MEM_SAVED) != 0)
@@ -686,7 +686,7 @@ class RZ_RepVoice
 			return string.Format("You're the one who %1.", deed);
 
 		int mem = l.GetMemory(ident);
-		if (l.MemoryLife(ident) == p.m_iLives)
+		if (l.MemoryLife(ident) == p.m_iCharacter)
 		{
 			if ((mem & RZ_Leaders.MEM_SAVED) != 0)
 				return "Here's the one I owe. Sit down.";

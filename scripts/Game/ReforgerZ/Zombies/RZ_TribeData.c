@@ -100,7 +100,7 @@ class RZ_TribeHabit
 class RZ_TribeMark
 {
 	int m_iPlayer;
-	int m_iLife;			// the player's life number (RZ_PlayerProfile.m_iLives): a new life is a new character
+	int m_iLife;			// the player's life number (RZ_PlayerProfile.m_iCharacter): a new life is a new character
 	float m_fStrength;		// 100, falling 25 a counted night
 }
 

@@ -2129,7 +2129,7 @@ class RZ_DialogueTrees
 			if (bitten.IsInfected() && !bitten.m_bBiteDeclared && !bitten.m_bBiteCaught)
 			{
 				bitten.m_bBiteCaught = true;
-				s.m_aNew.Insert("(Caught hiding a bite: the houses won't take your word on it again this life.)");
+				s.m_aNew.Insert("(Caught hiding a bite: the houses won't take your word on it again this character.)");
 			}
 
 			return;

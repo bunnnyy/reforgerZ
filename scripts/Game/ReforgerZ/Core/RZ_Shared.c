@@ -274,7 +274,7 @@ class RZ_Shared
 	void OnNewLife(int playerId, RZ_PlayerProfile profile)
 	{
 		if (profile)
-			m_Callbacks.OnLifeEnded(profile.m_sIdentity, profile.m_iLives);
+			m_Callbacks.OnLifeEnded(profile.m_sIdentity, profile.m_iCharacter);
 	}
 
 	//------------------------------------------------------------------------------------------------

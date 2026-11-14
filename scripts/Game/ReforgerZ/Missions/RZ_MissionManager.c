@@ -447,7 +447,7 @@ class RZ_MissionManager
 		}
 
 		if (dropped > 0)
-			RZ_Log.Info(string.Format("Missions: %1 began a new life, off %2 job(s) the last one held", RZ_Util.PlayerName(playerId), dropped));
+			RZ_Log.Info(string.Format("Missions: %1 began a new character, off %2 job(s) the last one held", RZ_Util.PlayerName(playerId), dropped));
 	}
 
 	//------------------------------------------------------------------------------------------------

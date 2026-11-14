@@ -61,7 +61,7 @@ class RZ_Errand_CarryTheDose : RZ_EpiCard
 		gm.AddInfamy(playerId, e.m_iFaction, 10, "opened a dose meant for a holdout", 0, "kept a holdout's dose");
 		RZ_Epilogue epi = Week();
 		RZ_PlayerProfile p = gm.GetProfile(playerId);
-		string lifeKey = string.Format("%1|%2", p.m_sIdentity, p.m_iLives);
+		string lifeKey = string.Format("%1|%2", p.m_sIdentity, p.m_iCharacter);
 		if (!epi || !gm.GetInfection().SeemsInfected(playerId) || epi.Data().dosed.Contains(lifeKey))
 		{
 			said.Insert("One dose, a label with somebody else's name on it, and nothing you needed today. You opened it for nothing.");

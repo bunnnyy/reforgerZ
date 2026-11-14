@@ -195,21 +195,20 @@ class RZ_OpeningCase
 
 	//------------------------------------------------------------------------------------------------
 	//! "This character": the one place the case asks whether a record belongs to the character being
-	//! played now. Today a death starts a new character (RZ_PlayerProfile.m_iLives); when it doesn't,
-	//! only this changes (designs/PERSISTENCE.md).
+	//! played now (RZ_PlayerProfile.m_iCharacter: a death doesn't change it, a reset does).
 	static int CharacterStamp(RZ_PlayerProfile profile)
 	{
 		if (!profile)
 			return -1;
 
-		return profile.m_iLives;
+		return profile.m_iCharacter;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! This character took part in Proof (the same helper the case asks everywhere).
 	static bool TookPart(RZ_GameModeComponent gm, RZ_QuestRun run, int playerId)
 	{
-		return run && run.PlayerTookPartThisLife(gm, playerId);
+		return run && run.PlayerTookPartThisCharacter(gm, playerId);
 	}
 
 	// ================================================================ The opening's step

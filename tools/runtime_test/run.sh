@@ -60,6 +60,7 @@
 #   The Long Table (RZT_LongTable.c): the family stands at the farm in its own looks with the tester 60 m off, the farm laid out, a supper sign at a junction, the bell and the voice, a death near the farm taken at dawn, a jar in loot, the door mark, the host on the road, the injured man at dusk, the boy in a town, the harvest supper ("RZT table OK|FAIL ...", "RZT table: done");
 #   The line (RZT_Line.c): a road above the line near a town (150-250 m outside the warning zone, 600 m to 2 km off), the scene played with the tester at it: the loudspeakers, a runner who breaks from cover (or is laid down), shot in the warning zone not the kill zone, dead there with the case by him, the line said, the tester never shot and never in the zones ("RZT line OK|FAIL ...", "RZT line: N checks");
 #   A fresh spawn (RZT_Fresh.c): as a veteran, the opening has its contact within 15 m and the chain starting at the door, not the lead to work, the last life's questline part and jobs aren't the new one's, and the Quests tab lists nothing taken ("RZT fresh OK|FAIL ...", "RZT fresh: N checks");
+#   A character who lasts (RZT_Persist.c): a death keeps standing, the habit, the fog and the character, counts a death and clears the bite; a quest item is held as data and comes back; coming round at the nearest camp that takes you in, none when hunted by all, never bitten; a reset starts a new character, Watched where the last was hunted; an old save migrates ("RZT persist OK|FAIL ...", "RZT persist: N checks");
 #   - starts every registered mission type one at a time, moves the player where the quest tracker
 #     points, then ends it (alternately won and failed) so Setup, Update, rewards and cleanup all run;
 #   - checks every objective's place on the way (RZT_ObjPlace.c): for each mission and questline
@@ -339,6 +340,7 @@ grep -E 'RZT line' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT ferda' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT chain' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT fresh' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT persist' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT favour' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT kitchen' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT fog' "$LOG" | sed 's/.*RZT /  /'
@@ -364,6 +366,7 @@ grep -q 'RZT papers FAIL' "$LOG" && { echo "FAILED: the papers in the case's lid
 grep -q 'RZT line FAIL' "$LOG" && { echo "FAILED: the opening's line (a road above it, the runner shot in the warning zone, the line said, the tester never shot: RZT_Line.c)"; exit 1; }
 grep -q 'RZT ferda FAIL' "$LOG" && { echo "FAILED: the opening's fixer (he comes for the case, each way through him, his note on a real door: RZT_Ferda.c)"; exit 1; }
 grep -q 'RZT chain FAIL' "$LOG" && { echo "FAILED: the opening by level (RZT_OpeningChain.c: the door, the favour, the line's short form, the runner, Ferda by level, the case at Halcyon)"; exit 1; }
+grep -q 'RZT persist FAIL' "$LOG" && { echo "FAILED: a character who lasts (RZT_Persist.c: a death keeps them, coming round at a camp, a reset, an old save)"; exit 1; }
 grep -q 'RZT fresh FAIL' "$LOG" && { echo "FAILED: a fresh spawn (its contact, the chain from the door, a clean Quests tab: RZT_Fresh.c)"; exit 1; }
 grep -q 'RZT fog FAIL' "$LOG" && { echo "FAILED: the map's fog (RZT_Fog.c: walking reveals, a found map, the save, the payload)"; exit 1; }
 grep -q 'RZT masts FAIL' "$LOG" && { echo "FAILED: the masts (RZT_Masts.c: found, put up, given, overheard, a voice found by bearings)"; exit 1; }

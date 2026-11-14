@@ -583,7 +583,7 @@ class RZ_UIFeed
 			bgName = bg.m_sName;
 
 		RZ_UILine head = new RZ_UILine("H");
-		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iLives).Add(RZ_RepNamesPage.Header(m_GM, playerId)).Add(RZ_Habits.StandingLine(p)).End();
+		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iCharacter).Add(RZ_RepNamesPage.Header(m_GM, playerId)).Add(RZ_Habits.StandingLine(p)).End();
 		IEntity standingEnt = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		vector standingAt = vector.Zero;
 		if (standingEnt)
@@ -1127,7 +1127,7 @@ class RZ_UIFeed
 			if (m_GM.GetMissions())
 				stageJob = m_GM.GetMissions().FindById(run.m_iMissionId);
 
-			if (run.PlayerTookPartThisLife(m_GM, playerId) || (stageJob && stageJob.m_aParticipants.Contains(playerId)))
+			if (run.PlayerTookPartThisCharacter(m_GM, playerId) || (stageJob && stageJob.m_aParticipants.Contains(playerId)))
 				part = "1";
 
 			RZ_UILine lnQ = new RZ_UILine("M");
@@ -1161,11 +1161,19 @@ class RZ_UIFeed
 		foreach (RZ_Background bg : list)
 		{
 			string locked = "0";
+			string why = bg.m_sUnlockText;
 			if (bg.m_bLocked && !p.HasUnlocked(bg.m_sUnlockId))
 				locked = "1";
 
+			// A character who goes on is who they are: every other background waits for a reset
+			if (p.HasCharacter() && bg.m_sId != p.m_sBackgroundId)
+			{
+				locked = "1";
+				why = "Your character goes on as someone else. Reset your character (the notebook's Standing page) to start as this.";
+			}
+
 			RZ_UILine lnB = new RZ_UILine("B");
-			lnB.Add(bg.m_sId).Add(bg.m_sName).Add(bg.m_sLoadoutName).Add(bg.m_sPerk).Add(bg.m_sFlaw).Add(locked).Add(bg.m_sUnlockText);
+			lnB.Add(bg.m_sId).Add(bg.m_sName).Add(bg.m_sLoadoutName).Add(bg.m_sPerk).Add(bg.m_sFlaw).Add(locked).Add(why);
 			lnB.AddInt(bg.GetStartRep(RZ_EFaction.SURVIVORS)).AddInt(bg.GetStartRep(RZ_EFaction.MILITARY));
 			string gear;
 			if (!m_mGear.Find(bg.m_sLoadoutName, gear))

@@ -548,7 +548,7 @@ class RZ_RepWatch
 
 		RZ_PlayerProfile p = m_GM.GetProfile(target);
 		p.EnsureArrays();
-		string text = string.Format("%1, life %2:\n", RZ_Util.PlayerName(target), p.m_iLives);
+		string text = string.Format("%1, character %2:\n", RZ_Util.PlayerName(target), p.m_iCharacter);
 		for (int f = 0; f < RZ_Factions.COUNT; f++)
 		{
 			int fame = p.GetFame(f);

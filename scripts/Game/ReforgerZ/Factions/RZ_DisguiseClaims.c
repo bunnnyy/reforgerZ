@@ -222,7 +222,7 @@ class RZ_DisguiseClaims
 	protected string ClaimKey(int playerId, string speaker)
 	{
 		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
-		return string.Format("%1|%2|%3", p.m_sIdentity, p.m_iLives, speaker);
+		return string.Format("%1|%2|%3", p.m_sIdentity, p.m_iCharacter, speaker);
 	}
 
 	// ================================================================ The look's last minuses
@@ -363,7 +363,7 @@ class RZ_DisguiseClaims
 		string text = face;
 		int catches = p.m_aCatches[f];
 		if (catches > 0)
-			text += string.Format(" Caught %1 of 3 this life.", catches);
+			text += string.Format(" Caught %1 of 3 this character.", catches);
 
 		if (m_Disguise.IsBlown(playerId, f))
 		{

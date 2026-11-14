@@ -914,6 +914,37 @@ class RZ_CampLife
 		return n;
 	}
 
+	// ================================================================ Coming round (Backgrounds/RZ_Character.c)
+	//------------------------------------------------------------------------------------------------
+	//! A live place within `radius` of pos is under attack (its alert, docs/SITES.md "When the site
+	//! is threatened"): nobody is carried in there.
+	bool UnderAttackNear(vector pos, float radius)
+	{
+		foreach (RZ_CampPlace p : m_aPlaces)
+		{
+			if (p && p.m_iAlert == RZ_SitePeople.ALERT_ALERT && RZ_Util.DistXZ(p.m_vPos, pos) <= radius)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a place within `radius` of pos keeps its people (its yard: m_vHome). False with none.
+	bool HomeNear(vector pos, float radius, inout vector home)
+	{
+		foreach (RZ_CampPlace p : m_aPlaces)
+		{
+			if (p && RZ_Util.DistXZ(p.m_vPos, pos) <= radius && p.m_vHome != vector.Zero)
+			{
+				home = p.m_vHome;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	// ================================================================ Places come and go with their bodies
 	//------------------------------------------------------------------------------------------------
 	//! From the owner's SpawnBodies, after the bodies are there. guards and persons may get jobs;

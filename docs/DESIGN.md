@@ -45,8 +45,9 @@ from Early Outbreak to Aftermath, and the only way to win is together: research 
 
 **Pillars**
 
-1. **Every life is different.** A background from the spawn menu, a random town, random
-   missions, and a world that changed since your last visit.
+1. **Every character is different, and lasts.** A background from the spawn menu, a random town,
+   random missions, and a world that changed since your last visit. A death costs what you carried;
+   the character goes on until you reset it.
 2. **The world moves without you.** The Director spreads infection, moves the server
    through stages and sends hordes toward noise.
 3. **One shared goal.** Cure research is server-wide, and also something to fight over.
@@ -832,11 +833,85 @@ its own copy, so two players may see a herd in different places once it has run,
 player shot may still stand for another. A click on an empty gun kills a deer for the mod but gives
 no meat, since the server heard no shot. None of this has been seen in play.
 
+## A character who lasts
+
+Code: `Backgrounds/RZ_Character.c`, `Backgrounds/RZ_PlayerProfile.c` (`StartCharacter`, `OnDeath`,
+`HasCharacter`), the spawn handler in `Guidance/RZ_OpeningPlaces.c`. ✅
+
+A **character** lasts across deaths until the player resets it. A death costs what you carried and
+nothing else; the character goes on with its name, background, standing and stories.
+
+| Lasts across a death | Lost at a death |
+|---|---|
+| The background (locked: the spawn screen shows the others locked until a reset), perk and flaw | Everything carried, worn or held: it stays on the body |
+| Fame, Infamy and Favor with every faction, their tiers, the trust ladder, deeds, what people call you | The bite and its infection, and the meds' once-a-bite flags |
+| Questline and major parts, held errands and jobs (their own timers keep running) | A duty run under way (ended unpaid) and an errand only offered |
+| Leaders', wanderers', locals' and tribes' memory of you, lies told, disguise claims | |
+| The habit, the map's fog, the journal and the tracker's job, the personal goal | |
+| **Quest items** (below): they come back with you | |
+
+Every record that belonged to "a life" now belongs to the character: its number
+(`RZ_PlayerProfile.m_iCharacter`) goes up only at a new character, so everything stamped with it
+(memory, errands and owed pay, callbacks, lies, the questlines' parts, Bastion's roster, the Long
+Table, the tribes, the quartermasters' once-only items, the epilogue's one dose) lasts through
+deaths. Deaths are counted apart (`m_iDeaths`: the death brief's "Nurse, death 4"). A save from
+before loads its last life as the character, so every stamp still matches.
+
+**Quest items.** At a death every item on the body that belongs to a job (a job's own item, tagged
+with `RZ_MissionItemComponent`, or a job's goods, `RZ_MissionGoods`: an errand's carried item, a
+delivery's food) is taken off the body as data. On coming round it goes back in the pack, re-tagged,
+and an errand points at the new item; one whose job ended while you were away is gone (*"The job's
+over while you were gone. They took their things back."*). The runner's case keeps itself the same
+way, with its warmth held ([The case](#the-case)).
+
+**Coming round.** Free: the spawn handler moves the character to the **nearest camp that takes
+them in**, nearest to where they fell, before it's handed over.
+
+| Camp | Takes you in when |
+|---|---|
+| A holding (stronghold or outpost) | your tier with its faction is Stranger or better by access (Stranger, Uneasy, Known, Tolerated, Wildcard, Trusted, Respected, Champion; never Watched, Hunted or Kill on Sight) |
+| A Haven safehouse | the same with the Haven, and you're not exiled from the houses |
+| Halcyon's lab | Known or better with Halcyon, and not during the final stand |
+| A road post, the Long Table | never |
+
+Not taken in: a bitten death (*nobody carries in a bitten body*), a camp under attack (its alert,
+[SITES.md](SITES.md#when-the-site-is-threatened)), or a camp that took you in three times in the
+last real hour. Then the next camp; with none, a **random start** rolled by the openings' place
+rules, without an opening. You come round in the camp's yard (its people's home), and one of its
+people says how you got back (a Haven man, a Bastion medic, a Red Hand crewman, a Halcyon orderly).
+
+**The kit.** What you wear stays (clothes, vest, helmet, pack). Of what the loadout carried, one
+bandage, one water bottle and the background's own tool (the Mechanic's wrench, the Radio
+Operator's radio, the Nurse's and Doctor's dressing) stay; every weapon, magazine, round and
+anything else goes; the new character's compass, paper map and wind-up radio aren't given again. No other cost: no debuff, no Favor owed, no longer timer than vanilla's.
+
+**Reset character.** On the notebook's Standing page, **Y** (T or Space): the first press asks
+(*"This person is gone. Their name stays on the wall."*), a second within 10 seconds resets. One a
+real day. The character is killed where they stand; the next spawn picks a background and runs the
+opening. A reset clears standing, Favor, the trust ladder, quests and errands held, the habit and
+the fog; Legacy, unlocks, the season record and the hall of fame stay
+([REPUTATION.md](REPUTATION.md#characters-and-carry-over): Word gets around, the name carried as
+Watched, Remembered). A **season wipe** ends every character (the profiles start over with the
+save).
+
+**Log lines.** `Character: <player> begins character <n> as <background>`, `Character: <player>
+died (death <n> of character <m>)[, bitten]; <k> quest items held for coming round`, `Character:
+<player> comes round at <camp> (<grid>)` or `... at a random start (<why>)`, `Character: <player>
+came round as <background> (death <n>), kit trimmed to <k> things`, `Character: <player> came round
+with <k> quest items (<j> gone with their jobs)`, `Character: <player> reset character <n> (<k>
+deaths)`, `Character: a new character starts Watched with <faction> (the last was hunted)`.
+
+*Simplified:* a mission's own objective item that a mission holds by reference (a retrieve job's
+black box, a live capture, Await Relief's package) comes back as a new item, and the mission may
+count its first one lost; the background's tool is chosen by words, not a slot; there's no water
+bottle or bandage added when the loadout has none. What still waits: [designs/PERSISTENCE.md](../designs/PERSISTENCE.md).
+
 ## Backgrounds and personal goals
 
 Code: `Backgrounds/RZ_Background.c`, `Backgrounds/RZ_Objectives.c`, `Backgrounds/RZ_PlayerProfile.c`.
 
-You pick a background on our spawn screen, which replaces vanilla's deploy menu (each background is a
+You pick a background on our spawn screen for each new character (a character lasts across deaths:
+[A character who lasts](#a-character-who-lasts)), which replaces vanilla's deploy menu (each background is a
 loadout); it shows its perk, flaw, starting gear, starting standing and whether it's locked, and
 the kind of place it starts at, never where ([UI.md](UI.md#the-spawn-screen),
 [Openings](#openings-how-every-life-starts)). Gear comes from the
@@ -3545,7 +3620,9 @@ fixer](#the-fixer) who comes for the case; shorter for those who know it (the ch
 Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningScenes.c`, `RZ_OpeningChain.c`,
 `RZ_OpeningSteps.c`, `RZ_OpeningText.c`, `RZ_OpeningLine.c`, `RZ_OpeningFixer.c`, `Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
 
-Every life starts somewhere random that suits who you were, coming out of a door for a reason, and
+Every new character starts somewhere random that suits who you were, coming out of a door for a
+reason (a death doesn't run an opening: the character comes round at a camp, [A character who
+lasts](#a-character-who-lasts)), and
 within a few seconds someone outside is talking to you and there is one obvious thing to do: the
 first of the steps that teach the Zone and tell its story, then hand you to the faction your
 background belongs with. Nobody is new: everyone has been trapped since the roads shut. How their
@@ -3702,7 +3779,7 @@ a talk objective comes before the first step, and before a next person's step (a
 | 2, familiar | The door asks nothing when there's a last character's habit to carry (else it asks), the favour, the line's short form (the runner is found already down), the runner, Ferda as one scene where you are |
 | 3, veteran | The door (as familiar), no favour, the line's short form, the runner, Ferda's note on a door: about five minutes |
 
-Every life starts with the door's favour from the person at the door (the author's play-test as a
+Every new character starts with the door's favour from the person at the door (the author's play-test as a
 veteran: nobody there and the lead tracked at once read as "the first mission is already skipped").
 
 The last step is **The Runner** ([the case](#the-case)) whenever the case can be found here. When it can't
@@ -4027,19 +4104,20 @@ share his visit by the second getting his note.
 
 ### Experience levels
 
-Each player has a **guidance level** from lives that lasted at least 10 minutes. It fades but
+Each player has a **guidance level** from characters that lasted at least 10 minutes (a death counts
+nothing; each character counts once). It fades but
 never disappears.
 
-| Level | Counted lives | What they get |
+| Level | Counted characters | What they get |
 |---|---|---|
 | 0, brand new | 0 | Everything: every tip in full, the gentle start, an opening with all three steps leaning to the hiding place (a wanderer comes looking when nobody's outside), the radio every 12 min |
 | 1, learning | 1–2 | Every tip in full, the whole opening (the door's question, the favour, the line, the runner, Ferda's visit), wanderer gossip every time |
 | 2, familiar | 3–7 | Most tips; the opening without the door's question (the last habit carries), the line's short form and Ferda as one scene; gossip now and then |
 | 3, veteran | 8+ | The floor: an opening's one-line read, the door, the line's short form, the runner and Ferda's note (always with someone at the door; about five minutes), the open channels (every 42 min), and critical tips as one short line |
 
-A player who comes back after 30+ real days gets two levels more guidance for two lives.
+A player who comes back after 30+ real days gets two levels more guidance for two characters.
 The [opening](#openings-how-every-life-starts) sets its chain by level; the wanderer who comes
-looking is for a brand-new life with nobody outside.
+looking is for a brand-new character with nobody outside.
 
 ### Contextual tips
 
@@ -4085,10 +4163,10 @@ chain (its last step is the walk to where they belong).
 
 ### The wind-up radio and faction voices
 
-- Every new life gets a **compass** (vanilla's Adrianov, **UI > Compass prefab**) and a **paper map**
+- Every new character gets a **compass** (vanilla's Adrianov, **UI > Compass prefab**) and a **paper map**
   (vanilla's folded map, **UI > Map prefab**) a few seconds after spawn, unless its loadout already
   has one; one that doesn't fit lies at your feet.
-- Every new life gets a **wind-up radio** (unless they carry one). It picks up the **open
+- Every new character gets a **wind-up radio** (unless they carry one). It picks up the **open
   channels**: the Haven ("If you can hear this, *town* is open. Bring water if you can. Bring
   yourself either way."), Bastion's net and the Red Hand's taunts. About every 12 minutes for a
   brand-new player, up to 42 for a veteran.

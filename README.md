@@ -12,7 +12,11 @@ and one way to end it: **research the cure.**
 - **Backgrounds** picked on our own spawn screen (Nurse, Mechanic, Hunter, Police Officer, Ex-Con,
   Lab Technician, Radio Operator, Unemployed), each with a real perk and flaw. Five more are
   unlocked through Legacy.
-- **Openings:** every life starts somewhere random that suits who you were, coming out of a door
+- **A character who lasts:** a death costs what you carried, nothing else: standing, quests,
+  errands and memory stay, quest items come back in your pack, and you come round free at the
+  nearest camp that takes you in. Reset character (the notebook's Standing page) starts someone new
+  ([DESIGN.md](docs/DESIGN.md#a-character-who-lasts)).
+- **Openings:** every new character starts somewhere random that suits who you were, coming out of a door
   for a reason (the last bottle empty, your group gone three days, the fever broken), and whoever's
   outside calls you over: someone who knew you before, a stranger, or a wanderer who met an earlier
   life of yours. Your first objective is to talk to them (nobody opens the talk screen on you). Their small asks move you from place to place, never back: they walk with you, or send you on to the next person (the second ask your background's own: a fever to treat, a pump, a
@@ -198,8 +202,8 @@ and one way to end it: **research the cure.**
   people who tell you things.
 - **Any map**: towns, the quarantine line and its checkpoints are found automatically.
 - **A UI that looks like the Zone**: quarantine signage and survivor marks, original faction
-  emblems, a spawn screen in place of vanilla's deploy menu (with a short card of the life just
-  ended over it at each death), an infection timer with the golden window, styled notice cards in each faction's
+  emblems, a spawn screen in place of vanilla's deploy menu (with a short card of each death over
+  it), an infection timer with the golden window, styled notice cards in each faction's
   colour that come a few at a time by importance (one card at spawn, the rest into the notebook),
   a small quest tracker top left with the tracked job's objectives, each pointing where its own step is done, a you-are-here
   arrow on the map, a notebook (standing, quests, radio, a journal of
@@ -299,7 +303,7 @@ scripts/Game/ReforgerZ/
     Behaviour/   the behaviour layer: Bacon's hooks, steering modes, senses, hearing, blood
                  and shrieks, formations, hunt strategies, reactions, doors, navigation, the
                  kinds' attacks and their effects (server side), the crawlers' daily life
-  Backgrounds/   backgrounds, personal goals, player profiles
+  Backgrounds/   backgrounds, personal goals, player profiles, the character who lasts (deaths, coming round, reset)
   Factions/      reputation and its 16 names (and the season record and titles), quartermasters, shops and the shop screen's server
                  side, perks, services, hunter squads, bounties,
                  road posts and camps, leaders, AI hostility, disguises and retaliation,

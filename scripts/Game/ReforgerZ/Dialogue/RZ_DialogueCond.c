@@ -356,7 +356,7 @@ class RZ_DialogueCond
 			case "seasoned":
 			{
 				RZ_RepSeason seasoned = RZ_RepSeason.Get();
-				return seasoned && RZ_Factions.IsValid(t.m_iFaction) && seasoned.KnownByName(profile.m_sIdentity, t.m_iFaction, profile.m_iLives);
+				return seasoned && RZ_Factions.IsValid(t.m_iFaction) && seasoned.KnownByName(profile.m_sIdentity, t.m_iFaction, profile.m_iCharacter);
 			}
 			case "owed":
 			{
@@ -474,7 +474,7 @@ class RZ_DialogueCond
 	protected static bool MemoryBit(RZ_DCtx ctx, int which)
 	{
 		string ident = ctx.m_GM.GetProfile(ctx.m_iPlayer).m_sIdentity;
-		int life = ctx.m_GM.GetProfile(ctx.m_iPlayer).m_iLives;
+		int life = ctx.m_GM.GetProfile(ctx.m_iPlayer).m_iCharacter;
 		if (ctx.m_Leader)
 		{
 			if (ctx.m_Leader.MemoryLife(ident) != life)

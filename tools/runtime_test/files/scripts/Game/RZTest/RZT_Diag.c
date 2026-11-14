@@ -623,6 +623,10 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 60 && m_iRZTSec % 20 == 0)
 			RZT_Fresh.PartTick(this);
 
+		// A character who lasts (RZT_Persist.c): a death, coming round, a reset, an old save
+		if (m_iRZTSec == 40)
+			RZT_Persist.Tick(this);
+
 		// The map's fog (RZT_Fog.c): walking reveals, a found map, the save, the payload; first, so
 		// nothing else moves the tester while it walks him
 		if (m_iRZTSec >= 12 && !RZT_Fog.Tick(this))
