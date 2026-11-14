@@ -640,6 +640,11 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 12 && !RZT_Grid.Tick(this))
 			return;
 
+		// The power and radio leftovers (RZT_PowerRest.c): the map's cabinet, the region's talk, the
+		// fuse, Lights Out and Lights Back, the cold room, the Red Hand at the call, Await Relief's nights
+		if (m_iRZTSec >= 12 && !RZT_PowerRest.Tick(this))
+			return;
+
 		// The openings' play-test faults (RZT_Openings.c), before the missions move the tester about
 		if (m_iRZTSec >= 12 && !RZT_Openings.Tick(this, m_aRZTRoute[0]))
 			return;

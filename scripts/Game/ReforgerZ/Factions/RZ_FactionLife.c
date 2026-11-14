@@ -644,6 +644,19 @@ class RZ_FactionLife
 		if (!need.IsEmpty() && Math.RandomFloat01() < 0.7)
 			text = need;
 
+		// A mast of theirs over this region: who climbed it (World/RZ_Masts.c), now and then
+		if (RZ_Masts.Get() && Math.RandomFloat01() < 0.35)
+		{
+			string mast = RZ_Masts.Get().RegionLine(f, pos);
+			if (!mast.IsEmpty())
+			{
+				if (!text.IsEmpty())
+					text += " ";
+
+				text += mast;
+			}
+		}
+
 		if (Math.RandomFloat01() < 0.25)
 		{
 			string moment = MomentReference(f);

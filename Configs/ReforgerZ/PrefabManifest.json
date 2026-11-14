@@ -5556,6 +5556,24 @@
    "notes": ""
   },
   {
+   "id": "CraftFuse",
+   "kind": "create",
+   "system": "Crafting",
+   "path": "Prefabs/ReforgerZ/Crafting/RZ_Fuse.et",
+   "basePrefab": "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et",
+   "baseFind": "",
+   "baseHint": "an inventory item with the metal fragment mesh; keep \"fuse\" in its name (RZ_Fuse)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_CraftSettings.m_sFusePrefab"],
+   "listSlot": false,
+   "slotLabel": "Interactions > Crafting > Fuse",
+   "required": false,
+   "minimum": false,
+   "use": "a substation's fuse, fitted before its breaker closes; also a garage find",
+   "notes": "Search > Extra finds (garage, rare)"
+  },
+  {
    "id": "CraftSterileDressing",
    "kind": "create",
    "system": "Crafting",

@@ -33,6 +33,8 @@ class RZ_LoopRelay
 	protected static const string CALL = "mast.call";
 	protected static const int TAPES = 4;
 	protected static const float CALL_HEAT = 10;
+	protected static const float CREW_REACH = 4000;	// a Red Hand holding this close to the tallest mast sends a crew for the call
+	protected static const int CREW_STAYS = 180;		// seconds the crew hangs about after the call ends
 	protected static const float TAPE_SECONDS = 12;
 
 	protected static RZ_LoopRelay s_Instance;
@@ -42,6 +44,9 @@ class RZ_LoopRelay
 	protected RZ_Masts m_Masts;
 	protected ref RZ_RelaySave m_State = new RZ_RelaySave();
 	protected int m_iCaller;			// the player holding the power for the call (0 none)
+	protected ref RZ_UnitWatch m_CallCrew = new RZ_UnitWatch();	// the Red Hand's crew come for the set while the call is held
+	protected int m_iCrewUntil;			// unix time the crew goes home (a while after the call)
+	static bool s_bTestCrewAnywhere;	// the runtime test only: a crew comes whatever holdings are near
 	protected int m_iCutter;			// the player whose relay hold is open (0 none)
 	protected bool m_bTapeAired;		// the swapped tape aired once at once (the loop then carries it)
 
@@ -319,6 +324,7 @@ class RZ_LoopRelay
 			m_GM.GetHeat().AddHeat(m.m_vPos, CALL_HEAT);
 
 		m_Masts.WakeBelow(m);
+		SendCrew(m, playerId);
 		RZ_WorkSites sites = RZ_WorkSites.Get();
 		if (!sites || !RZ_WorkSites.Available())
 		{
@@ -333,9 +339,94 @@ class RZ_LoopRelay
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The Red Hand at the call: with one of its holdings within CREW_REACH of the tallest mast, a crew
+	//! comes up the hill for the set while the power's held (Missions > Red Hand group), spawned 180 to
+	//! 260 m out (a player is there: the one holding the power) and sent to the cabinet, set to fight.
+	//! They go home CREW_STAYS seconds after the call ends, or when they're all down.
+	protected bool SendCrew(RZ_Mast m, int playerId)
+	{
+		if (m_CallCrew.IsSpawned() || !m_GM.GetTerritory() || m_GM.GetRedHandGroupPrefab().IsEmpty())
+			return false;
+
+		bool near = s_bTestCrewAnywhere;
+		foreach (RZ_Holding h : m_GM.GetTerritory().GetHoldings())
+		{
+			if (h && h.m_eFaction == RZ_EFaction.BANDITS && RZ_Util.DistXZ(h.m_vPos, m.m_vPos) <= CREW_REACH)
+			{
+				near = true;
+				break;
+			}
+		}
+
+		if (!near)
+			return false;
+
+		vector from = RZ_Mission.LandPointNear(m.m_vPos, 180, 260);
+		if (!m_CallCrew.Spawn(m_GM.GetRedHandGroupPrefab(), from))
+			return false;
+
+		if (m_GM.GetSpawner())
+			RZ_Util.SendGroupTo(m_CallCrew.m_Unit, m_Masts.CabinetPos(m), m_GM.GetSpawner().GetMoveWaypointPrefab());
+
+		RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_CallCrew.m_Unit);
+		m_iCrewUntil = 0;
+		m_GM.Say(playerId, RZ_FactionVoice.ChannelTitle(RZ_EFaction.MILITARY), RZ_EFaction.MILITARY, "Engines on the hill road. That's the Red Hand: they want the set, or they want us off it. Keep the power on.");
+		RZ_Log.Info(string.Format("Masts: a Red Hand crew comes up %1 for the set while Bastion calls (from %2).", m.m_sName, RZ_SettlementScanner.GridReference(from)));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The crew goes home a while after the call (or when it's all down).
+	protected void TickCrew()
+	{
+		if (!m_CallCrew.IsSpawned())
+			return;
+
+		if (m_CallCrew.IsDead(1))
+		{
+			m_CallCrew.Delete();
+			return;
+		}
+
+		if (m_iCaller > 0)
+			return;
+
+		int now = RZ_Guidance.UnixNow();
+		if (m_iCrewUntil == 0)
+			m_iCrewUntil = now + CREW_STAYS;
+
+		if (now >= m_iCrewUntil)
+		{
+			m_CallCrew.Delete();
+			RZ_Log.Info("Masts: the Red Hand's crew goes home from the call.");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test only: a crew sent for the call at `m` now (the holdings' rule kept). True if it came.
+	bool TestCrew(RZ_Mast m, int playerId)
+	{
+		return SendCrew(m, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasCrew()
+	{
+		return m_CallCrew.IsSpawned() && m_CallCrew.m_Unit != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test only: the crew sent home now.
+	void TestCrewHome()
+	{
+		m_CallCrew.Delete();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! From RZ_Masts.TickHolds: a relay or call hold at `m` finished.
 	void TickHolds(RZ_Mast m)
 	{
+		TickCrew();
 		RZ_WorkSites sites = RZ_WorkSites.Get();
 		if (!sites)
 			return;

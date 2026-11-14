@@ -49,6 +49,7 @@
 #   The loop's relay and Bastion's call (RZT_Relay.c): every mast put up, the relay's rows open, a cut silences the loop and shuts the relay, a swapped tape plays then reverts, Bastion's call runs once a real day with no answer, a held mast is talked about ("RZT relay OK|FAIL ...");
 #   The masts (RZT_Masts.c): found on dry mainland, a crew's promise binds one, one put up with its part clears the fog and is kept open, another handed to the Haven, something to overhear, a trapped voice found by bearings at two masts starts a Distress Call there ("RZT masts OK|FAIL ...", "RZT masts: N checks");
 #   The grid past the station (RZT_Grid.c): substations on the map's yards, a town lit only when switched on and the station runs, a break and its splice, a Red Hand toll's crewman, the lab's and morale's caps, a cut breaker, a mast's cable cut and put back
+#   The power and radio leftovers (RZT_PowerRest.c): masts on the map's own cabinet counted, a held mast talked about in its region, a cut breaker takes its fuse, Lights Out against a rival's mast (the book's tip held back), Lights Back's two steps, the cold room in a lit town, the Red Hand at Bastion's call, the call's night for Await Relief
 #   The map's fog (RZT_Fog.c): where the tester stands is seen, walking 600 m reveals new ground, a paper map in his pack reveals its far town, the fog survives the save's JSON round trip, the payload is small ("RZT fog OK|FAIL ...", "RZT fog: N checks");
 #   The door and the favour (RZT_Favour.c): for every background, the door asks who you were and a habit is picked (each habit's effect checked), the favour's fetch is handed at a place, the hand-over waits for its reply (standing by him never counts), and the background's way settles it without a hand-over ("RZT favour OK|FAIL ...", "RZT favour: N checks");
 #   The fixer (RZT_Ferda.c): Ferda Kroupa comes for the case (two men, tracked on him, the Red Hand's people leave the sale to him), the street rallied (its door job at a real doorway, three jobs, then RALLIED), the hand-over (sold, Get It Back next) and the warning, the story about Bastion as the good liar (TALKED, no standing), slipping away (SLIPPED), a fight (FOUGHT), his note on a real door's step, a veteran's note only ("RZT ferda OK|FAIL ...", "RZT ferda: N checks");
@@ -295,6 +296,7 @@ grep -E 'RZT fog' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT masts' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT relay' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT grid' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT power' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT patrol' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT craft' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
@@ -315,6 +317,7 @@ grep -q 'RZT fog FAIL' "$LOG" && { echo "FAILED: the map's fog (RZT_Fog.c: walki
 grep -q 'RZT masts FAIL' "$LOG" && { echo "FAILED: the masts (RZT_Masts.c: found, put up, given, overheard, a voice found by bearings)"; exit 1; }
 grep -q 'RZT relay FAIL' "$LOG" && { echo "FAILED: the loop's relay or Bastion's call (RZT_Relay.c)"; exit 1; }
 grep -q 'RZT grid FAIL' "$LOG" && { echo "FAILED: the grid past the station (RZT_Grid.c: substations, a break and a splice, the stakes' caps, a cut)"; exit 1; }
+grep -q 'RZT power FAIL' "$LOG" && { echo "FAILED: the power and radio leftovers (RZT_PowerRest.c: the region's talk, the fuse, Lights Out and Lights Back, the cold room, the call)"; exit 1; }
 grep -q 'RZT favour FAIL' "$LOG" && { echo "FAILED: the door and the favour (who you were, the habit, the fetch, the hand-over by reply, the background's way: RZT_Favour.c)"; exit 1; }
 grep -q 'RZT kitchen FAIL' "$LOG" && { echo "FAILED: kitchen work at a kitchen (RZT_Kitchen.c: a kitchen thing at the prompt, the camp's own cook pot)"; exit 1; }
 grep -q 'RZT patrol FAIL' "$LOG" && { echo "FAILED: a patrol's finds or its marker (RZT_Patrol.c: each find's thing there, a door find at a real doorway, the marker on the walker)"; exit 1; }

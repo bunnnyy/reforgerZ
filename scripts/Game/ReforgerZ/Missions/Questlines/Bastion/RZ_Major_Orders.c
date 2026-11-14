@@ -260,6 +260,8 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 		scene.m_sTitle = "The muster";
 		scene.m_sBrief = run.Fill("Every post on the secure net at the nightly call. {co}: \"Tonight I read the numbers to Command, or I read them something else. Tell me which.\" Command never answers, in any version.");
 		scene.m_sObjective = run.Fill("Help {co} decide what to read to Command at the nightly call.");
+		// The nights Bastion called from the tallest mast (World/RZ_LoopRelay.c, Bastion's last call)
+		scene.m_sBrief += NightsLine(gm);
 		scene.m_eTier = RZ_ETier.KNOWN;
 		scene.m_iFame = 10;
 		scene.m_iFavor = 20;
@@ -281,6 +283,21 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 
 		scene.Choice(crew, "Hold the relay for the crew (+25 Infamy)").Way(RZ_EQuestApproach.BETRAY).Needs(RZ_EFaction.BANDITS, RedHandRank(gm)).Only("!relay_taken").Side(RZ_EFaction.BANDITS, RZ_EFaction.MILITARY, 10, 15).HoldAt(relay, 180, OUT_EXPENDED, OUT_CALL).Says("The radio man keys up. Behind you, something on the hill hears the generator.", "held the relay for the Red Hand").Refused("The boss says you're not one of ours. Not for this.");
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The muster's brief reads the log: the nights someone held the tallest mast's power while
+	//! Bastion called Command (`bastion.last_call`), and never a reply. "" with none.
+	protected string NightsLine(RZ_GameModeComponent gm)
+	{
+		int nights = RZ_MajorHelp.World(gm, "bastion.last_call");
+		if (nights <= 0)
+			return "";
+
+		if (nights == 1)
+			return " The log has one call from the tallest mast in it, and no reply.";
+
+		return string.Format(" The log has %1 nights of calls from the tallest mast in it, one under another, and not one reply.", nights);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -310,7 +327,8 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 	//------------------------------------------------------------------------------------------------
 	//! "Read it to them": persuade 3; one easier for each of the true count, proof (orders.copy, B3's
 	//! pilot.line), a Merciful or Idealist CO, HC1's weeks.public and, once, another page in the open;
-	//! one harder with a Paranoid CO. Never easier than 2.
+	//! one easier when the log holds three nights or more of calls from the tallest mast with no reply
+	//! (`bastion.last_call`); one harder with a Paranoid CO. Never easier than 2.
 	protected int ReadStep(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		int d = 3;
@@ -327,6 +345,9 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 			d--;
 
 		d -= RZ_MajorHelp.PageStep(gm, run);
+		if (RZ_MajorHelp.World(gm, "bastion.last_call") >= 3)
+			d--;
+
 		if (RZ_MajorHelp.TopHas(gm, RZ_EFaction.MILITARY, RZ_ELeaderTrait.PARANOID))
 			d++;
 

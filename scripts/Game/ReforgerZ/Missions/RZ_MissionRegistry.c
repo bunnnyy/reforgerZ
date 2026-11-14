@@ -71,6 +71,9 @@ class RZ_MissionRegistry
 		mgr.RegisterType(RZ_Mission_DoubleAgent);
 		mgr.RegisterType(RZ_Mission_CollectTheBounty);
 		mgr.RegisterType(RZ_Mission_KillTheOfficer);
+		// The grid's jobs (Missions/RZ_PowerJobs.c): the Red Hand's cut, and the hurt faction's put-back
+		mgr.RegisterType(RZ_Mission_LightsOut);
+		mgr.RegisterType(RZ_Mission_LightsBack);
 		// The Red Hand's hard edges (Missions/RedHand/RZ_RedHandLoreMissions.c); Tied Down is the Haven's
 		mgr.RegisterType(RZ_Mission_LearningTheDrones);
 		mgr.RegisterType(RZ_Mission_PitsDebtor);

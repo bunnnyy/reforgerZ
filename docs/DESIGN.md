@@ -615,8 +615,9 @@ infrastructure carries it further, one region at a time.
   substation in Levie", "the transformer yard outside Tyrone".
 - **Switching one on.** Its control is the map's own electrical cabinet in the yard (an invisible
   spot on its face) when there is one within 45 m, else the station's control prefab beside it.
-  **Look at the substation** opens its object menu: **Fit a fuse and close the breaker** (a 12 s
-  hold at the cabinet; it takes a coil of wire, the crafting's wire or the masts' words). Its towns
+  **Look at the substation** opens its object menu, in two steps at the cabinet: **Fit a fuse** (a 5 s
+  hold; it takes a fuse: the bench makes two from wire and scrap metal, and garages have them, rare),
+  then **Close the breaker** (a 12 s hold). Its towns
   have power while it's switched on, its line to them is whole and the station runs: the lights
   hook, the street lamps, town memory's power flag, as the station's own region. The station stopping
   darkens them all; a substation stays switched on through it.
@@ -638,7 +639,7 @@ infrastructure carries it further, one region at a time.
 | Faction | While its place has power |
 |---|---|
 | Halcyon | The lab works ×1.2 faster while its town is lit (**Lab multiplier**, capped at 1.5) |
-| The Haven | +1 morale an hour while a town it holds is lit, at most +6 a real day (the cold room, the kitchens) |
+| The Haven | +1 morale an hour while a town it holds is lit, at most +6 a real day (the kitchens); and **the cold room**: a safehouse in a lit town eats its stores at 0.8 the speed (**Cold room**, 0.5 to 1), so its food lasts longer |
 | Bastion | The same (its radios reach its posts) |
 | The Red Hand | The tolls on a town's line (above), and its pay for sabotage (below) |
 
@@ -646,21 +647,29 @@ infrastructure carries it further, one region at a time.
   streets keep them off a little), but every lit town makes 1 heat a minute at its middle, so packs
   come from further.
 - **Sabotage.** At a switched-on substation, **Cut the breaker** (an 8 s hold, loud: 8 heat): its towns
-  go dark until someone fits a new fuse. At an up mast that's somebody's ([The masts](#the-masts)),
+  go dark, and whoever cuts it pockets the fuse, so putting it back takes a new one. At an up mast that's somebody's ([The masts](#the-masts)),
   **Cut its cable**: it's down again with a new part missing, and whoever held it asks on its channel
   for someone to put it back; whoever does gets 5 Fame with them (Favor with the Red Hand) and the mast
   is theirs again. Either cut costs **8 Infamy** with each faction whose town or mast it darkens, and
   the Red Hand pay **10 Favor** for a rival's (once a real day a player; their channel says so).
+- **The jobs.** A Red Hand giver offers **Lights Out** (Known; 8 Fame, 20 Favor) against a lit
+  substation a rival's towns are on, else a mast a rival holds; the job's pay replaces the Red Hand's
+  tip for that cut, and the cut's Infamy is the cut's own. A substation cut on purpose is offered back
+  as **Lights Back** by the faction holding its towns (Stranger; 8 Fame, 10 Favor): fit a fuse, close
+  the breaker. A cut mast's put-back stays its holder's ask on the channel (above). Both are in
+  [MISSIONS.md](MISSIONS.md#the-grids-jobs).
 - **Generators you carry** are the placed kit's ([Barricades, traps and
   generators](#barricades-traps-and-generators)): a portable or found generator lights where it
-  stands for 30 minutes a fuel item, and hums (6 heat a minute).
-- **Saved:** each substation's switch and its broken line (where, what kind, the crewman), and today's
-  Red Hand pay.
+  stands for 30 minutes a fuel item, and hums (6 heat a minute). Started on the ground and loaded
+  straight into a car's storage, it runs on in the back: it lights and charges where the car stands.
+- **Saved:** each substation's switch, its fuse, whether it was cut on purpose, its broken line (where,
+  what kind, the crewman), and today's Red Hand pay.
 
-*Simplified:* a substation is switched in one hold, not a fuse and a breaker as two things; the break's
-pole has no sagging wire of its own (the pole is the map's, the spot on it ours); a substation lights
-whole towns, not streets; the Haven's cold room and Bastion's radios are morale, not their own systems;
-sabotage is open to anyone at the place (the Red Hand pay afterwards), not a contract taken from a giver.
+*Simplified:* the break's pole has no sagging wire of its own (the pole is the map's, the spot on it
+ours); a substation lights whole towns, not streets; Bastion's radios are morale, not their own
+system; the cold room is the safehouse's food, not medicine or samples (nothing in the Zone spoils
+by itself); a generator in a car's back runs only if it was started first and loaded from the ground
+(picked up into a pack, it stops, as before).
 
 ### The radio station
 
@@ -673,8 +682,7 @@ every 10 minutes server-wide (5 with power). **Cosmetic and social only:** no Fa
 
 ### The masts
 
-Code: `World/RZ_Masts.c`, `Dialogue/RZ_TalkMasts.c`. **World > Masts** (on). What waits (the map's own
-cabinet, a sabotage contract from a giver) is in [designs/POWER_AND_RADIO.md](../designs/POWER_AND_RADIO.md).
+Code: `World/RZ_Masts.c`, `Dialogue/RZ_TalkMasts.c`. **World > Masts** (on).
 
 Three to five of the map's own masts and aerials, each over a region (2.5 km round it). A mast is a
 place you put up, and **whoever puts it up says whose voice it is**: it isn't more radio range.
@@ -682,8 +690,10 @@ place you put up, and **whoever puts it up says whose voice it is**: it isn't mo
 **Where.** The radio station's finder's masts and aerials within 1.5 km of a town, on dry mainland,
 off the line, 1.5 km apart and 800 m from the radio station; too few (under three), the highest
 ground by the bigger towns. Named for what's there and the town below ("the radio mast above
-Arleville"). Saved with the season. At its foot stands one prop, **Look at the mast** (the console
-the radio station uses, or **Cabinet prefab**), which opens the object menu: the tag's words (what's
+Arleville"). Saved with the season. Its prompt, **Look at the mast**, is on the map's own electrical
+cabinet or control box within 25 m of its foot when there is one (an invisible spot on its face, as a
+substation's; with the power grid's **Use cabinets**), else on one prop at its foot (the console the
+radio station uses, or **Cabinet prefab**). It opens the object menu: the tag's words (what's
 missing, who's at its foot, whose it is) and the rows below. Without the object menu, its first four
 rows are the prop's prompts. It exists while a player is within 300 m.
 
@@ -727,10 +737,12 @@ done. The mast is up; the one who climbed it sees the land round it (the map's f
 | Finding a voice | with two masts up, every 90 minutes a trapped man calls from a spot in an up mast's region, for 30 minutes. Each up mast's menu offers **Take a bearing on the voice** (a 10 s hold); a bearing from a second mast fixes him, and a **Distress Call** starts at that spot ([MISSIONS.md](MISSIONS.md)) |
 
 Every line is a voice on the radio (**Radio: the mast above ...**, **Radio: overheard**, **Radio:
-past the line**), never a card. *Simplified:* the prop at the foot is always ours (the map's own
-cabinet isn't used yet).
+past the line**), never a card.
 
 - **A cut cable** ([sabotage](#the-grid-region-by-region)): an up mast's **Cut its cable** takes it down with a new part missing; its old holder asks for it back, and whoever puts it back up gives it back to them (5 Fame; Favor with the Red Hand).
+- **Its people talk about it in person.** Talk to a leader or a named person of the faction a mast
+  serves, inside its region, and a third of the time they mention it and who climbed it (*"That's our
+  set on the mast above Levie now. Pavel Novak climbed it for us."*), with their other news.
 - **Its holder talks about it.** On the open channel ([faction chatter](#radios-open-and-secure)), a quarter of the time a faction has a line to say, it's about a mast it holds ("Our set on the mast above Levie's clean tonight. Whoever climbed it for us, we haven't forgotten.").
 
 ### The loop's relay and Bastion's last call
@@ -761,10 +773,16 @@ end: *"Command, Command, this is Task Force Bastion. We are holding. Requesting 
 but the hiss, for a long time. *"Bastion out."* Nobody ever answers: the Zone is sealed. Once a real day for
 the whole server; 3 Bastion Fame for the holder (once a real day each), Bastion morale −1, and the
 world fact `bastion.last_call` counted. While [Await Relief](QUESTLINES.md#await-relief) runs, the
-officer adds that it goes in the CO's log.
+officer adds that it goes in the CO's log, and the muster reads the nights
+([QUESTLINES.md](QUESTLINES.md#await-relief)).
 
-Every line is a voice on the radio. *Simplified:* the Red Hand don't come for a held call (only
-what's below does); no act of Await Relief reads `bastion.last_call` yet.
+**The Red Hand at the call.** With a Red Hand holding within 4 km of the tallest mast, a crew comes
+up the hill for the set as the power's held (**Missions > Red Hand group**): spawned 180 to 260 m out,
+sent to the cabinet, set to fight; Bastion's officer says so (*"Engines on the hill road. That's the
+Red Hand..."*). They go home three minutes after the call ends, or when they're all down. Without the
+group prefab, or with no Red Hand holding near, only what's below comes.
+
+Every line is a voice on the radio.
 
 ### The government broadcast
 
@@ -3281,7 +3299,7 @@ isn't saved and doesn't count toward the replacement timer.
 
 ### Light crafting
 
-At a workbench, fifteen built-in recipes, and more can be added as data (twenty-four in all at most). A
+At a workbench, sixteen built-in recipes, and more can be added as data (twenty-four in all at most). A
 recipe whose output prefab isn't set is hidden. A recipe takes its time at the bench (5 to 20 s;
 moving away stops it) and some make noise (heat). Its inputs are checked when you start and again
 when the work is done, each carried item counting for one input only; then each is taken from your
@@ -3306,6 +3324,7 @@ rags (a tool may be in your hands).
 | Radio lure | a radio, torch cells | a radio lure: thrown, it hisses static for over a minute (eight bursts, 9 s apart, 25 heat each) and the infected come to it |
 | Salvaged spark plugs | 2 scrap metal, wire; a wrench (kept) | spark plugs, the car part ([Cars](#cars-found-rare-and-hard-to-fix)) |
 | Hand-drawn map | a writing pad | a paper map you can open (it shows what the base game's map shows; copying what you've explored onto it is planned with the map's fog) |
+| Fuses | wire, scrap metal | 2 fuses: a substation's fuse, fitted before its breaker closes ([The grid, region by region](#the-grid-region-by-region)); garages have them too, rare |
 
 The inputs are found by name (Interactions > Crafting's keywords), so the mods' items count where
 their names fit. The junk the new recipes take lies in houses, shops, farms, garages, police posts,
@@ -3373,7 +3392,7 @@ any map fireplace with vanilla's fireplace component. Its fire is read through v
 | Planks (barricade) | 3 | 60 min | Boards up a real doorway: set within 3 m of a building's outside door, the boards go up in it, facing out (nowhere else: *"There's no door here to board up."*). Infected against it make noise; 8 hits break it. The town counts as Barricaded |
 | Tin-can tripwire | 3 | 60 min | Rattles (20 heat) when something walks through; the owner hears it within 400 m |
 | Spike trap | 2 | 60 min | Kills an infected that walks onto it, three times. Players aren't hurt |
-| Generator | 1 running | 30 min per fuel item | 6 heat a minute; lights hook within 40 m; a radio within 30 m hears every open channel; standing near it charges your radio and torch |
+| Generator | 1 running | 30 min per fuel item | 6 heat a minute; lights hook within 40 m; a radio within 30 m hears every open channel; standing near it charges your radio and torch. Started on the ground and loaded straight into a car's storage, it runs on in the back, lighting and charging where the car stands; picked up into a pack, it stops |
 
 None of these are saved.
 

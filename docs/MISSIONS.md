@@ -23,7 +23,8 @@ not): [PLACES.md](PLACES.md#the-live-check).
 | [Haven house contracts](#haven-house-contracts) | 3, plus the Courier's letters | — |
 | [Leader missions](#leader-missions) | 27, plus Rein In | — |
 | [Story arc missions](#story-arc-missions) | 3 | — |
-| **Total** | **164** | **—** |
+| [The grid's jobs](#the-grids-jobs) | 2 | — |
+| **Total** | **166** | **—** |
 | [Errands](ERRANDS.md) (not missions: asked in person) | 34 routines, 2 wanderers' asks, 18 strangers, 70 cards (the margin cards of all four majors, a Champion card per faction and the lock card among them), plus the epilogue deck's 20 | — |
 | [Questlines](#questlines) | 15 questlines and the 4 majors, about 90 stage missions plus the majors' 15 scenes (not counted above) | — (the majors' remaining approaches are scene choices: [QUESTLINES.md](QUESTLINES.md#the-majors)) |
 | [The cure finale](#the-cure-finale) | 5 routes (20 scenes and 5 releases), 5 desks, 2 tissue hunts, Take the Lab's finale mode (not counted above) | — (simplified: [FINALE.md](FINALE.md#simplified-and-not-built-yet)) |
@@ -455,6 +456,16 @@ Code: `Missions/RedHand/RZ_RedHandLoreMissions.c`.
 **Amends:** Field Samples and Blood Drive work off Halcyon Infamy while you're Watched.
 
 ---
+
+## The grid's jobs
+
+The cut and the put-back at the grid past the station ([DESIGN.md](DESIGN.md#the-grid-region-by-region)).
+Code: `Missions/RZ_PowerJobs.c`.
+
+| Contract | Giver, needs | What you do | Result | Status |
+|---|---|---|---|---|
+| Lights Out | The Red Hand, Known | Cut the breaker at a lit substation a rival's towns are on (else the cable at a mast a rival holds) | 8 Fame, 20 Favor through the caps; the cut's own Infamy with whoever it darkens; the Red Hand's tip for a cut isn't paid on top | ✅ |
+| Lights Back | Whoever holds the towns of a substation cut on purpose (not the Red Hand), Stranger | Fit a fuse at its cabinet, then close the breaker (two tracker lines) | 8 Fame, 10 Favor | ✅ *a cut mast's put-back stays its holder's ask on the channel, with its own 5 Fame* |
 
 ## The packs' contracts
 

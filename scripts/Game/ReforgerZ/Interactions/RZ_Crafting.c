@@ -131,6 +131,9 @@ class RZ_CraftSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Hand-drawn map (a writing pad): a paper map you can open", "et")]
 	ResourceName m_sMapCopyPrefab;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Fuses (wire wound round scrap): a substation's fuse, fitted before its breaker closes (World/RZ_Substations.c)", "et")]
+	ResourceName m_sFusePrefab;
+
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Stove: sterile dressing (a rag boiled in clean water): a bandage that also cleans a bite (its name has an Antiseptic keyword)", "et")]
 	ResourceName m_sSterilePrefab;
 
@@ -296,6 +299,7 @@ class RZ_Crafting
 		Show(AddBuiltIn("Radio lure", m_Settings.m_sRadioWords, 1, m_Settings.m_sCellWords, 1, "", 0, m_Settings.m_sLurePrefab, 12, 1), "Radio", "Torch cells", "", "item_noisemaker");
 		Tool(Show(AddBuiltIn("Salvaged spark plugs", m_Settings.m_sScrapWords, 2, m_Settings.m_sWireWords, 1, "", 0, m_Settings.m_sPlugsPrefab, 15, 2), "Scrap metal", "Wire", "", ""), m_Settings.m_sWrenchWords, "Wrench", 1);
 		Show(AddBuiltIn("Hand-drawn map", m_Settings.m_sPadWords, 1, "", 0, "", 0, m_Settings.m_sMapCopyPrefab, 20, 0), "Writing pad", "", "", "");
+		Tool(Show(AddBuiltIn("Fuses", m_Settings.m_sWireWords, 1, m_Settings.m_sScrapWords, 1, "", 0, m_Settings.m_sFusePrefab, 8, 0), "Wire", "Scrap metal", "", ""), "", "", 2);
 
 		if (m_Settings.m_aRecipes)
 		{

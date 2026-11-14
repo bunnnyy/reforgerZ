@@ -102,6 +102,8 @@ class RZT_Grid
 			subs.CutBreaker(sub, id);
 
 		Check(!RZ_PowerGrid.IsGridPoweredAt(at), string.Format("%1 is dark while %2 is switched off", town.m_sName, sub.m_sName));
+		Check(!subs.SwitchOn(sub, id, me), "the breaker won't go in without a fuse");
+		Check(subs.FitFuse(sub, id, me), "a fuse goes in (the first step)");
 		Check(subs.SwitchOn(sub, id, me), "the breaker goes in");
 		Check(RZ_PowerGrid.IsGridPoweredAt(at), string.Format("%1 is lit once it's switched on and the station runs", town.m_sName));
 		grid.TestPower(false);
