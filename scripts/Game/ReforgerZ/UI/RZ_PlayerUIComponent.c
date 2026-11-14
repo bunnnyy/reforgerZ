@@ -81,7 +81,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
-	protected ref array<float> m_aLastCommand = {-100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100, -100};	// per CMD_*
+	protected ref array<float> m_aLastCommand = {};	// per CMD_*, sized in RpcAsk_Command (CMD_COUNT)
 	protected float m_fLastPick = -100;		// the last car job or purchase (PICK_GAP)
 	protected static const float PICK_GAP = 0.5;
 
@@ -99,6 +99,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	static const int CMD_LASTENTRY = 10;	// /lastentry <text>: your line on the Names board (a pad writes one without typing)
 	static const int CMD_TRACES = 11;	// /traces (admins): the door marks near you, to the server log (World/Traces)
 	static const int CMD_SITES = 12;	// /sites (admins, game masters): the site builder (World/HandBuilt/RZ_SiteBuilder.c)
+	static const int CMD_COUNT = 13;	// one more than the last CMD_*: the table of when each was last asked (a command past it was dropped unheard)
 
 	//------------------------------------------------------------------------------------------------
 	//! The local player's component (client), or null.
@@ -889,8 +890,16 @@ class RZ_PlayerUIComponent : ScriptComponent
 			return;
 
 		int playerId = OwnerPlayerId();
-		if (playerId <= 0 || cmd < 0 || cmd >= m_aLastCommand.Count())
+		while (m_aLastCommand.Count() < CMD_COUNT)
+		{
+			m_aLastCommand.Insert(-100);
+		}
+
+		if (playerId <= 0 || cmd < 0 || cmd >= CMD_COUNT)
+		{
+			RZ_Log.Warn(string.Format("UI: command %1 from player %2 dropped (unknown).", cmd, playerId));
 			return;
+		}
 
 		// Each command at most every 2 s, and the player hears why one was dropped
 		float now = RZ_UIW.Now();

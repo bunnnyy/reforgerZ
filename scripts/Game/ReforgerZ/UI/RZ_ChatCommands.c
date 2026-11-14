@@ -130,6 +130,7 @@ class RZ_ChatCommands
 	//! talk screen's [Admin] list and Game Master's context menu, without typing.
 	protected void OnSites(SCR_ChatPanel panel, string data)
 	{
+		RZ_Log.Info("Site builder: /sites typed, asking the server.");
 		Send(RZ_PlayerUIComponent.CMD_SITES, data);
 	}
 

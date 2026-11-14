@@ -137,10 +137,14 @@ class RZ_SiteBuilder
 	{
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		if (!gm || !gm.GetCampLife())
+		{
+			RZ_Log.Info(string.Format("Site builder: player %1 asked, but camp life isn't running.", playerId));
 			return;
+		}
 
 		if (!MayBuild(playerId))
 		{
+			RZ_Log.Info(string.Format("Site builder: player %1 asked, but is neither a server admin nor a game master with the full editor.", playerId));
 			gm.NotifyPlayer(playerId, TITLE, "Only a server admin or a game master can build sites.");
 			return;
 		}
@@ -148,6 +152,7 @@ class RZ_SiteBuilder
 		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (!user)
 		{
+			RZ_Log.Info(string.Format("Site builder: player %1 asked with no character.", playerId));
 			gm.NotifyPlayer(playerId, TITLE, "The site builder opens on your character: spawn one first.");
 			return;
 		}
@@ -160,7 +165,13 @@ class RZ_SiteBuilder
 		}
 
 		if (!RZ_ObjectScreen.OpenRows(playerId, user, TITLE, new RZ_SiteBuilderRows(s)))
+		{
+			RZ_Log.Info(string.Format("Site builder: player %1's menu couldn't open (the object row layout, or another screen open).", playerId));
 			gm.NotifyPlayer(playerId, TITLE, "The menu couldn't open (UI > Object row layout is empty, or another screen is open). Close other screens and try again.");
+			return;
+		}
+
+		RZ_Log.Info(string.Format("Site builder: opened for player %1.", playerId));
 	}
 
 	//------------------------------------------------------------------------------------------------
