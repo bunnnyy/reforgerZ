@@ -95,6 +95,18 @@ class RZ_WorkSiteSettings
 	[Attribute("1", desc: "Dig with the tool: at a latrine, a grave or a dig, a carried entrenching tool is taken in hand and vanilla's building animation plays. The tool is never needed: without one, the hands animation")]
 	bool m_bDigWithTool;
 
+	[Attribute("1", desc: "Carry for real: a task whose words say carry, stack or bring in is done by moving the things one by one, from a pile to where the words say, slowed while you carry (docs/DESIGN.md, Carrying). Off: one hold where the things are, as before")]
+	bool m_bCarry;
+
+	[Attribute("0.45", UIWidgets.Slider, "Carrying speed: the carrier's top speed x this while a thing is in their arms (under about 0.5 there's no running)", "0.2 1 0.05")]
+	float m_fCarrySpeed;
+
+	[Attribute("{6E1B3C5A2D4F7081}Prefabs/ReforgerZ/Work/RZ_Carried_Box.et", UIWidgets.ResourcePickerThumbnail, "Carried box: what shows in the arms while a crate, a box or a sack is carried. Look only: a model, no physics, nothing to use. Empty = nothing shown in the arms", "et")]
+	ResourceName m_sCarriedBox;
+
+	[Attribute("{7A2C4D6B3E5F8192}Prefabs/ReforgerZ/Work/RZ_Carried_Chair.et", UIWidgets.ResourcePickerThumbnail, "Carried chair: what shows in the arms while a chair is carried. Look only, as the Carried box. Empty = nothing shown in the arms", "et")]
+	ResourceName m_sCarriedChair;
+
 	[Attribute("40", UIWidgets.Slider, "Sites at once, server-wide. A new one past this drops the oldest whose step is over (its result still standing); one whose step is under way is never dropped", "8 200 1")]
 	int m_iMaxSites;
 
@@ -257,6 +269,7 @@ class RZ_WorkSites
 	protected static const ResourceName TAKE_FALLBACK = "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et";	// the base game's cardboard box (world_kit.txt; footprints.json 0.4 x 0.7 m)		// a person's box: a 0.6 m square (RZ_SiteFoot.SEAT)
 
 	protected RZ_SharedSettings m_Shared;
+	protected ref RZ_Carries m_Carries;
 	protected ref array<ref RZ_WorkSite> m_aSites = {};
 	protected ref array<ref RZ_WorkChoice> m_aChoices = {};
 	protected int m_iNextId = 1;
@@ -272,6 +285,14 @@ class RZ_WorkSites
 	void RZ_WorkSites(RZ_SharedSettings shared)
 	{
 		m_Shared = shared;
+		m_Carries = new RZ_Carries(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Carrying things somewhere (RZ_Carry.c), built on these sites.
+	RZ_Carries Carries()
+	{
+		return m_Carries;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1150,6 +1171,8 @@ class RZ_WorkSites
 	void Tick(float dt, array<int> ids, array<IEntity> players)
 	{
 		m_fClock += dt;
+		// Carrying first: a put-down's own prompt is a site, so the workers below see it this second
+		m_Carries.Tick(ids, players, SpawnRadius(), DespawnRadius());
 		if (m_aSites.IsEmpty())
 			return;
 
@@ -1323,8 +1346,9 @@ class RZ_WorkSites
 	//------------------------------------------------------------------------------------------------
 	//! Where the before look goes (docs/DESIGN.md, "Work site"): its real box must fit, as a camp's
 	//! piece must (RZ_CampLife.BoxFits). Its own spot and heading first, then the other headings, then
-	//! spots around it (up to 2 m outdoors, 0.75 m indoors). Nowhere: the look is left out and the
-	//! site keeps only its prompt (drop, don't squeeze). The site moves with its look.
+	//! spots around it (up to 3 m outdoors, 0.75 m indoors). Nowhere: a small box stands there instead
+	//! (the base game's cardboard box), and only when not even that fits does the site keep only its
+	//! prompt (logged). The site moves with its look.
 	protected void FitLook(RZ_WorkSite s)
 	{
 		vector fmin;
@@ -1337,7 +1361,7 @@ class RZ_WorkSites
 		}
 
 		float step = 1;
-		int rings = 3;
+		int rings = 4;
 		if (s.m_bKeepHeight)
 		{
 			step = 0.75;
@@ -1375,7 +1399,16 @@ class RZ_WorkSites
 			}
 		}
 
-		RZ_Log.Info(string.Format("Work sites: %1 look %2 doesn't fit at %3, left out", s.m_sKey, RZ_Util.PrettyPrefabName(s.m_sBefore), RZ_SettlementScanner.GridReference(s.m_vPos)));
+		// Nowhere for it: a small box stands there instead (once), so the prompt is never on bare ground
+		if (s.m_sBefore != TAKE_FALLBACK)
+		{
+			RZ_Log.Info(string.Format("Work sites: %1 look %2 doesn't fit at %3, a box instead", s.m_sKey, RZ_Util.PrettyPrefabName(s.m_sBefore), RZ_SettlementScanner.GridReference(s.m_vPos)));
+			s.m_sBefore = TAKE_FALLBACK;
+			FitLook(s);
+			return;
+		}
+
+		RZ_Log.Info(string.Format("Work sites: %1 has nothing standing at it at %2 (not even a box fits): only its prompt", s.m_sKey, RZ_SettlementScanner.GridReference(s.m_vPos)));
 		s.m_sBefore = "";
 	}
 

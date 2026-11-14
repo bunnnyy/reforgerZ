@@ -1,0 +1,14 @@
+GenericEntity {
+ ID "D4F6182A35C7E90B"
+ components {
+  MeshObject "{E5072A3B46D8FA1C}" {
+   Object "{3781539ED6FAF453}Assets/Props/Furniture/ChairOld_01/ChairOld_01.xob"
+  }
+  RplComponent "{F6183B4C57E90B2D}" {
+   Enabled 1
+  }
+  Hierarchy "{B09E7C53A2816F4D}" {
+  }
+ }
+ coords 0 0 0
+}

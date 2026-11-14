@@ -299,7 +299,7 @@ scripts/Game/ReforgerZ/
                  its story and its audit),
                  reputation's voice (the word for you, crew names, the picture), the voice bank
   Missions/      framework, requirements, bases, building blocks (Blocks/: escorts, live
-                 capture, vehicle zones and convoys, health cost, step chains, work sites); Haven/ Bastion/ RedHand/ Halcyon/
+                 capture, vehicle zones and convoys, health cost, step chains, work sites, carrying); Haven/ Bastion/ RedHand/ Halcyon/
                  Events/ Leaders/ Unarmed/ Perimeter/ Tribes/ (the packs' contracts); the shared checks (Trust, Fear, prices) and
                  ways through a job; Story/ (the story kit, who decides, who benefits, reasons);
                  Errands/ (the dealer, the routines, the duties, Cards/ with the epilogue deck); Questlines/ (the author's base class,

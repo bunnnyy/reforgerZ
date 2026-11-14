@@ -1091,6 +1091,10 @@ class RZ_Errands
 	protected bool StepWorked(RZ_Errand e, RZ_ErrandWay w, IEntity me, float dt)
 	{
 		RZ_WorkSites sites = RZ_WorkSites.Get();
+		RZ_Carries carries = RZ_Carries.Get();
+		if (carries && carries.Has(WorkKey(e)))
+			return carries.IsDone(WorkKey(e));
+
 		if (sites && sites.Has(WorkKey(e)))
 			return sites.IsDone(WorkKey(e)) && (!w.m_bGiveThere || w.IsAtPlace(me, e.m_vPlace));
 
@@ -1139,6 +1143,10 @@ class RZ_Errands
 		if (!w.IsWork() || e.m_vPlace == vector.Zero)
 			return false;
 
+		// Carried for real: a pile of the things, and where they go
+		if (w.m_iCarry > 0 && OpenCarry(e, w))
+			return true;
+
 		RZ_WorkSites sites = RZ_WorkSites.Get();
 		vector at = e.m_vPlace;
 		// At the giver's place or its gate: beside it, not on whoever stands there
@@ -1168,9 +1176,14 @@ class RZ_Errands
 		if (!inside && at[1] > RZ_Util.GroundPos(at)[1] + 0.3)
 			inside = true;
 
-		ResourceName before;
-		if (w.m_eProp != RZ_EErrandProp.NONE)
+		ResourceName before = w.m_sLook;
+		if (before.IsEmpty() && w.m_eProp != RZ_EErrandProp.NONE)
 			before = m_Settings.Props().For(w.m_eProp);
+
+		// Work at something that isn't there (HANDS has no look of its own): the words name a thing
+		// nothing stands for, which the audit should catch (docs/ERRANDS.md, "The work")
+		if (before.IsEmpty() && w.m_eWork == RZ_EWork.HANDS && !w.m_bPerson)
+			RZ_Log.Info(string.Format("Errands: %1 '%2' has nothing standing at its work site (no look, no person)", e.m_Def.m_sKey, w.m_sWorkLabel));
 
 		string key = WorkKey(e);
 		float hold = w.m_fWorkSeconds;
@@ -1187,6 +1200,60 @@ class RZ_Errands
 			sites.SetUnseen(key);
 
 		e.m_vPlace = at;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A way carried for real (RZ_ErrandWay.Carry): the pile and where it goes. Into the place's
+	//! building: the pile in the open beside the place, the stack inside on its ground floor (else
+	//! by the place's door, said so). Out of it: the pile inside, the stack in the open beside it.
+	//! False: carrying is off, or it won't open (the plain work site instead).
+	protected bool OpenCarry(RZ_Errand e, RZ_ErrandWay w)
+	{
+		RZ_Carries carries = RZ_Carries.Get();
+		if (!carries || !RZ_Carries.Available())
+			return false;
+
+		string kind = w.m_sInside;
+		if (kind == "any")
+			kind = "";
+
+		vector room;
+		bool indoors = RZ_WorkSites.Indoors(e.m_vPlace, INSIDE_RADIUS, kind, room);
+		vector open = RZ_WorkSites.Spot(e.m_vPlace, 6, 12);
+		vector pick = open;
+		vector drop = room;
+		bool pickIn = false;
+		bool dropIn = indoors;
+		string pickName = "outside";
+		string dropName = "indoors, on the ground floor";
+		if (!w.m_bCarryIn)
+		{
+			pick = room;
+			pickIn = indoors;
+			pickName = "inside, on the ground floor";
+			drop = open;
+			dropIn = false;
+			dropName = "outside, by the door";
+			if (!indoors)
+			{
+				pick = RZ_WorkSites.Spot(e.m_vPlace, 2, 4);
+				pickName = "by the door";
+			}
+		}
+		else if (!indoors)
+		{
+			drop = RZ_WorkSites.Spot(e.m_vPlace, 2, 4);
+			dropName = "by the door, under cover if you can";
+		}
+
+		if (!indoors)
+			RZ_Log.Info(string.Format("Errands: %1 carries %2, but no building within %3 m of %4: carried to its door", e.m_Def.m_sKey, w.m_sCarryThings, INSIDE_RADIUS, RZ_SettlementScanner.GridReference(e.m_vPlace)));
+
+		if (!carries.Open(WorkKey(e), e.m_iAsker, w.m_iCarry, w.m_sCarryProp, w.m_sCarryThing, w.m_sCarryThings, pick, pickIn, pickName, drop, dropIn, dropName, w.m_bCarryStack))
+			return false;
+
+		e.m_vPlace = pick;
 		return true;
 	}
 
@@ -1262,6 +1329,11 @@ class RZ_Errands
 		RZ_WorkSites sites = RZ_WorkSites.Get();
 		if (sites)
 			sites.Close(WorkKey(e));
+
+		RZ_Carries carries = RZ_Carries.Get();
+		if (carries)
+			carries.Close(WorkKey(e));
+
 		if (e.m_Carried)
 		{
 			RZ_Util.DeleteUnit(e.m_Carried);

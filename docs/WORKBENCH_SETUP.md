@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **368 prefab fields**: 46 on `RZ_GameModeComponent`, 305 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **345 entries**: 202 prefabs the plugin creates, 38 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 105 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **370 prefab fields**: 46 on `RZ_GameModeComponent`, 307 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **347 entries**: 202 prefabs the plugin creates, 38 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -542,6 +542,8 @@ and the UI files) need none, and eight have no base:
 | `RZ_Trader.et` | a character or vehicle (e.g. a Shop System trader) | — | Missions > Trader | optional | Wandering Trader |
 | `RZ_Explosion.et` | a mortar or shell impact effect | — | Missions > Explosion | optional | Bastion Shelling; charges in Blow the Bridge, shells in Fire Mission, Gas Station Fire's blast, the burning helicopter in The Last Pilot |
 | `RZ_WorkSite.et` | an empty GenericEntity with an invisible interaction box (0.5 m, no collision, off the character layer) and a 1.5 m action radius | `RZ_WorkSiteComponent`; `RZ_WorkSiteAction` (Duration 10) | Shared > Work sites > Site prefab | optional | every step done with your hands (dig, build, board up, fix, search, fill, paint, burn, dress a wound): the one hold prompt at the work site; empty = those steps are done by staying there, as before. Built as text (set in the game mode). The action's Duration (10) is what the hold's bar is scaled from: keep it positive (a timed hold), never negative (a continuous action) |
+| (existing prefab) | Prefabs/ReforgerZ/Work/RZ_Carried_Box.et, written as text: a GenericEntity with only the base game's BoxWooden_01 model, an RplComponent and a Hierarchy (no RigidBody: nothing to bump into, nothing to use). Open it once in Workbench so its id registers | — | Shared > Work sites > Carried box | optional | what shows against the chest while a crate, a box or a sack is carried for real (docs/DESIGN.md, Carrying). Empty: nothing shown in the arms |
+| (existing prefab) | Prefabs/ReforgerZ/Work/RZ_Carried_Chair.et, written as text: as the Carried box, with the base game's ChairOld_01 model | — | Shared > Work sites > Carried chair | optional | what shows against the chest while a chair is carried for real. Empty: nothing shown in the arms |
 | (existing prefab) | the RZ_Work_* compositions in Prefabs/ReforgerZ/Work/ (vanilla props: planks, sacks, a stake, cans, a paint tin, a mattress) and existing pieces for the results (the camp latrine, Traces' grave, pyre and stencilled board, the boarded doorway, the sandbag barricade, the clutter); nothing with actions | — | Shared > Work sites > Looks (each kind's Before and After) | optional | what stands at a work site before and after the work (docs/DESIGN.md, Work site); a kind with no entry shows only the prompt. Set in the game mode; up only while a player is within 150 m |
 | (existing prefab) | a dead man's things: a kit bag or rucksack with a jacket over it, as one composition (`RZ_ErrandProp_Effects.et`): an empty root with an RplComponent, vanilla props as children, no physics | — | Missions > Errands > Props > Effects | optional | His Effects, The Name on the Tape, Notebook 31 and its fallout, Into the Record: at the step's place while it's open; empty = words only. Shown only while a player is within 150 m (the marks' props pool); nothing is saved |
 | (existing prefab) | a small wooden supply crate or a cardboard box of odds and ends (`RZ_ErrandProp_Crate.et`) | — | Missions > Errands > Props > Crate | optional | The Truck Didn't Come, Clean Glasses, Pack for the Queue: at the step's place while it's open; empty = words only. Shown only while a player is within 150 m (the marks' props pool); nothing is saved |
@@ -953,6 +955,12 @@ the boarded doorway, the sandbag barricade, the clutter, `DirtPile_Cluttered_01`
 `RZ_WorkSite.et` once: its **RZ_WorkSiteAction** should show **Duration** 10 (vanilla's timed hold;
 never negative) and its box the Interaction layer. Place each `RZ_Work_*` once and check its props
 sit on the ground (none floats or sinks); a camp piece's footprint comes from `tools/camp_kit`.
+**Carrying** ([DESIGN.md](DESIGN.md#carrying)) needs nothing new to set: its piles and stacks are
+base-game props named in the code (the small wooden crate `BoxWooden_01`, the old chair
+`ChairOld_01`). What shows in the arms, `Prefabs/ReforgerZ/Work/RZ_Carried_Box.et` and
+`RZ_Carried_Chair.et`, is written as text (a model, an RplComponent and a Hierarchy, no physics) and
+set by default in **Shared > Work sites > Carried box** and **Carried chair**: open each once so its
+id registers.
 
 **Contracts** (how the blocks work is in [DESIGN.md](DESIGN.md#mission-building-blocks)). An
 escort prefab that isn't an AI group (a character or prop) still works: the people then move as
@@ -1608,7 +1616,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
 | UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 4–12 s, 11 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout**, the **object row layout** (the object menu; empty = world prompts) ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
 | Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit)) |
-| Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits), **Work sites** (on, reach 3 m, time scale 1, 40 sites at once; while holding: **Lock movement** on, **Hands animation** on, **Dig with the tool** on) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
+| Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits), **Work sites** (on, reach 3 m, time scale 1, 40 sites at once; while holding: **Lock movement** on, **Hands animation** on, **Dig with the tool** on; carrying ([DESIGN.md](DESIGN.md#carrying)): **Carry for real** on, **Carrying speed** 0.45, **Carried box** `RZ_Carried_Box.et`, **Carried chair** `RZ_Carried_Chair.et`) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
 | Debug | (top level) |  | Status log every few minutes (on) |
 <!-- /manifest:settings -->
@@ -1800,6 +1808,15 @@ without a place (N world events, not jobs)` (a world event is news, never on the
 checked once while the giver's body is out; the tracker's point must be within 5 m of that body.
 Each miss is `RZT objplace FAIL person errand <id> '<objective>': the tracker points at <grid>,
 <giver> stands at <grid> (<n> m off)`, the sum `RZT person objectives: N checked, N wrong`.
+**Carrying** (`RZT_Carry.c`, [DESIGN.md](DESIGN.md#carrying)): four minutes in, the tester carries
+three crates from the open into the nearest building with a ground floor (each hold done for him):
+at the pile its crate and the others beside it stand; carrying, a put-down prompt opens inside, on
+the floor under a roof; each put down is counted and stands stacked. Lines `RZT carry: round N, ...`,
+the sum `RZT carry: done true, 3 of 3 carried in; the pile seen N of 3; in the arms N of 3; put down
+indoors N of 3, under a roof N of 3; N standing at the stack, the top N m up (a crate N m); N
+failures`, and `RZT carry FAIL ...` for each miss (the run fails on any). On Linux the full test now
+runs the server in its own network namespace too (`unshare -n`, as the audits do), so it can run
+beside another test.
 
 **The cure finale.** Last, after the route walk (the cure stands the line down), the questlines'
 **Wait scale** goes to 0.1 and a scripted finale runs: a commit refused below the gate; the slow
@@ -2096,7 +2113,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **195** lines with the tag, all but one in the game scripts (one is the comment in
+There are **197** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2119,7 +2136,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (92)
+### Medium risk: big features, with a fallback (94)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2206,6 +2223,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_WorkSiteAction.c:193`, `:149` | the hold prompt at a work site: the prefab's `Duration 10` makes **RZ_WorkSiteAction** a timed hold with vanilla's progress ring; its progress comes from `GetActionProgressScript` on the holder's machine (the bar runs at 10 ÷ the site's seconds), `GetActionDuration` returns the 10, and `OnActionStart` runs there when the ring appears. Hold **Dig the latrine** (15 s) with a stopwatch; get hit by an infected half-way and watch the ring drop back | Without a Duration the prompt is instant: the server still counts the time at the site (*"Not finished"* until it's served), so the step is done by pressing it after standing there long enough. A wrong rate: set the action's Duration to the commonest hold (10) and live with the difference |
 | `Interactions/RZ_WorkHold.c:269` | `CharacterControllerComponent.SetDisableMovementControls(true)` on the player's own machine stops walking for a work site's hold while the hold key stays down and the camera still looks about (vanilla sets it for item placement); `false` gives the legs back | You can still walk off mid-hold (the bar then starts again past 1.5 m), or the look locks too, or the hold key stops counting: turn **Shared > Work sites > Lock movement** off and report which |
 | `Interactions/RZ_WorkHold.c:297` | `SCR_GadgetManagerComponent.SetGadgetMode(tool, IN_HAND)` draws a carried entrenching tool (vanilla's building-tool gadget) from the pack or a slot while the hold runs, within a couple of seconds | The tool stays put away: after 2.5 s the digging uses the hands animation instead. Take the tool in hand before you hold and it should dig |
+| `Missions/Blocks/RZ_Carry.c:447` | a look-only thing (the Carried box or chair: a model, an RplComponent and a Hierarchy, no physics) added as the carrier's child with `AddChild` (`AUTO_TRANSFORM`, `RECALC_LOCAL_TRANSFORM`) shows against their chest and moves with them on every machine, as the Perimeter's drone does | Nothing in the arms (the log says once that it didn't attach, and it's deleted), or it hangs where it was picked up: carrying still works and still slows you. Empty **Shared > Work sites > Carried box** and **Carried chair** if it looks wrong |
+| `Missions/Blocks/RZ_Carry.c:490` | `CharacterControllerComponent.IsWeaponRaised()` read on the server is the carrier's raised weapon (as `RZ_Disguise` reads it) | Raising your weapon doesn't put the thing down where you stand: put it down at the stack, or get into a vehicle |
 | `Interactions/RZ_WorkHold.c:316` | the item use vanilla's building makes (`TryUseItemOverrideParams` with `CMD_Item_Action`, argument 1, the held tool, no movement) loops the digging at a work site as at a vanilla build site, other players see it, and `FinishItemUse(true)` ends it | The tool is held still, or the digging never stops: turn **Dig with the tool** off (the hands animation is used) |
 | `Interactions/RZ_WorkHold.c:326` | `SetStanceChange(STANCECHANGE_TOCROUCH)` on the holder's own machine crouches them for work at a thing under 0.9 m (as the crouch key does, others see it, and the movement lock set after it doesn't stop it); `STANCECHANGE_TOERECTED` at the end stands them up if still crouched | They stand to work (no harm), or stay crouched after it (press the stance key) |
 | `Interactions/RZ_WorkHold.c:350` | vanilla's pick-up gesture (`TryPlayItemGesture(EItemGesturePickUp)`, no item named, as when taking something off the ground into the pack), played on the holder's own machine and again every 1.6 s while a work site's bar runs, shows them reaching down and taking hold, with empty hands or a weapon slung, others nearby see it, and the movement lock doesn't stop it | It returns false: the mine's item use (`:371`) is tried instead. It plays for the holder only: the item gestures' own replication; tell us |
@@ -2725,7 +2744,7 @@ dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by
 <player> overtaken`, `Work sites: errand.N "Dig the latrine" (LATRINE, 15 s) at <grid>` and
 `Work sites: <key> "<label>" done by <player>` (a mission's are `mission.<id>.point.N`, `.truck`,
 `.tissue`, `.well`, `.sample`, `.chain`, `.charge.N`; the Red Hand van's `cargovan.N`; a stranger's `stranger.N`), `Work sites: measured <look>: W x D m`
-once per look, `Work sites: <key> look <look> fits at <grid> (N m off, heading N)` or `... doesn't fit at <grid>, left out`,
+once per look, `Work sites: <key> look <look> fits at <grid> (N m off, heading N)` or `... doesn't fit at <grid>, a box instead` (then the box's own line), `Work sites: <key> has nothing standing at it at <grid> (not even a box fits): only its prompt`, `Errands: <errand> '<prompt>' has nothing standing at its work site (no look, no person)` (a fault: the words name a thing nothing stands for), carrying for real ([DESIGN.md](DESIGN.md#carrying)): `Carry: errand.N, 3 crates from <grid> (outside) to <grid> (indoors, on the ground floor)`, `Carry: errand.N, N of 3 crates put down indoors, on the ground floor`, `Carry: errand.N, a crate put down at <grid>, not at the stack`, `Errands: <errand> carries <things>, but no building within 60 m of <grid>: carried to its door`, `Carry: the thing in the arms didn't attach to the character; ...` (once),
 `Work sites: <key> after look <look> doesn't fit ...`, `Work sites: <key> has no room for its person at <grid>, left out`, `Work sites: the Site prefab has no
 RZ_WorkSiteComponent, so it shows no prompt` once if the prefab is wrong, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
 <place> fixed`, every 30 minutes `Errands | live N | asked N, called out N | <family>: dealt N,
@@ -4720,8 +4739,29 @@ on the talk screen says why something wasn't dealt)
   cupboard; Clean Rifles' search is in the police station, Clean Paper's in the school, Civvies' in
   a house. The log's `Work sites: ... look ... fits at` line for each, and the measured size of the
   table and the crate looks matches what you see (VERIFY `Missions/Blocks/RZ_WorkSites.c`'s
-  `JoinBounds`). Put a look's spot against a wall or a car on purpose: it moves up to 2 m or turns,
-  or is left out with its prompt alone.
+  `JoinBounds`). Put a look's spot against a wall or a car on purpose: it moves up to 3 m or turns,
+  else a small cardboard box stands there instead (`... a box instead`); a prompt never stands on
+  bare ground.
+- [ ] **The thing its words name** (the author: *"no visible crates"* at The Boiler, Morton's hall):
+  as any background with Known standing, ask for the kitchen, wood and water, and washing-down
+  duties until each task has come up. **Stir the pot** and **Ladle supper out** have the cook pot on
+  its fire, **Split the wood** the woodpile and chopping block, **Wash and hang the bedding** the
+  washing line, **Sluice the yard** a bucket; False Hope at the Line's two prompts have the forger
+  standing at the gate. The log has no `has nothing standing at its work site` line.
+- [ ] **Carried for real** ([DESIGN.md](DESIGN.md#carrying)): take **Carry the crates in** (Wood and
+  water, any faction; Halcyon's The Boiler at Morton). Three small crates stand in a row in the open
+  6–12 m from the place, one prompt **Pick up a crate** on the first. Hold it (2 s): that crate goes,
+  a crate shows against your chest (VERIFY `Missions/Blocks/RZ_Carry.c:447`; say if it floats,
+  hangs where you picked it up, or blocks your walk), a hint says what you carry, and you walk:
+  you can't run. The tracker says *Put the crate down indoors, on the ground floor.* and points into
+  the nearest building; there **Put the crate down** (2 s) stands on the floor, not in a wall. Put it
+  down: it stays, the next one goes on top of it, the third on top of that, not floating or sunk;
+  the tracker counts *(1 of 3 carried)*. Mid-way, raise your weapon: the crate drops where you
+  stand with its own prompt (VERIFY `:490`); get into a car with one: the same. Pick it up again
+  and finish; *"That's the last of the crates."*, then the way back to the giver. A second player
+  watching: do they see the crate in your arms? With a pad the same. Then Chairs for the Reading
+  (Halcyon): three old chairs inside the village hall, carried out to a row by its door. Turn
+  **Shared > Work sites > Carry for real** off: the crates are one hold again.
 - [ ] Missions: Burn the Bodies (five piles, **Burn the pile**, ash after; a Nurse holds faster),
   Install Sensors (a set on a crate after; a Radio Op or Lab Tech in half the time), Convoy Escort's
   breakdown (**Fix the engine** by the bonnet; a Mechanic in a third), Specimen from the Nest

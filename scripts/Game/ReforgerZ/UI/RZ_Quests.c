@@ -641,6 +641,41 @@ class RZ_QuestTracker
 
 		string back = e.Fill(BackLine(e));
 
+		// Carried for real (Missions/Blocks/RZ_Carry.c): picking one up, then putting it down where
+		// it goes, each at its own place, with the count; then the way back
+		RZ_Carries carries = RZ_Carries.Get();
+		RZ_CarryJob job;
+		if (carries && !e.m_bStepDone)
+			job = carries.Job(RZ_Errands.WorkKey(e));
+
+		if (job)
+		{
+			string pickLine;
+			string dropLine;
+			carries.Lines(job, pickLine, dropLine);
+			vector from = job.m_vDrop;
+			IEntity carrier = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+			if (carrier)
+				from = carrier.GetOrigin();
+
+			RZ_ObjPlace pickAt = RZ_ObjPlace.Spot(carries.NowAt(job, from), 3);
+			RZ_ObjPlace dropAt = RZ_ObjPlace.Spot(job.m_vDrop, 3);
+			if (job.m_bCarrying)
+			{
+				list.Add(dropLine, RZ_EObjState.CURRENT, dropAt);
+				if (job.m_iDelivered + 1 < job.m_iCount)
+					list.Add(pickLine, RZ_EObjState.NEXT, pickAt);
+			}
+			else
+			{
+				list.Add(pickLine, RZ_EObjState.CURRENT, pickAt);
+				list.Add(dropLine, RZ_EObjState.NEXT, dropAt);
+			}
+
+			list.Add(back, RZ_EObjState.NEXT, backAt);
+			return;
+		}
+
 		// A duty's scene names its own steps (take the box, carry it, hand it over, sign): each
 		// is one objective, then the way back
 		RZ_DutyScenes scenes = errands.GetScenes();
