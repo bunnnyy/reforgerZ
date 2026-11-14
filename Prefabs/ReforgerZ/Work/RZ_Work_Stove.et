@@ -1,0 +1,36 @@
+GenericEntity {
+ ID "FF4B8BD3D39CD781"
+ components {
+  RplComponent "{9D7E55309F21BFE3}" {
+  }
+  Hierarchy "{ACB8C96591F8671F}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{1D8BBCA16BD4FAEC}Prefabs/Props/Industrial/StoveIndustrial_01/StoveIndustrial_01.et" {
+   ID "BD7EE529F2C8694C"
+   components {
+    Hierarchy "{9273A4A3ECABFE24}" {
+    }
+   }
+   coords 0.571 0 -0.405
+  }
+  GenericEntity : "{F1C5AA461DC6ECCE}Prefabs/Props/Civilian/PotOld_01.et" {
+   ID "98194E6D6399BC86"
+   components {
+    Hierarchy "{CB771D040229B985}" {
+    }
+   }
+   coords 0 1.05 0
+  }
+  GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
+   ID "B70B2747CB99BFAE"
+   components {
+    Hierarchy "{2DBAFE47968FE7A0}" {
+    }
+   }
+   coords -0.9 0 0.2
+  }
+ }
+}

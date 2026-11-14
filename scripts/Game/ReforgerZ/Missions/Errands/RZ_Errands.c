@@ -303,6 +303,8 @@ class RZ_Errands
 	protected static const float SLOW_TICK = 30;
 	protected static const float BOARD_DOOR_REACH = 40;	// boarding up: the place's real door this close (m)
 	protected static const float INSIDE_RADIUS = 60;	// an indoor work site: the nearest fitting building this far from the place
+	protected static const float KITCHEN_REACH = 60;	// kitchen work: a camp's cook pot this close to the place (m)
+	protected static const float KITCHEN_STAND = 1.3;	// and done this far in front of it (the kit's RZ_Cook point, tools/camp_kit/pieces.py)
 	protected static const float TALK_SECONDS = 90;
 	protected static const float TALK_RANGE = 20;
 	protected static const float OFFER_MINUTES = 10;
@@ -1237,6 +1239,13 @@ class RZ_Errands
 		if (sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, at, e.m_iAsker, before, "", yaw, inside) < 0)
 			return false;
 
+		sites.SetLooks(key, w.m_aLookChain);
+
+		// Kitchen work at the place's own kitchen: a camp's cook pot (a kit's, or the cook spot of a
+		// hand-built site) near the place; else its own look, the table with the pot on it
+		if (w.m_bKitchen)
+			AtKitchen(e, key, sites);
+
 		if (w.m_bPerson)
 			sites.SetPerson(key, PersonPrefab(), w.m_bPersonLies);
 
@@ -1245,6 +1254,31 @@ class RZ_Errands
 
 		e.m_vPlace = at;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Kitchen work stands at the place's own kitchen when it has one (docs/ERRANDS.md, "Work sites"):
+	//! the nearest cook piece a camp has laid out within KITCHEN_REACH of the place (a kit's cook pot:
+	//! the work is done from in front of it; a hand-built site's cook spot: on it). Else it keeps its
+	//! own look, the kitchen table or the stove with the pot. Logged either way.
+	protected void AtKitchen(RZ_Errand e, string key, RZ_WorkSites sites)
+	{
+		RZ_CampLife camp = m_GM.GetCampLife();
+		vector spot;
+		float yaw;
+		bool handBuilt;
+		if (camp && camp.UseSpotNear(e.m_vPlace, KITCHEN_REACH, RZ_EDressUse.COOK, KITCHEN_STAND, spot, yaw, handBuilt))
+		{
+			sites.SetAtPiece(key, spot, yaw);
+			string kind = "the camp's cook pot";
+			if (handBuilt)
+				kind = "the hand-built site's cook spot";
+
+			RZ_Log.Info(string.Format("Errands: %1 kitchen work at %2, %3 (%4 m from the place)", e.m_Def.m_sKey, kind, RZ_SettlementScanner.GridReference(spot), RZ_Util.RoundToInt(RZ_Util.DistXZ(spot, e.m_vPlace))));
+			return;
+		}
+
+		RZ_Log.Info(string.Format("Errands: %1 kitchen work: no cook pot laid out within %2 m of %3, at its own table", e.m_Def.m_sKey, KITCHEN_REACH, RZ_SettlementScanner.GridReference(e.m_vPlace)));
 	}
 
 	//------------------------------------------------------------------------------------------------

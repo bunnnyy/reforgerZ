@@ -153,6 +153,8 @@ class RZ_WorkSite
 	ResourceName m_sPerson;		// who the work is for (a patient, the newcomer), standing by it while it's open
 	vector m_vPerson;
 	bool m_bPersonLies;			// they lie on the work's spot (its bed) instead, and the prompt is at their side
+	ref array<ResourceName> m_aLookChain;	// plainer looks of the same kind, tried in order where the one before doesn't fit (SetLooks)
+	bool m_bAtPiece;			// it stands at a camp's own piece (its cook pot): that piece is its look, nothing more is put out
 
 	// Props (null while nobody is near)
 	IEntity m_Box;
@@ -270,6 +272,10 @@ class RZ_WorkSites
 	protected static const float LIE_SIDE = 0.8;		// and its prompt is this far to their side
 	protected static const float LIE_DELAY = 600;		// ms after spawning before they're laid down (as The Round's)
 	protected static const float PERSON_HALF = 0.3;
+	protected static const ResourceName BENCH_FALLBACK = "{2DB729170DBCE7BE}Prefabs/Props/Furniture/TableOld_01/TableOld_01.et";	// an old table (footprints.json 1.71 x 0.91 m)
+	protected static const ResourceName FILL_FALLBACK = "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et";	// a bucket (0.43 x 0.42 m)
+	protected static const ResourceName SANDBAGS_FALLBACK = "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et";	// one sack (0.79 x 0.54 m)
+	protected static const ResourceName KITCHEN_FALLBACK = "{2E6F60636D64DA2A}Prefabs/ReforgerZ/Work/RZ_Work_Pot.et";	// the pot on its own, a bowl and a tin (tools/camp_kit/work_looks.py)
 	protected static const ResourceName TAKE_FALLBACK = "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et";	// the base game's cardboard box (world_kit.txt; footprints.json 0.4 x 0.7 m)		// a person's box: a 0.6 m square (RZ_SiteFoot.SEAT)
 
 	protected RZ_SharedSettings m_Shared;
@@ -538,6 +544,54 @@ class RZ_WorkSites
 	//! Someone the work is for stands beside the site while it's open and a player is near (the
 	//! newcomer to check over, the bitten man to sit with): a body in the errands' budget, gone with
 	//! the site's props. Empty prefab or no room in the budget: nobody, the work is done all the same.
+	//! Plainer looks of the same kind, tried in order where the one before doesn't fit (docs/ERRANDS.md,
+	//! "Work sites"): a kitchen table, then just the pot. Never a thing of another kind.
+	void SetLooks(string key, array<ResourceName> chain)
+	{
+		RZ_WorkSite s = Find(key);
+		if (!s || !chain)
+			return;
+
+		s.m_aLookChain = {};
+		foreach (ResourceName r : chain)
+		{
+			if (!r.IsEmpty())
+				s.m_aLookChain.Insert(r);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! It stands at a camp's own piece (a kit's cook pot, a hand-built site's cook spot): that piece is
+	//! what stands there, so nothing else is put out. Moves the site to `at`, facing `yaw`.
+	void SetAtPiece(string key, vector at, float yaw)
+	{
+		RZ_WorkSite s = Find(key);
+		if (!s)
+			return;
+
+		s.m_bAtPiece = true;
+		s.m_vPos = RZ_Util.GroundPos(at);
+		s.m_bKeepHeight = false;
+		s.m_fYaw = yaw;
+		s.m_sBefore = "";
+		s.m_iFit = 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where it stands now, and whether that's at a camp's own piece (the runtime test's kitchen check).
+	bool PlaceOf(string key, out vector pos, out ResourceName before, out bool atPiece)
+	{
+		RZ_WorkSite s = Find(key);
+		if (!s)
+			return false;
+
+		pos = s.m_vPos;
+		before = s.m_sBefore;
+		atPiece = s.m_bAtPiece;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void SetPerson(string key, ResourceName prefab, bool lies = false)
 	{
 		RZ_WorkSite s = Find(key);
@@ -1366,29 +1420,80 @@ class RZ_WorkSites
 	//------------------------------------------------------------------------------------------------
 	//! Where the before look goes (docs/DESIGN.md, "Work site"): its real box must fit, as a camp's
 	//! piece must (RZ_CampLife.BoxFits). Its own spot and heading first, then the other headings, then
-	//! spots around it (up to 3 m outdoors, 0.75 m indoors). Nowhere: a small box stands there instead
-	//! (the base game's cardboard box), and only when not even that fits does the site keep only its
-	//! prompt (logged). The site moves with its look.
+	//! spots around it (up to 3 m outdoors, 0.75 m indoors). Nowhere: the plainer looks of the same kind
+	//! (SetLooks, then KindFallback: a kitchen table, then just the pot), each the same way; then each
+	//! again a little further out (4 to 8 m, outdoors). Never a thing of another kind (a box at a
+	//! "Stir the pot"): only a "Take ..." prompt's last resort is the base game's cardboard box, a thing
+	//! to take. Nothing of its kind fits: the site keeps only its prompt (logged). The site moves with
+	//! its look.
 	protected void FitLook(RZ_WorkSite s)
 	{
-		vector fmin;
-		vector fmax;
-		s.m_iFit = -1;
-		if (!BoxOf(s.m_sBefore, s.m_vPos, fmin, fmax))
+		array<ResourceName> chain = {s.m_sBefore};
+		if (s.m_aLookChain)
 		{
-			s.m_sBefore = "";
-			return;
+			foreach (ResourceName c : s.m_aLookChain)
+			{
+				if (!chain.Contains(c))
+					chain.Insert(c);
+			}
 		}
 
+		ResourceName plain = KindFallback(s.m_eKind, s.m_sBefore);
+		if (!plain.IsEmpty() && !chain.Contains(plain))
+			chain.Insert(plain);
+
+		string first = RZ_Util.PrettyPrefabName(s.m_sBefore);
+		vector from = s.m_vPos;
+		for (int pass = 0; pass < 2; pass++)
+		{
+			foreach (int i, ResourceName look : chain)
+			{
+				if (!FitOne(s, look, pass > 0))
+					continue;
+
+				if (i > 0 || pass > 0)
+					RZ_Log.Info(string.Format("Work sites: %1 look %2 doesn't fit at %3, %4 instead", s.m_sKey, first, RZ_SettlementScanner.GridReference(from), RZ_Util.PrettyPrefabName(look)));
+
+				return;
+			}
+		}
+
+		s.m_iFit = -1;
+		RZ_Log.Info(string.Format("Work sites: %1 has nothing of its kind at %2 (%3 and its plainer looks don't fit within 8 m): only its prompt", s.m_sKey, RZ_SettlementScanner.GridReference(s.m_vPos), first));
+		s.m_sBefore = "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One look tried around the site: rings 1 m apart up to 3 m (0.75 m apart up to 0.75 m indoors),
+	//! or with `wide` 4 to 8 m out (outdoors only). True: it fits there, and the site has moved to it.
+	protected bool FitOne(RZ_WorkSite s, ResourceName look, bool wide)
+	{
+		if (look.IsEmpty())
+			return false;
+
+		vector fmin;
+		vector fmax;
+		if (!BoxOf(look, s.m_vPos, fmin, fmax))
+			return false;
+
 		float step = 1;
+		int first = 0;
 		int rings = 4;
 		if (s.m_bKeepHeight)
 		{
+			if (wide)
+				return false;
+
 			step = 0.75;
 			rings = 2;
 		}
+		else if (wide)
+		{
+			first = 4;
+			rings = 9;
+		}
 
-		for (int ring = 0; ring < rings; ring++)
+		for (int ring = first; ring < rings; ring++)
 		{
 			int around = 1;
 			if (ring > 0)
@@ -1411,25 +1516,40 @@ class RZ_WorkSites
 					if (!s.m_sPerson.IsEmpty())
 						s.m_vPerson = s.m_vPerson + (spot - s.m_vPos);
 
+					s.m_sBefore = look;
 					s.m_vPos = spot;
 					s.m_fYaw = yaw;
-					RZ_Log.Info(string.Format("Work sites: %1 look %2 fits at %3 (%4 m off, heading %5)", s.m_sKey, RZ_Util.PrettyPrefabName(s.m_sBefore), RZ_SettlementScanner.GridReference(spot), ring * step, RZ_Util.RoundToInt(yaw) % 360));
-					return;
+					RZ_Log.Info(string.Format("Work sites: %1 look %2 fits at %3 (%4 m off, heading %5)", s.m_sKey, RZ_Util.PrettyPrefabName(look), RZ_SettlementScanner.GridReference(spot), ring * step, RZ_Util.RoundToInt(yaw) % 360));
+					return true;
 				}
 			}
 		}
 
-		// Nowhere for it: a small box stands there instead (once), so the prompt is never on bare ground
-		if (s.m_sBefore != TAKE_FALLBACK)
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The plainest thing of the same kind as a work's look, tried last (docs/ERRANDS.md, "Work
+	//! sites"): a "Take ..." prompt's and a search's is the base game's cardboard box (a thing to take,
+	//! a box to rummage); a kitchen's, the pot on its own; a bench's, an old table; filling's, a bucket;
+	//! sandbags', one sack. Others have none: their plainer things are their owner's chain (SetLooks).
+	static ResourceName KindFallback(RZ_EWork kind, ResourceName look)
+	{
+		string low = look;
+		low.ToLower();
+		if (low.Contains("rz_work_stove") || low.Contains("kitchentable") || low.Contains("servetable") || low.Contains("cookpot"))
+			return KITCHEN_FALLBACK;
+
+		switch (kind)
 		{
-			RZ_Log.Info(string.Format("Work sites: %1 look %2 doesn't fit at %3, a box instead", s.m_sKey, RZ_Util.PrettyPrefabName(s.m_sBefore), RZ_SettlementScanner.GridReference(s.m_vPos)));
-			s.m_sBefore = TAKE_FALLBACK;
-			FitLook(s);
-			return;
+			case RZ_EWork.TAKE: return TAKE_FALLBACK;
+			case RZ_EWork.SEARCH: return TAKE_FALLBACK;
+			case RZ_EWork.BENCH: return BENCH_FALLBACK;
+			case RZ_EWork.FILL: return FILL_FALLBACK;
+			case RZ_EWork.SANDBAGS: return SANDBAGS_FALLBACK;
 		}
 
-		RZ_Log.Info(string.Format("Work sites: %1 has nothing standing at it at %2 (not even a box fits): only its prompt", s.m_sKey, RZ_SettlementScanner.GridReference(s.m_vPos)));
-		s.m_sBefore = "";
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1493,16 +1493,28 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
   nothing overhead and its corners within 0.4 m of level, on the ground; indoors a floor under every
   corner and nothing in the way. Its own spot and heading first, then the other three headings, then
   spots around it (1, 2 and 3 m off outdoors, 0.75 m indoors), and the prompt moves with it. Nowhere:
-  a small box stands there instead (the base game's cardboard box, tried the same way: a prompt never
-  floats on bare ground; `Work sites: <key> look <look> doesn't fit at <grid>, a box instead`), and
-  only when not even that fits does the prompt stand alone (`... has nothing standing at it ...`).
+  the plainer looks **of the same kind**, each tried the same way (the way's own `Fallback` chain,
+  then the kind's plainest thing: a kitchen's is the pot on its own, a bench's an old table, filling's
+  a bucket, sandbags' one sack, a "Take ..." prompt's and a search's the base game's cardboard box),
+  then each again 4 to 8 m out (outdoors); `Work sites: <key> look <look> doesn't fit at <grid>,
+  <plainer look> instead`. Never a thing of another kind: before, a *Stir the pot* against Morton's
+  hall wall showed a cardboard box. Nothing of its kind fits: the prompt stands alone (`... has
+  nothing of its kind at ...`, a fault for the audit).
   The after look gets the same check where the work was (no fallback: the thing was taken). Anything in a look a player could use is stripped, as camp
   dressing is.
 - **The thing its words name.** Every kind has its look, except **hands** work (labour at something
   already there: a car to push, a chain to cut). A way whose hands work names a thing of its own
-  gives its look (`RZ_ErrandWay.Look`): the cook pot at *Stir the pot* and *Ladle supper out*, the
-  woodpile and chopping block at *Split the wood*, the washing line at *Wash and hang the bedding*,
-  a bucket at *Sluice the yard*. One with no look and nobody standing at it is logged when it opens
+  gives its look (`RZ_ErrandWay.Look`, with plainer ones by `Fallback`): the woodpile and chopping
+  block at *Split the wood* (else the block alone), the washing line at *Wash and hang the bedding*
+  (else a laundry basket), a bucket at *Sluice the yard*. **Kitchen work** (*Peel and chop*, *Stir the
+  pot*, *Ladle supper out*: `RZ_ErrandWay.AtKitchen`) is done at the place's own kitchen: the nearest
+  cook pot a camp has laid out within 60 m (a kit's `CookPot` piece, worked from 1.3 m in front of
+  it, or a hand-built site's cook spot, on it: `RZ_CampLife.UseSpotNear`), with nothing more put out;
+  else at its own look, small kitchen compositions from `tools/camp_kit/work_looks.py`: the kitchen
+  table with the pot, bowls and a sack of potatoes (peel), the pot on a canteen stove (stir; else the
+  kitchen table), the pot on a table with bowls set out (serve), and last the pot on its own
+  (`Errands: <errand> kitchen work at the camp's cook pot ...` or `... no cook pot laid out within
+  60 m ..., at its own table`). One with no look and nobody standing at it is logged when it opens
   (`Errands: <errand> '<prompt>' has nothing standing at its work site (no look, no person)`): a
   fault for the audit ([ERRANDS.md](ERRANDS.md#work-sites)).
 - **Someone it's for.** Where the words name a person (the newcomer, the bitten man), that person

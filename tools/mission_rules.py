@@ -47,6 +47,7 @@ ALLOW = os.path.join(ROOT, "tools", "mission_rules_allow.txt")
 
 RULES = {
     1: "words name a building kind the file never asks for",
+    2: "a work prompt whose look isn't the thing its words name",
     3: "a door spawned instead of a real one",
     9: "a person's marker on a stored spot",
     10: "a woman's name or word in a shown line",
@@ -396,6 +397,52 @@ def check_building_words(hits):
             hits.append(Hit(1, rel, lit.line, lit.text))
 
 
+# ---------------------------------------------------------------- 2: the thing its words name
+# A work prompt whose words name a thing (a pot, the wood, the line...) must have a look of that kind:
+# its .Look(...) prefab (a constant in the same file, or the literal), never left to the work kind's
+# default or to a box. Each kind: the words, and what its look's prefab path must contain.
+THINGS = [
+    ("kitchen", re.compile(r"\b(pot|stir|ladle|stove|peel|soup|supper|cook)\b", re.I),
+     ("rz_work_stove", "kitchentable", "servetable", "rz_work_pot", "cookpot")),
+    ("wood", re.compile(r"\b(split the wood|chop the wood|chop wood|woodpile)\b", re.I),
+     ("firewood", "logchopping", "woodpile")),
+    ("line", re.compile(r"\b(hang|washing line|the line)\b", re.I), ("dryingline", "clothesline", "basketlaundry")),
+]
+LOOK_ARG = re.compile(r"\.Look\(\s*(\w+|\"[^\"]*\")\s*\)")
+CONST = re.compile(r"ResourceName\s+(\w+)\s*=\s*\"([^\"]+)\"")
+
+
+def check_things(hits):
+    for path in script_files():
+        if not is_task_file(path):
+            continue
+        lines = read(path)
+        consts = {}
+        for raw in lines:
+            m = CONST.search(raw)
+            if m:
+                consts[m.group(1)] = m.group(2).lower()
+        for i, raw in enumerate(lines):
+            line = strip_comment(raw)
+            if not HOLD.search(line):
+                continue
+            # The task's own words: its label and its prompt (the short ones), not the step's long line
+            label = " ".join(lit for lit in re.findall(r'"([^"]*)"', line) if len(lit) <= 48)
+            if not label:
+                continue
+            for kind, words, ok in THINGS:
+                if not words.search(label):
+                    continue
+                m = LOOK_ARG.search(line)
+                look = ""
+                if m:
+                    arg = m.group(1)
+                    look = arg.strip('"').lower() if arg.startswith('"') else consts.get(arg, "")
+                if not any(o in look for o in ok):
+                    hits.append(Hit(2, path, i + 1, raw, "the words name the %s, its look isn't one" % kind))
+                break
+
+
 # ---------------------------------------------------------------- the allowlist
 def load_allow():
     rules = []
@@ -422,7 +469,7 @@ def main():
     args = ap.parse_args()
 
     hits = []
-    for check in (check_objectives, check_walk_up, check_doors, check_carry, check_markers, check_roles,
+    for check in (check_things, check_objectives, check_walk_up, check_doors, check_carry, check_markers, check_roles,
                   check_tracker, check_openings, check_inputs, check_building_words):
         check(hits)
 

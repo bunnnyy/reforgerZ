@@ -10,8 +10,8 @@ the gaps named; **open** means it's agreed but not yet enforced everywhere.
 
 Two checks keep them. **`tools/mission_rules.py`** reads the source (seconds; run it before every
 commit that adds or changes a task: [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#mission-rules-check)):
-rules 1, 3, 9, 10, 14, 19, 23, 24, 26 and 27. **The runtime test** checks what only a running server
-shows (`RZT rules` and `RZT person objectives` lines): rules 2, 9 and 19. What neither can see is
+rules 1, 2, 3, 9, 10, 14, 19, 23, 24, 26 and 27. **The runtime test** checks what only a running server
+shows (`RZT rules`, `RZT kitchen` and `RZT person objectives` lines): rules 2, 9 and 19. What neither can see is
 for the play-test. [The audit](#the-audit) below is the last full pass.
 
 ## The place
@@ -19,7 +19,7 @@ for the play-test. [The audit](#the-audit) below is the last full pass.
 | # | Rule | Where it lives | How it's kept | Status |
 |---|---|---|---|---|
 | 1 | **A place is what its words say.** "The chemist's" is a real pharmacy, "the farm" a farm, "the hall" a hall. If there's no such building, the words change ("the old aid post", "my old medical cabinet") or the task isn't offered there. | [PLACES.md](PLACES.md#a-place-is-what-its-words-say) | `RZ_PlaceCheck.WordsTrue`; `run.sh tasks` fails a place whose words are false (`Places words:` lines); `mission_rules.py` (a building named in a file that never asks for one) | held |
-| 2 | **What the words name stands there.** A box at "take the box", crates at "carry the crates", a patient at "treat the boy". If it can't be put out, it falls back to a plainer thing, never to nothing. | [ERRANDS.md](ERRANDS.md#work-sites) | the work sites' looks and their fallbacks; runtime `RZT rules FAIL thing` | held: a work site always shows the thing its words name, else a box, logged; the Nurse's son and the Doctor's bitten friend lie there (runtime `RZT openings`, `RZT rules thing`) |
+| 2 | **What the words name stands there.** A box at "take the box", crates at "carry the crates", a patient at "treat the boy". If it can't be put out, it falls back to a plainer thing **of the same kind** (a kitchen table, then just the pot), never to a box of another kind. Kitchen work stands at the place's own kitchen, else on a table. | [ERRANDS.md](ERRANDS.md#work-sites) | the work sites' looks and their same-kind fallbacks; `mission_rules.py` rule 2 (a prompt whose words name a pot, the wood or the line needs a look of that kind); runtime `RZT rules FAIL thing`, `RZT kitchen FAIL` | partly: the play-test checks the rest |
 | 3 | **Real doors only.** Anything "at a door" happens on a real building's doorstep. The mod never spawns a door. | [ERRANDS.md](ERRANDS.md#work-sites) | the locks' door finder; `mission_rules.py` (a prefab built on a base-game door) | held: no door is spawned; the boarded doorway goes up only in a real doorway (a trap's barricade within 3 m of one, a work look within 1.2 m) |
 | 4 | **"In" means inside.** A search, a stack or a patient "in" a building is inside it, on its ground floor. | [PLACES.md](PLACES.md#a-place-is-what-its-words-say) | `RZ_WorkSites.FloorOf` | held |
 | 5 | **A line stands at a real way in,** with a path to it: the camp's gate, else the road into town, else the giver's door. | [ERRANDS.md](ERRANDS.md#duties) | `AT_ENTRY` beats, logged | held |

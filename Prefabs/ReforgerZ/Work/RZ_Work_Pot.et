@@ -1,0 +1,36 @@
+GenericEntity {
+ ID "B7338FEA0ABE214F"
+ components {
+  RplComponent "{2139B7ACE1744F0B}" {
+  }
+  Hierarchy "{843DA99AF3D5B399}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{F1C5AA461DC6ECCE}Prefabs/Props/Civilian/PotOld_01.et" {
+   ID "3086A5D6F8B14247"
+   components {
+    Hierarchy "{C5776E06FC3760FF}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
+   ID "D27454FC508A28A3"
+   components {
+    Hierarchy "{BF718F6BE16FA18A}" {
+    }
+   }
+   coords 0.35 0 0.1
+  }
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "DBA857E5F018161F"
+   components {
+    Hierarchy "{C08372F77C53685B}" {
+    }
+   }
+   coords -0.3 0 0.15
+  }
+ }
+}

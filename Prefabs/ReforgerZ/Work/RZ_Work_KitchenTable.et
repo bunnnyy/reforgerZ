@@ -1,0 +1,53 @@
+GenericEntity {
+ ID "867DEA12DDFAD446"
+ components {
+  RplComponent "{1DD57934E174F47E}" {
+  }
+  Hierarchy "{D2349D7E0CB8A42F}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{2DB729170DBCE7BE}Prefabs/Props/Furniture/TableOld_01/TableOld_01.et" {
+   ID "300252FE202B4425"
+   components {
+    Hierarchy "{8F19701A15DED7E5}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{F1C5AA461DC6ECCE}Prefabs/Props/Civilian/PotOld_01.et" {
+   ID "80E1C469CA99BE33"
+   components {
+    Hierarchy "{EB6936C93B85E432}" {
+    }
+   }
+   coords 0.45 0.78 0.05
+  }
+  GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
+   ID "175B4F141DE03A58"
+   components {
+    Hierarchy "{407D9A05AF5BF5FF}" {
+    }
+   }
+   coords -0.2 0.78 0.1
+  }
+  GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
+   ID "3B7BCD463A11E2BE"
+   components {
+    Hierarchy "{EAD2E385EB21F18E}" {
+    }
+   }
+   coords -0.5 0.78 -0.15
+  }
+  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+   ID "0AE3FC12C0AEE559"
+   components {
+    Hierarchy "{1D5C66A8E7C9D4F4}" {
+    }
+   }
+   coords -1.25 0 0.1
+   angles 0 80 0
+  }
+ }
+}

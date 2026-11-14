@@ -350,9 +350,25 @@ someone, talking, walking someone somewhere, handing something over, and leaving
 door (a moment's work, not a job of work).
 
 **The thing its words name stands there.** A hands task names a thing hands work has no look for,
-so each gives its own (`RZ_ErrandWay.Look`): the duties' **Stir the pot** and **Ladle supper out**
-the cook pot on its fire, **Split the wood** the woodpile and chopping block, **Wash and hang the
-bedding** the washing line, **Sluice the yard** a bucket. The forger's two prompts have the forger
+so each gives its own (`RZ_ErrandWay.Look`, and plainer ones of the same kind by `Fallback`, tried
+where it doesn't fit: never a box of another kind, [DESIGN.md](DESIGN.md#mission-building-blocks)).
+The kitchen's three tasks stand **at the place's own kitchen** when it has one: the camp's cook pot
+(or a hand-built site's cook spot) within 60 m, with nothing more put out. Else at a small kitchen of
+their own:
+
+| Task | Its look | Plainer, in order |
+|---|---|---|
+| **Peel and chop** | the kitchen table: the pot, two bowls, a sack of potatoes at its end | the pot on its own |
+| **Stir the pot** | the pot on a canteen stove | the kitchen table; the pot on its own |
+| **Ladle supper out** | the pot on a table, bowls, a mug and a tin set out | the pot on its own |
+| **Split the wood** | the woodpile and chopping block | the chopping block alone |
+| **Wash and hang the bedding** | the washing line | a laundry basket |
+| **Sluice the yard** | a bucket | — |
+| **Scrub the tables** (bench) | the meal's table | an old table |
+
+The other kinds' plainest things: filling's a bucket, sandbags' one sack, a "Take ..." prompt's and a
+search's the base game's cardboard box. Before this, *Stir the pot* at Morton's hall stood at a
+cardboard box against the wall (its fire-and-pot look didn't fit, and every look fell back to the box). The forger's two prompts have the forger
 standing there. A hands task that opens with neither a look nor a person is logged as a fault
 (`Errands: <errand> '<prompt>' has nothing standing at its work site`). Before this, *Carry and stack
 the crates* at Morton's hall was a prompt on bare grass: hands work had no look, and the task gave
@@ -592,7 +608,7 @@ hands at a [work site](#work-sites) at the place (or behind it), then back to th
 
 | Duty | Rung | Their own work (roles) | Haven | Bastion | Red Hand | Halcyon | Tasks (one a run) and ways | Pay | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| Kitchen | 1 | cook, storekeeper, farmer | Kitchen Duty | Mess Duty | Feeding the Crew | Canteen | Peel and chop (18 s) · Stir the pot (20 s) · Ladle supper out (16 s), both at the cook pot. Or **put two tins in the pot**, or **a leg of raw meat** (a deer's, [DESIGN.md](DESIGN.md#wildlife)) | 3 Favor; the tins 4 Favor and +1 food at a house, the meat 4 Favor and +2 (a house is fed by duties twice a season day at most) | ✅ |
+| Kitchen | 1 | cook, storekeeper, farmer | Kitchen Duty | Mess Duty | Feeding the Crew | Canteen | Peel and chop (18 s) · Stir the pot (20 s) · Ladle supper out (16 s), all three at the camp's own cook pot, else at a kitchen table or stove with the pot ([Work sites](#work-sites)). Or **put two tins in the pot**, or **a leg of raw meat** (a deer's, [DESIGN.md](DESIGN.md#wildlife)) | 3 Favor; the tins 4 Favor and +1 food at a house, the meat 4 Favor and +2 (a house is fed by duties twice a season day at most) | ✅ |
 | Wood and water | 1 | storekeeper, farmer, mechanic, technician | Wood and Water | Fatigues | Earn Your Keep | The Boiler | Split the wood (18 s, at the woodpile) · Fill the water cans (15 s) · **Carry the crates in**: three crates from outside, one by one, stacked indoors ([carried for real](#carried-for-real)) | 3 Favor | ✅ |
 | Washing down | 1 | nurse, medic, lab assistant, clerk | Washing Down | Hygiene Detail | The Scrub | Decontamination, Minor | Scrub the tables (18 s) · Wash and hang the bedding (16 s, at the washing line) · Sluice the yard (18 s, a bucket) | 3 Favor | ✅ |
 | The line | 2 | nurse, medic, lookout, sentry, guard, toll man | The Line at the Door | The Wash-Down | The Look-Over | Intake | [A sorting duty](#the-sorting-duties): the people waiting at the gate. Take each by the arm to **the holding room** (a bite, clouded eyes), **the wash** (a fever) or **through the gate** | Up to 6 Favor by how many you got right; 1 Fame if every one | ✅ |
