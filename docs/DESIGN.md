@@ -758,7 +758,7 @@ Code: `Factions/RZ_Territory.c`.
   delivered, −2 per truck lost; +3 / −5 when a town changes hands. It drifts 2 points an hour
   back toward 50.
 - **Headlines only.** Every change is a headline, never a server-wide alert.
-- **Bodies only near players.** Within 300 m of a holding: its guards (one fewer while its relief
+- **Bodies only near players.** Within 400 m of a holding: its guards (one fewer while its relief
   is missing, [the faults table](ERRANDS.md#the-faults-table)), two of its three **named people**
   (the cook, the sentry, the toll man...) and, at an outpost, the faction's quartermaster. Named
   people are saved and come back on every visit; they answer **Anything need doing?**
@@ -789,6 +789,13 @@ look and the next one along wears another. An empty list keeps the slot's own pr
 | A road post's crew and speaker | the post |
 | A supply truck's crew, a hunter squad, a stronghold quartermaster, a mission's faction group (the finale's stand, Authors, the Red Hand vans, Bastion's gate squad, the crash site's recovery team, the squad sent to arrest a post's commander) | the spot it spawns at |
 | A stronghold leader, council head or outpost leader | the seat and the generation: a successor wears another look |
+
+**Names fit the body.** The base game's people and our mod stack's are all men (no female body,
+[MISSION_RULES.md](MISSION_RULES.md#the-people), rule 10), so everyone who stands in the world is a
+man: a man's first name (`RZ_NoteText.ManName`; `FirstName` is the same list, since a note's name may
+be met later) and a man's words. Women may be mentioned (a dead wife, a mother back home), never met.
+An older save's women's names are mapped to men's as they load (`RZ_NoteText.ManFromOld`: the named
+people, wanderers, the finale's people, the Long Table and questlines' texts).
 
 **Nobody of a faction wears a vanilla soldier's kit.** Three rules make sure of it:
 
@@ -985,12 +992,13 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   shape, an antenna isn't a mission's landmark. The quartermaster and
   a safehouse's own services stay what they are and are never scenery.
 - **Only near players.** Pieces spawn and go with the place's bodies (a player within the
-  owner's visible radius: 300 m for holdings). Every site's ground is read on the grid and solved in
+  owner's visible radius: 400 m for holdings and safehouses). Every site's ground is read on the grid and solved in
   the background from the start (**Pre-read**, strongholds and the lab first), a little each second
-  ([SITES.md](SITES.md#the-site-grid)), and a place a player comes near first goes before the rest;
-  the layout is kept, so a visit lays it out at once. The pieces spawn **4 per server tick**
-  for all places together (a stronghold's 40 to 55 pieces and its layers' 30 to 60 are up in about two
-  minutes at the 5 s tick); when a place's last piece is up, its people are given their jobs again.
+  ([SITES.md](SITES.md#the-site-grid)), and a place a player comes near first goes before the rest,
+  on a larger budget of its own; the layout is kept, so a visit lays it out at once. The pieces
+  spawn every tenth of a second on a few ms of server time, nearest place first and what people use
+  first ([SITES.md](SITES.md#how-fast-a-place-fills)); when a place's last piece is up, its people
+  are given their jobs again.
   A site's layers (the wire's runs, the boards, the lookouts, the lights) count up to **Layer
   pieces** (60) on top of its piece count, and at most **200** of camp life's own pieces stand or
   wait to spawn on the server (Traces' props, boards and sound looks are scenery too but don't
@@ -1169,12 +1177,12 @@ questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table) and [MISSIONS.md
   name), else the building farthest out, else a point on the edge. Saved. Territory never founds or
   takes an outpost within 1.5 km of it, and world events that want a town nobody lives in leave
   its town alone.
-- **Data.** One record: 4–7 people by role (the mother, the host, the quiet son, the boy, and up to
+- **Data.** One record: 4–7 people by role (the father, the host, the quiet son, the boy, and up to
   three others; names seeded), **hunger** (0–100, starts at 45, +6 an hour of play × season speed)
   and **suspicion** (0–100, starts at 10). Ticked every 10 minutes of play. Saved with what it took
   last, its tells on the road and what it remembers of each character.
 - **Bodies only near players.** Within 300 m (Puzzles > Civilian): the host and one or two others
-  outside, the mother at the door, the boy half the time. While a questline's stage mission is at
+  outside, the father at the door, the boy half the time. While a questline's stage mission is at
   the farm, it has the farm: the house's own people stand aside. A body that's a character and is
   killed is one of them gone.
 - **The host on the road.** Every 30 s, a player within 1.5 km of the farm (not at it, not in a
@@ -1215,9 +1223,9 @@ questlines are in [QUESTLINES.md](QUESTLINES.md#the-long-table) and [MISSIONS.md
 - **The fight** (the guest rule's, or a questline's): the family's men as one AI group (Missions >
   Events > Rival group, else Missions > Survivor group) hostile only to the players it's set on, by
   the Haven's bit as Rival Survivors are. Each death is one of them, the host last. All of them
-  down: the mother is gone by morning. The players gone for a minute: the group goes, the dead stay
+  down: the father is gone by morning. The players gone for a minute: the group goes, the dead stay
   dead. Without the prefab there's no fight (the guest rule is a narrow escape).
-- **Broken up**: without the mother, or with fewer than two grown-ups, or by a questline's ending,
+- **Broken up**: without the father, or with fewer than two grown-ups, or by a questline's ending,
   it's gone for the season. Burnt: its town counts as Burned (town memory) and loses 15 infection.
   The boy, if he got out, becomes the Kid wanderer (or one more at the nearest safehouse if a Kid is
   already on the roads); the host may become a Scavenger wanderer.
@@ -1245,9 +1253,9 @@ isn't kept as an AI body: they become **+1 population** at the nearest safehouse
   least 1): the first at the Haven quartermaster, the rest in quiet, low-infection villages at
   least 1.2 km apart, away from the lab and the quarantine line. Saved. Placing any
   `RZ_SafehouseMarkerEntity` turns the picking off.
-- **Few bodies.** While a player is within 300 m, a safehouse shows 3–6 occupants (never
+- **Few bodies.** While a player is within 400 m, a safehouse shows 3–6 occupants (never
   more than its population), its guards, its medic and its own quartermaster. A new tier's
-  people (more guards, the medic) come once nobody is within 300 m, so nobody sees the house
+  people (more guards, the medic) come once nobody is within 400 m, so nobody sees the house
   empty and fill again.
 - **Population tiers** (cap 30; past it, new arrivals go to the next safehouse):
 
@@ -1410,6 +1418,7 @@ Contracts** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 | **Health cost** (`RZ_HealthCost`) | Takes a share of a player's health (the bite detector's health accessor against the hit zone's maximum), refuses below a floor, once per life per giver. The bite detector forgets its last reading afterwards, so the drop never counts as a bite | Blood Drive |
 | **Arriving** (`RZ_Arrive`) | The one rule for a step done by getting somewhere, so nobody has to find the exact metre. A spot (a job's points, an errand's or an opening's place, a chain's step, a puzzle's "go here", a meeting, the walk back to an errand's giver) counts within the **Arrive radius** (15 m), or within the step's own radius if that's wider. A place with a size counts inside it or within the **Arrive margin** (25 m) of its edge: a town by its radius, a building known only by its centre within the margin of it. In a vehicle, where the vehicle is counts. Checked on the server on each caller's own tick; the radius is kept to 5–40 m and the margin to 0–50 m, so nothing finishes from across a river. Steps done by an interaction (talk, use, pick up, hand over, read) keep it: getting there may finish at the radius, the interaction doesn't. Steps that stand for working at a thing you can see keep their own short reach: a corpse pile to burn (5 m), a charge to wire (3 m), a body's tags or a nest's tissue (4 m), a lock to cut, a well, a truck to repair, a wreck's box, a grave or a clue prop to stand at, a stranger's car to push (those that are work, with work sites on, are a hold at the thing instead: [Work site](#work-site)). Holding an area (the hold base, a questline's hold) is not arriving and keeps its own radius | every "go to" step: visit points, the step chain, the vehicle zone, errands and the openings' chain, puzzles, personal goals, the steps named in [MISSIONS.md](MISSIONS.md#who-gets-offered-what) |
 | **Work site** (`RZ_WorkSites`) | A step done with your hands at a visible thing: its before look and one hold prompt (5–20 s, vanilla's bar), checked on the server; done, the after look stands there ([below](#work-site)) | errands, the openings and strangers ([ERRANDS.md](ERRANDS.md#work-sites)); Install Sensors, Water Survey, Burn the Bodies (and The Authors' burning), Convoy Escort's engine, Specimen from the Nest, The Armory's well, Blow the Bridge's charges, Bust Out's chain, the Red Hand van's padlock (Tied Down, Cargo); The Well Story's sample |
+| **Carrying** (`RZ_Carries`) | A task whose words say carry, stack or bring in: the things stand in a pile, you pick each up (slowed, in your arms), walk it where the words say and put it down there, stacked ([below](#carrying)) | the duty Wood and water's crates, Chairs for the Reading ([ERRANDS.md](ERRANDS.md#work-sites)) |
 | **Step chain** (`RZ_StepChain`) | Ordered steps across towns. Only the current step is live: its infected and its clue appear within 250 m of it. A step is done when someone has stood there long enough and read its clue. A clue that disappears before it's read is put back (a few times) | Patient Zero, Struck Off (his pack), The Three Weeks, Tied Down; The Book (questline) |
 | **Borrowed kit** (`Factions/RZ_Disguise.c`, `RZ_Ways.PassAs`) | A claim in a faction's kit, judged by the fixed look (`RZ_Checks.LookScore`); a mission sets the difficulty, may give its paper as the cover detail and registers its people as watchers (`AddWatcher`). Caught: the one cost ([REPUTATION.md](REPUTATION.md#borrowed-kit)) plus the stage's own outcome. Approach `TRICK` | Bust Out (the claim at the stockade and the second look); road posts and gates |
 
@@ -1479,10 +1488,19 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
   (`RZ_CampLife.BoxFits`, [SITES.md](SITES.md)): outdoors nothing in it at knee or chest height,
   nothing overhead and its corners within 0.4 m of level, on the ground; indoors a floor under every
   corner and nothing in the way. Its own spot and heading first, then the other three headings, then
-  spots around it (1 and 2 m off outdoors, 0.75 m indoors), and the prompt moves with it. Nowhere:
-  the look is left out and only the prompt stands there (drop, don't squeeze). The after look gets
-  the same check where the work was. Anything in a look a player could use is stripped, as camp
+  spots around it (1, 2 and 3 m off outdoors, 0.75 m indoors), and the prompt moves with it. Nowhere:
+  a small box stands there instead (the base game's cardboard box, tried the same way: a prompt never
+  floats on bare ground; `Work sites: <key> look <look> doesn't fit at <grid>, a box instead`), and
+  only when not even that fits does the prompt stand alone (`... has nothing standing at it ...`).
+  The after look gets the same check where the work was (no fallback: the thing was taken). Anything in a look a player could use is stripped, as camp
   dressing is.
+- **The thing its words name.** Every kind has its look, except **hands** work (labour at something
+  already there: a car to push, a chain to cut). A way whose hands work names a thing of its own
+  gives its look (`RZ_ErrandWay.Look`): the cook pot at *Stir the pot* and *Ladle supper out*, the
+  woodpile and chopping block at *Split the wood*, the washing line at *Wash and hang the bedding*,
+  a bucket at *Sluice the yard*. One with no look and nobody standing at it is logged when it opens
+  (`Errands: <errand> '<prompt>' has nothing standing at its work site (no look, no person)`): a
+  fault for the audit ([ERRANDS.md](ERRANDS.md#work-sites)).
 - **Someone it's for.** Where the words name a person (the newcomer, the bitten man), that person
   stands by the site facing it while a player is near (Props > Duty person, else Puzzles >
   Civilian; a body in the errands' budget), wherever a person's 0.6 m box fits on one of its four
@@ -1518,7 +1536,7 @@ item on the ground; at our invisible box it's a guess (the VERIFY list says what
 | Care | a patient's bed (`RZ_Work_Patient`) | the same |
 | Bench | a table (`RZ_Dress_Table`) | the same |
 | Dig | a stake and a sack (`RZ_Work_DigMark`) | turned earth (`DirtPile_Cluttered_01`) |
-| Hands | what's already there (a car, a hive, a well) | nothing |
+| Hands | what's already there (a car, a hive, a well), or the way's own look (`RZ_ErrandWay.Look`: a cook pot, the woodpile, a washing line, a bucket) | nothing |
 
 Owners open a site by key and read `IsDone(key)` on their own tick: errands and the openings
 (`RZ_ErrandWay.Work`), strangers (`RZ_Strangers.StartWork`), a visit-points job's points
@@ -1528,6 +1546,45 @@ Owners open a site by key and read `IsDone(key)` on their own tick: errands and 
 
 *Simplified:* the props stand on the ground at the place (a search inside a house is a crate there,
 not the house's own rooms); a hold isn't an animation of the work, only vanilla's bar.
+
+#### Carrying
+
+Code: `Missions/Blocks/RZ_Carry.c` (on the work sites, `RZ_WorkSites.Carries()`); settings
+**Shared > Work sites** (*Carry for real*, *Carrying speed*, *Carried box*, *Carried chair*). A
+task whose words say **carry**, **stack** or **bring in** is done by really moving the things, one
+at a time, not by holding a prompt where they are.
+
+- **The pile.** The things stand at the pick-up: a row of them (three crates, three chairs), each a
+  base-game prop. Its prompt is **Pick up a crate** (2 s, the work sites' hold, animation and lock);
+  the crate it stands on goes as you take it.
+- **Where it goes.** Where the words say: carried **in**, the pile is in the open 6–12 m from the
+  place and the stack inside the nearest building's ground floor (the work sites' indoor spot);
+  carried **out**, the pile is inside and the stack in the open by the place. With no building
+  within 60 m, the stack (or the pile) stands by the place's door instead, the tracker says so, and
+  the server logs it.
+- **In your arms.** While you carry one you're slowed to **Carrying speed** (0.45 of full: no
+  running, on your own machine, as the infected's hold slows you, `RZ_PlayerEffectsComponent`), a
+  hint says so, and the thing shows against your chest (**Carried box** or **Carried chair**: a
+  model with no physics, attached to you). One at a time: the pile's prompt waits.
+- **Putting it down.** At the stack: **Put the crate down** (2 s). It stays there, each on the last
+  (three high, then a new stack beside it; chairs in a row), measured off the first one put down.
+  Anywhere else, it's put down where you stand when you **raise your weapon**, get into a vehicle,
+  go down or leave: it lies there with its own **Pick up a crate** prompt.
+- **The tracker.** Two lines, each with its own place: *Pick up a crate outside (1 of 3 carried).*
+  and *Put the crate down indoors, on the ground floor.*, the current one first, then the way back
+  to the giver ([UI.md](UI.md#the-quest-tracker)).
+- **Done** when the last is put down; the stack stands until the errand is over and nobody is near.
+  Near players only, like the work sites. Logged: `Carry: <key>, N <things> from <grid> (<where>)
+  to <grid> (<where>)`, each put-down, and each put down elsewhere.
+- **Off.** With **Carry for real** off (or work sites off), the task is the one hold where the
+  things are, as before.
+
+The tasks carried, and those left as one hold with why: [ERRANDS.md](ERRANDS.md#work-sites).
+
+*Simplified:* the thing in your arms is a model held in front of your chest, not in your hands:
+there's no carrying animation (your arms swing as they do empty), and whether other players see
+it rests on the engine sending a child entity to every machine, as with the Perimeter's drone. A
+dropped thing isn't the vanilla inventory's: it's our own prop with its own prompt.
 
 ### Story blocks
 
@@ -1597,7 +1654,7 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
 - **Lies in a job** go to the one lie store ([Lies and witnesses](#lies-and-witnesses)): covering a
   collection (found at the next collection there), saying a colleague turned or walking a deserter to
   the Haven (found by a visit), selling a distress call to the crew (found when Tied Down frees a
-  truck), a Nurse hiding a bite at a house's door (found within a season day; the life record "hid a bite" names the house, and that house's people make her checks one step harder for the rest of the life: its errands' talk and Protection Racket's persuade, `RZ_StoryKit.HouseHarder`), the commander's stove
+  truck), a Nurse hiding a bite at a house's door (found within a season day; the life record "hid a bite" names the house, and that house's people make his checks one step harder for the rest of the life: its errands' talk and Protection Racket's persuade, `RZ_StoryKit.HouseHarder`), the commander's stove
   (found by the rumour round).
 - **Season counts the story jobs keep** (season flags): Bastion's civilians sheltered
   (`bastion.sheltered`, read on the call to those who brought them), and Struck Off's men walked home
@@ -1621,7 +1678,7 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
   No prefab, or no room: the job goes on in words.
 - **Choices on a plain mission's people**: a non-puzzle mission can tag a person with choice and use
   slots (`RZ_PuzzleObjectComponent`) and get them through `HandleObjectChoice` and `HandleObjectUse`
-  (Survivors Trapped's mother, the one-choice stand-in's Leave).
+  (Survivors Trapped's father, the one-choice stand-in's Leave).
 - **One real choice** (`Missions/Blocks/RZ_OneChoice.c`, `m_Choice`): when a one-choice job's work
   is done (its state turns to succeeded), it stays open and a stand-in person (the civilian puzzle
   prefab) appears beside it with the options as choice slots (object index 90). Picking one goes
@@ -2449,7 +2506,7 @@ ending). Reputation's voice says them back ([REPUTATION.md](REPUTATION.md#what-p
 a person, a house or a leader. **Heavy** (3): a questline's or major's ending (its words), a one-choice
 job about a person's life or freedom (*"decided whether he lives near Morton"*). **Medium** (2): the
 other one-choice jobs (*"decided which house gets the food near Levie"*). **Light** (1): an errand
-done (*"did Mara Kovac a favour"*). The same key again keeps the heavier weight. Full: the lightest,
+done (*"did Marek Kovac a favour"*). The same key again keeps the heavier weight. Full: the lightest,
 oldest goes; light deeds hold at most four slots, and a new deed never pushes out a heavier one, so a
 day of small kindnesses can't wash the record clean. A leader brings one up plainly, one time in
 three after the openers that come first, at most once a visit (a real day per seat): *"You're the one
@@ -3267,7 +3324,7 @@ while it's still true:
 
 | Reason | Clue | True while | It says |
 |---|---|---|---|
-| The hiding place | The scratched door (**Guidance > Door prefab**) | the line is sealed | the roads out end in concrete; we tried the north road; nobody gets out |
+| The hiding place | The scratched door: a real outside door of a building 6–80 m from yours, read at an invisible readable spot on its leaf (**Interactions > Door spot**); no door near, no clue. No door is ever spawned for it | the line is sealed | the roads out end in concrete; we tried the north road; nobody gets out |
 | | The radio still talking (**Table radio prefab**, else the wind-up radio) | always | the broadcast, then the Haven's open channel and its town |
 | Your group is gone | Their car in the ditch (**Car wreck prefab**), the note on its dashboard | there's a safehouse | "Gone to the safehouse in *town*.", an arrow |
 | | Halcyon's flyer, the one they went after (**Flyer prefab**) | there's a lab, not after the cure | samples wanted at the lab |
@@ -3288,7 +3345,7 @@ the camp pieces ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); a key with none has 
 |---|---|---|
 | Someone from before | about three in four | who they were to you, by your background (below); the hiding place: "Look at you. Alive. I'd stopped knocking on that door."; your group gone: the one who came back; the fever: who wrote on the door |
 | A stranger | about one in four | a stranger who heard the door; someone who saw them go; the stranger who wrote on the door |
-| An earlier life's | 35%, when a wanderer remembers an earlier life of yours and hasn't met this one ([life-stamped memory](REPUTATION.md#face-and-name)) | that wanderer, by name and role ("Old Marta, a trader who thinks they know you"): "You look like someone I knew." Their greeting reads what they remember: a kindness, a wrong, or only the face |
+| An earlier life's | 35%, when a wanderer remembers an earlier life of yours and hasn't met this one ([life-stamped memory](REPUTATION.md#face-and-name)) | that wanderer, by name and role ("Old Marek, a trader who thinks they know you"): "You look like someone I knew." Their greeting reads what they remember: a kindness, a wrong, or only the face |
 
 An earlier life's wanderer is held off the road while they stand here (`RZ_Wanderers.Hold`) and goes
 back on it from where they stood once they leave; killed, they're gone from the roads. With nobody
@@ -3300,17 +3357,20 @@ Someone from before, by your background:
 
 | Background | Who they were | Background | Who they were |
 |---|---|---|---|
-| Nurse | a patient's mother | Radio Operator | a voice from the night band |
+| Nurse | a patient's father | Radio Operator | a voice from the night band |
 | Doctor | a nurse from your ward | Unemployed | the neighbour who lent you money |
 | Mechanic | a regular at the garage | Soldier | a private from your unit |
 | Hunter | the farmer whose land you hunted | Raider | someone you robbed |
-| Police Officer | a shopkeeper on your beat | Elder | a mother from your street |
+| Police Officer | a shopkeeper on your beat | Elder | a father from your street |
 | Ex-Con | your old cellmate | Drifter | a face you half know |
 | Lab Technician | a junior from the institute | | |
 
+Every contact, and the next person they send you to, is a man, as the base game's civilian bodies
+are: their names are men's and the words about them say father, man, he.
+
 **They call you over; you talk to them.** Four seconds after the spawn they call to you, a subtitle
 with their name (*"Hey. Over here. It's me."*), and your first objective is tracked at once: *Talk
-to Vera Holm.* (their name; the errand *Outside the Door*, on the HUD tracker and as the map's diamond on
+to Pavel Holm.* (their name; the errand *Outside the Door*, on the HUD tracker and as the map's diamond on
 them). The talk screen never opens by itself ([DIALOGUE.md](DIALOGUE.md#who-opens-a-conversation)):
 it opens when you talk to them, and then the first step starts in that conversation: their greeting,
 that step's piece of the story, then the step's ask, and the step is yours and tracked. **The chain
@@ -3320,7 +3380,7 @@ starts from there, at a new place, in one of two ways by your background:
 | Pattern | Backgrounds | How you move on |
 |---|---|---|
 | **They walk with you** (escort) | Mechanic, Hunter, Lab Technician, Unemployed, Raider, Ex-Con, Radio Operator: steps out and about (a pump, a pack's ground, the remains, the road, a door that owes, a toll, the channel) | Once the first ask is out and the talk screen is shut, the contact comes with you (*"I'm coming with you. ... You lead."*): their body becomes an escort ([building blocks](#mission-building-blocks), `RZ_Escort`) of **Guidance > Companion** (`RZ_OpeningCompanion.et`, a one-man civilian group) that follows 4 m behind you, stops while infected are within 25 m of them or nobody's within 150 m, and can be killed. Each next step starts as soon as they're within 30 m of you, said by them as subtitles; not caught up within a minute, it starts anyway, on its card. They walk you to the end and say one line there (*"This is it. I'll find a corner."*). No escort room (**Contracts > Max escorts**) or no prefab: they stay where they stood, and each next step starts where you are, on its card |
-| **They send you on** (hand-off) | Nurse, Doctor, Elder, Soldier, Police Officer, Drifter (a plan with steps 1 and 2) | When step 1 starts, its giver picks the next person: a house 200–600 m on from step 1's place (the one nearest where the chain ends first), 150 m or more from them, not locked, the spot outside its side facing step 1's place meeting `opening.search`; named, and who they are by your background (*the mother with the sick boy*, *the man whose friend was bitten*, *the woman between two families*, *the one keeping the gate*, *the shopkeeper who kept your station's keys*, else *someone who heard you help*). With the ask they say *"When you're done there, don't come back for me. Go on to Ruth, the mother with the sick boy, at Ruth's house in Morton."* Step 1 done, Ruth stands there (a body tagged as the first was) and *Find Ruth* is tracked ("Find Ruth at Ruth's house in Morton. Talk to them."); within 25 m she calls you over (*"You're the one Vera sent? Over here."*), and talking to her gives step 2. Step 2 done, the walk starts where you are. The first giver stays behind (talked to, *"Go on. Ruth's waiting for you, not me."*) and goes once nobody's within 150 m. No house fits: step 2 is theirs, *Back to Vera Holm*, the only way back left |
+| **They send you on** (hand-off) | Nurse, Doctor, Elder, Soldier, Police Officer, Drifter (a plan with steps 1 and 2) | When step 1 starts, its giver picks the next person: a house 200–600 m on from step 1's place (the one nearest where the chain ends first), 150 m or more from them, not locked, the spot outside its side facing step 1's place meeting `opening.search`; named, and who they are by your background (*the father with the sick son*, *the man whose friend was bitten*, *the man between two families*, *the one keeping the gate*, *the shopkeeper who kept your station's keys*, else *someone who heard you help*). With the ask they say *"When you're done there, don't come back for me. Go on to Emil, the father with the sick son, at Emil's house in Morton."* Step 1 done, Emil stands there (a body tagged as the first was) and *Find Emil* is tracked ("Find Emil at Emil's house in Morton. Talk to them."); within 25 m he calls you over (*"You're the one Pavel sent? Over here."*), and talking to him gives step 2. Step 2 done, the walk starts where you are. The first giver stays behind (talked to, *"Go on. Emil's waiting for you, not me."*) and goes once nobody's within 150 m. No house fits: step 2 is theirs, *Back to Pavel Holm*, the only way back left |
 
 With neither (levels 2–3, one step and the lead, or the Drifter's second and third asks), each next
 step starts where you are, said by them when they're within 30 m, else only its card. Already talking
@@ -3352,7 +3412,7 @@ there, one line on arrival ("Someone with a list looks up."), and no Fame. All t
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
 | 1. Down the Road | Search a building 150–450 m from them: a work site's **Search it, quietly** (8 s; 6 s for a learning player, level 1; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot inside it, on its ground floor; done there. One of your background's kinds when one is there (below), else a house, named for what it really is ([PLACES.md](PLACES.md#a-place-is-what-its-words-say)); no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
-| 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold), else The Cut (dress their hand with anything medical you carry: the hand-over reply on their talk screen) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
+| 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold), else The Cut (dress their hand with anything medical you carry: the hand-over reply on their talk screen, done there and then) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
 | 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
 No step 2 (yours can't run here, no well near and nothing medical on you): straight to the walk.
@@ -3371,10 +3431,10 @@ meets its need ([PLACES.md](PLACES.md#the-needs)) or the step can't run here.
 
 | Background | Step 1's building | Step 2 | What it needs to run | Done when |
 |---|---|---|---|---|
-| Nurse | the chemist's, else the old aid post, the vet's farm or the doctor's house | **The Fever**: treat their boy | something medical on you | you pick the hand-over reply on their talk screen (*[Errand] Show me the boy. I've got something.*, first in the list, locked "Needs a dressing, or anything medical" without it); one medical item is taken then, never just for opening the talk |
+| Nurse | the chemist's, else the old aid post, the vet's farm or the doctor's house | **The Fever**: treat their son, who lies there: a body laid on a mattress (a **Treat his fever** care work site, Props > Duty person) on the ground floor of the nearest house within 60 m, else beside them; the tracker's diamond is on him, not on his father | something medical on you | the 8 s hold at him, with your hands; one medical item is taken then (without one you're told what it needs). Never for standing by his father, never for opening a talk |
 | | | else **Water for the Fever** | a well within 400 m | **Fill what you can carry** at the well (8 s) (it'll be boiled) |
-| Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, 10 minutes before it lapses | an antidote on you | the hand-over reply (*[Errand] Here's the antidote. Roll his sleeve up.*, locked "Needs the antidote"); the antidote is taken then |
-| | | else **The Clock** with a dressing | something medical | the hand-over reply (*[Errand] Let me clean it and bind it. That buys time.*); one medical item is taken then |
+| Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, lying there as the Fever's son does (inside any building within 60 m, else beside them), 10 minutes before it lapses | an antidote on you | the 8 s hold at him, **Give him the antidote**; the antidote is taken then |
+| | | else **The Clock** with a dressing | something medical | the 8 s hold at him, **Clean and bind the bite**; one medical item is taken then |
 | Mechanic | a garage or petrol station | **The Pump**: fuel from the nearest petrol station within 800 m | a petrol station near | 5 s at the pump with 5 litres in a can |
 | Hunter | a farm | **Downwind**: watch a pack's ground, unseen | 150 m short of the nearest pack's lair within 1.6 km, else a tree line 150–250 m out (four trees within 40 m) | 30 s within 25 m, hidden (built stealth), quiet; back |
 | Police Officer | a police post or hall | **The Station Keys**: the contact gives you the key to a locked building 40–300 m off | locks and the key prefab, a real lock near | inside that building |

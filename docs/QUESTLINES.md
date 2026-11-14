@@ -397,9 +397,9 @@ the post of a running Await Relief (both their own checks).
 While the majors run, H1's stages 1–4 are [Every Name](#every-name)'s act III, and its endings are
 reached through the second sitting; H1 isn't offered on its own.
 
-Every Haven house keeps a list of names, and some are quietly crossed out. A woman at a safehouse
-found her husband's name crossed out while he was still out on a supply run. He never came
-back. Her council head wants to know who crosses names out, and why, without the chair of the
+Every Haven house keeps a list of names, and some are quietly crossed out. A man at a safehouse
+found his brother's name crossed out while he was still out on a supply run. He never came
+back. His council head wants to know who crosses names out, and why, without the chair of the
 council finding out who's asking. The answer is the Haven's oldest shame. In the first hungry
 week the council sent its "mouths" to a farmhouse past the last village that said it could feed
 them. The farmhouse went quiet, and the council crossed the whole house off.
@@ -423,9 +423,9 @@ season or any safehouse has run short or lost people lately.
 
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
-| 1 | **Find the husband** | **Follow his trail**: a note, his pack, a third clue. Half the time he's alive: he walked off when he saw his name crossed out, and comes home (+1 person, `list.husband_alive`). **Ask the wanderers**: a Scavenger sells his last sighting for 1 food. ★ Radio Op: hears his last call on the Haven channel, grid included | Trail of Clues |
+| 1 | **Find the brother** | **Follow his trail**: a note, his pack, a third clue. Half the time he's alive: he walked off when he saw his name crossed out, and comes home (+1 person, `list.husband_alive`). **Ask the wanderers**: a Scavenger sells his last sighting for 1 food. ★ Radio Op: hears his last call on the Haven channel, grid included | Trail of Clues |
 | 2 | **Get three copies of the List** | **Talk** to council heads: a Merciful one hands it over; a Loyal one asks the chair first and refuses unless you're Trusted; a Paranoid one won't. **Sneak**: read it in the stores at night past two lookouts (seen: +8 Haven Infamy, `list.stolen` *(you)*). **Bribe**: deliver 3 food to that house. **Side with the Red Hand**: their list of strays counts as one copy, for 15 Red Hand Favor | A Quiet Arrangement's lookouts; delivery |
-| 3 | **Read the pattern** | **Work it out** at a safehouse: the names crossed out in the same week on all three copies, against the ration notes, point to one farmhouse. Wrong: locked 5 min; twice: you only learn "a farm out that way" (`list.half_truth`). ★ Elder or Police: the method spelled out. **Ask the chair** (Trusted): she tells you half and asks you to stop (`list.chair_asked`) | Patient Zero's Ledger (a deduction) |
+| 3 | **Read the pattern** | **Work it out** at a safehouse: the names crossed out in the same week on all three copies, against the ration notes, point to one farmhouse. Wrong: locked 5 min; twice: you only learn "a farm out that way" (`list.half_truth`). ★ Elder or Police: the method spelled out. **Ask the chair** (Trusted): he tells you half and asks you to stop (`list.chair_asked`) | Patient Zero's Ledger (a deduction) |
 | 4 | **Go and look** | If the Long Table lives there this season, it's their house: the host meets you at the gate and sets a place (C1 starts at stage 2, `list.found_table`). If not, an empty farm: nine graves, and one too few. **Look round** (three points, 10 s each). **Sit down and eat** (the guest rule applies, [REPUTATION.md](REPUTATION.md#the-long-table)). **Leave and report** | Visit points |
 | 5 | **Wait** | One session (2 real hours with players online). Gossip in the news: *"Someone's been asking about the List."* Then the chair of the council asks to see you | Wait |
 | 6 | **The chair's decision** | **Talk: read it out**, every house, crossed names too (Trusted, ★ Elder, or Known with `list.husband_alive` as proof): then hold the reading at the stronghold safehouse while the bells bring the infected (3 min, 2 waves). **Keep it quiet**: give the copies to the chair (`list.buried`). **Side with Bastion**: deliver them to a Bastion seat for its census (`list.to_bastion`). **Side with the Red Hand**: sell them to a crew boss (`list.to_redhand`). Either delivery must pass two Haven lookouts unseen | Hold; delivery |
@@ -445,7 +445,7 @@ Long Table is there.
 
 A hungry safehouse pays the Red Hand to be left alone. This month the crew boss doesn't want
 tins. He wants a stranger: a man the house put out at night for stealing from the stores, and
-where he sleeps now. The council head would rather not know what she's selling. Someone has to
+where he sleeps now. The council head would rather not know what he's selling. Someone has to
 carry the envelope.
 
 **Built** ([MISSIONS.md](MISSIONS.md#the-price-of-the-door-the-haven-or-the-red-hand)). Stage 1 is
@@ -465,9 +465,9 @@ nearest Red Hand outpost.
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
 | 1 | **Carry the envelope** | **Deliver it** to the crew's drop past two lookouts (`door.paid`). ★ Ex-Con: lookouts spot you only at 25 m. **Open it**: a grid and a name (`door.knows` *(you)*). **Refuse**: the house finds someone else; go to stage 3 (`door.refused`) | A Quiet Arrangement |
-| 2 | **The man at the grid** | He's a Haven exile, sleeping in a barn. **Talk: warn him**: he moves on as a wanderer elsewhere (`exile.warned`). **Bring him back to plead** (escort to the safehouse; he needs someone Trusted with the Haven, or ★ Elder, to speak for him at stage 4) (`exile.home`). **Betray: hand him over**: walk him to the crew's drop (+15 Haven Infamy if a Haven wanderer or lookout sees, `exile.sold` *(you)*). **Leave it**: the crew finds him in a day | Escort |
+| 2 | **The man at the grid** | He's a Haven exile, sleeping in a barn: a real farm building at the edge of a town 0.8–3 km from his house, inside on its floor (a town without one isn't picked). **Talk: warn him**: he moves on as a wanderer elsewhere (`exile.warned`). **Bring him back to plead** (escort to the safehouse; he needs someone Trusted with the Haven, or ★ Elder, to speak for him at stage 4) (`exile.home`). **Betray: hand him over**: walk him to the crew's drop (+15 Haven Infamy if a Haven wanderer or lookout sees, `exile.sold` *(you)*). **Leave it**: the crew finds him in a day | Escort |
 | 3 | **The crew comes to collect** | Only if the price wasn't paid. **Fight**: hold the safehouse gate against a Red Hand raid, 3 min (`door.held`). **Bribe**: 40 Haven Favor or 25 Red Hand Favor to the crew boss (`door.bought`). **Talk him down** (Trusted with the Red Hand, or ★ Ex-Con): a debt is a debt, but it can be yours (`door.debt_yours` *(you)*). **Side with Bastion**: bread to the nearest Bastion post for a patrol, and a Bastion checkpoint goes up on the road for the night (`door.bastion`) | Trader Caravan's raid; Over the Fence |
-| 4 | **Wait, then the vote** | One session. The house votes on its council head. **Speak for her** (Known). **Speak against her** (Trusted, or ★ Elder): the cook takes the chair. **Speak for the exile** (with `exile.home`; Trusted or ★ Elder): he's let back in (+1 person) | Wait; talk |
+| 4 | **Wait, then the vote** | One session. The house votes on its council head. **Speak for him** (Known). **Speak against him** (Trusted, or ★ Elder): the cook takes the chair. **Speak for the exile** (with `exile.home`; Trusted or ★ Elder): he's let back in (+1 person) | Wait; talk |
 | 5 | **The house stands, or pays** | `door.held` or `door.bastion`: put the barricades up (Fortify the Safehouse). `door.paid` or `exile.sold`: carry next month's envelope, which is tins again. `door.debt_yours`: pay the first instalment, in the crew's pit (House Rules) or 20 Red Hand Favor | Fortify the Safehouse; House Rules |
 
 | Ending | You get | The world |
@@ -553,7 +553,7 @@ the line starts at that post.
 | 2 | **The runner** | The relay's log gives the hour. Follow his trail across three towns (his pack, his fire, his body), past turned soldiers at the last. His page is water-stained, legible in parts: *"...hold the line... no relief will... authorised to... expended."* | Step chain (Struck Off's trail); Missing Patrol |
 | 3 | **Who reads it** | **To the commanding officer** (Trusted, or ★ Soldier): it goes in the stove (`orders.stove`). **To the commander** who sent you: he reads it to his men at the shift change (`orders.read`). **Side with the Red Hand**: a crew boss reads it on the open channel, for 40 Red Hand Favor (`orders.mocked`). **Side with the Haven**: the council chair keeps it, as proof of what Bastion was told (`orders.haven`) | Delivery |
 | 4 | **Wait** | One session. Read: two men walk off the post. Mocked: Bastion's open channel is silent for a night while the Red Hand laughs every hour. Stove: the operator is moved to the stronghold. The Haven: the chair says nothing, yet | Wait |
-| 5 | **The reckoning** | *Read:* the commanding officer sends a squad to arrest the commander. **Fight** for him (+20 Bastion Infamy; he goes Rogue and keeps his post, and Rein In follows), **arrest him yourself** (escort to the stronghold), or **talk the CO down** (Champion with Bastion, or Trusted and ★ Soldier: loyalty +25). *Mocked:* find the operator who leaked it, and bring him in or walk him to a safehouse. *Stove:* a copy, if you made one, can still go to anyone in stage 3, once. *The Haven:* Bastion rations to the chair's house, as her price for keeping it | Escort; Struck Off; Desertion Route; Hearts and Minds |
+| 5 | **The reckoning** | *Read:* the commanding officer sends a squad to arrest the commander. **Fight** for him (+20 Bastion Infamy; he goes Rogue and keeps his post, and Rein In follows), **arrest him yourself** (escort to the stronghold), or **talk the CO down** (Champion with Bastion, or Trusted and ★ Soldier: loyalty +25). *Mocked:* find the operator who leaked it, and bring him in or walk him to a safehouse. *Stove:* a copy, if you made one, can still go to anyone in stage 3, once. *The Haven:* Bastion rations to the chair's house, as his price for keeping it | Escort; Struck Off; Desertion Route; Hearts and Minds |
 
 | Ending | You get | The world |
 |---|---|---|
@@ -694,7 +694,7 @@ endings are act 3's results.
 Everything owed is in the book, and the book has to balance. Last week somebody tore a page out:
 the one nobody is meant to read, with who *outside* the Red Hand owes it and for what. A Bastion
 outpost commander for rifles that fell off the inventory, a Halcyon field lead for live ones, a
-Haven council head for her quiet arrangement. Whoever holds that page can ruin someone in every
+Haven council head for him quiet arrangement. Whoever holds that page can ruin someone in every
 faction. The boss wants it back, and the man who tore it out put in the pit.
 
 **Needs:** Known with the Red Hand; Trusted to return the page (Known with `orders.mocked`: the
@@ -705,7 +705,7 @@ the faction's Rogue leaders where there are any, else Independent ones.
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
 | 1 | **Who tore it** | Three crew members, one of them lying. ★ Police or Ex-Con: more to go on. Wrong: the wrong man goes in the pit and you're told so (+5 Red Hand Infamy, `book.wrong_man` *(you)*) | The Rat |
-| 2 | **Find {thief_short}** | His trail through two towns to a barn. **Talk** him out (unarmed; ★ Ex-Con, he knows you're one of his). **Fight** (two friends with him). **Bribe**: 20 Red Hand Favor and he runs (`book.thief_ran`). He tells you why: his sister's house is on the page | Step chain; Struck Off |
+| 2 | **Find {thief_short}** | His trail through two towns to a barn. **Talk** him out (unarmed; ★ Ex-Con, he knows you're one of his). **Fight** (two friends with him). **Bribe**: 20 Red Hand Favor and he runs (`book.thief_ran`). He tells you why: his brother's house is on the page | Step chain; Struck Off |
 | 3 | **Read the page** | Three names. For each: **collect** the debt (talk 60%; threaten, +3 Infamy with their faction; or pay it, 15 Red Hand Favor), **leave it**, or **betray: turn them in** to their own stronghold (at most one name: that leader is replaced, their faction's morale −3, Fame +10 with that faction and +15 Red Hand Infamy, because nobody rats). With `door.debt_yours` (H2), your name is on it too: a fourth debt, yours | Debt Collection |
 | 4 | **The page** | **Return it** to the boss (`book.returned`). **Keep it** (`book.kept` *(you)*). **Burn it** (`book.burnt`). **Side with Bastion**: the whole page to the commanding officer (`book.bastion`) | Delivery |
 | 5 | **The thief** | The boss wants him in the pit. **Let it happen**. **Fight**: take his place (4 min of waves). **Bribe**: pay his debt, 30 Red Hand Favor. **Get him out**: walk him to a safehouse (+10 Red Hand Infamy if seen) | Fight Pit; Desertion Route |
@@ -729,7 +729,7 @@ headline and rumour only.
 Some trucks carry people, not tins, and where to, nobody says. The driver of one of them wants
 out. He has carried strays the Haven turned out, debtors from the book, a deserter or two. Most
 went to the pit, or to the line, to learn the drones. Lately one crew boss sends a load somewhere
-else: a farm past the last village, where a woman pays in jars. The driver has stopped eating meat.
+else: a farm past the last village, where a man pays in jars. The driver has stopped eating meat.
 
 **Needs:** Known with the Red Hand; or Known with the Haven, for the Haven's version (a Haven
 wanderer saw the van). ★ Ex-Con, ★ Mechanic, ★ Police.
@@ -834,35 +834,35 @@ finished Patient Zero or Patient Zero's Ledger.
 
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
-| 1 | **The driver** | A Scavenger wanderer who won't talk to anyone in a lab coat. **Talk** (Known with the Haven, and not Trusted with Halcyon). **Share food** twice. **Threaten** him (+3 Haven Infamy). He names the site, and says *"she stayed because she wanted to."* | Wanderer talk |
-| 2 | **The site** | The closed site on the highest ground away from towns. A keypad; the code is on three bodies from the team that went up with her. ★ Lab Tech: the first digit. Three wrong: locked 2 min, loud | Locked Bunker |
-| 3 | **The team lead** | Her notebook is inside, and so is she: she turned a long time ago. **Mercy**: end it, take the notebook. **Live capture**: bring her to the lab (`weeks.captured`, research +2). **Sneak**: take the notebook and leave her | Live Capture |
-| 4 | **Who reads it** | The notebook doesn't say what the site was for. It says the Institute was told on the first day of the three weeks, and wrote back one word: *"Continue."* **To the director** (Trusted): it goes in the record; the pages about the director go in the stove (`weeks.director`). **To the field lead**: she wants it out (`weeks.public`). **Side with Bastion**: the commanding officer was right about Halcyon (`weeks.bastion`). **Side with the Haven**: the chair reads it at supper (`weeks.public`). **Side with the Red Hand**: 40 Red Hand Favor, and they read it on the open channel (`weeks.public`) | Delivery |
-| 5 | **The lab answers** | One session. Public: the Red Hand thinks the lab has more to hide and raids it (hold the lab). In the record: the field lead walks out; walk her to a safehouse, or bring her back to the lab. Bastion: the CO's demand goes to the director (HC3 opens with it) | Wait; Lab Defence; escort |
+| 1 | **The driver** | A Scavenger wanderer who won't talk to anyone in a lab coat. **Talk** (Known with the Haven, and not Trusted with Halcyon). **Share food** twice. **Threaten** him (+3 Haven Infamy). He names the site, and says *"he stayed because he wanted to."* | Wanderer talk |
+| 2 | **The site** | The closed site on the highest ground away from towns. A keypad; the code is on three bodies from the team that went up with him. ★ Lab Tech: the first digit. Three wrong: locked 2 min, loud | Locked Bunker |
+| 3 | **The team lead** | His notebook is inside, and so is he: he turned a long time ago. **Mercy**: end it, take the notebook. **Live capture**: bring him to the lab (`weeks.captured`, research +2). **Sneak**: take the notebook and leave him | Live Capture |
+| 4 | **Who reads it** | The notebook doesn't say what the site was for. It says the Institute was told on the first day of the three weeks, and wrote back one word: *"Continue."* **To the director** (Trusted): it goes in the record; the pages about the director go in the stove (`weeks.director`). **To the field lead**: he wants it out (`weeks.public`). **Side with Bastion**: the commanding officer was right about Halcyon (`weeks.bastion`). **Side with the Haven**: the chair reads it at supper (`weeks.public`). **Side with the Red Hand**: 40 Red Hand Favor, and they read it on the open channel (`weeks.public`) | Delivery |
+| 5 | **The lab answers** | One session. Public: the Red Hand thinks the lab has more to hide and raids it (hold the lab). In the record: the field lead walks out; walk him to a safehouse, or bring him back to the lab. Bastion: the CO's demand goes to the director (HC3 opens with it) | Wait; Lab Defence; escort |
 
 | Ending | You get | The world |
 |---|---|---|
-| **In the record** | Halcyon Fame +20, 30 Favor; research +1 | Halcyon morale +3; the field lead is replaced (she leaves: a life event) |
+| **In the record** | Halcyon Fame +20, 30 Favor; research +1 | Halcyon morale +3; the field lead is replaced (he leaves: a life event) |
 | **Out on the open channel** | Fame +15 with whoever you gave it to; Halcyon Infamy +10 | Halcyon morale −10; *"Halcyon made this"* is a common rumour for the season; H3's lab road gets harder |
 | **Bastion's file** | Bastion Fame +20; Halcyon Infamy +15 | Bastion strength +3; HC3 starts with Bastion's terms already on the table |
-| *(with any ending)* **She's at the lab** | Research +2 at stage 3 | The director speaks for two minutes on the open channel, about her |
+| *(with any ending)* **He's at the lab** | Research +2 at stage 3 | The director speaks for two minutes on the open channel, about him |
 
 ### HC2. The Other Two
 
 Eight in ten walk out of the trial dose, and the lab writes down what happens to the other two.
-A Haven woman's brother volunteered and didn't come back, and the lab won't tell her more than a
+A Haven man's brother volunteered and didn't come back, and the lab won't tell him more than a
 number. The answer is at the field station. The other two leave with half the time they came in
 with, and some of them are kept, in a back room, so that someone with a clipboard can be there at
 the moment of turning.
 
 **Needs:** Known with the Haven or with Halcyon. ★ Doctor, ★ Nurse, ★ Lab Tech.
-**Starts:** the sister (a Haven named person) at a safehouse. With `walk.knows_other_two` (H3),
+**Starts:** the brother (a Haven named person) at a safehouse. With `walk.knows_other_two` (H3),
 at stage 2.
 
 **Built** ✅: in [MISSIONS.md](MISSIONS.md#the-other-two-halcyon). It replaces The Author List
 contract: stage 5's names come from its deduction (the trial list by the door and the man who
 walked them up; ★ Elder reads the council's pencil). Changes from the design: the stages are the
-sister's (Haven) contracts, offered to anyone Known with either; her house is picked within
+brother's (Haven) contracts, offered to anyone Known with either; his house is picked within
 3.5 km of the field station when it can be, and the brother has long enough to be walked home
 rather than a few minutes. Stage 2's courier is an escort. Sold ends the line at stage 4; the
 names to the chair is Brought home; leaving the numbers, or nobody naming them, is The work goes
@@ -873,9 +873,9 @@ as `walk.knows_other_two` and `walk.lab_road`.
 |---|---|---|---|
 | 1 | **{brother}'s number** | **Talk** at the lab (Known with Halcyon): a number and a date. **Sneak**: the volunteers' ledger on the night shift (a heat limit; seen: +8 Halcyon Infamy). **Bribe** a courier: 20 Halcyon Favor. ★ Lab Tech reads the ledger's codes | Letters' quiet way; talk |
 | 2 | **The back room** | **Get in as a courier**: walk a cold case there with Halcyon's courier. **Talk**: the field lead's leave (Trusted with Halcyon). **Sneak**: at night, unseen. Inside: three people in the Final stage, and a chair with a clipboard by each | Escort; sneak |
-| 3 | **{brother} in the back room** | He has a few minutes left. **Sit with him** (`brother.sat`). **Take him to his sister** before he turns (`brother.home`). **Take the sample** at the moment of turning (research +1, `brother.sample` *(you)*). **End it** | Patients Not Samples; escort |
-| 4 | **The field lead** | **Talk** (Trusted with Halcyon, or ★ Doctor): she closes the room (`ward.closed`). **Report her** to the director: she's replaced and the room moves to the lab (`ward.lab`). **Keep quiet**: 25 Halcyon Favor (`ward.kept`). **Side with the Red Hand** (Trusted with them): one of the other two goes to a crew as a "live one", for 40 Red Hand Favor (`ward.sold` *(you)*) | Talk |
-| 5 | **Names** | The paper lists the volunteers by number. **Bring the names** to the director (Trusted, or Known with the sister beside you after `brother.home`). **Side with the Haven**: the chair reads them at supper instead. **Leave the numbers** | Delivery; talk |
+| 3 | **{brother} in the back room** | He has a few minutes left. **Sit with him** (`brother.sat`). **Take him to his brother** before he turns (`brother.home`). **Take the sample** at the moment of turning (research +1, `brother.sample` *(you)*). **End it** | Patients Not Samples; escort |
+| 4 | **The field lead** | **Talk** (Trusted with Halcyon, or ★ Doctor): he closes the room (`ward.closed`). **Report him** to the director: he's replaced and the room moves to the lab (`ward.lab`). **Keep quiet**: 25 Halcyon Favor (`ward.kept`). **Side with the Red Hand** (Trusted with them): one of the other two goes to a crew as a "live one", for 40 Red Hand Favor (`ward.sold` *(you)*) | Talk |
+| 5 | **Names** | The paper lists the volunteers by number. **Bring the names** to the director (Trusted, or Known with the brother beside you after `brother.home`). **Side with the Haven**: the chair reads them at supper instead. **Leave the numbers** | Delivery; talk |
 
 | Ending | You get | The world |
 |---|---|---|
@@ -918,10 +918,10 @@ as `pilot.flew_for`, the faction the pilot flew for (Halcyon: the samples).
 
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
-| 1 | **The director's letter** | Carry her terms to the commanding officer. **Read it first** (`authors.read` *(you)*): the method for Bastion alone, in return for guards. **Sneak** a copy to the field lead | Delivery |
-| 2 | **The field lead's plan** | She wants the method at a Haven clinic first. **Carry it**, cold, before it's missed (`authors.haven_copy`). **Report her** to the director (`authors.reported`). **Side with the Red Hand**: sell it (Sell the Formula) | Cold Chain; Sell the Formula |
+| 1 | **The director's letter** | Carry his terms to the commanding officer. **Read it first** (`authors.read` *(you)*): the method for Bastion alone, in return for guards. **Sneak** a copy to the field lead | Delivery |
+| 2 | **The field lead's plan** | He wants the method at a Haven clinic first. **Carry it**, cold, before it's missed (`authors.haven_copy`). **Report him** to the director (`authors.reported`). **Side with the Red Hand**: sell it (Sell the Formula) | Cold Chain; Sell the Formula |
 | 3 | **The CO's answer** | One session. The CO wants a locked crate, a key and a guard on the clean room. **Agree** for the director. **Bargain** (Trusted with both): two guards at the gate, no key. **Refuse** for the lab (+5 Bastion Infamy) | Wait; talk |
-| 4 | **The Red Hand's offer** | The boss offers to buy the batch, and to leave the lab alone during the stand. **Take it to the director**: she refuses. **Betray**: take the money (60 Red Hand Favor); Take the Lab is offered during the stand. **Side with Bastion**: tell the CO, and a Bastion checkpoint goes up on the lab's road | Talk |
+| 4 | **The Red Hand's offer** | The boss offers to buy the batch, and to leave the lab alone during the stand (two objectives: hear the offer, then the terms to the director). **Take it to the director**: he refuses. **Betray**: take the money (60 Red Hand Favor); Take the Lab is offered during the stand. **Side with Bastion**: tell the CO, and a Bastion checkpoint goes up on the lab's road | Talk |
 | 5 | **Ready the lab** | One of Power the Lab, Burn the Bodies at the lab or Lab Defence, picked by the director from your flags | Power the Lab; Burn the Bodies; Lab Defence |
 | 6 | **The final stand** | The stand itself. With `pilot.flew_for` samples (B3), Halcyon's people remember who flew for them, and one Halcyon guard more stands at the gate | Final stand |
 
@@ -957,15 +957,15 @@ rumour; or from H1 (at stage 2), R2 (at stage 4) or C2 (at stage 4).
 |---|---|---|---|
 | 1 | **Never arrived** | Follow a missing wanderer's last road: a boot on the verge, a satchel at a fence, the gate of the farm. ★ Hunter or Police: grid references | Trail of Clues |
 | 2 | **Guest** | The host meets you on the road. **Talk: accept** and eat: in daylight, in company or bitten, it's only a meal (`table.guest` *(you)*). **Sneak: decline** and watch from outside, unseen. **Declare your bite** if you have one: they bless you and send you on | Talk; visit points |
-| 3 | **Proof** | Three of: the guestbook and its small crosses, the boots by the door, a dead courier's letters in a drawer, the cellar (locked: the mother's key, or a crowbar, which is loud). **Sneak** in during supper (18:30). **Talk** to the boy, away from the house, unarmed (★ Nurse or Elder): he says one thing. **Fight** your way in (before the cellar is open, shooting them costs Haven Infamy, [REPUTATION.md](REPUTATION.md#the-long-table)). With `cargo.buyer_known` (R2) or `place.undercover` (C2): done | Door locks; clues |
-| 4 | **Who to tell** | **The Haven**: horror and shame; the chair wants them brought home and walked out (`table.haven`). **Bastion**: containment (`table.bastion`). **Halcyon**: the director wants one of them alive, and the mother's kitchen notebook: why they never eat the bitten (`table.halcyon`). **The Red Hand**: the boss pays the house to go away (`table.redhand`). **Nobody**: deal with it yourself | Talk; delivery |
-| 5 | **The end of the house** | *Haven:* walk the family to the edge of town at dusk, unarmed. They go quietly, except the quiet son. *Bastion:* the guns, after five minutes' warning; get the boy out first (talk him down, nothing within 25 m), or don't. *Halcyon:* walk the mother to the lab as a "volunteer". *Red Hand:* hold the farm 90 s while a crew moves them on. *Yourself:* **fight** (three or four of them), or **talk** the last ones out once the mother is gone | Walk Him Out; Bastion Shelling; escort; hold |
+| 3 | **Proof** | Three of: the guestbook and its small crosses, the boots by the door, a dead courier's letters in a drawer, the cellar (locked: the father's key, or a crowbar, which is loud). **Sneak** in during supper (18:30). **Talk** to the boy, away from the house, unarmed (★ Nurse or Elder): he says one thing. **Fight** your way in (before the cellar is open, shooting them costs Haven Infamy, [REPUTATION.md](REPUTATION.md#the-long-table)). With `cargo.buyer_known` (R2) or `place.undercover` (C2): done | Door locks; clues |
+| 4 | **Who to tell** | **The Haven**: horror and shame; the chair wants them brought home and walked out (`table.haven`). **Bastion**: containment (`table.bastion`). **Halcyon**: the director wants one of them alive, and the father's kitchen notebook: why they never eat the bitten (`table.halcyon`). **The Red Hand**: the boss pays the house to go away (`table.redhand`). **Nobody**: deal with it yourself | Talk; delivery |
+| 5 | **The end of the house** | *Haven:* walk the family to the edge of town at dusk, unarmed. They go quietly, except the quiet son. *Bastion:* the guns, after five minutes' warning; get the boy out first (talk him down, nothing within 25 m), or don't. *Halcyon:* walk the father to the lab as a "volunteer". *Red Hand:* hold the farm 90 s while a crew moves them on. *Yourself:* **fight** (three or four of them), or **talk** the last ones out once the father is gone | Walk Him Out; Bastion Shelling; escort; hold |
 
 | Ending | You get | The world |
 |---|---|---|
 | **Walked out** | Haven Fame +20, 30 Favor | Haven morale −8, then +5 when it's done; the boy joins a safehouse (+1) or becomes the Kid wanderer. Headline: *"Every Haven house lit a candle last night. Nobody said who for."* |
 | **Burnt** | Bastion Fame +20, 30 Favor | The farm's town is Burned (town memory); Bastion morale +3. Headline: *"Bastion reports an infected cluster cleared past the last village."* If the boy wasn't got out, nobody reads his name |
-| **Studied** | Halcyon Fame +20; research +2 | The mother is at the lab; the rest scatter. The host becomes a Scavenger wanderer who never asks anyone to dinner again |
+| **Studied** | Halcyon Fame +20; research +2 | The father is at the lab; the rest scatter. The host becomes a Scavenger wanderer who never asks anyone to dinner again |
 | **Paid to go** | Red Hand Fame +15, 40 Red Hand Favor | The house moves 2–5 km and is quiet for a real day, then takes people half as often; C1 can start again, once |
 **By your own hand** is no ending of its own: the house is gone for the season, the boy lives if you
 got him out, and the proof, taken to a faction after, pays half that faction's Fame.
@@ -990,9 +990,9 @@ Bastion burns it ([DESIGN.md](DESIGN.md#the-long-table)).
   Fame is the telling's plus the contract's (10 Fame and 30 Favor; Halcyon 10 and 20; the Red Hand
   11 and 40). The Haven's walk is between 16:00 and 21:30, and the family waits for you at the edge
   of town rather than walking with you; the quiet son is talked round (persuade) or let go.
-  Halcyon's volunteer is the mother, or one of them alive without her. By your own hand: fight them
-  (the fight prefab), or tell the mother you know (persuade with the Haven, difficulty 2; ★ Elder
-  or Nurse) and she walks out, then tell the rest to go; a failed word and they set on you. "Taken
+  Halcyon's volunteer is the father, or one of them alive without him. By your own hand: fight them
+  (the fight prefab), or tell the father you know (persuade with the Haven, difficulty 2; ★ Elder
+  or Nurse) and he walks out, then tell the rest to go; a failed word and they set on you. "Taken
   to a faction after" is a last wait of two hours of play or 12 real hours.
 - Its endings also publish what happened (`table.walked_out` and the rest, in [Crossings](#crossings)).
 
@@ -1012,10 +1012,10 @@ ask the Haven's friends). ★ Police: anything you learn counts as proof.
 
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
-| 1 | **The dead** | Stand where a wanderer or a truck crew died to the infected in the last hour, then tell the host. A bowl and true road news (where the next truck is going) (`place.dead` *(you)*) | Visit point; talk |
+| 1 | **The dead** | Stand where a wanderer or a truck crew died to the infected in the last hour, then tell the host (two objectives: the place, then the host at the farm gate). A bowl and true road news (where the next truck is going) (`place.dead` *(you)*) | Visit point; talk |
 | 2 | **The dying** | A bitten wanderer *"who won't make it."* **Tell him where** (the wanderer never arrives, `place.dying` *(you)*). **Lie**: send him the wrong way, and he's cooler with you. **Save the wanderer**: give them your antidote | Talk; wanderer |
 | 3 | **A stray** | He wants a living one: an exile the Red Hand keeps track of. **Betray: bring him** (escort to the farm, `place.stray` *(you)*). **Pretend**: walk him to a safehouse or a Bastion seat instead (`place.undercover`). **Refuse**: you're not a guest any more, and the guest rule holds for you in daylight too | Escort |
-| 4 | **Grace** | The mother asks you to sit at the long table and say a name. **Sit and say it** (`place.family` *(you)*). **Get up and go**, with the proof (C1, stage 4). **Fight**, at the table (C1, stage 5, by your own hand) | Talk |
+| 4 | **Grace** | The father asks you to sit at the long table and say a name. **Sit and say it** (`place.family` *(you)*). **Get up and go**, with the proof (C1, stage 4). **Fight**, at the table (C1, stage 5, by your own hand) | Talk |
 
 | Ending | You get | The world |
 |---|---|---|
@@ -1109,7 +1109,7 @@ events and rumours. A flag is 1 when set, unless its row gives other values.
 | `weeks.public` | HC1 | H3 | Brokering the lab road needs Trusted with the Haven |
 | `weeks.bastion` | HC1 | HC3 | HC3 starts at stage 2 |
 | `weeks.records` | Patient Zero, Patient Zero's Ledger | HC1 | HC1 can start: the clinic records are out |
-| `weeks.record`, `.captured`, `.lead_left` | HC1 | (facts) | The notebook is in the lab's record; Dr Wolff is in the lab's isolation room; the field lead left her station |
+| `weeks.record`, `.captured`, `.lead_left` | HC1 | (facts) | The notebook is in the lab's record; Dr Wolff is in the lab's isolation room; the field lead left his station |
 | `other_two.named`, `.haven_names`, `.ward`, `.sold` | HC2 | (facts) | The lab named its volunteers; the Haven did instead; the back room (1 closed, 2 at the lab, 3 kept, 4 sold from, 5 gone); one of the other two is in the Red Hand's pit |
 | `authors.bastion_key`, `.guard`, `.open`, `.lead_first`, `.batch_sold`, `.formula_sold` | HC3 | (facts) | Bastion holds a key to the clean room; a Bastion squad held the lab gate; the method went to the Haven's clinics; the field lead's name is first on the paper; the boss paid for the batch; the method was sold to the Red Hand |
 | `place.undercover` | C2 | C1 | C1's proof is done: it starts at stage 4; the undercover guest gets +5 Fame on top when they tell |
@@ -1122,7 +1122,7 @@ events and rumours. A flag is 1 when set, unless its row gives other values.
 | `table.broken`, `table.burnt`, `table.moved`; `table.suspicion` | the Long Table (the first three only once true) | any | Gone for the season; burnt by Bastion; moved once; how suspected (0–100) |
 | `table.suspicion_add` | any line | the Long Table | Added to its suspicion, then cleared |
 | `table.haven`, `table.bastion`, `table.halcyon`, `table.redhand` | C1 | any | Who was told |
-| `table.walked_out`, `table.studied`, `table.host_wanders`, `table.paid`, `table.by_hand`, `table.boy_lost` | C1 (`table.by_hand` also C2) | any | How the house ended: walked out; the mother at the lab; the host on the roads as a Scavenger; paid to move; by your own hand; the boy not got out |
+| `table.walked_out`, `table.studied`, `table.host_wanders`, `table.paid`, `table.by_hand`, `table.boy_lost` | C1 (`table.by_hand` also C2) | any | How the house ended: walked out; the father at the lab; the host on the roads as a Scavenger; paid to move; by your own hand; the boy not got out |
 
 The Long Table also accepts the setter's own spelling for flags the table names under `table.`
 (`cargo.supplier_cut`, `cargo.bastion_knows`).
@@ -1134,7 +1134,7 @@ The Long Table also accepts the setter's own spelling for flags the table names 
 | `finale.open`, `finale.finisher`, `finale.route`, `finale.how`, `finale.terms`, `finale.partner`, `finale.came` | the controller | the epilogue's record, outlets and stand board ([EPILOGUE.md](EPILOGUE.md)) | The routes are open; who finished (route + 1, 0 the lab alone); who controls (0 nobody: handed over); how it was won (1 held, 2 force, 3 deal, 4 betrayal, 5 theft, 6 handed over); the terms (1–4); the pact partner (route + 1); how many routes came for the room |
 | `cure.slow`, `finale.taken`, `finale.coat_run` | the controller | (facts) | The lab alone made the batch; the season day Take the Lab and the Coat Run passed |
 | `held.rh_knows`, `held.named`, `held.processed` | Held for Collection | (facts) | The Red Hand knows the cold store; the four ledgers named the tubes; Twice was brought home |
-| `cook.heard`, `cook.still_known`, `cook.line_paid`; `cook.lines`, `cook.paid` | The Cook; every cut dose taken | The Cook's terms | Someone heard the cook's terms; found the still; her line marked paid. The cut doses written in her book, and those that held |
+| `cook.heard`, `cook.still_known`, `cook.line_paid`; `cook.lines`, `cook.paid` | The Cook; every cut dose taken | The Cook's terms | Someone heard the cook's terms; found the still; his line marked paid. The cut doses written in his book, and those that held |
 | `finale.plan_sold` | Sell the Plan (`Questlines/Finale/RZ_FinaleRoute.c`) | Take the Lab | The bay hold is 150 s |
 
 ## Loose Ends
@@ -1162,4 +1162,4 @@ halved.
 | B3 The Last Pilot | The Last Flight | Fly with him, bring him back (He stays); talk him into walking instead (Grounded); sell the aircraft for parts (Burnt for the Red Hand) | Grounded: *"He didn't fly. The aircraft sits on the pad with its doors open."* |
 | R2 Cargo | The Last Load | Drive the van to the queue (Told); hand the van to the crew (The cut); follow it (Told) | The cut: *"The van went, and came back empty. The driver walked to the queue alone."* |
 | R3 The Well Story | The Last Toll | Pay it yourself, 15 Red Hand Favor (The story worked); stand with the village (Stood up); tell the story one last time (Faked) | The story worked: *"The village paid in its last tins and walked out lighter."* |
-| HC2 The Other Two | His Coat | Carry the coat to his sister (Brought home); take his number to her board (Named); leave it on the hook (The work goes on) | The work goes on: *"The coat stays on the hook. Nobody came for it. The lab labelled it."* |
+| HC2 The Other Two | His Coat | Carry the coat to his brother (Brought home); take his number to his board (Named); leave it on the hook (The work goes on) | The work goes on: *"The coat stays on the hook. Nobody came for it. The lab labelled it."* |

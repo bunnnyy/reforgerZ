@@ -712,7 +712,7 @@ class RZ_FactionServices
 
 		if (p.IsInfected())
 		{
-			m_GM.NotifyPlayer(playerId, title, "Stitches, a clean dressing, a look at the bite she doesn't like. \"I can't stop that. Ask for the trial, or find an antidote. Soon.\"");
+			m_GM.NotifyPlayer(playerId, title, "Stitches, a clean dressing, a look at the bite he doesn't like. \"I can't stop that. Ask for the trial, or find an antidote. Soon.\"");
 			return;
 		}
 

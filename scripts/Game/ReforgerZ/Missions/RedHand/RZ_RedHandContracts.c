@@ -144,11 +144,11 @@ class RZ_Mission_CarTheft : RZ_Mission
 //------------------------------------------------------------------------------------------------
 //! #10 Protection Racket (story key `racket`): "collect" from a Haven safehouse. The truth, kept per
 //! house: just late, paid twice (another crew's receipt is pinned in the stores) or the storekeeper's
-//! cut (her daughter in the doorway tells it). At the storekeeper: Ask; Persuade (Trust with the Haven
+//! cut (his son in the doorway tells it). At the storekeeper: Ask; Persuade (Trust with the Haven
 //! 2: two food, 75% pay); Press (Fear 2: the full three food and +5 Haven Infamy, +8 when short;
-//! refused, her people come out, or the door shuts); Cover it yourself (4 food or 20 Red Hand Favor:
+//! refused, his people come out, or the door shuts); Cover it yourself (4 food or 20 Red Hand Favor:
 //! half pay, and a lie the next collection here finds out); the receipt (full pay, the house pays
-//! nothing); her cut (keep her secret: one food; or tell the council: three food and she's put
+//! nothing); his cut (keep his secret: one food; or tell the council: three food and he's put
 //! out); Side with the house (after the hold: +10 Red Hand Infamy, nobody pays). Not for Elders.
 //! Time up: the crew collects anyway, and the house's cook has The Pot for the participants first.
 class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
@@ -285,8 +285,8 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 
 		if (m_sTruth == "cut")
 		{
-			m_iDaughterClue = AddClue("A girl in the doorway", "She's about nine and very serious. \"Mum says the tins are for my medicine. The man at the pit has antibiotics.\"");
-			SpawnClue(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(h.m_vPos, 6, 14), m_iDaughterClue, "Talk to the girl");
+			m_iDaughterClue = AddClue("A boy in the doorway", "He's about nine and very serious. \"Dad says the tins are for my medicine. The man at the pit has antibiotics.\"");
+			SpawnClue(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(h.m_vPos, 6, 14), m_iDaughterClue, "Talk to the boy");
 		}
 
 		m_sTitle = "Protection Racket";
@@ -324,7 +324,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		array<string> labels = {};
 		if (m_bCutFound)
 		{
-			labels.Insert("Keep her secret");
+			labels.Insert("Keep his secret");
 			m_aActs.Insert(ACT_SECRET);
 			labels.Insert("Tell the council");
 			m_aActs.Insert(ACT_COUNCIL);
@@ -389,7 +389,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		if (idx == m_iDaughterClue && !m_bCutFound)
 		{
 			m_bCutFound = true;
-			m_Story.Reveal(gm, this, HouseKey(), playerId, "daughter", "The house did pay. The storekeeper kept tins back to trade for her daughter's antibiotics, and the council doesn't know.");
+			m_Story.Reveal(gm, this, HouseKey(), playerId, "daughter", "The house did pay. The storekeeper kept tins back to trade for his son's antibiotics, and the council doesn't know.");
 			SetObjectLabels(0, "", Labels());
 		}
 	}
@@ -434,7 +434,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		else if (act == ACT_RECEIPT)
 			Receipt(gm, playerId);
 		else if (act == ACT_SECRET)
-			Collect(gm, playerId, 1, 1, "secret", "She pays out of her hidden tins, one at a time, and doesn't thank you. Her daughter watches from the stairs.");
+			Collect(gm, playerId, 1, 1, "secret", "He pays out of his hidden tins, one at a time, and doesn't thank you. His son watches from the stairs.");
 		else if (act == ACT_COUNCIL)
 			Council(gm, playerId);
 		else if (act == ACT_STRONGHOLD)
@@ -467,8 +467,8 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 
 		if (m_sTruth == "cut")
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"We've nothing. That's all. Nothing.\" She doesn't look at the stairs.");
-			RZ_StoryKit.Read(gm, this, playerId, "police", "She's lying, and badly. Whatever's missing, she knows where it went.");
+			gm.NotifyPlayer(playerId, m_sTitle, "\"We've nothing. That's all. Nothing.\" He doesn't look at the stairs.");
+			RZ_StoryKit.Read(gm, this, playerId, "police", "He's lying, and badly. Whatever's missing, he knows where it went.");
 			RZ_StoryKit.Read(gm, this, playerId, "nurse", "Empty antibiotic boxes in the bin by the door. Children's dose.");
 			return;
 		}
@@ -481,7 +481,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 			return;
 		}
 
-		gm.NotifyPlayer(playerId, m_sTitle, string.Format("\"%1 is down to the bone. Everyone's late this week. Count the shelves yourself.\" You do. She's right.", m_sHouse));
+		gm.NotifyPlayer(playerId, m_sTitle, string.Format("\"%1 is down to the bone. Everyone's late this week. Count the shelves yourself.\" You do. He's right.", m_sHouse));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -496,7 +496,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		RZ_ECheck result = m_Ways.TryTrust(gm, playerId, "keeper", RZ_EFaction.SURVIVORS, difficulty, "nurse,police");
 		if (result == RZ_ECheck.REFUSED)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Don't you talk to me like a friend.\" She won't hear it from you again.");
+			gm.NotifyPlayer(playerId, m_sTitle, "\"Don't you talk to me like a friend.\" He won't hear it from you again.");
 			return;
 		}
 
@@ -509,7 +509,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		}
 
 		m_fRewardScale = 0.75;
-		Collect(gm, playerId, 2, 0, "persuaded", "She pays what she can, two tins short of the full count, and looks you in the eye while she does it.");
+		Collect(gm, playerId, 2, 0, "persuaded", "He pays what he can, two tins short of the full count, and looks you in the eye while he does it.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -523,13 +523,13 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		RZ_ECheck result = m_Ways.TryFear(gm, playerId, "racket.keeper." + m_iHouse.ToString(), RZ_EFaction.SURVIVORS, RZ_EFaction.BANDITS, difficulty, false, PRESS_INFAMY, "excon,raider");
 		if (result == RZ_ECheck.PASS)
 		{
-			Collect(gm, playerId, FOOD, 0, "pressed", "You say it quietly, close. She pays the full count. Nobody in that doorway will forget your face.");
+			Collect(gm, playerId, FOOD, 0, "pressed", "You say it quietly, close. He pays the full count. Nobody in that doorway will forget your face.");
 			return;
 		}
 
 		if (result == RZ_ECheck.SHORT)
 		{
-			Collect(gm, playerId, FOOD, SHORT_INFAMY, "pressed", "It takes longer than it should, and louder. She pays the full count. The whole house heard.");
+			Collect(gm, playerId, FOOD, SHORT_INFAMY, "pressed", "It takes longer than it should, and louder. He pays the full count. The whole house heard.");
 			return;
 		}
 
@@ -588,7 +588,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 			houses.RemovePopulation(m_iHouse, 1);
 
 		RZ_StoryKit.Remember(gm, RZ_EFaction.SURVIVORS, m_vPos, 3000, playerId, RZ_Leaders.MEM_HELPED);
-		Collect(gm, playerId, FOOD, 0, "council", "The council head pays from the stores and puts her out the same hour. A girl loses her mother's place by the stove.");
+		Collect(gm, playerId, FOOD, 0, "council", "The council head pays from the stores and puts him out the same hour. A boy loses his father's place by the stove.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -890,6 +890,13 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 	protected static const float EXCON_SECONDS = 8;
 
 	//------------------------------------------------------------------------------------------------
+	//! Out: the crew walks with you.
+	override protected bool ObjFirstDone()
+	{
+		return m_Escort.IsStarted();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.BANDITS, RZ_ETier.TRUSTED, 35, 35);
@@ -983,7 +990,7 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		m_sTitle = "Bust Out";
 		m_sDeed = "broke one of ours out at {town}";
 		m_sBrief = string.Format("Bastion is holding some of ours in a stockade near %1. They owe us, and nobody pays from a stockade. Cut them out and walk them to %2. In one of their uniforms, the guards won't look twice.", postName, m_sMeetName);
-		m_sObjective = string.Format("Free the crew from the stockade near %1 and walk the crew to %2.", postName, m_sMeetName);
+		ObjThen(string.Format("Free the crew from the stockade near %1.", postName), string.Format("Walk the crew to %1.", m_sMeetName));
 		if (!m_Escort.Begin(gm, LandPointNear(m_vGate, 3, 6)))
 			return false;
 
@@ -1073,7 +1080,7 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 			if (h)
 			{
 				gm.GetSafehouses().AddPopulationAt(m_iHouse, 1);
-				RZ_StoryKit.LaterWith(gm, this, h.m_sName, "A woman at the door holds a boy by the collar like he might run again. \"He says you got him out. He says it was nothing. Was it nothing?\"", h.m_vPos, true);
+				RZ_StoryKit.LaterWith(gm, this, h.m_sName, "A man at the door holds a boy by the collar like he might run again. \"He says you got him out. He says it was nothing. Was it nothing?\"", h.m_vPos, true);
 			}
 
 			RZ_StoryKit.Record(this, "fate", town, "boy_home", who);

@@ -321,9 +321,9 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 //! appears once the one before it has been read. Half the time they're alive (bring them home:
 //! they join a safehouse); otherwise their last letter (less Fame). ★ Police: grid references.
 //! A story job (key `trail`, kept per first town): lost, as they said (alive half the time); found
-//! (alive, with their bitten mother, and staying); or taken in by a crew (a Red Hand holding within 5
+//! (alive, with their bitten father, and staying); or taken in by a crew (a Red Hand holding within 5
 //! km of the last town). The neighbour at the first house (the talk scene): [Known - Haven] or a tin
-//! and she saw which way (straight to the last town: no gun, no standing). At the end: found: leave
+//! and he saw which way (straight to the last town: no gun, no standing). At the end: found: leave
 //! them together (nobody pays, an Independent asset); crew: the lookout lets the kid go ([Known - Red
 //! Hand] or three tins), or leave the kid with the crew (5 Red Hand Favor, the Haven pays nothing).
 class RZ_Mission_TrailOfClues : RZ_PuzzleMission
@@ -403,7 +403,7 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 		m_sName = RZ_NoteText.FirstName(m_Rng);
 		m_bAlive = m_Rng.Chance(0.5);
 		RZ_Settlement third = gm.GetSettlement(c);
-		int note = AddClue("A note on the kitchen table", string.Format("Gone to %1 to look for Mum. She was at the school there last week, someone said. Don't wait up. Back by dark.\n%2",
+		int note = AddClue("A note on the kitchen table", string.Format("Gone to %1 to look for Dad. He was at the school there last week, someone said. Don't wait up. Back by dark.\n%2",
 			second.m_sName, RZ_NoteText.Signoff(m_Rng, m_sName)));
 		SpawnClue(gm, RZ_EPuzzleProp.CLUE, m_aSpots[0], note, "Read the note on the table");
 
@@ -434,17 +434,17 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 			m_bAlive = true;
 
 		m_Job.m_vReadAt = m_aSpots[0];
-		m_Job.Read("", "elder", string.Format("The family photo on the dresser has a gap in it where someone took one out. %1 took Mum with them.", m_sName));
+		m_Job.Read("", "elder", string.Format("The family photo on the dresser has a gap in it where someone took one out. %1 took Dad with them.", m_sName));
 		m_Job.Read("crew", "excon,raider", string.Format("A red chalk mark by the gate, a crew's 'pick up here'. %1 recruits young.", m_sCrew));
 
 		RZ_TalkScene sc = m_Job.Scene("The neighbour", "trail.neighbour", LandPointNear(m_aSpots[0], 6, 10));
 		int n0 = sc.Node("A neighbour hangs out washing that won't dry. \"Gone three days. The dog came back on the second. Make of that what you like.\"");
-		sc.Way(n0, "Which way did they go?", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_SKIP, "She points with a peg, past the next town and the one after. \"Walking fast, like they'd decided.\"", "I don't watch the road. I watch the washing.");
-		sc.Way(n0, "A tin for what she saw", RZ_TalkScene.FOOD, -1, 1, WAY_SKIP, "She pockets the tin and tells you exactly where, down to the gate.");
+		sc.Way(n0, "Which way did they go?", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_SKIP, "He points with a peg, past the next town and the one after. \"Walking fast, like they'd decided.\"", "I don't watch the road. I watch the washing.");
+		sc.Way(n0, "A tin for what he saw", RZ_TalkScene.FOOD, -1, 1, WAY_SKIP, "He pockets the tin and tells you exactly where, down to the gate.");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! At the last town: Mum, or the crew's lookout (a second scene).
+	//! At the last town: Dad, or the crew's lookout (a second scene).
 	protected void LastScene(RZ_GameModeComponent gm)
 	{
 		string truth = m_Job.m_sTruth;
@@ -456,9 +456,9 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 
 		if (truth == "found")
 		{
-			RZ_TalkScene mum = m_Job.Scene("Their mother", "trail.mum", LandPointNear(m_aSpots[2], 3, 6));
-			int m0 = mum.Node(string.Format("A woman with a bandaged arm sits by %1. \"Don't make me send them home. Don't make me keep them either.\"", m_sName));
-			mum.Decide(m0, "Leave them together", "leave them with their mother", WAY_STAY, "You'll tell the house you didn't find them. Nobody pays for that.", RZ_CureFinale.INDEP);
+			RZ_TalkScene mum = m_Job.Scene("Their father", "trail.mum", LandPointNear(m_aSpots[2], 3, 6));
+			int m0 = mum.Node(string.Format("A man with a bandaged arm sits by %1. \"Don't make me send them home. Don't make me keep them either.\"", m_sName));
+			mum.Decide(m0, "Leave them together", "leave them with their father", WAY_STAY, "You'll tell the house you didn't find them. Nobody pays for that.", RZ_CureFinale.INDEP);
 			return;
 		}
 
@@ -490,7 +490,7 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 		if (way == WAY_STAY)
 		{
 			RZ_StoryKit.Record(this, "fate", subject, "stayed", who);
-			RZ_StoryKit.Later(gm, playerId, "A note", string.Format("A note under a stone where you'll find it: \"Mum's arm is better. We're not coming back. Thank you for not making us.\" %1", m_sName), m_aSpots[2]);
+			RZ_StoryKit.Later(gm, playerId, "A note", string.Format("A note under a stone where you'll find it: \"Dad's arm is better. We're not coming back. Thank you for not making us.\" %1", m_sName), m_aSpots[2]);
 		}
 		else
 		{
@@ -521,7 +521,7 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 		if (idx == 0 && m_iStep == 0)
 		{
 			m_iStep = 1;
-			int bag = AddClue(m_sName + "'s bag", string.Format("A school bag with %1 written inside the flap. A map with %2 circled twice, and a page torn from a diary: \"%3. Mum isn't here. They say a doctor went toward %2. Going.\"",
+			int bag = AddClue(m_sName + "'s bag", string.Format("A school bag with %1 written inside the flap. A map with %2 circled twice, and a page torn from a diary: \"%3. Dad isn't here. They say a doctor went toward %2. Going.\"",
 				m_sName, Where(gm, playerId, 2), RZ_NoteText.Day(DayNow(gm))));
 			SpawnClue(gm, RZ_EPuzzleProp.CLUE, m_aSpots[1], bag, "Look in the bag");
 			MoveToStep(gm, 1);
@@ -534,13 +534,13 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 			m_iStep = 2;
 			if (m_bAlive)
 			{
-				int voice = AddClue(m_sName, "Thin, dirty, alive. \"I couldn't find her. I couldn't go back without her.\"");
+				int voice = AddClue(m_sName, "Thin, dirty, alive. \"I couldn't find him. I couldn't go back without him.\"");
 				SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_aSpots[2], 0, "", "Bring them home", voice, "Talk to " + m_sName);
 				LastScene(gm);
 			}
 			else
 			{
-				m_iFinal = AddClue("A last letter", string.Format("Mum, if they find this before you do: I got as far as %1. I'm not scared. Tell the others not to come this way.\n%2",
+				m_iFinal = AddClue("A last letter", string.Format("Dad, if they find this before you do: I got as far as %1. I'm not scared. Tell the others not to come this way.\n%2",
 					Where(gm, playerId, 2), RZ_NoteText.Signoff(m_Rng, m_sName)));
 				SpawnClue(gm, RZ_EPuzzleProp.BODY, m_aSpots[2], m_iFinal, "Search the body");
 			}

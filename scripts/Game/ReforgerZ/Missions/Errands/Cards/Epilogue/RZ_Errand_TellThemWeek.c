@@ -13,8 +13,8 @@ class RZ_Errand_TellThemWeek : RZ_EpiCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		Offer("There's a family at this house still waiting for {name}, who went out in the spring and didn't come back. People say {name} has been seen with the infected from {pack}. Somebody should find out and tell the family. I can't.",
-			"{name}'s mother still sets a place every night. Somebody's seen {name} walking with the infected from {pack}. Go and look. Then tell her, one way or another, before the gates open.");
-		Over("Never mind. She knows. Somebody told her this morning.");
+			"{name}'s father still sets a place every night. Somebody's seen {name} walking with the infected from {pack}. Go and look. Then tell him, one way or another, before the gates open.");
+		Over("Never mind. He knows. Somebody told him this morning.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Read the marks below {pack}";
@@ -25,7 +25,7 @@ class RZ_Errand_TellThemWeek : RZ_EpiCard
 		w.m_sStep = "Go below where the infected from {pack} gather and search the ground for any sign of {name} (30 s unseen), then come back to {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("An ID card. In the mud. Then it's true. Thank you for bringing something back. She'll want to hold it.");
+		w.Done("An ID card. In the mud. Then it's true. Thank you for bringing something back. He'll want to hold it.");
 
 		w = Way("talk");
 		w.m_sLabel = "Tell them plainly";

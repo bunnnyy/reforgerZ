@@ -231,13 +231,13 @@ class RZ_DutyFinds
 		o = b.Opt("Reset them and go on", "Reset, and one moved a field over.");
 		o.Next("end");
 		beats.Insert(b);
-		b = new RZ_DutyBeat("girl", "A girl, nine or ten, with a rabbit by the ears. She sees you and doesn't run. She just holds it tighter.", RZ_DutyBeat.AT_SAME);
+		b = new RZ_DutyBeat("girl", "A boy, nine or ten, with a rabbit by the ears. He sees you and doesn't run. He just holds it tighter.", RZ_DutyBeat.AT_SAME);
 		b.m_sIf = "wait";
-		o = b.Opt("Let her keep it", "She goes backwards for the first ten steps. The hunter looks at the sky.");
+		o = b.Opt("Let him keep it", "He goes backwards for the first ten steps. The hunter looks at the sky.");
 		o.Fx("local").Later("who took rabbits from the snare line", "You let me keep the rabbit. My brother ate. I've been setting my own since, away from yours.");
-		o = b.Opt("Take the rabbit back", "She lets go of it. She doesn't cry until she's past the gate.");
+		o = b.Opt("Take the rabbit back", "He lets go of it. He doesn't cry until he's past the gate.");
 		o.Fx("feed");
-		o = b.Opt("Bring her in to the house", "She comes, because there's nowhere else. There's another mouth at the table tonight.");
+		o = b.Opt("Bring him in to the house", "He comes, because there's nowhere else. There's another mouth at the table tonight.");
 		o.Fx("report,local").Later("who was brought in off the snare line", "You brought me in. I was angry. I'm not now, mostly.");
 		beats.Insert(b);
 	}

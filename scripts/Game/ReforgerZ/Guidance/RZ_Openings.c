@@ -74,9 +74,9 @@ class RZ_Opening
 	float m_fWaitNear;			// walking with you: the next step waits since then for them to catch up
 	bool m_bHadContact;
 	bool m_bContactDead;
-	string m_sName;				// "Vera Holm"
-	string m_sShort;			// "Vera" ("Old Marta" for a wanderer)
-	string m_sWho;				// "a patient's mother"
+	string m_sName;				// "Pavel Holm"
+	string m_sShort;			// "Pavel" ("Old Marek" for a wanderer)
+	string m_sWho;				// "a patient's father"
 	string m_sSpeaker;			// the title their lines come under; whoever finds you, once they're dead
 	int m_iEnd = -1;			// the faction the chain ends with
 	vector m_vEnd;
@@ -2093,9 +2093,25 @@ class RZ_Openings
 		}
 
 		RZ_Opening o = ById(id);
+		RZ_Errands errands = m_GM.GetErrands();
+		RZ_Errand e;
+		if (errands && o.m_iErrand >= 0)
+			e = errands.FindById(o.m_iErrand);
+
+		// Done there and then, in this conversation: the thing taken, their thanks, and the next
+		// step said into this same talk (Ready finds it open). Never later, for walking back.
 		o.m_bTended = true;
+		int before = said.Count();
 		said.Insert(RZ_OpeningText.HandedOver(o.m_iTask));
-		RZ_Log.Info(string.Format("Openings: %1 handed over to %2 (step 2, task %3)", RZ_Util.PlayerName(playerId), o.m_sName, o.m_iTask));
+		if (!e || !errands.FinishNow(e, user))
+		{
+			o.m_bTended = false;
+			said.Remove(before);
+			said.Insert(RZ_OpeningText.HandOverMissing());
+			return;
+		}
+
+		RZ_Log.Info(string.Format("Openings: %1 handed over to %2 (step 2, task %3), done there and then", RZ_Util.PlayerName(playerId), o.m_sName, o.m_iTask));
 	}
 
 	//------------------------------------------------------------------------------------------------

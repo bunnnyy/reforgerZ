@@ -1388,6 +1388,14 @@ class RZ_Interactions
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The door spot prefab (an invisible readable box), for systems that put something to read on a
+	//! real door (an opening's scratched door).
+	ResourceName GetDoorSpotPrefab()
+	{
+		return DoorSpotPrefab();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void UpdateSpots(array<IEntity> players)
 	{
 		for (int i = m_aSpots.Count() - 1; i >= 0; i--)

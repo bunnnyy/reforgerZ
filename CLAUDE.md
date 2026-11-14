@@ -51,6 +51,8 @@ one. Designs are not docs:
 When you restructure, update the **Doc map** below and the README's doc list in the same commit.
 
 ### Before committing, check
+- [ ] A new or changed task meets `docs/MISSION_RULES.md` (its checklist); a rule's status there is current;
+      `python3 tools/mission_rules.py --strict` ends `mission_rules: OK`.
 - [ ] Every doc statement you touched matches the code. Docs say "planned" for anything not built.
 - [ ] No doc mentions a dropped idea except the roadmap's "Dropped" list.
 - [ ] No broken relative links (`grep -o '([^)]*\.md)' -r README.md docs/ designs/`).
@@ -72,9 +74,10 @@ The Doc map covers `docs/` only. Approved but unbuilt designs are in `designs/` 
 | `docs/INFECTED.md` | The infected: the spawner, the towns' crawlers, loose ones, heat hordes, infection adapts, the land grid, bodies and the agent budget, the tribes (phases 1–5 built), the behaviour layer |
 | `docs/TRACES.md` | Traces, the world's environmental storytelling: door marks (the grammar, the symbols, reading by level, where marks come from, ageing, doors on the map), doors you can see (decals, boards), player traces, the scenes (the first days and the line, vignettes, live traces), sound and light, the cure and the epilogue, errands' old mark, the Long Table's absence, caps, its decisions |
 | `docs/PLACES.md` | Task places and things: the mainland (no island gets anything), a place is what its words say (the name rule and the words by what's there), the needs (place flags, the things a task's words name and their slots), the needs table, how pickers use them (`RZ_PlaceFind`), the live check and its log line, the place audit (`run.sh tasks`, its log lines and drawing), results, what isn't covered |
-| `docs/SITES.md` | Camp sites: the site grid, real footprints (`footprints.json`, the measuring plugin), drop don't squeeze, the surroundings and the threat sectors, the site audit (its checks, score and log lines, `run.sh sites`), `render.py --placed` and the fly-to plugin, the world-building kit (`world_kit.txt`), hand-built sites (the site builder, the saves, role spots and the checklist, pinning, `tools/hand_built.py`) |
+| `docs/SITES.md` | Camp sites: the site grid, real footprints (`footprints.json`, the measuring plugin), drop don't squeeze, the surroundings and the threat sectors, the site audit (its checks, score and log lines, `run.sh sites`), how fast a place fills (the fast tick, Spawn ms, Spawn timing lines), `render.py --placed` and the fly-to plugin, the world-building kit (`world_kit.txt`), hand-built sites (the site builder, the saves, role spots and the checklist, pinning, `tools/hand_built.py`) |
 | `docs/ROADMAP.md` | Built, next, play-test priorities, and the Dropped list |
 | `docs/REPUTATION.md` | Factions, Fame/Infamy/Favor, tiers, shops, perks, leaders, AI hostility, morale/needs/truces |
+| `docs/MISSION_RULES.md` | The rules every task follows (place, people, doing it, talk and hand-overs, objectives and the tracker), each with the doc that owns it, how it's kept and its status; the checklist for a new task |
 | `docs/MISSIONS.md` | Every contract, world event, puzzle, leader and arc mission, with requirements and ✅ status |
 | `docs/ERRANDS.md` | Errands: the givers (named people, the wanderers' asks), the dealer, keeping them true, ways and steps, pay, the faults table, every routine and card with ✅, the duties (always there to be asked for), the trust ladder, the sorting duties played at their place and the duties' people, telemetry |
 | `docs/QUESTLINES.md` | The four majors (acts, defaults, endings) and the long questlines (three per faction, two for the Long Table): stages, approaches, endings, crossings |
@@ -117,6 +120,8 @@ Write conservatively:
 - Conversations are `.rzd` files in `dialogue/`: after changing one, run `python3 tools/dialogue_pack.py`
   (the dialogue lint; it writes the generated packs in `Dialogue/Pack/`, never edited by hand) and
   `--lock` when new ids ship (`docs/DIALOGUE.md`).
+- Run `python3 tools/mission_rules.py --strict` after adding or changing a task: it must end
+  `mission_rules: OK` (what it checks: `docs/WORKBENCH_SETUP.md`, "Mission rules check").
 - Run `python3 tools/voice_lint.py` after changing player text: it must print `voice_lint: OK`
   (the text lint: what it checks is in `docs/WRITING.md`, how to run it in `docs/WORKBENCH_SETUP.md`).
 - After changes to missions or cross-system logic, run `tools/runtime_test/run.sh` (60–90 min)

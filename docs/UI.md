@@ -294,7 +294,7 @@ important first, then oldest first. Each card comes in with vanilla's own hint s
 **A job's start and end cards** (`Missions/RZ_JobCards.c`). Whenever a job becomes yours, one card
 to you only: its kind and title ("Quest started: The Other Two: his number", "Job started: Recover the
 Bus", "Errand started: Water for Morton"), then "From" its giver ("From Sergeant Hale at Fort Kell.",
-"From Mara, the cook at Morton.", "From the Haven." for a questline's next stage), then its first
+"From Marek, the cook at Morton.", "From the Haven." for a questline's next stage), then its first
 objective (an errand's step with its direction). It comes when you take a job in talk, when a
 questline you're part of starts its next stage, when an opening hands you its step, and on the old
 paths without the talk screen. Tagged START: high, and a card even in the quiet start and the first
@@ -332,7 +332,7 @@ under the secure-radio panel while that shows), for the one job you follow. The 
 - **The tracked job and nothing else:** its type icon (from the imageset, tinted the giver's
   colour) and its name; its **current objective** after a filled diamond (`track_current`); the
   **known next objective**, dim, after an open diamond (`track_next`), when there is one, with its
-  place after it when that's somewhere else ("Go back to Mara · Morton"); and the **area line**, on a
+  place after it when that's somewhere else ("Go back to Marek · Morton"); and the **area line**, on a
   line of its own in amber (`TrackerAreaRow`), as below. No box: the text sits on the world with a
   dark shadow.
 - **Where it points: the current objective.** Every objective has its own place, where that step is
@@ -342,7 +342,10 @@ under the secure-radio panel while that shows), for the one job you follow. The 
   out, moving with them, and their usual spot only while they're put away (`RZ_Errands.GiverAt`,
   `RZ_ObjPlace.Person`). **One objective is one thing at one place:** a duty played as a scene shows
   each step as its own line (The Cold Chain: take the box, carry it to the far door, hand it over,
-  sign the manifest, then go back), each at its beat's place (`RZ_DutyGoals.c`), and an errand's
+  sign the manifest, then go back), each at its beat's place (`RZ_DutyGoals.c`); a task carried for
+  real ([DESIGN.md](DESIGN.md#carrying)) shows *Pick up a crate outside (1 of 3 carried).* at the
+  pile (or the nearest one put down elsewhere) and *Put the crate down indoors, on the ground
+  floor.* at the stack, the one you're on first; and an errand's
   step drops its last "then tell {giver}" clause, since going back is the next line. The area line, the arrow and metres, the map's mark and the Quests
   tab's row all follow the current objective's place, and move on when it does. The job's own place
   (where it was given, or its town) is only the fallback for an objective without one.
@@ -371,7 +374,8 @@ under the secure-radio panel while that shows), for the one job you follow. The 
 
 **What's tracked.** Nothing, until you pick a job in the Quests tab or take one. Taking a job (being
 counted on it: a job offered to you that you reached, a questline you took part in, an errand you
-agreed to) tracks the newest one if nothing is tracked. When the tracked job ends, the newest one still
+agreed to) tracks it at once, whatever was tracked before: the job you just said yes to is the
+one on the tracker, within 2 s of the talk. When the tracked job ends, the newest one still
 taken is tracked. Picking the tracked job again stops tracking it, and then nothing is tracked
 until you take a new job. The choice is saved on your profile (`m_iTrackedId`, with the title to
 find it again after a restart), so it survives a relog. A job you haven't taken is tracked only if
@@ -414,7 +418,7 @@ detail:
 
 | Block | What it says |
 |---|---|
-| The heading | The name, then one line: the faction, who gave it and the area ("The Haven · from Elder Mara · Morton, a few km north-west"; a questline's stage stands for "from") |
+| The heading | The name, then one line: the faction, who gave it and the area ("The Haven · from Elder Marek · Morton, a few km north-west"; a questline's stage stands for "from") |
 | The brief | A few lines in the giver's voice: what it is and why it matters (the job's own brief, cut to about three sentences at a sentence's end; `RZ_QuestText.Short`). Only what you were told |
 | Objectives | New Vegas style, up to six: done ones struck through and faint with a tick; the current one bright after a filled diamond; the known next ones dim after an open diamond; an optional one as "(Optional) ..."; a failed one as "Failed: ...", red. An open one shows its place after it when that's somewhere else than the one before ("Take them a crate · Outskirts 59-95") |
 | Reward, as far as you know | About so much Fame and Favor with the giver, "It depends on how it ends.", or "No pay. It shows you the way, that's all." for a job that pays nothing (Where the Work Is) |
@@ -646,7 +650,7 @@ channel**. Nobody opens it on you by looking at them or walking up: someone who 
 as a [subtitle](#subtitles-and-the-reader) with their name (a stranger, a road post, an opening's
 contact; [DIALOGUE.md](DIALOGUE.md#who-opens-a-conversation)), their nametag shows as you come near,
 and where it's a step of a job the [tracker](#the-quest-tracker) and the map's diamond point at them
-("Talk to Vera Holm.").
+("Talk to Pavel Holm.").
 
 **One Talk prompt per person.** Everyone who talks has exactly one prompt, **Talk to ...**, and
 everything else they offer is a reply on their hub (vanilla's own actions on them stay). For the
@@ -714,12 +718,12 @@ meter). The head row says who and from where:
 | Part | What it shows |
 |---|---|
 | Source icon (28) | how the line reaches you, in the speaker's colour: a speech bubble in person (`standing_word`), a loudspeaker (`status_broadcast`: Bastion's loudspeakers, the Perimeter line, a speaker on a post, a loudhailer), a paper sheet (`voice_note`: a sign, a board or a note read out). A radio's voice has the radio (`status_radio_open`) when it can't go to its own box |
-| Name (bold 24) | in their faction colour, grey (163, 158, 144) when they have none: "Marta Weber" |
+| Name (bold 24) | in their faction colour, grey (163, 158, 144) when they have none: "Marek Weber" |
 | Role (22, dim) | after a dot, what they are, with whose: "· Haven council head in Morton". The faction's short name goes in front unless the name or role already has it ("· Bastion checkpoint"); cut at 48 characters; hidden when there's none |
 | Arrow and distance (24, 22 bold, bone) | **in person only**: the you-are-here arrow (`marker_self`) turned to the speaker from where you face, and "12 m" (1.4 km past a kilometre), redrawn every frame while the line shows, from their body while it streams in, else from where they stood. Hidden for loudspeakers, notes and radio, and when the server had no place for them |
 
-The name and role come from the title the line is said under ("Marta Weber, cook at Morton" is
-Marta Weber, then the rest). How it reaches you is worked out from that title and the line
+The name and role come from the title the line is said under ("Marek Weber, cook at Morton" is
+Marek Weber, then the rest). How it reaches you is worked out from that title and the line
 (`RZ_SayLine.SourceFor`): a title naming a loudspeaker or loudhailer, or a line opening "A
 loudhailer" or "A speaker on a post", is a loudspeaker; a line opening "A sign", "A new sign",
 "The board", "The roster board", "Under the toll sign" or "A note" is a note; a radio channel's
@@ -883,7 +887,7 @@ drawn: which job is missing shows on the markers, not the picture.
 ### The shop screen
 
 As approved (`shop.html`): **Trade** at a quartermaster opens a panel 1,600 × 880 in the middle of the screen, the
-world dimmed. The header says whose stores they are ("Haven stores", "Ada Reyes, quartermaster in
+world dimmed. The header says whose stores they are ("Haven stores", "Adam Reyes, quartermaster in
 Morton") and, on the right, your standing with them and your Favor ("You're Trusted", "64 Favor" in
 the faction's colour), over a 2 px line in that colour. Under it the categories as tabs: **Food
 and water, Medical, Gear and tools, Weapons and ammo, Services** (a tab with nothing on it is

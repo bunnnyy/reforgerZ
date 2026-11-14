@@ -1,7 +1,7 @@
 //! The Officer's Coat (docs/ERRANDS.md, the house; a disguise card): you're in Bastion kit as a
-//! disguise (below Known with Bastion) at a Haven house. A mother asks after her son in the stockade.
-//! Tell her you're not Bastion; play the soldier and take a tin "for the paperwork" (a lie, found
-//! when she asks at a post); or go to the post yourself and ask: "He's on the roster as KIA, or
+//! disguise (below Known with Bastion) at a Haven house. A father asks after his son in the stockade.
+//! Tell his you're not Bastion; play the soldier and take a tin "for the paperwork" (a lie, found
+//! when he asks at a post); or go to the post yourself and ask: "He's on the roster as KIA, or
 //! struck off."
 class RZ_Errand_OfficersCoat : RZ_ErrandCard
 {
@@ -18,7 +18,7 @@ class RZ_Errand_OfficersCoat : RZ_ErrandCard
 		Over("Never mind. Someone from the post came by. I know now, and I wish I didn't.");
 
 		RZ_ErrandWay w = Way("talk");
-		w.m_sLabel = "Tell her you're not Bastion";
+		w.m_sLabel = "Tell his you're not Bastion";
 		w.Done("Oh. Not Bastion. Just the jacket, then. Well. Thank you for saying so. Most wouldn't.");
 
 		w = Way("lie");
@@ -32,7 +32,7 @@ class RZ_Errand_OfficersCoat : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 25;
-		w.m_sStep = "Go to the Bastion post {subject_place} out of uniform and ask after her son (10 s there), then come back to {giver}.";
+		w.m_sStep = "Go to the Bastion post {subject_place} out of uniform and ask after his son (10 s there), then come back to {giver}.";
 		w.m_iFavor = 4;
 		w.Done("On the roster as killed, or struck off? Which? They wouldn't say which? Then I'll sit down. I'll just sit down here a minute.");
 	}
@@ -89,11 +89,11 @@ class RZ_Errand_OfficersCoat : RZ_ErrandCard
 		if (w.m_iIndex != 1)
 			return;
 
-		// The tin was the house's; the lie comes out when she asks at a post herself
+		// The tin was the house's; the lie comes out when he asks at a post himself
 		if (gm.GetSafehouses())
 			gm.GetSafehouses().AddFood(e.m_iHouse, -1);
 
 		gm.GetFacts().Memory().Lies().Tell(gm, playerId, "errand.officers_coat", e.m_sSubject, RZ_EFaction.SURVIVORS, e.m_sGiver, e.m_vSubject, RZ_ELieTest.RUMOUR, 3,
-			"She asked at the post herself, and there was no paperwork. {house} knows who took the tin.");
+			"He asked at the post himself, and there was no paperwork. {house} knows who took the tin.");
 	}
 }

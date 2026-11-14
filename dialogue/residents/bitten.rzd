@@ -83,13 +83,13 @@ prio world
 voice haven
 
 node start
-  say The little one at the back. She's been coughing since the school trip, since before all this, and now people move their bowls away from her at supper.
-  say (her father) It's her chest. It's always been her chest. I keep telling them, and they look at me like I'd say anything.
-  say People look at her like she's bitten. She isn't. Is she? You'd know. You've the hands for it.
-  > @chest That isn't a bite. It's her chest. -> chest   if bg:nurse,doctor
+  say The little one at the back. He's been coughing since the school trip, since before all this, and now people move their bowls away from him at supper.
+  say (his father) It's his chest. It's always been his chest. I keep telling them, and they look at me like I'd say anything.
+  say People look at him like he's bitten. He isn't. Is he? You'd know. You've the hands for it.
+  > @chest That isn't a bite. It's his chest. -> chest   if bg:nurse,doctor
   > @back Let me ask you something else. -> hub
 
 node chest
-  say Say it again, louder, at supper. They'll listen to you. They don't listen to him, because he's her father, and everybody knows a father would say anything.
+  say Say it again, louder, at supper. They'll listen to you. They don't listen to him, because he's his father, and everybody knows a father would say anything.
   do learn:house.cough@here
   > @back1 Let me ask you something else. -> hub

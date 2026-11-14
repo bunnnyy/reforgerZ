@@ -142,7 +142,7 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 			RZ_Safehouse h = gm.GetSafehouses().Get(m_iHouse);
 			gm.GetSafehouses().AddFood(m_iHouse, 3);
 			RZ_StoryKit.Record(this, "went_to", town, "family", who);
-			RZ_StoryKit.LaterWith(gm, this, h.m_sName, "A girl with a jam jar under each arm stops at the door. \"Mum says thank you for not eating our larder. She says most people would.\"", h.m_vPos, true);
+			RZ_StoryKit.LaterWith(gm, this, h.m_sName, "A boy with a jam jar under each arm stops at the door. \"Dad says thank you for not eating our larder. He says most people would.\"", h.m_vPos, true);
 			NotifyParticipants(gm, m_sTitle, string.Format("The scout's cart goes back empty. The jars go to %1, and nobody pays you for them.", h.m_sName));
 			return;
 		}
@@ -192,7 +192,7 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 //! AI (spawned when someone comes within 300 m), and the mission fails if they all die (fallout:
 //! The Name on the Tag). Amends: works off Haven Infamy, except for a Watched player who sends them
 //! to Bastion. ★ Nurse: bonus Fame, and one more of them makes it.
-//! After the third wave the mother asks where they're going (anyone who took part, after the 5 s
+//! After the third wave the father asks where they're going (anyone who took part, after the 5 s
 //! hold): the nearest house (3, or 4 with a ★), the hungriest house (the same, and Haven morale +1),
 //! or Bastion's post (Bastion pays the base instead; the Haven pays nothing). Nobody answers in
 //! 90 s: the nearest house. One time in four the father is bitten: ★ Nurse or Doctor sees it at once;
@@ -311,7 +311,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 
 		super.OnUpdate(gm, dt, ids, players);
 
-		// Held: before they go, the mother asks where
+		// Held: before they go, the father asks where
 		if (m_eState == RZ_EMissionState.SUCCEEDED && !m_bChosen)
 		{
 			m_eState = RZ_EMissionState.ACTIVE;
@@ -343,7 +343,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 			return;
 		}
 
-		NotifyParticipants(gm, m_sTitle, string.Format("It's quiet. Mrs %1 has the kids by the hands. \"Where are we going? Tell me where.\" Talk to her.", m_sSurname));
+		NotifyParticipants(gm, m_sTitle, string.Format("It's quiet. Mr %1 has the kids by the hands. \"Where are we going? Tell me where.\" Talk to him.", m_sSurname));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -362,7 +362,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 			}
 
 			m_iHidBite = playerId;
-			gm.NotifyPlayer(playerId, m_sTitle, "You dress his arm under the sleeve, tight and clean. He doesn't thank you. The mother doesn't see.");
+			gm.NotifyPlayer(playerId, m_sTitle, "You dress his arm under the sleeve, tight and clean. He doesn't thank you. The father doesn't see.");
 			return;
 		}
 
@@ -397,7 +397,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 		}
 
 		if (decider > 0)
-			gm.NotifyPlayer(decider, m_sTitle, "She nods once and doesn't argue. They're ready.");
+			gm.NotifyPlayer(decider, m_sTitle, "He nods once and doesn't argue. They're ready.");
 
 		m_eState = RZ_EMissionState.SUCCEEDED;
 	}
@@ -422,7 +422,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 		}
 
 		// The house checks everyone at the door: a bitten father is walked out at dusk. Hidden by a Nurse
-		// who knew: he comes in, and turns within a season day; the house names her (+8 Haven Infamy)
+		// who knew: he comes in, and turns within a season day; the house names him (+8 Haven Infamy)
 		if (m_bBitten && m_iWhere != WHERE_BASTION && m_iHidBite > 0)
 		{
 			int doorHouse = -1;
@@ -723,8 +723,8 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 //! (the same pay, no extras). Noticed taking it, they turn on you. Open to anyone, unarmed.
 //! A story job (key `medicine`, kept per town): the shelves are stocked, as they said; a crew took
 //! half and is coming back for the rest (a Red Hand holding within 5 km); or the chemist still lives
-//! upstairs and counts her boxes. The woman in the doorway (the talk scene): [Known - Haven] "It's for
-//! the house" or three tins and she brings the box down (no gun, no standing); split it with the
+//! upstairs and counts his boxes. The man in the doorway (the talk scene): [Known - Haven] "It's for
+//! the house" or three tins and he brings the box down (no gun, no standing); split it with the
 //! chemist (60%, an Independent route asset), or sell it to the crew's runner (12 Red Hand Favor, +5
 //! Haven Infamy, the Haven pays nothing). Record `medicine.went_to`.
 class RZ_Mission_MedicineRun : RZ_Mission_Delivery
@@ -914,35 +914,35 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 		m_Job.m_vReadAt = m_vPos;
 		m_Job.Read("looted", "labtech", "The stock book's last page is a list in another hand, every line ticked. Somebody shopped here with an order.");
 		m_Job.Read("looted", "excon,raider", string.Format("Chalk on the till: %1's mark and a date. They'll be back for the rest.", m_sCrew));
-		m_Job.Read("upstairs", "elder", "Washing on the line upstairs, one woman's, and a chair by the window facing the door. She still lives here.");
+		m_Job.Read("upstairs", "elder", "Washing on the line upstairs, one man's, and a chair by the window facing the door. He still lives here.");
 
-		string line = "A woman leans in the doorway. \"Help yourself. I'm only the neighbour. The chemist's been dead since spring, God rest his prices.\"";
+		string line = "A man leans in the doorway. \"Help yourself. I'm only the neighbour. The chemist's been dead since spring, God rest his prices.\"";
 		string reveal = "Nobody wants it but you and the things in the aisles. They don't read labels.";
 		if (truth == "looted")
 		{
-			line = "A woman leans in the doorway, watching the road. \"Half's gone already. A crew came Tuesday with a list.\"";
+			line = "A man leans in the doorway, watching the road. \"Half's gone already. A crew came Tuesday with a list.\"";
 			reveal = string.Format("%1. Their runner's due back for the other half. He's polite, if you're quick.", m_sCrew);
 		}
 		else if (truth == "upstairs")
 		{
-			line = "A woman leans in the doorway with a ledger. \"That's my shop. I live upstairs. I count the boxes every night.\"";
+			line = "A man leans in the doorway with a ledger. \"That's my shop. I live upstairs. I count the boxes every night.\"";
 			reveal = "Mine. Every box. I've kept people alive on that shelf since the trucks stopped. Ask nicely.";
 		}
 
-		RZ_TalkScene sc = m_Job.Scene("The woman in the doorway", "medicine.door", LandPointNear(m_vPos, 6, 10));
+		RZ_TalkScene sc = m_Job.Scene("The man in the doorway", "medicine.door", LandPointNear(m_vPos, 6, 10));
 		int n0 = sc.Node(line);
 		int n1 = sc.Node("So. What's it to be?");
-		sc.Way(n0, "It's for the house.", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_GIVE, string.Format("She sighs and brings the box down herself. \"For %1, then. Tell them who.\"", m_sHomeName), "Everybody says that. Everybody's for a house.");
-		sc.Way(n0, "Three tins for the box", RZ_TalkScene.FOOD, -1, 3, WAY_GIVE, "She counts the tins twice and goes in for the box.");
+		sc.Way(n0, "It's for the house.", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_GIVE, string.Format("He sighs and brings the box down himself. \"For %1, then. Tell them who.\"", m_sHomeName), "Everybody says that. Everybody's for a house.");
+		sc.Way(n0, "Three tins for the box", RZ_TalkScene.FOOD, -1, 3, WAY_GIVE, "He counts the tins twice and goes in for the box.");
 		sc.Ask(n0, "Who else wants it?", n1, reveal, true);
 		if (truth == "upstairs")
-			sc.Decide(n1, "Split it with her", "split the medicine with the chemist", WAY_SPLIT, "\"Half, then. Half's more than anyone's offered.\" She brings down what she'll part with.", RZ_CureFinale.INDEP);
+			sc.Decide(n1, "Split it with him", "split the medicine with the chemist", WAY_SPLIT, "\"Half, then. Half's more than anyone's offered.\" He brings down what he'll part with.", RZ_CureFinale.INDEP);
 		else if (truth == "looted")
 			sc.Decide(n1, "Sell it to the crew's runner", "sell the medicine to the crew", WAY_SELL, "The runner turns up on a bicycle, counts out the price and takes the box. He thanks you nicely.", RZ_EFaction.BANDITS);
 		else
 			sc.Ask(n1, "Why are you still here?", -1, "Where would I go? I'm the only one left who can read his handwriting.");
 
-		sc.Service(n1, "See to her cough", "nurse,doctor", 20, WAY_GIVE, "\"Fine. You've earned a box.\" She brings it down herself.");
+		sc.Service(n1, "See to his cough", "nurse,doctor", 20, WAY_GIVE, "\"Fine. You've earned a box.\" He brings it down himself.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1221,7 +1221,7 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 		m_sTitle = "Missing Scout";
 		m_sDeed = "found the scout near {town}";
 		m_sBrief = string.Format("One of our scouts never came back from %1. He was marking which houses still stood and which wells were clean. Search the area, find his notes and bring them to the safehouse in %2. If you find him, we'll read his name at supper.", s.m_sName, homeName);
-		m_sObjective = string.Format("Find the missing scout's notes in %1 and take the notes to the safehouse in %2.", s.m_sName, homeName);
+		ObjThen(string.Format("Find the missing scout's notes in %1.", s.m_sName), string.Format("Take the notes to the safehouse in %1.", homeName));
 		return true;
 	}
 
@@ -1254,7 +1254,7 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 		}
 		else
 		{
-			m_Choice.Set(string.Format("The clerk reads %1's notes out: weather, tracks, and a stash he marked on his last day. \"The house could use that,\" she says. \"So could anybody.\"", m_sName),
+			m_Choice.Set(string.Format("The clerk reads %1's notes out: weather, tracks, and a stash he marked on his last day. \"The house could use that,\" he says. \"So could anybody.\"", m_sName),
 				"Keep the stash for the house|Read the stash out on the open channel", "decide where the stash goes", OPT_KEEP);
 			m_Choice.Asset(OPT_SECOND, RZ_CureFinale.INDEP);
 		}
@@ -1606,15 +1606,15 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 //! ★ Hunter: quieter approach (hold time runs a third faster).
 class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 {
-	protected int m_iWhere;		// the one choice: 0 the nearest house, 1 their aunt at Bastion's post
+	protected int m_iWhere;		// the one choice: 0 the nearest house, 1 their uncle at Bastion's post
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Mission_RescueTheKids()
 	{
 		m_Story = new RZ_MissionStory("kids");
 		m_Choice = new RZ_OneChoice();
-		m_Choice.Set("The kids are out. The oldest one says their aunt is at Bastion's post: \"She's a cook there. She said to come if.\" Decide with them, here.",
-			"The nearest house|Their aunt at Bastion's post", "decide where the kids go", 0);
+		m_Choice.Set("The kids are out. The oldest one says their uncle is at Bastion's post: \"He's a cook there. He said to come if.\" Decide with them, here.",
+			"The nearest house|Their uncle at Bastion's post", "decide where the kids go", 0);
 		m_Choice.Asset(1, RZ_EFaction.MILITARY);
 	}
 
@@ -1705,7 +1705,7 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 
 		if (m_iWhere == 1)
 		{
-			NotifyParticipants(gm, m_sTitle, "Their aunt meets the truck at the gate with her apron still on.");
+			NotifyParticipants(gm, m_sTitle, "Their uncle meets the truck at the gate with his apron still on.");
 			RZ_StoryKit.Sheltered(gm, this, 3);
 			return;
 		}

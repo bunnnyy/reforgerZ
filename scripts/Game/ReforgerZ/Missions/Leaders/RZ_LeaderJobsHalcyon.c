@@ -52,7 +52,7 @@ class RZ_Job_SecondOpinion : RZ_LeaderDelivery
 			return false;
 
 		m_sTitle = "Second Opinion";
-		m_sBrief = string.Format("Our results disagree with themselves. The Haven's medic in %1 has seen more bites than anyone in this building. Take her my notes and the slides. Ask her what she sees.",
+		m_sBrief = string.Format("Our results disagree with themselves. The Haven's medic in %1 has seen more bites than anyone in this building. Take his my notes and the slides. Ask him what he sees.",
 			h.m_sName);
 		m_sObjective = string.Format("Take the notes and slides to the Haven medic in %1.", h.m_sName);
 		return true;
@@ -148,7 +148,7 @@ class RZ_Job_PatientsNotSamples : RZ_LeaderPuzzle
 }
 
 //------------------------------------------------------------------------------------------------
-//! Independent. A dead researcher's notebook: half research, half what she thought of the
+//! Independent. A dead researcher's notebook: half research, half what he thought of the
 //! director. To the field lead (+1 research) or to the stronghold (+2 research, more Halcyon
 //! Fame, and the field lead doesn't forgive it).
 class RZ_Job_TheNotebook : RZ_LeaderDelivery
@@ -198,7 +198,7 @@ class RZ_Job_TheNotebook : RZ_LeaderDelivery
 		RZ_Rng rng = new RZ_Rng(m_iId * 7919 + 29);
 		m_sAuthor = "Dr " + RZ_NoteText.Surname(rng);
 		m_sTitle = "The Notebook";
-		m_sBrief = string.Format("%1 died in %2 with her notebook on her. Half of it is research. Half of it is what she thought of the director. Bring it to me first. The director will want it too. All of it.",
+		m_sBrief = string.Format("%1 died in %2 with his notebook on him. Half of it is research. Half of it is what he thought of the director. Bring it to me first. The director will want it too. All of it.",
 			m_sAuthor, s.m_sName);
 		m_sObjective = string.Format("Bring %1's notebook from %2 to {leader:%3}.", m_sAuthor, s.m_sName, m_iLeaderId);
 		return true;
@@ -211,7 +211,7 @@ class RZ_Job_TheNotebook : RZ_LeaderDelivery
 		if (dropIndex == 0)
 		{
 			gm.GetCure().AddResearch(1, m_sAuthor + "'s notebook reached a Halcyon field lead, the pages about the director included.");
-			gm.NotifyPlayer(playerId, m_sTitle, "Some of the pages come out and go into the stove. The rest go into the research. Nobody at the lab will ever read what she thought.");
+			gm.NotifyPlayer(playerId, m_sTitle, "Some of the pages come out and go into the stove. The rest go into the research. Nobody at the lab will ever read what he thought.");
 			return;
 		}
 
@@ -428,6 +428,13 @@ class RZ_Job_PrivateCollection : RZ_PuzzleMission
 	protected static const int EXPOSE_FAVOR = 10;
 
 	//------------------------------------------------------------------------------------------------
+	//! Caught: it's in its case.
+	override protected bool ObjFirstDone()
+	{
+		return m_Capture.m_eState == RZ_ECaptureState.CRATED || m_Capture.m_eState == RZ_ECaptureState.DELIVERED;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void GetPropSpots(notnull array<vector> result)
 	{
 		super.GetPropSpots(result);
@@ -484,7 +491,7 @@ class RZ_Job_PrivateCollection : RZ_PuzzleMission
 		m_vPos = cage;
 		m_sTitle = "Private Collection";
 		m_sBrief = string.Format("I want one of the specials alive, for me, not for the director's committee. The trap is set outside %1. Bring it here in its case. Nobody at the lab needs to know.", s.m_sName);
-		m_sObjective = string.Format("Trap a special outside %1 and bring the case to {leader:%2}.", s.m_sName, m_iLeaderId);
+		ObjThen(string.Format("Trap a special outside %1.", s.m_sName), string.Format("Bring the case to {leader:%1}.", m_iLeaderId));
 		return m_Capture.Begin(gm, m_iId, m_iSettlement, cage, lair, 0);
 	}
 

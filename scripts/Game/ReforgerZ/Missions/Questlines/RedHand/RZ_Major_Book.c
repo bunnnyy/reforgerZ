@@ -457,7 +457,7 @@ class RZ_Major_Book : RZ_Quest_TheBook
 			return "\"No.\" The boss closes the book.";
 
 		if (RZ_MajorHelp.World(gm, "cook.line_paid") != 0)
-			return "The cook stands at the lorry. The boss reads her line on the first page. \"Paid. On the first page, again.\"";
+			return "The cook stands at the lorry. The boss reads his line on the first page. \"Paid. On the first page, again.\"";
 
 		return "\"Day 2. Ten litres, on tick.\" Beside it: Paid. \"He let people pay later. You can't run a road like that.\"";
 	}

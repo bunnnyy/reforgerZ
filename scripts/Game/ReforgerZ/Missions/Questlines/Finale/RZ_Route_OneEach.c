@@ -277,7 +277,7 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 				case RZ_EFaction.INSTITUTE:
 				{
 					if (RZ_Reputation.GetAccessRank(gm.GetTier(playerId, RZ_EFaction.INSTITUTE)) < 0 - ease)
-						return "The field lead wants her blood for the paper. Not from you.";
+						return "The field lead wants his blood for the paper. Not from you.";
 
 					break;
 				}
@@ -348,7 +348,7 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 
 		if (code == "store_any")
 		{
-			// One unit from another route's subject: her bag, a tube, a dose, a vial
+			// One unit from another route's subject: his bag, a tube, a dose, a vial
 			int handed = Finale().GetItems().HandInAny(IdentOf(gm, playerId), RZ_CureFinale.INDEP);
 			if (handed <= 0)
 				return -1;

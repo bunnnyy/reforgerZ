@@ -51,7 +51,7 @@ class RZ_FactionVoice
 	//! A guard or occupant's name, in the faction's style ("Private Emil Kral", "Dana Novak").
 	static string PersonName(RZ_Rng rng, RZ_EFaction f)
 	{
-		string first = RZ_NoteText.FirstName(rng);
+		string first = RZ_NoteText.ManName(rng);
 		string last = RZ_NoteText.Surname(rng);
 		switch (f)
 		{
@@ -100,7 +100,7 @@ class RZ_FactionVoice
 		if (f != RZ_EFaction.INSTITUTE)
 			return PersonName(rng, f);
 
-		string first = RZ_NoteText.FirstName(rng);
+		string first = RZ_NoteText.ManName(rng);
 		string last = RZ_NoteText.Surname(rng);
 		if (role == "doctor")
 			return "Dr " + first + " " + last;

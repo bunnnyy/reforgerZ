@@ -90,7 +90,7 @@ and one way to end it: **research the cure.**
   defaults fire from what the server is really doing (research pace, hours played, who's engaging,
   the gap since the last beat), never on fixed days ([QUESTLINES.md](docs/QUESTLINES.md#the-majors)).
 - **The cure's finale** ([FINALE.md](docs/FINALE.md)): at 90% the lab's batch is missing one thing,
-  and five routes race to bring it (the woman who didn't turn, the captain's Day 2 tubes, the cook's
+  and five routes race to bring it (the man who didn't turn, the captain's Day 2 tubes, the cook's
   still, the lower store's reference stock, the eight who walked out of the Day 6 trial). Each needs
   one thing a rival faction holds, and every door has a slower way round. You lock to one route for
   the season; the first to finish makes the batch and earns its faction a capped chunk of season
@@ -236,6 +236,7 @@ What's built, next and to test first is in [ROADMAP.md](docs/ROADMAP.md); start 
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
 | [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, the tribes and their life cycle, borders, memory, who they are, how they move and hunt, the crawlers' life, the people's side (words, knowing, skills, your dead run, the moat, the cure, the last week), the great one, signs and sounds, the simulator's numbers |
 | [TRACES.md](docs/TRACES.md) | Traces: door marks written by the people who were there (who wrote what, how to read them by background, where they come from), doors you can see, player traces, the scenes (the first days, the line, vignettes, live traces), sound and light, the handover to the epilogue |
+| [MISSION_RULES.md](docs/MISSION_RULES.md) | The rules every task follows, where each is kept, and the checklist for a new task |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
 | [ERRANDS.md](docs/ERRANDS.md) | The small jobs named people ask in person: givers, the dealer, pay, the faults table, the routines and cards, and the duties (a place's own work, from the first day, on a trust ladder) |
 | [QUESTLINES.md](docs/QUESTLINES.md) | The four majors (one season-long story per faction) and the long questlines over many sessions, three per faction and two for the Long Table |
@@ -298,7 +299,7 @@ scripts/Game/ReforgerZ/
                  its story and its audit),
                  reputation's voice (the word for you, crew names, the picture), the voice bank
   Missions/      framework, requirements, bases, building blocks (Blocks/: escorts, live
-                 capture, vehicle zones and convoys, health cost, step chains, work sites); Haven/ Bastion/ RedHand/ Halcyon/
+                 capture, vehicle zones and convoys, health cost, step chains, work sites, carrying); Haven/ Bastion/ RedHand/ Halcyon/
                  Events/ Leaders/ Unarmed/ Perimeter/ Tribes/ (the packs' contracts); the shared checks (Trust, Fear, prices) and
                  ways through a job; Story/ (the story kit, who decides, who benefits, reasons);
                  Errands/ (the dealer, the routines, the duties, Cards/ with the epilogue deck); Questlines/ (the author's base class,
@@ -379,6 +380,9 @@ tools/voice_sim.py
                  replays the voice bank's picker: pool sizes and joke shares by mood
 tools/strings_inventory.py
                  lists every line of player text in the scripts and the conversations
+tools/mission_rules.py, tools/mission_rules_allow.txt
+                 the mission rules check: every task against docs/MISSION_RULES.md from the
+                 source; the allowlist holds the hits that are right, and the pending ones
 tools/voice_lint.py, tools/voice_lint_baseline.txt
                  the text lint: checks player text against the writing rules; the baseline
                  holds today's findings, so only new or changed text fails

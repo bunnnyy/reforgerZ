@@ -1,0 +1,163 @@
+# Hits of tools/mission_rules.py that are right as they are, or that work under way clears.
+# One line each: <rule> <file> <text the hit's line holds>  # why
+# A reason starting "pending:" names the work that clears it (counted apart; doesn't fail --strict).
+
+# 1: a building's name in a task's words
+1 RZ_DutyGoals.c Count the heads in the school room at  # the Haven holding's own school room, a corner of its camp, not a school building
+1 RZ_Quest_Authors.c I want the method at a Haven clinic  # "the clinic at the safehouse": the safehouse's own sick room
+1 RZ_Quest_Authors.c Carry the method from the field station to the clinic  # the same: a safehouse's sick room
+
+# 3: doors
+3 RZ_BoardedDoorway.et BuildingParts/Doors  # pending: the openings work (a trap's barricade and the BOARDS work look's after-prop must stand in a real doorway)
+
+# 10: a woman's name or word in a shown line (everyone met is a man): women only mentioned, never met
+10 gate.rzd say My mother said to come to the soldiers if anything happe  # the boy's mother, back home; never met
+10 round.rzd say It came round the houses like the post used to. The well  # the patients' mother at the far well; never met
+10 round.rzd say Mama went for water at the far well, because ours tastes  # the patients' mother at the far well; never met
+10 round.rzd say For Mama to come back. And my dog. He's not allowed in.  # the patients' mother at the far well; never met
+10 swap.rzd say My mother wore them to her wedding and to his funeral an  # traders' absent women (a mother's pearls, a daughter in Saint-Philippe); never met
+10 swap.rzd say To my daughter, Vera. She's in Saint-Philippe, on the st  # traders' absent women (a mother's pearls, a daughter in Saint-Philippe); never met
+10 swap.rzd > @who When did you last hear from her? -> more   do call:sl  # traders' absent women (a mother's pearls, a daughter in Saint-Philippe); never met
+10 toll.rzd say My aunt's in the next town. She has a blue door. I know  # passers' absent kin (an aunt, a sister, a dead wife); never met
+10 toll.rzd say Cold. It's cold. Everybody's cold. I just want to get to  # passers' absent kin (an aunt, a sister, a dead wife); never met
+10 toll.rzd say My wife. She was on this road with the cart, the first w  # passers' absent kin (an aunt, a sister, a dead wife); never met
+10 hidden.rzd say Don't spread it. His mother's in a Haven house and think  # a deserter's mother in a Haven house; never met
+10 openings.rzd say? cflag:opening.why=2 :: You're still here. It's me, the  # the van (her), a dead mother, the dead in the street; never met
+10 openings.rzd say? cflag:opening.why=3 :: It's me, from your street. I sat  # the van (her), a dead mother, the dead in the street; never met
+10 openings.rzd say The baker's girl. The man with the dogs, without the dog  # the van (her), a dead mother, the dead in the street; never met
+10 steps.rzd say Old Kern laughed. Nobody's heard him laugh since the roa  # a neighbour's girl fetching a dog, off scene; never met
+10 open.rzd say? mood:bleak :: This is for anyone near the square. Has a  # voices on the open channel; never met
+10 open.rzd say Her ankle. She went over on it in a ditch. Not a bite, s  # voices on the open channel; never met
+10 hubs.rzd say? persona:3 :: A girl who won't give her surname. So I wr  # letters and lists the wanderers carry; never met
+10 occupants.rzd say On Day 2 a teacher put her class trip, eleven kids, to s  # a Day 2 story (the teacher); the reply key decide:girl is an id
+10 strangers.rzd topic "Tell me about your girl."  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd say Eleven. Clever. Eats like a sparrow, which is lucky, the  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd say Her mother's on the list for the next walk out. Don't as  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd > @lie She'll be all right. -> fine  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd > @nurse Is she eating at all? Coughing? -> nurse   if bg:nu  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd say Everyone says that. I've started saying it too, to her,  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd > @nothing Probably nothing. Keep her warm. -> fine  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd topic "Tell me about your wife."  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd say Thursdays to {their:town}, for the market. Thirty years.  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd say She'd hate this. Standing about on a verge, talking to a  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd > @tell Tell me about her, then. -> tell  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd say She grew marrows the size of dogs and gave them away to  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd say So am I. Help me put the car in the ditch, out of the ro  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd say Go on, tell them. On an adventure. Isn't that right? An  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 strangers.rzd say (the older one) We're going to Gran's. Gran's dead. Dad  # a stranger's daughter at home, a dead wife, a dead gran; never met
+10 hubs.rzd say A mother in one town has written to her son in another.  # letters and lists the wanderers carry; never met
+10 kid.rzd say My mum said not to tell people my name. Then she said if  # the kid's mum, lost; never met
+10 roles.rzd say A man at a Bastion post, to his wife on the other side o  # a soldier's wife outside the line; never met
+10 RZ_TalkWords.c case "Give him a tin": return "Here, take a tin for her.";  # the tin man's girl at home; never met
+10 RZ_EpilogueRest.c "My sister's at the house. She says she'll come when it's sh  # a queue's absent kin; never met
+10 RZ_EpilogueRest.c lines.Insert("I paid for my mother's. She'll never know what  # a queue's absent kin; never met
+10 RZ_EpilogueText.c return "Been here since the order. Nobody's been processed.  # a sister who won't come; never met
+10 RZ_DisguiseClaims.c case RZ_EFaction.INSTITUTE: line = "Somebody in one of those  # a story about a white coat at tea; never met
+10 RZ_FactionVoice.c case RZ_EFaction.SURVIVORS: lines.Insert("The Haven waters t  # a woman in a queue, in hearsay; never met
+10 RZ_GuidanceTips.c t.m_sHaven = "Grandmother's recipe. Five minutes, maybe, and  # a grandmother's recipe
+10 RZ_OpeningChain.c "That'll turn her over, if anything will. You always said th  # the car (turn her over)
+10 RZ_OpeningScenes.c string text = m_GM.GetBroadcast().GetText() + "\nThen static  # a woman's voice on the radio; never met
+10 RZ_Crafting.c m_GM.NotifyPlayer(playerId, title, string.Format("Herbs in t  # a grandmother's kitchen (a smell)
+10 RZ_BastionContracts.c m_Job.Read("crash", "mechanic", "A hydraulic line split clea  # the helicopter (she)
+10 RZ_BastionContracts.c m_Job.Read("ditched", "mechanic", "Nothing wrong with this e  # the helicopter (she)
+10 RZ_BastionLoreMissions.c return "The tins went to two kids at the house. Their mum wa  # a dead soldier, the kids' mum; never met
+10 RZ_Errand_OffTheReport.c Offer("There's a duty report on the sergeant's desk with my  # the giver's mother down the road; never met
+10 RZ_Errand_DebtGoneQuiet.c said.Insert(e.Fill("Paid. Turns out the money had been going  # a debtor's sick wife; never met
+10 RZ_Errand_DebtGoneQuiet.c e.Fill("{name} walked up to the toll last night, very much a  # a debtor's sick wife; never met
+10 RZ_Errand_MasksOff.c w.m_sStep = "Find the one in the Halcyon coat at {house} (15  # the orderly's daughter; never met
+10 RZ_Errand_KeyWhereItWas.c "Petr went up the north road to the queue without his key. I  # Petr's wife's photos; never met
+10 RZ_Errand_PackForTheQueue.c Offer("We're going up to the processing queue, the whole fam  # a mother's coat; never met
+10 RZ_Errand_AWordForMe.c Offer("Two families want the last room in the house, the one  # a family's little one; never met
+10 RZ_Errand_YoureTheOne.c Offer("There's a man at our gate who lost his daughter in th  # a dead daughter; never met
+10 RZ_Errand_YoureTheOne.c "There's a man at the gate asking for you by what people cal  # a dead daughter; never met
+10 RZ_Errand_YoureTheOne.c w.Done("He read it twice, upside down, and said it out loud  # a dead daughter; never met
+10 RZ_Errand_YoureTheOne.c houses.GetBoard().PostUnsigned(e.m_vGiver, e.Fill("{name}, w  # a dead daughter; never met
+10 RZ_Errand_NothingGoesOut.c Offer("I've a letter for my sister. She's outside the line,  # a sister outside the line; never met
+10 RZ_Errand_NothingGoesOut.c w.Done("You read it. I can tell by your face. It says she sh  # a sister outside the line; never met
+10 RZ_Errand_RedDoor.c Offer("The boy who lives with us now keeps drawing the same  # the boy's mother, lost; never met
+10 RZ_Errand_RedDoor.c w.Done("You told him she went to another house. True, nearly  # the boy's mother, lost; never met
+10 RZ_Errand_RedDoor.c w.m_sLabel = "Find it, tell him she's coming";  # the boy's mother, lost; never met
+10 RZ_Errand_RedDoor.c w.Done("You told him she's coming. He asked when, and you sa  # the boy's mother, lost; never met
+10 RZ_Errand_RedDoor.c RZ_Local l = dealer.GetLocals().Make(playerId, "the boy at t  # the boy's mother, lost; never met
+10 RZ_DutyBastion.c Papers("drunk", "One of ours, back from somewhere, cheerful,  # a girl at the Haven, a soldier's sweetheart, a wren (her rights); never met
+10 RZ_DutyBastion.c Kit("tags", "A young private's kit. His hand keeps going to  # a girl at the Haven, a soldier's sweetheart, a wren (her rights); never met
+10 RZ_DutyBastion.c RZ_DutyScript.T("nest", "There is a nest in the horn. Three  # a girl at the Haven, a soldier's sweetheart, a wren (her rights); never met
+10 RZ_DutyBastion.c RZ_DutyScript.O("Move the nest to the hedge", "Carried over  # a girl at the Haven, a soldier's sweetheart, a wren (her rights); never met
+10 RZ_DutyBastion.c RZ_DutyScript.O("Leave her there", "The speaker will sound l  # a girl at the Haven, a soldier's sweetheart, a wren (her rights); never met
+10 RZ_DutyHalcyon.c RZ_DutyScript.O("Stand and talk them down", "You tell them w  # a sister on a ward, said in passing; never met
+10 RZ_DutyHaven.c RZ_DutyScript.T("quarrel", "Two of the house at the end bed,  # absent kin (a mother who planted the bed, a mother's pearls, a daughter); never met
+10 RZ_DutyHaven.c RZ_DutyScript.O("It belongs to who works it", "The one who d  # absent kin (a mother who planted the bed, a mother's pearls, a daughter); never met
+10 RZ_DutyHaven.c "Real, and old, and knotted between each one. The clasp has  # absent kin (a mother who planted the bed, a mother's pearls, a daughter); never met
+10 RZ_DutyHaven.c "The address is a street in a town that burned in the first  # absent kin (a mother who planted the bed, a mother's pearls, a daughter); never met
+10 RZ_DutyPosts.c pool.Insert(Sighting("voice", "A voice, far off, calling one  # a voice far off, a girl at the Haven, a chart's kin words; never met
+10 RZ_DutyPosts.c says = string.Format("%1, through the boards. I owe the crew  # a voice far off, a girl at the Haven, a chart's kin words; never met
+10 RZ_DutyPosts.c freed = "I got to her. We're paying it off, slower than the  # a voice far off, a girl at the Haven, a chart's kin words; never met
+10 RZ_DutyRedHand.c RZ_DutyScript.O("Take the tin to the Haven's board", "You'll  # a story at the board, a joke, a dead wife's things, a recruit's mother, a sister's medicine; never met
+10 RZ_DutyRedHand.c RZ_DutyScript.O("Not before the gate", "No. He calls you his  # a story at the board, a joke, a dead wife's things, a recruit's mother, a sister's medicine; never met
+10 RZ_DutyRedHand.c Pass("widow", true, "A man in black with a small case, quite  # a story at the board, a joke, a dead wife's things, a recruit's mother, a sister's medicine; never met
+10 RZ_DutyRedHand.c Pass("recruit", true, "A boy of sixteen who wants to join, a  # a story at the board, a joke, a dead wife's things, a recruit's mother, a sister's medicine; never met
+10 RZ_DutyRedHand.c RZ_DutyScript.O("Keep it off the slate", "It isn't what you  # a story at the board, a joke, a dead wife's things, a recruit's mother, a sister's medicine; never met
+10 RZ_DutyRound.c "Mama went to get water from the far well. She said wait. Th  # the patients' mother at the far well; never met
+10 RZ_DutyRound.c "You sit on the end of the bed and ask about the far well, a  # the patients' mother at the far well; never met
+10 RZ_DutyTrusted.c charts.Insert(string.Format("%1, the boss's sister's boy. Tw  # the boss's sister; never met
+10 RZ_ErrandRoutines.c Offer("It's a letter for my mum, outside. Put it in the mail  # a letter to a mum outside; the lorry (she)
+10 RZ_ErrandRoutines.c w.Done("There she goes. The book says you're alright. The bo  # a letter to a mum outside; the lorry (she)
+10 RZ_StrangerKinds.c return "Got a tin? Just the one. {house} is on half portions  # a stranger's daughter at home, a dead wife, a wife past the line; never met
+10 RZ_StrangerKinds.c s.Finish(v, playerId, "Thank you. She'll eat tonight. Here's  # a stranger's daughter at home, a dead wife, a wife past the line; never met
+10 RZ_StrangerKinds.c Local(s, v, playerId, "who had the empty sack", "You gave me  # a stranger's daughter at home, a dead wife, a wife past the line; never met
+10 RZ_StrangerKinds.c return "This was my wife's car. She drove it to {town} every  # a stranger's daughter at home, a dead wife, a wife past the line; never met
+10 RZ_StrangerKinds.c s.Finish(v, playerId, "There it goes. Sounded like furniture  # a stranger's daughter at home, a dead wife, a wife past the line; never met
+10 RZ_StrangerKinds.c return "She's just there, past the line, behind the trees. S  # a stranger's daughter at home, a dead wife, a wife past the line; never met
+10 RZ_StrangerKinds.c s.Finish(v, playerId, "Go on. I'll stay a while. She'll wave  # a stranger's daughter at home, a dead wife, a wife past the line; never met
+10 RZ_HalcyonContracts.c reveal = "Ten, where it says twelve. The tech who packed it  # a tech's sister, somebody's sister; never met
+10 RZ_HalcyonContracts.c RZ_StoryKit.LaterWith(gm, this, h.m_sName, "The house's nurs  # a tech's sister, somebody's sister; never met
+10 RZ_HavenContracts.c sc.Way(n1, "Mirek sent me.", RZ_TalkScene.TRICK, RZ_EFaction  # a tank (she'll go)
+10 RZ_HavenContracts.c gm.NotifyPlayer(ids[i], m_sTitle, "You find the fuel line ki  # a tank (she'll go)
+10 RZ_HavenHouseMissions.c string reveal = "Mothers, mostly. Mothers write. Sons don't.  # letters' mothers; the girl the member feeds, off scene; never met
+10 RZ_HavenHouseMissions.c m_iTalk = AddClue(m_sMember, string.Format("\"Two extra tins  # letters' mothers; the girl the member feeds, off scene; never met
+10 RZ_HavenHouseMissions.c gm.NotifyPlayer(playerId, m_sTitle, string.Format("You say i  # letters' mothers; the girl the member feeds, off scene; never met
+10 RZ_HavenHouseMissions.c gm.NotifyPlayer(playerId, m_sTitle, string.Format("You squar  # letters' mothers; the girl the member feeds, off scene; never met
+10 RZ_HavenHouseMissions.c gm.NotifyPlayer(playerId, m_sTitle, string.Format("\"Go. Ton  # letters' mothers; the girl the member feeds, off scene; never met
+10 RZ_HavenLoreMissions.c found = string.Format("A packed bag nobody came back for, an  # a mother in a letter; never met
+10 RZ_LeaderJobsHalcyon.c gm.NotifyPlayer(playerId, m_sTitle, string.Format("You stay.  # a patient's wife; never met
+10 RZ_LeaderJobsRedHand.c m_iTalk = AddClue(m_sDebtor, "Forty tins. I know. I had fort  # a debtor's daughter; never met
+10 RZ_Quest_LastPilot.c int talk = AddClue(QText(gm, "pilot"), QFill(gm, "{pilot} is  # the helicopter (she)
+10 RZ_Quest_LastPilot.c gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "Red Hand dies  # the helicopter (she)
+10 RZ_Quest_LastPilot.c gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You find wher  # the helicopter (she)
+10 RZ_Quest_TheList.c string notes = string.Format("Ration notes, %1, in the counc  # ration notes about a farm's old cook; never met
+10 RZ_Quest_HouseWentQuiet.c m_iBoots = AddClue("The boots", "A row of boots by the door,  # the dead's boots (a woman's); never met
+10 RZ_RedHandContracts.c m_Choice.Set("The driver's on his knees by the cab with his  # a driver's wife; an idiom (I'm not your mother)
+10 RZ_RedHandContracts.c int n1 = sc.Node("Leave it in the tray. Or don't. I'm not yo  # a driver's wife; an idiom (I'm not your mother)
+10 RZ_Grey.c Version("He volunteered, for the record.", "The debtor says  # a debtor's sister in the book; never met
+10 RZ_PuzzleMystery.c int n2 = AddClue("A letter, never sent", string.Format("The  # a letter never sent; never met
+10 RZ_PuzzleNavigation.c int note = AddClue("A radio log", string.Format("%1 MHz. Eve  # a woman's voice reading numbers on the radio; never met
+10 RZ_PuzzleNavigation.c return "A woman's voice, flat and patient: \"" + m_sBroadcas  # a woman's voice reading numbers on the radio; never met
+10 RZ_NoteText.c array<string> old = {"Marta", "Jana", "Lucie", "Ruth", "Iren  # old saves' women's names mapped to men's; notes' writers' kin
+10 RZ_NoteText.c "Ada", "Hana", "Olga", "Edith", "Agnes", "Zofia", "Greta", "  # old saves' women's names mapped to men's; notes' writers' kin
+10 RZ_NoteText.c "Tell my sister I'm sorry about the car. I left it at the no  # old saves' women's names mapped to men's; notes' writers' kin
+10 RZ_NoteText.c "I left the key under the blue pot, for whoever comes after.  # old saves' women's names mapped to men's; notes' writers' kin
+10 RZ_Menus.c result.Insert("If you see a girl in a red coat, tell her her  # a girl in a red coat, in a radio message; never met
+10 RZ_LongTable.c string channel = "\"Anyone missing a satchel? Letters, a hai  # somebody's mum in a satchel's picture; never met
+10 RZ_Wanderers.c case RZ_EWandererRole.KID: return "Mum said to wait at the s  # the kid's mum; never met
+10 RZ_TraceText.c case 0: return string.Format("In lipstick on the glass: \"GO  # a mum's house in lipstick on a window; never met
+10 RZ_TribeLife.c RZ_Log.Info(string.Format("Tribes: %1 split; the daughter %2  # a tribe's daughter pack (a log line)
+
+# 14: carrying done as a hold
+14 RZ_OpeningChain.c Fill what you can carry  # one place: filling cans at the well; "carry" is how much
+14 RZ_WorkSites.c Fill and stack the sandbags  # one place: the bags are filled and stacked where the wall goes
+14 RZ_ErrandRoutinesPeople.c Fill and stack the sandbags  # the same
+14 RZ_ErrandDuties.c Carry and stack the crates  # pending: the carry-tasks work (real crates picked up and put down)
+14 RZ_Errand_MarginProof.c Stack the chairs  # pending: the carry-tasks work ("stack the chairs ... and bring them back": a real carry)
+
+# 19: completing by walking up to a person
+19 RZ_Errands.c !byTalk && carrier > 0 && RZ_Arrive.AtSpot  # pending: the openings work (a handed errand must hand in by reply too; with the talk screen off there's no reply to pick)
+19 RZ_Errands.c !byTalk && RZ_Arrive.AtSpot(me, giverAt  # pending: the openings work (the same)
+
+# 23: two places in one objective line
+23 RZ_Errand_UnknownFace.c Write your own letter and carry it into  # one place: the letter is written on the way and handed in there
+23 RZ_Errand_WrongWayRound.c tell them to paint over the hands  # one place: "tell them to" is what's said, not a second place
+23 RZ_Errand_DesertersWay.c Walk to the Bastion post  # one place: the name is given at the post's barrier
+23 RZ_Errand_RedDoor.c then go back to the boy at  # the way back is its own line: the boy at the house is who asked (the card's giver speaks for him)
+23 RZ_HalcyonContracts.c Follow the first case's trail  # a step chain: its steps are the objectives (RZ_StepChain), this line never shows
+23 RZ_PuzzleLogic.c Work out who infected the ward  # a puzzle: the thinking has no place; the answer at the lab is the one step
+23 RZ_Route_RedHand.c Dose someone bitten who asks  # pending: the finale's stage lines (one line per stage); split with the route's dose flag

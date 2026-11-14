@@ -582,7 +582,7 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		pack.m_sReadLabel = "Go through the pack";
 		m_iPackClue = pack.m_iClue;
 
-		m_iWitnessClue = AddClue("A Haven trader", string.Format("\"Your lot's uniform, patch cut off. Paid me in rifle rounds for two tins of fish and asked if the Haven takes soldiers.\" She points past the last houses. \"He sleeps rough out there, grid %1. He jumps at every sound. Don't tell him it was me.\"",
+		m_iWitnessClue = AddClue("A Haven trader", string.Format("\"Your lot's uniform, patch cut off. Paid me in rifle rounds for two tins of fish and asked if the Haven takes soldiers.\" He points past the last houses. \"He sleeps rough out there, grid %1. He jumps at every sound. Don't tell him it was me.\"",
 			RZ_SettlementScanner.GridReference(m_vHide)));
 		m_iTalk = AddClue(m_sName, string.Format("He doesn't reach for the rifle. \"%1. They wrote me up, didn't they? Killed in action, %2.\" A short laugh. \"I was. Most of me. I walked away from what was left of the section and nobody came looking. Until you.\"", m_sSurname, day));
 		m_iRosterClue = AddClue("The roster", string.Format("Grease pencil on the board: \"%1. KIA %2. Body not recovered.\" On the wall behind the radio, a row of nails with a tag on each. The one under his name is empty.", m_sName, day));
@@ -595,7 +595,7 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 
 		m_vPos = m_vWitness;
 		m_sTitle = "Struck Off";
-		m_sBrief = string.Format("%1 walked off post at %2 with a week's rations, they say. He's on the board as killed in action. A Haven trader in %3 says she sold him fish two days ago. Bring him back, or bring back his tag.", m_sName, m_sPost, m_sTown);
+		m_sBrief = string.Format("%1 walked off post at %2 with a week's rations, they say. He's on the board as killed in action. A Haven trader in %3 says he sold him fish two days ago. Bring him back, or bring back his tag.", m_sName, m_sPost, m_sTown);
 		m_sObjective = string.Format("Bring back %1, or %1's tag, from near %2.", m_sName, m_sTown);
 		return m_Escort.Begin(gm, m_vHide);
 	}

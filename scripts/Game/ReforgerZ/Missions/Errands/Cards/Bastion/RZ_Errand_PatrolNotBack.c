@@ -38,7 +38,7 @@ class RZ_Errand_PatrolNotBack : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
-		w.m_sStep = "Go into {town}, {where_place}, take a card from {dead}'s patrol (10 s there), and sell it to the Red Hand's fence, who'll give it a new face. Then tell {giver} there was nothing to bring.";
+		w.m_sStep = "Go into {town}, {where_place}, and take a card from {dead}'s patrol for the Red Hand's fence, who'll give it a new face (10 s there). Then tell {giver} there was nothing to bring.";
 		w.Work(RZ_EWork.TAKE, "Take the identity card");
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 10;

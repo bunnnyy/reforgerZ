@@ -55,7 +55,7 @@ class RZ_SafehouseSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Medic (optional, Settlement and up): a civilian with RZ_SafehouseAction set to HEAL and DECLARE_BITE", "et")]
 	ResourceName m_sMedicPrefab;
 
-	[Attribute("300", desc: "Occupants, guards, medic and the safehouse quartermaster exist only while a player is this close (m)")]
+	[Attribute("400", desc: "Occupants, guards, medic and the safehouse quartermaster exist only while a player is this close (m); its camp is laid out and put up from here, so it is full by the time you arrive")]
 	float m_fVisibleRadius;
 
 	[Attribute("180", desc: "Real minutes between upkeep (food eaten). Only counts while players are online")]
@@ -1487,7 +1487,7 @@ class RZ_Safehouses
 
 			profile.m_bBiteCaught = true;
 			m_GM.AddInfamy(ids[i], RZ_EFaction.SURVIVORS, m_Settings.m_iCaughtInfamy);
-			m_GM.NotifyPlayer(ids[i], "The Haven", string.Format("A woman in %1 sees the sweat, the grey in your skin, the way you hold your arm. She doesn't scream. She just gets the children behind her and points at the door. (+%2 Infamy)",
+			m_GM.NotifyPlayer(ids[i], "The Haven", string.Format("A man in %1 sees the sweat, the grey in your skin, the way you hold your arm. He doesn't scream. He just gets the children behind him and points at the door. (+%2 Infamy)",
 				h.m_sName, m_Settings.m_iCaughtInfamy));
 		}
 	}
@@ -1762,7 +1762,7 @@ class RZ_Safehouses
 		}
 
 		RZ_Util.HealCharacter(user);
-		m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, "The medic cleans you up and doesn't ask where you got it. She never does.");
+		m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, "The medic cleans you up and doesn't ask where you got it. He never does.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1950,7 +1950,7 @@ class RZ_Safehouses
 				profile.m_bBiteDeclared = true;
 				profile.m_bDeclareSlowed = true;
 				profile.m_fInfectionLeft = profile.m_fInfectionLeft * m_Settings.m_fDeclareTown;
-				extra = string.Format(" She sees the bite and doesn't say a word about it, just works. About %1 minutes, now.", RZ_Util.RoundToInt(profile.m_fInfectionLeft / 60));
+				extra = string.Format(" He sees the bite and doesn't say a word about it, just works. About %1 minutes, now.", RZ_Util.RoundToInt(profile.m_fInfectionLeft / 60));
 			}
 
 			string where = profile.m_sFallenPlace;

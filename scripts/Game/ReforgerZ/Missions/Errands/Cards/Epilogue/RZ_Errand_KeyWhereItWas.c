@@ -20,7 +20,8 @@ class RZ_Errand_KeyWhereItWas : RZ_EpiCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
-		w.m_sStep = "Take Petr's key from under the step and carry it up to him in the queue on the north road (10 s there), then come back to {giver}.";
+		w.First(RZ_EErrandPlace.HERE, "Take Petr's key from under his step (5 s there).", 5);
+		w.m_sStep = "Carry the key up to Petr in the queue on the north road (10 s there), then come back to {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
 		w.Done("He took it? He'll hold onto it the whole way out. That's Petr.",

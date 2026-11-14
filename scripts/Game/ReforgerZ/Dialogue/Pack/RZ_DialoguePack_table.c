@@ -61,7 +61,7 @@ class RZ_DialoguePack_table
 		db.Choice("expected", "They're expecting me back by dark.", "expected", "", "", "", "", "", "", "", "");
 		db.Choice("road", "I'm just passing through.", "passing", "", "", "", "", "", "", "", "");
 		db.Node("alone");
-		db.Say("", "Then you'll eat with us tonight. Mother cooks for twenty and there are never twenty any more. Supper's at half six, at the farmhouse up the lane, with the lamp in the window.");
+		db.Say("", "Then you'll eat with us tonight. Father cooks for twenty and there are never twenty any more. Supper's at half six, at the farmhouse up the lane, with the lamp in the window.");
 		db.Do("claim:alone");
 		db.Choice("maybe", "Maybe I will. Thank you.", "hub", "", "", "", "", "", "", "", "");
 		db.Choice("no", "Another time, maybe.", "hub", "", "", "", "", "", "", "", "");
@@ -70,7 +70,7 @@ class RZ_DialoguePack_table
 		db.Do("claim:expected; test:expected:20.5:300");
 		db.Choice("thanks", "Thanks. I'll mind the verges.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("passing");
-		db.Say("", "Everyone is, these days. That's what roads are for. The offer stands whenever you're passing next. Supper's at half six, and Mother always asks after the ones who said no.");
+		db.Say("", "Everyone is, these days. That's what roads are for. The offer stands whenever you're passing next. Supper's at half six, and Father always asks after the ones who said no.");
 		db.Choice("back1", "I'll remember that.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("table.road.still_expected", "table:road", "nmem:expected.false & !table:crossed", "", 3, 5, "table");
 		db.Node("start");

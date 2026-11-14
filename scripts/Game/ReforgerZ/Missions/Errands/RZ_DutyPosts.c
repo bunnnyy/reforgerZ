@@ -347,7 +347,7 @@ class RZ_DutyPosts
 		scene.m_aBeats.Insert(b);
 		b = new RZ_DutyBeat("chart2", "", RZ_DutyBeat.AT_NEAR);
 		b.m_bAlone = true;
-		b.Opt("Read the chart at the third bed", string.Format("%1. Thirty-four, bitten four days ago. Nothing marks the chart out, except a note in another hand: the night technician's sister.", kin)).Work(RZ_EWork.CARE, 3);
+		b.Opt("Read the chart at the third bed", string.Format("%1. Thirty-four, bitten four days ago. Nothing marks the chart out, except a note in another hand: the night technician's brother.", kin)).Work(RZ_EWork.CARE, 3);
 		scene.m_aBeats.Insert(b);
 		b = new RZ_DutyBeat("list", "The list, on its board by the door. One line is empty. Whoever you write there is who the trial tries to save.", RZ_DutyBeat.AT_HERE);
 		b.m_bAlone = true;
@@ -355,7 +355,7 @@ class RZ_DutyPosts
 		o.Work(RZ_EWork.WRITE, 5).Fx("record,rumour,morale+").Later("", string.Format("%1 is on Halcyon's list. %2 and %3 are not. The one who chose picked the one who'd live.", young, old, kin)).Told("You chose the one who'd live. The director calls that sentiment. The ward calls it something else.");
 		o = b.Opt("Write in the one the trial learns most from", string.Format("%1, in block capitals. The trial gets its data. The ward goes quiet when you turn round.", old));
 		o.Work(RZ_EWork.WRITE, 5).Fx("record,rumour").Pay(1).Later("", string.Format("%1 is on Halcyon's list. %2 and %3 are not. They say the choice was made for the data.", old, young, kin)).Told("You chose the useful one. It has been noted, in the good column. Don't look for thanks on the ward.");
-		o = b.Opt("Write in the technician's sister", string.Format("%1, in block capitals. No reason you could put on a form. The night technician will know by morning.", kin));
+		o = b.Opt("Write in the technician's brother", string.Format("%1, in block capitals. No reason you could put on a form. The night technician will know by morning.", kin));
 		o.Work(RZ_EWork.WRITE, 5).Fx("record,rumour,local").Later("who is the night technician at the station", string.Format("You wrote %1 on the list. I didn't ask you to. I won't forget that I didn't have to.", kin)).Told("You chose a name with a friend on the staff. People will say so. Some of them will be glad.");
 		scene.m_aBeats.Insert(b);
 	}

@@ -98,11 +98,60 @@ class RZ_Rng
 class RZ_NoteText
 {
 	//------------------------------------------------------------------------------------------------
+	//! Everyone in the Zone is a man (the stack has only male bodies, docs/MISSION_RULES.md rule 10),
+	//! and a note's name may be met later, so every first name is a man's.
 	static string FirstName(RZ_Rng rng)
 	{
-		array<string> names = {"Marta", "Pavel", "Henri", "Jana", "Radim", "Lucie", "Emil", "Ruth", "Anton", "Irena",
-			"Viktor", "Elise", "Karel", "Nadia", "Oskar", "Vera", "Milan", "Sabine", "Jakub", "Ilse", "Bruno", "Dana", "Leon", "Agata"};
+		return ManName(rng);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A man's first name, for someone who stands in the world: the base game's people are all men
+	//! (its identity list has no women, SCR_EIdentityGender), so a body's name matches it
+	//! (docs/MISSION_RULES.md, rule 10). FirstName is the same list.
+	static string ManName(RZ_Rng rng)
+	{
+		array<string> names = {"Pavel", "Henri", "Radim", "Emil", "Anton", "Viktor", "Karel", "Oskar", "Milan", "Jakub",
+			"Bruno", "Leon", "Rudolf", "Patrik", "Lukas", "Vilem", "Felix", "Otto", "Konrad", "Erik", "Stanislav", "Hugo", "Dominik", "Jan"};
 		return rng.Pick(names);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A saved name from before everyone met was a man (an older save): a woman's first name from
+	//! the old lists becomes its man's name, the rest of the text as it was ("Marek Weber" becomes
+	//! "Marek Weber", "Old Marek" "Old Marek"). Any other text comes back unchanged.
+	static string ManFromOld(string text)
+	{
+		if (text.IsEmpty())
+			return text;
+
+		array<string> old = {"Marta", "Jana", "Lucie", "Ruth", "Irena", "Elise", "Nadia", "Vera", "Sabine", "Ilse", "Dana", "Agata",
+			"Ada", "Hana", "Olga", "Edith", "Agnes", "Zofia", "Greta", "Mila"};
+		array<string> men = {"Marek", "Jan", "Lukas", "Rudolf", "Ivo", "Emil", "Nikola", "Vaclav", "Samuel", "Ivan", "Dalibor", "Augustin",
+			"Adam", "Hanus", "Oldrich", "Edmund", "Albin", "Zdenek", "Gregor", "Milos"};
+		array<string> words = {};
+		text.Split(" ", words, false);
+		bool changed = false;
+		for (int i = 0; i < words.Count(); i++)
+		{
+			int at = old.Find(words[i]);
+			if (at < 0)
+				continue;
+
+			words[i] = men[at];
+			changed = true;
+		}
+
+		if (!changed)
+			return text;
+
+		string joined = words[0];
+		for (int k = 1; k < words.Count(); k++)
+		{
+			joined += " " + words[k];
+		}
+
+		return joined;
 	}
 
 	//------------------------------------------------------------------------------------------------

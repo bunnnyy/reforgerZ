@@ -182,14 +182,14 @@ class RZ_Wanderer
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Old Marta"
+	//! "Old Marek"
 	string GetShortName()
 	{
 		return m_sEpithet + m_sName;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Old Marta the trader"
+	//! "Old Marek the trader"
 	string GetTitle()
 	{
 		return GetShortName() + " the " + GetRoleName();
@@ -347,7 +347,7 @@ class RZ_Wanderer
 		RZ_Wanderer w = new RZ_Wanderer();
 		w.m_iId = s.id;
 		w.m_iGeneration = s.generation;
-		w.m_sName = s.name;
+		w.m_sName = RZ_NoteText.ManFromOld(s.name);	// an older save's women's names
 		w.m_sEpithet = s.epithet;
 		w.m_eRole = s.role;
 		w.m_bAlive = s.alive;
@@ -635,7 +635,7 @@ class RZ_Wanderers
 	//------------------------------------------------------------------------------------------------
 	protected string UniqueName(RZ_Rng rng)
 	{
-		string name = RZ_NoteText.FirstName(rng);
+		string name = RZ_NoteText.ManName(rng);
 		for (int i = 0; i < 20; i++)
 		{
 			bool taken = false;
@@ -648,7 +648,7 @@ class RZ_Wanderers
 			if (!taken)
 				return name;
 
-			name = RZ_NoteText.FirstName(rng);
+			name = RZ_NoteText.ManName(rng);
 		}
 
 		return name;
@@ -706,7 +706,7 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Old Marta the trader", "" if unknown.
+	//! "Old Marek the trader", "" if unknown.
 	string GetTitle(int id)
 	{
 		RZ_Wanderer w = Find(id);
@@ -780,7 +780,7 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Old Marta" for a living wanderer of a role in roleMask, "" if none. A brief can name them.
+	//! "Old Marek" for a living wanderer of a role in roleMask, "" if none. A brief can name them.
 	string AnyName(int roleMask)
 	{
 		array<int> ids = {};
@@ -1068,7 +1068,7 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Old Marta the trader, 1.2 km NE" for the nearest living wanderer with a role in
+	//! "Old Marek the trader, 1.2 km NE" for the nearest living wanderer with a role in
 	//! roleMask, "" if none. For guidance hints.
 	string DescribeNearest(vector pos, int roleMask)
 	{

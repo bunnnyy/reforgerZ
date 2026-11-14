@@ -125,7 +125,7 @@ installed and what's missing.
 5. **Python 3:** there only if `py -3 -c 'import sys; print(sys.version)'` (or the same with `python`)
    prints 3.x. "Python was not found" is Windows' Microsoft Store shortcut, not Python. It's needed
    by `tools/prefab_manifest.py`, `tools/pacing_sim.py`, `tools/tribe_sim.py`, `tools/icon_atlas.py`,
-   `tools/strings_inventory.py`, `tools/voice_lint.py` (the text lint), `tools/people_looks.py`, the runtime test and the
+   `tools/strings_inventory.py`, `tools/voice_lint.py` (the text lint), `tools/mission_rules.py` (the mission rules check), `tools/people_looks.py`, the runtime test and the
    zombie lab. `tools/icon_atlas.py` also needs **Pillow**: it's there if
    `py -c 'import PIL; print(PIL.__version__)'` prints a version.
 6. **Workshop mods** the game has downloaded: folders named like `BaconZombies_622120A5448725E3`
@@ -205,7 +205,7 @@ SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" 
 ```
 
 The text lint needs only Python and takes a second
-([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint)): `py tools/voice_lint.py`. The compile check
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint)): `py tools/voice_lint.py`; so does the mission rules check, in about ten seconds ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#mission-rules-check)): `py tools/mission_rules.py --strict`. The compile check
 runs the dialogue lint first (`python3`, else `py -3`), and fails if a conversation pack is stale:
 after changing a `.rzd` file in `dialogue/`, run `py tools/dialogue_pack.py`
 ([DIALOGUE.md](DIALOGUE.md#tools)). Without Python it warns and carries on.

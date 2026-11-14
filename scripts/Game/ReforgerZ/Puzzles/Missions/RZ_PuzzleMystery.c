@@ -85,7 +85,7 @@ class RZ_Mission_SilentVillage : RZ_PuzzleMission
 		if (names.Count() < 9)
 			return false;
 
-		string priest = "Father " + RZ_NoteText.FirstName(m_Rng);
+		string priest = "Father " + RZ_NoteText.ManName(m_Rng);
 		int n1 = AddClue("A diary page", string.Format("%1, %2. %3 says the bell at %4 rang by itself last night. Nobody was pulling the rope. He went down to the crypt to look. That was this morning.\n%5",
 			v.m_sName, RZ_NoteText.Day(m_Rng.Int(4, 8)), priest, churchName, RZ_NoteText.Signoff(m_Rng, names[0])));
 		int n2 = AddClue("A letter, never sent", string.Format("The sick ones aren't turning here. They get up in the night and walk to %1 and go down the steps, quietly, like it's Mass. %2 followed her husband. I'm locking us in the cellar.\n%3",
@@ -286,7 +286,7 @@ class RZ_Mission_TheWitness : RZ_PuzzleMission
 		int body = AddClue("The courier", string.Format("A Haven courier, %1. The satchel has been cut open and emptied. Someone tied a red rag around the strap, like a joke.", courier));
 		SpawnClue(gm, RZ_EPuzzleProp.BODY, m_vSpot, body, "Look at the body");
 
-		m_sTestimony = string.Format("He keeps his eyes on the dark road while he talks. \"Three of them. Red rags on their arms. She gave them the bag and they shot her anyway. They went off toward %1, laughing. I followed them as far as the last fence. I'm not going any closer, and neither should you.\"", m_sCampName);
+		m_sTestimony = string.Format("He keeps his eyes on the dark road while he talks. \"Three of them. Red rags on their arms. He gave them the bag and they shot his anyway. They went off toward %1, laughing. I followed them as far as the last fence. I'm not going any closer, and neither should you.\"", m_sCampName);
 		m_iWitness = AddClue("The wanderer", "");
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, RZ_Util.RandomPointInRing(m_vSpot, 5, 8), 0, "", "", m_iWitness, "Talk to the wanderer");
 
@@ -298,7 +298,7 @@ class RZ_Mission_TheWitness : RZ_PuzzleMission
 
 		m_fTimeLeft = NightDuration(2400, 10800, 4800);
 		m_sTitle = "The Witness";
-		m_sBrief = string.Format("A Haven courier was killed on the road outside %1. A wanderer saw it happen, they say, but he only talks after dark, and only where she died. Find out who did it.", s.m_sName);
+		m_sBrief = string.Format("A Haven courier was killed on the road outside %1. A wanderer saw it happen, they say, but he only talks after dark, and only where he died. Find out who did it.", s.m_sName);
 		m_sObjective = string.Format("Find out who killed the Haven courier outside %1.", s.m_sName);
 		return true;
 	}
@@ -351,7 +351,7 @@ class RZ_Mission_TheWitness : RZ_PuzzleMission
 			if (!m_sGroupPrefab.IsEmpty())
 				SetRival(RZ_EFaction.BANDITS, 10);
 
-			gm.NotifyPlayer(playerId, m_sTitle, "You read out the grid on the Haven channel. A long pause, then: \"Thank you. We'll come for the letters, and for her.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "You read out the grid on the Haven channel. A long pause, then: \"Thank you. We'll come for the letters, and for him.\"");
 			m_eState = RZ_EMissionState.SUCCEEDED;
 			return;
 		}

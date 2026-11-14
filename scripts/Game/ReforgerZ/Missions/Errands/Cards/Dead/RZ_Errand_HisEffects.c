@@ -40,7 +40,7 @@ class RZ_Errand_HisEffects : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Go to the wrecked truck {where_place}, take the crew's things (15 s there), and sell the jacket and the photo frame at the fence. Then go back to {giver}.";
+		w.m_sStep = "Go to the wrecked truck {where_place} and take the jacket and the photo frame for the fence (15 s there). Then go back to {giver}.";
 		w.Work(RZ_EWork.TAKE, "Take their things");
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_bCarry = true;

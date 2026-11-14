@@ -61,9 +61,6 @@ class RZ_GuidanceSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Crashed car (optional, an opening's group-gone clue: their car; a note lies next to it unless it has RZ_ClueComponent)", "et")]
 	ResourceName m_sCarWreckPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Scratched door or wall panel (optional, an opening's hiding-place clue; readable with RZ_ClueComponent + RZ_ReadClueAction, else the note is used)", "et")]
-	ResourceName m_sDoorPrefab;
-
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon flyer (optional, an opening's group-gone clue and safehouse walls; falls back to Puzzles > Note)", "et")]
 	ResourceName m_sFlyerPrefab;
 

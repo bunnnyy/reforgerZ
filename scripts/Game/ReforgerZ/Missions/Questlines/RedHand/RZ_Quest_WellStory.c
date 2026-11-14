@@ -783,7 +783,7 @@ class RZ_QM_WellTell : RZ_QuestMission
 		m_vPos = RZ_Util.RandomPointInRing(m_vWell, 2, 4);
 		m_iSettlement = run.Flag("town", -1);
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
-		string woman = RZ_RedHandQuest.WomanName(rng);
+		string woman = RZ_NoteText.ManName(rng);
 		run.SetText("drawer", woman);
 		m_iTalk = AddClue(woman, QFill(gm, "{drawer} is hauling up a bucket, and doesn't stop. \"You're the Red Hand's. Go on, then. Say it.\""));
 		m_sTitle = "The Well Story: tell the story";

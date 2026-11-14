@@ -11,7 +11,7 @@
 //!   hand it over (a carried item to a rival, logged), Last Mile's contracts at the desks (Buy It,
 //!   Sign It In, Nobody's, Keep It Overnight), the deal at the gate during the batch hold.
 //! - Each route's remaining ways, as choices on its scenes (MoreChoices): the Haven's terms one by
-//!   one and moving her; Bastion's ledgers, the clipboard's guard and the carries; the Red Hand's
+//!   one and moving him; Bastion's ledgers, the clipboard's guard and the carries; the Red Hand's
 //!   Who Came Back, the Mechanic's coil, the volunteer by kind and The Bottles; Halcyon's canisters'
 //!   riddle, the vials and the ways down; the Independent's carry on air.
 //! - Live tissue's rules: within reach of the lab (5 km, straight line x 1.3), the same pack never
@@ -676,7 +676,7 @@ class RZ_FinaleRest
 
 	//------------------------------------------------------------------------------------------------
 	//! Guard the door: the door's own route moves it once a season (the clipboard, 114, the trays,
-	//! her boy's line).
+	//! his boy's line).
 	bool GuardDoor(int route)
 	{
 		if (m_S.guarded.Contains(route))
@@ -898,9 +898,9 @@ class RZ_FinaleRest
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The Haven: her four terms one by one (her name read at supper costs Haven morale 5), moving her
+	//! The Haven: his four terms one by one (his name read at supper costs Haven morale 5), moving him
 	//! once a real day, the hungry house selling the spot, the annex's centrifuge, the quiet draw,
-	//! "One more", the truck's cab, betraying her on the last mile.
+	//! "One more", the truck's cab, betraying him on the last mile.
 	protected void HavenWays(RZ_GameModeComponent gm, RZ_QuestRun run, int stage, RZ_QM_MajorScene scene)
 	{
 		RZ_FinalePeople people = m_Finale.GetPeople();
@@ -910,33 +910,33 @@ class RZ_FinaleRest
 		vector house = people.Pos("woman");
 		if (stage == RZ_FinaleRoute.S_DOOR)
 		{
-			int terms = scene.Person(RZ_Mission.LandPointNear(house, 3, 6), "her, at the table", "Sit with her", "One at a time. Say each one and mean it. Leave the gun twenty metres off.");
-			scene.Choice(terms, "Promise: never up that hill").Sets("term1").Says("\"Not up the hill. Good.\" She ticks a finger.", "promised her the first term");
-			scene.Choice(terms, "Promise: nobody first for guns").Only("term1").Sets("term2").Says("\"Nobody first because they're armed.\" Two fingers.", "promised her the second term");
-			scene.Choice(terms, "Promise her name read at supper").Only("term2").Sets("do:rest:name").Says("Out loud. At the table. Where I can hear it.", "promised her name at supper");
-			scene.Choice(terms, "Promise her boy goes free").Only("term3").Sets("do:rest:yes").Says("\"And my boy.\" She holds your eye. \"Then yes.\"", "kept all four of her terms");
-			int chair = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.HAVEN)), "the chair's runner", "Talk to the runner", "She moves at dusk. Never the same two nights. A locked hand can move her once a day.");
-			scene.Choice(chair, "Move her tonight [the Haven's route]").Sets("do:rest:move").Says("A different house tonight, a different bowl. Whoever was watching the last one can keep watching it.", "moved her to another house");
-			int hungry = scene.Person(RZ_Mission.LandPointNear(house, 30, 60), "the hungry house next door", "Talk to them", "We're short. We know which house has her tonight. Everyone's short.");
-			// Under the Far House (haven.rule 2) her house is known and sold more readily: one food
+			int terms = scene.Person(RZ_Mission.LandPointNear(house, 3, 6), "him, at the table", "Sit with him", "One at a time. Say each one and mean it. Leave the gun twenty metres off.");
+			scene.Choice(terms, "Promise: never up that hill").Sets("term1").Says("\"Not up the hill. Good.\" He ticks a finger.", "promised him the first term");
+			scene.Choice(terms, "Promise: nobody first for guns").Only("term1").Sets("term2").Says("\"Nobody first because they're armed.\" Two fingers.", "promised him the second term");
+			scene.Choice(terms, "Promise his name read at supper").Only("term2").Sets("do:rest:name").Says("Out loud. At the table. Where I can hear it.", "promised his name at supper");
+			scene.Choice(terms, "Promise his boy goes free").Only("term3").Sets("do:rest:yes").Says("\"And my boy.\" He holds your eye. \"Then yes.\"", "kept all four of his terms");
+			int chair = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.HAVEN)), "the chair's runner", "Talk to the runner", "He moves at dusk. Never the same two nights. A locked hand can move him once a day.");
+			scene.Choice(chair, "Move his tonight [the Haven's route]").Sets("do:rest:move").Says("A different house tonight, a different bowl. Whoever was watching the last one can keep watching it.", "moved him to another house");
+			int hungry = scene.Person(RZ_Mission.LandPointNear(house, 30, 60), "the hungry house next door", "Talk to them", "We're short. We know which house has his tonight. Everyone's short.");
+			// Under the Far House (haven.rule 2) his house is known and sold more readily: one food
 			int spotPrice = 2;
 			if (RZ_MajorHelp.World(m_GM, "haven.rule") == 2)
 				spotPrice = 1;
 
-			scene.Choice(hungry, string.Format("Buy tonight's spot [%1 food]", spotPrice)).Way(RZ_EQuestApproach.BETRAY).Trade(RZ_EErrandItem.FOOD, spotPrice).Sets("do:rest:spot").Says("They tell you which house. They don't look at you while they do.", "bought her spot from a hungry house");
+			scene.Choice(hungry, string.Format("Buy tonight's spot [%1 food]", spotPrice)).Way(RZ_EQuestApproach.BETRAY).Trade(RZ_EErrandItem.FOOD, spotPrice).Sets("do:rest:spot").Says("They tell you which house. They don't look at you while they do.", "bought his spot from a hungry house");
 		}
 		else if (stage == RZ_FinaleRoute.S_PIECE)
 		{
 			int annex = scene.Person(RZ_Mission.LandPointNear(house, 40, 80), "the annex with the generator", "Look at the annex", "A generator, a pharmacy fridge, and somewhere to lie down. The vet's centrifuge is at the crossroads.");
 			scene.Choice(annex, "Hire the vet's centrifuge [25 Favor]").Bribe(RZ_EFaction.BANDITS, 25).Sets("do:draw").Says("The centrifuge comes in a crew's van and leaves the same way. The draw goes cleaner.", "drew a bag at the annex");
 			scene.Choice(annex, "Draw it quietly [unseen]").Sneak().Sets("do:draw").Says("No lamp, no queue at the door. One bag, and nobody saw it go.", "drew a bag quietly");
-			scene.Choice(annex, "Ask her for one more").Only("spared").Persuade(RZ_EFaction.SURVIVORS, 3, "nurse,doctor").Sets("do:draw").Says("One more. Then that's all of me you get.", "asked her for one more").Refused("I said two. I meant two.");
+			scene.Choice(annex, "Ask him for one more").Only("spared").Persuade(RZ_EFaction.SURVIVORS, 3, "nurse,doctor").Sets("do:draw").Says("One more. Then that's all of me you get.", "asked him for one more").Refused("I said two. I meant two.");
 		}
 		else if (stage == RZ_FinaleRoute.S_ACT4)
 		{
 			int cab = scene.Person(RZ_Mission.LandPointNear(house, 20, 40), "a truck with its engine running", "Look at the truck", "A cab with room for one more. The roadblocks wave trucks through.");
-			scene.Choice(cab, "Drive her up in the cab").Sets("walked").Says("She sits in the cab with her hands in her lap. The roadblocks wave you through.", "drove her up in a truck's cab");
-			scene.Choice(cab, "Turn her over on the last mile").Way(RZ_EQuestApproach.BETRAY).Sets("do:rest:betray").Says("You stop short of the lab and somebody else's people take her the rest of the way. She doesn't fight.", "betrayed her on the last mile");
+			scene.Choice(cab, "Drive him up in the cab").Sets("walked").Says("He sits in the cab with his hands in his lap. The roadblocks wave you through.", "drove him up in a truck's cab");
+			scene.Choice(cab, "Turn him over on the last mile").Way(RZ_EQuestApproach.BETRAY).Sets("do:rest:betray").Says("You stop short of the lab and somebody else's people take him the rest of the way. He doesn't fight.", "betrayed him on the last mile");
 		}
 	}
 
@@ -979,8 +979,8 @@ class RZ_FinaleRest
 	{
 		if (stage == RZ_FinaleRoute.S_ACT1)
 		{
-			int haven = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.HAVEN)), "a Haven cook who knew her", "Talk to the cook", "Who came back from her pan? I'll tell you for a price. Everyone's got one this week.");
-			scene.Choice(haven, "Buy her line at the Haven [10 Favor]").Bribe(RZ_EFaction.SURVIVORS, 10).Sets("line_h").Says("Four came back. One didn't, and she knows his name.", "bought a line at the Haven");
+			int haven = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.HAVEN)), "a Haven cook who knew him", "Talk to the cook", "Who came back from his pan? I'll tell you for a price. Everyone's got one this week.");
+			scene.Choice(haven, "Buy his line at the Haven [10 Favor]").Bribe(RZ_EFaction.SURVIVORS, 10).Sets("line_h").Says("Four came back. One didn't, and he knows his name.", "bought a line at the Haven");
 			int lab = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.HALCYON)), "a lab orderly", "Talk to the orderly", "The cook's patients? We logged them. For a price.");
 			scene.Choice(lab, "Buy the lab's line [10 Favor]").Only("line_h").Bribe(RZ_EFaction.INSTITUTE, 10).Decides(RZ_FinaleRoute.OUT_ACT1).Says("Three lines that agree: who came back, and from which pan.", "had Who Came Back from three lines");
 			scene.Choice(lab, "Make up who came back").Way(RZ_EQuestApproach.BETRAY).Sets("do:rest:false").Says("You give the boss a list. Some of it might even be true.", "gave the boss a false answer");
@@ -991,7 +991,7 @@ class RZ_FinaleRest
 		{
 			int still = scene.Person(RZ_Mission.LandPointNear(scene.m_vPos, 10, 20), "the still's coil", "Look at the coil", "The coil is burnt through. A Mechanic could fix it in the dark.");
 			scene.Choice(still, "Fix the coil in the dark").Persuade(RZ_EFaction.BANDITS, 2, "mechanic").Decides(RZ_FinaleRoute.OUT_PIECE).Says("New copper, bent by hand. The still runs all night without a cough.", "fixed the still's coil").Refused("It needs hands that know engines.");
-			scene.Choice(still, "Copy her notes for the lab [unseen]").Sneak().Sets("world:cook.lab_copy").Says("Her chalk on the boards, copied into a notebook. Halcyon will want it.", "copied the cook's notes for the lab");
+			scene.Choice(still, "Copy his notes for the lab [unseen]").Sneak().Sets("world:cook.lab_copy").Says("His chalk on the boards, copied into a notebook. Halcyon will want it.", "copied the cook's notes for the lab");
 		}
 	}
 
@@ -1085,10 +1085,10 @@ class RZ_FinaleRest
 			case "move":
 			{
 				if (mine != RZ_CureFinale.HAVEN)
-					return "Only the Haven's people move her.";
+					return "Only the Haven's people move him.";
 
 				if (RZ_SeasonClock.Now() - run.Flag("moved_unix") < DAY * m_GM.GetQuestlines().WaitScale())
-					return "She's moved once today. Twice and the houses talk.";
+					return "He's moved once today. Twice and the houses talk.";
 
 				break;
 			}
@@ -1146,7 +1146,7 @@ class RZ_FinaleRest
 			case "betray":
 			{
 				people.Betray("woman");
-				m_GM.AddInfamy(playerId, RZ_EFaction.SURVIVORS, 20, "handed her over on the last mile", 0, "betrayed her on the last mile");
+				m_GM.AddInfamy(playerId, RZ_EFaction.SURVIVORS, 20, "handed him over on the last mile", 0, "betrayed him on the last mile");
 				break;
 			}
 			case "checkpoint":

@@ -203,19 +203,19 @@ node seed
 
 conv stranger.sister.barns
 for stranger:sister
-topic "Tell me about your sister."
+topic "Tell me about your brother."
 prio world
 once
 voice plain
 
 node start
-  say Older than me. Bossier than me. Put out of {their:house} for upkeep, and she'd paid it twice before they asked a third time.
-  say She'll be in a barn. {their:barn}, if I had to bet. She liked barns when we were kids. She'd hide in the hay and I'd pretend I couldn't find her.
-  > @help I'll keep an eye out for her. -> help
+  say Older than me. Bossier than me. Put out of {their:house} for upkeep, and he'd paid it twice before they asked a third time.
+  say He'll be in a barn. {their:barn}, if I had to bet. He liked barns when we were kids. He'd hide in the hay and I'd pretend I couldn't find him.
+  > @help I'll keep an eye out for him. -> help
   > @back Let me ask you something else. -> hub
 
 node help
-  say That's all I ask. That, and if she says I'm useless, don't argue. She's not wrong.
+  say That's all I ask. That, and if he says I'm useless, don't argue. He's not wrong.
   > @back1 Let me ask you something else. -> hub
 
 conv stranger.waves_at_line.him

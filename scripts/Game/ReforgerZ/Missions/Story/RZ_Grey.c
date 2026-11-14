@@ -274,7 +274,7 @@ class RZ_BriefLies
 		Version("Command still answers, now and then.", "The satchel's seal is weeks old. The orders inside are dated Day 3.", "Command hadn't answered since Day 3. The orders said so.");
 
 		Add("trial", "RZ_Job_UnsanctionedTrial", HALCYON, "doctor,nurse,labtech", "He had asked, and his family had too. The paper was real.");
-		Version("His family agreed as well.", "His wife is at the door. Nobody asked her anything.", "Nobody asked his family. His wife found out from the needle.");
+		Version("His family agreed as well.", "His brother is at the door. Nobody asked him anything.", "Nobody asked his family. His brother found out from the needle.");
 		Version("The serum's been through animal trials.", "The vial's label: batch one. No trials noted, animal or otherwise.", "It had never been tried on anything. Batch one.");
 
 		Add("collection", "RZ_Job_PrivateCollection", HALCYON, "labtech,hunter", "It was for the work after all, just not the committee's.");

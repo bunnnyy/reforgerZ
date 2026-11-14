@@ -225,7 +225,7 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 		m_sTitle = "The Armory";
 		m_sDeed = "found the rifles near {town}";
 		m_sBrief = string.Format("Our people left weapons in %1 in %2 when it fell: a long case with Bastion stencils, somewhere inside. Find it and bring it to %3. Don't get ideas about keeping it.", place, s.m_sName, meetName);
-		m_sObjective = string.Format("Find the Bastion weapons case in %1 in %2 and bring it to %3.", place, s.m_sName, meetName);
+		ObjThen(string.Format("Find the Bastion weapons case in %1 in %2.", place, s.m_sName), string.Format("Bring the case to %1.", meetName));
 		m_Mirror.Roll();
 		Truth(gm);
 		return true;
@@ -731,6 +731,13 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 	protected static const float BLEED_SECONDS = 1200;
 
 	//------------------------------------------------------------------------------------------------
+	//! Found: the pilot is walking with you.
+	override protected bool ObjFirstDone()
+	{
+		return m_Escort.IsStarted();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.MILITARY, RZ_ETier.TRUSTED, 35, 30);
@@ -778,7 +785,7 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 		m_sTitle = "Rescue the Pilot";
 		m_sDeed = "brought the pilot in from {town}";
 		m_sBrief = string.Format("The last helicopter put down hard outside %1 on its run. The mechanics will get the airframe back; the pilot is still out there, hurt, and Bastion has nobody else to fly it. Find him and walk him to %2.", s.m_sName, m_sDestName);
-		m_sObjective = string.Format("Find the downed pilot outside %1 and walk the pilot to %2.", s.m_sName, m_sDestName);
+		ObjThen(string.Format("Find the downed pilot outside %1.", s.m_sName), string.Format("Walk the pilot to %1.", m_sDestName));
 		if (!m_Escort.Begin(gm, LandPointNear(m_vWreck, 3, 8)))
 			return false;
 
@@ -1028,7 +1035,7 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 
 //------------------------------------------------------------------------------------------------
 //! #18 Secure the Shipment: a Halcyon courier walks a sample case to the lab. Bastion wants it.
-//! Escort her (RZ_Escort); on the way, talk to her: **see it to the lab** (Halcyon pays, research)
+//! Escort him (RZ_Escort); on the way, talk to him: **see it to the lab** (Halcyon pays, research)
 //! or **divert it to Bastion** (Bastion pays, Halcyon Infamy). Whoever gets it pays, as in a
 //! choice mission.
 class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
@@ -1042,6 +1049,13 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 	protected int m_iTalk = -1;
 
 	protected static const int CROSS_INFAMY = 15;
+
+	//------------------------------------------------------------------------------------------------
+	//! Met: the courier walks.
+	override protected bool ObjFirstDone()
+	{
+		return m_bMet;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -1074,14 +1088,14 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius + 40);
-		m_iTalk = AddClue("The courier", "A Halcyon courier with a steel case chained to her wrist. \"Samples for the lab. Are you my escort? You don't look like Bastion.\"");
+		m_iTalk = AddClue("The courier", "A Halcyon courier with a steel case chained to his wrist. \"Samples for the lab. Are you my escort? You don't look like Bastion.\"");
 		m_Escort.m_sName = "the courier";
 		m_Escort.m_sPrefab = RZ_Escort.PrefabFor(gm, 1);
 		m_Escort.SetTalk(m_iId, 0, "See it to the lab|Divert it to Bastion", m_iTalk, "Talk to the courier");
 		m_Escort.SetDestination(LandPointNear(m_vLab, 6, 12));
 		m_sTitle = "Secure the Shipment";
 		m_sBrief = string.Format("Halcyon is walking a case of samples from %1 to their lab. We want it. Walk with the courier and, when nobody's looking, bring it to %2 instead. Or don't, and answer for it.", s.m_sName, m_sBastionName);
-		m_sObjective = string.Format("Walk with Halcyon's courier from %1, then take the samples to %2.", s.m_sName, m_sBastionName);
+		ObjThen(string.Format("Meet Halcyon's courier in %1.", s.m_sName), string.Format("Walk him and the samples to %1.", m_sBastionName));
 		return m_Escort.Begin(gm, m_vPos);
 	}
 
@@ -1092,7 +1106,7 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 		{
 			m_bMet = true;
 			m_Escort.Go();
-			RZ_ContractHelp.NotifyNear(gm, m_Escort.m_vPos, 50, m_sTitle, "She sets off for the lab without waiting to be asked. Talk to her if you mean to change that.");
+			RZ_ContractHelp.NotifyNear(gm, m_Escort.m_vPos, 50, m_sTitle, "He sets off for the lab without waiting to be asked. Talk to him if you mean to change that.");
 		}
 
 		m_Escort.Update(gm, dt, ids, players);
@@ -1129,7 +1143,7 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 
 		if (option == 0)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Good.\" She keeps walking toward the lab.");
+			gm.NotifyPlayer(playerId, m_sTitle, "\"Good.\" He keeps walking toward the lab.");
 			return;
 		}
 
@@ -1139,7 +1153,7 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 		m_bDiverted = true;
 		m_Escort.SetDestination(m_vBastion);
 		m_Escort.Go();
-		gm.NotifyPlayer(playerId, m_sTitle, string.Format("You tell her where she's going now. She looks at your rifle, then at the road. \"They'll know it was you.\" She walks toward %1.", m_sBastionName));
+		gm.NotifyPlayer(playerId, m_sTitle, string.Format("You tell him where he's going now. He looks at your rifle, then at the road. \"They'll know it was you.\" He walks toward %1.", m_sBastionName));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1149,7 +1163,7 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The courier where she waits, then where she walks (the lab, or Bastion if you diverted her).
+	//! The courier where he waits, then where he walks (the lab, or Bastion if you diverted him).
 	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
 	{
 		RZ_ObjPlace at = m_Escort.ObjPlace();

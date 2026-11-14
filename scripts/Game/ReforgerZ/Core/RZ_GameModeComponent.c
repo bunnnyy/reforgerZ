@@ -606,6 +606,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		{
 			GetGame().GetCallqueue().Remove(ServerTick);
 			GetGame().GetCallqueue().Remove(SecondTick);
+			GetGame().GetCallqueue().Remove(FastTick);
 			SaveState();
 		}
 
@@ -938,6 +939,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// Bites need a faster check than the main tick to catch individual hits, and stealth a
 		// faster update for the infected near players
 		GetGame().GetCallqueue().CallLater(SecondTick, 1000, true);
+		// What appears near players (camp life's pieces, a site read for a visit) goes on every
+		// tenth of a second, a few ms at a time, so a place is full by the time you get there
+		GetGame().GetCallqueue().CallLater(FastTick, 100, true);
 
 		RZ_Log.Info(string.Format("Started. %1 settlements, stage %2, cure %3 percent, state %4.",
 			m_aSettlements.Count(), RZ_StageSettings.GetStageName(m_Director.GetStage()),
@@ -1940,6 +1944,15 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Every tenth of a second: camp life's spawning and the read of a site a player came near
+	//! (docs/SITES.md, How fast a place fills).
+	protected void FastTick()
+	{
+		if (m_CampLife)
+			m_CampLife.FastTick();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Once a second: bites, stealth (which updates at its own pace, Stealth > Update seconds) and the
 	//! land grid's first reading.
 	protected void SecondTick()
@@ -2519,7 +2532,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 					return "The Haven holds the cure. The houses read the bite book, not the List.";
 				if (t == 4)
 					return "The Haven holds the cure. They went down the List from the bottom.";
-				return "The Haven holds the cure. It goes hand to hand, and the first box went to her house.";
+				return "The Haven holds the cure. It goes hand to hand, and the first box went to his house.";
 			}
 			case RZ_CureFinale.BASTION:
 			{

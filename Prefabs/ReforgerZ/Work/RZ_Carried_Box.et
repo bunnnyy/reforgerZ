@@ -1,0 +1,14 @@
+GenericEntity {
+ ID "A1C3E5F7092B4D61"
+ components {
+  MeshObject "{B2D4F60813A5C7E9}" {
+   Object "{CEC8A3DF893B9C96}Assets/Props/Crates/BoxWooden_01.xob"
+  }
+  RplComponent "{C3E5071924B6D8FA}" {
+   Enabled 1
+  }
+  Hierarchy "{16D4B2907F5E3C1A}" {
+  }
+ }
+ coords 0 0 0
+}

@@ -8,7 +8,7 @@
 //! asks a Courier for work. Needs the mission item and the Haven drop point.
 //! A story job (key `letters`, kept per destination): letters, as they said; to the man from himself;
 //! or a crew's sealed letter among them (a Red Hand holding within 6 km: a toll list for the house).
-//! The ways are the road, the quiet way and the Hunter's quieter one. The woman at the door (the talk
+//! The ways are the road, the quiet way and the Hunter's quieter one. The man at the door (the talk
 //! scene, at the drop): who they're for; the crew's: burn the red one (4 Haven Favor, +3 Red Hand
 //! Infamy, a Haven asset).
 class RZ_Mission_CourierJob : RZ_Mission_Delivery
@@ -148,10 +148,10 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 		if (m_sTruth == "the_writer")
 			reveal = "Him again. He writes to himself so someone brings him the post. We all pretend.";
 		else if (m_sTruth == "crew")
-			reveal = "She holds the red-sealed one up to the light. \"That's a toll list, that is. In our own post.\"";
+			reveal = "He holds the red-sealed one up to the light. \"That's a toll list, that is. In our own post.\"";
 
-		RZ_TalkScene sc = m_Job.Scene("The woman at the door", "letters.door", LandPointNear(dest, 3, 6));
-		int n0 = sc.Node("A woman at the door takes the bundle before you've offered it. \"Anything for me? There never is. I check anyway.\"");
+		RZ_TalkScene sc = m_Job.Scene("The man at the door", "letters.door", LandPointNear(dest, 3, 6));
+		int n0 = sc.Node("A man at the door takes the bundle before you've offered it. \"Anything for me? There never is. I check anyway.\"");
 		int n1 = sc.Node("Go on, then. What do you want done with it?");
 		sc.Ask(n0, "Who are they for?", n1, reveal, true);
 		if (m_sTruth == "crew")
@@ -231,7 +231,7 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 
 		if (m_sTruth == "the_writer")
 		{
-			string line = "The woman at the door reads the top letter and laughs, once. \"This one's to him from him. He writes to himself so someone brings him the post.\"";
+			string line = "The man at the door reads the top letter and laughs, once. \"This one's to him from him. He writes to himself so someone brings him the post.\"";
 			gm.NotifyPlayerAs(playerId, m_sTitle, line, RZ_ENoticeTag.MISSION);
 			RZ_WorldFacts.Get().Memory().FoundTruth("letters", RZ_WorldFacts.Town(m_iSettlement), "delivery");
 			RZ_StoryKit.Later(gm, playerId, "The man who writes to himself", "An old man raises his cup to you from a doorstep. \"Got a letter this week. From a very good friend.\"", m_vPos, true);

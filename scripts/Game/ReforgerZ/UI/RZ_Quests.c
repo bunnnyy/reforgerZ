@@ -641,6 +641,41 @@ class RZ_QuestTracker
 
 		string back = e.Fill(BackLine(e));
 
+		// Carried for real (Missions/Blocks/RZ_Carry.c): picking one up, then putting it down where
+		// it goes, each at its own place, with the count; then the way back
+		RZ_Carries carries = RZ_Carries.Get();
+		RZ_CarryJob job;
+		if (carries && !e.m_bStepDone)
+			job = carries.Job(RZ_Errands.WorkKey(e));
+
+		if (job)
+		{
+			string pickLine;
+			string dropLine;
+			carries.Lines(job, pickLine, dropLine);
+			vector from = job.m_vDrop;
+			IEntity carrier = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+			if (carrier)
+				from = carrier.GetOrigin();
+
+			RZ_ObjPlace pickAt = RZ_ObjPlace.Spot(carries.NowAt(job, from), 3);
+			RZ_ObjPlace dropAt = RZ_ObjPlace.Spot(job.m_vDrop, 3);
+			if (job.m_bCarrying)
+			{
+				list.Add(dropLine, RZ_EObjState.CURRENT, dropAt);
+				if (job.m_iDelivered + 1 < job.m_iCount)
+					list.Add(pickLine, RZ_EObjState.NEXT, pickAt);
+			}
+			else
+			{
+				list.Add(pickLine, RZ_EObjState.CURRENT, pickAt);
+				list.Add(dropLine, RZ_EObjState.NEXT, dropAt);
+			}
+
+			list.Add(back, RZ_EObjState.NEXT, backAt);
+			return;
+		}
+
 		// A duty's scene names its own steps (take the box, carry it, hand it over, sign): each
 		// is one objective, then the way back
 		RZ_DutyScenes scenes = errands.GetScenes();
@@ -652,6 +687,21 @@ class RZ_QuestTracker
 				list.Add(back, RZ_EObjState.NEXT, backAt);
 
 			return;
+		}
+
+		// A first place before the step's own (RZ_ErrandWay.First): its own line
+		if (w && w.HasFirst() && e.m_vFirst != vector.Zero)
+		{
+			string first = e.Fill(w.m_sFirst);
+			if (!e.m_bFirstDone)
+			{
+				list.Add(first, RZ_EObjState.CURRENT, RZ_ObjPlace.Spot(e.m_vFirst, wayR));
+				list.Add(step, RZ_EObjState.NEXT, stepAt);
+				list.Add(back, RZ_EObjState.NEXT, backAt);
+				return;
+			}
+
+			list.Add(first, RZ_EObjState.DONE, null);
 		}
 
 		if (e.m_bStepDone)
@@ -790,7 +840,7 @@ class RZ_QuestTracker
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Keeps the tracked job valid (a newly taken job is tracked if nothing is; one that ended
+	//! Keeps the tracked job valid (a newly taken job is always tracked; one that ended
 	//! falls back to the newest taken, unless the player untracked on purpose) and sends the
 	//! tracker if it changed.
 	protected void Push(int playerId, IEntity ent, bool force)
@@ -848,7 +898,8 @@ class RZ_QuestTracker
 			}
 		}
 
-		if (newest != 0 && (!tracked || p.m_bTrackOff))
+		// A job just taken (agreed to in a talk) is followed at once, whatever was followed before
+		if (newest != 0)
 		{
 			tracked = FindJob(jobs, newest);
 			p.m_bTrackOff = false;
@@ -936,7 +987,7 @@ class RZ_QuestTracker
 		s += lnNow.AddInt(RZ_EObjState.CURRENT).Add(now).Add(place).End();
 		if (!next.IsEmpty())
 		{
-			// The next one's place in words when it's somewhere else ("Go back to Mara" · Morton)
+			// The next one's place in words when it's somewhere else ("Go back to Marek" · Morton)
 			string nextPlace = OtherPlace(list.PlaceOf(RZ_EObjState.NEXT), place);
 			RZ_UILine lnNext = new RZ_UILine("O");
 			s += lnNext.AddInt(RZ_EObjState.NEXT).Add(next).Add(nextPlace).End();

@@ -639,6 +639,13 @@ class RZ_Mission_Delivery : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Found: someone carries the thing (ObjThen's second line points at the drop).
+	override protected bool ObjFirstDone()
+	{
+		return IsCarried() || m_bDelivered;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
 		if (m_bInsideLater && !m_bItemSpawned && CountPlayersNear(players, m_vInside, INSIDE_PLACE_RADIUS) > 0 && SpawnItemInside(gm, m_vInside))

@@ -78,6 +78,9 @@ class RZ_ErrandWay
 	RZ_EErrandItem m_eItem = RZ_EErrandItem.NONE;
 	int m_iItems;				// how many, handed over when picked (or at the place, m_bGiveThere)
 	bool m_bGiveThere;			// the items are handed over at the step's place
+	RZ_EErrandPlace m_eFirst = RZ_EErrandPlace.NONE;	// a place to go first (First), then the step's own
+	string m_sFirst;			// its objective line
+	float m_fFirstSeconds;		// how long there
 	int m_iFavorCost;			// paid when picked, with the giver's faction
 	string m_sBackground;		// one of these backgrounds ("nurse,doctor")
 	int m_iTrust;				// a Trust check with the giver's faction (difficulty 1-3), 0 none
@@ -101,7 +104,15 @@ class RZ_ErrandWay
 	string m_sWorkLabel;		// its prompt ("Dig the latrine")
 	string m_sInside;			// its work site is inside a building of this kind ("any", "house", "shop", "police", "school", "public", "clinic"), on the ground floor; empty: in the open
 	bool m_bPerson;				// someone the work is for stands at its work site (the newcomer, the bitten man): Props > Duty person
+	bool m_bPersonLies;			// and lies there, on the work's bed, instead of standing by it (a sick son, a bitten friend)
 	float m_fWorkSeconds;		// its hold (0: from m_fSeconds, RZ_WorkSites.HoldFor)
+	ResourceName m_sLook;		// what stands at its work site while it's to do (the cook pot, the woodpile), over the kind's look (Look())
+	int m_iCarry;				// carried for real (Carry()): how many things, 0 not a carry
+	ResourceName m_sCarryProp;	// one of them, as it stands (a base-game prop)
+	string m_sCarryThing;		// "crate"
+	string m_sCarryThings;		// "crates"
+	bool m_bCarryIn;			// from outside into the building (else out of it)
+	bool m_bCarryStack;			// put down one on another (else in a row)
 	string m_sNeed;				// the place need its words make (World/RZ_PlaceNeeds.c; empty: by its place kind, NeedKey)
 	int m_iGame;				// a sorting duty (RZ_DutyGame.KIND_*): its row is laid out at the place, and its verdicts are the step
 	bool m_bSquad;				// a duty walked with the place's people (RZ_DutySquads): the step is coming back with them
@@ -128,6 +139,23 @@ class RZ_ErrandWay
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A place to go first, before the step's own (find the ring in the grass, then take it to the
+	//! mother's door): its own objective line (docs/MISSION_RULES.md, rule 23), done by staying there
+	//! `seconds`. `line` is its objective ("Search the grass {subject_place} for the ring.").
+	void First(RZ_EErrandPlace place, string line, float seconds)
+	{
+		m_eFirst = place;
+		m_sFirst = line;
+		m_fFirstSeconds = seconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasFirst()
+	{
+		return m_eFirst != RZ_EErrandPlace.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool HasStep()
 	{
 		return m_ePlace != RZ_EErrandPlace.NONE;
@@ -142,6 +170,29 @@ class RZ_ErrandWay
 		m_eWork = kind;
 		m_sWorkLabel = label;
 		m_fWorkSeconds = hold;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What stands at its work site while it's to do, when the words name a thing the kind's look
+	//! isn't (a cook pot at "Stir the pot", the woodpile at "Split the wood").
+	void Look(ResourceName prefab)
+	{
+		m_sLook = prefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Carried for real (Missions/Blocks/RZ_Carry.c): `count` of `prop` picked up one by one and put
+	//! down where the words say: into the place's building on its ground floor (`into`), else out of
+	//! it to the open beside it; one on another when `stack`. The work site from Work() is the old
+	//! rule when carrying is off.
+	void Carry(string thing, string things, ResourceName prop, int count, bool into, bool stack)
+	{
+		m_iCarry = count;
+		m_sCarryThing = thing;
+		m_sCarryThings = things;
+		m_sCarryProp = prop;
+		m_bCarryIn = into;
+		m_bCarryStack = stack;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -399,6 +450,9 @@ class RZ_Errand
 	vector m_vPlace;			// the taken way's place
 	float m_fProgress;
 	bool m_bStepDone;
+	vector m_vFirst;			// the way's first place (RZ_ErrandWay.First), zero: none
+	bool m_bFirstDone;
+	float m_fFirstProgress;
 	bool m_bNoisy;				// a shot near it while it ran
 	bool m_bUnasked;			// a call-out, not an ask
 	bool m_bFallout;			// a failed story job's fallout (RZ_Fallout): pays at most m_iCap

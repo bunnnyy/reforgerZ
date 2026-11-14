@@ -1,16 +1,16 @@
 //! The Haven's route, The One Who Didn't Turn (docs/FINALE.md, "The Haven"), key "route_haven".
-//! She was on the Day 2 bus, bitten in the church doorway on Day 4, kept back from the Day 6 hill,
+//! He was on the Day 2 bus, bitten in the church doorway on Day 4, kept back from the Day 6 hill,
 //! and crossed off the List with the pencil the houses use for the dead. Nothing is drawn without
-//! her yes. Nobody, the writing included, ever says why she didn't turn.
-//!   I   The Crossed-Out Name (open): her name, her house, tonight's spot
-//!   II  And my boy (sworn): her yes, and her boy's line in the book (the Red Hand's door) or she
+//! his yes. Nobody, the writing included, ever says why he didn't turn.
+//!   I   The Crossed-Out Name (open): his name, his house, tonight's spot
+//!   II  And my boy (sworn): his yes, and his boy's line in the book (the Red Hand's door) or he
 //!       gives without it, one step harder; then Three Times: two bags, drawn at dusk, stored cold
 //!   III Who It Was (open): live tissue (the controller's hunts)
 //!   IV  Up the Hill (sworn, last): at dawn, the last draw fresh in the lab; "Two is enough" spares
-//!       her the dawn for 2 real days of the lab's work
-//! Branch: What She Left (her notebook for the door) and Twice (up to six bags) when she's gone.
-//! Simplified: tonight's spot is her house (the rota moves her every 3 real days); the walk up is
-//! a choice, not an escort block; R1 (her Day 2 tube) is one bag.
+//!       him the dawn for 2 real days of the lab's work
+//! Branch: What He Left (his notebook for the door) and Twice (up to six bags) when he's gone.
+//! Simplified: tonight's spot is his house (the rota moves him every 3 real days); the walk up is
+//! a choice, not an escort block; R1 (his Day 2 tube) is one bag.
 class RZ_Route_Haven : RZ_FinaleRoute
 {
 	protected static const float BAG_COLD = 900;	// a cool bag: 15 minutes out of the cold
@@ -41,9 +41,9 @@ class RZ_Route_Haven : RZ_FinaleRoute
 	{
 		switch (stage)
 		{
-			case S_ACT1: return "\"There's someone. We kept her from you. We kept her from everyone.\" A woman the houses crossed off the List to keep her alive. Find her name, and where she sleeps tonight.";
-			case S_DOOR: return "\"Day 2 I was on the bus. Day 4 I was in the church door. Day 6 I was meant to walk up that hill.\" Ask {woman} for her yes. Her terms end with her boy's line in the Red Hand's book.";
-			case S_PIECE: return "Two bags of {woman}'s blood, drawn at dusk at the edge of her town and carried cold to the lab.";
+			case S_ACT1: return "\"There's someone. We kept him from you. We kept him from everyone.\" A man the houses crossed off the List to keep him alive. Find his name, and where he sleeps tonight.";
+			case S_DOOR: return "\"Day 2 I was on the bus. Day 4 I was in the church door. Day 6 I was meant to walk up that hill.\" Ask {woman} for his yes. His terms end with his boy's line in the Red Hand's book.";
+			case S_PIECE: return "Two bags of {woman}'s blood, drawn at dusk at the edge of his town and carried cold to the lab.";
 			case S_ACT4: return "At dawn, the hour the ten walked up on Day 6: the last draw, fresh, in the lab.";
 		}
 
@@ -55,7 +55,7 @@ class RZ_Route_Haven : RZ_FinaleRoute
 	{
 		switch (stage)
 		{
-			case S_ACT1: return "Find the woman the houses crossed off the List, starting with {chair}.";
+			case S_ACT1: return "Find the man the houses crossed off the List, starting with {chair}.";
 			case S_DOOR: return "Ask {woman} for a yes, and meet {woman}'s terms.";
 			case S_PIECE: return "Carry two bags of {woman}'s blood, drawn at dusk, cold to the lab in {lab_town}.";
 			case S_ACT4: return "Bring {woman} to the lab in {lab_town} at dawn for the last draw.";
@@ -67,7 +67,7 @@ class RZ_Route_Haven : RZ_FinaleRoute
 	//------------------------------------------------------------------------------------------------
 	override protected string RemakeText()
 	{
-		return "The batch was lost. {woman} can give once more, if she agrees.";
+		return "The batch was lost. {woman} can give once more, if he agrees.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -98,11 +98,11 @@ class RZ_Route_Haven : RZ_FinaleRoute
 	override void OnBegin(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (gm.GetFactionLife())
-			gm.GetFactionLife().OpenChannelLine(RZ_EFaction.SURVIVORS, "All houses: nobody says her name on the radio. She moves tonight.");
+			gm.GetFactionLife().OpenChannelLine(RZ_EFaction.SURVIVORS, "All houses: nobody says his name on the radio. He moves tonight.");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Draws at dusk or after dark; the walk up at dawn (05:00-09:00) unless she was spared it.
+	//! Draws at dusk or after dark; the walk up at dawn (05:00-09:00) unless he was spared it.
 	override protected bool Window(RZ_GameModeComponent gm, RZ_QuestRun run, int stage)
 	{
 		if (stage == S_PIECE)
@@ -118,14 +118,14 @@ class RZ_Route_Haven : RZ_FinaleRoute
 	override protected string ItemName(string kind)
 	{
 		if (kind == "bag")
-			return "a bag of her blood";
+			return "a bag of his blood";
 
 		return "the last draw";
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Her yes: persuade 3 on Haven rank (Nurse, Doctor or Elder +1); one easier with her name read
-	//! at supper (Every Name), one harder if she was sent to the far house as a mouth.
+	//! His yes: persuade 3 on Haven rank (Nurse, Doctor or Elder +1); one easier with his name read
+	//! at supper (Every Name), one harder if he was sent to the far house as a mouth.
 	protected int YesStep(RZ_GameModeComponent gm)
 	{
 		int d = 3;
@@ -149,7 +149,7 @@ class RZ_Route_Haven : RZ_FinaleRoute
 		scene.m_sObjective = run.Fill(StageObjective(stage));
 		if (!here && stage >= S_DOOR)
 		{
-			scene.m_sBrief = run.Fill("{woman} is gone. What she left is a notebook, and a man the crews call Twice has the same luck.");
+			scene.m_sBrief = run.Fill("{woman} is gone. What he left is a notebook, and a man the crews call Twice has the same luck.");
 			scene.m_sObjective = run.Fill("Find the man the crews call Twice, who has {woman}'s luck.");
 		}
 
@@ -158,15 +158,15 @@ class RZ_Route_Haven : RZ_FinaleRoute
 			case S_ACT1:
 			{
 				scene.m_vPos = Seat(gm, RZ_EFaction.SURVIVORS);
-				int chair = scene.Person(scene.m_vPos, run.Fill("{chair}"), "Talk to the chair", "There's someone. We kept her from you. We kept her from everyone.");
-				scene.Choice(chair, "Ask who she is [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Decides(OUT_ACT1).Says(run.Fill("\"Her name is {woman}. Don't say it on the radio.\" The chair tells you which house, and that it changes."), "heard her name from the chair");
-				scene.Choice(chair, "Read her name off the List").Only("world:list.read").Decides(OUT_ACT1).Says(run.Fill("Her name was read with the rest at supper: {woman}. Uncrossed now."), "found her name on the List");
-				int head = scene.Person(HeadSeat(gm, house), "a council head near her house", "Talk to the council head", "Which house? They all look the same at dusk. That's the point.");
-				scene.Choice(head, "Ask the council head [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Sets("do:head").Decides(OUT_ACT1).Says("Tonight it's the house with the second bowl. Tomorrow it isn't.", "had her house from a council head");
-				scene.Choice(head, "Ask the Preacher who rings for her").Persuade(RZ_EFaction.SURVIVORS, 2, "elder").Decides(OUT_ACT1).Says("\"I ring for the ones the List forgot. One of them still answers.\" A house, and a name.", "heard it from the Preacher").Refused("The bells are for the dead. Ask the living.");
+				int chair = scene.Person(scene.m_vPos, run.Fill("{chair}"), "Talk to the chair", "There's someone. We kept him from you. We kept him from everyone.");
+				scene.Choice(chair, "Ask who he is [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Decides(OUT_ACT1).Says(run.Fill("\"His name is {woman}. Don't say it on the radio.\" The chair tells you which house, and that it changes."), "heard his name from the chair");
+				scene.Choice(chair, "Read his name off the List").Only("world:list.read").Decides(OUT_ACT1).Says(run.Fill("His name was read with the rest at supper: {woman}. Uncrossed now."), "found his name on the List");
+				int head = scene.Person(HeadSeat(gm, house), "a council head near his house", "Talk to the council head", "Which house? They all look the same at dusk. That's the point.");
+				scene.Choice(head, "Ask the council head [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Sets("do:head").Decides(OUT_ACT1).Says("Tonight it's the house with the second bowl. Tomorrow it isn't.", "had his house from a council head");
+				scene.Choice(head, "Ask the Preacher who rings for him").Persuade(RZ_EFaction.SURVIVORS, 2, "elder").Decides(OUT_ACT1).Says("\"I ring for the ones the List forgot. One of them still answers.\" A house, and a name.", "heard it from the Preacher").Refused("The bells are for the dead. Ask the living.");
 				int lookout = scene.Person(house, "a house's back door at dusk", "Look at the back door", "Two bowls go out by the back door at dusk. The house has one cat. It hasn't got a cat.");
 				scene.Choice(lookout, "Watch for the second bowl [unseen]").Sneak().Decides(OUT_ACT1).Says("The second bowl goes in through the side window. Someone eats on half portions in there.", "watched a house at dusk");
-				scene.Choice(lookout, "Feed the hungry house [3 food]").Sets("do:food3").Decides(OUT_ACT1).Says("The council head takes the food and answers one question. It's the right one.", "fed her house");
+				scene.Choice(lookout, "Feed the hungry house [3 food]").Sets("do:food3").Decides(OUT_ACT1).Says("The council head takes the food and answers one question. It's the right one.", "fed his house");
 				scene.Choice(lookout, "Tail the walker at dusk [unseen]").Only("world:walk.walks_stay").Sneak().Decides(OUT_ACT1).Says("The walker goes the long way round and knocks twice at one door.", "tailed the walker");
 				scene.Choice(lookout, "Knock as a house runner [Haven kit]").Trick(RZ_EFaction.SURVIVORS, 2).Decides(OUT_ACT1).Says("\"You're late with the bread.\" The door opens wider than it should.", "passed as a house runner").Refused("You're not from any house I know.");
 				int clerk = scene.Person(RZ_MajorHelp.NearSeat(gm.GetLabPosition()), "the lab's clerk", "Talk to the clerk", "The Day 6 ledger: eleven referred, ten treated, eight discharged. One did not present.");
@@ -185,29 +185,29 @@ class RZ_Route_Haven : RZ_FinaleRoute
 				scene.m_vPos = house;
 				if (!here)
 				{
-					int notebook = scene.Person(Seat(gm, RZ_EFaction.SURVIVORS), run.Fill("{chair}"), "Talk to the chair", run.Fill("She kept a notebook. Every bite, every fever, every day she didn't turn."));
-					scene.Choice(notebook, "Take what she left to the lab").Decides(OUT_OTHER).Says("The lab reads her notebook, slowly. It's not blood, but it's two years of her.", "took her notebook to the lab");
+					int notebook = scene.Person(Seat(gm, RZ_EFaction.SURVIVORS), run.Fill("{chair}"), "Talk to the chair", run.Fill("He kept a notebook. Every bite, every fever, every day he didn't turn."));
+					scene.Choice(notebook, "Take what he left to the lab").Decides(OUT_OTHER).Says("The lab reads his notebook, slowly. It's not blood, but it's two years of him.", "took his notebook to the lab");
 					return true;
 				}
 
-				int her = scene.Person(house, run.Fill("{woman}"), "Talk to her", "\"They crossed me off to keep me safe. Nobody asked me either.\" Her terms: not up that hill, nobody first because of guns, her name said out loud, and her boy.");
+				int her = scene.Person(house, run.Fill("{woman}"), "Talk to him", "\"They crossed me off to keep me safe. Nobody asked me either.\" His terms: not up that hill, nobody first because of guns, his name said out loud, and his boy.");
 				RZ_QM_RouteScene.Cast(scene).TrackSubject(her, "woman");
-				scene.Choice(her, "Ask for her yes").Persuade(RZ_EFaction.SURVIVORS, YesStep(gm), "nurse,doctor,elder").Sets("do:yes").Says("\"Then say it. Out loud.\" You do. She nods once.", "had her yes").Refused("Ask me again when you mean it.");
-				scene.Choice(her, "Ask her to give without it").Only("yes").Persuade(RZ_EFaction.SURVIVORS, Math.MinInt(4, YesStep(gm) + 1), "nurse,doctor,elder").Decides(OUT_OTHER).Says("\"He's a grown man. He chose his crew.\" She rolls up her sleeve.", "had her give without her boy's line").Refused("And my boy.");
+				scene.Choice(her, "Ask for his yes").Persuade(RZ_EFaction.SURVIVORS, YesStep(gm), "nurse,doctor,elder").Sets("do:yes").Says("\"Then say it. Out loud.\" You do. He nods once.", "had his yes").Refused("Ask me again when you mean it.");
+				scene.Choice(her, "Ask him to give without it").Only("yes").Persuade(RZ_EFaction.SURVIVORS, Math.MinInt(4, YesStep(gm) + 1), "nurse,doctor,elder").Decides(OUT_OTHER).Says("\"He's a grown man. He chose his crew.\" He rolls up his sleeve.", "had him give without his boy's line").Refused("And my boy.");
 				FreeChoice(gm, run, scene, her, "woman");
-				int boss = scene.Person(PersonAt("son", Seat(gm, RZ_EFaction.BANDITS)), "the crew boss who holds her boy's line", "Talk to the crew boss", run.Fill("{son}? Owes. Everyone owes. A debt is a debt."));
+				int boss = scene.Person(PersonAt("son", Seat(gm, RZ_EFaction.BANDITS)), "the crew boss who holds his boy's line", "Talk to the crew boss", run.Fill("{son}? Owes. Everyone owes. A debt is a debt."));
 				int price = 30;
 				if (Major(gm, "haven.rule") == 4)
 					price = 15;
 
-				scene.Choice(boss, string.Format("Pay his line [%1 Red Hand Favor]", price)).Only("yes").Needs(RZ_EFaction.BANDITS, 2).Bribe(RZ_EFaction.BANDITS, price).Decides(OUT_DOOR).Says("\"A debt is a debt. It was paid, by her.\" The boss marks the line paid.", "paid her boy's line");
-				scene.Choice(boss, "Walk him out at night [unseen]").Only("yes").Sneak().Decides(OUT_DOOR).Says("He comes because she asked. His line moves to her house: leaving doesn't pay a debt.", "walked her boy out of the camp");
-				scene.Choice(boss, "Lean on the crew boss").Only("yes").Threaten(RZ_EFaction.BANDITS, 3, 5).Decides(OUT_DOOR).Says("\"Take him, then. The book keeps the line.\" The boss won't forget it.", "leaned on her boy's crew boss").Refused("In my own camp? Brave.");
+				scene.Choice(boss, string.Format("Pay his line [%1 Red Hand Favor]", price)).Only("yes").Needs(RZ_EFaction.BANDITS, 2).Bribe(RZ_EFaction.BANDITS, price).Decides(OUT_DOOR).Says("\"A debt is a debt. It was paid, by him.\" The boss marks the line paid.", "paid his boy's line");
+				scene.Choice(boss, "Walk him out at night [unseen]").Only("yes").Sneak().Decides(OUT_DOOR).Says("He comes because his father asked. His line moves to his house: leaving doesn't pay a debt.", "walked his boy out of the camp");
+				scene.Choice(boss, "Lean on the crew boss").Only("yes").Threaten(RZ_EFaction.BANDITS, 3, 5).Decides(OUT_DOOR).Says("\"Take him, then. The book keeps the line.\" The boss won't forget it.", "leaned on his boy's crew boss").Refused("In my own camp? Brave.");
 				if (Major(gm, "book.last") == 4 || Finale().PactOf(m_iRoute) == RZ_CureFinale.REDHAND)
-					scene.Choice(boss, "His line's already settled").Only("yes").Decides(OUT_DOOR).Says("\"Every debt went with the book.\" Or with the pact. Either way his line is clean.", "found her boy's line already clear");
+					scene.Choice(boss, "His line's already settled").Only("yes").Decides(OUT_DOOR).Says("\"Every debt went with the book.\" Or with the pact. Either way his line is clean.", "found his boy's line already clear");
 
 				int desk = scene.Person(RZ_Mission.LandPointNear(Seat(gm, RZ_EFaction.BANDITS), 10, 25), "the fence's desk", "Look at the desk", "The fence keeps a copy of every crew's page. Nobody checks the copies.");
-				scene.Choice(desk, "Mark his line paid [Red Hand kit]").Only("yes").Trick(RZ_EFaction.BANDITS, 2).Decides(OUT_DOOR).Says("Paid, in the fence's own hand, near enough. Nobody checks the copies.", "marked her boy's line paid at the fence's desk").Refused("That's not your page.");
+				scene.Choice(desk, "Mark his line paid [Red Hand kit]").Only("yes").Trick(RZ_EFaction.BANDITS, 2).Decides(OUT_DOOR).Says("Paid, in the fence's own hand, near enough. Nobody checks the copies.", "marked his boy's line paid at the fence's desk").Refused("That's not your page.");
 				RivalSpot(gm, run, scene, house, "woman", "her", "");
 				return true;
 			}
@@ -219,7 +219,7 @@ class RZ_Route_Haven : RZ_FinaleRoute
 				if (!here)
 				{
 					scene.m_vPos = PersonAt("twice", Seat(gm, RZ_EFaction.BANDITS));
-					int twice = scene.Person(scene.m_vPos, "a man the crews call Twice", "Talk to Twice", "\"Killed in action once. Bitten once. Neither took.\" He's heard what she was.");
+					int twice = scene.Person(scene.m_vPos, "a man the crews call Twice", "Talk to Twice", "\"Killed in action once. Bitten once. Neither took.\" He's heard what the lodger was.");
 					RZ_QM_RouteScene.Cast(scene).TrackSubject(twice, "twice");
 					scene.Choice(twice, "Ask him for a bag").Persuade(RZ_EFaction.SURVIVORS, TwiceStep(gm), "nurse,doctor").Sets("do:twice_yes").Says("Six. Not seven.", "had Twice's yes").Refused("Ask me when you've eaten with me.");
 					scene.Choice(twice, "Ask him as one of the crews").Persuade(RZ_EFaction.BANDITS, TwiceStep(gm), "excon,raider").Sets("do:twice_yes").Says("For a crew? Six. Not seven.", "had Twice's yes as a crew").Refused("You're not crew enough.");
@@ -228,14 +228,14 @@ class RZ_Route_Haven : RZ_FinaleRoute
 					return true;
 				}
 
-				int draw = scene.Person(scene.m_vPos, "the edge of her town at dusk", "Look at the draw point", "Where the houses used to walk the bitten out at dusk. A table, a lamp, a cool bag.");
+				int draw = scene.Person(scene.m_vPos, "the edge of his town at dusk", "Look at the draw point", "Where the houses used to walk the bitten out at dusk. A table, a lamp, a cool bag.");
 				RZ_QM_RouteScene.Cast(scene).TrackSubject(draw, "woman");
-				scene.Choice(draw, "Draw a bag [her yes]").Sets("do:draw").Says("She looks away while it fills. \"Twice more. Then I'm done.\"", "drew a bag of her blood");
-				scene.Choice(draw, "Keep a bag back for yourself").Way(RZ_EQuestApproach.BETRAY).Sets("do:divert").Says("A bag goes in your coat instead of the cool box. She saw. She doesn't say anything.", "kept a bag of her blood back");
-				scene.Choice(duty, "Two is enough [Haven: Trusted]").Needs(RZ_EFaction.SURVIVORS, 2).Sets("spared").Says("Then she doesn't walk up at dawn. The lab will make do, slower.", "spared her the dawn");
-				int tube = scene.Person(Seat(gm, RZ_EFaction.MILITARY), "Bastion's medical store", "Look at the store", "Day 2 tubes, one a passenger, in a rack marked R. One of them is hers.");
-				scene.Choice(tube, "Trade for her Day 2 tube [40 Favor]").Bribe(RZ_EFaction.MILITARY, 40).Sets("do:r1").Says("\"R1. Signed out to the bearer.\" Cold, in a bag, as good as a draw.", "traded for her Day 2 tube");
-				scene.Choice(tube, "Take her Day 2 tube [unseen]").Sneak().Sets("do:r1").Says("R1 goes in your coat. The rack has a gap now.", "took her Day 2 tube");
+				scene.Choice(draw, "Draw a bag [his yes]").Sets("do:draw").Says("He looks away while it fills. \"Twice more. Then I'm done.\"", "drew a bag of his blood");
+				scene.Choice(draw, "Keep a bag back for yourself").Way(RZ_EQuestApproach.BETRAY).Sets("do:divert").Says("A bag goes in your coat instead of the cool box. He saw. He doesn't say anything.", "kept a bag of his blood back");
+				scene.Choice(duty, "Two is enough [Haven: Trusted]").Needs(RZ_EFaction.SURVIVORS, 2).Sets("spared").Says("Then he doesn't walk up at dawn. The lab will make do, slower.", "spared him the dawn");
+				int tube = scene.Person(Seat(gm, RZ_EFaction.MILITARY), "Bastion's medical store", "Look at the store", "Day 2 tubes, one a passenger, in a rack marked R. One of them is his.");
+				scene.Choice(tube, "Trade for his Day 2 tube [40 Favor]").Bribe(RZ_EFaction.MILITARY, 40).Sets("do:r1").Says("\"R1. Signed out to the bearer.\" Cold, in a bag, as good as a draw.", "traded for his Day 2 tube");
+				scene.Choice(tube, "Take his Day 2 tube [unseen]").Sneak().Sets("do:r1").Says("R1 goes in your coat. The rack has a gap now.", "took his Day 2 tube");
 				RivalSpot(gm, run, scene, scene.m_vPos, "woman", "her", "");
 				return true;
 			}
@@ -246,21 +246,21 @@ class RZ_Route_Haven : RZ_FinaleRoute
 				if (run.Flag("spared") != 0 || !here)
 				{
 					run.SetFlag("spare_until", Math.MaxInt(run.Flag("spare_until"), RZ_SeasonClock.Now() + RZ_Util.RoundToInt(172800 * gm.GetQuestlines().WaitScale())));
-					scene.Choice(gate, "Ask how the work's going").Sets("do:wait:spare_until").Decides(OUT_LAST).Says("What she gave was enough. Slower, and kinder.", "waited out the lab's work");
+					scene.Choice(gate, "Ask how the work's going").Sets("do:wait:spare_until").Decides(OUT_LAST).Says("What he gave was enough. Slower, and kinder.", "waited out the lab's work");
 					return true;
 				}
 
-				int walker = scene.Person(PersonAt("woman", house), run.Fill("{woman}"), "Talk to her", "I'll walk. Not carried.");
+				int walker = scene.Person(PersonAt("woman", house), run.Fill("{woman}"), "Talk to him", "I'll walk. Not carried.");
 				RZ_QM_RouteScene.Cast(scene).TrackSubject(walker, "woman");
-				scene.Choice(walker, "Walk up the hill with her [her yes]").Sets("walked").Says("Houses on her road light candles. She keeps her own pace.", "walked her up the hill");
-				scene.Choice(gate, "Bring her in at the gate").Only("walked").Sets("do:last").Decides(OUT_LAST).Says("The last draw, fresh, in the clean room.", "brought her up the hill");
+				scene.Choice(walker, "Walk up the hill with him [his yes]").Sets("walked").Says("Houses on his road light candles. He keeps his own pace.", "walked him up the hill");
+				scene.Choice(gate, "Bring him in at the gate").Only("walked").Sets("do:last").Decides(OUT_LAST).Says("The last draw, fresh, in the clean room.", "brought him up the hill");
 				scene.Choice(walker, "Draw at first light and run it up").Sets("do:give:last:720").Says("Twelve minutes in a cool bag. Run.", "ran the last draw up");
 				scene.Choice(gate, "Hand in the last draw").Sets(string.Format("do:store:last:1:%1", OUT_LAST)).Says("The duty officer takes it straight through.", "handed in the last draw");
-				int road = scene.Person(RZ_Mission.LandPointNear(house, 40, 80), "the Preacher at the bells", "Talk to the Preacher", "I'll ring her up the hill. They'll hear it and they'll come. Better them than her.");
-				scene.Choice(road, "Ring her up the hill").Sets("walked").Says("The bells go, and the road clears ahead of her for a while.", "had the Preacher ring her up");
-				scene.Choice(road, "Take the courier road [unseen]").Sneak().Sets("walked").Says("Back lanes, no lights. Nobody sees her go.", "took her up the courier road");
-				scene.Choice(road, "Pay the roadblocks [30 Red Hand Favor]").Bribe(RZ_EFaction.BANDITS, 30).Sets("walked").Says("The poles go up and stay up. Somebody writes it in a book.", "paid her way through the roadblocks");
-				scene.Choice(road, "Pay Halcyon's gate [20 Favor]").Bribe(RZ_EFaction.INSTITUTE, 20).Sets("walked").Says("The gate opens before she reaches it. Nobody asks her name.", "paid her way in at the gate");
+				int road = scene.Person(RZ_Mission.LandPointNear(house, 40, 80), "the Preacher at the bells", "Talk to the Preacher", "I'll ring him up the hill. They'll hear it and they'll come. Better them than him.");
+				scene.Choice(road, "Ring him up the hill").Sets("walked").Says("The bells go, and the road clears ahead of him for a while.", "had the Preacher ring him up");
+				scene.Choice(road, "Take the courier road [unseen]").Sneak().Sets("walked").Says("Back lanes, no lights. Nobody sees him go.", "took him up the courier road");
+				scene.Choice(road, "Pay the roadblocks [30 Red Hand Favor]").Bribe(RZ_EFaction.BANDITS, 30).Sets("walked").Says("The poles go up and stay up. Somebody writes it in a book.", "paid his way through the roadblocks");
+				scene.Choice(road, "Pay Halcyon's gate [20 Favor]").Bribe(RZ_EFaction.INSTITUTE, 20).Sets("walked").Says("The gate opens before he reaches it. Nobody asks his name.", "paid his way in at the gate");
 				return true;
 			}
 		}
@@ -269,7 +269,7 @@ class RZ_Route_Haven : RZ_FinaleRoute
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A council head near her house, read by their leader: Loyal heads send you to the chair, a
+	//! A council head near his house, read by their leader: Loyal heads send you to the chair, a
 	//! Paranoid head gives a decoy below Trusted, an Independent head wants a job (3 food) first;
 	//! a Merciful head tells anyone Known.
 	protected vector HeadSeat(RZ_GameModeComponent gm, vector house)
@@ -312,7 +312,7 @@ class RZ_Route_Haven : RZ_FinaleRoute
 			RZ_FinalePersonSave p = people.Get("woman");
 			int to = people.YesTo("woman");
 			if (!people.IsAlive("woman"))
-				return "She's gone.";
+				return "He's gone.";
 
 			if (p && p.holder >= 0 && p.holder != m_iRoute)
 				return "Not while they're holding me.";
@@ -334,7 +334,7 @@ class RZ_Route_Haven : RZ_FinaleRoute
 				return run.Fill("Ask the chair. {chair} decides who knows.");
 
 			if (head.HasTrait(RZ_ELeaderTrait.PARANOID) && rank < 2)
-				return "\"The far house. She's at the far house.\" She isn't. You can tell by how fast it came.";
+				return "\"The far house. He's at the far house.\" He isn't. You can tell by how fast it came.";
 
 			if (head.m_eLoyalty == RZ_ELoyalty.INDEPENDENT)
 			{
@@ -420,7 +420,7 @@ class RZ_Route_Haven : RZ_FinaleRoute
 			// Betraying a bag: it's nobody's now (the Independent's one unit), +15 Haven Infamy
 			Finale().GetItems().Give("bag", ItemName("bag"), RZ_CureFinale.INDEP, IdentOf(gm, playerId), PlayerPos(playerId), ColdFor(gm, playerId, BAG_COLD));
 			people.Betray("woman");
-			Finale().PayIdent(IdentOf(gm, playerId), RZ_EFaction.SURVIVORS, 0, 0, 15, "kept a bag of her blood back");
+			Finale().PayIdent(IdentOf(gm, playerId), RZ_EFaction.SURVIVORS, 0, 0, 15, "kept a bag of his blood back");
 			return -1;
 		}
 
@@ -440,7 +440,7 @@ class RZ_Route_Haven : RZ_FinaleRoute
 		if (code == "r1")
 		{
 			RZ_WorldFacts.Get().SetFlag("finale.r1", 1);
-			GiveItem(gm, playerId, "bag", "her Day 2 tube (R1)", PlayerPos(playerId), ColdFor(gm, playerId, BAG_COLD));
+			GiveItem(gm, playerId, "bag", "his Day 2 tube (R1)", PlayerPos(playerId), ColdFor(gm, playerId, BAG_COLD));
 			return -1;
 		}
 
@@ -460,7 +460,7 @@ class RZ_Route_Haven : RZ_FinaleRoute
 	override protected void AfterStep(RZ_GameModeComponent gm, RZ_QuestRun run, int stage, int outcome)
 	{
 		if (stage == S_ACT1)
-			run.Note(run.Fill("Her name is {woman}. The houses move her at dusk."));
+			run.Note(run.Fill("His name is {woman}. The houses move him at dusk."));
 		else if (stage == S_DOOR && outcome == OUT_DOOR)
 			run.Note(run.Fill("{son}'s line is marked paid."));
 	}
@@ -473,7 +473,7 @@ class RZ_Route_Haven : RZ_FinaleRoute
 		scene.m_sObjective = run.Fill(ReleaseObjective());
 		scene.m_vPos = gm.GetLabPosition();
 		int form = DutyOfficer(gm, scene, "Who goes first? Write it in. I'll read it out.");
-		scene.Choice(form, "Her house, and her boy").Decides(OUT_TERMS + 1).Says("The first box goes to her house. Her boy carries it.", "chose her house first");
+		scene.Choice(form, "His house, and his boy").Decides(OUT_TERMS + 1).Says("The first box goes to his house. His boy carries it.", "chose his house first");
 		if (Major(gm, "haven.rule") == 2)
 			scene.Choice(form, "The far house first").Decides(OUT_TERMS + 2).Says("Somebody finally drives out to the far house.", "chose the far house first");
 
@@ -483,7 +483,7 @@ class RZ_Route_Haven : RZ_FinaleRoute
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Nobody chose: a Merciful or Idealist chair reads the bite book; else her house first.
+	//! Nobody chose: a Merciful or Idealist chair reads the bite book; else his house first.
 	override int DefaultTerms(RZ_GameModeComponent gm)
 	{
 		if (RZ_MajorHelp.TopHas(gm, RZ_EFaction.SURVIVORS, RZ_ELeaderTrait.MERCIFUL) || RZ_MajorHelp.TopHas(gm, RZ_EFaction.SURVIVORS, RZ_ELeaderTrait.IDEALIST))
@@ -495,9 +495,9 @@ class RZ_Route_Haven : RZ_FinaleRoute
 	//------------------------------------------------------------------------------------------------
 	override protected string ControlledLine(int terms)
 	{
-		return "If you can hear this: her name is {woman}. She was bitten on Day 4, and she's still here. Bring water if you can.";
+		return "If you can hear this: his name is {woman}. He was bitten on Day 4, and he's still here. Bring water if you can.";
 	}
 
-	override protected string LostLine() { return "She gave three times. It went out on somebody else's terms. The Haven read her name anyway."; }
-	override protected string NeverLine() { return "She was never needed. The Haven uncrossed her name anyway."; }
+	override protected string LostLine() { return "He gave three times. It went out on somebody else's terms. The Haven read his name anyway."; }
+	override protected string NeverLine() { return "He was never needed. The Haven uncrossed his name anyway."; }
 }

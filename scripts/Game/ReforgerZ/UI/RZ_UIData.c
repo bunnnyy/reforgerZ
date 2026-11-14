@@ -591,7 +591,7 @@ class RZ_UIColor
 
 //------------------------------------------------------------------------------------------------
 //! Classifies a notice by its title, on the client, so the 600-odd NotifyPlayer calls keep their
-//! signature. Titles are the speaker ("Ines Calder, council head in Morton"), a channel
+//! signature. Titles are the speaker ("Ivan Calder, council head in Morton"), a channel
 //! ("Radio: Bastion net", "Cracked: Bastion command net") or a subject ("Fever").
 class RZ_NoticeStyle
 {
@@ -1341,7 +1341,7 @@ enum RZ_ESaySource
 //------------------------------------------------------------------------------------------------
 //! One spoken line as the HUD shows it (RZ_GameModeComponent.Say, RZ_HudDisplay): who says it (a
 //! name, a short role, their faction), how it reaches you, a radio line's channel, and where an
-//! in-person speaker stands. Worked out from the title the line comes under ("Ines Calder, council
+//! in-person speaker stands. Worked out from the title the line comes under ("Ivan Calder, council
 //! head in Morton", "Loudspeaker", "Radio: Bastion net") and the line itself, so the callers keep
 //! their signature. The server sends it (RZ_PlayerUIComponent.SendSayLine); the client builds one
 //! the same way from a plain spoken line or a radio notice.

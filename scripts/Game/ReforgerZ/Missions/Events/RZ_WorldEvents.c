@@ -129,7 +129,7 @@ class RZ_Event_Storm : RZ_Event_Timed
 //! Needs the trader prefab (e.g. a Shop System trader).
 //! A story job (key `trader`, kept per town): honest goods, as they said; a dead house's stores (a
 //! house within 6 km: its name on the crates); or he sells the roads (who passed, to a crew within 6
-//! km). His wife on the wagon (the talk scene): stolen: send the crates home (the house +3 food, 8
+//! km). His brother on the wagon (the talk scene): stolen: send the crates home (the house +3 food, 8
 //! Haven Favor, he leaves early, a Haven asset); roads: tell the house he's selling them (Haven morale
 //! +1, +4 Red Hand Infamy, he leaves) or two tins for his silence about you (nothing else changes).
 class RZ_Event_WanderingTrader : RZ_Event_Timed
@@ -221,16 +221,16 @@ class RZ_Event_WanderingTrader : RZ_Event_Timed
 		else if (truth == "roads")
 			reveal = "He writes down who passes. Somebody pays for that. Don't look at his notebook, he's shy.";
 
-		RZ_TalkScene sc = m_Job.Scene("The trader's wife", "trader.wife", LandPointNear(m_vPos, 4, 7));
-		int n0 = sc.Node("A woman sits on the wagon's step, shelling peas. \"Everything's half price. The other half's what it costs you.\"");
+		RZ_TalkScene sc = m_Job.Scene("The trader's brother", "trader.wife", LandPointNear(m_vPos, 4, 7));
+		int n0 = sc.Node("A man sits on the wagon's step, shelling peas. \"Everything's half price. The other half's what it costs you.\"");
 		int n1 = sc.Node("So you know. Now what?");
 		sc.Ask(n0, "Where's it all from?", n1, reveal, true);
 		if (truth == "stolen" && m_iHouse >= 0)
-			sc.Decide(n1, "Send the crates home", "send the trader's crates back to the house", WAY_HOME, "She sighs and starts loading the crates back. \"He'll sulk for a week.\"", RZ_EFaction.SURVIVORS);
+			sc.Decide(n1, "Send the crates home", "send the trader's crates back to the house", WAY_HOME, "He sighs and starts loading the crates back. \"He'll sulk for a week.\"", RZ_EFaction.SURVIVORS);
 		else if (truth == "roads")
 		{
-			sc.Decide(n1, "Tell the house he sells roads", "tell the house the trader sells the roads", WAY_TELL, "\"Then we'll be going.\" She whistles for him and the wagon's moving in a minute.");
-			sc.Way(n1, "Two tins and I wasn't here", RZ_TalkScene.FOOD, -1, 2, WAY_QUIET, "She tears a page out of his notebook and gives it to you. Your page.");
+			sc.Decide(n1, "Tell the house he sells roads", "tell the house the trader sells the roads", WAY_TELL, "\"Then we'll be going.\" He whistles for him and the wagon's moving in a minute.");
+			sc.Way(n1, "Two tins and I wasn't here", RZ_TalkScene.FOOD, -1, 2, WAY_QUIET, "He tears a page out of his notebook and gives it to you. Your page.");
 		}
 		else
 			sc.Ask(n1, "Where are you headed?", -1, "Wherever the road's least shot at. It moves about.");

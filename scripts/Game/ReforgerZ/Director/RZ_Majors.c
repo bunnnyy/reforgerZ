@@ -446,7 +446,7 @@ class RZ_QuestVote
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Mara Novak leans to the shared pot" lines, one per voter, `names` giving each option's words.
+	//! "Marek Novak leans to the shared pot" lines, one per voter, `names` giving each option's words.
 	string LeanLines(notnull array<string> names)
 	{
 		string text = "";

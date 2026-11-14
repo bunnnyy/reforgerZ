@@ -185,6 +185,14 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		}
 	}
 
+	// What stands at a hands task's work site: the thing its words name (HANDS has no look of its own)
+	protected static const ResourceName LOOK_POT = "{2CA928D7FADD1FBA}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_CookPot.et";		// the camp kit's cook pot on its fire
+	protected static const ResourceName LOOK_WOOD = "{0AA08FC6D5A6FF79}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Firewood.et";	// the woodpile and the chopping block
+	protected static const ResourceName LOOK_LINE = "{136E35552D91BCE4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_DryingLine.et";	// the washing line
+	protected static const ResourceName LOOK_BUCKET = "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et";	// the base game's bucket (footprints.json 0.43 x 0.42 m)
+	// One crate to carry: the base game's small wooden box (a hand's load, 3 kg)
+	protected static const ResourceName CARRY_CRATE = "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et";
+
 	//------------------------------------------------------------------------------------------------
 	//! A task way: work with your hands at the place (`gate`: behind it), then back to the giver.
 	protected RZ_ErrandWay Task(string label, RZ_EWork work, string prompt, float hold, bool gate, string step, int favor)
@@ -227,8 +235,8 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		m_iNeed = RZ_ENeed.FOOD;
 		m_sThread = "took a turn in the kitchen";
 		Task("Peel and chop for the pot", RZ_EWork.BENCH, "Peel and chop", 18, false, "Peel and chop at the kitchen table at {here}, then tell {giver}.", 3);
-		Task("Mind the pot", RZ_EWork.HANDS, "Stir the pot", 20, false, "Stir the pot on the stove at {here}, then tell {giver}.", 3);
-		Task("Serve the line", RZ_EWork.HANDS, "Ladle supper out", 16, false, "Ladle supper out to the line at {here}, then tell {giver}.", 3);
+		Task("Mind the pot", RZ_EWork.HANDS, "Stir the pot", 20, false, "Stir the pot on the stove at {here}, then tell {giver}.", 3).Look(LOOK_POT);
+		Task("Serve the line", RZ_EWork.HANDS, "Ladle supper out", 16, false, "Ladle supper out to the line at {here}, then tell {giver}.", 3).Look(LOOK_POT);
 		RZ_ErrandWay give = Way("give");
 		give.m_sLabel = "Put two tins in the pot";
 		give.m_eItem = RZ_EErrandItem.FOOD;
@@ -291,9 +299,12 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		m_iRung = RZ_Duties.RUNG_CHORES;
 		m_sRoles = "storekeeper,farmer,mechanic,technician";
 		m_sThread = "kept the stove in wood and water";
-		Task("Split the wood", RZ_EWork.HANDS, "Split the wood", 18, true, "Split the wood stacked behind {here}, then tell {giver}.", 3);
+		Task("Split the wood", RZ_EWork.HANDS, "Split the wood", 18, true, "Split the wood stacked behind {here}, then tell {giver}.", 3).Look(LOOK_WOOD);
 		Task("Fill the water cans", RZ_EWork.FILL, "Fill the cans", 15, true, "Fill the water cans at the butt behind {here}, then tell {giver}.", 3);
-		Task("Carry the crates in", RZ_EWork.HANDS, "Carry and stack the crates", 16, false, "Carry the crates in and stack them at {here}, then tell {giver}.", 3);
+		// Carried for real: three crates from the road, one by one, stacked indoors (Missions/Blocks/RZ_Carry.c)
+		RZ_ErrandWay crates = Task("Carry the crates in", RZ_EWork.HANDS, "Carry and stack the crates", 16, false, "Carry the three crates in from outside and stack them indoors at {here}, then tell {giver}.", 3);
+		crates.Carry("crate", "crates", CARRY_CRATE, 3, true, true);
+		crates.m_sInside = "any";
 		switch (m_iFaction)
 		{
 			case RZ_EFaction.SURVIVORS:
@@ -345,8 +356,8 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		m_sRoles = "nurse,medic,lab assistant,clerk";
 		m_sThread = "scrubbed the place down";
 		Task("Scrub the tables down", RZ_EWork.BENCH, "Scrub the tables", 18, false, "Scrub the tables and boil the cloths at {here}, then tell {giver}.", 3);
-		Task("Wash the bedding", RZ_EWork.HANDS, "Wash and hang the bedding", 16, true, "Wash the bedding and hang it on the line behind {here}, then tell {giver}.", 3);
-		Task("Sluice the yard", RZ_EWork.HANDS, "Sluice the yard", 18, true, "Sluice the yard and the step at {here} with lime water, then tell {giver}.", 3);
+		Task("Wash the bedding", RZ_EWork.HANDS, "Wash and hang the bedding", 16, true, "Wash the bedding and hang it on the line behind {here}, then tell {giver}.", 3).Look(LOOK_LINE);
+		Task("Sluice the yard", RZ_EWork.HANDS, "Sluice the yard", 18, true, "Sluice the yard and the step at {here} with lime water, then tell {giver}.", 3).Look(LOOK_BUCKET);
 		switch (m_iFaction)
 		{
 			case RZ_EFaction.SURVIVORS:
@@ -599,7 +610,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		snares.m_fSeconds = 30;
 		snares.m_fRadius = 40;
 		snares.m_bSquad = true;
-		snares.m_sStep = "Go out with {squad} to the snare line {place}, check the snares there with the hunter beside you, and bring what's caught back to {giver}.";
+		snares.m_sStep = "Go out with {squad} to the snare line {place}, check the snares there with the hunter beside you, then bring what's caught to {giver}.";
 		snares.Work(RZ_EWork.SEARCH, "Check the snares", 15);
 		snares.m_iFavor = 7;
 		snares.m_iFame = 1;
@@ -664,7 +675,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				m_sTitle = "The School Room";
 				SceneWay("Mind the school room", false, "Count the heads in the school room at {here}, and find whoever is missing from the benches. Then tell {giver}.", 4, 0);
 				Offer("The school room wants minding for an hour, and the teacher has a tooth. {why} Count them when you go in. Count them again when you come out. The numbers are meant to match.");
-				Over("Never mind. The teacher's tooth came out and she's back.");
+				Over("Never mind. The teacher's tooth came out and he's back.");
 				Said("They'll try it on. They try it on with everyone.", "Twelve in, twelve out. You'd be surprised how often it isn't.", "Thank you. They liked you, which they'll deny.");
 				break;
 			}
@@ -1126,7 +1137,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			m_sThread = "put the names on the week's work";
 			SceneWay("Read the desks for the week's report", false, "Go to each of the three desks at {here}, read what's on it, and place each name on the week's report: first, thanked, or left off. Then initial it and tell {giver}.", 10, 2);
 			Offer("The week's bench report goes in the record tonight, and the names on it are wrong more often than they're right. {why} Read the desks. The notebooks don't lie, even when the people do. Whatever you place stays on their record.");
-			Over("Never mind. The director placed the names herself.");
+			Over("Never mind. The director placed the names himself.");
 			Said("The notebooks are on the desks. Read the hands, not the covers.", "The report. Show me where you put them.", "Initialled. Thank you. It's the first one in a month I'd sign.");
 			return;
 		}

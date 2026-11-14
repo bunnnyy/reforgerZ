@@ -95,6 +95,18 @@ class RZ_WorkSiteSettings
 	[Attribute("1", desc: "Dig with the tool: at a latrine, a grave or a dig, a carried entrenching tool is taken in hand and vanilla's building animation plays. The tool is never needed: without one, the hands animation")]
 	bool m_bDigWithTool;
 
+	[Attribute("1", desc: "Carry for real: a task whose words say carry, stack or bring in is done by moving the things one by one, from a pile to where the words say, slowed while you carry (docs/DESIGN.md, Carrying). Off: one hold where the things are, as before")]
+	bool m_bCarry;
+
+	[Attribute("0.45", UIWidgets.Slider, "Carrying speed: the carrier's top speed x this while a thing is in their arms (under about 0.5 there's no running)", "0.2 1 0.05")]
+	float m_fCarrySpeed;
+
+	[Attribute("{6E1B3C5A2D4F7081}Prefabs/ReforgerZ/Work/RZ_Carried_Box.et", UIWidgets.ResourcePickerThumbnail, "Carried box: what shows in the arms while a crate, a box or a sack is carried. Look only: a model, no physics, nothing to use. Empty = nothing shown in the arms", "et")]
+	ResourceName m_sCarriedBox;
+
+	[Attribute("{7A2C4D6B3E5F8192}Prefabs/ReforgerZ/Work/RZ_Carried_Chair.et", UIWidgets.ResourcePickerThumbnail, "Carried chair: what shows in the arms while a chair is carried. Look only, as the Carried box. Empty = nothing shown in the arms", "et")]
+	ResourceName m_sCarriedChair;
+
 	[Attribute("40", UIWidgets.Slider, "Sites at once, server-wide. A new one past this drops the oldest whose step is over (its result still standing); one whose step is under way is never dropped", "8 200 1")]
 	int m_iMaxSites;
 
@@ -140,6 +152,7 @@ class RZ_WorkSite
 	int m_iFit;					// the before look's spot: 0 not checked yet, 1 its box fits, -1 nowhere (left out)
 	ResourceName m_sPerson;		// who the work is for (a patient, the newcomer), standing by it while it's open
 	vector m_vPerson;
+	bool m_bPersonLies;			// they lie on the work's spot (its bed) instead, and the prompt is at their side
 
 	// Props (null while nobody is near)
 	IEntity m_Box;
@@ -253,10 +266,14 @@ class RZ_WorkSites
 	protected static const float SLACK = 1.5;			// seconds the server forgives (its 1 s poll, the hold's network trip)
 	protected static const float LIFT = 0.6;			// the prompt stands this high over the ground
 	protected static const float PERSON_OFF = 1.2;		// the person stands this far behind the site
+	protected static const float LIE_LIFT = 0.12;		// someone lying on the work's bed lies this far above its spot (a mattress)
+	protected static const float LIE_SIDE = 0.8;		// and its prompt is this far to their side
+	protected static const float LIE_DELAY = 600;		// ms after spawning before they're laid down (as The Round's)
 	protected static const float PERSON_HALF = 0.3;
 	protected static const ResourceName TAKE_FALLBACK = "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et";	// the base game's cardboard box (world_kit.txt; footprints.json 0.4 x 0.7 m)		// a person's box: a 0.6 m square (RZ_SiteFoot.SEAT)
 
 	protected RZ_SharedSettings m_Shared;
+	protected ref RZ_Carries m_Carries;
 	protected ref array<ref RZ_WorkSite> m_aSites = {};
 	protected ref array<ref RZ_WorkChoice> m_aChoices = {};
 	protected int m_iNextId = 1;
@@ -272,6 +289,14 @@ class RZ_WorkSites
 	void RZ_WorkSites(RZ_SharedSettings shared)
 	{
 		m_Shared = shared;
+		m_Carries = new RZ_Carries(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Carrying things somewhere (RZ_Carry.c), built on these sites.
+	RZ_Carries Carries()
+	{
+		return m_Carries;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -480,6 +505,14 @@ class RZ_WorkSites
 		if (kind == RZ_EWork.TAKE && s.m_sBefore.IsEmpty())
 			s.m_sBefore = TAKE_FALLBACK;
 
+		// A door is never spawned in the open: a look that is a door (a boarded doorway) stands only
+		// in a real doorway (RZ_DoorGeometry.DoorPropFits), else it's left out
+		if (!RZ_DoorGeometry.DoorPropFits(s.m_sBefore, s.m_vPos, key))
+			s.m_sBefore = "";
+
+		if (!RZ_DoorGeometry.DoorPropFits(s.m_sAfter, s.m_vPos, key))
+			s.m_sAfter = "";
+
 		s.m_fOpenedAt = m_fClock;
 		m_aSites.Insert(s);
 		RZ_PlaceNeeds.Verify("work.site", s.m_vPos, s.m_sLabel);
@@ -505,13 +538,14 @@ class RZ_WorkSites
 	//! Someone the work is for stands beside the site while it's open and a player is near (the
 	//! newcomer to check over, the bitten man to sit with): a body in the errands' budget, gone with
 	//! the site's props. Empty prefab or no room in the budget: nobody, the work is done all the same.
-	void SetPerson(string key, ResourceName prefab)
+	void SetPerson(string key, ResourceName prefab, bool lies = false)
 	{
 		RZ_WorkSite s = Find(key);
 		if (!s || prefab.IsEmpty())
 			return;
 
 		s.m_sPerson = prefab;
+		s.m_bPersonLies = lies;
 		float rad = s.m_fYaw * Math.DEG2RAD;
 		s.m_vPerson = s.m_vPos + Vector(Math.Sin(rad), 0, Math.Cos(rad)) * PERSON_OFF;
 	}
@@ -1150,6 +1184,8 @@ class RZ_WorkSites
 	void Tick(float dt, array<int> ids, array<IEntity> players)
 	{
 		m_fClock += dt;
+		// Carrying first: a put-down's own prompt is a site, so the workers below see it this second
+		m_Carries.Tick(ids, players, SpawnRadius(), DespawnRadius());
 		if (m_aSites.IsEmpty())
 			return;
 
@@ -1294,6 +1330,13 @@ class RZ_WorkSites
 		SpawnPerson(s);
 
 		vector at = s.m_vPos;
+		// Someone lying on the spot: the prompt at their side, where you'd kneel to them
+		if (s.m_bPersonLies && s.m_Person)
+		{
+			float side = (s.m_fYaw + 90) * Math.DEG2RAD;
+			at = at + Vector(Math.Sin(side), 0, Math.Cos(side)) * LIE_SIDE;
+		}
+
 		at[1] = at[1] + LIFT;
 		s.m_Box = RZ_Util.SpawnPrefab(Settings().m_sSitePrefab, at, s.m_fYaw);
 		Push(s);
@@ -1323,8 +1366,9 @@ class RZ_WorkSites
 	//------------------------------------------------------------------------------------------------
 	//! Where the before look goes (docs/DESIGN.md, "Work site"): its real box must fit, as a camp's
 	//! piece must (RZ_CampLife.BoxFits). Its own spot and heading first, then the other headings, then
-	//! spots around it (up to 2 m outdoors, 0.75 m indoors). Nowhere: the look is left out and the
-	//! site keeps only its prompt (drop, don't squeeze). The site moves with its look.
+	//! spots around it (up to 3 m outdoors, 0.75 m indoors). Nowhere: a small box stands there instead
+	//! (the base game's cardboard box), and only when not even that fits does the site keep only its
+	//! prompt (logged). The site moves with its look.
 	protected void FitLook(RZ_WorkSite s)
 	{
 		vector fmin;
@@ -1337,7 +1381,7 @@ class RZ_WorkSites
 		}
 
 		float step = 1;
-		int rings = 3;
+		int rings = 4;
 		if (s.m_bKeepHeight)
 		{
 			step = 0.75;
@@ -1375,7 +1419,16 @@ class RZ_WorkSites
 			}
 		}
 
-		RZ_Log.Info(string.Format("Work sites: %1 look %2 doesn't fit at %3, left out", s.m_sKey, RZ_Util.PrettyPrefabName(s.m_sBefore), RZ_SettlementScanner.GridReference(s.m_vPos)));
+		// Nowhere for it: a small box stands there instead (once), so the prompt is never on bare ground
+		if (s.m_sBefore != TAKE_FALLBACK)
+		{
+			RZ_Log.Info(string.Format("Work sites: %1 look %2 doesn't fit at %3, a box instead", s.m_sKey, RZ_Util.PrettyPrefabName(s.m_sBefore), RZ_SettlementScanner.GridReference(s.m_vPos)));
+			s.m_sBefore = TAKE_FALLBACK;
+			FitLook(s);
+			return;
+		}
+
+		RZ_Log.Info(string.Format("Work sites: %1 has nothing standing at it at %2 (not even a box fits): only its prompt", s.m_sKey, RZ_SettlementScanner.GridReference(s.m_vPos)));
 		s.m_sBefore = "";
 	}
 
@@ -1460,6 +1513,23 @@ class RZ_WorkSites
 
 		if (shared && !shared.CanSpawnBody(RZ_BodyBudget.ERRAND, s.m_vPerson))
 			return;
+
+		// Lying on the work's own spot (its bed: the mattress the care look puts there), laid down as
+		// The Round's sick are; the prompt stands at their side (SpawnBefore)
+		if (s.m_bPersonLies)
+		{
+			s.m_vPerson = s.m_vPos + Vector(0, LIE_LIFT, 0);
+			s.m_Person = RZ_Util.SpawnPrefab(s.m_sPerson, s.m_vPerson, s.m_fYaw);
+			if (!s.m_Person)
+				return;
+
+			if (shared)
+				shared.AddBody(RZ_BodyBudget.ERRAND, s.m_Person);
+
+			// VERIFY: laid down on the mattress (The Round's LieDown), he stays on it, not through it, and the hold prompt 0.8 m to his side stays reachable over his body
+			GetGame().GetCallqueue().CallLater(RZ_DutyRound.LieDown, LIE_DELAY, false, s.m_Person);
+			return;
+		}
 
 		// Behind the work, else to either side or in front: wherever a person's box fits
 		vector half = Vector(PERSON_HALF, 0, PERSON_HALF);

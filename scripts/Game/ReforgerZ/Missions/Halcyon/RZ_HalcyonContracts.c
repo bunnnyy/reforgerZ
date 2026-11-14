@@ -276,7 +276,7 @@ class RZ_Mission_BloodDrive : RZ_PuzzleMission
 
 		if (gm.GetProfile(playerId).IsInfected())
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "She looks at your eyes and puts the needle down. \"Not yours. I'm sorry.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "He looks at your eyes and puts the needle down. \"Not yours. I'm sorry.\"");
 			return;
 		}
 
@@ -309,7 +309,7 @@ class RZ_Mission_BloodDrive : RZ_PuzzleMission
 //! manifest says twelve); or a trial batch with no lot number (the house is the trial). The porter at
 //! the lab's door (the talk scene): [Known - Halcyon] or two tins and he packs it properly (the
 //! Nurse's 25 minutes for anyone). At the house's clinic: hand it over; short: tell them two are
-//! missing (+3 Halcyon Infamy, 5 Haven Favor, a Haven asset); trial: tell the nurse (she refuses it:
+//! missing (+3 Halcyon Infamy, 5 Haven Favor, a Haven asset); trial: tell the nurse (he refuses it:
 //! Halcyon pays nothing, 5 Haven Favor, an Independent asset).
 class RZ_Mission_ColdChain : RZ_Mission_Delivery
 {
@@ -415,7 +415,7 @@ class RZ_Mission_ColdChain : RZ_Mission_Delivery
 			m_Choice.Asset(OPT_TELL, RZ_CureFinale.INDEP);
 		}
 
-		m_Choice.Set(string.Format("The nurse at %1 holds out her hands for the box. \"All of it?\"", h.m_sName), labels, "decide what the nurse hears", OPT_HAND);
+		m_Choice.Set(string.Format("The nurse at %1 holds out his hands for the box. \"All of it?\"", h.m_sName), labels, "decide what the nurse hears", OPT_HAND);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -518,12 +518,12 @@ class RZ_Mission_ColdChain : RZ_Mission_Delivery
 }
 
 //------------------------------------------------------------------------------------------------
-//! #10 Escort the Scientist: a researcher takes readings at three sites. She follows the player
-//! who leads her (RZ_Escort) and needs 20 s within 15 m of each site. Research when she's done.
-//! A story job (key `scientist`, kept per town): readings, as they said; she's looking for her brother
+//! #10 Escort the Scientist: a researcher takes readings at three sites. He follows the player
+//! who leads him (RZ_Escort) and needs 20 s within 15 m of each site. Research when he's done.
+//! A story job (key `scientist`, kept per town): readings, as they said; he's looking for his brother
 //! (a house within 5 km of the last site); or mapping the drones' times to the line. The lab's driver
 //! (the talk scene): [Known - Halcyon] or two tins and he takes the last site himself (two sites, no
-//! gun, no standing). Done, she asks: brother: wait for her (research +2) or leave her with him (half
+//! gun, no standing). Done, he asks: brother: wait for him (research +2) or leave him with his brother (half
 //! pay, no research, an Independent asset); the line: hand the readings in, burn the drone times
 //! (research +1, nobody), or copy them for the crew (10 Red Hand Favor, +5 Halcyon Infamy); readings:
 //! give the water readings to the house too (5 Haven Favor, research +1).
@@ -595,10 +595,10 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 		m_iTalk = AddClue("The researcher", "A researcher with a case of instruments. \"Three sites. I need twenty seconds at each and nobody chewing on me. Lead the way.\"");
 		m_Escort.m_sName = "the researcher";
 		m_Escort.m_sPrefab = RZ_Escort.PrefabFor(gm, 1);
-		m_Escort.SetTalk(m_iId, 0, "Lead the way (she follows you)", m_iTalk, "Talk to the researcher");
+		m_Escort.SetTalk(m_iId, 0, "Lead the way (he follows you)", m_iTalk, "Talk to the researcher");
 		m_sTitle = "Escort the Scientist";
 		m_sDeed = "walked a researcher through {town}";
-		m_sBrief = string.Format("One of our field researchers needs readings from %1, %2 and %3, and they can't be taken from behind a fence. Collect her at the lab and walk her round all three. She'll be watching her instruments, not the hedges. You watch the hedges.", m_aSiteNames[0], m_aSiteNames[1], m_aSiteNames[2]);
+		m_sBrief = string.Format("One of our field researchers needs readings from %1, %2 and %3, and they can't be taken from behind a fence. Collect him at the lab and walk him round all three. He'll be watching his instruments, not the hedges. You watch the hedges.", m_aSiteNames[0], m_aSiteNames[1], m_aSiteNames[2]);
 		m_sObjective = string.Format("Walk the researcher from the lab to %1, %2 and %3.", m_aSiteNames[0], m_aSiteNames[1], m_aSiteNames[2]);
 		if (!m_Escort.Begin(gm, m_vPos))
 			return false;
@@ -622,27 +622,27 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 		m_sBrother = RZ_NoteText.FirstName(m_Rng);
 		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
 		m_Job.m_vReadAt = m_vPos;
-		m_Job.Read("line", "radioop", "Her instrument case has a scanner tuned to the drones' band. Those aren't soil readings.");
-		m_Job.Read("brother", "elder", string.Format("She asks every house you pass about a man called %1, with her nose. She's looking for someone.", m_sBrother));
+		m_Job.Read("line", "radioop", "His instrument case has a scanner tuned to the drones' band. Those aren't soil readings.");
+		m_Job.Read("brother", "elder", string.Format("He asks every house you pass about a man called %1, with his nose. He's looking for someone.", m_sBrother));
 		m_Job.Read("readings", "labtech", "Soil and water: ordinary readings, carefully taken, and labelled in a hand that's done it a thousand times.");
 
-		string reveal = "Best we've got. She once took readings through a horde. They were good readings.";
+		string reveal = "Best we've got. He once took readings through a horde. They were good readings.";
 		if (truth == "brother")
-			reveal = string.Format("Her brother %1 went to a house out that way in the spring. She picks her sites.", m_sBrother);
+			reveal = string.Format("His brother %1 went to a house out that way in the spring. He picks his sites.", m_sBrother);
 		else if (truth == "line")
-			reveal = "She times the drones. Every site's on a drone's turn. Don't tell her I said.";
+			reveal = "He times the drones. Every site's on a drone's turn. Don't tell his I said.";
 
 		RZ_TalkScene sc = m_Job.Scene("The lab's driver", "scientist.driver", LandPointNear(m_vPos, 6, 12));
-		int n0 = sc.Node("A driver leans on a van with no wheels. \"She'll walk you off your feet. Then she'll walk you off the map.\"");
+		int n0 = sc.Node("A driver leans on a van with no wheels. \"He'll walk you off your feet. Then he'll walk you off the map.\"");
 		int n1 = sc.Node("I know the last site. I could take it myself, for a consideration.");
-		sc.Ask(n0, "Who is she?", n1, reveal, true);
+		sc.Ask(n0, "Who is he?", n1, reveal, true);
 		sc.Way(n1, "Take the last one yourself.", RZ_TalkScene.TRUST, RZ_EFaction.INSTITUTE, 1, WAY_SHORT, "\"Fine. Two for you, one for me.\" He picks up a case and walks off whistling.", "For you? No.");
 		sc.Way(n1, "Two tins for the last site", RZ_TalkScene.FOOD, -1, 2, WAY_SHORT, "He pockets the tins. \"Two sites for you, then. I'll do the far one.\"");
 
 		string labels = "Hand the readings in";
 		if (truth == "brother")
 		{
-			labels = "Wait for her|Leave her with him";
+			labels = "Wait for him|Leave him with him";
 			m_Choice.Asset(OPT_SECOND, RZ_CureFinale.INDEP);
 		}
 		else if (truth == "line")
@@ -656,13 +656,13 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 			m_Choice.Asset(OPT_SECOND, RZ_EFaction.SURVIVORS);
 		}
 
-		m_Choice.Set("She snaps the case shut for the last time and looks at you. \"So. What happens to these?\"", labels, "decide what happens to the readings", OPT_HAND);
+		m_Choice.Set("He snaps the case shut for the last time and looks at you. \"So. What happens to these?\"", labels, "decide what happens to the readings", OPT_HAND);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
 	{
-		// Never the site she's at or past: the driver takes one still ahead
+		// Never the site he's at or past: the driver takes one still ahead
 		if (m_aSites.Count() > 2 && m_iSite < m_aSites.Count() - 1)
 		{
 			m_aSites.Remove(m_aSites.Count() - 1);
@@ -684,7 +684,7 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 			if (h)
 			{
 				gm.GetSafehouses().AddPopulationAt(m_iHouse, 1);
-				RZ_StoryKit.LaterWith(gm, this, h.m_sName, string.Format("A woman with instrument cases is fixing the house's radio with %1. They argue like twins. They aren't.", m_sBrother), h.m_vPos, true);
+				RZ_StoryKit.LaterWith(gm, this, h.m_sName, string.Format("A man with instrument cases is fixing the house's radio with %1. They argue like twins. They aren't.", m_sBrother), h.m_vPos, true);
 			}
 
 			RZ_StoryKit.Record(this, "fate", town, "stayed", who);
@@ -696,7 +696,7 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 			m_iResearch = 1;
 			m_bHasGiver = false;
 			RZ_StoryKit.Record(this, "fate", town, "burned", who);
-			NotifyParticipants(gm, m_sTitle, "The drone times go in a fire. She watches them burn and says nothing. Halcyon pays nothing for ash.");
+			NotifyParticipants(gm, m_sTitle, "The drone times go in a fire. He watches them burn and says nothing. Halcyon pays nothing for ash.");
 			return;
 		}
 
@@ -765,7 +765,7 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 			return;
 		}
 
-		RZ_ContractHelp.NotifyNear(gm, m_vPos, 80, m_sTitle, string.Format("\"Got it.\" She snaps the case shut. Next: %1 (%2).", m_aSiteNames[m_iSite], RZ_Util.DirectionText(m_vPos, m_aSites[m_iSite])));
+		RZ_ContractHelp.NotifyNear(gm, m_vPos, 80, m_sTitle, string.Format("\"Got it.\" He snaps the case shut. Next: %1 (%2).", m_aSiteNames[m_iSite], RZ_Util.DirectionText(m_vPos, m_aSites[m_iSite])));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -777,7 +777,7 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 		m_Escort.Follow(playerId);
 		m_Escort.Go();
 		if (m_iSite < m_aSites.Count())
-			gm.NotifyPlayer(playerId, m_sTitle, string.Format("She falls in behind you. First site: %1 (%2).", m_aSiteNames[m_iSite], RZ_Util.DirectionText(m_Escort.m_vPos, m_aSites[m_iSite])));
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("He falls in behind you. First site: %1 (%2).", m_aSiteNames[m_iSite], RZ_Util.DirectionText(m_Escort.m_vPos, m_aSites[m_iSite])));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -788,7 +788,7 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Her at the lab until she follows you, then the next site (she reads it there).
+	//! Him at the lab until he follows you, then the next site (he reads it there).
 	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
 	{
 		if (m_Escort.GetFollowed() > 0 && m_iSite < m_aSites.Count())
@@ -861,7 +861,7 @@ class RZ_Mission_SpecimenFromTheNest : RZ_Mission_Delivery
 
 		m_sTitle = "Specimen from the Nest";
 		m_sBrief = string.Format("There's a hive in %1, where they lie up together through the day. Living tissue from inside it tells us more about what they're becoming than any body on the slab. Cut a sample and bring it to the lab. Don't burn it, whatever the Haven tells you. Burnt tissue is just ash.", s.m_sName);
-		m_sObjective = string.Format("Cut a tissue sample in the hive in %1 and bring it to the lab.", s.m_sName);
+		ObjThen(string.Format("Cut a tissue sample in the hive in %1.", s.m_sName), "Bring the sample to the lab.");
 		return true;
 	}
 
@@ -1244,6 +1244,13 @@ class RZ_Mission_LiveCapture : RZ_PuzzleMission
 	protected bool m_bPackTaken;
 
 	//------------------------------------------------------------------------------------------------
+	//! Caught: it's in its case.
+	override protected bool ObjFirstDone()
+	{
+		return m_Capture.m_eState == RZ_ECaptureState.CRATED || m_Capture.m_eState == RZ_ECaptureState.DELIVERED;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void GetPropSpots(notnull array<vector> result)
 	{
 		super.GetPropSpots(result);
@@ -1289,7 +1296,7 @@ class RZ_Mission_LiveCapture : RZ_PuzzleMission
 		m_vPos = cage;
 		m_sTitle = "Live Capture";
 		m_sBrief = string.Format("We need a special alive. There's a cage trap set outside its lair in %1. Get it to follow you in, drop the door, keep it calm until the sedative takes, then bring it to the lab before it wakes. Or bring it down without killing it and tie it. Dead is no use to us.", s.m_sName);
-		m_sObjective = string.Format("Trap the special at its lair in %1 and bring it to the lab alive.", s.m_sName);
+		ObjThen(string.Format("Trap the special at its lair in %1.", s.m_sName), "Bring it to the lab alive.");
 		return m_Capture.Begin(gm, m_iId, m_iSettlement, cage, lair, 0);
 	}
 
@@ -1335,7 +1342,7 @@ class RZ_Mission_LiveCapture : RZ_PuzzleMission
 			m_vPos = cage;
 			m_sTitle = "Live Capture";
 			m_sBrief = string.Format("We need one of %1 alive: %2. There's a cage trap set near where they lie up. Get it to follow you in and drop the door, or bring it down without killing it and tie it. Keep it calm until the sedative takes, then bring it to the lab before it wakes. Dead is no use to us.", people.NameAt(t, RZ_EFaction.INSTITUTE), what);
-			m_sObjective = string.Format("Take %1 alive and bring it to the lab before the sedative wears off.", what);
+			ObjThen(string.Format("Take %1 alive.", what), "Bring it to the lab before the sedative wears off.");
 			if (!m_Capture.Begin(gm, m_iId, -1, cage, lair, 0))
 				return false;
 

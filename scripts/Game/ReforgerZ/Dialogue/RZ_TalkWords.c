@@ -304,9 +304,9 @@ class RZ_TalkWords
 			case "Look under the bonnet": return "Let me look under the bonnet first.";
 			case "Leave him to it": return "I'll leave you to it.";
 			// Which way to town
-			case "Point her round it": return "Go round by the fields. It's longer, but it's quiet.";
-			case "Walk her past it": return "Stay close. I'll walk you past it.";
-			case "Tell her the toll's cheap": return "The toll on the straight road is cheap. Just pay it.";
+			case "Point him round it": return "Go round by the fields. It's longer, but it's quiet.";
+			case "Walk him past it": return "Stay close. I'll walk you past it.";
+			case "Tell him the toll's cheap": return "The toll on the straight road is cheap. Just pay it.";
 			// Behind a door since Tuesday
 			case "Walk them out now": return "Get your things. I'll walk you out now.";
 			case "Come back for them at dawn": return "Not in the dark. I'll come back for you at dawn.";
@@ -315,9 +315,9 @@ class RZ_TalkWords
 			case "Fix it": return "Let me have a look at the engine.";
 			case "Give them a battery": return "Here, take my battery. Try it now.";
 			case "Push-start it downhill": return "Let's push it down the hill and bump it.";
-			// A woman digging by the verge
-			case "Help her dig": return "Give me the shovel. I'll take a turn.";
-			case "Tell her who it was": return "I know who that was. I'll tell you.";
+			// A man digging by the verge
+			case "Help his dig": return "Give me the shovel. I'll take a turn.";
+			case "Tell him who it was": return "I know who that was. I'll tell you.";
 			case "Take the dead's things": return "Whatever's in their pockets is mine.";
 			// The man who's heard of a shot at the lab
 			case "Point him to the lab": return "It's true. The lab's that way.";
@@ -334,19 +334,19 @@ class RZ_TalkWords
 			case "Say they're with you": return "They're with me. I'll vouch for them.";
 			case "Walk them round the post": return "Come with me. We'll go round the post.";
 			case "Hand the bundle in at the barrier": return "Let them search it. It's only a bundle.";
-			// The sister put out of a house
-			case "Find her and tell him": return "I'll find your sister and tell you where she is.";
-			case "Warn her on to another house": return "I'll find her, and I'll tell her to keep moving.";
+			// The brother put out of a house
+			case "Find him and tell him": return "I'll find your brother and tell you where he is.";
+			case "Warn him on to another house": return "I'll find him, and I'll tell him to keep moving.";
 			case "Call him out": return "That's a red hand on your wrist. Who are you really?";
 			// On the wrong side of the toll
-			case "Pay her toll": return "I'll pay your toll.";
-			case "Say she's with you": return "She's with me. Let her through.";
-			case "Walk her round the toll": return "Come on. I know a way round the toll.";
-			case "Sell her to the toll": return "Wait here. I'll talk to the toll for you.";
+			case "Pay his toll": return "I'll pay your toll.";
+			case "Say he's with you": return "He's with me. Let him through.";
+			case "Walk him round the toll": return "Come on. I know a way round the toll.";
+			case "Sell him to the toll": return "Wait here. I'll talk to the toll for you.";
 			// Waving at the line
-			case "Talk her back": return "Come back from the line. Come on, step back with me.";
-			case "Walk out there with her": return "I'll walk out there with you.";
-			case "Leave her be": return "I'll leave you be.";
+			case "Talk him back": return "Come back from the line. Come on, step back with me.";
+			case "Walk out there with him": return "I'll walk out there with you.";
+			case "Leave him be": return "I'll leave you be.";
 			// The face on the notice
 			case "Take the book, unseen": return "I'll get your page out of that book. Nobody sees me.";
 			case "Burn the hut's books": return "I'll burn every book in that hut.";

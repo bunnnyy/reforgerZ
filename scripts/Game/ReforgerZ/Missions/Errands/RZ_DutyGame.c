@@ -891,7 +891,7 @@ class RZ_DutyGames
 			case RZ_DutyGame.KIND_STOCK: return string.Format("Crate %1", 21 + index * 5 + Math.RandomInt(0, 4));
 		}
 
-		array<string> who = {"A woman, forties", "Two brothers", "A courier", "A lad with a pack", "An old man", "A mother and child", "A farmhand", "A man in a coat"};
+		array<string> who = {"A man, forties", "Two brothers", "A courier", "A lad with a pack", "An old man", "A father and child", "A farmhand", "A man in a coat"};
 		return Unused(who, used);
 	}
 

@@ -460,7 +460,7 @@ class RZ_Job_OffBookRequisition : RZ_LeaderPuzzle
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.4);
-		m_iTalk = AddClue("The village elder", "\"Bastion. Of course. We gave last week, to the other one. Do they not talk to each other?\" She already knows they don't.");
+		m_iTalk = AddClue("The village elder", "\"Bastion. Of course. We gave last week, to the other one. Do they not talk to each other?\" He already knows they don't.");
 		string labels = string.Format("Take the full contribution|Take half and say it was all|[%1 Bastion Favor] Pay it yourself", PAY_FAVOR);
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", labels, m_iTalk, "Talk to the elder");
 
@@ -490,7 +490,7 @@ class RZ_Job_OffBookRequisition : RZ_LeaderPuzzle
 				houses.TakeFood(m_vPos, 4);
 
 			gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, FULL_INFAMY);
-			gm.NotifyPlayer(playerId, m_sTitle, string.Format("You take what was asked for. The elder writes your face down in her head. (+%1 Haven Infamy)", FULL_INFAMY));
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("You take what was asked for. The elder writes your face down in his head. (+%1 Haven Infamy)", FULL_INFAMY));
 			m_eState = RZ_EMissionState.SUCCEEDED;
 			return;
 		}
@@ -502,7 +502,7 @@ class RZ_Job_OffBookRequisition : RZ_LeaderPuzzle
 
 			m_fRewardScale = 0.6;
 			gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, FULL_INFAMY / 2);
-			gm.NotifyPlayer(playerId, m_sTitle, string.Format("You take half and tell the commander it was all. The elder doesn't thank you. She does remember. (+%1 Haven Infamy)", FULL_INFAMY / 2));
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("You take half and tell the commander it was all. The elder doesn't thank you. He does remember. (+%1 Haven Infamy)", FULL_INFAMY / 2));
 			m_eState = RZ_EMissionState.SUCCEEDED;
 			return;
 		}

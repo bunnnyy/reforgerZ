@@ -346,7 +346,7 @@ class RZ_TalkMenu : RZ_MenuBase
 
 	//------------------------------------------------------------------------------------------------
 	//! What they said as it shows (breaks as ^): each line without its speaker's own name in front
-	//! ("Ines Calder: ...", the name is at the top right) and without quotation marks around it
+	//! ("Ivan Calder: ...", the name is at the top right) and without quotation marks around it
 	//! (RZ_TalkWords.Unquote). Someone else's name in front of their line stays.
 	static string Spoken(string said, string name)
 	{

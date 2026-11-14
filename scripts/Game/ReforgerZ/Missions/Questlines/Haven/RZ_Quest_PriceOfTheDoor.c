@@ -125,8 +125,22 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 		}
 
 		RZ_Safehouse home = houses.Get(house);
-		int barnTown = RZ_Mission.PickSettlementAway(gm, home.m_vPos, 800, 3000, 0, 80, home.m_iSettlement);
-		RZ_Settlement barn = gm.GetSettlement(barnTown);
+		// "A barn outside {barn}": a town with a real farm building at its edge (docs/MISSION_RULES.md,
+		// rule 1); a few tries, else none and no questline this time
+		int barnTown = -1;
+		RZ_Settlement barn;
+		vector inBarn;
+		for (int tryBarn = 0; tryBarn < 6 && !barn; tryBarn++)
+		{
+			int pick = RZ_Mission.PickSettlementAway(gm, home.m_vPos, 800, 3000, 0, 80, home.m_iSettlement);
+			RZ_Settlement candidate = gm.GetSettlement(pick);
+			if (candidate && RZ_WorkSites.Indoors(candidate.m_vCenter, candidate.m_fRadius + 150, "farm", inBarn))
+			{
+				barnTown = pick;
+				barn = candidate;
+			}
+		}
+
 		if (!barn)
 			return false;
 
@@ -823,7 +837,9 @@ class RZ_QM_DoorExile : RZ_HavenQM
 			return false;
 
 		m_vHouse = h.m_vPos;
-		m_vBarn = LandPointNear(barn.m_vCenter, barn.m_fRadius * 0.8, barn.m_fRadius + 80);
+		// Inside the barn: the farm building nearest the town's edge, on its floor (asleep in the straw)
+		if (!RZ_WorkSites.Indoors(barn.m_vCenter, barn.m_fRadius + 150, "farm", m_vBarn))
+			m_vBarn = LandPointNear(barn.m_vCenter, barn.m_fRadius * 0.8, barn.m_fRadius + 80);
 		m_vDrop = LandPointNear(boss.m_vPos, 150, 250);
 		m_vPos = m_vBarn;
 		m_iSettlement = QFlag(gm, "barn", -1);
@@ -1291,7 +1307,7 @@ class RZ_QM_DoorVote : RZ_HavenQM
 		m_iSettlement = h.m_iSettlement;
 		m_vPos = LandPointNear(h.m_vPos, 4, 9);
 		m_bExile = QFlag(gm, "exile_home") == 1;
-		m_iTalk = AddClue("The meeting", QFill(gm, "Everyone who sleeps in {house} is in the one room, standing, because there aren't enough chairs. {head} sits at the front and doesn't say anything. The cook has her arms folded. Somebody says the word \"price\", and the room goes quiet."));
+		m_iTalk = AddClue("The meeting", QFill(gm, "Everyone who sleeps in {house} is in the one room, standing, because there aren't enough chairs. {head} sits at the front and doesn't say anything. The cook has his arms folded. Somebody says the word \"price\", and the room goes quiet."));
 		if (m_bExile)
 			m_iExileTalk = AddClue(QText(gm, "exile"), QFill(gm, "{exile} stands at the back by the door, where he can leave fast. \"I took bread. I'd take it again. Ask them who they'd have fed.\""));
 

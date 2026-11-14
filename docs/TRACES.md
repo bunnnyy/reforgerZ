@@ -17,7 +17,7 @@ the clue registry, the finer triggers and one kit with the epilogue. Every prop 
 trace still tells its story as text. Phase 0, the Workbench spike that settles decals, lights, loops
 and wrecks, is the author's ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#traces-the-workbench-spike-phase-0)).
 Errands' cards anchor on standing scenes (`RZ_Scenes.SceneNear`; Traces never deals an errand itself):
-Boarded Up on V2, Is She Gone? near L1, His Effects on L5 or V7, and a stranger's fresh event at L1 or L2
+Boarded Up on V2, Is He Gone? near L1, His Effects on L5 or V7, and a stranger's fresh event at L1 or L2
 ([ERRANDS.md](ERRANDS.md#the-cards)). Nothing here has been play-tested.
 
 Code: `World/Traces/` (`RZ_Traces.c` the owner, settings and kit, the epilogue's asks; `RZ_DoorMarks.c`
@@ -522,7 +522,7 @@ The author approved all 16 as recommended (2026-11-11).
 |---|---|
 | Who sees a town's summary and a door line | A character on foot within the town's radius (+30 m); standing 2 s means two one-second checks within 5 m, not a speed test |
 | The first days' sweep | "Within 3 km of the roads into `origin.site`" is within 3 km of the line from the site to the roadblock; at most 12 towns nearest first |
-| P3's notable death | A life of 2 hours or more, or dying at a running job's site; the stand and a pack's kill aren't told apart. The Digger stranger's grave, once you've dug it with her, stays by the road with whoever she was told it was (or SOMEONE) |
+| P3's notable death | A life of 2 hours or more, or dying at a running job's site; the stand and a pack's kill aren't told apart. The Digger stranger's grave, once you've dug it with him, stays by the road with whoever he was told it was (or SOMEONE) |
 | The thumbprint | Exiles are players Hunted by the Haven; their minutes in a town, and a thumbprint that's due, are saved across a restart. The Long Table never makes a player its exile, so it has none to count |
 | Scene placement | A scene's own point by Traces' ground test, its extra pieces by the shared placer; with no **Pieces that age** set, each scene is its one composition and ages in its words. A prop never comes up while a player or a vehicle is within 8 m of its spot |
 | The column (F1) | 4–8 cars along the road from the queue's point (400 m back from the barrier) to 1.2 km back, never within 25 m of a junction (three road ends meeting); where the road can't be followed, the rest 9 m apart back from the queue's point |

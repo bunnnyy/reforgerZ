@@ -11,9 +11,9 @@ voice haven
 
 node start
   say? was:every_name :: You were at the table when the names were read. I saw you. Sit down, there's soup. Real soup, with things in it. We're all leaving soon, and I wanted you to have a bowl first.
-  say? cure_held:bastion :: The cure came up the road in a crate with a number on it. We're on Bastion's list for it now. Everyone's on a list now. Mrs {resident} says at least it's a list with an end.
-  say? cure_held:everyone :: Somebody walked the cure out to every house. Ours came in a cold box at dawn. Mrs {resident} asked who to thank, and nobody would say. So we thank everybody, at supper.
-  say? ending:every_name=every_name :: They read every name at supper, even the crossed-out ones. Mrs {resident} cried, then went to bed early. We're leaving in a few days. The bear stays on the door.
+  say? cure_held:bastion :: The cure came up the road in a crate with a number on it. We're on Bastion's list for it now. Everyone's on a list now. Mr {resident} says at least it's a list with an end.
+  say? cure_held:everyone :: Somebody walked the cure out to every house. Ours came in a cold box at dawn. Mr {resident} asked who to thank, and nobody would say. So we thank everybody, at supper.
+  say? ending:every_name=every_name :: They read every name at supper, even the crossed-out ones. Mr {resident} cried, then went to bed early. We're leaving in a few days. The bear stays on the door.
   say? epilogue :: The loudspeakers at the road checkpoints say processing now, not remain indoors. Nobody from {here} has gone up yet. Nobody quite believes it. We're packing slowly.
 
 conv epilogue.occupant.route

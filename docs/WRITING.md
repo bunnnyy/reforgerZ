@@ -55,6 +55,10 @@ hard edges are each faction's in [LORE.md](LORE.md#the-factions-as-people).
 
 ## The voices
 
+- **Everyone you meet is a man.** The game has only male bodies, so a person who stands in the
+  world, speaks to you, gives work or is found, treated or carried is *he*: a man's name, *father*,
+  *brother*, *Mr*. Women may be mentioned (a dead wife, a mother back home, a voice on the radio),
+  never met. The rule and its check: [MISSION_RULES.md](MISSION_RULES.md#the-people), rule 10.
 - **Broadcasts** are short, official and slightly wrong:
   *"Day 14. Residents are reminded that the perimeter is for your protection."*
 - **Notes** are personal and specific: names, places in the town they're found in, and mistakes.
@@ -214,7 +218,7 @@ they called you over. How the engine does it: [DIALOGUE.md](DIALOGUE.md#no-fille
 | Reply | Give them your antidote | Here. Take my antidote. Quickly. |
 | Job offer | "Nothing for you today." / the job as a card | The leader's intro, the brief and their sign-off, then *It's at Morton, 1.2 km north-east. Pay is 15 Favor on completion, and 10 Fame on the roster.* and the danger; then *[Job] I'll do it.* / *Not today.* |
 | Locked reply | the job missing, or "You can't do that." after you pick it | *[Quest] The Other Two: his number (Needs Known with Haven or Halcyon)* |
-| Start card | "Errand: The Pump" | *Errand started: The Pump* / From Mara, the cook at Morton. / Fetch the pump's spare valve. Out past the church, north-east. |
+| Start card | "Errand: The Pump" | *Errand started: The Pump* / From Marek, the cook at Morton. / Fetch the pump's spare valve. Out past the church, north-east. |
 
 **Built replies.** A reply the scripts build from an action's name ("Ask for work", "Trade", "Share
 some food", a stranger's "Give him a tin") keeps that name for the world prompt and the object menu;
@@ -602,12 +606,15 @@ so it never leans on the brief.
 |---|---|
 | Find out his number. | Find Emil Novak's trial number at the lab in Morton. |
 | Search the houses over the way. | Search the chemist's down the road, quietly. Then go on to Ruth, at Ruth's house in Morton. |
-| Search the houses over the way. | Search the houses across the road from Lucie Brandt's, quietly. |
+| Search the houses over the way. | Search the houses across the road from Lukas Brandt's, quietly. |
 | Secure it and hold the area for a minute. | Hold the cellar cache in Levie for a minute. |
-| Find him. | Find the downed pilot outside Morton and walk the pilot to Levie. |
+| Find him. | Find the downed pilot outside Morton. (Then, once he walks: Walk the pilot to Levie.) |
 
-The text lint's `objective` check holds the pronoun and length rules, and that every mission with a
-brief names its objective ([Checking text](#checking-text)).
+A job done at two places is two lines, one place each ([MISSION_RULES.md](MISSION_RULES.md), rule
+23): a mission sets them with `ObjThen`, an errand's way with `First`; "..., then tell {giver}" needs
+neither (the way back is its own line). The text lint's `objective` check holds the pronoun and
+length rules, and that every mission with a brief names its objective (`m_sObjective` or `ObjThen`)
+([Checking text](#checking-text)); `tools/mission_rules.py` finds two places in one line.
 
 ## Dark humour, not edginess
 

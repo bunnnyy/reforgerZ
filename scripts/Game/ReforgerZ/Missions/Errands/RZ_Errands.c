@@ -175,7 +175,7 @@ class RZ_ErrandSettings
 	[Attribute("0.2", UIWidgets.Slider, "Found hook chance: after a job ends at a site, this share of sites holds a stranger (someone hiding, someone who got there first, a bite) or an old mark, for 2 hours", "0 1 0.05")]
 	float m_fHookChance;
 
-	[Attribute("1", desc: "Dark cards: the strangers and cards where you can sell someone (Wrong Side of the Toll, She Waves at the Line, My Sister at Morton's knowing way)")]
+	[Attribute("1", desc: "Dark cards: the strangers and cards where you can sell someone (Wrong Side of the Toll, He Waves at the Line, My Brother at Morton's knowing way)")]
 	bool m_bDarkCards;
 
 	[Attribute("0.2", UIWidgets.Slider, "Twist chance: a card that can have a twist (the giver lies or hides something) has it this often, at most one errand in three a player and never two in a row", "0 1 0.05")]
@@ -301,6 +301,7 @@ class RZ_Fallout
 class RZ_Errands
 {
 	protected static const float SLOW_TICK = 30;
+	protected static const float BOARD_DOOR_REACH = 40;	// boarding up: the place's real door this close (m)
 	protected static const float INSIDE_RADIUS = 60;	// an indoor work site: the nearest fitting building this far from the place
 	protected static const float TALK_SECONDS = 90;
 	protected static const float TALK_RANGE = 20;
@@ -807,6 +808,10 @@ class RZ_Errands
 					continue;
 				}
 
+				// A first place before the step's own (RZ_ErrandWay.First): there long enough, then on
+				if (!FirstWorked(e, w, me, dt))
+					continue;
+
 				if (!e.m_Def.StepCounts(this, e, me))
 					continue;
 
@@ -1085,12 +1090,36 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The way's first place (RZ_ErrandWay.First) is done: true at once without one. Stay there its
+	//! seconds; then the step's own place is the objective, and the asker is told.
+	protected bool FirstWorked(RZ_Errand e, RZ_ErrandWay w, IEntity me, float dt)
+	{
+		if (e.m_bFirstDone || !w.HasFirst() || e.m_vFirst == vector.Zero)
+			return true;
+
+		if (!w.IsAtPlace(me, e.m_vFirst))
+			return false;
+
+		e.m_fFirstProgress += dt;
+		if (e.m_fFirstProgress < w.m_fFirstSeconds)
+			return false;
+
+		e.m_bFirstDone = true;
+		m_GM.NotifyPlayer(e.m_iAsker, "Errand: " + e.Fill(e.m_Def.m_sTitle), e.Fill(RZ_QuestTracker.WithoutBack(w.StepText())));
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The step's own rule, on the 5 s tick: work at a work site is done when its hold is done (the
 	//! server counted the asker at it); otherwise, being at the place long enough (unseen, for an
 	//! unseen way).
 	protected bool StepWorked(RZ_Errand e, RZ_ErrandWay w, IEntity me, float dt)
 	{
 		RZ_WorkSites sites = RZ_WorkSites.Get();
+		RZ_Carries carries = RZ_Carries.Get();
+		if (carries && carries.Has(WorkKey(e)))
+			return carries.IsDone(WorkKey(e));
+
 		if (sites && sites.Has(WorkKey(e)))
 			return sites.IsDone(WorkKey(e)) && (!w.m_bGiveThere || w.IsAtPlace(me, e.m_vPlace));
 
@@ -1139,6 +1168,10 @@ class RZ_Errands
 		if (!w.IsWork() || e.m_vPlace == vector.Zero)
 			return false;
 
+		// Carried for real: a pile of the things, and where they go
+		if (w.m_iCarry > 0 && OpenCarry(e, w))
+			return true;
+
 		RZ_WorkSites sites = RZ_WorkSites.Get();
 		vector at = e.m_vPlace;
 		// At the giver's place or its gate: beside it, not on whoever stands there
@@ -1168,25 +1201,101 @@ class RZ_Errands
 		if (!inside && at[1] > RZ_Util.GroundPos(at)[1] + 0.3)
 			inside = true;
 
-		ResourceName before;
-		if (w.m_eProp != RZ_EErrandProp.NONE)
+		// Boarding up is done at a real door of the place (the boards go in its doorway): never a
+		// door of our own in the open. No real door near: the boards are left out (DoorPropFits)
+		float yaw = -1;
+		if (w.m_eWork == RZ_EWork.BOARDS)
+		{
+			IEntity door;
+			vector centre;
+			vector normal;
+			if (RZ_DoorGeometry.NearestOuterDoor(e.m_vPlace, 0, BOARD_DOOR_REACH, false, door, centre, normal))
+			{
+				at = RZ_Util.GroundPos(centre + normal * 0.1);
+				yaw = Math.Atan2(normal[0], normal[2]) * Math.RAD2DEG;
+				if (yaw < 0)
+					yaw += 360;
+			}
+		}
+
+		ResourceName before = w.m_sLook;
+		if (before.IsEmpty() && w.m_eProp != RZ_EErrandProp.NONE)
 			before = m_Settings.Props().For(w.m_eProp);
+
+		// Work at something that isn't there (HANDS has no look of its own): the words name a thing
+		// nothing stands for, which the audit should catch (docs/ERRANDS.md, "The work")
+		if (before.IsEmpty() && w.m_eWork == RZ_EWork.HANDS && !w.m_bPerson)
+			RZ_Log.Info(string.Format("Errands: %1 '%2' has nothing standing at its work site (no look, no person)", e.m_Def.m_sKey, w.m_sWorkLabel));
 
 		string key = WorkKey(e);
 		float hold = w.m_fWorkSeconds;
 		if (hold <= 0)
 			hold = RZ_WorkSites.HoldFor(w.m_fSeconds);
 
-		if (sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, at, e.m_iAsker, before, "", -1, inside) < 0)
+		if (sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, at, e.m_iAsker, before, "", yaw, inside) < 0)
 			return false;
 
 		if (w.m_bPerson)
-			sites.SetPerson(key, PersonPrefab());
+			sites.SetPerson(key, PersonPrefab(), w.m_bPersonLies);
 
 		if (w.m_bUnseen)
 			sites.SetUnseen(key);
 
 		e.m_vPlace = at;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A way carried for real (RZ_ErrandWay.Carry): the pile and where it goes. Into the place's
+	//! building: the pile in the open beside the place, the stack inside on its ground floor (else
+	//! by the place's door, said so). Out of it: the pile inside, the stack in the open beside it.
+	//! False: carrying is off, or it won't open (the plain work site instead).
+	protected bool OpenCarry(RZ_Errand e, RZ_ErrandWay w)
+	{
+		RZ_Carries carries = RZ_Carries.Get();
+		if (!carries || !RZ_Carries.Available())
+			return false;
+
+		string kind = w.m_sInside;
+		if (kind == "any")
+			kind = "";
+
+		vector room;
+		bool indoors = RZ_WorkSites.Indoors(e.m_vPlace, INSIDE_RADIUS, kind, room);
+		vector open = RZ_WorkSites.Spot(e.m_vPlace, 6, 12);
+		vector pick = open;
+		vector drop = room;
+		bool pickIn = false;
+		bool dropIn = indoors;
+		string pickName = "outside";
+		string dropName = "indoors, on the ground floor";
+		if (!w.m_bCarryIn)
+		{
+			pick = room;
+			pickIn = indoors;
+			pickName = "inside, on the ground floor";
+			drop = open;
+			dropIn = false;
+			dropName = "outside, by the door";
+			if (!indoors)
+			{
+				pick = RZ_WorkSites.Spot(e.m_vPlace, 2, 4);
+				pickName = "by the door";
+			}
+		}
+		else if (!indoors)
+		{
+			drop = RZ_WorkSites.Spot(e.m_vPlace, 2, 4);
+			dropName = "by the door, under cover if you can";
+		}
+
+		if (!indoors)
+			RZ_Log.Info(string.Format("Errands: %1 carries %2, but no building within %3 m of %4: carried to its door", e.m_Def.m_sKey, w.m_sCarryThings, INSIDE_RADIUS, RZ_SettlementScanner.GridReference(e.m_vPlace)));
+
+		if (!carries.Open(WorkKey(e), e.m_iAsker, w.m_iCarry, w.m_sCarryProp, w.m_sCarryThing, w.m_sCarryThings, pick, pickIn, pickName, drop, dropIn, dropName, w.m_bCarryStack))
+			return false;
+
+		e.m_vPlace = pick;
 		return true;
 	}
 
@@ -1262,6 +1371,11 @@ class RZ_Errands
 		RZ_WorkSites sites = RZ_WorkSites.Get();
 		if (sites)
 			sites.Close(WorkKey(e));
+
+		RZ_Carries carries = RZ_Carries.Get();
+		if (carries)
+			carries.Close(WorkKey(e));
+
 		if (e.m_Carried)
 		{
 			RZ_Util.DeleteUnit(e.m_Carried);
@@ -1338,7 +1452,7 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Who an errand is from, for its start card: "Mara, the cook at Morton".
+	//! Who an errand is from, for its start card: "Marek, the cook at Morton".
 	protected string GiverWords(RZ_Errand e)
 	{
 		string who = e.m_sGiverName;
@@ -2311,6 +2425,9 @@ class RZ_Errands
 
 		e.m_vPlace = PlaceFor(e, w.m_ePlace, w.NeedKey());
 		e.SetText("place", PlaceText(e, w.m_ePlace, user.GetOrigin()));
+		e.m_bFirstDone = !w.HasFirst();
+		if (w.HasFirst())
+			e.m_vFirst = PlaceFor(e, w.m_eFirst);
 		RZ_PlaceNeeds.Verify(w.NeedKey(), e.m_vPlace, e.m_Def.m_sKey + ": " + e.Fill(w.m_sStep));
 		if (w.m_eProp != RZ_EErrandProp.NONE)
 			RZ_PlaceNeeds.Verify("errand." + RZ_PlaceThings.PropSlot(w.m_eProp), e.m_vPlace, e.m_Def.m_sKey + ": " + e.Fill(w.m_sStep));
@@ -3824,7 +3941,7 @@ class RZ_Errands
 			case RZ_EErrandItem.FUEL: result.Insert("jerrycan"); result.Insert("canister"); result.Insert("fuelcan"); break;
 			case RZ_EErrandItem.BATTERY: result.Insert("battery"); break;
 			case RZ_EErrandItem.MEAT: result.Insert("meatleg"); break;
-			case RZ_EErrandItem.MEDICAL: result.Insert("bandage"); result.Insert("medkit"); result.Insert("morphine"); result.Insert("tourniquet"); result.Insert("salin"); result.Insert("pill"); result.Insert("antibiotic"); break;
+			case RZ_EErrandItem.MEDICAL: result.Insert("bandage"); result.Insert("dressing"); result.Insert("gauze"); result.Insert("aspirin"); result.Insert("medkit"); result.Insert("morphine"); result.Insert("tourniquet"); result.Insert("salin"); result.Insert("pill"); result.Insert("antibiotic"); break;
 			case RZ_EErrandItem.ANTIDOTE:
 			{
 				if (gm && !gm.GetAntidotePrefab().IsEmpty())
@@ -4001,6 +4118,34 @@ class RZ_Errands
 
 		RZ_Log.Info(string.Format("Errands: %1 handed to %2 (%3)", d.m_sKey, RZ_Util.PlayerName(playerId), giverName));
 		return e;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A handed step finished there and then by a reply the player picked (an opening's hand-over):
+	//! its thing taken from them and the errand resolved now, inside that conversation, never later
+	//! for being near. False: it isn't held, or the thing isn't on them (nothing changes).
+	bool FinishNow(RZ_Errand e, IEntity me)
+	{
+		if (!e || !me || e.m_eState != RZ_EErrandState.HELD)
+			return false;
+
+		RZ_ErrandWay w = e.GetWay();
+		if (!w)
+			return false;
+
+		if (w.m_bGiveThere && w.m_iItems > 0)
+		{
+			if (CountItems(me, w.m_eItem) < w.m_iItems)
+				return false;
+
+			TakeItems(me, w.m_eItem, w.m_iItems);
+		}
+
+		e.m_bStepDone = true;
+		e.m_bTold = false;
+		RemoveProp(e);
+		Resolve(e, w);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

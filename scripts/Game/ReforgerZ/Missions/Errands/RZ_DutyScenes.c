@@ -145,7 +145,7 @@ class RZ_DutyBeat
 	string m_sGroup;			// the interaction it belongs to (its flags are its own)
 	string m_sPassed;			// said when it's left alone past its timeout ("" the plain line)
 	string m_sTalk;				// someone stands here to talk to: their conversations are for duty:<this> ("swap:ring")
-	string m_sTalkName;			// who they are, the talk screen's name ("A woman with a ring")
+	string m_sTalkName;			// who they are, the talk screen's name ("A man with a ring")
 	ResourceName m_sThing;		// what stands on the table or the ground in front (a display copy, RZ_DutyThings)
 	int m_iBody = -1;			// the scene's own person who is already there (m_aBodies: a patient in a bed) is this beat's person to talk to
 	float m_fFace = -1;			// >= 0: the bearing of the side to stand on (a bed against a wall): the options set out (m_fOut) spread along that side only
@@ -879,18 +879,23 @@ class RZ_DutyScenes
 			case RZ_DutyBeat.AT_OUT: at = RZ_PlaceFind.Near(s.m_vHome, 60, 140, need); break;
 			case RZ_DutyBeat.AT_FAR: at = RZ_PlaceFind.Near(s.m_vHome, 180, 350, need); break;
 			case RZ_DutyBeat.AT_NEAR: return RZ_WorkSites.Spot(s.m_vLast, 12, 30);
+			// A door beat is always a real door of the map, on its doorstep (a house's, else any
+			// building's): no door is ever spawned for it. Only with no building door within reach does
+			// it stand in the open, logged
 			case RZ_DutyBeat.AT_NEAR_DOOR:
 			{
-				if (DoorStep(s.m_vLast, 12, 60, at) || DoorStep(s.m_vLast, 5, 150, at))
+				if (DoorStep(s.m_vLast, 12, 60, at) || DoorStep(s.m_vLast, 5, 150, at) || AnyDoorStep(s.m_vLast, 5, 300, at))
 					return at;
 
+				NoDoor(s, b);
 				return RZ_WorkSites.Spot(s.m_vLast, 12, 30);
 			}
 			case RZ_DutyBeat.AT_FAR_DOOR:
 			{
-				if (DoorStep(s.m_vHome, 180, 350, at) || DoorStep(s.m_vHome, 100, 600, at))
+				if (DoorStep(s.m_vHome, 180, 350, at) || DoorStep(s.m_vHome, 100, 600, at) || AnyDoorStep(s.m_vHome, 100, 900, at))
 					return at;
 
+				NoDoor(s, b);
 				at = RZ_PlaceFind.Near(s.m_vHome, 180, 350, need);
 				break;
 			}
@@ -901,6 +906,31 @@ class RZ_DutyScenes
 			at = RZ_WorkSites.Spot(s.m_vHome, 20, 40);
 
 		return at;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest real outside door of any building lo-hi m from `home`, its doorstep (when no house
+	//! has one in reach).
+	protected static bool AnyDoorStep(vector home, float lo, float hi, out vector at)
+	{
+		IEntity door;
+		vector centre;
+		vector normal;
+		if (!RZ_DoorGeometry.NearestOuterDoor(home, lo, hi, false, door, centre, normal))
+			return false;
+
+		vector step = RZ_Util.GroundPos(centre + normal * DOORSTEP);
+		if (RZ_PlaceCheck.IsWet(step))
+			return false;
+
+		at = step;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void NoDoor(RZ_DutyScene s, RZ_DutyBeat b)
+	{
+		RZ_Log.Info(string.Format("Duties: no real door within reach for beat %1 at %2: it stands in the open (no door is spawned)", b.m_sKey, RZ_SettlementScanner.GridReference(s.m_vHome)));
 	}
 
 	//------------------------------------------------------------------------------------------------
