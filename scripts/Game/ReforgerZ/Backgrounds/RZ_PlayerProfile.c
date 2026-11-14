@@ -28,6 +28,8 @@ class RZ_PlayerProfile
 	int m_iCaseSeason = -1;				// the season this player's case last counted (one a season)
 	bool m_bCaseHeld;					// died carrying it: it comes back in the next spawn's pack
 	float m_fCaseWarm;					// and how warm it was then (0 cold, 1 warm)
+	ref array<int> m_aPapers = {};		// the papers from the case's lid (Guidance/RZ_CasePapers.c): each one's state, three long
+	int m_iPapersLife = -1;				// the character they belong to (RZ_OpeningCase.CharacterStamp)
 
 	// The map's fog (World/RZ_MapFog.c): one bit per square seen, kept across deaths (per character
 	// once characters last: designs/PERSISTENCE.md); m_sFogGrid is the grid it was kept for

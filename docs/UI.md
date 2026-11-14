@@ -413,7 +413,7 @@ radio. The radio only says who's asking."*
 |---|---|
 | THE SEASON'S STORY | The majors you took part in ([QUESTLINES.md](QUESTLINES.md)) |
 | QUESTLINES AND JOBS | Questlines you're part of, missions, contracts, events, leaders' jobs |
-| ERRANDS | The errands you hold ([ERRANDS.md](ERRANDS.md)) |
+| ERRANDS | The errands you hold ([ERRANDS.md](ERRANDS.md)), with the jobs the opening hands you: the case's lead, and a paper from its lid you agreed to carry to its owner ([DESIGN.md](DESIGN.md#the-papers-in-the-lid)) |
 
 **One row per questline.** A questline's row says where its work is now, so the job of its current
 stage never gets a row of its own beside it: a major you took part in is one row under THE SEASON'S

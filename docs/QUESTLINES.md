@@ -44,7 +44,9 @@ waits and because some stages only open at dusk, at night or at a cure percentag
 
 ✅ Built (phase 5, simplified as each major says). One season-long story per faction, its climax
 on a cure milestone. Each stronghold leader has a page they'd rather burn, and every page put in the
-open (`majors.pages_open`) makes the next leader's "read it" one step easier, once. How the lane,
+open (`majors.pages_open`) makes the next leader's "read it" one step easier, once. The
+opening's case carries copies of three of them; how they start their majors from there, and why
+one never counts twice: [DESIGN.md](DESIGN.md#the-papers-in-the-lid). How the lane,
 the acts, the votes and the dynamic fallbacks work: [DESIGN.md](DESIGN.md#the-majors). Their stage
 missions: [MISSIONS.md](MISSIONS.md#the-majors-acts). Each act's remaining approaches are more
 people and choices on its scene (`Director/RZ_MajorRest.c`), listed under each major.
@@ -78,6 +80,8 @@ The Red Hand ([LORE.md](LORE.md#the-red-hand)). The boss holds the book, and the
 when the line stands down, a toll is a lorry across a road, and the Red Hand is only what it's owed.
 The back page (who outside owes it) goes missing in front of every crew. Code:
 `Missions/Questlines/RedHand/RZ_Major_Book.c` (a subclass of R1's class).
+
+**From the opening:** the runner's case holds a page torn from the book. Handed back to the Red Hand's people, you're in this major; given to anyone else, the page is in the open ([DESIGN.md](DESIGN.md#the-papers-in-the-lid)).
 
 | Act | Opens | Anchor, need, patience | What players do | Default | Status |
 |---|---|---|---|---|---|
@@ -117,6 +121,8 @@ signal; the runner's page says "expended". The CO has known since Day 3. Before 
 CO says in front of every post what Bastion is. Command never answers. Code:
 `Missions/Questlines/Bastion/RZ_Major_Orders.c` (a subclass of B1's class).
 
+**From the opening:** the runner's case holds a copy of the Day 3 orders. Handed to Bastion's people, you're in this major; given to anyone else, the page is in the open ([DESIGN.md](DESIGN.md#the-papers-in-the-lid)).
+
 | Act | Opens | Anchor, need, patience | What players do | Default | Status |
 |---|---|---|---|---|---|
 | I. Reply received | Collapse, after a nightly call (B1 stages 1–2); any commander gives it if no Independent one exists | the muster; 2 | As B1 | A patrol walks the runner's road; the page goes in the stove | ✅ |
@@ -155,6 +161,8 @@ The Haven ([LORE.md](LORE.md#the-haven)). When there isn't enough, who is the Ha
 writes the second rule down, then keeps or changes it once someone has found out what the first
 council did, and whose pencil it was. Code: `Missions/Questlines/Haven/RZ_Major_EveryName.c` (a
 subclass of H1's class, under a new key).
+
+**From the opening:** the runner's case holds a list of names in a Haven hand. Handed to the Haven's people, you're in this major; given to anyone else, the page is in the open ([DESIGN.md](DESIGN.md#the-papers-in-the-lid)).
 
 | Act | Opens | Anchor, need, patience | What players do | Default | Status |
 |---|---|---|---|---|---|

@@ -53,6 +53,7 @@
 #   Road patrols (RZT_RoadPatrols.c): a foot patrol of each faction on the real roads 1-3 km out and back, data 2.5 km off and put out within 400 m with its leader tagged, met by standing (a stranger's papers or toll, a friend's news and stretch, the Hunted fired on), one vehicle patrol at a time, a fight's spent cases (L9), a lost Bastion patrol's Missing Patrol ("RZT roadpatrols OK|FAIL ...", "RZT roadpatrols: N checks");
 #   The map's fog (RZT_Fog.c): where the tester stands is seen, walking 600 m reveals new ground, a paper map in his pack reveals its far town, the fog survives the save's JSON round trip, the payload is small ("RZT fog OK|FAIL ...", "RZT fog: N checks");
 #   The door and the favour (RZT_Favour.c): for every background, the door asks who you were and a habit is picked (each habit's effect checked), the favour's fetch is handed at a place, the hand-over waits for its reply (standing by him never counts), and the background's way settles it without a hand-over ("RZT favour OK|FAIL ...", "RZT favour: N checks");
+#   The papers in the case's lid (RZT_Papers.c): gained once a character, each offered as a job at another faction's people, handed to its owner by reply (a participant of its major, or waiting for it), given to a rival instead (the page in the open, once).
 #   The fixer (RZT_Ferda.c): Ferda Kroupa comes for the case (two men, tracked on him, the Red Hand's people leave the sale to him), the street rallied (its door job at a real doorway, three jobs, then RALLIED), the hand-over (sold, Get It Back next) and the warning, the story about Bastion as the good liar (TALKED, no standing), slipping away (SLIPPED), a fight (FOUGHT), his note on a real door's step, a veteran's note only ("RZT ferda OK|FAIL ...", "RZT ferda: N checks");
 #   The opening by level (RZT_OpeningChain.c): a fresh Nurse at levels 1, 2 and 3 runs the whole chain: the door asks or not, the favour or none, the line or its short form, the runner, Ferda's visit, one scene or his note, and the case delivered to Halcyon by the reply.
 #   The Long Table (RZT_LongTable.c): the family stands at the farm in its own looks with the tester 60 m off, the farm laid out, a supper sign at a junction, the bell and the voice, a death near the farm taken at dawn, a jar in loot, the door mark, the host on the road, the injured man at dusk, the boy in a town, the harvest supper ("RZT table OK|FAIL ...", "RZT table: done");
@@ -332,6 +333,7 @@ grep -E 'RZT Power test: ' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT carry(: done| FAIL|: off|: no building)' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT openings' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT case' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT papers' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT line' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT ferda' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT chain' "$LOG" | sed 's/.*RZT /  /'
@@ -356,6 +358,7 @@ grep -q 'RZT objplace FAIL' "$LOG" && { echo "FAILED: an objective points somewh
 grep -q 'RZT carry FAIL' "$LOG" && { echo "FAILED: carrying for real (the pile, the put-down indoors, the stack)"; exit 1; }
 grep -q 'RZT openings FAIL' "$LOG" && { echo "FAILED: an opening's step (the son, a hand-over, a door: RZT_Openings.c)"; exit 1; }
 grep -q 'RZT case FAIL' "$LOG" && { echo "FAILED: the runner's case (found, carried, kept over a death, handed over by reply: RZT_Case.c)"; exit 1; }
+grep -q 'RZT papers FAIL' "$LOG" && { echo "FAILED: the papers in the case's lid (gained once, offered as jobs, handed to their owners or a rival: RZT_Papers.c)"; exit 1; }
 grep -q 'RZT line FAIL' "$LOG" && { echo "FAILED: the opening's line (a road above it, the runner shot in the warning zone, the line said, the tester never shot: RZT_Line.c)"; exit 1; }
 grep -q 'RZT ferda FAIL' "$LOG" && { echo "FAILED: the opening's fixer (he comes for the case, each way through him, his note on a real door: RZT_Ferda.c)"; exit 1; }
 grep -q 'RZT chain FAIL' "$LOG" && { echo "FAILED: the opening by level (RZT_OpeningChain.c: the door, the favour, the line's short form, the runner, Ferda by level, the case at Halcyon)"; exit 1; }
