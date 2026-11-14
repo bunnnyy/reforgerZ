@@ -846,6 +846,13 @@ watch by its doctrine, and lays its camp out inside by each piece's rules
 ([SITES.md](SITES.md#building-in-layers)); with no building that fits, it lays it out on open
 ground facing the road.
 
+**Hand-built sites.** A site the author built by hand in Game Master and saved with the site builder
+is laid out from that save instead (its objects only near players, as pieces); its people's daily
+routine runs on the save's **role spots** (where they sit, work, keep watch, cook, wash, chop and sleep,
+the canteen, the gate, the walk), and a job with no spot falls back as at a bare place. A site without
+a save in use keeps the automated layout; a pinned save stands in the same place every season. How
+it's built, its checklist, saved, switched, pinned and shipped: [SITES.md](SITES.md#hand-built-sites).
+
 **What stands there.** Each faction has a **kit** for each kind of place: a list of the pieces it
 brings there, most important first, each piece a composition of outdoor props
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits); the pieces are drawn in

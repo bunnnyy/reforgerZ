@@ -48,6 +48,8 @@ class RZ_SiteMarks
 //------------------------------------------------------------------------------------------------
 class RZ_SiteAudit
 {
+	int m_iHandBuilt;		// hand-built sites in use: listed, not scored (World/HandBuilt)
+
 	static const float OVERLAP_AREA = 0.1;		// m2: less than this between two footprints isn't an overlap
 	static const float RUN_END = 0.15;		// m: a run on the line may touch what it meets this far into its ends
 	static const float FLOAT_SPREAD = 0.3;		// ground under one prop varying more than this: one edge floats or is buried
@@ -1029,6 +1031,9 @@ class RZ_SiteAudit
 	//! sites under the pass mark. How many strongholds are under it.
 	int Summary(int threshold)
 	{
+		if (m_iHandBuilt > 0)
+			RZ_Log.Info(string.Format("Sites audit: %1 hand-built sites, not scored.", m_iHandBuilt));
+
 		if (m_aScores.IsEmpty())
 		{
 			RZ_Log.Info("Sites audit: no sites.");

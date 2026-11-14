@@ -320,6 +320,10 @@ class RZ_ObjectRows
 	//------------------------------------------------------------------------------------------------
 	//! This player's client couldn't open the menu: the rows become world prompts for them.
 	void Failed(int playerId) {}
+
+	//------------------------------------------------------------------------------------------------
+	//! The menu closed (the player, the screen guard, or another screen took over).
+	void Closed(int playerId) {}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -495,6 +499,10 @@ class RZ_ObjectScreen
 	{
 		if (!s_mOwner)
 			return;
+
+		RZ_ObjectRows rows;
+		if (s_mRows.Find(playerId, rows) && rows)
+			rows.Closed(playerId);
 
 		s_mOwner.Remove(playerId);
 		s_mSerial.Remove(playerId);

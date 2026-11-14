@@ -6,7 +6,7 @@ layers by its faction's doctrine, where its people stand and walk, what story it
 site is measured. Built: the site grid, real
 footprints, the surroundings and the threat sectors, the rules and the solver, building in layers
 (the wire and its gates, the boards, the watch, valuables indoors), the people at their posts and on
-their rounds, each site's story, and the audit with its drawing.
+their rounds, each site's story, the audit with its drawing, and sites built by hand in Game Master.
 
 Code: `Factions/RZ_SiteGrid.c` (the grid and footprints), `Factions/RZ_SiteSurroundings.c`,
 `Factions/RZ_SiteRules.c` (zones, rules, layers, doctrine), `Factions/RZ_SiteSolver.c`,
@@ -24,6 +24,7 @@ Workbench plugins.
 - [The site grid](#the-site-grid)
 - [Real footprints](#real-footprints) ([Spacing](#spacing))
 - [The world-building kit](#the-world-building-kit)
+- [Hand-built sites](#hand-built-sites)
 - [The surroundings and the threat](#the-surroundings-and-the-threat)
 - [The rules](#the-rules)
 - [The solver](#the-solver)
@@ -295,6 +296,236 @@ What to know before using a line:
   prefabs and classes" shows them), then measure it (`FOOTPRINTS=1 tools/runtime_test/run.sh sites`,
   or the Workbench plugin above) and run `build.py`. A composition or a building goes in
   `world_kit.txt` only.
+
+## Hand-built sites
+
+A site can be **built by hand in Game Master** and saved in world coordinates. A site with a
+hand-built save **in use** is laid out from it; a site without one (or with one switched off) keeps
+its automated layout. Code: `World/HandBuilt/` (`RZ_HandBuilt.c` the saves, `RZ_SiteBuilder.c` the
+menu, `RZ_HandSpots.c` the role spots and the checklist, `RZ_SiteBuilderEditor.c` Game Master's row,
+the camera and the guides drawn on the builder's screen, `RZ_HandBuiltPack.c` the shipped saves,
+generated). Tool: `tools/hand_built.py`.
+
+The author also puts down **role spots**: where people sit, stand, work, keep watch, cook, wash, chop
+and sleep, the canteen, the medic's tent, the food tent, the latrine, the quartermaster's and the
+leader's places and the points of the walks. Camp life's daily routine then runs on them as it runs on
+its own pieces ([Role spots](#role-spots)). A site can be **pinned** so the season's roll puts it there
+every time ([Pinning a site](#pinning-a-site)).
+
+
+### The site builder
+
+A menu for a server admin or a game master with the full editor. It opens three ways, all with a pad:
+Game Master's context menu on empty ground (**ReforgerZ: Site builder**), the talk screen's
+**[Admin] Site builder** (any person), or `/sites` in chat. It is the object menu fed as rows
+([UI.md](UI.md#the-object-menu)) and opens on your character, so you need one in the world.
+
+**The list** shows every site camp life lays out on this map (the holdings, the Haven safehouses, the
+road posts standing now), ten a page, each with its state in capitals:
+
+| State | Means |
+|---|---|
+| **AUTOMATED** | nothing built: camp life lays it out |
+| **HAND-BUILT, IN USE** | your build is used |
+| **HAND-BUILT, NOT IN USE** | your build is kept, but the automated layout is used |
+
+A hand-built site's row also says its spots: **spots complete**, or **spots 3 missing (Gate, Cook
+spot, Sleeping place)**, and **PINNED** when it is.
+
+Its first rows: **Show** (all sites, automated only, hand-built only: each press the next),
+**Order** (by faction, or nearest first), **Next site not built yet** (the nearest automated one),
+and **Back to the site you're building** while you build one. The site you build reads
+**BUILDING NOW**.
+
+**A site's rows**, in order:
+
+| Row | Does |
+|---|---|
+| Go there | your character to the site's edge, Game Master's camera above it looking in. Its people and its automated pieces come out as for any player near |
+| Build here: start empty | camp life's pieces there go; you build on bare ground |
+| Build here: start from the automated layout | camp life's pieces there stay as yours to keep (locked until they're out: go there first). They are camp life's own prefabs, which Game Master can't select: to change one of them start empty instead |
+| Build here: edit the saved site (N objects) | the save is put out as Game Master objects to move, delete and add to |
+| Save this site | saves what stands there and its spots (below). Replacing a save asks for a second press, naming the save it replaces |
+| Put a spot at your feet: *type* | while building: a role spot of that type where your character stands, facing the way they face ([Role spots](#role-spots)) |
+| Spot type: *type*. Next type / Previous spot type | which type the row above puts down (17, in the table's order) |
+| Take up the nearest spot (*type*, N m) | while building: the spot nearest your character goes, its marker with it |
+| Stop building | everything put out or placed there goes, and the site is laid out again from what's in use |
+| In use: HAND-BUILT / AUTOMATED. Switch to ... | which one the game uses; the save stays either way, and the site is laid out again at once |
+| Keep this site here every season: ON / OFF | pins the save's site to its place ([Pinning a site](#pinning-a-site)); not for a road post |
+| Restore the last save (N kept) | a second press brings back the save before this one (three are kept) |
+| Back to the list | |
+| Delete the hand-built | last, a second press: the save and its backups go, and the site is automated again |
+
+While you build, the description counts the objects that would be saved, says **UNSAVED CHANGES**
+once anything there was placed, moved or deleted since the last save or load, and how many stand
+outside the site (not saved). Going to another site or stopping with unsaved changes asks first:
+**Save, then go on**, **Discard the changes, then go on** (the site goes back to its last save) or
+**Stay and keep building**. Closing the menu can't be stopped, so it only says the site has unsaved
+changes; they stay standing for you to come back to. One admin builds a site at a time (the rows say
+who has it).
+
+**What a save holds:** every object standing within the site's radius of its centre (72 m for a
+stronghold, 56 m for an outpost or a field station, 40 m for a safehouse, 22 m for a road post) that
+a game master placed this session, plus what the builder put out there (the loaded save, or the
+automated pieces you started from) still standing. Only Game Master's plain objects and compositions
+(its "generic" kind): never a character, a group, a vehicle, an item, a waypoint, camp life's own
+pieces, loot or people. A composition is saved whole by its own prefab. Each object keeps the prefab
+Game Master placed (its editable copy, so it can be edited again), its place, its yaw, pitch and roll,
+and its scale.
+
+### Where saves are, and shipping them
+
+| Where | What |
+|---|---|
+| `$profile:ReforgerZ/hand_built/<world>/<site id>.txt` | the save on the machine the builder ran on, with `<site id>.bak1.txt` to `.bak3.txt` (newest first). A save here wins over a shipped one with the same id |
+| `scripts/Game/ReforgerZ/World/HandBuilt/RZ_HandBuiltPack.c` | the shipped saves, compiled into the mod (generated, never edited by hand) |
+
+`py tools/hand_built.py` reads the saves (Workbench's profile, then the game's: `--from <folder>` for
+another), checks them (each line, every prefab with its GUID, every object inside its site) and writes
+the pack: sites already in it stay unless a save replaces them or marks them deleted. `--check` checks
+without writing. Commit the pack. A world is named by its world file (`RZ_Everon`), so a save is used
+only on its own map; every other map is automated as before.
+
+A save is text, one line each, by its first word: `site <id>`, `title`, `kind` (`hold`, `out`,
+`safe`, `post`), `centre x y z`, `radius`, `use 1|0`, `saved`, `deleted 1` (on this machine: hides a
+shipped save, and the tool drops it), and `obj <prefab> x y z yaw pitch roll scale`. Any other first
+word is skipped by the game and the tool, so later kinds of line can be added. A site's **id** is its
+kind and its place rounded to the metre (`out_4810_6620`): the same every session. A place matches its
+own id, else the nearest save of its kind within 25 m.
+
+A save's other lines: `faction <n>` (whose site it is: 0 Haven, 1 Bastion, 2 Red Hand, 3 Halcyon),
+`pin 1|0` and `spot <type> x y z yaw [seats]` (a role spot). The tool checks each spot's type and that
+it stands inside its site.
+
+**A save belongs to a place, not to a faction's holding.** Holdings are rolled for each season (and on
+a fresh save), so a holding can stand somewhere else next season: its save is kept and used again
+whenever a site of its kind stands there (the list says how many saves have no site this season, and
+the site audit logs `Hand-built: <site> (<id>) has no save; the nearest of its kind is <id>, N m off.`).
+The Haven safehouses and the road posts move the same way. To keep a site where you built it, **pin**
+it ([Pinning a site](#pinning-a-site)), or place an outpost marker in the world, which never moves
+([Where a place stands](#where-a-place-stands)).
+
+**Why saved as data and spawned near players, not a world layer:** a site then follows the same rule
+as every camp piece (only near players, gone when they leave), its state is per site and switchable
+without opening Workbench, it ships in the mod's scripts with no world file to register, and a map
+without saves runs exactly as before.
+
+### In play
+
+When a place comes out near a player and has a save in use, camp life queues its objects (a few a tick,
+as pieces) and lays no automated piece: no plan, no layers, no wire, no counters and no story elements.
+Each object is stripped by the dressing guard like every piece (nothing usable left in it). What stays
+from camp life: its people and their posts and jobs, run on the site's role spots
+([Role spots](#role-spots)); a job with no spot falls back as at a bare place (a seat if there is
+one, else walking the camp or standing about), and the quartermasters turn to serve where they have
+no spot of their own. The log line says how many objects and spots it laid and its checklist
+(`Camp life: <site>: hand-built (N objects, N role spots, saved ...), automated layout off; its spots:
+complete`).
+
+The site audit (`run.sh sites`) doesn't lay out or score a hand-built site in use; it lists each
+(`Sites audit: <site> at <grid>: hand-built (N objects, saved ...), not scored.`) and counts them in
+the summary. The log lines are in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check).
+
+### Role spots
+
+A role spot is a point with a type, a place and a way it faces. The site builder puts one down at your
+character's feet, facing your way, and marks it with a small Game Master object (**Territory > Camp
+life > Spot marker**, vanilla's editable traffic cone): move the cone in Game Master and the spot moves
+with it, delete it and the spot goes. In play nothing of it shows: camp life puts an invisible point
+there carrying the smart action its job needs (**Hand spot**, `RZ_HandSpot.et`: one sentinel for each of
+camp life's tags; the canteen's **Hand spot meal**, eight seats round a point, for a table you place).
+
+| Type | In play | Camp life's job there |
+|---|---|---|
+| Seat | sit point (`RZ_Sit`) | sitting by turns, off duty (the fire, the table) |
+| Canteen table (8 seats) | eight sit points round it; home for named people | the dusk meal and sitting; named people stay within 20 m of it |
+| Lean spot | lean point (`RZ_Lean`) | leaning (the toll barrier, the fire barrel) |
+| Work spot | work point (`RZ_Work`) | work by turns (chores, the racks, the cold box) |
+| Water | work point found by name | the Haven's water job |
+| Watch post | watch point facing its way (`RZ_Watch`); a lookout post | a lookout |
+| Gate | watch point; the gate's post, first in the posts | the gate's guard; the line from it to the middle is the way in |
+| Cook spot | cook point (`RZ_Cook`) | cooking before the meal |
+| Wash spot | wash point (`RZ_Wash`) | washing in the morning (Halcyon's decon) |
+| Chopping block | chop point (`RZ_Chop`) | chopping wood by day |
+| Sleeping place | a sleep point | off shift: to bed here (asleep as data out of sight) |
+| Medic's tent | a position | the place's medic is stood there, facing its way |
+| Food tent / stores door | the door post | the quartermaster's runner walks there and back |
+| Latrine | a point found by name | the short walk to the latrine and back |
+| Quartermaster's place | a position | the quartermaster is stood there, facing its way, to serve |
+| Leader's place | a position | where an outpost's leader sits and its people come out (else the canteen) |
+| Walk point | a point of the walk, in the order put down | the stroll out and back (the approach) and Halcyon's courier |
+
+The quartermaster and the medic are moved to their spots when the place's people come out
+(`SetWorldTransform`, VERIFY). A site's spots replace the posts and walks camp life would work out:
+its gate, watch posts and stores door are its posts, its walk points its one walk.
+
+### What a site needs
+
+The checklist is the routine table in [DESIGN.md](DESIGN.md#camp-life) turned into spots, by faction
+and kind. **Required** ones count as missing until they're there; the rest are nice to have.
+
+| Spot | Required | Nice to have |
+|---|---|---|
+| Gate | every site | |
+| Watch post | Bastion; a stronghold (not the Haven's) | the rest (a safehouse's lookout is its gate) |
+| Seats (a canteen counts 8) | 3 (a stronghold 4) | |
+| Work spots | 1 (Halcyon 2) | |
+| Sleeping places | 1 (a stronghold 2) | |
+| Chopping block | Bastion, Red Hand, Haven | Halcyon |
+| Cook spot, canteen table, water | the Haven | the rest |
+| Wash spot | Halcyon | the rest |
+| Walk points (2) | Red Hand, Halcyon | the rest |
+| Lean spot | Red Hand | the rest |
+| Quartermaster's place | a stronghold | the rest |
+| Leader's place | an outpost | the rest |
+| Medic's tent, stores door, latrine | | every site |
+| A road post | the gate | 2 lean spots, 2 seats |
+
+**In the menu:** a site's description lists the needs as `Gate 1 of 1 OK · Seat 2 of 3 MISSING ...`,
+then the nice ones (`none yet` when short). It shows the save's spots, or what you're building.
+
+**On your screen while you build** (`RZ_SiteBuilderMarks`, the builder's own client): the site's edge as
+a white ring on the ground, and each spot as a post with a ball on top: **green** where it's right,
+**red** where it's wrong, **yellow** at a suggested place for a missing one (where the automated layout
+had that kind of piece, or its gate, stores door or quartermaster). They are debug shapes (VERIFY: they
+draw on a game client), redrawn each time the menu refreshes. A spot is **red** when it's:
+
+- outside the site's radius (not saved);
+- in a wall or a prop (something solid across it at knee and chest height);
+- on top of another spot (under 0.8 m apart; walk points aside);
+- in the way in: within 1.5 m of the line from the gate to the middle (watch, lean and walk points
+  aside).
+
+The description says how many are red and where the first is (`Seat, 6 m east of you: in a wall or a
+prop`). **Saving** still saves; it says how many spots stood outside (not saved), how many are red and
+what's still needed, and logs both.
+
+### Pinning a site
+
+**Keep this site here every season** pins a saved holding or safehouse to where it was built: from the
+next season (or a fresh save) the roll puts it there first and fills the rest round it. A road post
+can't be pinned (posts come and go near players).
+
+| Kind | How |
+|---|---|
+| Outpost or field station | placed with the placed outpost markers, before the roll; fixed like them (never abandoned or taken). One already standing within 150 m wins |
+| Stronghold | its faction's stronghold stands there, unless its leader or quartermaster is placed in the world (they decide) |
+| Haven safehouse | placed first, then the picks fill the rest; one standing within 100 m (a saved one) is kept. Placed safehouse markers still replace every pick |
+
+A pinned save needs its faction (saved since the role spots came in: save an older one again). Ship it
+with the tool to keep the pin in the mod. Log lines: `Territory: pinned hand-built outpost <title>
+(<id>) at <grid>.`, `Territory: pinned hand-built stronghold (<id>) at <grid>.`, `Haven safehouses:
+pinned hand-built safehouse <name> (<id>).`
+
+### Simplified
+
+- Role spots are put down from the menu and moved as their markers in Game Master; they aren't in Game
+  Master's own object browser. A spot's height is its marker's (a floor indoors), else the ground's.
+- A pinned outpost counts toward its faction's outposts but is fixed: the faction can't lose it.
+- A save only counts what this session's game master placed: an object placed in an earlier session
+  and never saved is not in it (Game Master's own save of a session isn't read).
+- **Start from the automated layout** keeps camp life's pieces as they are; Game Master can't move or
+  delete them, only build round them.
 
 ## The surroundings and the threat
 

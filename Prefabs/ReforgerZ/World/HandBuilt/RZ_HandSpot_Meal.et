@@ -1,0 +1,132 @@
+GenericEntity {
+ ID "9BD3884D39A74ED5"
+ components {
+  RplComponent "{D6182807C9EF434C}" {
+  }
+  Hierarchy "{561FB8B1DB158895}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity {
+   ID "4E8B26B93B012CA9"
+   components {
+    SCR_AISmartActionSentinelComponent "{8910CE57975C81A2}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition -0.0 1.6 -1.1
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{BE1232CE2ECB3A85}" {
+    }
+   }
+   coords 0.0 0 1.1
+  }
+  GenericEntity {
+   ID "D07CEE6005DD131C"
+   components {
+    SCR_AISmartActionSentinelComponent "{639FAB8549A95984}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition -0.78 1.6 -0.78
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{33F76690ED404752}" {
+    }
+   }
+   coords 0.78 0 0.78
+  }
+  GenericEntity {
+   ID "86CD62268E82CC9C"
+   components {
+    SCR_AISmartActionSentinelComponent "{64CB919F9ED66C8C}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition -1.1 1.6 -0.0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{765AFE64B00C2C5B}" {
+    }
+   }
+   coords 1.1 0 0.0
+  }
+  GenericEntity {
+   ID "63E6782C1FB837BA"
+   components {
+    SCR_AISmartActionSentinelComponent "{0471B025B3EC0A74}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition -0.78 1.6 0.78
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{E5AC9213647A5B07}" {
+    }
+   }
+   coords 0.78 0 -0.78
+  }
+  GenericEntity {
+   ID "DCBB3D688A2815BF"
+   components {
+    SCR_AISmartActionSentinelComponent "{A1E171A7EFB804CA}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition -0.0 1.6 1.1
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{92D172E766F9BAC8}" {
+    }
+   }
+   coords 0.0 0 -1.1
+  }
+  GenericEntity {
+   ID "D7D25CD075BED7E0"
+   components {
+    SCR_AISmartActionSentinelComponent "{DE7B9751DF402279}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 0.78 1.6 0.78
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{72B34BCCE024DB6B}" {
+    }
+   }
+   coords -0.78 0 -0.78
+  }
+  GenericEntity {
+   ID "D61ADD4395A3860E"
+   components {
+    SCR_AISmartActionSentinelComponent "{701503880278E876}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 1.1 1.6 0.0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{C81D49366F3B50F9}" {
+    }
+   }
+   coords -1.1 0 -0.0
+  }
+  GenericEntity {
+   ID "1D1DB2A6825A336D"
+   components {
+    SCR_AISmartActionSentinelComponent "{F714BC87CFF8E627}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 0.78 1.6 -0.78
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{9F225A368369BA33}" {
+    }
+   }
+   coords -0.78 0 0.78
+  }
+ }
+}
