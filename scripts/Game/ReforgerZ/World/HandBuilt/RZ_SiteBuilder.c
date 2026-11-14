@@ -363,7 +363,7 @@ class RZ_SiteBuilder
 
 		foreach (IEntity put : s.m_aPut)
 		{
-			if (!put)
+			if (!put || IsMark(s, put))
 				continue;
 
 			if (RZ_Util.DistXZ(put.GetOrigin(), site.m_vPos) <= site.m_fRadius)
@@ -387,7 +387,7 @@ class RZ_SiteBuilder
 				continue;
 
 			IEntity e = ec.GetOwner();
-			if (!e || result.Contains(e) || RZ_CampLife.IsDressing(e))
+			if (!e || result.Contains(e) || RZ_CampLife.IsDressing(e) || IsMark(s, e))
 				continue;
 
 			float d = RZ_Util.DistXZ(e.GetOrigin(), site.m_vPos);
@@ -396,6 +396,31 @@ class RZ_SiteBuilder
 			else if (d <= site.m_fRadius * 1.5)
 				outside++;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spot's marker, never an object of the site: one of the session's, or a stray one of the
+	//! marker's prefab standing on a spot (it lost its spot, and isn't saved as a cone).
+	protected static bool IsMark(RZ_SiteBuilderSession s, IEntity e)
+	{
+		if (s.m_aMarks.Contains(e))
+			return true;
+
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!gm || !gm.GetCampLifeSettings() || !e.GetPrefabData())
+			return false;
+
+		ResourceName marker = gm.GetCampLifeSettings().m_sSpotMarker;
+		if (marker.IsEmpty() || e.GetPrefabData().GetPrefabName() != marker)
+			return false;
+
+		foreach (RZ_HandSpot sp : s.m_aSpots)
+		{
+			if (RZ_Util.DistXZ(sp.m_vPos, e.GetOrigin()) < 0.5)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

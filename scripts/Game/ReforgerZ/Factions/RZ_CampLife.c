@@ -2523,7 +2523,8 @@ class RZ_CampLife
 
 		RZ_SiteLayout kept = KeepLayout(p, result);
 		m_Audit.Site(this, p, job.m_Ground, job.m_Grid, job.m_Around, result, job.m_bDraw);
-		if (!live)
+		// The site builder took the place while it was being worked out: nothing goes down
+		if (!live || p.m_bHand)
 			return;
 
 		if (job.m_Solver && job.m_Solver.m_Place == p)
