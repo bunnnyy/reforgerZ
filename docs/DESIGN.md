@@ -3376,10 +3376,11 @@ and for the first five minutes cards come at most one every 45 s; the rules and 
 
 Built of the new opening ([designs/OPENING.md](../designs/OPENING.md)): the door's question and
 [habits](#habits), the favours by background, [the line](#the-line) and [the case](#the-case), which
-leads into Proof. Planned there: the Red Hand fixer and the shorter forms by level.
+leads into Proof, and [the fixer](#the-fixer) who comes for the case. Planned there: the shorter
+forms by level of the first beats.
 
 Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningScenes.c`, `RZ_OpeningChain.c`,
-`RZ_OpeningSteps.c`, `RZ_OpeningText.c`, `RZ_OpeningLine.c`, `Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
+`RZ_OpeningSteps.c`, `RZ_OpeningText.c`, `RZ_OpeningLine.c`, `RZ_OpeningFixer.c`, `Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
 
 Every life starts somewhere random that suits who you were, coming out of a door for a reason, and
 within a few seconds someone outside is talking to you and there is one obvious thing to do: the
@@ -3724,7 +3725,7 @@ Warm, it still counts; the station says so.
 | At | The reply | What happens |
 |---|---|---|
 | Halcyon's people | **[Errand] Hand over the runner's case** | The director (else whoever stands for him): where you got it, and that the date on the tag is a filing error you'd do well to forget. +10 Halcyon Fame (small). You take part in **Proof** for this character (`RZ_QuestRun.Did`). The season's first live case is banked as live tissue for Halcyon's route ([FINALE.md](FINALE.md#live-tissue)); a later one is an ordinary sample; a player's second this season counts for nothing. Before 25% cure, **The Date on the Tag** |
-| The Red Hand's | **[Trade] Sell the runner's case** | +15 Red Hand Favor, +5 Halcyon Infamy. Halcyon's field lead hands you **Get It Back** |
+| The Red Hand's | **[Trade] Sell the runner's case** (not while Ferda is on his way or in the street: he's the buyer, [below](#the-fixer)) | +15 Red Hand Favor, +5 Halcyon Infamy. Halcyon's field lead hands you **Get It Back** |
 | Bastion's | **[Errand] Hand the runner's case in** | "Then it's evidence." +5 Bastion Fame (small). Halcyon's field lead hands you **The Case at the Post** |
 
 Kept: the lead stays, and while anyone keeps a case, Halcyon asks after it on its channel once a
@@ -3753,7 +3754,72 @@ and the finale's `live tissue, the runner's case`.
 
 *Simplified:* in the line's short form the runner is already dead when you come; the case's tag is read in the reader, and in the pack only its fixed description shows;
 Get It Back and The Case at the Post take it from a spot inside the holding, not from a real lock-up
-or shelf; Ferda Kroupa, the Red Hand's fixer, isn't built (a Red Hand person buys it).
+or shelf.
+
+### The fixer
+
+Code: `Guidance/RZ_OpeningFixer.c` (the visit, its replies, what follows), `Dialogue/RZ_TalkOpenings.c`
+(`RZ_TalkFixer`). Beat 5 of the new opening ([designs/OPENING.md](../designs/OPENING.md)): the
+Red Hand wants the runner's case back, and you pick a side in the street you started from.
+
+**He comes.** Once the case is in your pack, **Ferda Kroupa**, who collects for the Red Hand's book
+([LORE.md](LORE.md#the-red-hand)), is on his way: 2 to 4 minutes after you're back within 250 m of
+where you started (the clock waits while you're away), and at the latest 7 minutes after the case,
+wherever you are. He and two of the crews stand 18–30 m from you (the Red Hand's occupant look, else
+**Puzzles > Civilian**; bodies in the story budget, only near you). He asks the contact first when
+the contact is within 60 m (*"Pavel, isn't it. The runner on the line road owed the book, and he had
+something on him. Somebody from this street picked it up."* / *"Ask him. I've enough to answer
+for."*), else you. Then **Ferda Kroupa** is tracked, its marker on him, and his talk screen is the
+choice. While he's on his way or in the street, the Red Hand's people don't buy the case: he's the
+buyer.
+
+**The ways**, each a reply, a work site or a fight, never a menu; one objective at a time:
+
+| Way | How | What it does (small, through the caps) |
+|---|---|---|
+| **Hand it over** | **[Trade] Hand it over** (locked without the case on you) | The case's sale ([above](#the-case)): +15 Red Hand Favor, +5 Halcyon Infamy, Get It Back next; and +3 Haven Infamy, the street saw. On the full visit a neighbour stands at his own real door, and **Warn the Street** is tracked |
+| **Sell it, then warn the street** | after the sale, **[Errand] He'll be back for more. Bolt your doors.** to that neighbour, within 10 minutes | +3 Haven Fame, +3 Red Hand Infamy (he hears of it). Not warned in time: it stays a hand-over |
+| **Talk him off** | *"Bastion's patrol is two streets away. You'd better go."*, tagged **[A good liar]** or your background when it's a Police Officer, a Soldier, an Ex-Con or a Raider; locked for anyone else, with why | Nothing; he goes and remembers you |
+| **Rally the street** | **[Street] Wait here. I'll talk to the street first.**: three neighbours each need one job, one at a time, each a work site with the neighbour standing there: board up his door (planks, 15 s, in a real doorway within 90 m), clean his rifle on the step of his house (12 s, at another real door), show the lookout the road (8 s, at the corner). A job with no real door near is skipped, logged. Then **Stand With the Street**: **[Street] The street's with me.** | +5 Haven Fame, +3 Red Hand Infamy; he backs off. He waits 15 minutes for the street, then goes and remembers you |
+| **Slip away** | walk off with the case: 120 m from him for 10 s | +3 Haven Infamy: the street had his visit |
+| **A fight** | one of his down, or your shot within 40 m of them while he's here | +10 Red Hand Infamy; *"Wrong answer."* His men answer by their own faction's AI (nothing here makes them shoot) |
+
+He and his men stand till you're 150 m off (at most three minutes), then they're put away.
+
+**Shorter for those who know it.** A familiar player (level 2): he comes half a minute after the
+case, wherever you are; hand it over, talk him off or slip away (no street to rally or warn). A
+veteran (level 3), or a second opening in a street he's already coming to (400 m): only his note.
+
+**Afterwards** (what you did is kept on the profile for this character, `RZ_PlayerProfile.m_iFerdaWay`,
+through `RZ_OpeningCase.CharacterStamp`):
+
+- **The radio, that evening** (from 19:00): once, on the Haven's channel (the crews' for a hand-over or
+  a fight), what happened in that street, without your name.
+- **His note:** twenty minutes later (or another season day), on the step of a real door within 25 m
+  of you, never a door of our own (**Puzzles > Clue**); **Read the note on the step** opens the reader.
+  A veteran's says where to bring the case; the others answer what you did. It's taken up once
+  you're 200 m from it.
+- **His men at a toll:** once, at a Red Hand road post within 40 m: *"Ferda's asking after you. He
+  said you'd know why."* (*"... you're square with the book"* after a hand-over).
+- **His voice:** once, another season day's evening, on the crews' channel, if he remembers you.
+
+He never hunts you: no squad follows you, and he turns up only where the Red Hand already is.
+
+**Log lines:** `Openings: Ferda Kroupa is coming for <player> (the full visit|one scene, N s after
+they're back in <town>)`, `Ferda Kroupa came for <player> at <grid> with N men (...)`, `Ferda's step
+<key> for <player> at <grid>`, `the street's job N of 3 done for <player> (<key>)`, `no real door
+near <grid> for the street's job <key>; it makes do without`, `<player> handed the case over (sold to
+Ferda Kroupa, cold|warm)`, `<player> sold the case to Ferda; the street can still be warned
+(<name>)`, `Ferda's visit for <player> ended: handed|talked|rallied|slipped|warned|fought|waited`,
+`Ferda came too late for <player>: the case is gone`, `Ferda's note for <player> (a veteran|...)`,
+`Ferda's note on the step of a door at <grid> for <player>`, `the radio spoke of <player>'s way with
+Ferda (<way>)`, `the toll asked after <player> for Ferda`, `Ferda's voice on the crews' channel, for
+<player>`, `no fixer for <player> (no body prefab)`.
+
+*Simplified:* he and his men are put out standing at the end of the street, not walking in; the
+neighbours stand at their jobs and don't gather round you when you stand with the street; the line
+in the book is the Favor the sale pays, not an entry anyone can read; two openings in one street
+share his visit by the second getting his note.
 
 ### Experience levels
 

@@ -374,6 +374,12 @@ never says is who paid:
 means stop. Stop means pay. Pay means we're friends. See? Easy."* The boss, asked about Rudi: *"He
 let people pay later. You can't run a road like that."*
 
+
+**Ferda Kroupa** collects for the book. He was a bailiff before Day 1 and he still talks like one:
+polite, patient, never in a hurry, sorry for your trouble. He doesn't shout and he doesn't need to;
+he comes with two of the crews and stands at the end of your street until somebody tells him
+something. *"Nothing personal: the book doesn't do personal."* Every new arrival who picks up what a
+dead man owed meets him sooner or later ([DESIGN.md](DESIGN.md#the-fixer)).
 ### Halcyon
 
 A research team that was at the outbreak site before the lockdown. They run the only lab.

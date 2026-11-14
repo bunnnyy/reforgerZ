@@ -200,3 +200,60 @@ class RZ_TalkOpening : RZ_TalkGeneric
 		return true;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! The opening's fixer as a speaker (Guidance/RZ_OpeningFixer.c): Ferda Kroupa, who collects for the
+//! Red Hand's book, and the neighbour you can warn after a sale. Their replies are the ways through
+//! his visit, first in the list; only picking one does anything (docs/MISSION_RULES.md, rule 19).
+//! They talk only to the player the visit is for. No conversations of their own. Server only.
+class RZ_TalkFixer : RZ_TalkSpeaker
+{
+	protected IEntity m_Owner;
+	protected int m_iCode;		// the visit's id * 10 + the role (RZ_OpeningFixer.ROLE_*)
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_TalkFixer(IEntity owner, int code)
+	{
+		m_Owner = owner;
+		m_iCode = code;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Setup(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId)
+	{
+		RZ_OpeningFixer f = RZ_OpeningFixer.Get();
+		if (f)
+			f.Setup(m_iCode, s);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Greet(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, IEntity user)
+	{
+		RZ_OpeningFixer f = RZ_OpeningFixer.Get();
+		if (f)
+			f.Greet(m_iCode, playerId, s.m_aNew);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool SpeaksFirst(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId)
+	{
+		RZ_OpeningFixer f = RZ_OpeningFixer.Get();
+		return f && f.SpeaksFirst(m_iCode, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Replies(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, IEntity user, notnull array<ref RZ_TalkReply> replies)
+	{
+		RZ_OpeningFixer f = RZ_OpeningFixer.Get();
+		if (f)
+			f.Replies(m_iCode, playerId, user, replies);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Pick(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
+	{
+		RZ_OpeningFixer f = RZ_OpeningFixer.Get();
+		if (f)
+			f.Pick(m_iCode, playerId, replyId, user, s.m_aNew);
+	}
+}

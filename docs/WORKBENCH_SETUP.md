@@ -2006,7 +2006,16 @@ spawned through the spawn screen, so no place is rolled for it. From then
 on the fake player can't hold a prompt, so while it stands at a mission the open work sites within 25 m of
 it are done for it (the others wait until the tracker sends it there) (`RZT work sites: N done for '<title>'`), and a job finished that way ends by itself. An objection
 to a hold, a truth kept after a restart, a reason starting a contract and a locked player refused need
-a play (§8).
+a play (§8). Then **the fixer** (`RZT_Ferda.c`): Ferda Kroupa comes for
+the tester's case (the case held through the case check's stand-in where the pack refuses it) with
+two men, "Talk to Ferda Kroupa" tracked on him, and the Red Hand's people leave the sale to him;
+his replies listed (hand it over, the story about Bastion, the street); the street rallied (its
+door job at a real doorway, each job done for the tester at its site, then standing with it:
+RALLIED, Haven Fame and Red Hand Infamy up); the hand-over (sold, Get It Back next) and the
+neighbour warned (WARNED); the good liar's story (TALKED, no standing changed); slipping away
+(SLIPPED, Haven Infamy up); Ferda killed (FOUGHT, Red Hand Infamy up); his note on a real door's
+step; a veteran's note only (`RZT ferda OK|FAIL <what>`, `RZT ferda: N checks, N failed`; the run
+fails on FAIL).
 
 **The epilogue week.** Then, from the finale's cure, **Epilogue > Test scale** goes to 0.02 and the
 week runs scripted (`RZT_Epilogue.c`): the commit (its record holding the release's terms), the hall's freeze, beats and phase A; phase B;
@@ -2270,7 +2279,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **207** lines with the tag, all but one in the game scripts (one is the comment in
+There are **208** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2397,7 +2406,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1475` | a quartermaster or the medic moved and turned with `SetWorldTransform` on the server stays at their hand-placed spot, facing its way, on every client | They stand where they spawned; the quartermaster turns to serve as before |
 | `World/HandBuilt/RZ_HandSpots.c:402` | a short flat trace through a spot inside a wall, a crate or a tent's side reports a hit (the spot turns red), and the excluded marker cone doesn't | A spot in a wall isn't flagged; the author sees it in play |
 
-### Low risk: contained or cosmetic (53)
+### Low risk: contained or cosmetic (54)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2412,6 +2421,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Guidance/RZ_OpeningCase.c:255` | the runner (Puzzles > Civilian) killed the moment he's spawned falls and lies where he was put, for every client, as A Sample's remains | He stands, dead to the server: the case still lies by him |
 | `Guidance/RZ_ColdCase.c:75` | `GetItems()` finds the cold case in a bag inside another bag, as for keys | A case carried that deep isn't seen: the hand-over reply doesn't show until it's in a pocket or the pack itself |
 | `Guidance/RZ_OpeningCase.c:825` | deleting the case while it's still in a dead body's storage (when `TryDeleteItem` refuses) leaves the body's storage sound | The body's inventory shows an empty slot or an error; the case still comes back on respawn |
+| `Guidance/RZ_OpeningFixer.c:1105` | Ferda Kroupa's two men are the Red Hand's own AI: fired on (your shot within 40 m of them, or one of them down), they answer by their faction's AI, nothing here makes them shoot | They stand and take it: the visit still ends as a fight (FOUGHT) with its Red Hand Infamy |
 | `Guidance/RZ_OpeningLine.c:284` | the line's runner (Guidance > Companion, a one-man civilian group on a move waypoint) sprints when `SetMovementTypeWanted(SPRINT)` is asked of him, as the infected's behaviour layer does | He walks or jogs at the line: the scene still plays, only slower (he's shot where he stands after 60 s) |
 | `Guidance/RZ_OpeningLine.c:378` | the line's drone (Perimeter > Drone prefab) moved with `SetOrigin` over the runner shows moving on every client | It hangs where it first appeared, over the place he broke from cover |
 | `Guidance/RZ_OpeningSteps.c:516` | A Sample's remains: a special spawned and killed at once on the server (`RZ_Util.KillCharacter`) falls and lies where it was spawned, for every client | The body stands, or isn't seen: the place check still passes (it's dead there). Spawn it a frame later, or use a body prop |
@@ -3747,6 +3757,21 @@ when it happens)
   character (or with two other players near the line): no scene, the shot heard and the contact's
   *"That came from the line. Somebody tried it."*, the runner found already down. Log lines as in
   [DESIGN.md](DESIGN.md#the-line): paste the `Openings: the line ...` ones.
+- [ ] **The fixer** ([DESIGN.md](DESIGN.md#the-fixer)), with a pad, as a brand-new character on Everon.
+  Take the runner's case and go back to the street you started from: 2 to 4 minutes later Ferda
+  Kroupa and two men stand at the end of the street (are they Red Hand to look at? do they stand
+  well, not in a wall?); he asks the contact first, then *Ferda Kroupa* is tracked on him. Talk to
+  him: his greeting, then **[Trade] Hand it over**, the story about Bastion (locked unless you're
+  the good liar or a Police Officer, Soldier, Ex-Con or Raider) and **[Street] Wait here...**.
+  Play each way on a fresh character: hand it over (+15 Red Hand Favor, Get It Back next; then a
+  neighbour at his door to warn), the story, rally the street (board his door: are the planks in a
+  real doorway? clean the rifle on a step, show the lookout the corner; then **The street's with
+  me.**), walk off with it (120 m for 10 s), and fire near his men (do they shoot back? VERIFY
+  `Guidance/RZ_OpeningFixer.c:1105`). That evening the radio says what happened; twenty minutes
+  later his note lies on the step of a real door near you (**Read the note on the step**); at a Red
+  Hand toll his men ask after you. As a familiar character he comes half a minute after the case,
+  as a veteran only his note. Log lines as in [DESIGN.md](DESIGN.md#the-fixer): paste the
+  `Openings: Ferda ...` ones.
 - [ ] **Openings** ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), with a pad. The spawn
   screen has no place picker: under Start, only the kind of place the picked background starts at
   ("A clinic, or a house near one"); left and right do nothing. Deploy as a Nurse: you stand 2 m out

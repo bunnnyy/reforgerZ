@@ -480,6 +480,10 @@ class RZ_OpeningCase
 		if (!user || !Carries(user))
 			return;
 
+		// Ferda Kroupa's talk has its own hand-over (RZ_OpeningFixer)
+		if (RZ_TalkFixer.Cast(s.m_Adapter))
+			return;
+
 		int f = SpeakerFaction(s);
 		RZ_TalkReply r;
 		if (f == RZ_EFaction.INSTITUTE)
@@ -489,6 +493,11 @@ class RZ_OpeningCase
 		}
 		else if (f == RZ_EFaction.BANDITS)
 		{
+			// While Ferda is on his way or in the street, he's the buyer: the crews leave it to him
+			RZ_OpeningFixer fixer = RZ_OpeningFixer.Get();
+			if (fixer && fixer.Waiting(s.m_iPlayer))
+				return;
+
 			r = NewReply(REPLY_SELL, "Sell the runner's case");
 			r.m_sTag = RZ_TalkJobs.Tag("Trade");
 		}
@@ -548,11 +557,7 @@ class RZ_OpeningCase
 		else if (replyId == REPLY_SELL)
 		{
 			s.m_aNew.Insert("A Halcyon case. Do you know what the lab people would give for this? I do. Here's half of it.");
-			m_GM.AddFavor(playerId, RZ_EFaction.BANDITS, 15);
-			m_GM.AddInfamy(playerId, RZ_EFaction.INSTITUTE, 5, "sold Halcyon's case");
-			profile.m_iCaseState = STATE_SOLD;
-			StoreAt(playerId, RZ_EFaction.BANDITS, at);
-			OpenStage(playerId, user, m_Back, RZ_EFaction.BANDITS);
+			Sold(playerId, user, at);
 		}
 		else
 		{
@@ -565,6 +570,47 @@ class RZ_OpeningCase
 
 		EndLead(playerId, user, replyId == REPLY_HALCYON);
 		RZ_Log.Info(string.Format("Openings: %1 handed the case over (%2, %3)", RZ_Util.PlayerName(playerId), ReplyName(replyId), WarmText(warm)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sold to the Red Hand: the book pays (15 Favor with the Red Hand, 5 Infamy with Halcyon), the
+	//! case goes to their lock-up, and Get It Back opens for this character.
+	protected void Sold(int playerId, IEntity user, vector at)
+	{
+		m_GM.AddFavor(playerId, RZ_EFaction.BANDITS, 15);
+		m_GM.AddInfamy(playerId, RZ_EFaction.INSTITUTE, 5, "sold Halcyon's case");
+		RZ_PlayerProfile seller = m_GM.GetProfile(playerId);
+		seller.m_iCaseState = STATE_SOLD;
+		StoreAt(playerId, RZ_EFaction.BANDITS, at);
+		OpenStage(playerId, user, m_Back, RZ_EFaction.BANDITS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The opening's sale, to Ferda Kroupa (RZ_OpeningFixer): the case leaves your pack, `line` is what
+	//! he says, and the sale is the Red Hand's as above. False: nothing carried, or it couldn't be taken.
+	bool Sell(int playerId, IEntity user, notnull array<string> said, string line)
+	{
+		IEntity item = RZ_ColdCaseComponent.CarriedBy(user);
+		RZ_ColdCaseComponent c = RZ_ColdCaseComponent.Of(item);
+		if (!c)
+		{
+			said.Insert("Empty pockets. Then you've given it to someone. The book will want to know who.");
+			return false;
+		}
+
+		bool warm = c.IsWarm();
+		vector at = user.GetOrigin();
+		if (!TakeCase(user, item))
+		{
+			said.Insert("Keep hold of it a moment. Your hands are full.");
+			return false;
+		}
+
+		said.Insert(line);
+		Sold(playerId, user, at);
+		EndLead(playerId, user, false);
+		RZ_Log.Info(string.Format("Openings: %1 handed the case over (sold to Ferda Kroupa, %2)", RZ_Util.PlayerName(playerId), WarmText(warm)));
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
