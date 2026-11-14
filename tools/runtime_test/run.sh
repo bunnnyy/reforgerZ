@@ -48,6 +48,7 @@
 #     door-like prop is refused in the open ("RZT openings OK|FAIL ...", "RZT openings: N checks");
 #   The map's fog (RZT_Fog.c): where the tester stands is seen, walking 600 m reveals new ground, a paper map in his pack reveals its far town, the fog survives the save's JSON round trip, the payload is small ("RZT fog OK|FAIL ...", "RZT fog: N checks");
 #   The door and the favour (RZT_Favour.c): for every background, the door asks who you were and a habit is picked (each habit's effect checked), the favour's fetch is handed at a place, the hand-over waits for its reply (standing by him never counts), and the background's way settles it without a hand-over ("RZT favour OK|FAIL ...", "RZT favour: N checks");
+#   The Long Table (RZT_LongTable.c): the family stands at the farm in its own looks with the tester 60 m off, the farm laid out, a supper sign at a junction, the bell and the voice, a death near the farm taken at dawn, a jar in loot, the door mark, the host on the road, the injured man at dusk, the boy in a town, the harvest supper ("RZT table OK|FAIL ...", "RZT table: done");
 #   The line (RZT_Line.c): a road above the line near a town (150-250 m outside the warning zone, 600 m to 2 km off), the scene played with the tester at it: the loudspeakers, a runner who breaks from cover (or is laid down), shot in the warning zone not the kill zone, dead there with the case by him, the line said, the tester never shot and never in the zones ("RZT line OK|FAIL ...", "RZT line: N checks");
 #   A fresh spawn (RZT_Fresh.c): as a veteran, the opening has its contact within 15 m and the door's favour first, the last life's questline part and jobs aren't the new one's, and the Quests tab lists nothing taken ("RZT fresh OK|FAIL ...", "RZT fresh: N checks");
 #   - starts every registered mission type one at a time, moves the player where the quest tracker
@@ -247,6 +248,10 @@ cp "$ROOT"/Prefabs/ReforgerZ/Work/RZ_Work_Stove.et* "$ROOT"/Prefabs/ReforgerZ/Wo
 # The runner's cold case (Guidance > Cold case), for the case check (RZT_Case.c)
 mkdir -p "$ADDON/Prefabs/ReforgerZ/Guidance"
 cp "$ROOT"/Prefabs/ReforgerZ/Guidance/RZ_ColdCase.et* "$ADDON/Prefabs/ReforgerZ/Guidance/"
+# The Long Table's jar and the family's looks (World > Long Table > Reach), for the table check (RZT_LongTable.c)
+cp "$ROOT"/Prefabs/ReforgerZ/World/RZ_TableJar.et* "$ADDON/Prefabs/ReforgerZ/World/"
+mkdir -p "$ADDON/Prefabs/ReforgerZ/People/LongTable"
+cp "$ROOT"/Prefabs/ReforgerZ/People/LongTable/RZ_Table_*.et* "$ADDON/Prefabs/ReforgerZ/People/LongTable/"
 # The crafting items and the recipes' outputs (RZT_Craft.c sets them on the test world's Crafting)
 mkdir -p "$ADDON/Prefabs/ReforgerZ/Crafting" "$ADDON/Prefabs/ReforgerZ/Interactions"
 cp "$ROOT"/Prefabs/ReforgerZ/Crafting/RZ_*.et* "$ADDON/Prefabs/ReforgerZ/Crafting/"
@@ -287,6 +292,7 @@ grep -E 'RZT kitchen' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT fog' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT patrol' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT craft' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT table' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (epilogue check: .*FAILED|epilogue done|epilogue: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E '\[ReforgerZ\] Sites audit: [0-9]+ sites,' "$LOG" | sed 's/.*\[ReforgerZ\] /  /'
@@ -304,5 +310,6 @@ grep -q 'RZT favour FAIL' "$LOG" && { echo "FAILED: the door and the favour (who
 grep -q 'RZT kitchen FAIL' "$LOG" && { echo "FAILED: kitchen work at a kitchen (RZT_Kitchen.c: a kitchen thing at the prompt, the camp's own cook pot)"; exit 1; }
 grep -q 'RZT patrol FAIL' "$LOG" && { echo "FAILED: a patrol's finds or its marker (RZT_Patrol.c: each find's thing there, a door find at a real doorway, the marker on the walker)"; exit 1; }
 grep -q 'RZT craft FAIL' "$LOG" && { echo "FAILED: a new recipe or the lockpick (RZT_Craft.c)"; exit 1; }
+grep -q 'RZT table FAIL' "$LOG" && { echo "FAILED: the Long Table's farm or its reach (RZT_LongTable.c: the family at the farm, a sign, the dead taken, jars, the host, the injured man, the boy, the harvest)"; exit 1; }
 grep -q 'RZT Power test: .*FAILED' "$LOG" && { echo "FAILED: the power station's looks (the dressing, the generator's sound or the lamps' list)"; exit 1; }
 exit 0
