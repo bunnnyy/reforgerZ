@@ -1,13 +1,13 @@
-//! The finale's people (docs/FINALE.md, "Items and people"): the woman who didn't turn and her son,
-//! Twice (Private Marek Fiala), the captain at the cold store, the cook and her sister, the sergeant
+//! The finale's people (docs/FINALE.md, "Items and people"): the man who didn't turn and his son,
+//! Twice (Private Marek Fiala), the captain at the cold store, the cook and his brother, the sergeant
 //! with the second key, the vet, the eight from the Day 6 trial and the radio ham. Each is data:
 //! alive, a place, who holds them (custody), the route their yes went to, draws and betrayals
 //! (saved). Bodies come only with the route's scenes, within 300-400 m of a player. Nobody is
 //! killed off-screen, and consent is a check in every draw and dose: a person refuses without
 //! their own yes. Claims: "person:<key>" (RZ_FinalePeople.Subject).
 //!
-//! Places are season canon (World facts): unturned.house (a Haven safehouse; the rota moves her every
-//! 3 real days at dusk), held.store (the cold store in the hills), redhand.still, cook.sister,
+//! Places are season canon (World facts): unturned.house (a Haven safehouse; the rota moves him every
+//! 3 real days at dusk), held.store (the cold store in the hills), redhand.still, cook.brother,
 //! origin.site.lower, ham.house, day6.cohort.<n>; held.count (280-340), unturned.name.
 
 //------------------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ class RZ_FinalePeopleSave
 //------------------------------------------------------------------------------------------------
 class RZ_FinalePeople
 {
-	static const int MAX_DRAWS = 5;		// she gives five at most, never a sixth
+	static const int MAX_DRAWS = 5;		// he gives five at most, never a sixth
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_CureFinale m_Finale;
@@ -251,7 +251,7 @@ class RZ_FinalePeople
 		RZ_WorldFacts facts = RZ_WorldFacts.Get();
 		RZ_Rng rng = new RZ_Rng(facts.Flag("finale.seed", 0) + RZ_SeasonClock.Now());
 
-		// The woman, in a Haven house; her son with the Red Hand crew nearest it
+		// The man, in a Haven house; his son with the Red Hand crew nearest it
 		int house = WomanHouse(rng);
 		vector womanAt = HousePos(house);
 		string woman = facts.CanonText("unturned.name");
@@ -265,7 +265,7 @@ class RZ_FinalePeople
 		m_S.rotaUnix = RZ_SeasonClock.Now();
 		Add("woman", woman, "the lodger", womanAt, RZ_EFaction.SURVIVORS);
 		vector crew = NearestSeat(RZ_EFaction.BANDITS, womanAt);
-		Add("son", RZ_NoteText.FirstName(rng) + " " + RZ_NoteText.Surname(rng), "her son", crew, RZ_EFaction.BANDITS);
+		Add("son", RZ_NoteText.FirstName(rng) + " " + RZ_NoteText.Surname(rng), "his son", crew, RZ_EFaction.BANDITS);
 
 		// The cold store in the hills, and its captain
 		vector store = StorePos(rng);
@@ -276,13 +276,13 @@ class RZ_FinalePeople
 		// Twice: Private Marek Fiala, with the crew nearest the store
 		Add("twice", "Private Marek Fiala", "Twice", NearestSeat(RZ_EFaction.BANDITS, store), RZ_EFaction.BANDITS);
 
-		// The cook at the Red Hand's stronghold, the still, and her sister at a Haven house
+		// The cook at the Red Hand's stronghold, the still, and his brother at a Haven house
 		vector rh = StrongholdPos(RZ_EFaction.BANDITS);
 		Add("cook", RZ_NoteText.FirstName(rng) + " " + RZ_NoteText.Surname(rng), "the cook", rh, RZ_EFaction.BANDITS);
 		vector still = StillPos(rng, rh);
 		facts.SetCanon("redhand.still", RZ_WorldFacts.PosText(still));
 		int sisterHouse = NearestHouse(rh);
-		Add("sister", RZ_NoteText.FirstName(rng) + " " + RZ_NoteText.Surname(rng), "the cook's sister", HousePos(sisterHouse), RZ_EFaction.SURVIVORS);
+		Add("sister", RZ_NoteText.FirstName(rng) + " " + RZ_NoteText.Surname(rng), "the cook's brother", HousePos(sisterHouse), RZ_EFaction.SURVIVORS);
 
 		// The lower store at the closed site, the sergeant with the second key, the vet's tank
 		vector site = facts.CanonPos("origin.site");
@@ -534,8 +534,8 @@ class RZ_FinalePeople
 
 	// ================================================================ The rota
 	//------------------------------------------------------------------------------------------------
-	//! Every 3 real days at dusk the rota moves her, as data, to the next Haven house no other story
-	//! holds (one house: she stays put). A Haven-locked player can move her early (MoveWoman).
+	//! Every 3 real days at dusk the rota moves him, as data, to the next Haven house no other story
+	//! holds (one house: he stays put). A Haven-locked player can move his early (MoveWoman).
 	void Tick(float dt, array<int> ids, array<IEntity> players)
 	{
 		RZ_FinalePersonSave p = Get("woman");
@@ -570,7 +570,7 @@ class RZ_FinalePeople
 		}
 
 		m_S.rotaUnix = RZ_SeasonClock.Now();
-		RZ_Log.Info(string.Format("Finale: the rota moved the woman to house %1.", m_S.rotaHouse));
+		RZ_Log.Info(string.Format("Finale: the rota moved the man to house %1.", m_S.rotaHouse));
 	}
 
 	//------------------------------------------------------------------------------------------------

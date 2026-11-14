@@ -357,7 +357,7 @@ class RZ_FinaleRoute : RZ_Questline
 	protected float RemakeHours() { return 24; }
 
 	//------------------------------------------------------------------------------------------------
-	//! The person the route claims while it runs ("woman", "captain", "cook"; "" none).
+	//! The person the route claims while it runs ("man", "captain", "cook"; "" none).
 	protected string SubjectKey()
 	{
 		return "";
@@ -656,7 +656,7 @@ class RZ_FinaleRoute : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A route item's name for the player ("a bag of her blood").
+	//! A route item's name for the player ("a bag of his blood").
 	protected string ItemName(string kind)
 	{
 		return kind;
@@ -1521,8 +1521,8 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Ambush a carry, spoiled: an item of another route you carry is spoiled here. Her bag: +10
-	//! Haven Infamy, and she gives again.
+	//! Ambush a carry, spoiled: an item of another route you carry is spoiled here. His bag: +10
+	//! Haven Infamy, and he gives again.
 	protected void SpoilFind(RZ_GameModeComponent gm, RZ_CureFinale f, int playerId)
 	{
 		string ident = gm.GetProfile(playerId).m_sIdentity;
@@ -1539,7 +1539,7 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 
 		if (r == RZ_CureFinale.HAVEN)
 		{
-			f.PayIdent(ident, RZ_EFaction.SURVIVORS, 0, 0, 10, "spoiled a bag of her blood");
+			f.PayIdent(ident, RZ_EFaction.SURVIVORS, 0, 0, 10, "spoiled a bag of his blood");
 			f.GetPeople().GiveAgain("woman");
 		}
 

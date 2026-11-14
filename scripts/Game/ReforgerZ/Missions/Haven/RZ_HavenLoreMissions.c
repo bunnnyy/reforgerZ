@@ -96,7 +96,7 @@ class RZ_Mission_TheList : RZ_PuzzleMission
 		RZ_NoteText.DistinctFirstNames(m_Rng, 3, firsts);
 		while (firsts.Count() < 3)
 		{
-			firsts.Insert("Dana");
+			firsts.Insert("Dalibor");
 		}
 
 		m_sName = firsts[0] + " " + RZ_NoteText.Surname(m_Rng);

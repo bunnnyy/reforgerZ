@@ -1,8 +1,8 @@
 //! The Other Two (Halcyon; HC2 in docs/QUESTLINES.md, built in docs/MISSIONS.md, "Questlines").
 //! Eight in ten walk out of the trial dose, and the lab writes down what happens to the other two.
-//! A Haven woman's brother volunteered and didn't come back. The answer is a back room at a field
+//! A Haven man's brother volunteered and didn't come back. The answer is a back room at a field
 //! station, where the other two are kept so someone with a clipboard can be there when they turn.
-//! Its stages are the sister's (Haven) contracts, offered to anyone Known with the Haven or Halcyon.
+//! Its stages are the elder brother's (Haven) contracts, offered to anyone Known with the Haven or Halcyon.
 //!
 //! 1. His number (mission, at the lab): ask the trial clerk (Known with Halcyon; Known with the
 //!    Haven once H3 opened the lab road), read the volunteers' ledger on the night shift unseen
@@ -10,16 +10,16 @@
 //! 2. The back room (mission, at the field station): walk in with Halcyon's courier and his cold
 //!    case (RZ_Escort), ask the field lead (Trusted, or Known as a Doctor), or slip in at night
 //!    unseen (a Lab Tech who read the codes, any time).
-//! 3. Her brother (mission): he has until the end of the Final stage. Sit with him, walk him home
-//!    to his sister before he turns (RZ_Escort; a Nurse buys him longer), wait with the sample kit
+//! 3. His brother (mission): he has until the end of the Final stage. Sit with him, walk him home
+//!    to his brother before he turns (RZ_Escort; a Nurse buys him longer), wait with the sample kit
 //!    for the moment of turning (research +1) or end it (armed).
-//! 4. The field lead (mission): ask her to close the room (Trusted, or Known as a Doctor), report
-//!    her to the director, say nothing (25 Halcyon Favor) or sell one of the other two to the Red
+//! 4. The field lead (mission): ask him to close the room (Trusted, or Known as a Doctor), report
+//!    him to the director, say nothing (25 Halcyon Favor) or sell one of the other two to the Red
 //!    Hand (Trusted with them: 40 Red Hand Favor, and the questline ends there).
-//! 5. Names (mission, at the sister's safehouse): the paper has the house's other volunteer as a
+//! 5. Names (mission, at the elder brother's safehouse): the paper has the house's other volunteer as a
 //!    number; the trial list by the door and the man who walked them up give the name (folded in
 //!    from The Author List contract; an Elder reads the council's pencil). Then the names to the
-//!    director (Trusted, or Known with the sister beside you after he came home), to the Haven's
+//!    director (Trusted, or Known with the elder brother beside you after he came home), to the Haven's
 //!    chair, or let them stay numbers.
 //!
 //! Endings: Named, Brought home, The work goes on, Sold. With H3's knows_other_two it starts at the
@@ -79,17 +79,17 @@ class RZ_Quest_OtherTwo : RZ_Questline
 	static const int E_NUMBERS = 2;
 	static const int E_SOLD = 3;
 
-	static const float WALK_HOME_RANGE = 3500;		// the sister's house, from the field station, when one is this close
+	static const float WALK_HOME_RANGE = 3500;		// the elder brother's house, from the field station, when one is this close
 
 	//------------------------------------------------------------------------------------------------
 	override void Define()
 	{
 		Info(KEY, "The Other Two", RZ_EFaction.INSTITUTE);
 
-		RZ_QuestStage start = WaitStage(S_START, "{brother}'s number", "{sister} at the safehouse in {town} has a brother, {brother}, who volunteered for the trial dose and didn't come back. The lab won't tell her more than a number.");
+		RZ_QuestStage start = WaitStage(S_START, "{brother}'s number", "{sister} at the safehouse in {town} has a brother, {brother}, who volunteered for the trial dose and didn't come back. The lab won't tell him more than a number.");
 		start.Wait(0);
 
-		RZ_QuestStage number = MissionStage(S_NUMBER, "{brother}'s number", "{sister} at the safehouse in {town} has a brother, {brother}, who volunteered for the trial dose and didn't come back. The lab won't tell her more than a number. Find out his, at the lab.");
+		RZ_QuestStage number = MissionStage(S_NUMBER, "{brother}'s number", "{sister} at the safehouse in {town} has a brother, {brother}, who volunteered for the trial dose and didn't come back. The lab won't tell him more than a number. Find out his, at the lab.");
 		number.GiveUp(4, "Nobody ever told {sister} what happened to {brother}.");
 		number.Visits(2);
 
@@ -100,7 +100,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 		RZ_QuestStage brother = MissionStage(S_BROTHER, "{brother} in the back room", "Inside the back room at {lead_place}: three people in the Final stage, and a chair with a clipboard by each. {brother} is in the bed by the window. He hasn't long.");
 		brother.GiveUp(2, "Nobody went back into the room for {brother}. The clipboard got its last line.");
 
-		RZ_QuestStage lead = MissionStage(S_LEAD, "The field lead", "{lead} runs the back room at {lead_place}. Somebody has to talk to her about it, or about her.");
+		RZ_QuestStage lead = MissionStage(S_LEAD, "The field lead", "{lead} runs the back room at {lead_place}. Somebody has to talk to him about it, or about him.");
 		lead.GiveUp(4, "Nobody said anything to {lead} about the back room. It's still there.");
 		lead.Visits(2);
 
@@ -124,7 +124,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 		if (!lead)
 			return false;
 
-		// Her house: one with people, within a walk of the field station if there is one (he has to
+		// His house: one with people, within a walk of the field station if there is one (he has to
 		// be walked home from it before he turns), else the nearest
 		array<int> options = {};
 		int nearest = -1;
@@ -196,11 +196,11 @@ class RZ_Quest_OtherTwo : RZ_Questline
 	//------------------------------------------------------------------------------------------------
 	override void OnBegin(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
-		Headline(gm, run.Fill("{sister} at the safehouse in {town} walks up to the lab every morning and asks for her brother by name. They give her a number."), false);
+		Headline(gm, run.Fill("{sister} at the safehouse in {town} walks up to the lab every morning and asks for his brother by name. They give him a number."), false);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The sister's house has to have people in it; the brother's stages need the field station.
+	//! The elder brother's house has to have people in it; the elder brother's stages need the field station.
 	override bool IsReady(RZ_GameModeComponent gm, RZ_QuestRun run, int stage)
 	{
 		if (!RZ_QM_HalcyonScene.HouseLives(gm, run.Flag("house", -1)))
@@ -278,7 +278,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The back room is at the field station: if she's gone (dead, replaced, the station lost), so is
+	//! The back room is at the field station: if he's gone (dead, replaced, the station lost), so is
 	//! the room, and he's a number on the lab's paper.
 	protected int ToRoom(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
@@ -316,7 +316,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 			case OUT_HOME:
 			{
 				run.SetFlag("brother", BRO_HOME);
-				run.Note("{brother} made it home to {sister} before he turned. She was with him at the end.");
+				run.Note("{brother} made it home to {sister} before he turned. He was with him at the end.");
 				break;
 			}
 			case OUT_SAMPLE:
@@ -504,7 +504,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 			return run.Fill("The safehouse in {town} is empty now. Nobody is waiting to hear about {brother}.");
 
 		if ((run.m_iStage == S_ROOM || run.m_iStage == S_BROTHER) && !RZ_QM_HalcyonScene.SameLeader(gm, run, "lead"))
-			return run.Fill("The field station at {lead_place} isn't {lead}'s any more. Whatever was in its back room has gone with her.");
+			return run.Fill("The field station at {lead_place} isn't {lead}'s any more. Whatever was in its back room has gone with him.");
 
 		return super.JournalText(gm, run);
 	}
@@ -519,7 +519,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The sister's council head has a word while it runs: about him until his end is known, then
+	//! The elder brother's council head has a word while it runs: about him until his end is known, then
 	//! about the names.
 	override string OnLeaderTalk(RZ_GameModeComponent gm, RZ_QuestRun run, int playerId, int leaderId)
 	{
@@ -530,16 +530,16 @@ class RZ_Quest_OtherTwo : RZ_Questline
 		if (run.Flag("brother") == 0)
 			return string.Format("%1 nods toward the door. \"{sister} still walks up the hill every morning. If you're going up there, find out what they did with {brother}.\"", l.m_sShort);
 
-		return string.Format("%1 keeps their voice down. \"{sister} has the lab's paper now. She wants every number on it to have a name, not just his.\"", l.m_sShort);
+		return string.Format("%1 keeps their voice down. \"{sister} has the lab's paper now. He wants every number on it to have a name, not just his.\"", l.m_sShort);
 	}
 }
 
 //------------------------------------------------------------------------------------------------
-//! The Other Two's stage missions: the sister's (Haven) contracts, for anyone Known with the Haven
+//! The Other Two's stage missions: the elder brother's (Haven) contracts, for anyone Known with the Haven
 //! or with Halcyon and Hunted by neither.
 class RZ_QM_OtherTwoScene : RZ_QM_HalcyonScene
 {
-	protected int m_iLead = -1;		// the field lead, held while the stage needs her stand-in
+	protected int m_iLead = -1;		// the field lead, held while the stage needs his stand-in
 
 	//------------------------------------------------------------------------------------------------
 	protected void SetSister(int fame, int favor, float seconds)
@@ -575,10 +575,10 @@ class RZ_QM_OtherTwoScene : RZ_QM_HalcyonScene
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The field lead's stand-in at her station, held while the stage runs (-1 if she's gone).
+	//! The field lead's stand-in at his station, held while the stage runs (-1 if he's gone).
 	protected int HoldLead(RZ_GameModeComponent gm)
 	{
-		// Not while another mission has her (its own stand-in is out there)
+		// Not while another mission has him (its own stand-in is out there)
 		RZ_Leader l = SameLeader(gm, Run(gm), "lead");
 		if (!l || l.m_iHeldBy >= 0 || !gm.GetLeaders())
 			return -1;
@@ -871,7 +871,7 @@ class RZ_QM_OtherRoom : RZ_QM_OtherTwoScene
 		}
 
 		Remember(gm, playerId, RZ_EQuestApproach.PERSUADE, "asked the field lead and was refused");
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"No.\" {lead_short} says it kindly. (She lets in people the lab trusts, and doctors it knows.)"));
+		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"No.\" {lead_short} says it kindly. (He lets in people the lab trusts, and doctors it knows.)"));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -946,9 +946,9 @@ class RZ_QM_OtherRoom : RZ_QM_OtherTwoScene
 }
 
 //------------------------------------------------------------------------------------------------
-//! The Other Two, stage 3 (Haven contract): her brother, until the end of the Final stage (long
+//! The Other Two, stage 3 (Haven contract): his brother, until the end of the Final stage (long
 //! enough to walk him home, from when the first player reaches the room). Sit with him (90 s
-//! beside him), walk him home (RZ_Escort to the sister's safehouse; a Nurse buys half as long again),
+//! beside him), walk him home (RZ_Escort to the elder brother's safehouse; a Nurse buys half as long again),
 //! wait with the kit for the turning (90 s beside him: research +1, and he gets up) or end it.
 class RZ_QM_OtherBrother : RZ_QM_OtherTwoScene
 {
@@ -991,12 +991,12 @@ class RZ_QM_OtherBrother : RZ_QM_OtherTwoScene
 		m_vBed = LandPointNear(station, 12, 20);
 		m_vPos = m_vBed;
 		m_iSettlement = gm.FindNearestSettlement(station);
-		int talk = AddClue(QText(gm, "brother"), QFill(gm, "{brother} knows his own name, and yours once you've said it. \"Is {sister} all right? Tell her it wasn't her fault. I volunteered.\" His hands are cold and his eyes keep going to the chair."));
+		int talk = AddClue(QText(gm, "brother"), QFill(gm, "{brother} knows his own name, and yours once you've said it. \"Is {sister} all right? Tell him it wasn't his fault. I volunteered.\" His hands are cold and his eyes keep going to the chair."));
 		string choices = QFill(gm, "Sit with him|Walk him home to {sister}|Wait with the sample kit|End it");
 		m_iBedSpot = AddSpot(m_vBed, RZ_EPuzzleProp.CIVILIAN, OBJ_BROTHER, talk, QFill(gm, "Talk to {brother}"), choices, QFill(gm, "{brother}, in the back room at {lead_place}"));
 		int sheet = AddClue("The clipboard", QFill(gm, "Volunteer {number}. Temperature and pulse every fifteen minutes in a neat hand, and the times getting closer together. At the bottom, a line waiting: \"Moment of turning: ____\". The pen is tied to the chair with string."));
 		AddSpot(LandPointNear(m_vBed, 1.5, 2.5), RZ_EPuzzleProp.CLUE, -1, sheet, "Read the clipboard", "", "");
-		int second = AddClue("The second bed", "A woman in the second bed is counting the ceiling tiles out loud. She has got to forty-one, and she starts again.");
+		int second = AddClue("The second bed", "A man in the second bed is counting the ceiling tiles out loud. He has got to forty-one, and he starts again.");
 		AddSpot(LandPointNear(m_vBed, 3, 5), RZ_EPuzzleProp.CIVILIAN, -1, second, "Look at the second bed", "", "");
 		int third = AddClue("The third bed", "The man in the third bed is asleep, or nearly. The chair beside him has a clipboard on it and nobody in it.");
 		AddSpot(LandPointNear(m_vBed, 3, 5), RZ_EPuzzleProp.CIVILIAN, -1, third, "Look at the third bed", "", "");
@@ -1062,8 +1062,8 @@ class RZ_QM_OtherBrother : RZ_QM_OtherTwoScene
 		{
 			m_Walk.Arrive();
 			int walker = m_Walk.GetFollowed();
-			gm.NotifyPlayer(walker, m_sTitle, QFill(gm, "{sister} is at the gate before you are. She takes him inside and shuts the door, and the safehouse goes very quiet. It's a while before anyone comes out."));
-			Resolve(gm, walker, RZ_EQuestApproach.TALK, RZ_Quest_OtherTwo.OUT_HOME, "walked him home to his sister");
+			gm.NotifyPlayer(walker, m_sTitle, QFill(gm, "{sister} is at the gate before you are. He takes him inside and shuts the door, and the safehouse goes very quiet. It's a while before anyone comes out."));
+			Resolve(gm, walker, RZ_EQuestApproach.TALK, RZ_Quest_OtherTwo.OUT_HOME, "walked him home to his brother");
 			return;
 		}
 
@@ -1230,9 +1230,9 @@ class RZ_QM_OtherBrother : RZ_QM_OtherTwoScene
 }
 
 //------------------------------------------------------------------------------------------------
-//! The Other Two, stage 4 (Haven contract): the field lead at her station (held while it runs) and
-//! the duty officer at the lab. Close the room (persuade), report her, keep quiet (Halcyon Favor)
-//! or sell one of the other two to the Red Hand (Trusted with them). She's gone: the room is too.
+//! The Other Two, stage 4 (Haven contract): the field lead at his station (held while it runs) and
+//! the duty officer at the lab. Close the room (persuade), report him, keep quiet (Halcyon Favor)
+//! or sell one of the other two to the Red Hand (Trusted with them). He's gone: the room is too.
 class RZ_QM_OtherLead : RZ_QM_OtherTwoScene
 {
 	//------------------------------------------------------------------------------------------------
@@ -1267,8 +1267,8 @@ class RZ_QM_OtherLead : RZ_QM_OtherTwoScene
 		RZ_Leader l = gm.GetLeaders().Get(m_iLead);
 		m_vPos = NearSeat(l.m_vPos);
 		m_iSettlement = gm.FindNearestSettlement(l.m_vPos);
-		int talk = AddClue(l.m_sName, string.Format("%1 has the three clipboards in a stack on her desk. \"Somebody has to be there at the moment of turning, or the other two die for nothing. I chose to be the somebody. What would you have me do?\"", l.m_sShort));
-		string choices = string.Format("Ask her to close the room|Say nothing (%1 Halcyon Favor)|Sell one to the Red Hand (%2 Red Hand Favor)", KEEP_FAVOR, SOLD_FAVOR);
+		int talk = AddClue(l.m_sName, string.Format("%1 has the three clipboards in a stack on his desk. \"Somebody has to be there at the moment of turning, or the other two die for nothing. I chose to be the somebody. What would you have me do?\"", l.m_sShort));
+		string choices = string.Format("Ask him to close the room|Say nothing (%1 Halcyon Favor)|Sell one to the Red Hand (%2 Red Hand Favor)", KEEP_FAVOR, SOLD_FAVOR);
 		AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_LEAD, talk, "Talk to " + l.m_sShort, choices, string.Format("%1 at the field station in %2", l.m_sShort, l.m_sPlace));
 
 		vector lab = gm.GetLabPosition();
@@ -1276,7 +1276,7 @@ class RZ_QM_OtherLead : RZ_QM_OtherTwoScene
 		AddSpot(LandPointNear(lab, 6, 12), RZ_EPuzzleProp.CIVILIAN, OBJ_DUTY, duty, "Talk to the duty officer", "Report the back room to the director", "the duty officer at the lab");
 
 		m_sTitle = "The Other Two: the field lead";
-		m_sBrief = QFill(gm, "{lead} runs the back room at {lead_place}. Ask her to close it, tell the director about it, or keep it to yourself. Whatever you choose, {sister} will want to know.");
+		m_sBrief = QFill(gm, "{lead} runs the back room at {lead_place}. Ask him to close it, tell the director about it, or keep it to yourself. Whatever you choose, {sister} will want to know.");
 		m_sObjective = QFill(gm, "Decide what to do about {lead}'s back room at {lead_place}.");
 		return true;
 	}
@@ -1284,7 +1284,7 @@ class RZ_QM_OtherLead : RZ_QM_OtherTwoScene
 	//------------------------------------------------------------------------------------------------
 	override protected void OnScene(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		// She's gone (killed, replaced, the station lost): the room went with her
+		// He's gone (killed, replaced, the station lost): the room went with him
 		RZ_Leader l = gm.GetLeaders().Get(m_iLead);
 		if (!l || !l.IsPresent())
 			Resolve(gm, -1, RZ_EQuestApproach.NONE, RZ_Quest_OtherTwo.OUT_GONE, "", true);
@@ -1303,7 +1303,7 @@ class RZ_QM_OtherLead : RZ_QM_OtherTwoScene
 			if (gm.GetLeaders() && m_iLead >= 0)
 				gm.GetLeaders().Remember(m_iLead, playerId, RZ_Leaders.MEM_CROSSED);
 
-			Resolve(gm, playerId, RZ_EQuestApproach.BETRAY, RZ_Quest_OtherTwo.OUT_REPORTED, "reported her to the director");
+			Resolve(gm, playerId, RZ_EQuestApproach.BETRAY, RZ_Quest_OtherTwo.OUT_REPORTED, "reported him to the director");
 			return;
 		}
 
@@ -1316,19 +1316,19 @@ class RZ_QM_OtherLead : RZ_QM_OtherTwoScene
 			{
 				if (!TryPersuade(gm, playerId, RZ_EFaction.INSTITUTE, 2, "doctor"))
 				{
-					Remember(gm, playerId, RZ_EQuestApproach.PERSUADE, "asked her to close it and was refused");
-					gm.NotifyPlayer(playerId, m_sTitle, "\"You don't know the work.\" She doesn't raise her voice. (She'd listen to someone the lab trusts, or to a doctor.)");
+					Remember(gm, playerId, RZ_EQuestApproach.PERSUADE, "asked him to close it and was refused");
+					gm.NotifyPlayer(playerId, m_sTitle, "\"You don't know the work.\" He doesn't raise his voice. (He'd listen to someone the lab trusts, or to a doctor.)");
 					return;
 				}
 
-				gm.NotifyPlayer(playerId, m_sTitle, "She looks at the clipboards for a long time. Then she takes the pen off its string and puts it in her pocket. \"All right. Sit with them, then. Somebody should.\"");
-				Resolve(gm, playerId, RZ_EQuestApproach.PERSUADE, RZ_Quest_OtherTwo.OUT_CLOSED, "talked her into closing the room");
+				gm.NotifyPlayer(playerId, m_sTitle, "He looks at the clipboards for a long time. Then he takes the pen off its string and puts it in his pocket. \"All right. Sit with them, then. Somebody should.\"");
+				Resolve(gm, playerId, RZ_EQuestApproach.PERSUADE, RZ_Quest_OtherTwo.OUT_CLOSED, "talked him into closing the room");
 				return;
 			}
 			case 1:
 			{
 				if (run)
-					run.Reward(gm, playerId, RZ_EFaction.INSTITUTE, 0, KEEP_FAVOR, "\"Thank you for understanding.\" She means it, which is the worst part.");
+					run.Reward(gm, playerId, RZ_EFaction.INSTITUTE, 0, KEEP_FAVOR, "\"Thank you for understanding.\" He means it, which is the worst part.");
 
 				Resolve(gm, playerId, RZ_EQuestApproach.BRIBE, RZ_Quest_OtherTwo.OUT_KEPT, "kept quiet about the room", false);
 				return;
@@ -1360,10 +1360,10 @@ class RZ_QM_OtherLead : RZ_QM_OtherTwoScene
 
 //------------------------------------------------------------------------------------------------
 //! The Other Two, stage 5 (Haven contract): names. The paper has the house's other volunteer as a
-//! number. At the sister's safehouse, the trial list by the door says who went up that day and the
+//! number. At the elder brother's safehouse, the trial list by the door says who went up that day and the
 //! man who walked them up says who came back (The Author List's deduction; an Elder reads the
-//! council's pencil). The sister takes the name (wrong: five minutes; twice: numbers, then). Then
-//! the duty officer at the lab (for the director: Trusted, or Known with the sister there after he
+//! council's pencil). The elder brother takes the name (wrong: five minutes; twice: numbers, then). Then
+//! the duty officer at the lab (for the director: Trusted, or Known with the elder brother there after he
 //! came home), the Haven's council clerk, or let them stay numbers.
 class RZ_QM_OtherNames : RZ_QM_OtherTwoScene
 {
@@ -1472,8 +1472,8 @@ class RZ_QM_OtherNames : RZ_QM_OtherTwoScene
 		AddSpot(LandPointNear(h.m_vPos, 4, 8), RZ_EPuzzleProp.CIVILIAN, -1, m_iHelperClue, "Talk to " + helper, "", "");
 		m_iSisterSpot = AddSpot(LandPointNear(h.m_vPos, 4, 8), RZ_EPuzzleProp.CIVILIAN, OBJ_SISTER, sister, QFill(gm, "Talk to {sister}"), "", QFill(gm, "{sister} at the safehouse in {town}"));
 
-		// Where the names can go, once she has them
-		int duty = AddClue("The duty officer", QFill(gm, "The duty officer at the lab. \"Names for {director}? She'll see you if she knows you.\""));
+		// Where the names can go, once he has them
+		int duty = AddClue("The duty officer", QFill(gm, "The duty officer at the lab. \"Names for {director}? He'll see you if he knows you.\""));
 		m_iLabSpot = AddSpot(LandPointNear(gm.GetLabPosition(), 6, 12), RZ_EPuzzleProp.CIVILIAN, OBJ_DUTY, duty, "Talk to the duty officer", "Bring the names to the director", "the duty officer at the lab");
 		SetSpotOn(m_iLabSpot, false);
 		RZ_Leader chair = Top(gm, RZ_EFaction.SURVIVORS);
@@ -1484,10 +1484,10 @@ class RZ_QM_OtherNames : RZ_QM_OtherTwoScene
 			SetSpotOn(m_iHavenSpot, false);
 		}
 
-		// He came home: she'll walk up the hill with you, and stand beside you when the names go in
+		// He came home: he'll walk up the hill with you, and stand beside you when the names go in
 		if (run.Flag("brother") == RZ_Quest_OtherTwo.BRO_HOME)
 		{
-			int sisterLab = AddClue(QText(gm, "sister"), QFill(gm, "{sister} came up the hill with the names. She's wearing his coat."));
+			int sisterLab = AddClue(QText(gm, "sister"), QFill(gm, "{sister} came up the hill with the names. He's wearing his coat."));
 			m_iSisterLabSpot = AddSpot(LandPointNear(gm.GetLabPosition(), 6, 12), RZ_EPuzzleProp.CIVILIAN, -1, sisterLab, QFill(gm, "Talk to {sister}"), "", "");
 			SetSpotOn(m_iSisterLabSpot, false);
 		}
@@ -1506,7 +1506,7 @@ class RZ_QM_OtherNames : RZ_QM_OtherTwoScene
 		RZ_NoteText.DistinctFirstNames(rng, 4, firsts);
 		while (firsts.Count() < 4)
 		{
-			firsts.Insert("Dana");
+			firsts.Insert("Dalibor");
 		}
 
 		array<string> initials = {};
@@ -1600,7 +1600,7 @@ class RZ_QM_OtherNames : RZ_QM_OtherTwoScene
 		if (objIdx == OBJ_CLERK)
 		{
 			RZ_QuestApproach.SideWith(gm, playerId, RZ_EFaction.SURVIVORS, RZ_EFaction.INSTITUTE, 10, 5);
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "The chair reads them at supper, every one, slowly. When she gets to {brother_full} somebody at the back says \"Here,\" the way they used to at school."));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "The chair reads them at supper, every one, slowly. When he gets to {brother_full} somebody at the back says \"Here,\" the way they used to at school."));
 			Resolve(gm, playerId, RZ_EQuestApproach.SIDE, RZ_Quest_OtherTwo.OUT_TO_HAVEN, "gave the names to the Haven", true);
 			return;
 		}
@@ -1608,16 +1608,16 @@ class RZ_QM_OtherNames : RZ_QM_OtherTwoScene
 		if (objIdx != OBJ_DUTY)
 			return;
 
-		// Trusted with the lab; or Known, with the sister beside you once he came home
+		// Trusted with the lab; or Known, with the elder brother beside you once he came home
 		bool sisterThere = run && run.Flag("brother") == RZ_Quest_OtherTwo.BRO_HOME && Rank(gm, playerId, RZ_EFaction.INSTITUTE) >= 1;
 		if (Rank(gm, playerId, RZ_EFaction.INSTITUTE) < 2 && !sisterThere)
 		{
 			Remember(gm, playerId, RZ_EQuestApproach.TALK, "was turned away at the lab");
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"{director} doesn't see people she doesn't know.\" (She'll see someone the lab trusts, or someone it knows with the family beside them.)"));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"{director} doesn't see people he doesn't know.\" (He'll see someone the lab trusts, or someone it knows with the family beside them.)"));
 			return;
 		}
 
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{director} reads the names herself. Then she takes the paper, and a pen, and writes them over the numbers, in ink, one at a time. It takes a long time. Nobody leaves."));
+		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{director} reads the names himself. Then he takes the paper, and a pen, and writes them over the numbers, in ink, one at a time. It takes a long time. Nobody leaves."));
 		Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_OtherTwo.OUT_NAMED, "brought the names to the director");
 	}
 
@@ -1659,13 +1659,13 @@ class RZ_QM_OtherNames : RZ_QM_OtherTwoScene
 		m_iWrong++;
 		if (m_iWrong >= 2)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{sister} shakes her head. \"I won't write a guess next to his number. Numbers, then.\""));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{sister} shakes his head. \"I won't write a guess next to his number. Numbers, then.\""));
 			Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_OtherTwo.OUT_NUMBERS, "couldn't put a name to the number", false);
 			return;
 		}
 
 		LockOut(300);
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{sister} checks it against the list and shakes her head. \"That one came back. Ask again. I'll be here.\""));
+		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{sister} checks it against the list and shakes his head. \"That one came back. Ask again. I'll be here.\""));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1675,7 +1675,7 @@ class RZ_QM_OtherNames : RZ_QM_OtherTwoScene
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The safehouse with the list; once she has the names, the lab's duty officer (the director's
+	//! The safehouse with the list; once he has the names, the lab's duty officer (the director's
 	//! is the ask; the Haven's chair is the other door).
 	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
 	{

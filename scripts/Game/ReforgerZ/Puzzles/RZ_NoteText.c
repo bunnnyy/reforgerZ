@@ -98,17 +98,17 @@ class RZ_Rng
 class RZ_NoteText
 {
 	//------------------------------------------------------------------------------------------------
+	//! Everyone in the Zone is a man (the stack has only male bodies, docs/MISSION_RULES.md rule 10),
+	//! and a note's name may be met later, so every first name is a man's.
 	static string FirstName(RZ_Rng rng)
 	{
-		array<string> names = {"Marta", "Pavel", "Henri", "Jana", "Radim", "Lucie", "Emil", "Ruth", "Anton", "Irena",
-			"Viktor", "Elise", "Karel", "Nadia", "Oskar", "Vera", "Milan", "Sabine", "Jakub", "Ilse", "Bruno", "Dana", "Leon", "Agata"};
-		return rng.Pick(names);
+		return ManName(rng);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A man's first name, for someone who stands in the world: the base game's people are all men
 	//! (its identity list has no women, SCR_EIdentityGender), so a body's name matches it
-	//! (docs/MISSION_RULES.md, rule 10). FirstName stays for people nobody meets (a note's writer).
+	//! (docs/MISSION_RULES.md, rule 10). FirstName is the same list.
 	static string ManName(RZ_Rng rng)
 	{
 		array<string> names = {"Pavel", "Henri", "Radim", "Emil", "Anton", "Viktor", "Karel", "Oskar", "Milan", "Jakub",

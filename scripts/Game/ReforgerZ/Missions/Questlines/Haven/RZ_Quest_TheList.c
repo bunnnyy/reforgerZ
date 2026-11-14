@@ -158,7 +158,7 @@ class RZ_Quest_TheList : RZ_Questline
 		run.SetText("farm", fs.m_sName);
 		run.SetText("farmdir", RZ_Compass.DirectionWord(RZ_Compass.Bearing(h.m_vPos, fs.m_vCenter)));
 		run.SetText("farmwhere", "a farm out past the last village");
-		run.SetText("wife", RZ_HavenQuest.WomanName(rng));
+		run.SetText("wife", RZ_HavenQuest.ManName(rng));
 		run.SetText("husband", RZ_HavenQuest.ManName(rng));
 		run.SetFlag("seed", rng.Int(1, 1000000));
 		if (rng.Chance(0.5))
@@ -1327,7 +1327,7 @@ class RZ_QM_ListPattern : RZ_HavenQM
 		RZ_NoteText.DistinctFirstNames(rng, 20, names);
 		while (names.Count() < 20)
 		{
-			names.Insert("Dana");
+			names.Insert("Dalibor");
 		}
 
 		// The farm's day on every copy, adding up to ten; one or two others per copy

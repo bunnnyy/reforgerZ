@@ -120,7 +120,7 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 		run.SetText("walkhouse", houses.Get(walkHouse).m_sName);
 		run.SetText("nursehouse", houses.Get(nurseHouse).m_sName);
 		run.SetText("walker", walker);
-		run.SetText("nurse", RZ_HavenQuest.WomanName(rng));
+		run.SetText("nurse", RZ_HavenQuest.ManName(rng));
 		run.SetText("man", man);
 		run.SetText("next", RZ_HavenQuest.ManName(rng));
 		run.SetText("lab", LabName(gm));

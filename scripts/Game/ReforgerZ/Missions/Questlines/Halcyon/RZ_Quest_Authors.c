@@ -6,12 +6,12 @@
 //! moves the stand, and pays its endings only after the stand is over (so after the winner is
 //! chosen, when the stand is won).
 //!
-//! 1. The director's letter (mission): carry her terms from the lab to Bastion's commanding
+//! 1. The director's letter (mission): carry his terms from the lab to Bastion's commanding
 //!    officer. Read it first, and leave a copy on the field lead's desk unseen. Skipped when HC1
 //!    ended in Bastion's file: Bastion already has terms.
 //! 2. The field lead's plan (mission): the method, packed cold, to a Haven clinic before it's
-//!    missed (20 minutes; Nurse or Doctor 30), report her to the director, or sell it to the Red
-//!    Hand (Sell the Formula). Skipped if she's no longer in her chair.
+//!    missed (20 minutes; Nurse or Doctor 30), report him to the director, or sell it to the Red
+//!    Hand (Sell the Formula). Skipped if he's no longer in his chair.
 //! 3. The CO's answer (wait one session, then a mission at Bastion's stronghold): agree for the
 //!    director, bargain (Trusted with both: two guards at the gate, no key), or refuse (+5 Bastion
 //!    Infamy).
@@ -92,11 +92,11 @@ class RZ_Quest_Authors : RZ_Questline
 		RZ_QuestStage start = WaitStage(S_START, "The director's letter", "Research is past half. {director} would trade what the lab knows for Bastion's guns at the final stand.");
 		start.Wait(0);
 
-		RZ_QuestStage letter = MissionStage(S_LETTER, "The director's letter", "Research is past half. {director} would trade what the lab knows for Bastion's guns at the final stand. Carry her terms to {co}.");
-		letter.GiveUp(4, "Nobody carried the director's letter. Whatever her terms were, Bastion never read them.");
+		RZ_QuestStage letter = MissionStage(S_LETTER, "The director's letter", "Research is past half. {director} would trade what the lab knows for Bastion's guns at the final stand. Carry his terms to {co}.");
+		letter.GiveUp(4, "Nobody carried the director's letter. Whatever his terms were, Bastion never read them.");
 		letter.Visits(2);
 
-		RZ_QuestStage plan = MissionStage(S_PLAN, "The field lead's plan", "{lead} at {lead_place} wants the method at a Haven clinic first, before Bastion locks it in a crate. She has it packed cold for the clinic at the safehouse in {clinic}.");
+		RZ_QuestStage plan = MissionStage(S_PLAN, "The field lead's plan", "{lead} at {lead_place} wants the method at a Haven clinic first, before Bastion locks it in a crate. He has it packed cold for the clinic at the safehouse in {clinic}.");
 		plan.GiveUp(4, "{lead}'s cold case stayed on the field station's desk until it was warm, and the method in it was no use to anyone.");
 
 		RZ_QuestStage wait = WaitStage(S_ANSWER_WAIT, "The CO's answer", "{co} has the director's terms. Bastion takes its time.");
@@ -181,7 +181,7 @@ class RZ_Quest_Authors : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The director voices her stages; the field lead hers, while she's in her chair.
+	//! The director voices his stages; the field lead his, while he's in his chair.
 	static void Voice(RZ_GameModeComponent gm, RZ_Mission m, bool byLead)
 	{
 		if (!gm.GetQuestlines())
@@ -205,7 +205,7 @@ class RZ_Quest_Authors : RZ_Questline
 	//------------------------------------------------------------------------------------------------
 	override void OnBegin(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
-		Headline(gm, run.Fill("{director} has started signing her letters \"for the authors\". Nobody at the lab will say who the authors are."), false);
+		Headline(gm, run.Fill("{director} has started signing his letters \"for the authors\". Nobody at the lab will say who the authors are."), false);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -342,7 +342,7 @@ class RZ_Quest_Authors : RZ_Questline
 
 				run.Note("{co} has the director's terms: the method for Bastion alone, in return for guards through the final stand.");
 				if (run.Flag("copy") == 1)
-					run.Note("{lead} has a copy of the letter. She knows what the director is selling.");
+					run.Note("{lead} has a copy of the letter. He knows what the director is selling.");
 
 				return ToPlan(gm, run);
 			}
@@ -412,7 +412,7 @@ class RZ_Quest_Authors : RZ_Questline
 		if (RZ_QM_HalcyonScene.SameLeader(gm, run, "lead"))
 			return S_PLAN;
 
-		run.Note("{lead} isn't at {lead_place} any more. Her plan for the Haven's clinics went with her.");
+		run.Note("{lead} isn't at {lead_place} any more. His plan for the Haven's clinics went with him.");
 		return S_ANSWER_WAIT;
 	}
 
@@ -524,7 +524,7 @@ class RZ_Quest_Authors : RZ_Questline
 		}
 		else
 		{
-			run.Note("The Red Hand's offer went to {director}. She refused it without looking up.");
+			run.Note("The Red Hand's offer went to {director}. He refused it without looking up.");
 		}
 
 		return S_READY;
@@ -732,7 +732,7 @@ class RZ_Quest_Authors : RZ_Questline
 			return run.Fill("The final stand has begun. Whatever was being settled can wait, if the lab survives it.");
 
 		if (run.m_iStage == S_PLAN && !RZ_QM_HalcyonScene.SameLeader(gm, run, "lead"))
-			return run.Fill("{lead} isn't at {lead_place} any more. Her plan went with her.");
+			return run.Fill("{lead} isn't at {lead_place} any more. His plan went with him.");
 
 		if (run.m_iStage == S_READY && cure.m_fProgress < CURE_READY)
 			return run.Fill(string.Format("{director} will want the lab ready for the final push once research is past three quarters. It's at %1 percent.", pct));
@@ -777,7 +777,7 @@ class RZ_Quest_Authors : RZ_Questline
 //------------------------------------------------------------------------------------------------
 //! Authors, stage 1 (Halcyon contract, Trusted, cure 50%+): the director's letter. The duty officer
 //! at the lab hands it over (sealed, or read on the way); Bastion's adjutant takes it from whoever
-//! carries it. Read, it can be copied onto the field lead's desk at her station, unseen.
+//! carries it. Read, it can be copied onto the field lead's desk at his station, unseen.
 class RZ_QM_AuthorsLetter : RZ_QM_HalcyonScene
 {
 	protected int m_iDutySpot = -1;
@@ -814,7 +814,7 @@ class RZ_QM_AuthorsLetter : RZ_QM_HalcyonScene
 		vector lab = gm.GetLabPosition();
 		m_vPos = LandPointNear(lab, 6, 12);
 		m_iSettlement = gm.GetLabSettlement();
-		int duty = AddClue("The duty officer", QFill(gm, "The duty officer has an envelope with {director}'s own tape across the flap. \"For {co}, by hand. She said you'd know better than to open it.\""));
+		int duty = AddClue("The duty officer", QFill(gm, "The duty officer has an envelope with {director}'s own tape across the flap. \"For {co}, by hand. He said you'd know better than to open it.\""));
 		m_iDutySpot = AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_DUTY, duty, "Talk to the duty officer", "Take the sealed letter|Take it, and read it on the way", "the duty officer at the lab");
 		m_iLetterClue = AddClue("The director's letter", QFill(gm, "{director} to {co}. \"The method, written out, for Bastion alone. In return: Bastion's guns on the lab through the final stand, and nobody else's near it. Nobody else needs to know this letter exists.\""));
 
@@ -826,7 +826,7 @@ class RZ_QM_AuthorsLetter : RZ_QM_HalcyonScene
 		{
 			vector desk = LandPointNear(lead.m_vPos, 8, 14);
 			int deskClue = AddClue("A desk", QFill(gm, "{lead_short}'s desk at the field station: three notebooks, a cold cup, and a list of Haven clinics with ticks next to them."));
-			m_iDeskSpot = AddSpot(desk, RZ_EPuzzleProp.OBJECT, OBJ_DESK, deskClue, "Look at the desk", "", QFill(gm, "{lead_short}'s desk at {lead_place}"), "Leave her a copy of the letter");
+			m_iDeskSpot = AddSpot(desk, RZ_EPuzzleProp.OBJECT, OBJ_DESK, deskClue, "Look at the desk", "", QFill(gm, "{lead_short}'s desk at {lead_place}"), "Leave him a copy of the letter");
 			m_Quiet.Watch(lead.m_vPos, 70);
 		}
 
@@ -869,7 +869,7 @@ class RZ_QM_AuthorsLetter : RZ_QM_HalcyonScene
 
 		string text = "The adjutant takes it in to the CO, and comes back without it. \"The CO will answer the lab. In good time.\"";
 		if (HasBonus(gm, playerId))
-			text = "The adjutant sees a soldier and takes you straight in. The CO reads it twice, the second time slowly. \"Tell your director she'll have an answer.\"";
+			text = "The adjutant sees a soldier and takes you straight in. The CO reads it twice, the second time slowly. \"Tell your director he'll have an answer.\"";
 
 		gm.NotifyPlayer(playerId, m_sTitle, text);
 		Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_Authors.OUT_DELIVERED, "carried the director's letter to Bastion");
@@ -893,7 +893,7 @@ class RZ_QM_AuthorsLetter : RZ_QM_HalcyonScene
 
 		if (!IsHolder(playerId))
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "You've nothing to leave her. The letter is at the lab, or with whoever took it.");
+			gm.NotifyPlayer(playerId, m_sTitle, "You've nothing to leave him. The letter is at the lab, or with whoever took it.");
 			return;
 		}
 
@@ -913,7 +913,7 @@ class RZ_QM_AuthorsLetter : RZ_QM_HalcyonScene
 
 		SetQFlag(gm, "copy", 1);
 		Remember(gm, playerId, RZ_EQuestApproach.SNEAK, "left the field lead a copy of the letter");
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You copy it out under her lamp and leave it in her top notebook. {lead_short} will find it in the morning."));
+		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You copy it out under his lamp and leave it in his top notebook. {lead_short} will find it in the morning."));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -941,9 +941,9 @@ class RZ_QM_AuthorsLetter : RZ_QM_HalcyonScene
 }
 
 //------------------------------------------------------------------------------------------------
-//! Authors, stage 2 (Halcyon contract from the field lead, Trusted, cure 50%+): her cold case with
+//! Authors, stage 2 (Halcyon contract from the field lead, Trusted, cure 50%+): his cold case with
 //! the method. Carry it to the medic at the clinic before it warms (20 minutes from pickup; Nurse
-//! or Doctor 30), report her at the lab, or sell it to a Red Hand buyer (Sell the Formula).
+//! or Doctor 30), report him at the lab, or sell it to a Red Hand buyer (Sell the Formula).
 class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 {
 	protected int m_iLead = -1;
@@ -979,7 +979,7 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 		RZ_QuestRun run = Run(gm);
 		RZ_Leader l = SameLeader(gm, run, "lead");
 
-		// The clinic's house emptied since the start: she has packed it for another
+		// The clinic's house emptied since the start: he has packed it for another
 		RZ_Safehouse clinic;
 		if (run && !HouseLives(gm, run.Flag("clinic", -1)))
 		{
@@ -994,7 +994,7 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 		if (run)
 			clinic = RZ_Questline.GetHouse(gm, run.Flag("clinic", -1));
 
-		// Not while another mission has her (its own stand-in is out there)
+		// Not while another mission has him (its own stand-in is out there)
 		if (!l || l.m_iHeldBy >= 0 || !clinic || !gm.GetLeaders())
 			return false;
 
@@ -1005,7 +1005,7 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 		int talk = AddClue(l.m_sName, QFill(gm, "{lead_short} has a cold case on the desk, sealed with the lead's own initials. \"The method, every step. If the Haven's clinics have it first, nobody can lock it in a crate. It won't stay cold long, and the lab will miss it by tonight.\""));
 		m_iLeadSpot = AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_LEAD, talk, "Talk to " + l.m_sShort, "Take the cold case", string.Format("%1 at the field station in %2", l.m_sShort, l.m_sPlace));
 
-		int medic = AddClue("The clinic's medic", "The medic at the safehouse clinic has cleared a shelf in the cold box and is pretending she hasn't.");
+		int medic = AddClue("The clinic's medic", "The medic at the safehouse clinic has cleared a shelf in the cold box and is pretending he hasn't.");
 		m_iClinicSpot = AddSpot(LandPointNear(clinic.m_vPos, 4, 8), RZ_EPuzzleProp.CIVILIAN, OBJ_CLINIC, medic, "Talk to the medic", "Hand over the method", "the clinic at the safehouse in " + clinic.m_sName);
 
 		int duty = AddClue("The duty officer", "The duty officer at the lab writes down everything you say, and the time.");
@@ -1063,7 +1063,7 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 				SetHolder(playerId);
 				SetSpotLabels(m_iLeadSpot, "");
 				m_fCold = COLD_SECONDS;
-				string text = "The clock starts when the seal breaks: twenty minutes, she says, before it's no use to anyone.";
+				string text = "The clock starts when the seal breaks: twenty minutes, he says, before it's no use to anyone.";
 				if (HasBonus(gm, playerId))
 				{
 					m_fCold = COLD_BONUS_SECONDS;
@@ -1159,7 +1159,7 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The field lead; once someone has the cold case, the clinic she packed it for.
+	//! The field lead; once someone has the cold case, the clinic he packed it for.
 	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
 	{
 		if (HasHolder())
@@ -1214,7 +1214,7 @@ class RZ_QM_AuthorsAnswer : RZ_QM_HalcyonScene
 		m_iSettlement = gm.FindNearestSettlement(co.m_vPos);
 		string demand = "\"A locked crate for the batch. A key, in my pocket. A Bastion guard on the clean room through the stand.\" The adjutant reads it out flat, the way he reads everything. \"The CO considers that generous.\"";
 		if (QFlag(gm, "early_terms") == 1)
-			demand = "The CO has read the dead woman's notebook, and knows what the lab sat on for three weeks. The terms: a locked crate, a key in the CO's own pocket, and a Bastion guard on the clean room.";
+			demand = "The CO has read the dead man's notebook, and knows what the lab sat on for three weeks. The terms: a locked crate, a key in the CO's own pocket, and a Bastion guard on the clean room.";
 
 		int talk = AddClue("The adjutant", demand);
 		AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_ADJUTANT, talk, "Talk to the adjutant", "Agree, for the director|Bargain: two guards at the gate, no key|Refuse, for the lab", "the commanding officer's adjutant");

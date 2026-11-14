@@ -287,13 +287,6 @@ class RZ_HavenQuest
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static string WomanName(RZ_Rng rng)
-	{
-		array<string> names = {"Marta", "Jana", "Lucie", "Ruth", "Irena", "Elise", "Nadia", "Vera", "Sabine", "Ilse", "Dana", "Agata"};
-		return rng.Pick(names);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! Dark now, or the clock isn't known (then night-only approaches are never shut).
 	static bool IsDark()
 	{

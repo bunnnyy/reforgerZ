@@ -145,7 +145,7 @@ class RZ_Quest_TheBook : RZ_Questline
 		run.SetText("thief_short", names[0]);
 		run.SetText("inno1", names[1]);
 		run.SetText("inno2", names[2]);
-		run.SetText("sister", RZ_RedHandQuest.WomanName(rng));
+		run.SetText("sister", RZ_NoteText.ManName(rng));
 		run.SetFlag("turned", -1);
 		CountCutDose(gm, run);
 		run.SetPlace(boss.m_vPos, boss.m_sPlace);

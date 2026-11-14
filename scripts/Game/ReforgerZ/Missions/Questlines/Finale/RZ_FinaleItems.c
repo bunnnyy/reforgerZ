@@ -1,4 +1,4 @@
-//! The finale's items (docs/FINALE.md, "Items and people"): her bags, the box, a tray, the pan's
+//! The finale's items (docs/FINALE.md, "Items and people"): his bags, the box, a tray, the pan's
 //! case, the vials, the specimen case and the like, carried as data by one identity. Each keeps its
 //! route, its holder or the place it lies, its cold clock (seconds out of the cold) and its chain of
 //! carriers (saved). They drop where their carrier dies (the robbed-truck rule) and are picked up by
@@ -130,7 +130,7 @@ class RZ_FinaleItems
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Hands in up to `count` of this identity's `kind` items. anyRoute: a crossing (her tube for the
+	//! Hands in up to `count` of this identity's `kind` items. anyRoute: a crossing (his tube for the
 	//! Haven, any one unit for the Independent): an item of any route counts. Returns how many.
 	int HandIn(string ident, string kind, int route, int count, bool anyRoute = false)
 	{
@@ -306,7 +306,7 @@ class RZ_FinaleItems
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "a bag of her blood, the box" for what this identity carries (route -1: any).
+	//! "a bag of his blood, the box" for what this identity carries (route -1: any).
 	string CarriedText(string ident, int route)
 	{
 		string s = "";

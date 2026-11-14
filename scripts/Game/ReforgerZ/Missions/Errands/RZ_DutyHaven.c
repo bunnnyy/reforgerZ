@@ -200,7 +200,7 @@ class RZ_DutyHaven
 		{
 			RZ_DutyScript.T("toys", "A biscuit tin, a hand's depth down. A lead soldier, three marbles, and a drawing of a house with too many windows.", RZ_DutyBeat.AT_NEAR);
 			RZ_DutyScript.O("Take it in to the children", "The tin goes round the benches. Nobody claims it. Everybody wants the soldier.", "morale+ regard+");
-			RZ_DutyScript.O("Put it back where it was", "Back in the ground, and the soil pressed down. It was put there to be found by one person.", "later", "", "Someone dug up a tin in the garden and put it back. A child told me. She won't say how she knows what was in it.");
+			RZ_DutyScript.O("Put it back where it was", "Back in the ground, and the soil pressed down. It was put there to be found by one person.", "later", "", "Someone dug up a tin in the garden and put it back. A child told me. He won't say how he knows what was in it.");
 		}
 
 		RZ_DutyScript.G("frost", dusk);
@@ -274,9 +274,9 @@ class RZ_DutyHaven
 			RZ_DutyScript.O(string.Format("Chalk the %1 door", Ord(d)), "A cross and the date, in chalk, at eye height.", code + " write", "", "", told);
 		}
 
-		RZ_DutyScript.T("face", "As you turn to go, a face at the glass of the door you chalked. A woman. She shakes her head, slowly. Not yet.", RZ_DutyBeat.AT_SAME, "found");
+		RZ_DutyScript.T("face", "As you turn to go, a face at the glass of the door you chalked. A man. He shakes his head, slowly. Not yet.", RZ_DutyBeat.AT_SAME, "found");
 		RZ_DutyScript.O("Leave the chalk, and tell the house", "The chalk stays. The house will come tomorrow, with bread, and without rifles.", "local", "who was behind the chalked door", "You chalked us. I was angry for a day. Then they came with bread.");
-		RZ_DutyScript.O("Rub it out, and say nothing", "Your sleeve takes the cross off the door. She puts a hand flat on the glass, and is gone.", "shady1 local later", "who was behind the door you didn't chalk", "You rubbed the chalk off. We'll come in when we can stand to. I'll know you when we do.");
+		RZ_DutyScript.O("Rub it out, and say nothing", "Your sleeve takes the cross off the door. He puts a hand flat on the glass, and is gone.", "shady1 local later", "who was behind the door you didn't chalk", "You rubbed the chalk off. We'll come in when we can stand to. I'll know you when we do.");
 	}
 
 	// ================================================================ The roll call (worked out)
@@ -348,34 +348,34 @@ class RZ_DutyHaven
 	{
 		array<ref RZ_DutyBeat> picked = {};
 		RZ_DutyScript.Pool();
-		Swap("ring", "A woman lays a wedding ring on the cloth. Two tins, she says. She doesn't look at it.",
-			"Worn thin on the palm side. Twenty years of wearing, at least.", "It's mine to sell, she says. He'd have said sell it. He said it about everything.", "They're for the boy next door to her, the one whose mother can't get up.",
-			2, "The ring for two tins. She takes them without counting.", "You push it back to her. She closes her hand on it and stands a while.", "Two tins, and she keeps the ring on a promise. She says nothing. She'll keep the promise.",
-			"who sold her ring at the swap table", "You gave me the tins and left me the ring. I wear it on a string, where nobody asks.");
+		Swap("ring", "A man lays a wedding ring on the cloth. Two tins, he says. He doesn't look at it.",
+			"Worn thin on the palm side. Twenty years of wearing, at least.", "It's mine to sell, he says. He'd have said sell it. He said it about everything.", "They're for the boy next door to him, the one whose father can't get up.",
+			2, "The ring for two tins. He takes them without counting.", "You push it back to him. He closes his hand on it and stands a while.", "Two tins, and he keeps the ring on a promise. He says nothing. He'll keep the promise.",
+			"who sold his ring at the swap table", "You gave me the tins and left me the ring. I wear it on a string, where nobody asks.");
 		Swap("watch", "A child, seven or eight, puts a man's watch on the cloth with both hands. He wants bread.",
-			"Heavy, good, still wound. A name scratched inside the back. Not a child's name.", "It was my dad's, he says. Then, quieter: it was on the man by the bridge.", "It's for him and his sister. He has to be told twice that you asked.",
+			"Heavy, good, still wound. A name scratched inside the back. Not a child's name.", "It was my dad's, he says. Then, quieter: it was on the man by the bridge.", "It's for him and his brother. He has to be told twice that you asked.",
 			2, "Bread for a dead man's watch. He runs before you can change your mind.", "You keep the watch back. He stares at the bread, and goes.", "Bread for nothing, and the watch to the clerk for the book. He doesn't understand it and takes it anyway.",
-			"who brought a watch to the swap table", "You gave me the bread and I didn't have to give the watch. My sister says you're soft. She ate half.");
+			"who brought a watch to the swap table", "You gave me the bread and I didn't have to give the watch. My brother says you're soft. He ate half.");
 		Swap("coat", "A man takes his coat off and lays it on the cloth. It's freezing. A tin of meat, he says.",
 			"A good coat. Still warm from him. His shirt under it is two shirts.", "I've another at home, he says. He hasn't.", "For himself. He hasn't eaten since the day before yesterday, and says so as if it were someone else.",
 			2, "The coat for the tin. He eats it standing at the table, shaking.", "You push the coat back. He puts it on, and it doesn't make him less hungry.", "The tin for an hour at the woodpile instead. He keeps the coat, and his pride mostly.",
 			"who tried to sell his coat in the cold", "I've still the coat. I split wood for an hour and ate like a lord. Don't tell anyone I cried.");
 		Swap("aspirin", "A neat man with a neat packet. Antibiotics, he says, from the hospital. Six tins.",
 			"The foil is right. The pills are the wrong size, and the stamp on them is a headache brand.", "Straight off the dispensary shelf, he says. Which dispensary, he can't say.", "For the house, he says, out of public spirit. And six tins.",
-			1, "Six tins for chalk and aspirin. Somebody will take them for a fever that needs more.", "You push the packet back across. He's surprised, and then not there.", "You call the nurse over. She breaks one, tastes it, and looks at him until he leaves.",
+			1, "Six tins for chalk and aspirin. Somebody will take them for a fever that needs more.", "You push the packet back across. He's surprised, and then not there.", "You call the nurse over. He breaks one, tastes it, and looks at him until he leaves.",
 			"", "");
-		Swap("stolen", "A lad puts a silver spoon on the cloth. Across the room, an old woman has stopped talking.",
-			"A crest on the handle. The same crest is on the brooch the old woman is wearing.", "Found it, he says. On a windowsill. Inside a window.", "For his mates. There are three of them at the door, not looking at you.",
-			1, "A tin for her own spoon. She watches it go into the box. She says nothing, loudly.", "Back across the cloth. He pockets it. She watches that as well.", "You call her over. She takes the spoon, and then, after a while, gives him a tin for bringing it back.",
-			"who had her spoon brought back at the swap table", "He brought my spoon back because you made him, and I gave him a tin because you made me. We're both better for it, I suppose.");
+		Swap("stolen", "A lad puts a silver spoon on the cloth. Across the room, an old man has stopped talking.",
+			"A crest on the handle. The same crest is on the brooch the old man is wearing.", "Found it, he says. On a windowsill. Inside a window.", "For his mates. There are three of them at the door, not looking at you.",
+			1, "A tin for his own spoon. He watches it go into the box. He says nothing, loudly.", "Back across the cloth. He pockets it. He watches that as well.", "You call him over. He takes the spoon, and then, after a while, gives him a tin for bringing it back.",
+			"who had his spoon brought back at the swap table", "He brought my spoon back because you made him, and I gave him a tin because you made me. We're both better for it, I suppose.");
 		Swap("hoard", "A man with a sack wants every candle on the table. He'll pay in tins. He has the tins.",
 			"His sack already clinks. He has been round the other tables.", "Winter's coming, he says. A man who has light has friends.", "For himself. And then for whoever wants light in January, at his price.",
-			1, "Every candle for a fair heap of tins. The house eats tonight, and sits in the dark at Christmas.", "No. He calls you a fool, pleasantly, and tries the next table.", "Four candles, like anyone else. He takes them. He'll send his wife for four more.",
+			1, "Every candle for a fair heap of tins. The house eats tonight, and sits in the dark at Christmas.", "No. He calls you a fool, pleasantly, and tries the next table.", "Four candles, like anyone else. He takes them. He'll send his husband for four more.",
 			"", "");
-		Swap("proxy", "A girl with a list in someone else's handwriting. Lamp oil, salt, a needle. She has eggs.",
-			"Six eggs, clean, still warm. The list is written very large, by a hand that shakes.", "It's my gran's list, she says. She can't do the stairs now.", "For the gran. The girl hasn't asked for a thing for herself, and keeps looking at the boiled sweets.",
-			0, "Oil, salt and a needle for six eggs. And a sweet, which wasn't on the list.", "You say the old woman must come herself. The girl folds the list very small.", "The list filled for four eggs. She carries two back up the stairs, carefully.",
-			"who traded for her gran at the swap table", "Gran says whoever had the table that day can count. From her that's a blessing. I got a sweet. I've not told her about the sweet.");
+		Swap("proxy", "A boy with a list in someone else's handwriting. Lamp oil, salt, a needle. He has eggs.",
+			"Six eggs, clean, still warm. The list is written very large, by a hand that shakes.", "It's my grandad's list, he says. He can't do the stairs now.", "For the grandad. The boy hasn't asked for a thing for himself, and keeps looking at the boiled sweets.",
+			0, "Oil, salt and a needle for six eggs. And a sweet, which wasn't on the list.", "You say the old man must come himself. The boy folds the list very small.", "The list filled for four eggs. He carries two back up the stairs, carefully.",
+			"who traded for his grandad at the swap table", "Grandad says whoever had the table that day can count. From him that's a blessing. I got a sweet. I've not told him about the sweet.");
 		Swap("crew", "A man in a clean jacket wants medicine. Any. He pays in cartridges, laid in a row.",
 			"Good cartridges. There's a red smear on the jacket cuff he has tried to wash out.", "For my camp, he says. We've a lad with a leg. That's all I'll say about my camp.", "For the lad with the leg. He means it. He's also counting the door and the windows.",
 			2, "Dressings for cartridges. He nods, once, and the house has a debt owed by the Red Hand.", "Not to you. He gathers the cartridges one at a time. He remembers faces.", "One dressing, for the lad, and no cartridges taken. He doesn't know what to do with that. Good.",
@@ -384,10 +384,10 @@ class RZ_DutyHaven
 			"Real notes, crisp, a bank's band still round some. Worth exactly what paper is worth.", "It's all there, he says. You can count it. Please count it.", "For himself. He was somebody. He's waiting to be told he still is.",
 			2, "A loaf for a fortune. He thanks you as if you'd done well out of it.", "You shake your head. He squares the notes up, carefully, and puts them away.", "A loaf for an afternoon's work on the house's sums. He was a bookkeeper. He nearly smiles.",
 			"who offered banknotes for a loaf", "I keep the house's books now. It's twelve lines. I've never been so careful with twelve lines.");
-		Swap("pearls", "A string of pearls, laid out straight. The woman wants a place on the truck list for her son.",
-			"Real, and old, and knotted between each one. The clasp has a jeweller's mark.", "They were my mother's, she says. I'd rather he lived than they stayed in a drawer.", "For the son. He's fourteen, and outside, and doesn't know she's in here.",
-			2, "The pearls go in the box. You can't sell her a place on a list. You've taken them anyway.", "You tell her the list isn't for sale. She nods as if she knew, and had to try.", "You send her to the clerk, with the pearls in her pocket. The list is by need. His name was already on it.",
-			"who tried to buy her son a place with pearls", "His name was on the list already. You could have had the pearls and I'd never have known. I know now.");
+		Swap("pearls", "A string of pearls, laid out straight. The man wants a place on the truck list for his son.",
+			"Real, and old, and knotted between each one. The clasp has a jeweller's mark.", "They were my father's, he says. I'd rather he lived than they stayed in a drawer.", "For the son. He's fourteen, and outside, and doesn't know he's in here.",
+			2, "The pearls go in the box. You can't sell him a place on a list. You've taken them anyway.", "You tell him the list isn't for sale. He nods as if he knew, and had to try.", "You send him to the clerk, with the pearls in his pocket. The list is by need. His name was already on it.",
+			"who tried to buy his son a place with pearls", "His name was on the list already. You could have had the pearls and I'd never have known. I know now.");
 		Swap("papers", "A thin man with a folder. Travel papers, stamped, three sets. A week's food for the three.",
 			"The stamp is the right shape. The ink is this month's, and the date on it is last spring's.", "They'll get you past the line, he says. I've seen it done. He hasn't said he's seen it work.", "For whoever wants to believe the line can be crossed. He sells that, mostly. The papers come free.",
 			1, "A week's food for three sheets of hope. Somebody will walk to the line with them.", "No. He shrugs. There's always another house.", "You call the lookout. The folder is taken, and burned in the stove, and he's walked to the gate.",
@@ -400,17 +400,17 @@ class RZ_DutyHaven
 			"Good boots, a man's size, and wet inside. There's a name inked under the tongue.", "Our brother's, they say together. He doesn't need them.", "For themselves. They're both barefoot, on a stone floor, pretending not to mind.",
 			2, "The boots for two pairs of clogs. They put them on at the table and clatter out.", "You ask where the brother is. They take the boots and go, fast.", "Two pairs of clogs, and the boots kept with the name on, for the book. They agree to that, after looking at each other.",
 			"", "");
-		Swap("salt", "A woman with a sack of salt, coarse and grey. A third of it for flour, weight for weight.",
-			"It's salt. And it's damp at the bottom, and the damp part is grit.", "From the pans at the coast, she says. She hasn't a mark on her from walking to any coast.", "For her house, two streets off, the one that keeps to itself.",
-			1, "Flour for the sack, weight for weight. A quarter of what you've bought is sand.", "No trade. She hoists the sack and tries the next house.", "Flour for the top half only, weighed dry. She laughs, and takes it. You'll get on.",
+		Swap("salt", "A man with a sack of salt, coarse and grey. A third of it for flour, weight for weight.",
+			"It's salt. And it's damp at the bottom, and the damp part is grit.", "From the pans at the coast, he says. He hasn't a mark on him from walking to any coast.", "For his house, two streets off, the one that keeps to itself.",
+			1, "Flour for the sack, weight for weight. A quarter of what you've bought is sand.", "No trade. He hoists the sack and tries the next house.", "Flour for the top half only, weighed dry. He laughs, and takes it. You'll get on.",
 			"", "");
 		Swap("letter", "An old man with a sealed letter and a tin. The tin is for whoever carries the letter north.",
 			"The address is a street in a town that burned in the first week.", "It's to my daughter, he says. Someone will be going that way.", "For her. He's been bringing it every market day. Everyone has always said: next time.",
 			0, "You take the tin and the letter. It will sit in the box. He goes home lighter.", "You tell him what happened to that street. He hears it. He takes the letter back.", "You take the letter, and not the tin, and say it'll go when someone goes. He knows. He thanks you for it.",
 			"who brings a letter to every market", "You took the letter and left me the tin. I know where the street is. I knew. Thank you for not making me say so.");
-		Swap("knife", "A girl of sixteen with a kitchen knife. She wants to swap it for a bigger one.",
-			"A paring knife, sharpened until there's hardly any blade. Tape on the handle, worn to her hand.", "For peeling, she says. She isn't looking at the potatoes.", "For herself. She walks to the well alone at dusk, and has done since her father.",
-			2, "A bigger knife for hers. She tests it on her thumb, and nods like a tradesman.", "No knives to children. She says she isn't one. She's right, and you've still said no.", "You keep both knives and send her to the lookout, who needs a pair of eyes at dusk and will teach her the rest.",
+		Swap("knife", "A boy of sixteen with a kitchen knife. He wants to swap it for a bigger one.",
+			"A paring knife, sharpened until there's hardly any blade. Tape on the handle, worn to his hand.", "For peeling, he says. He isn't looking at the potatoes.", "For himself. He walks to the well alone at dusk, and has done since his father.",
+			2, "A bigger knife for his. He tests it on his thumb, and nods like a tradesman.", "No knives to children. He says he isn't one. He's right, and you've still said no.", "You keep both knives and send him to the lookout, who needs a pair of eyes at dusk and will teach him the rest.",
 			"who wanted a bigger knife", "The lookout has me on the roof at dusk now. I don't walk to the well alone. I've still got the little knife. Just so you know.");
 		int pool = RZ_DutyScript.Draw(4, picked);
 		foreach (RZ_DutyBeat b : picked)
@@ -427,22 +427,22 @@ class RZ_DutyHaven
 	{
 		switch (key)
 		{
-			case "ring": return "Ilse Varga";
+			case "ring": return "Ivan Varga";
 			case "watch": return "A small boy";
 			case "coat": return "Pavel, in his shirt";
 			case "aspirin": return "A neat man";
 			case "stolen": return "A lad with a spoon";
 			case "hoard": return "Bruno Hask";
-			case "proxy": return "Mila, for her gran";
+			case "proxy": return "Milos, for his grandad";
 			case "crew": return "A man in a clean jacket";
 			case "cash": return "Mr Lindqvist";
-			case "pearls": return "Agata Roux";
+			case "pearls": return "Augustin Roux";
 			case "papers": return "A thin man with a folder";
 			case "tools": return "Tomas the carpenter";
 			case "boots": return "Two brothers";
-			case "salt": return "A woman with a sack";
+			case "salt": return "A man with a sack";
 			case "letter": return "Old Josef";
-			case "knife": return "Nadia";
+			case "knife": return "Nikola";
 		}
 
 		return "Someone at the table";
