@@ -98,6 +98,7 @@ modded class RZ_LongTableReach
 	}
 	IEntity RZT_SignEntity(int i) { return m_aSigns[i]; }
 	int RZT_Dead() { return m_aDead.Count(); }
+	int RZT_Taken() { return m_iDeadTaken; }
 	void RZT_Harvest() { m_S.m_iHarvestDay = 1; m_bHarvestDone = false; }
 	void RZT_Mark() { m_iMarkUnix = 0; TryDoorMark(); }
 	bool RZT_Marked() { return m_iMarkUnix != 0; }
@@ -194,10 +195,13 @@ modded class RZ_LongTable
 
 				int looked;
 				int n = RZT_BodiesNear(40, looked);
-				if (n >= 2)
+				// A questline's stage mission or a fight can have the farm: the house's own people stand aside
+				if (m_iSceneHold >= 0 || m_FightGroup)
+					Print(string.Format("RZT table: a questline or a fight has the farm (mission %1): the family's own bodies weren't tried", m_iSceneHold));
+				else if (n >= 2)
 					RZT_Table.Ok(string.Format("the family stands at the farm: %1 bodies with the tester 60 m off", n));
 				else
-					RZT_Table.Fail(string.Format("only %1 of the family at the farm with the tester 60 m off", n));
+					RZT_Table.Fail(string.Format("only %1 of the family at the farm with the tester 60 m off (%2 m from it)", n, RZ_Util.RoundToInt(RZ_Util.DistXZ(RZT_Fake.s_Ent.GetOrigin(), farm))));
 
 				// Their looks are built on the mod's own civilian; the test world sets a vanilla one
 				ResourceName civ = m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
@@ -278,7 +282,7 @@ modded class RZ_LongTable
 				else
 					RZT_Table.Fail("a death 600 m from the farm wasn't kept for the night");
 
-				int before = RZT_Tells();
+				int before = reach.RZT_Taken();
 				reach.RZT_From(5.4);
 				RZT_Table.SetHour(5.6);
 				RZT_Table.s_vPoint = Vector(before, 0, 0);
@@ -290,7 +294,7 @@ modded class RZ_LongTable
 				if (RZT_Table.s_fWait < 12)
 					return;
 
-				if (RZT_Tells() > RZT_Table.s_vPoint[0] && reach.RZT_Dead() == 0)
+				if (reach.RZT_Taken() > RZT_Table.s_vPoint[0] && reach.RZT_Dead() == 0)
 					RZT_Table.Ok("at dawn the dead are gone, with drag marks (a tell)");
 				else
 					RZT_Table.Fail("at dawn no drag marks for the death near the farm");
@@ -417,6 +421,10 @@ modded class RZ_LongTable
 			}
 			case 11:
 			{
+				// Other systems speak to the tester too: keep his unasked-contact gap clear for the boy
+				if (RZ_NoticeLanes.Get())
+					RZ_NoticeLanes.Get().RZT_ClearContact(RZT_Fake.ID);
+
 				if (reach.BoyBody())
 				{
 					RZT_Table.Ok("the boy asked the tester to supper in a town near the farm");

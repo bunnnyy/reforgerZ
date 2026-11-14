@@ -146,6 +146,7 @@ class RZ_LongTableReach
 
 	// The dead near the farm, taken at dawn
 	protected ref array<ref RZ_ReachDead> m_aDead = {};
+	protected int m_iDeadTaken;				// taken at dawn this run (the log and the test)
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_LongTableReach(RZ_GameModeComponent gm, RZ_LongTable table, RZ_LongTableReachSettings settings)
@@ -446,6 +447,7 @@ class RZ_LongTableReach
 		}
 
 		m_aDead.Clear();
+		m_iDeadTaken += taken;
 		RZ_Log.Info(string.Format("Long Table: %1 of the dead taken in the night.", taken));
 	}
 
