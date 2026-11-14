@@ -47,6 +47,7 @@
 #     there and then and only with the thing; a real outside door is found near the town and a
 #     door-like prop is refused in the open ("RZT openings OK|FAIL ...", "RZT openings: N checks");
 #   The masts (RZT_Masts.c): found on dry mainland, a crew's promise binds one, one put up with its part clears the fog and is kept open, another handed to the Haven, something to overhear, a trapped voice found by bearings at two masts starts a Distress Call there ("RZT masts OK|FAIL ...", "RZT masts: N checks");
+#   The grid past the station (RZT_Grid.c): substations on the map's yards, a town lit only when switched on and the station runs, a break and its splice, a Red Hand toll's crewman, the lab's and morale's caps, a cut breaker, a mast's cable cut and put back
 #   The map's fog (RZT_Fog.c): where the tester stands is seen, walking 600 m reveals new ground, a paper map in his pack reveals its far town, the fog survives the save's JSON round trip, the payload is small ("RZT fog OK|FAIL ...", "RZT fog: N checks");
 #   The door and the favour (RZT_Favour.c): for every background, the door asks who you were and a habit is picked (each habit's effect checked), the favour's fetch is handed at a place, the hand-over waits for its reply (standing by him never counts), and the background's way settles it without a hand-over ("RZT favour OK|FAIL ...", "RZT favour: N checks");
 #   The fixer (RZT_Ferda.c): Ferda Kroupa comes for the case (two men, tracked on him, the Red Hand's people leave the sale to him), the street rallied (its door job at a real doorway, three jobs, then RALLIED), the hand-over (sold, Get It Back next) and the warning, the story about Bastion as the good liar (TALKED, no standing), slipping away (SLIPPED), a fight (FOUGHT), his note on a real door's step, a veteran's note only ("RZT ferda OK|FAIL ...", "RZT ferda: N checks");
@@ -289,6 +290,7 @@ grep -E 'RZT favour' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT kitchen' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT fog' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT masts' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT grid' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT patrol' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT craft' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
@@ -306,6 +308,7 @@ grep -q 'RZT ferda FAIL' "$LOG" && { echo "FAILED: the opening's fixer (he comes
 grep -q 'RZT fresh FAIL' "$LOG" && { echo "FAILED: a fresh spawn (its contact, the favour first, a clean Quests tab: RZT_Fresh.c)"; exit 1; }
 grep -q 'RZT fog FAIL' "$LOG" && { echo "FAILED: the map's fog (RZT_Fog.c: walking reveals, a found map, the save, the payload)"; exit 1; }
 grep -q 'RZT masts FAIL' "$LOG" && { echo "FAILED: the masts (RZT_Masts.c: found, put up, given, overheard, a voice found by bearings)"; exit 1; }
+grep -q 'RZT grid FAIL' "$LOG" && { echo "FAILED: the grid past the station (RZT_Grid.c: substations, a break and a splice, the stakes' caps, a cut)"; exit 1; }
 grep -q 'RZT favour FAIL' "$LOG" && { echo "FAILED: the door and the favour (who you were, the habit, the fetch, the hand-over by reply, the background's way: RZT_Favour.c)"; exit 1; }
 grep -q 'RZT kitchen FAIL' "$LOG" && { echo "FAILED: kitchen work at a kitchen (RZT_Kitchen.c: a kitchen thing at the prompt, the camp's own cook pot)"; exit 1; }
 grep -q 'RZT patrol FAIL' "$LOG" && { echo "FAILED: a patrol's finds or its marker (RZT_Patrol.c: each find's thing there, a door find at a real doorway, the marker on the walker)"; exit 1; }

@@ -23,19 +23,21 @@ finding a trapped man's voice by bearings. What waits from A:
 |---|---|
 | The map's own cabinet | the prompt on the map's electrical cabinet within 25 m of the mast when there is one, our prop only when there isn't |
 | A faction's foothold | its people in the region mentioning the mast and who climbed it (beyond the deed) |
-| A cut mast | a rival cuts a faction's mast (B's sabotage): it's down again, with a new part missing, and the faction that held it offers a job to put it back |
 | All masts up | opens C's loop's relay |
 
 ## B. The grid
 
-| Idea | How it plays |
+**Built** ([DESIGN.md](../docs/DESIGN.md#the-grid-region-by-region)): the substations region by region,
+lines that break and their splice, the Red Hand's tolls, the factions' stakes, lit towns at night, the
+sabotage of a yard or a mast (and a cut mast's put-back). Generators you carry are the placed kit's.
+What waits from B:
+
+| | |
 |---|---|
-| **Substations, region by region** | The station feeds the substations, not the towns. Each of the map's transformer yards near a town is switched on in person (its own small panel: a breaker, a fuse to fit), so lighting the map is a chain of trips. |
-| **What the factions want from it** | Halcyon's research runs faster while the lab's region is lit (×1.2, capped). The Haven's cold room keeps samples and medicine longer. Bastion's radios reach their posts. The Red Hand can cut a town's line and charge to switch it back: errands and leader jobs come from each. |
-| **Lines that break** | Storms and the infected break the overhead line between a substation and a town. Walk the line to find the break (a sagging wire at a pole) and splice it with wire and pliers: a quiet job in the open at night. |
-| **Generators you carry** | A portable generator (a farm's, a garage's) on a car's back lights one building: a camp, a locker, a workshop. It hums: heat. |
-| **Lit towns at night** | The infected shy from lit streets (a little), but the light draws packs from further away. |
-| **Sabotage** | A contract to cut a rival's substation or mast: their region goes dark, at a price in Infamy. |
+| The fuse and the breaker as two things | a fuse to find (a part of its own), then the breaker; today one hold with a coil of wire |
+| A sabotage contract | a giver (the Red Hand's quartermaster, a rival's officer) offering the cut as a tracked job; today anyone may cut and the Red Hand pay after |
+| The Haven's cold room | medicine and samples lasting longer in a lit safehouse; today morale |
+| A generator on a car's back | carried in a vehicle and run there; today it's set down |
 
 ## C. The loop's relay and Bastion's last call
 
@@ -47,6 +49,5 @@ finding a trapped man's voice by bearings. What waits from A:
 ## Order of work
 
 1. **A's rest:** the map's own cabinet, the foothold's talk (with B's sabotage: the cut mast).
-2. **B, the grid:** substations, the factions' stakes, lines that break, generators, lit towns,
-   sabotage (and a cut mast's job to put it back).
+2. **B's rest:** the fuse as its own part, a sabotage contract from a giver, the cold room, a generator on a car.
 3. **C:** the loop's relay, Bastion's last call.

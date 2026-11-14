@@ -1591,6 +1591,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | World | Power grid | `m_PowerSettings` | Control prefab, **Use cabinets** (on: the map's own electrical cabinet at the station carries the control as an invisible spot), **Control yaw** (0: turns the control prefab if its front doesn't face out from the wall), **Generator sound prefab** and **Dressing prefab** (both set; empty = that part is off), **Street lamps** (on: the map's own lamps stay dark at night but in towns with power; off = left as the map has them), region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
 | World | Radio station | `m_RadioStationSettings` | Console prefab, takeover (30 s), cooldown (10 min, halved with power) |
 | World | Masts | `m_MastSettings` | On (1), masts at least (3) and at most (5), region (2500 m), climb hold (25 s), bearing hold (10 s), fog cleared (1000 m), minutes between warnings (6), overheard lines (9), the drone operators (15), trapped voices (90) and how long one calls (30), Fame for handing one to a faction (5), Red Hand Favor for selling one (15), **Cabinet prefab** (empty: Puzzles > Radio mast) ([DESIGN.md](DESIGN.md#the-masts)) |
+| World | Power grid > Substations | `m_PowerSettings.m_Substations` | On (1), at most (6), towns within (1500 m), apart (2000 m), switch hold (12 s), splice hold (15 s), cut hold (8 s), **Breaks an hour** (0.25), **Toll share** (0.3), **Lab multiplier** (1.2, at most 1.5), morale an hour (1) and a day at most (6), **Lit spawn** (0.85), lit heat a minute (1), cut Infamy (8), cut Favor (10) |
 | World | Wildlife | `m_WildlifeSettings` | **Doe** and **Buck** prefabs (WildlifeExpansion's; no doe = off), **Meat** (the raw meat leg), herds on the server (2), does a herd (up to 3), buck chance (0.7), chance a minute for a player in the country (0.25; ×0.5 at night), minutes before the same player gets another (20), put out 150 to 300 m away and put away past 450 m, margin from towns and faction places (150 m), meat a deer (1 to 2), shot range (260 m), deer a minute that leave meat (4) ([DESIGN.md](DESIGN.md#wildlife)) |
 | World | Placed things | `m_PlacedSettings` | **Enabled** (on), **Placed prefabs** (keywords in the prefab names of what players build: `fm_campfire`, the fireplace of Make Fire Campfire & Wood; a tent mod's own names go here), **Unused days** (3 real days; fractions work for a test), use radius (15 m), clear distance (never cleared with a player within 100 m), most tracked (40) ([DESIGN.md](DESIGN.md#things-players-build)) |
 | World | Long Table | `m_LongTableSettings` | **Enabled**, **Chance** a season has one (0.75), hunger per hour (6), take hours (3, ÷ season speed), body radius (300 m), the host on the road (on), the **guest rule** (on), **trade keywords** (ammunition and medicine) ([DESIGN.md](DESIGN.md#the-long-table)) |
@@ -1892,6 +1893,16 @@ itself as it walks, not at the route's end. Lines `RZT patrol: find <kind> at <g
 stop; called "..."; goal "..."`, `RZT patrol: finds at N of 8 stops, N with none that fits`,
 `RZT patrol: walking, the marker is N m from him and N m from the route's end`, the sum `RZT patrol:
 done, N failures`, and `RZT patrol FAIL ...` for each miss (the run fails on any).
+
+**The grid past the station** (`RZT_Grid.c`, [DESIGN.md](DESIGN.md#the-grid-region-by-region)):
+right after the masts, in one go: the substations found and their towns; with the station running a
+switched-off substation's first town is dark, switched on it's lit, with the station stopped it's dark
+again; a line breaks (the town dark) and its splice lights it again; a Red Hand toll break has its
+crewman; the lab's multiplier is within 1 and 1.5, lit streets' within 0.5 and 1, a day's morale within
+its cap; a cut breaker darkens the town; a mast cut goes down for its old holder and put back up is
+theirs again. The station's step is put back as it was. Lines `RZT grid OK|FAIL ...`, `RZT grid: ...`,
+the sum `RZT grid: N checks, N failed` (the run fails on any FAIL). On a map with no substations it
+says so and only tries the mast.
 
 **The new recipes and the lockpick** (`RZT_Craft.c`, [DESIGN.md](DESIGN.md#light-crafting)): three
 minutes in, each of the eighteen new item prefabs (the recipes' outputs and the loot's junk) must
@@ -2279,7 +2290,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **208** lines with the tag, all but one in the game scripts (one is the comment in
+There are **209** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2302,10 +2313,11 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (97)
+### Medium risk: big features, with a fallback (98)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `World/RZ_Substations.c:1013` | the map's power-line poles (`PowerLine_*_pole*`) are static entities with their prefab's name, also where a power-line generator placed them, so a broken line's spot stands on a real pole | The break is at the yard's own cabinet (the log says "at the yard (no pole found)") |
 | `Interactions/RZ_Interactions.c:1468` | the repo's `Prefabs/Props/Civilian/RadioSmall_01_Base.et` (vanilla's GUID `{B68D3829D4442F80}`, a full copy of vanilla's with our set added) replaces vanilla's prefab, so every small radio on the map and in compositions, its four colours too, carries **Listen to the radio** and the four options in its own `SCR_TurnOnAction` context, beside vanilla's Turn on/off. The hosting itself ran in the runtime test (a new-GUID copy spawned by the tester: tagged, untagged when the tester left, no exception), but the Linux test server doesn't apply a same-GUID copy from an unpacked addon (no more than `chimeraMenus.conf`), so only Workbench or a packed build shows this | The radio gets its own invisible spot again, a second prompt beside vanilla's (as before). In Workbench, open the radio's prefab: the Resource Browser should show the ReforgerZ copy, and its ActionsManagerComponent our five actions; if Workbench wants an override made its own way, use **Override in ReforgerZ** on vanilla's prefab and add the same set (the table in [Add to prefabs you already have](#add-to-prefabs-you-already-have)) |
 | `Interactions/RZ_Medical.c:15` | vanilla's consumable item component runs `ApplyItemEffect` on the server when a medic finishes vanilla's heal on another character (a bandage, tourniquet, morphine or saline used on them) | A Nurse or Doctor no longer slows a bite when treating someone: no line comes. Find the server-side point of vanilla's heal on another character (`SCR_HealingUserAction`, the health item's `ApplyEffect`) and move the hook there |
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
@@ -2543,6 +2555,12 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Radio station: the radio mast near Beauregard at grid 31-27 (picked).
 [ReforgerZ] Masts: <name> (<n>) at <grid>, missing <part>, trouble NONE|MAN|CREW|PACK, down|up, <whose> (found|save).
 [ReforgerZ] Masts: N on this map, N up.
+[ReforgerZ] Substations: <name> (<n>) at <grid>, N towns (<names>), switched off|on|on, with a line down to <town>.
+[ReforgerZ] Substations: N on this map, N switched on.   (or "Substations: off.")
+[ReforgerZ] Substations: <player> switched on <name> (<towns>).   / spliced the line to <town> from <name>.   / cut the breaker at <name> (N factions hurt).
+[ReforgerZ] Substations: the line from <name> to <town> is down (wear|the storm|the infected|the Red Hand's toll) at <grid>, at a pole|at the yard (no pole found).
+[ReforgerZ] Substations: <player> paid the Red Hand's toll on the line to <town>.
+[ReforgerZ] Masts: <player> cut <name> (it was <whose>); it now needs <part>.   / put <name> back up; it's <whose> again.
 [ReforgerZ] Haven safehouses: 2 (picked).
 [ReforgerZ] Wanderers: 7 on the roads (new roster, seed S).
 [ReforgerZ] Faction leaders: 5 (new, seed S). Haven 2, Bastion 1, Red Hand 1, Halcyon 1
@@ -5352,3 +5370,5 @@ on the talk screen says why something wasn't dealt)
   spawns or rewards from rereading.
 - [ ] 1 player and a full server: spot cap (70) and escort (3) and capture (2) caps hold; with
   everyone in one town some players get no interaction spots until others leave (expected).
+- [ ] **The grid past the station** (DESIGN.md, "The grid, region by region"). The log's `Substations:` lines name each yard and its towns. With the station running, walk to one: **Look at the substation** opens its menu with a pad; with a coil of wire, **Fit a fuse and close the breaker** (does the hold animate?), and its towns' lamps come on at night. Wait for (or admin-force) a broken line: the open channel says so on a radio; **Look at the line** stands on a real power pole (not a field: VERIFY `World/RZ_Substations.c` pole query), **Splice the line** with wire. A Red Hand toll: the crewman stands under the pole, **Pay him two tins** works. **Cut the breaker** darkens its towns; at an up mast, **Cut its cable**, then put it back up and see it return to its old holder. Say how often lines break and whether the lit towns feel different at night.
+

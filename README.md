@@ -264,7 +264,7 @@ scripts/Game/ReforgerZ/
                  deer herds in the country and their meat, the things players build cleared
                  when unused (fireplaces, tents),
                  town memory, the power grid (where its station is, the control at it, its
-                 dressing and generator sound, the power panel's server side and its breakers), the radio station, the masts (put up, given
+                 dressing and generator sound, the power panel's server side and its breakers; the substations past it, broken lines, tolls and sabotage), the radio station, the masts (put up, given
                  away, their warnings, listening in and a trapped voice's bearings), the world facts (what content
                  reads: season flags, canon, claims and soft holds, text tokens) and its world
                  memory (reasons, signals, the town log, world records, the truth deck) with its
