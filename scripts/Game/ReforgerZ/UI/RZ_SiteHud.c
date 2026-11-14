@@ -7,9 +7,19 @@ class RZ_SiteHud
 {
 	protected static const ResourceName LAYOUT = "{4382F77E3ACA1D25}UI/layouts/ReforgerZ/RZ_SiteHud.layout";
 	protected static const int SPOTS = 16;		// HudSpot0-HudSpot15
-	protected static const float BAR = 430;		// HudBarFill's full width
+	protected static const float BAR = 328;		// HudBarFill's full width
 
 	protected static Widget s_wRoot;
+	protected static bool s_bHidden;			// the site builder's screen is open: it shows the same
+
+	//------------------------------------------------------------------------------------------------
+	//! Hidden while the site builder's screen is open (it would sit over it).
+	static void SetHidden(bool hidden)
+	{
+		s_bHidden = hidden;
+		if (s_wRoot)
+			s_wRoot.SetVisible(!hidden);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static void OnPayload(string payload)
@@ -33,6 +43,8 @@ class RZ_SiteHud
 			if (!s_wRoot)
 				return;
 		}
+
+		s_wRoot.SetVisible(!s_bHidden);
 
 		array<ref array<string>> recs = {};
 		RZ_MenuBase.Records(payload, recs);
@@ -74,29 +86,30 @@ class RZ_SiteHud
 			string idx = i.ToString();
 			bool there = i < check.Count();
 			RZ_UIW.Show(s_wRoot, "HudSpot" + idx, there);
+			RZ_UIW.Show(s_wRoot, "HudSpotIcon" + idx, there);
 			if (!there)
 				continue;
 
 			array<string> c = check[i];
 			bool ok = RZ_UIText.Int(c, 2) == 1;
-			string mark = "✗ "; // VERIFY: the HUD's font draws ✓ and ✗ (else they show as boxes)
-			Color col = RZ_UIColor.Bad();
+			string icon = "track_next";
+			Color col = RZ_SiteBuilderMenu.Lin(240, 149, 149);
 			if (ok)
 			{
-				mark = "✓ ";
-				col = RZ_UIColor.Good();
+				icon = "track_done";
+				col = RZ_SiteBuilderMenu.Lin(151, 196, 89);
+			}
+			else if (RZ_UIText.Int(c, 3) != 1)
+			{
+				col = RZ_SiteBuilderMenu.Lin(154, 151, 143);
 			}
 
-			RZ_UIW.SetText(s_wRoot, "HudSpot" + idx, mark + RZ_UIText.Str(c, 1));
+			RZ_UIW.Icon(s_wRoot, "HudSpotIcon" + idx, icon);
+			RZ_UIW.Tint(s_wRoot, "HudSpotIcon" + idx, col);
+			RZ_UIW.SetText(s_wRoot, "HudSpot" + idx, RZ_UIText.Str(c, 1));
 			RZ_UIW.Tint(s_wRoot, "HudSpot" + idx, col);
 		}
 
-		RZ_UIW.SetText(s_wRoot, "HudType", "Next spot: " + RZ_UIText.Str(head, 8));
-		string hint = "Site builder (/sites): put a spot, save, stop";
-		string problem = RZ_UIText.Str(head, 9);
-		if (!problem.IsEmpty())
-			hint = "Red spot: " + problem;
-
-		RZ_UIW.SetText(s_wRoot, "HudHint", RZ_UIText.Clean(hint, 60));
+		RZ_UIW.SetText(s_wRoot, "HudType", "<   " + RZ_UIText.Str(head, 8) + "   >");
 	}
 }

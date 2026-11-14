@@ -17,6 +17,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	protected static int s_iTab;				// 0 all, then RZ_EFaction + 1
 	protected static int s_iFilter;				// 0 all, 1 not built, 2 hand-built, 3 pinned
 	protected static string s_sPicked;			// the picked site's id, kept for the session
+	protected static bool s_bOpen;
 
 	protected static const int ROWS = 12;		// Row0-Row11 in the layout
 	protected static const int SPOTS = 16;		// Spot0-Spot15
@@ -75,8 +76,10 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		input.AddActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
 		input.AddActionListener("MenuTabLeft", EActionTrigger.DOWN, OnTabLeft);
 		input.AddActionListener("MenuTabRight", EActionTrigger.DOWN, OnTabRight);
-		input.AddActionListener("MenuNavLeft", EActionTrigger.DOWN, OnTriggerLeft);
-		input.AddActionListener("MenuNavRight", EActionTrigger.DOWN, OnTriggerRight);
+		input.AddActionListener("MenuNavLeft_NoScroll", EActionTrigger.DOWN, OnTriggerLeft);
+		input.AddActionListener("MenuNavRight_NoScroll", EActionTrigger.DOWN, OnTriggerRight);
+		input.AddActionListener("MouseWheelUp", EActionTrigger.DOWN, OnWheelUp);
+		input.AddActionListener("MouseWheelDown", EActionTrigger.DOWN, OnWheelDown);
 		input.AddActionListener("MenuSelect", EActionTrigger.DOWN, OnA);
 		input.AddActionListener("MenuRefresh", EActionTrigger.DOWN, OnX);
 		input.AddActionListener("MenuFavourite", EActionTrigger.DOWN, OnY);
@@ -98,6 +101,11 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		{
 			RZ_UIW.OnClick(m_wRoot, "Row" + r.ToString(), m_Click);
 		}
+
+		RZ_UIW.OnClick(m_wRoot, "SpotPrev", m_Click);
+		RZ_UIW.OnClick(m_wRoot, "SpotNext", m_Click);
+		s_bOpen = true;
+		RZ_SiteHud.SetHidden(true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -108,8 +116,10 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		input.RemoveActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
 		input.RemoveActionListener("MenuTabLeft", EActionTrigger.DOWN, OnTabLeft);
 		input.RemoveActionListener("MenuTabRight", EActionTrigger.DOWN, OnTabRight);
-		input.RemoveActionListener("MenuNavLeft", EActionTrigger.DOWN, OnTriggerLeft);
-		input.RemoveActionListener("MenuNavRight", EActionTrigger.DOWN, OnTriggerRight);
+		input.RemoveActionListener("MenuNavLeft_NoScroll", EActionTrigger.DOWN, OnTriggerLeft);
+		input.RemoveActionListener("MenuNavRight_NoScroll", EActionTrigger.DOWN, OnTriggerRight);
+		input.RemoveActionListener("MouseWheelUp", EActionTrigger.DOWN, OnWheelUp);
+		input.RemoveActionListener("MouseWheelDown", EActionTrigger.DOWN, OnWheelDown);
 		input.RemoveActionListener("MenuSelect", EActionTrigger.DOWN, OnA);
 		input.RemoveActionListener("MenuRefresh", EActionTrigger.DOWN, OnX);
 		input.RemoveActionListener("MenuFavourite", EActionTrigger.DOWN, OnY);
@@ -118,6 +128,8 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		if (s_Open == this)
 			s_Open = null;
 
+		s_bOpen = false;
+		RZ_SiteHud.SetHidden(false);
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (ui && !m_bDone)
 			ui.SendSiteAct("closed", "");
@@ -323,6 +335,31 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			SetFilter((s_iFilter + 1) % FILTERS);
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! The mouse wheel: the list (or, while you build the picked site, the spot type).
+	protected void OnWheelUp(float value = 0, EActionTrigger reason = 0)
+	{
+		if (Asking())
+			return;
+
+		if (BuildingPicked())
+			Act("spot_back");
+		else
+			Pick(PickedRow() - 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnWheelDown(float value = 0, EActionTrigger reason = 0)
+	{
+		if (Asking())
+			return;
+
+		if (BuildingPicked())
+			Act("spot_next");
+		else
+			Pick(PickedRow() + 1);
+	}
+
 	// ================================================================ The buttons
 	//------------------------------------------------------------------------------------------------
 	protected void Act(string act)
@@ -368,7 +405,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	//! Menu: the bar's other buttons (restore, delete), and back.
 	protected void OnMore(float value = 0, EActionTrigger reason = 0)
 	{
-		if (Asking() || BuildingPicked() || !Picked())
+		if (Asking() || (!m_bMore && !HasMore()))
 			return;
 
 		m_bMore = !m_bMore;
@@ -432,7 +469,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		{
 			switch (button)
 			{
-				case "A": label = "Put a spot at your feet"; return "spot_place";
+				case "A": label = "Put spot here"; return "spot_place";
 				case "X":
 				{
 					label = "Save";
@@ -442,7 +479,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 					return "save";
 				}
 				case "Y": label = "Stop building"; return "stop";
-				case "R3": label = "Take up the nearest spot"; return "spot_remove";
+				case "R3": label = "Remove nearest spot"; return "spot_remove";
 			}
 
 			return "";
@@ -452,7 +489,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		{
 			if (button == "A" && RZ_UIText.Int(site, 15) > 0 && !other)
 			{
-				label = "Restore the last save";
+				label = "Restore";
 				if (RZ_UIText.Str(m_aHead, 8) == "restore")
 					label = "Restore: press again";
 
@@ -461,7 +498,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 
 			if (button == "X" && saved && !other)
 			{
-				label = "Delete the build";
+				label = "Delete";
 				if (RZ_UIText.Str(m_aHead, 8) == "delete")
 					label = "Delete: press again, for good";
 
@@ -481,14 +518,11 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 
 				if (saved)
 				{
-					label = "Edit the build";
+					label = "Edit";
 					return "build_saved";
 				}
 
-				label = "Build from the layout";
-				if (RZ_UIText.Int(site, 17) <= 0)
-					label = "Build from the layout (go there first)";
-
+				label = "Build";
 				return "build_auto";
 			}
 			case "Y":
@@ -535,9 +569,30 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			SetFilter(tag);
 		else if (name.StartsWith("Row") && !Asking() && tag >= 0)
 			Pick(tag);
+		else if (name == "SpotPrev" && BuildingPicked())
+			Act("spot_back");
+		else if (name == "SpotNext" && BuildingPicked())
+			Act("spot_next");
 	}
 
 	// ================================================================ Drawing
+	//------------------------------------------------------------------------------------------------
+	//! A colour as it should look (0-255, like a mockup's hex): the screen takes linear values.
+	static Color Lin(int r, int g, int b)
+	{
+		return new Color(ToLinear(r), ToLinear(g), ToLinear(b), 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static float ToLinear(int v)
+	{
+		float c = v / 255.0;
+		if (c <= 0.04045)
+			return c / 12.92;
+
+		return Math.Pow((c + 0.055) / 1.055, 2.4);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override protected void Redraw()
 	{
@@ -587,9 +642,9 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			string idx = t.ToString();
 			RZ_UIW.SetText(m_wRoot, "TabText" + idx, string.Format("%1 (%2)", names[t], n));
 			RZ_UIW.Show(m_wRoot, "TabLine" + idx, t == s_iTab);
-			Color c = RZ_UIColor.Dim();
+			Color c = Lin(154, 151, 143);
 			if (t == s_iTab)
-				c = RZ_UIW.Rgb(255, 255, 255);
+				c = Lin(255, 255, 255);
 
 			RZ_UIW.Tint(m_wRoot, "TabText" + idx, c);
 		}
@@ -599,12 +654,12 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		{
 			string fi = f.ToString();
 			RZ_UIW.SetText(m_wRoot, "FilterText" + fi, filters[f]);
-			Color bg = RZ_UIW.Rgb(42, 45, 49);
-			Color fg = RZ_UIW.Rgb(207, 204, 196);
+			Color bg = Lin(42, 45, 49);
+			Color fg = Lin(207, 204, 196);
 			if (f == s_iFilter)
 			{
-				bg = RZ_UIColor.Objective();
-				fg = RZ_UIW.Rgb(38, 34, 26);
+				bg = Lin(232, 178, 58);
+				fg = Lin(38, 34, 26);
 			}
 
 			RZ_UIW.Tint(m_wRoot, "FilterBg" + fi, bg);
@@ -625,31 +680,31 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		int state = RZ_UIText.Int(site, 5);
 		int building = RZ_UIText.Int(site, 10);
 		words = "AUTOMATED";
-		bg = RZ_UIW.Rgb(68, 68, 65);
-		fg = RZ_UIW.Rgb(211, 209, 199);
+		bg = Lin(68, 68, 65);
+		fg = Lin(211, 209, 199);
 		if (building == 1)
 		{
 			words = "BUILDING NOW";
-			bg = RZ_UIW.Rgb(12, 68, 124);
-			fg = RZ_UIW.Rgb(181, 212, 244);
+			bg = Lin(12, 68, 124);
+			fg = Lin(181, 212, 244);
 		}
 		else if (building == 2)
 		{
 			words = "SOMEONE BUILDING";
-			bg = RZ_UIW.Rgb(12, 68, 124);
-			fg = RZ_UIW.Rgb(181, 212, 244);
+			bg = Lin(12, 68, 124);
+			fg = Lin(181, 212, 244);
 		}
 		else if (state == 1)
 		{
 			words = "IN USE";
-			bg = RZ_UIW.Rgb(39, 80, 10);
-			fg = RZ_UIW.Rgb(192, 221, 151);
+			bg = Lin(39, 80, 10);
+			fg = Lin(192, 221, 151);
 		}
 		else if (state == 2)
 		{
 			words = "NOT IN USE";
-			bg = RZ_UIW.Rgb(99, 56, 6);
-			fg = RZ_UIW.Rgb(250, 199, 117);
+			bg = Lin(99, 56, 6);
+			fg = Lin(250, 199, 117);
 		}
 	}
 
@@ -749,7 +804,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		bool pinned = RZ_UIText.Int(site, 9) == 1;
 		RZ_UIW.Show(m_wRoot, "DetailPinBg", pinned);
 		RZ_UIW.Show(m_wRoot, "DetailPin", pinned);
-		array<string> keys = {"Where", "Objects", "Last saved", "Backups"};
+		array<string> keys = {"Where", "Objects", "Last saved"};
 		array<string> vals = {};
 		vals.Insert(string.Format("%1, %2 of you", RZ_UIText.Str(site, 8), RZ_UIText.Str(site, 7)));
 		int objects = RZ_UIText.Int(site, 13);
@@ -766,8 +821,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			when = "never";
 
 		vals.Insert(when);
-		vals.Insert(RZ_UIText.Int(site, 15).ToString());
-		for (int k = 0; k < 4; k++)
+		for (int k = 0; k < 3; k++)
 		{
 			RZ_UIW.SetText(m_wRoot, "Key" + k.ToString(), keys[k]);
 			RZ_UIW.SetText(m_wRoot, "Val" + k.ToString(), vals[k]);
@@ -779,24 +833,29 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			string si = s.ToString();
 			bool there = s < m_aCheck.Count();
 			RZ_UIW.Show(m_wRoot, "Spot" + si, there);
+			RZ_UIW.Show(m_wRoot, "SpotIcon" + si, there);
 			if (!there)
 				continue;
 
 			array<string> c = m_aCheck[s];
 			bool ok = RZ_UIText.Int(c, 2) == 1;
-			string mark = "✗ ";
-			Color col = RZ_UIColor.Bad();
+			string icon = "track_next";
+			Color col = Lin(240, 149, 149);
 			if (ok)
 			{
-				mark = "✓ ";
-				col = RZ_UIColor.Good();
+				icon = "track_done";
+				col = Lin(151, 196, 89);
+			}
+			else if (RZ_UIText.Int(c, 3) != 1)
+			{
+				// Nice to have: grey, not red
+				col = Lin(154, 151, 143);
 			}
 
-			string label = RZ_UIText.Str(c, 1);
-			if (RZ_UIText.Int(c, 3) != 1)
-				label += " (nice to have)";
-
-			RZ_UIW.SetText(m_wRoot, "Spot" + si, mark + label);
+			RZ_UIW.Show(m_wRoot, "SpotIcon" + si, true);
+			RZ_UIW.Icon(m_wRoot, "SpotIcon" + si, icon);
+			RZ_UIW.Tint(m_wRoot, "SpotIcon" + si, col);
+			RZ_UIW.SetText(m_wRoot, "Spot" + si, RZ_UIText.Str(c, 1));
 			RZ_UIW.Tint(m_wRoot, "Spot" + si, col);
 		}
 
@@ -804,9 +863,71 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		if (RZ_UIText.Int(site, 10) == 2)
 			note = "Someone else is building this site now.";
 		else if (BuildingPicked())
-			note = "Building: place objects in Game Master within the white ring. Next spot: " + RZ_UIText.Str(m_aHead, 9) + ".";
+			note = "Place objects in Game Master inside the white ring.";
+		else if (RZ_UIText.Int(site, 5) == 0 && RZ_UIText.Int(site, 17) <= 0)
+			note = "Go there first to build from its layout: it's put out once you're near.";
+
+		RZ_UIW.Show(m_wRoot, "SpotPicker", BuildingPicked());
+		RZ_UIW.SetText(m_wRoot, "SpotPickerType", RZ_UIText.Str(m_aHead, 9));
 
 		RZ_UIW.SetText(m_wRoot, "DetailNote", note);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A button on the bar (vanilla's input button: its key or pad glyph and a label). A click on it
+	//! comes back through OnPromptClick; its own key press already reaches the listeners.
+	protected bool Prompt(string action, string label)
+	{
+		Widget parent = RZ_UIW.Find(m_wRoot, "Prompts");
+		if (!parent)
+			return false;
+
+		Widget w = GetGame().GetWorkspace().CreateWidgets(RZ_UIW.PROMPT_LAYOUT, parent);
+		if (!w)
+			return false;
+
+		SCR_InputButtonComponent btn = SCR_InputButtonComponent.FindComponent(w);
+		if (!btn)
+		{
+			w.RemoveFromHierarchy();
+			return false;
+		}
+
+		btn.SetAction(action);
+		btn.SetLabel(label);
+		btn.m_OnActivated.Insert(OnPromptClick);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A bar button clicked with the mouse (a key press or pad button fires it too: those are
+	//! already handled by the action listeners, so only the mouse counts here).
+	protected void OnPromptClick(SCR_InputButtonComponent btn, string action)
+	{
+		if (!RZ_UIW.ByMouse())
+			return;
+
+		switch (action)
+		{
+			case "MenuSelect": OnA(); break;
+			case "MenuRefresh": OnX(); break;
+			case "MenuFavourite": OnY(); break;
+			case "MenuDelete": OnR3(); break;
+			case "MenuFilter": OnMore(); break;
+			case "MenuNavRight_NoScroll": OnTriggerRight(); break;
+			case "MenuBack": Back(); break;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether Menu has anything under it for the picked site (restore or delete).
+	protected bool HasMore()
+	{
+		array<string> site = Picked();
+		if (!site || BuildingPicked() || RZ_UIText.Int(site, 10) == 2)
+			return false;
+
+		return RZ_UIText.Int(site, 5) != 0 || RZ_UIText.Int(site, 15) > 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -828,22 +949,22 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			if (act.IsEmpty())
 				continue;
 
-			shown = RZ_UIW.AddPrompt(m_wRoot, "Prompts", actions[i], label) && shown;
+			shown = Prompt(actions[i], label) && shown;
 			fallback += b + " " + label + "    ";
 		}
 
 		if (BuildingPicked())
 		{
-			shown = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuNavRight", "Spot type") && shown;
+			shown = Prompt("MenuNavRight_NoScroll", "Spot type") && shown;
 			fallback += "LT RT spot type    ";
 		}
-		else if (!Asking())
+		else if (m_bMore || HasMore())
 		{
 			string more = "More";
 			if (m_bMore)
 				more = "Back";
 
-			shown = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuFilter", more) && shown;
+			shown = Prompt("MenuFilter", more) && shown;
 			fallback += "MENU " + more + "    ";
 		}
 
@@ -853,7 +974,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		else if (m_bMore)
 			close = "Back";
 
-		shown = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", close) && shown;
+		shown = Prompt("MenuBack", close) && shown;
 		fallback += "B " + close;
 		RZ_UIW.SetText(m_wRoot, "PromptsText", fallback);
 		RZ_UIW.Show(m_wRoot, "PromptsText", !shown);

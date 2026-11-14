@@ -18,9 +18,9 @@ COND_BOLD = '{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt
 TEXT = (0.925, 0.914, 0.882, 1)
 DIM = (0.604, 0.592, 0.561, 1)
 AMBER = (0.91, 0.698, 0.227, 1)
-PANEL = (0.086, 0.094, 0.102, 0.97)
-PANE = (0.118, 0.129, 0.141, 1)
-ROW = (0.153, 0.165, 0.18, 1)
+PANEL = (0.031, 0.035, 0.039, 0.98)
+PANE = (0.051, 0.057, 0.063, 1)
+ROW = (0.106, 0.118, 0.129, 1)
 
 
 class G:
@@ -31,8 +31,16 @@ class G:
         return hashlib.sha1((self.layout + key).encode()).hexdigest()[:16].upper()
 
 
+def lin(v):
+    """A display (sRGB) value as the linear one layouts hold: the screen converts them back."""
+    if v <= 0.04045:
+        return v / 12.92
+    return ((v + 0.055) / 1.055) ** 2.4
+
+
 def col(c):
-    return " ".join(("%g" % round(v, 3)) for v in c)
+    """Colours here are written as they should look (sRGB, like a mockup's hex); layouts take linear."""
+    return " ".join(("%g" % round(lin(v) if i < 3 else v, 4)) for i, v in enumerate(c))
 
 
 def slot(g, name, x, y, w, h, anchor="0 0 0 0"):
@@ -148,7 +156,7 @@ def menu():
             image(g, "FilterBg%d" % i, 0, 0, w, 38, (0.165, 0.176, 0.192, 1)),
             text(g, "FilterText%d" % i, 12, 6, w - 24, 28, (0.812, 0.8, 0.769, 1), n, 20)]))
         fx += w + 8
-    list_kids.append(text(g, "SortText", lw - 216, 18, 200, 28, DIM, "LT RT filter", 18))
+    list_kids.append(text(g, "SortText", lw - 336, lh - 34, 320, 28, DIM, "LT RT filter", 18))
     ry = 62
     for i in range(ROWS):
         list_kids.append(button(g, "Row%d" % i, 12, ry, lw - 24, 46, [
@@ -159,12 +167,12 @@ def menu():
             image(g, "RowStateBg%d" % i, lw - 24 - 200, 9, 190, 28, (0.267, 0.267, 0.255, 1)),
             text(g, "RowState%d" % i, lw - 24 - 192, 11, 178, 26, TEXT, "AUTOMATED", 18, BOLD)]))
         ry += 48
-    list_kids.append(text(g, "ListMore", 16, lh - 34, lw - 32, 28, DIM, "", 18))
+    list_kids.append(text(g, "ListMore", 16, lh - 34, 300, 28, DIM, "", 18))
     list_kids.append(text(g, "ListEmpty", 24, 80, lw - 48, 60, DIM, "No site here.", 22, visible=False))
     kids.append(frame(g, "ListPane", lx, ly, lw, lh, list_kids))
     # The detail pane
     dx, dy, dw, dh = px + lw + 24, 150, W - 2 * px - lw - 24, 660
-    d = [image(g, "DetailBg", 0, 0, dw, dh, (0.141, 0.153, 0.165, 1))]
+    d = [image(g, "DetailBg", 0, 0, dw, dh, (0.063, 0.07, 0.078, 1))]
     d.append(text(g, "DetailHead", 24, 20, dw - 48, 26, DIM, "THE HAVEN - STRONGHOLD", 18, BOLD))
     d.append(text(g, "DetailName", 24, 48, dw - 48, 50, TEXT, "Le Moule", 40, COND_BOLD))
     d.append(image(g, "DetailStateBg", 24, 104, 300, 32, (0.153, 0.314, 0.039, 1)))
@@ -172,7 +180,7 @@ def menu():
     d.append(image(g, "DetailPinBg", 336, 104, 110, 32, (0.267, 0.267, 0.255, 1), False))
     d.append(text(g, "DetailPin", 348, 107, 96, 28, TEXT, "PINNED", 20, BOLD, False))
     ky = 152
-    for i in range(4):
+    for i in range(3):
         d.append(text(g, "Key%d" % i, 24, ky, 180, 30, DIM, "Where", 22))
         d.append(text(g, "Val%d" % i, 210, ky, dw - 234, 30, TEXT, "26-54, 1.2 km NE of you", 22))
         ky += 34
@@ -182,7 +190,14 @@ def menu():
     for i in range(SPOTS):
         cx = 24 + (i % 2) * half
         cy = sy + (i // 2) * 30
-        d.append(text(g, "Spot%d" % i, cx, cy, half - 8, 30, (0.592, 0.769, 0.349, 1), "Quartermaster", 22))
+        d.append(image(g, "SpotIcon%d" % i, cx, cy + 4, 22, 22, (0.592, 0.769, 0.349, 1)))
+        d.append(text(g, "Spot%d" % i, cx + 30, cy, half - 38, 30, (0.592, 0.769, 0.349, 1), "Quartermaster", 22))
+    d.append(frame(g, "SpotPicker", 24, sy + 250, dw - 48, 40, [
+        image(g, "SpotPickerBg", 0, 0, dw - 48, 40, (0.165, 0.176, 0.192, 1)),
+        text(g, "SpotPickerLabel", 12, 7, 150, 28, DIM, "Next spot", 20),
+        button(g, "SpotPrev", 170, 0, 44, 40, [text(g, "SpotPrevText", 12, 0, 30, 38, AMBER, "<", 30, BOLD)]),
+        text(g, "SpotPickerType", 222, 6, dw - 48 - 290, 30, TEXT, "Wash spot", 22, BOLD),
+        button(g, "SpotNext", dw - 48 - 60, 0, 44, 40, [text(g, "SpotNextText", 14, 0, 30, 38, AMBER, ">", 30, BOLD)])], visible=False))
     d.append(text(g, "DetailNote", 24, dh - 62, dw - 48, 54, AMBER, "", 20, wrap=True))
     kids.append(frame(g, "DetailPane", dx, dy, dw, dh, d))
     # The unsaved-changes question, over the panes
@@ -210,21 +225,24 @@ def menu():
 # ------------------------------------------------------------------------------------ the HUD
 def hud():
     g = G("RZ_SiteHud")
-    W = 470
-    k = [image(g, "HudBg", 0, 0, W, 470, (0.071, 0.078, 0.086, 0.88)), image(g, "HudAccent", 0, 0, 4, 470, AMBER)]
-    k.append(text(g, "HudHead", 20, 14, W - 36, 24, DIM, "BUILDING - BASTION STRONGHOLD", 17, BOLD))
-    k.append(text(g, "HudName", 20, 38, W - 36, 38, TEXT, "Lamentin", 30, COND_BOLD))
-    k.append(text(g, "HudInfo", 20, 78, W - 36, 26, DIM, "41 objects - unsaved changes", 19))
-    k.append(text(g, "HudSpotsHead", 20, 112, W - 36, 24, DIM, "ROLE SPOTS - 7 OF 11", 17, BOLD))
-    k.append(image(g, "HudBarBg", 20, 140, W - 40, 6, (0.2, 0.216, 0.231, 1)))
-    k.append(image(g, "HudBarFill", 20, 140, 200, 6, (0.592, 0.769, 0.349, 1)))
-    half = (W - 40) // 2
+    W, H = 360, 330
+    k = [image(g, "HudBg", 0, 0, W, H, (0.063, 0.071, 0.078, 0.9)), image(g, "HudAccent", 0, 0, 3, H, AMBER)]
+    k.append(text(g, "HudHead", 16, 10, W - 28, 20, DIM, "BUILDING - BASTION STRONGHOLD", 14, BOLD))
+    k.append(text(g, "HudName", 16, 30, W - 28, 28, TEXT, "Lamentin", 22, COND_BOLD))
+    k.append(text(g, "HudInfo", 16, 58, W - 28, 20, DIM, "41 objects - unsaved changes", 15))
+    k.append(text(g, "HudSpotsHead", 16, 84, W - 28, 20, DIM, "ROLE SPOTS - 7 OF 11", 14, BOLD))
+    k.append(image(g, "HudBarBg", 16, 106, W - 32, 4, (0.2, 0.216, 0.231, 1)))
+    k.append(image(g, "HudBarFill", 16, 106, 160, 4, (0.592, 0.769, 0.349, 1)))
+    half = (W - 32) // 2
     for i in range(SPOTS):
-        k.append(text(g, "HudSpot%d" % i, 20 + (i % 2) * half, 156 + (i // 2) * 28, half - 6, 26, (0.592, 0.769, 0.349, 1), "Quartermaster", 20))
-    k.append(image(g, "HudTypeBg", 20, 392, W - 40, 34, (0.165, 0.176, 0.192, 1)))
-    k.append(text(g, "HudType", 32, 396, W - 64, 28, TEXT, "Next spot: Gate", 21))
-    k.append(text(g, "HudHint", 20, 432, W - 36, 30, DIM, "Site builder: put spots, save, stop", 18))
-    root = frame(g, "SiteHud", -W - 24, 120, W, 470, k, anchor="1 0 1 0")
+        x = 16 + (i % 2) * half
+        y = 116 + (i // 2) * 21
+        k.append(image(g, "HudSpotIcon%d" % i, x, y + 3, 15, 15, (0.592, 0.769, 0.349, 1)))
+        k.append(text(g, "HudSpot%d" % i, x + 20, y, half - 24, 20, (0.592, 0.769, 0.349, 1), "Quartermaster", 15))
+    k.append(image(g, "HudTypeBg", 16, 290, W - 32, 28, (0.165, 0.176, 0.192, 1)))
+    k.append(text(g, "HudType", 26, 294, W - 52, 22, TEXT, "< Wash spot >", 17, BOLD))
+    panel = frame(g, "SiteHudPanel", -W - 24, 96, W, H, k, anchor="1 0 1 0")
+    root = frame(g, "SiteHud", 0, 0, 0, 0, [panel], anchor="0 0 1 1")
     write("RZ_SiteHud.layout", root)
 
 
