@@ -21,10 +21,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -37,10 +37,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -53,12 +53,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -66,6 +66,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{AFC7B07FFA508482}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -74,14 +75,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge0"
      Slot FrameWidgetSlot "{B4D452E8F1F73C17}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -91,14 +92,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter0"
      Slot FrameWidgetSlot "{2D0D33027330C4A7}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -119,10 +120,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -135,10 +136,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -151,12 +152,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -164,6 +165,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{FB44FCD4D26135ED}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -172,14 +174,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge1"
      Slot FrameWidgetSlot "{CA6FC731A4F80185}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -189,14 +191,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter1"
      Slot FrameWidgetSlot "{CBED9D5FB2362E7E}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -217,10 +219,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -233,10 +235,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -249,12 +251,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -262,6 +264,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{07F6C1D868FF6C33}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -270,14 +273,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge2"
      Slot FrameWidgetSlot "{6EC3A57F56A00C2E}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -287,14 +290,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter2"
      Slot FrameWidgetSlot "{ED36F53F22D6772C}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -315,10 +318,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -331,10 +334,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -347,12 +350,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -360,6 +363,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{CF3712D9630E2726}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -368,14 +372,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge3"
      Slot FrameWidgetSlot "{73D3DC39B4F3E94C}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -385,14 +389,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter3"
      Slot FrameWidgetSlot "{85FAF5489AE66AF4}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -413,10 +417,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -429,10 +433,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -445,12 +449,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -458,6 +462,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{28EE2E38350F3F38}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -466,14 +471,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge4"
      Slot FrameWidgetSlot "{C7F7918AD4CDB359}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -483,14 +488,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter4"
      Slot FrameWidgetSlot "{ED7CB41785FFAC7B}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -511,10 +516,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -527,10 +532,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -543,12 +548,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -556,6 +561,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{55EC4F6D59EE73EC}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -564,14 +570,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge5"
      Slot FrameWidgetSlot "{26C3DDE856FF6BCF}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -581,14 +587,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter5"
      Slot FrameWidgetSlot "{FF73BD8E58D02B62}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -609,10 +615,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -625,10 +631,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -641,12 +647,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -654,6 +660,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{DA7ACA90B1EEE3CA}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -662,14 +669,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge6"
      Slot FrameWidgetSlot "{F043C6F2D49A893F}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -679,14 +686,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter6"
      Slot FrameWidgetSlot "{459FFBE7169BAC42}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -707,10 +714,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -723,10 +730,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -739,12 +746,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -752,6 +759,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{48497DC00162BBA6}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -760,14 +768,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge7"
      Slot FrameWidgetSlot "{454123F3F75DE0C0}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -777,14 +785,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter7"
      Slot FrameWidgetSlot "{31AD5867CDC7E7AA}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -805,10 +813,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -821,10 +829,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -837,12 +845,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -850,6 +858,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{599C139860284FBE}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -858,14 +867,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge8"
      Slot FrameWidgetSlot "{EAA8F8C1478344FC}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -875,14 +884,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter8"
      Slot FrameWidgetSlot "{EF75E410483D6FED}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -903,10 +912,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -919,10 +928,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -935,12 +944,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -948,6 +957,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{66FD37C95744EEBE}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -956,14 +966,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge9"
      Slot FrameWidgetSlot "{A9FE4F9C932846E8}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -973,14 +983,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter9"
      Slot FrameWidgetSlot "{34FDBAD87A0FDAE4}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -1001,10 +1011,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -1017,10 +1027,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1033,12 +1043,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1046,6 +1056,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{4453F33DC1CB5F12}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -1054,14 +1065,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge10"
      Slot FrameWidgetSlot "{4577BB8152EACF21}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -1071,14 +1082,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter10"
      Slot FrameWidgetSlot "{9C96AE32734FA3A3}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -1099,10 +1110,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -1115,10 +1126,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1131,12 +1142,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1144,6 +1155,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{DD82728489E3534C}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -1152,14 +1164,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge11"
      Slot FrameWidgetSlot "{04D552007CEBA6D2}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -1169,14 +1181,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter11"
      Slot FrameWidgetSlot "{830D5BFE98B80A78}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -1197,10 +1209,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -1213,10 +1225,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1229,12 +1241,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1242,6 +1254,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{506A1B33AC2F429D}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -1250,14 +1263,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge12"
      Slot FrameWidgetSlot "{AB027024F764F537}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -1267,14 +1280,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter12"
      Slot FrameWidgetSlot "{7F03E0CDCE9E3837}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -1295,10 +1308,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -1311,10 +1324,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1327,12 +1340,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1340,6 +1353,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{8F7843118C29B2FA}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -1348,14 +1362,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge13"
      Slot FrameWidgetSlot "{817AE21C05287E12}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -1365,14 +1379,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter13"
      Slot FrameWidgetSlot "{204CEB8B441E6BE7}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -1393,10 +1407,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -1409,10 +1423,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1425,12 +1439,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1438,6 +1452,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{9676D659A7D45338}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -1446,14 +1461,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge14"
      Slot FrameWidgetSlot "{01C4F6360887C2F1}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -1463,14 +1478,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter14"
      Slot FrameWidgetSlot "{7AB4B220B4A09460}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -1491,10 +1506,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -1507,10 +1522,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1523,12 +1538,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1536,6 +1551,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{9E61AC8A516A6C59}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -1544,14 +1560,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge15"
      Slot FrameWidgetSlot "{0D96227380B13793}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -1561,14 +1577,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter15"
      Slot FrameWidgetSlot "{AE259373184A3252}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -1589,10 +1605,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -1605,10 +1621,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1621,12 +1637,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1634,6 +1650,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{94CAF89F7F2CF1A9}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -1642,14 +1659,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge16"
      Slot FrameWidgetSlot "{607362A28042A04F}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -1659,14 +1676,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter16"
      Slot FrameWidgetSlot "{65B90F532D12D41F}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -1687,10 +1704,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -1703,10 +1720,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1719,12 +1736,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1732,6 +1749,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{949A13B55D59216E}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -1740,14 +1758,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge17"
      Slot FrameWidgetSlot "{7F21C2163BB319BA}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -1757,14 +1775,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter17"
      Slot FrameWidgetSlot "{35561AAB4BF5B643}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -1785,10 +1803,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -1801,10 +1819,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1817,12 +1835,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1830,6 +1848,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{C48B1E53A050202B}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -1838,14 +1857,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge18"
      Slot FrameWidgetSlot "{8F75E13E3135AB1D}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -1855,14 +1874,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter18"
      Slot FrameWidgetSlot "{A86FE91FAC40F446}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -1883,10 +1902,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -1899,10 +1918,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1915,12 +1934,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -1928,6 +1947,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{5D2463ABEC1B959D}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -1936,14 +1956,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge19"
      Slot FrameWidgetSlot "{CD23B17E89972F77}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -1953,14 +1973,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter19"
      Slot FrameWidgetSlot "{67D2F17D509428E4}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -1981,10 +2001,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -1997,10 +2017,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2013,12 +2033,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2026,6 +2046,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{FAB0B346D2C7D9D5}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -2034,14 +2055,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge20"
      Slot FrameWidgetSlot "{657743A05FDF666E}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -2051,14 +2072,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter20"
      Slot FrameWidgetSlot "{71D77B8312F85C72}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -2079,10 +2100,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -2095,10 +2116,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2111,12 +2132,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2124,6 +2145,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{C11C79CD352D2F8A}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -2132,14 +2154,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge21"
      Slot FrameWidgetSlot "{7AFB48D8BDC81EB9}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -2149,14 +2171,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter21"
      Slot FrameWidgetSlot "{21BE7D398C7AA5F0}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -2177,10 +2199,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -2193,10 +2215,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2209,12 +2231,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2222,6 +2244,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{4129A3F295623201}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -2230,14 +2253,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge22"
      Slot FrameWidgetSlot "{F1874E00873D23E8}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -2247,14 +2270,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter22"
      Slot FrameWidgetSlot "{601A30F4F5F1A3A5}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -2275,10 +2298,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -2291,10 +2314,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2307,12 +2330,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2320,6 +2343,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{D0B1E9D53A94ADA7}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -2328,14 +2352,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge23"
      Slot FrameWidgetSlot "{1D1EB61ED4C82AA9}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -2345,14 +2369,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter23"
      Slot FrameWidgetSlot "{7EF3F265EC979E0E}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -2373,10 +2397,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -2389,10 +2413,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2405,12 +2429,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2418,6 +2442,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{370978131F5738AB}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -2426,14 +2451,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge24"
      Slot FrameWidgetSlot "{1FAF5350D821EF1E}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -2443,14 +2468,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter24"
      Slot FrameWidgetSlot "{3570132848CEF409}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -2471,10 +2496,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -2487,10 +2512,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2503,12 +2528,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2516,6 +2541,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{C639DD058669DDE8}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -2524,14 +2550,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge25"
      Slot FrameWidgetSlot "{0E1C91BA29DC5220}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -2541,14 +2567,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter25"
      Slot FrameWidgetSlot "{C1F2B7A0CE840C0C}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -2569,10 +2595,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -2585,10 +2611,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2601,12 +2627,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2614,6 +2640,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{369A75957F24230B}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -2622,14 +2649,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge26"
      Slot FrameWidgetSlot "{80C30749EFCBCC6B}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -2639,14 +2666,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter26"
      Slot FrameWidgetSlot "{2BB25EDF5D14DBA9}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -2667,10 +2694,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -2683,10 +2710,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2699,12 +2726,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2712,6 +2739,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{C69414C4BFFE46D7}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -2720,14 +2748,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge27"
      Slot FrameWidgetSlot "{6449702BF4378693}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -2737,14 +2765,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter27"
      Slot FrameWidgetSlot "{76600222F88E50D5}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -2765,10 +2793,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -2781,10 +2809,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2797,12 +2825,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2810,6 +2838,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{A6655EDE678AC27C}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -2818,14 +2847,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge28"
      Slot FrameWidgetSlot "{E41948BC63E26D02}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -2835,14 +2864,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter28"
      Slot FrameWidgetSlot "{4E792C8C3346AE28}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -2863,10 +2892,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -2879,10 +2908,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2895,12 +2924,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2908,6 +2937,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{C59D42DA0E3C91C1}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -2916,14 +2946,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge29"
      Slot FrameWidgetSlot "{28C1EDC40D7BD866}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -2933,14 +2963,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter29"
      Slot FrameWidgetSlot "{ADDD9082C65F9941}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -2961,10 +2991,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -2977,10 +3007,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -2993,12 +3023,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3006,6 +3036,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{6E063E39A39644CA}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -3014,14 +3045,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge30"
      Slot FrameWidgetSlot "{AFF96996835D77A9}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -3031,14 +3062,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter30"
      Slot FrameWidgetSlot "{33296D364F3BA076}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -3059,10 +3090,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -3075,10 +3106,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3091,12 +3122,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3104,6 +3135,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{74F04CC2B8CA5DB5}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -3112,14 +3144,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge31"
      Slot FrameWidgetSlot "{6252E9F6423AAB52}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -3129,14 +3161,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter31"
      Slot FrameWidgetSlot "{D5702CB3B10FBD91}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -3157,10 +3189,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -3173,10 +3205,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3189,12 +3221,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3202,6 +3234,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{63F048E3052F3A3A}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -3210,14 +3243,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge32"
      Slot FrameWidgetSlot "{DD3C7410B481D749}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -3227,14 +3260,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter32"
      Slot FrameWidgetSlot "{DCD278DF7A4D0D74}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -3255,10 +3288,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -3271,10 +3304,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3287,12 +3320,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3300,6 +3333,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{D26DBEE1AA5005E4}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -3308,14 +3342,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge33"
      Slot FrameWidgetSlot "{77FE1A95837089A4}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -3325,14 +3359,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter33"
      Slot FrameWidgetSlot "{064853DBFFEE72C1}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -3353,10 +3387,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -3369,10 +3403,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3385,12 +3419,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3398,6 +3432,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{FB7EA84B65C70F22}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -3406,14 +3441,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge34"
      Slot FrameWidgetSlot "{54A9A025E3D6E2B7}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -3423,14 +3458,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter34"
      Slot FrameWidgetSlot "{372A2F7B241B94B4}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -3451,10 +3486,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -3467,10 +3502,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3483,12 +3518,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3496,6 +3531,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{B86270A450996835}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -3504,14 +3540,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge35"
      Slot FrameWidgetSlot "{201ACE0A78760211}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -3521,14 +3557,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter35"
      Slot FrameWidgetSlot "{DCDA74FA4F1CF9A1}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -3549,10 +3585,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -3565,10 +3601,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3581,12 +3617,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3594,6 +3630,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{D39BECD545C6DA95}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -3602,14 +3639,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge36"
      Slot FrameWidgetSlot "{EBD317DB8918A5BF}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -3619,14 +3656,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter36"
      Slot FrameWidgetSlot "{AB3247AAEB6A47A8}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -3647,10 +3684,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -3663,10 +3700,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3679,12 +3716,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3692,6 +3729,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{231E57BB4C84A13F}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -3700,14 +3738,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge37"
      Slot FrameWidgetSlot "{A03DCDA54A6AEC9C}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -3717,14 +3755,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter37"
      Slot FrameWidgetSlot "{9891C974717882E9}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -3745,10 +3783,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -3761,10 +3799,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3777,12 +3815,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3790,6 +3828,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{88D89A18A4BF5ECC}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -3798,14 +3837,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge38"
      Slot FrameWidgetSlot "{54722504AEA56783}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -3815,14 +3854,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter38"
      Slot FrameWidgetSlot "{7F00265672E0AA10}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -3843,10 +3882,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -3859,10 +3898,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3875,12 +3914,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3888,6 +3927,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{818F443226401A13}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -3896,14 +3936,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge39"
      Slot FrameWidgetSlot "{4C40961DD2E42043}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -3913,14 +3953,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter39"
      Slot FrameWidgetSlot "{ED02CB2DD47DAD2A}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -3941,10 +3981,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -3957,10 +3997,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3973,12 +4013,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -3986,6 +4026,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{8E385792F5D5AF17}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -3994,14 +4035,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge40"
      Slot FrameWidgetSlot "{824A1F148F29FF2B}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -4011,14 +4052,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter40"
      Slot FrameWidgetSlot "{5F39881872926CA4}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -4039,10 +4080,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -4055,10 +4096,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4071,12 +4112,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4084,6 +4125,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{6EEEE21E051B7BF6}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -4092,14 +4134,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge41"
      Slot FrameWidgetSlot "{76BBAE22ABC95B7A}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -4109,14 +4151,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter41"
      Slot FrameWidgetSlot "{357AE09419B2CE6B}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -4137,10 +4179,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -4153,10 +4195,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4169,12 +4211,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4182,6 +4224,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{F2E1B0B60C06570A}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -4190,14 +4233,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge42"
      Slot FrameWidgetSlot "{E830355AA888141A}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -4207,14 +4250,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter42"
      Slot FrameWidgetSlot "{2D76F319F35CB48E}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -4235,10 +4278,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -4251,10 +4294,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4267,12 +4310,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4280,6 +4323,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{D30E919967DD6217}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -4288,14 +4332,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge43"
      Slot FrameWidgetSlot "{7E236BAA04D368EE}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -4305,14 +4349,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter43"
      Slot FrameWidgetSlot "{12AD72FAC3C17F5C}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -4333,10 +4377,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -4349,10 +4393,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4365,12 +4409,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4378,6 +4422,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{4AABB3A7A952CEC3}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -4386,14 +4431,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge44"
      Slot FrameWidgetSlot "{D8A3E36B208072B6}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -4403,14 +4448,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter44"
      Slot FrameWidgetSlot "{4C50C75DCF3A2FBD}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -4431,10 +4476,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -4447,10 +4492,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4463,12 +4508,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4476,6 +4521,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{62F5935D61463BA8}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -4484,14 +4530,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge45"
      Slot FrameWidgetSlot "{6413A8FDFD8AF3E4}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -4501,14 +4547,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter45"
      Slot FrameWidgetSlot "{1C7EA6AB18C8945B}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -4529,10 +4575,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -4545,10 +4591,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4561,12 +4607,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4574,6 +4620,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{8ABB841A2A3EACFF}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -4582,14 +4629,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge46"
      Slot FrameWidgetSlot "{8C24288362105C91}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -4599,14 +4646,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter46"
      Slot FrameWidgetSlot "{2F969D3E9B78EED8}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1
@@ -4627,10 +4674,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 220
-    OffsetRight -220
-    SizeY 60
-    OffsetBottom -60
+    SizeX 320
+    OffsetRight -320
+    SizeY 90
+    OffsetBottom -90
     Alignment 0 0
    }
    "Is Visible" 0
@@ -4643,10 +4690,10 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 220
-      OffsetRight -220
-      SizeY 26
-      OffsetBottom -26
+      SizeX 320
+      OffsetRight -320
+      SizeY 50
+      OffsetBottom -50
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4659,12 +4706,12 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
       Anchor 0 0 0 0
       PositionX 8
       OffsetLeft 8
-      PositionY 2
-      OffsetTop 2
-      SizeX 206
-      OffsetRight -214
-      SizeY 22
-      OffsetBottom -24
+      PositionY 3
+      OffsetTop 3
+      SizeX 304
+      OffsetRight -312
+      SizeY 44
+      OffsetBottom -47
       Alignment 0 0
      }
      "Is Visible" 0
@@ -4672,6 +4719,7 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Text "Gate"
      "Font Size" 17
      "Min Font Size" 17
+     Wrap 1
      FontProperties FontProperties "{745F7EA4D518BE8A}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
@@ -4680,14 +4728,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkBadge47"
      Slot FrameWidgetSlot "{4163B30E068BA50E}" {
       Anchor 0 0 0 0
-      PositionX 96
-      OffsetLeft 96
-      PositionY 30
-      OffsetTop 30
+      PositionX 146
+      OffsetLeft 146
+      PositionY 56
+      OffsetTop 56
       SizeX 28
-      OffsetRight -124
+      OffsetRight -174
       SizeY 28
-      OffsetBottom -58
+      OffsetBottom -84
       Alignment 0 0
      }
      Color 0.8073 0.4451 0.0421 1
@@ -4697,14 +4745,14 @@ FrameWidgetClass "{714090FCDB5C91EA}" {
      Name "MarkLetter47"
      Slot FrameWidgetSlot "{9E21453C5237F2F6}" {
       Anchor 0 0 0 0
-      PositionX 100
-      OffsetLeft 100
-      PositionY 32
-      OffsetTop 32
+      PositionX 150
+      OffsetLeft 150
+      PositionY 58
+      OffsetTop 58
       SizeX 24
-      OffsetRight -124
+      OffsetRight -174
       SizeY 24
-      OffsetBottom -56
+      OffsetBottom -82
       Alignment 0 0
      }
      Color 0.0153 0.0116 0.0072 1

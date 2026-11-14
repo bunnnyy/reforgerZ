@@ -63,7 +63,13 @@ class RZ_SiteHud
 			return;
 		}
 
-		if (!s_wRoot && !Make())
+		// In Game Master the bar goes inside its screen (a loose widget under it gets no clicks): made
+		// again whenever the screen it should be in changes
+		Widget parent = Parent();
+		if (s_wRoot && s_wRoot.GetParent() != parent)
+			Drop();
+
+		if (!s_wRoot && !Make(parent))
 			return;
 
 		s_wRoot.SetVisible(!s_bHidden);
@@ -96,15 +102,57 @@ class RZ_SiteHud
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool Make()
+	//------------------------------------------------------------------------------------------------
+	//! Where the bar goes: Game Master's screen while it's open (its top menu, not the site builder's
+	//! own), else the workspace.
+	protected static Widget Parent()
+	{
+		WorkspaceWidget ws = GetGame().GetWorkspace();
+		MenuManager menus = GetGame().GetMenuManager();
+		if (!menus)
+			return ws;
+
+		MenuBase top = menus.GetTopMenu();
+		if (!top || RZ_SiteBuilderMenu.Cast(top))
+			return ws;
+
+		SCR_EditorManagerEntity editor = SCR_EditorManagerEntity.GetInstance();
+		if (!editor || !editor.IsOpened())
+			return ws;
+
+		Widget root = top.GetRootWidget();
+		if (!root)
+			return ws;
+
+		return root;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The bar taken down (kept state: page, picked type, loop).
+	protected static void Drop()
+	{
+		if (s_wRoot)
+			s_wRoot.RemoveFromHierarchy();
+
+		s_wRoot = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool Make(Widget parent)
 	{
 		WorkspaceWidget ws = GetGame().GetWorkspace();
 		if (!ws)
 			return false;
 
-		s_wRoot = ws.CreateWidgets(LAYOUT);
+		if (parent && parent != ws)
+			s_wRoot = ws.CreateWidgets(LAYOUT, parent); // VERIFY: widgets made inside Game Master's menu root take its mouse clicks
+		else
+			s_wRoot = ws.CreateWidgets(LAYOUT);
+
 		if (!s_wRoot)
 			return false;
+
+		s_wRoot.SetZOrder(1000);
 
 		s_Click = new RZ_SiteBarClick();
 		array<string> names = {"PagePrev", "PageNext", "BarUndo", "BarSave", "BarStop"};

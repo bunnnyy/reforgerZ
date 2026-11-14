@@ -19,7 +19,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	protected static string s_sPicked;			// the picked site's id, kept for the session
 	protected static bool s_bOpen;
 
-	protected static const int ROWS = 10;		// Row0-Row9 in the layout
+	protected static const int ROWS = 8;		// Row0-Row7 in the layout: the small cards, two across
 	protected static const int SPOTS = 16;		// Spot0-Spot15
 	protected static const int TABS = 5;
 	protected static const int FILTERS = 4;
@@ -86,11 +86,10 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		input.AddActionListener("MenuFavourite", EActionTrigger.DOWN, OnY);
 		input.AddActionListener("MenuDelete", EActionTrigger.DOWN, OnR3);
 		input.AddActionListener("MenuFilter", EActionTrigger.DOWN, OnMore);
-		for (int t = 0; t < TABS; t++)
-		{
-			RZ_UIW.OnClick(m_wRoot, "Tab" + t.ToString(), m_Click);
-			RZ_UIW.SetTag(RZ_UIW.Find(m_wRoot, "Tab" + t.ToString()), t);
-		}
+		RZ_UIW.OnClick(m_wRoot, "FactionPrev", m_Click);
+		RZ_UIW.OnClick(m_wRoot, "FactionNext", m_Click);
+		input.AddActionListener("MenuLeft", EActionTrigger.DOWN, OnLeft);
+		input.AddActionListener("MenuRight", EActionTrigger.DOWN, OnRight);
 
 		for (int f = 0; f < FILTERS; f++)
 		{
@@ -113,6 +112,8 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	override void OnMenuClose()
 	{
 		InputManager input = GetGame().GetInputManager();
+		input.RemoveActionListener("MenuLeft", EActionTrigger.DOWN, OnLeft);
+		input.RemoveActionListener("MenuRight", EActionTrigger.DOWN, OnRight);
 		input.RemoveActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
 		input.RemoveActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
 		input.RemoveActionListener("MenuTabLeft", EActionTrigger.DOWN, OnTabLeft);
@@ -211,8 +212,6 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		foreach (int row, int idx : m_aShown)
 		{
 			int fac = RZ_UIText.Int(m_aSites[idx], 4);
-			if (s_iTab == 0 && fac != last)
-				m_aItems.Insert(-1 - fac);
 
 			last = fac;
 			m_aItems.Insert(row);
@@ -282,11 +281,25 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	protected void OnUp(float value = 0, EActionTrigger reason = 0)
 	{
 		if (!Asking())
-			Pick(PickedRow() - 1);
+			Pick(PickedRow() - 2);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void OnDown(float value = 0, EActionTrigger reason = 0)
+	{
+		if (!Asking())
+			Pick(PickedRow() + 2);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnLeft(float value = 0, EActionTrigger reason = 0)
+	{
+		if (!Asking())
+			Pick(PickedRow() - 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnRight(float value = 0, EActionTrigger reason = 0)
 	{
 		if (!Asking())
 			Pick(PickedRow() + 1);
@@ -580,8 +593,10 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	override protected void OnClickOther(Widget w, string name)
 	{
 		int tag = RZ_UIW.GetTag(w);
-		if (name.StartsWith("Tab"))
-			SetTab(tag);
+		if (name == "FactionPrev")
+			OnTabLeft();
+		else if (name == "FactionNext")
+			OnTabRight();
 		else if (name.StartsWith("Filter") && !BuildingPicked())
 			SetFilter(tag);
 		else if (name.StartsWith("Row") && !Asking() && tag >= 0)
@@ -646,24 +661,22 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	protected void DrawTabs()
 	{
-		array<string> names = {"All", "Haven", "Bastion", "Red Hand", "Halcyon"};
+		array<string> names = {"All factions", "The Haven", "Task Force Bastion", "The Red Hand", "Halcyon"};
+		int count = 0;
+		foreach (array<string> counted : m_aSites)
+		{
+			if (s_iTab == 0 || RZ_UIText.Int(counted, 4) == s_iTab - 1)
+				count++;
+		}
+
+		RZ_UIW.SetText(m_wRoot, "FactionName", string.Format("%1 (%2)", names[s_iTab], count));
 		for (int t = 0; t < TABS; t++)
 		{
-			int n = 0;
-			foreach (array<string> site : m_aSites)
-			{
-				if (t == 0 || RZ_UIText.Int(site, 4) == t - 1)
-					n++;
-			}
-
-			string idx = t.ToString();
-			RZ_UIW.SetText(m_wRoot, "TabText" + idx, string.Format("%1 (%2)", names[t], n));
-			RZ_UIW.Show(m_wRoot, "TabLine" + idx, t == s_iTab);
-			Color c = Lin(154, 151, 143);
+			Color dot = Lin(80, 80, 80);
 			if (t == s_iTab)
-				c = Lin(255, 255, 255);
+				dot = Lin(232, 178, 58);
 
-			RZ_UIW.Tint(m_wRoot, "TabText" + idx, c);
+			RZ_UIW.Tint(m_wRoot, "FactionDot" + t.ToString(), dot);
 		}
 
 		array<string> filters = {"All", "Not built", "Hand-built", "Pinned"};
@@ -745,6 +758,8 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		}
 
 		m_iFirst = Math.Clamp(m_iFirst, 0, Math.Max(0, m_aItems.Count() - ROWS));
+		// Whole rows of two cards
+		m_iFirst -= m_iFirst % 2;
 		bool unsaved = RZ_UIText.Int(m_aHead, 5) == 1;
 		for (int r = 0; r < ROWS; r++)
 		{
@@ -761,7 +776,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			int item = m_aItems[at];
 			bool heading = item < 0;
 			RZ_UIW.SetTag(row, item);
-			RZ_UIW.Show(m_wRoot, "RowHead" + idx, heading);
+			RZ_UIW.Show(m_wRoot, "RowHead" + idx, true);
 			RZ_UIW.Show(m_wRoot, "RowName" + idx, !heading);
 			RZ_UIW.Show(m_wRoot, "RowSpots" + idx, !heading);
 			RZ_UIW.Show(m_wRoot, "RowStateBg" + idx, !heading);
@@ -778,7 +793,10 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 
 			array<string> site = m_aSites[m_aShown[item]];
 			bool on = item == picked;
-			RZ_UIW.SetText(m_wRoot, "RowName" + idx, RZ_UIText.Clean(RZ_UIText.Str(site, 2), 34));
+			RZ_UIW.SetText(m_wRoot, "RowName" + idx, RZ_UIText.Clean(RZ_UIText.Str(site, 2), 60));
+			string cardKind = RZ_UIText.Str(site, 3);
+			cardKind.ToUpper();
+			RZ_UIW.SetText(m_wRoot, "RowHead" + idx, headings[Math.Clamp(RZ_UIText.Int(site, 4), 0, 3)] + " · " + cardKind);
 			int building = RZ_UIText.Int(site, 10);
 			RZ_UIW.Show(m_wRoot, "RowDot" + idx, building == 1 && unsaved);
 			// Spots: done of all, for a site that's built or being built
@@ -803,7 +821,12 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 			RZ_UIW.SetText(m_wRoot, "RowState" + idx, words);
 			RZ_UIW.Tint(m_wRoot, "RowStateBg" + idx, bg);
 			RZ_UIW.Tint(m_wRoot, "RowState" + idx, fg);
-			RZ_UIW.Show(m_wRoot, "RowBg" + idx, on);
+			Color cardBg = Lin(27, 30, 33);
+			if (on)
+				cardBg = Lin(42, 47, 52);
+
+			RZ_UIW.Tint(m_wRoot, "RowBg" + idx, cardBg);
+			RZ_UIW.Show(m_wRoot, "RowBg" + idx, true);
 			RZ_UIW.Show(m_wRoot, "RowMark" + idx, on);
 			if (on && row)
 				RZ_UIW.FocusWidget(row);
@@ -831,7 +854,7 @@ class RZ_SiteBuilderMenu : RZ_MenuBase
 		string kind = RZ_UIText.Str(site, 3);
 		kind.ToUpper();
 		RZ_UIW.SetText(m_wRoot, "DetailHead", factions[fac] + " · " + kind);
-		RZ_UIW.SetText(m_wRoot, "DetailName", RZ_UIText.Clean(RZ_UIText.Str(site, 2), 44));
+		RZ_UIW.SetText(m_wRoot, "DetailName", RZ_UIText.Clean(RZ_UIText.Str(site, 2), 80));
 		string words;
 		Color bg;
 		Color fg;

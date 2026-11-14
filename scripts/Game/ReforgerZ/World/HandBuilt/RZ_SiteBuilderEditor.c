@@ -365,7 +365,7 @@ class RZ_SiteBuilderMarks
 			RZ_UIW.SetText(s_wLabels, "MarkName" + idx, s_aLabelName[i]);
 			RZ_UIW.Show(s_wLabels, "MarkName" + idx, near);
 			RZ_UIW.Show(s_wLabels, "MarkNameBg" + idx, near);
-			RZ_UIW.SetPos(label, screen[0] - 110, screen[1] - 46);
+			RZ_UIW.SetPos(label, screen[0] - 160, screen[1] - 84);
 			label.SetVisible(true);
 		}
 	}

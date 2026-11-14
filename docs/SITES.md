@@ -322,13 +322,14 @@ screen's **[Admin] Site builder** (any person), or `/sites` in chat. It opens on
 you need one in the world. A client that can't open it (no preset or layout) gets the same actions as
 the object menu's rows instead (`RZ_SiteBuilder.OpenRowsMenu`).
 
-**The list** (left) shows every site camp life lays out on this map (the holdings, the Haven
-safehouses, the road posts standing now), nearest first, ten rows at a time (the wheel or up and down
-move through it). **Faction tabs** across the top (All, Haven, Bastion, Red Hand, Halcyon, each with
-its count; LB and RB, or a click); the All tab groups the sites under their faction's heading.
-**Filters** above the list (All, Not built, Hand-built, Pinned; LT and RT, or a click). Each row: the
-site's name, an amber dot while you build it with unsaved changes, its spots done of those it needs
-(green when complete, red when not, a dash when nothing's built) and its state:
+**The cards.** Every site camp life lays out on this map (the holdings, the Haven safehouses, the road
+posts standing now), nearest first, as small cards on the right, two across and four down (up and down
+a row, left and right a card, the wheel the next): each with its faction and kind, its name (two lines
+when long), an amber dot while you build it with unsaved changes, its state and its spots done of
+those it needs (green when complete, red when not, a dash when nothing's built). **The faction
+switcher** on top (`<` All factions, the Haven, Bastion, the Red Hand, Halcyon `>`, with the count and
+a dot for each; LB and RB, or its arrows) and **filters** top right (All, Not built, Hand-built,
+Pinned; LT and RT, or a click). An **X** top right closes it.
 
 | State | Means |
 |---|---|
@@ -337,7 +338,7 @@ site's name, an amber dot while you build it with unsaved changes, its spots don
 | **NOT IN USE** | your build is kept, but the automated layout is used |
 | **BUILDING NOW** / **SOMEONE BUILDING** | you, or another admin, are building it |
 
-**The picked site** (right): faction and kind, its name, its state (and **PINNED**), the building
+**The picked site** (the big card, left): faction and kind, its name, its state (and **PINNED**), the building
 it moved into, where it is from you, its objects (and **unsaved changes**), when it was last saved,
 and its role spots as a checklist: an icon and the spot's name, green when there, red when missing,
 grey when only nice to have. A line above the button bar confirms what the last button did ("Put:
