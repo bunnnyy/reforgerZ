@@ -1651,6 +1651,10 @@ class RZ_CampLife
 		}
 
 		int spots = LayHandSpots(p, site);
+		RZ_HandSpot labSpot = RZ_HandSpots.First(site.m_aSpots, "lab");
+		if (labSpot)
+			m_GM.MoveLab(labSpot.m_vPos, labSpot.m_fYaw);
+
 		array<IEntity> qms = {};
 		Quartermasters(p, qms);
 		foreach (IEntity qm : qms)

@@ -370,7 +370,7 @@ they stay standing for you to come back to. One admin builds a site at a time.
 
 **The build bar** (`UI/RZ_SiteHud.c`, layout `RZ_SiteHud.layout`): while you build, a compact panel
 top right, clicked with Game Master's cursor (hidden while the screen is open). Its head: the site and
-its spots done (`7/11 · unsaved`). Three pages, turned with its `<` `>` buttons: **People** (gate,
+its spots done (`7/11 · unsaved`). Four pages, turned with its `<` `>` buttons: **People** (gate,
 watch, seat, work, sleep, lean, quartermaster, leader) and **Places** (cook, canteen, water, wash,
 medic, stores, chop, latrine), each a button with what's there (`done`, `0/2` in red, `+` when only
 nice to have): pick one, then click the ground (Game Master's own left click) and the spot is put
@@ -378,13 +378,13 @@ where the cursor points, facing in (the gate and the watch facing out). While a 
 see-through cone (Game Master's own placing look) and its label follow the cursor; right click (Game
 Master's own) puts the type away. And **Patrols** ([Role
 spots](#role-spots)), whose **Delete all markers** takes up every spot and patrol point (the
-objects stay). Undo takes up the last spot; **Reset** puts the site back to its last save (or to
+objects stay). And **More**: the cure's lab. Undo takes up the last spot; **Reset** puts the site back to its last save (or to
 how this build started, with none); **Clear** takes away every object and spot, to bare ground;
 Save and Stop are the screen's. Reset, Clear and Delete all markers ask first, in the bar (Yes / No).
 
 **The cones' labels** (`RZ_SiteBuilderMarks`, layout `RZ_SiteMarks.layout`): over each spot's cone a
 round badge with a letter (G gate, W watch, S seat, K work, Z sleep, L lean, Q quartermaster, Ld
-leader, C cook, T canteen, Wa water, Ws wash, M medic, St stores, Ch chop, La latrine; a patrol point
+leader, C cook, T canteen, Wa water, Ws wash, M medic, St stores, Ch chop, La latrine, Lb the cure's lab; a patrol point
 its number, in its loop's colour like its dashed line), green when right, red when something's wrong, amber when suggested; within 25 m of the
 camera the spot's name too, with what's wrong.
 
@@ -477,6 +477,7 @@ camp life's tags; the canteen's **Hand spot meal**, eight seats round a point, f
 | Latrine | a point found by name | the short walk to the latrine and back |
 | Quartermaster's place | a position | the quartermaster is stood there, facing its way, to serve |
 | Leader's place | a position | where an outpost's leader sits and its people come out (else the canteen) |
+| The cure's lab | a position | where the cure's lab tent stands, when the site is in the lab's own town (within 400 m of it): saving the site or laying it moves the lab there (`RZ_GameModeComponent.MoveLab`, deliveries go to it there, the place is kept in the world's save); a lab placed in the world by the map stays put. Never asked for |
 | Walk point | a point of a **patrol loop** (up to three, put down on the build bar's Patrols page in order; three points or more close back to the first) | loop 1 is the patrol along the wire (and the stroll and Halcyon's courier), loop 2 the walk out the approach, loop 3 the threat side's; drawn as numbered badges joined by a dashed line in the loop's colour |
 
 The quartermaster and the medic are moved to their spots when the place's people come out

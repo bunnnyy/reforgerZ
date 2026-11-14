@@ -1365,6 +1365,30 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! The lab entity (placed or spawned), null without one.
 	IEntity GetLabEntity() { return m_Lab; }
 
+	//------------------------------------------------------------------------------------------------
+	//! The cure's lab moved to a hand-built site's lab spot (docs/SITES.md, "Role spots"): only a site
+	//! in the lab's own town (within 400 m of it), and only a lab this mode spawned (one placed in the
+	//! world by the map stays). Deliveries go to it where it now stands.
+	void MoveLab(vector pos, float yaw)
+	{
+		if (!m_bHasLab || m_sLabPrefab.IsEmpty())
+			return;
+
+		if (m_Lab && m_Lab.GetPrefabData() && m_Lab.GetPrefabData().GetPrefabName() != m_sLabPrefab)
+			return;
+
+		float d = RZ_Util.DistXZ(m_vLabPos, pos);
+		if (d < 0.5 || d > 400)
+			return;
+
+		if (m_Lab)
+			SCR_EntityHelper.DeleteEntityAndChildren(m_Lab);
+
+		m_vLabPos = RZ_Util.GroundPos(pos);
+		m_Lab = RZ_Util.SpawnPrefab(m_sLabPrefab, m_vLabPos, yaw);
+		RZ_Log.Info(string.Format("Lab: moved %1 m to its hand-built spot at %2.", RZ_Util.RoundToInt(d), RZ_SettlementScanner.GridReference(m_vLabPos)));
+	}
+
 	bool HasLab() { return m_bHasLab; }
 
 	//------------------------------------------------------------------------------------------------

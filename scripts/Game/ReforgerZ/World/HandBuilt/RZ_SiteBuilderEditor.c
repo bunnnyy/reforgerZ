@@ -325,6 +325,7 @@ class RZ_SiteBuilderMarks
 			case "water": return "Wa";
 			case "wash": return "Ws";
 			case "medic": return "M";
+			case "lab": return "Lb";
 			case "stores": return "St";
 			case "chop": return "Ch";
 			case "latrine": return "La";

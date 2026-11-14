@@ -10,7 +10,7 @@ class RZ_SiteHud
 {
 	protected static const ResourceName LAYOUT = "{4382F77E3ACA1D25}UI/layouts/ReforgerZ/RZ_SiteHud.layout";
 	protected static const int BUTTONS = 8;		// Btn0-Btn7
-	protected static const int PAGES = 3;
+	protected static const int PAGES = 4;
 	protected static const int LOOPS = 3;
 
 	protected static Widget s_wRoot;
@@ -46,6 +46,18 @@ class RZ_SiteHud
 			types.Copy(placeTypes);
 			names.Copy(placeNames);
 		}
+		else if (page == 3)
+		{
+			types.Insert("lab");
+			names.Insert("Cure lab");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The page now is spot types (People, Places, More), not the patrols.
+	protected static bool TypesPage()
+	{
+		return s_iPage != 2;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -234,7 +246,7 @@ class RZ_SiteHud
 		if (!s_wRoot)
 			return;
 
-		array<string> titles = {"People", "Places", "Patrols"};
+		array<string> titles = {"People", "Places", "Patrols", "More"};
 		RZ_UIW.SetText(s_wRoot, "PageTitle", string.Format("%1 · %2/%3", titles[s_iPage], s_iPage + 1, PAGES));
 		RZ_UIW.SetText(s_wRoot, "BarProgress", s_sProgress);
 		Color idle = RZ_SiteBuilderMenu.Lin(36, 40, 44);
@@ -251,13 +263,18 @@ class RZ_SiteHud
 			string state = "";
 			Color stateCol = grey;
 			bool on = false;
-			if (s_iPage < 2)
+			if (TypesPage())
 			{
 				array<string> types = {};
 				array<string> names = {};
 				PageTypes(s_iPage, types, names);
-				string type = types[i];
-				name = names[i];
+				string type = "";
+				if (i < types.Count())
+				{
+					type = types[i];
+					name = names[i];
+				}
+
 				on = s_sArmed == type;
 				array<string> rec = TypeRecord(type);
 				int have = 0;
@@ -349,7 +366,7 @@ class RZ_SiteHud
 			if (litName == "BarConfirmYes")
 				lit = RZ_SiteBuilderMenu.Lin(250, 208, 120);
 
-			if (litName.StartsWith("Btn") && s_iPage < 2 && LitArmed(RZ_UIW.GetTag(s_wLit)))
+			if (litName.StartsWith("Btn") && TypesPage() && LitArmed(RZ_UIW.GetTag(s_wLit)))
 				lit = RZ_SiteBuilderMenu.Lin(250, 208, 120);
 
 			RZ_UIW.Tint(s_wRoot, litBg, lit);
@@ -427,7 +444,7 @@ class RZ_SiteHud
 		if (!name.StartsWith("Btn"))
 			return "";
 
-		if (s_iPage < 2)
+		if (TypesPage())
 		{
 			array<string> types = {};
 			array<string> names = {};
@@ -603,7 +620,7 @@ class RZ_SiteHud
 	//------------------------------------------------------------------------------------------------
 	protected static void PressButton(int i)
 	{
-		if (s_iPage < 2)
+		if (TypesPage())
 		{
 			array<string> types = {};
 			array<string> names = {};

@@ -55,6 +55,7 @@ class RZ_HandSpots
 		result.Insert("latrine");
 		result.Insert("qm");
 		result.Insert("leader");
+		result.Insert("lab");
 		result.Insert("route");
 	}
 
@@ -88,6 +89,7 @@ class RZ_HandSpots
 			case "latrine": return "Latrine";
 			case "qm": return "Quartermaster's place";
 			case "leader": return "Leader's place";
+			case "lab": return "The cure's lab";
 			case "route": return "Walk point";
 		}
 
@@ -116,6 +118,7 @@ class RZ_HandSpots
 			case "latrine": return "Where people go to relieve themselves.";
 			case "qm": return "Where the quartermaster stands to trade with you.";
 			case "leader": return "Where the camp's leader spends the day.";
+			case "lab": return "Where the cure's lab tent stands, in its own town: it moves here when the site is saved or used.";
 			case "route": return "A point on a patrol: the guards walk the points in order.";
 		}
 

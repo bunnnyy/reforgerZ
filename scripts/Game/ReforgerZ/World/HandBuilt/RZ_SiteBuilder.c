@@ -1128,6 +1128,11 @@ class RZ_SiteBuilder
 		}
 
 		s.m_sSig = Sig(s);
+		// The cure's lab goes to its spot now (its own town only: RZ_GameModeComponent.MoveLab)
+		RZ_HandSpot labSpot = RZ_HandSpots.First(hs.m_aSpots, "lab");
+		if (labSpot)
+			RZ_GameModeComponent.GetInstance().MoveLab(labSpot.m_vPos, labSpot.m_fYaw);
+
 		int missing;
 		string check = RZ_HandSpots.Short(site.m_eFaction, site.m_eKind, hs.m_aSpots, missing);
 		int bad = Problems(s);
