@@ -623,8 +623,34 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 60 && m_iRZTSec % 20 == 0)
 			RZT_Fresh.PartTick(this);
 
+		// The map's fog (RZT_Fog.c): walking reveals, a found map, the save, the payload; first, so
+		// nothing else moves the tester while it walks him
+		if (m_iRZTSec >= 12 && !RZT_Fog.Tick(this))
+			return;
+
+		// The masts (RZT_Masts.c): found, put up, given, overheard, a voice found by two bearings
+		if (m_iRZTSec >= 12 && !RZT_Masts.Tick(this))
+			return;
+
 		// The openings' play-test faults (RZT_Openings.c), before the missions move the tester about
 		if (m_iRZTSec >= 12 && !RZT_Openings.Tick(this, m_aRZTRoute[0]))
+			return;
+
+		// The opening's door and favour (RZT_Favour.c): who you were, the habit, the fetch, the
+		// hand-over by reply, your background's way, for every background
+		if (m_iRZTSec >= 13)
+			RZT_Favour.Tick(this);
+
+		// The runner's case (RZT_Case.c): found, carried, kept over a death, handed to Halcyon by reply
+		if (m_iRZTSec >= 12 && !RZT_Case.Tick(this, m_aRZTRoute[0]))
+			return;
+
+		// The opening's line (RZT_Line.c): a road above it, the runner shot in the warning zone, the line said
+		if (m_iRZTSec >= 12 && !RZT_Line.Tick(this))
+			return;
+
+		// The opening's fixer (RZT_Ferda.c): Ferda comes for the case; each way through him; his note
+		if (m_iRZTSec >= 12 && !RZT_Ferda.Tick(this, m_aRZTRoute[0]))
 			return;
 
 		if (m_iRZTSec > 5 && m_iRZTSec % 3 == 0 && !m_bRZTMissionsDone)

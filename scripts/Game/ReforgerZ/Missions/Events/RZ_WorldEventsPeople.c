@@ -113,15 +113,32 @@ class RZ_Event_DistressBase : RZ_PuzzleMission
 	protected static const string RADIO_OP = "radioham";
 	protected static const float HINT_RADIUS = 1500;
 
+	// A spot found by bearings at two masts (World/RZ_Masts.c): the next call starts there
+	protected static vector s_vForced;
+
+	//------------------------------------------------------------------------------------------------
+	//! The next call's spot (vector.Zero: picked as usual).
+	static void ForceSpot(vector at)
+	{
+		s_vForced = at;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	protected bool PickSpot(RZ_GameModeComponent gm)
 	{
-		m_iSettlement = PickSettlement(gm, 20, 85);
+		if (s_vForced != vector.Zero)
+			m_iSettlement = gm.FindNearestSettlement(s_vForced);
+		else
+			m_iSettlement = PickSettlement(gm, 20, 85);
+
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return false;
 
-		m_vSpot = LandPointNear(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius + 150);
+		if (s_vForced != vector.Zero)
+			m_vSpot = s_vForced;
+		else
+			m_vSpot = LandPointNear(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius + 150);
 		m_vPos = m_vSpot;
 		m_sCaller = RZ_NoteText.FirstName(m_Rng);
 		m_sTitle = "Distress Call";

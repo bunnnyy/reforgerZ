@@ -63,6 +63,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute(desc: "Radio station: a broadcast point players can take over to send preset messages (console prefab, cooldown; cosmetic only, docs/DESIGN.md, Time and environment)", category: "ReforgerZ|World")]
 	protected ref RZ_RadioStationSettings m_RadioStationSettings;
 
+	[Attribute(desc: "Masts: the map's own masts and aerials players put up and give away, each over a region: warnings, listening in, the drone operators, finding a trapped man's voice (docs/DESIGN.md, The masts)", category: "ReforgerZ|World")]
+	protected ref RZ_MastSettings m_MastSettings;
+
 	[Attribute(desc: "Wildlife: deer herds out in the country near players, from the Workshop mod WildlifeExpansion (doe and buck prefabs, caps, meat; docs/DESIGN.md, Wildlife). Off while the doe prefab is empty", category: "ReforgerZ|World")]
 	protected ref RZ_WildlifeSettings m_WildlifeSettings;
 
@@ -411,6 +414,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("1", desc: "Show world events and the lab on the map as vanilla text markers, when the icon layer isn't set up (UI > Map icon layout). Turn off if markers misbehave", category: "ReforgerZ|Map")]
 	protected bool m_bMapMarkers;
 
+	[Attribute(desc: "Map fog: the map shows only what this character has seen; places as rumours until seen (docs/UI.md, The map's fog)", category: "ReforgerZ|Map")]
+	protected ref RZ_MapFogSettings m_MapFogSettings;
+
 	// ---------------------------------------------------------------- UI
 	[Attribute(desc: "UI: styled notice cards (off = the vanilla hint), the infection timer, noise meter, radio log size, icon imageset and row layouts (docs/UI.md, UI/LAYOUTS.md)", category: "ReforgerZ|UI")]
 	protected ref RZ_UISettings m_UISettings;
@@ -469,6 +475,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Wildlife m_Wildlife;
 	protected ref RZ_PlacedThings m_PlacedThings;
 	protected ref RZ_RadioStation m_RadioStation;
+	protected ref RZ_Masts m_Masts;
 	protected ref RZ_StoryArcs m_StoryArcs;
 	protected ref RZ_Questlines m_Questlines;
 	protected ref RZ_Headlines m_Headlines;
@@ -493,6 +500,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_CampLife m_CampLife;
 	protected ref RZ_LongTable m_LongTable;
 	protected ref RZ_Traces m_Traces;
+	protected ref RZ_MapFog m_MapFog;
 	protected ref RZ_Land m_Land;
 	protected ref RZ_Tribes m_Tribes;
 	protected bool m_bClockSet;			// the day length and the saved time of day were applied
@@ -586,6 +594,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (m_Shared)
 			m_Shared.Forget(playerId);
 
+		if (m_MapFog)
+			m_MapFog.Forget(playerId);
+
 		if (m_Epilogue)
 			m_Epilogue.Forget(playerId);
 
@@ -649,6 +660,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (!m_RadioStationSettings)
 			m_RadioStationSettings = RZ_RadioStationSettings.Cast(RZ_Util.NewWithDefaults("RZ_RadioStationSettings"));
+
+		if (!m_MastSettings)
+			m_MastSettings = RZ_MastSettings.Cast(RZ_Util.NewWithDefaults("RZ_MastSettings"));
 
 		if (!m_WildlifeSettings)
 			m_WildlifeSettings = RZ_WildlifeSettings.Cast(RZ_Util.NewWithDefaults("RZ_WildlifeSettings"));
@@ -760,6 +774,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!m_SharedSettings)
 			m_SharedSettings = RZ_SharedSettings.Cast(RZ_Util.NewWithDefaults("RZ_SharedSettings"));
 
+		if (!m_MapFogSettings)
+			m_MapFogSettings = RZ_MapFogSettings.Cast(RZ_Util.NewWithDefaults("RZ_MapFogSettings"));
+
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
 			m_aBackgrounds = new array<ref RZ_Background>();
@@ -783,6 +800,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Environment = new RZ_Environment(this, m_EnvironmentSettings);
 		m_PowerGrid = new RZ_PowerGrid(this, m_PowerSettings);
 		m_RadioStation = new RZ_RadioStation(this, m_RadioStationSettings);
+		m_Masts = new RZ_Masts(this, m_MastSettings);
 		m_Wildlife = new RZ_Wildlife(this, m_WildlifeSettings);
 		m_PlacedThings = new RZ_PlacedThings(this, m_PlacedSettings);
 		m_StoryArcs = new RZ_StoryArcs(this, m_StorySettings);
@@ -823,6 +841,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Interactions = new RZ_Interactions(this, m_InteractionSettings, m_SearchSettings, m_LootSettings, m_CarSettings, m_CraftSettings, m_TrapSettings, m_RadioCrackSettings);
 		m_Errands = new RZ_Errands(this, m_ErrandSettings);
 		m_Traces = new RZ_Traces(this, m_TraceSettings);
+		// The map's fog: what each character has seen (docs/UI.md, The map's fog)
+		m_MapFog = new RZ_MapFog(this, m_MapFogSettings);
 
 		// A wipe that came due last run (the wipe cycle) or one by hand is carried out now:
 		// backup, then fresh
@@ -881,6 +901,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Wildlife.Setup();
 		m_PlacedThings.Setup();
 		m_RadioStation.Setup();
+		m_Masts.Setup();
 
 		SetupLab();
 		// Fresh season only: starting infection and safe towns from the season's rules. After the
@@ -977,6 +998,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Wildlife.Tick(dt, ids, players);
 		m_PlacedThings.Tick(dt, ids, players);
 		m_RadioStation.Tick(dt, ids, players);
+		m_Masts.Tick(dt, ids, players);
 		m_Interactions.Tick(dt, ids, players);
 		m_Missions.Tick(dt, ids, players);
 		m_Errands.Tick(dt, ids, players);
@@ -1064,6 +1086,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! On every machine: the client's own deer check reads the prefabs from it (null where none is set).
 	RZ_WildlifeSettings GetWildlifeSettings() { return m_WildlifeSettings; }
 	RZ_RadioStation GetRadioStation() { return m_RadioStation; }
+	RZ_Masts GetMasts() { return m_Masts; }
 	RZ_StoryArcs GetStoryArcs() { return m_StoryArcs; }
 	RZ_Questlines GetQuestlines() { return m_Questlines; }
 	RZ_MajorSettings GetMajorSettings() { return m_MajorSettings; }
@@ -1183,6 +1206,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_LongTable GetLongTable() { return m_LongTable; }
 	//! Traces (docs/TRACES.md): door marks, their reading, the player traces. Server only.
 	RZ_Traces GetTraces() { return m_Traces; }
+	RZ_MapFog GetMapFog() { return m_MapFog; }
+	RZ_MapFogSettings GetMapFogSettings() { return m_MapFogSettings; }
 	//! World > Traces, on every machine (the clients' decals read the kit).
 	RZ_TraceSettings GetTraceSettings() { return m_TraceSettings; }
 	//! The land grid (docs/DESIGN.md, The land grid). Check IsReady(): off by default, and read over
@@ -1971,6 +1996,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		// Retaliation: who fired, and when (a hit on a faction's AI is matched to it)
 		m_Hostility.OnPlayerShot(playerID, shooter.GetOrigin());
+		// Ferda's men, if the opening's fixer is in the street (Guidance/RZ_OpeningFixer.c)
+		if (m_Guidance && m_Guidance.GetOpenings())
+			m_Guidance.GetOpenings().OnPlayerShot(playerID, shooter.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1997,6 +2025,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Behaviour.Tick(ids, players);
 		// Traces: a town's doors on entry, a door read after 2 s standing at it
 		m_Traces.SecondTick(ids, players);
+		// The map's fog: the ground each player sees as they go
+		if (m_MapFog)
+			m_MapFog.SecondTick(ids, players);
 
 		// The land grid's first reading, a few squares a second (nothing once it's read)
 		m_Land.Step();
@@ -3189,6 +3220,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_PowerGrid.Restore(data.power);
 		m_PlacedThings.Restore(data.placed);
 		m_RadioStation.Restore(data.radio);
+		m_Masts.Restore(data.masts);
 		m_Facts.Restore(data.facts);
 		m_Shared.Restore(data.shared);
 		m_StoryArcs.Restore(data.story);
@@ -3282,6 +3314,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_RadioStation && m_RadioStation.IsActive())
 			data.radio = m_RadioStation.Save();
+
+		if (m_Masts && m_Masts.IsOn())
+			data.masts = m_Masts.Save();
 
 		if (m_StoryArcs && m_StoryArcs.IsEnabled())
 			data.story = m_StoryArcs.Save();
@@ -3432,6 +3467,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	void Say(int playerId, string speaker, int faction, string text, IEntity who = null)
 	{
 		SayFrom(playerId, speaker, faction, text, who, vector.Zero);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A voice from a place with nobody to see (behind a door, under a floor): the arrow points there.
+	void SayAt(int playerId, string speaker, int faction, string text, vector at)
+	{
+		SayFrom(playerId, speaker, faction, text, null, at);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -187,6 +187,11 @@ Halcyon ([LORE.md](LORE.md#halcyon)). The paper is the only thing from this Zone
 out. Its first page says Day 1; the clinic's file says three weeks earlier, and the director's site
 log says what the lab did with them. Code: `Missions/Questlines/Halcyon/RZ_Major_Proof.c`.
 
+**The door in.** Most characters come to Proof by the runner's case at the end of their opening
+([DESIGN.md](DESIGN.md#the-case)): its tag carries the clinic's date. Handed to Halcyon, it counts as
+taking part (talk), and before 25% cure it opens The Date on the Tag, the clinic's first file, ahead
+of Act I; sold to the Red Hand or handed to Bastion, it opens Get It Back or The Case at the Post.
+
 | Act | Opens | Anchor, need, patience | What players do | Default | Status |
 |---|---|---|---|---|---|
 | I. Day One | Early Outbreak | 25%; 2 | At the clinic: copy the margin first (unseen). Then hand the file in sealed, ask the director to read the date (persuade 2, ★ Doctor, Lab Tech), give it to Bastion's adjutant or the chair's clerk. Sets `proof.day_one` (1–4) and `weeks.records` | The field lead fetches it: Day 1 stays the lab's | ✅ simplified: a scene, not Patient Zero's Ledger |

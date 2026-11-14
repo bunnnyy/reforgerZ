@@ -100,6 +100,7 @@ class RZ_UIFeed
 	static const int PAYLOAD_SITEHUD = 26;	// the site builder's HUD while a site is built: B and C records; "" hides it (UI/RZ_SiteHud.c)
 	static const int PAYLOAD_HANDS = 27;	// the hands-on view: H, T, P, L, A, E records; X|reason closes (Interactions/RZ_HandsOn.c)
 	static const int PAYLOAD_SITEMARKS = 24;	// the site builder: the site's edge and its role spots, drawn while it's built; "" clears (World/HandBuilt/RZ_SiteBuilderEditor.c)
+	static const int PAYLOAD_FOG = 25;		// the map's fog: F and R records, "" off; asked when the map opens, sent while it changes (World/RZ_MapFog.c)
 	static const int DETAIL_MAX = 1500;
 	static const int ERRAND_ID_BASE = 100000;	// errand rows' ids: -(base + errand id)
 	static const int TRIBE_ID_BASE = 200000;	// the packs' rows (what you know of them): -(base + pack id)
@@ -566,7 +567,7 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! H|player name|background|life|the whole picture (RZ_RepNamesPage.Header)
+	//! H|player name|background|life|the whole picture (RZ_RepNamesPage.Header)|the habit's line (RZ_Habits.StandingLine, "" none)
 	//! F|faction|fame|infamy|favor|tier|need|need line|rep (RZ_ERep)|notoriety|word|note|left to forgive (-1 no budget)|owed (0/1)
 	//! The fields after the need line are new (docs/REPUTATION.md, "Reputations"): older layouts
 	//! read the first eight and ignore the rest. The word is what the faction calls you; owed is 1 while
@@ -585,7 +586,7 @@ class RZ_UIFeed
 			bgName = bg.m_sName;
 
 		RZ_UILine head = new RZ_UILine("H");
-		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iLives).Add(RZ_RepNamesPage.Header(m_GM, playerId)).End();
+		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iLives).Add(RZ_RepNamesPage.Header(m_GM, playerId)).Add(RZ_Habits.StandingLine(p)).End();
 		IEntity standingEnt = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		vector standingAt = vector.Zero;
 		if (standingEnt)
@@ -1195,7 +1196,7 @@ class RZ_UIFeed
 		bool lab = m_GM.HasLab();
 		vector labPos = m_GM.GetLabPosition();
 		if (lab)
-			s += MapEntry("marker_lab", RZ_EFaction.INSTITUTE, labPos, "Lab");
+			s += PlaceEntry(playerId, "marker_lab", RZ_EFaction.INSTITUTE, labPos, "Lab");
 
 		// Strongholds are common knowledge; an outpost only once they know the faction or have been there
 		bool haven = false;
@@ -1218,7 +1219,7 @@ class RZ_UIFeed
 						havenSeat = hold.m_vPos;
 					}
 
-					s += MapEntry("marker_stronghold", hold.m_eFaction, hold.m_vPos, "Stronghold");
+					s += PlaceEntry(playerId, "marker_stronghold", hold.m_eFaction, hold.m_vPos, "Stronghold");
 					continue;
 				}
 
@@ -1230,7 +1231,7 @@ class RZ_UIFeed
 				if (hold.m_eFaction == RZ_EFaction.INSTITUTE)
 					outpost = "Field station";
 
-				s += MapEntry("marker_outpost", hold.m_eFaction, hold.m_vPos, outpost);
+				s += PlaceEntry(playerId, "marker_outpost", hold.m_eFaction, hold.m_vPos, outpost);
 			}
 		}
 
@@ -1244,17 +1245,17 @@ class RZ_UIFeed
 				if (haven && RZ_Util.DistXZ(h.m_vPos, havenSeat) <= MAP_SAME_PLACE)
 					continue;
 
-				s += MapEntry("marker_safehouse", RZ_EFaction.SURVIVORS, h.m_vPos, "Safehouse");
+				s += PlaceEntry(playerId, "marker_safehouse", RZ_EFaction.SURVIVORS, h.m_vPos, "Safehouse");
 			}
 		}
 
 		RZ_PowerGrid grid = m_GM.GetPowerGrid();
 		if (grid && grid.IsActive())
-			s += MapEntry("marker_power", -1, grid.GetPosition(), "Power station");
+			s += PlaceEntry(playerId, "marker_power", -1, grid.GetPosition(), "Power station");
 
 		RZ_RadioStation radio = m_GM.GetRadioStation();
 		if (radio && radio.IsActive())
-			s += MapEntry("marker_radio", -1, radio.GetPosition(), "Radio station");
+			s += PlaceEntry(playerId, "marker_radio", -1, radio.GetPosition(), "Radio station");
 
 		RZ_Perimeter perimeter = m_GM.GetPerimeter();
 		if (perimeter)
@@ -1263,7 +1264,7 @@ class RZ_UIFeed
 			perimeter.GetCheckpoints(checkpoints);
 			foreach (vector cp : checkpoints)
 			{
-				s += MapEntry("marker_checkpoint", -1, cp, "Checkpoint");
+				s += PlaceEntry(playerId, "marker_checkpoint", -1, cp, "Checkpoint");
 			}
 		}
 
@@ -1286,6 +1287,21 @@ class RZ_UIFeed
 		// one (UI/RZ_Quests.c). No other job is on the map
 		s += m_Tracker.MapObjective(playerId);
 		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A place on the map: its pin once this player has seen its ground (the map's fog, World/RZ_MapFog.c),
+	//! else a rumour, a rough circle somewhere round it ("Safehouse, somewhere here"). With the fog
+	//! off, or its rumours off, the pin as before.
+	protected string PlaceEntry(int playerId, string icon, int faction, vector pos, string label)
+	{
+		RZ_MapFog fog = m_GM.GetMapFog();
+		if (!fog || !fog.RumoursOn() || fog.Seen(playerId, pos))
+			return MapEntry(icon, faction, pos, label);
+
+		vector c = RZ_MapFog.RumourCentre(pos);
+		RZ_UILine ln = new RZ_UILine("P");
+		return ln.Add("marker_range").AddInt(-1).AddInt(RZ_Util.RoundToInt(c[0])).AddInt(RZ_Util.RoundToInt(c[2])).Add(label + ", somewhere here").AddInt(RZ_Util.RoundToInt(RZ_MapFog.RumourRadius())).End();
 	}
 
 	//------------------------------------------------------------------------------------------------

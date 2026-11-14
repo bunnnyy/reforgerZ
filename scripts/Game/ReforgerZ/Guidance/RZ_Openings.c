@@ -28,7 +28,11 @@ enum RZ_EOpeningStage
 	SEARCH,		// step 1: a building close by, quietly
 	TASK,		// step 2: your background's own system (the Drifter: up to three asks)
 	WALK,		// step 3: to where your background belongs
-	LEAD		// the last step for levels 2-3 and a contact-less opening: to the nearest place with work
+	LEAD,		// the last step with nobody outside (or no case): to the nearest place with work
+	CASE,		// the chain's end: the runner and Halcyon's cold case (RZ_OpeningCase), then the lead to the station
+	FAVOUR,		// beat 2: the contact's favour, one named thing fetched (or your background's way through it)
+	GIVE,		// and handed over to him, by a reply (skipped when your background's way settled it)
+	LINE		// beat 3: walk with him to the road above the line and watch it (RZ_OpeningLine); the runner falls there
 }
 
 //------------------------------------------------------------------------------------------------
@@ -94,7 +98,17 @@ class RZ_Opening
 	int m_iTargetId = -1;		// the task's wanderer (SWAP) or road post (TOLL)
 	float m_fPulseAt;			// GATE: the step's progress at its next noise
 	bool m_bTold;				// the task said once what's missing
-	bool m_bTended;				// CUT, FEVER, CLOCK, CLOCK_MED: the hand-over reply was picked
+	bool m_bTended;				// CUT, FEVER, CLOCK, CLOCK_MED, the favour's hand-over: the hand-over reply was picked
+	int m_iFavour;				// the favour (RZ_EFavour, RZ_OpeningFavours)
+	vector m_vFavour;			// where its thing is
+	bool m_bFetched;			// the thing is fetched: the hand-over waits
+	bool m_bWayTaken;			// your background's way through it was taken (no hand-over then)
+	bool m_bHabitAsked;			// beat 1: the question was put (the habit replies show till one's picked)
+	bool m_bHabitPicked;
+	ref RZ_LineScene m_Line;	// beat 3, the line, while it runs (null: not yet, or its short form)
+	bool m_bLineShort;			// the line's short form: the runner is found already down
+	int m_iRemarks;				// the walking contact's remarks said (bits: 1 a door mark, 2 an infected, 4 a locked door, 8 the broadcast)
+	float m_fWalkFrom;			// when they started walking with you
 	int m_iErrand = -1;			// the current step's errand id
 	bool m_bResolved;			// the current step is done
 	bool m_bSpoke;				// they've called you over (the chain has begun)
@@ -126,6 +140,7 @@ class RZ_Openings
 	protected static const float CONTACT_OUT = 6;		// the contact stands this far out of the door
 	protected static const float NEXT_STEP_DELAY = 4;
 	protected static const float ASK_AGAIN = 120;		// called again once, this long into a wait or into step 1
+	protected static const float LINE_THERE = 25;		// at the road above the line: you this close to it (he within 10 m more)
 	protected static const float CONTACT_GONE = 150;	// the contact goes once nobody is this close (the walk, or over)
 	protected static const float CONTACT_MAX = 2700;	// and once the opening is 45 minutes old, with nobody within 50 m
 	protected static const float SEARCH_MIN = 150;		// step 1's house: this far from the contact...
@@ -140,6 +155,10 @@ class RZ_Openings
 	protected static const float STRANGER_CHANCE = 0.25;	// a stranger instead of someone from before
 	protected static const float EARLIER_CHANCE = 0.35;	// an earlier life's wanderer, when one remembers you
 	protected static const int HOLD_BASE = 800000;		// RZ_Wanderers.Hold's id for an opening (+ its id)
+	protected static const float REMARK_MARK = 12;		// the walking contact remarks on a door mark this close
+	protected static const float REMARK_INFECTED = 40;	// an infected this close
+	protected static const float REMARK_LOCKED = 10;	// a locked building this close
+	protected static const float REMARK_BROADCAST = 90;	// and the broadcast, this long into the walk
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Guidance m_Guide;
@@ -148,6 +167,9 @@ class RZ_Openings
 	protected ref RZ_OpeningChain m_Chain;
 	protected ref RZ_OpeningTasks m_Tasks;
 	protected ref RZ_OpeningScenes m_Scenes;
+	protected ref RZ_OpeningCase m_Case;
+	protected ref RZ_OpeningFavours m_Favours;
+	protected ref RZ_OpeningFixer m_Fixer;
 	protected ref array<ref RZ_Opening> m_aOpenings = {};
 	protected ref map<int, ref RZ_OpeningPlace> m_mPending = new map<int, ref RZ_OpeningPlace>();
 	protected ref map<int, bool> m_mMoved = new map<int, bool>();
@@ -167,6 +189,30 @@ class RZ_Openings
 		m_Chain = new RZ_OpeningChain();
 		m_Tasks = new RZ_OpeningTasks(gm);
 		m_Scenes = new RZ_OpeningScenes(gm, guide, settings);
+		m_Case = new RZ_OpeningCase(gm);
+		m_Favours = new RZ_OpeningFavours(m_Chain);
+		m_Fixer = new RZ_OpeningFixer(gm);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The case (the chain's end and the main story's door): its replies, its leads, its tick.
+	RZ_OpeningCase GetCase()
+	{
+		return m_Case;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The fixer (beat 5): Ferda Kroupa's visit after the case, and what follows it.
+	RZ_OpeningFixer GetFixer()
+	{
+		return m_Fixer;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player fired (RZ_GameModeComponent): near Ferda's men, it's a fight.
+	void OnPlayerShot(int playerId, vector pos)
+	{
+		m_Fixer.OnPlayerShot(playerId, pos);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -476,26 +522,17 @@ class RZ_Openings
 		RZ_Errands errands = m_GM.GetErrands();
 		if (errands && errands.IsOn())
 		{
-			if (o.m_iLevel <= 1)
-			{
-				o.m_aPlan.Insert(RZ_EOpeningStage.SEARCH);
-				o.m_aPlan.Insert(RZ_EOpeningStage.TASK);
-				o.m_aPlan.Insert(RZ_EOpeningStage.WALK);
-			}
-			else if (o.m_iLevel == 2)
-			{
-				o.m_aPlan.Insert(RZ_EOpeningStage.SEARCH);
-				o.m_aPlan.Insert(RZ_EOpeningStage.TASK);
-				o.m_aPlan.Insert(RZ_EOpeningStage.LEAD);
-			}
-			else
-			{
-				o.m_aPlan.Insert(RZ_EOpeningStage.SEARCH);
-				o.m_aPlan.Insert(RZ_EOpeningStage.LEAD);
-			}
+			// The door's favour (fetched and handed over, or your background's way through it), then the
+			// runner and his case (it becomes the walk, or the nearest work, when the case can't be
+			// found here: StartStage)
+			o.m_iFavour = RZ_OpeningFavours.For(o.m_sBackground);
+			o.m_aPlan.Insert(RZ_EOpeningStage.FAVOUR);
+			o.m_aPlan.Insert(RZ_EOpeningStage.GIVE);
+			o.m_aPlan.Insert(RZ_EOpeningStage.LINE);
+			o.m_aPlan.Insert(RZ_EOpeningStage.CASE);
 		}
 
-		o.m_bFull = o.m_aPlan.Contains(RZ_EOpeningStage.WALK);
+		o.m_bFull = o.m_iLevel <= 1 && o.m_aPlan.Contains(RZ_EOpeningStage.CASE);
 		if (o.m_sBackground == "drifter")
 			RZ_OpeningTasks.DrifterPool(rng, o.m_aTasks);
 		else
@@ -503,15 +540,15 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! How the chain moves you on (docs/DESIGN.md, "Openings"): the contact walks with you, step to
-	//! step (the escort pattern: a background whose steps are out and about, with Guidance >
-	//! Companion and room for an escort); or step 1's giver sends you on to the next person, at the
-	//! next place, who gives step 2 (the hand-off: a plan with both steps). Else (levels 2-3) each
-	//! step starts by itself where the last one ended.
+	//! How the chain moves you on (docs/DESIGN.md, "Openings"): the contact walks with you from the
+	//! favour on (the escort pattern, with Guidance > Companion and room for an escort), so its
+	//! hand-over is a reply where you are. No room or no prefab: each step starts where the last one
+	//! ended, and the hand-over is a reply at him where he stands.
 	protected void Pattern(RZ_Opening o)
 	{
-		o.m_bWalks = RZ_OpeningTasks.Walks(o.m_sBackground) && o.m_aPlan.Count() > 1 && !m_Settings.m_sCompanionPrefab.IsEmpty() && RZ_Escort.HasRoom(m_GM);
-		o.m_bHandOff = !o.m_bWalks && o.m_aPlan.Contains(RZ_EOpeningStage.SEARCH) && o.m_aPlan.Contains(RZ_EOpeningStage.TASK);
+		// The favour: he walks with you whatever your background, so its hand-over is where you are
+		o.m_bWalks = o.m_aPlan.Contains(RZ_EOpeningStage.FAVOUR) && !m_Settings.m_sCompanionPrefab.IsEmpty() && RZ_Escort.HasRoom(m_GM);
+		o.m_bHandOff = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -834,12 +871,14 @@ class RZ_Openings
 
 		m_fPoll = 0;
 		KeepContactsQuiet();
-		if (m_aOpenings.IsEmpty())
-			return;
-
 		m_aIds.Clear();
 		m_aPlayers.Clear();
 		RZ_Util.GetAlivePlayers(m_aIds, m_aPlayers);
+		m_Case.Tick(POLL, m_aIds, m_aPlayers);
+		m_Fixer.Tick(POLL, m_aIds, m_aPlayers);
+		if (m_aOpenings.IsEmpty())
+			return;
+
 		for (int i = m_aOpenings.Count() - 1; i >= 0; i--)
 		{
 			RZ_Opening o = m_aOpenings[i];
@@ -936,9 +975,21 @@ class RZ_Openings
 			return;
 		}
 
-		// "Talk to them" points where they stand now (the tracker and the map follow the step's place)
-		if (o.m_bWaitTalk && o.m_Contact)
+		// The line: its walk (the marker on him as he leads) and its scene
+		if (Stage(o) == RZ_EOpeningStage.LINE && o.m_Line && !o.m_bWaitTalk)
+		{
+			TickLine(o, me, e);
+			return;
+		}
+
+		// "Talk to them" and the favour's hand-over point where they stand now (the tracker and the map
+		// follow the step's place)
+		if ((o.m_bWaitTalk || Stage(o) == RZ_EOpeningStage.GIVE) && o.m_Contact)
 			e.m_vPlace = o.m_Contact.GetOrigin();
+
+		// Walking with you, they say a line at each thing worth knowing, once each
+		if (o.m_Escort && o.m_Contact && !o.m_bWaitTalk)
+			Remarks(o, me);
 
 		if (o.m_bWaitTalk)
 			CallAgain(o, me);
@@ -1350,6 +1401,12 @@ class RZ_Openings
 			return;
 		}
 
+		if (Stage(o) == RZ_EOpeningStage.CASE)
+		{
+			RZ_OpeningText.CaseBeat(lines);
+			return;
+		}
+
 		RZ_OpeningText.Beat(Math.Max(1, o.m_iStep), day, lines);
 	}
 
@@ -1456,7 +1513,117 @@ class RZ_Openings
 		string placeText;
 		int faction = RZ_EFaction.SURVIVORS;
 		int step = 1;
-		if (stage == RZ_EOpeningStage.SEARCH)
+		if (stage == RZ_EOpeningStage.LINE)
+		{
+			step = 3;
+			if (!o.m_Line && !StartLine(o, giverAt))
+			{
+				// The short form: no scene; the runner is found already down (the case's own place)
+				o.m_iStage++;
+				StartStage(o, me, tree, beat, sayNow);
+				return;
+			}
+
+			place = o.m_Line.m_vView;
+			placeText = "the road above the line, " + RZ_Util.DirectionText(giverAt, place);
+			d = m_Chain.m_LineWalk;
+			if (o.m_Line.m_iPhase != RZ_LineScene.WALK)
+			{
+				d = m_Chain.m_LineWatch;
+				placeText = "the road above the line";
+			}
+		}
+		else if (stage == RZ_EOpeningStage.CASE && o.m_Line && o.m_Line.m_Body && m_Case.CanRun(giverAt))
+		{
+			// After the line: the man you saw shot, where he fell
+			step = 3;
+			d = m_Chain.m_CaseSeen;
+			faction = RZ_EFaction.INSTITUTE;
+			place = RZ_Util.GroundPos(o.m_Line.m_Body.GetOrigin());
+			placeText = "on the road below, where he fell";
+		}
+		else if (stage == RZ_EOpeningStage.CASE)
+		{
+			if (!m_Case.CanRun(giverAt) || !m_Case.RunnerPlace(giverAt, place, placeText))
+			{
+				// No case here (no prefab, the cure is out, nowhere for a runner to have fallen):
+				// the old end, the walk for a learning player, else the nearest work
+				RZ_Log.Info(string.Format("Openings: no runner's case for %1 at %2, the old end instead", RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(giverAt)));
+				if (o.m_iLevel <= 1 && o.m_vEnd != vector.Zero)
+					o.m_aPlan[o.m_iStage] = RZ_EOpeningStage.WALK;
+				else
+					o.m_aPlan[o.m_iStage] = RZ_EOpeningStage.LEAD;
+
+				StartStage(o, me, tree, beat, sayNow);
+				return;
+			}
+
+			step = 3;
+			d = m_Chain.m_Case;
+			faction = RZ_EFaction.INSTITUTE;
+		}
+		else if (stage == RZ_EOpeningStage.FAVOUR)
+		{
+			d = m_Favours.FetchDef(o.m_iFavour);
+			bool found = d && RZ_OpeningFavours.PickPlace(o.m_iFavour, giverAt, place, placeText);
+			// Nowhere for your background's favour here: his tin, else his sack, if one of those has a place
+			// (your background's way goes with it: it's for your favour only)
+			if (!found)
+			{
+				array<int> plain = {RZ_EFavour.TIN, RZ_EFavour.SACK};
+				foreach (int other : plain)
+				{
+					if (found || other == o.m_iFavour)
+						continue;
+
+					d = m_Favours.FetchDef(other);
+					found = d && RZ_OpeningFavours.PickPlace(other, giverAt, place, placeText);
+					if (found)
+					{
+						RZ_Log.Info(string.Format("Openings: no place for %1's favour (%2) here, %3 instead", RZ_Util.PlayerName(o.m_iPlayer), typename.EnumToString(RZ_EFavour, o.m_iFavour), typename.EnumToString(RZ_EFavour, other)));
+						o.m_iFavour = other;
+					}
+				}
+			}
+
+			if (!found)
+			{
+				// Nowhere here the words would be true of: no favour, on to the runner
+				RZ_Log.Info(string.Format("Openings: no place for the favour (%1) for %2 at %3, on to the runner", typename.EnumToString(RZ_EFavour, o.m_iFavour), RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(giverAt)));
+				// The door still greets you and asks who you were (beat 1), before the next step's words
+				if (beat && o.m_iStage == 0)
+				{
+					if (!tree)
+						beat.Insert(RZ_OpeningText.GreetPlain(o.m_iReason, o.m_iWho));
+
+					AskWhoYouWere(o, beat);
+				}
+
+				o.m_iStage += 2;
+				StartStage(o, me, tree, beat, sayNow);
+				return;
+			}
+
+			o.m_vFavour = place;
+			o.m_sSearch = placeText;
+			SetFlag(o, RZ_OpeningFavours.FLAG_FAVOUR, o.m_iFavour);
+		}
+		else if (stage == RZ_EOpeningStage.GIVE)
+		{
+			// Your background's way settled it, or nothing was fetched: nothing to hand over
+			if (o.m_bWayTaken || !o.m_bFetched)
+			{
+				o.m_iStage++;
+				StartStage(o, me, tree, beat, sayNow);
+				return;
+			}
+
+			step = 2;
+			d = m_Favours.GiveDef(o.m_iFavour);
+			place = giverAt;
+			placeText = o.m_sName;
+		}
+		else if (stage == RZ_EOpeningStage.SEARCH)
 		{
 			d = m_Chain.m_Search;
 			if (o.m_iLevel >= 1)
@@ -1531,11 +1698,16 @@ class RZ_Openings
 
 		o.m_iStep = step;
 		o.m_bResolved = false;
+		o.m_bTended = false;
 		o.m_fStepAt = m_fClock;
 		SetFlag(o, FLAG_STEP, step);
 		if (beat)
 		{
 			StepLines(o, tree, beat);
+			// Beat 1: who you were, asked in passing; a veteran's door asks nothing (the last habit carries)
+			if (stage == RZ_EOpeningStage.FAVOUR && !o.m_bHabitAsked && o.m_iStage == 0)
+				AskWhoYouWere(o, beat);
+
 			if (stage == RZ_EOpeningStage.SEARCH && o.m_vNext != vector.Zero)
 				beat.Insert(RZ_OpeningText.SendOn(o.m_sNextShort, o.m_sNextWho, o.m_sNextPlace));
 
@@ -1571,12 +1743,137 @@ class RZ_Openings
 		o.m_iErrand = e.m_iId;
 		if (stage == RZ_EOpeningStage.TASK)
 			m_Tasks.Start(o, me, e);
+		else if (stage == RZ_EOpeningStage.CASE && d == m_Chain.m_CaseSeen)
+		{
+			m_Case.SpawnCaseBy(e.m_vPlace, o.m_iPlayer);
+			o.m_Remains = o.m_Line.m_Body;
+		}
+		else if (stage == RZ_EOpeningStage.CASE)
+		{
+			o.m_Remains = m_Case.SpawnRunner(e.m_vPlace, o.m_iPlayer);
+			if (o.m_bLineShort)
+				HeardShot(o, e.m_vPlace);
+		}
+
 
 		RZ_UIFeed feed = m_GM.GetUIFeed();
 		if (feed && feed.GetTracker())
 			feed.GetTracker().Follow(o.m_iPlayer, -(RZ_UIFeed.ERRAND_ID_BASE + e.m_iId), e.Fill(d.m_sTitle));
 
 		RZ_Log.Info(string.Format("Openings: %1 step %2 (%3) for %4, %5", o.m_sName, step, d.m_sKey, RZ_Util.PlayerName(o.m_iPlayer), RZ_Util.DirectionText(me.GetOrigin(), place)));
+	}
+
+	// ================================================================ Beat 3: the line
+	//------------------------------------------------------------------------------------------------
+	//! The line's scene for this opening (RZ_OpeningLine): a road above it in reach, the runner's
+	//! body set, a learning player and no crowd there. False: the short form (logged), and the runner
+	//! is found already down.
+	protected bool StartLine(RZ_Opening o, vector giverAt)
+	{
+		string why;
+		vector view;
+		vector breakAt;
+		vector fall;
+		vector away;
+		if (o.m_iLevel >= 2)
+			why = "a familiar player";
+		else if (m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN).IsEmpty())
+			why = "no runner's body (Puzzles > Civilian)";
+		else if (!RZ_OpeningLine.FindViewpoint(m_GM, giverAt, view, breakAt, fall, away))
+			why = "no road above the line in reach: " + RZ_OpeningLine.s_sWhy;
+		else if (RZ_OpeningLine.Crowded(view, o.m_iPlayer, m_aIds, m_aPlayers))
+			why = "other players near the line";
+
+		if (!why.IsEmpty())
+		{
+			o.m_bLineShort = true;
+			RZ_Log.Info(string.Format("Openings: the line's short form for %1 at %2 (%3): the runner is found already down", RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(giverAt), why));
+			return false;
+		}
+
+		RZ_LineScene sc = new RZ_LineScene();
+		sc.m_vView = view;
+		sc.m_vBreak = breakAt;
+		sc.m_vFall = fall;
+		sc.m_vOut = away;
+		sc.m_iPlayer = o.m_iPlayer;
+		o.m_Line = sc;
+		// He leads the way there (the marker rides on him: TickLine)
+		if (o.m_Escort && !o.m_Escort.IsDead())
+		{
+			o.m_Escort.m_eState = RZ_EEscortState.WAITING;
+			o.m_Escort.SetDestination(view);
+			o.m_Escort.Go();
+		}
+
+		RZ_Log.Info(string.Format("Openings: the line for %1: the road above it at %2, %3 m off; the runner breaks at %4", RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(view), RZ_Util.RoundToInt(RZ_Util.DistXZ(giverAt, view)), RZ_SettlementScanner.GridReference(breakAt)));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! While the line's step runs: the walk there (done when you and he are both at the road above
+	//! it), then the scene (done when it's over). Never by standing anywhere (StepCounts).
+	protected void TickLine(RZ_Opening o, IEntity me, RZ_Errand e)
+	{
+		RZ_LineScene sc = o.m_Line;
+		RZ_Errands errands = m_GM.GetErrands();
+		if (sc.m_iPhase == RZ_LineScene.WALK)
+		{
+			if (o.m_Contact)
+				e.m_vPlace = o.m_Contact.GetOrigin();
+
+			bool there = RZ_Util.DistXZ(me.GetOrigin(), sc.m_vView) <= LINE_THERE;
+			bool his = !o.m_Escort || o.m_Escort.IsDead() || o.m_Escort.IsNear(sc.m_vView, LINE_THERE + 10);
+			if (there && his)
+			{
+				sc.m_iPhase = RZ_LineScene.WAIT;
+				sc.m_fAt = 0;
+				RZ_Log.Info(string.Format("Openings: the line for %1: at the road above it", RZ_Util.PlayerName(o.m_iPlayer)));
+				errands.FinishNow(e, me);
+			}
+
+			return;
+		}
+
+		e.m_vPlace = sc.m_vView;
+		RZ_OpeningLine.Tick(m_GM, sc, o.m_Contact, o.m_sSpeaker, m_Settings.m_sCompanionPrefab, POLL, m_aIds, m_aPlayers);
+		if (sc.m_iPhase == RZ_LineScene.OVER)
+			errands.FinishNow(e, me);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The line's step is done: the walk (the watch is handed a moment later, where you stand), or
+	//! the scene (he walks with you again, and on to the runner).
+	protected void LineStepDone(RZ_Opening o)
+	{
+		RZ_LineScene sc = o.m_Line;
+		if (sc && sc.m_iPhase != RZ_LineScene.OVER)
+		{
+			o.m_bNext = true;
+			o.m_fNextAt = m_fClock + 1;
+			return;
+		}
+
+		if (o.m_Escort && !o.m_Escort.IsDead())
+		{
+			o.m_Escort.m_eState = RZ_EEscortState.WAITING;
+			o.m_Escort.Follow(o.m_iPlayer);
+			o.m_Escort.Go();
+		}
+
+		Next(o);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The line's short form: the shot is heard from where he fell, and the contact says what it was.
+	protected void HeardShot(RZ_Opening o, vector at)
+	{
+		RZ_Perimeter perimeter = m_GM.GetPerimeter();
+		if (perimeter && perimeter.IsActive())
+			perimeter.SpawnEffect(at);
+
+		if (o.m_Contact)
+			m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, "That came from the line. Somebody tried it.", o.m_Contact);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1761,6 +2058,18 @@ class RZ_Openings
 			return !sd || !RZ_OpeningTasks.HandsOver(sd.m_iTask);
 		}
 
+		// The line: done by its scene (TickLine), never by being there
+		if (Stage(o) == RZ_EOpeningStage.LINE)
+			return false;
+
+		// The runner's step: done once the case is in your pack
+		if (Stage(o) == RZ_EOpeningStage.CASE)
+			return RZ_OpeningCase.Carries(me);
+
+		// The favour's hand-over: only its reply (RZ_Openings.HandOver), never for standing by him
+		if (Stage(o) == RZ_EOpeningStage.GIVE)
+			return false;
+
 		if (Stage(o) != RZ_EOpeningStage.TASK || o.m_iTask == RZ_EOpeningTask.NONE)
 			return true;
 
@@ -1798,11 +2107,41 @@ class RZ_Openings
 			return;
 		}
 
+		if (stage == RZ_EOpeningStage.LINE)
+		{
+			LineStepDone(o);
+			return;
+		}
+
+		if (stage == RZ_EOpeningStage.CASE)
+		{
+			// The case in your pack: whoever gave the step hands you the lead to the station
+			IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(o.m_iPlayer);
+			vector giverAt = e.m_vPlace;
+			if (o.m_Contact)
+				giverAt = o.m_Contact.GetOrigin();
+
+			m_Case.Begin(o.m_iPlayer, me, o.m_sName, o.m_sSpeaker, giverAt);
+			// Beat 5: the book wants it back (RZ_OpeningFixer)
+			m_Fixer.Schedule(o.m_iPlayer, o.m_Place.m_vPos, o.m_sTown, o.m_Contact, o.m_sName, o.m_sSpeaker, o.m_iLevel);
+			Finish(o, "took the runner's case");
+			return;
+		}
+
 		if (stage == RZ_EOpeningStage.LEAD)
 		{
 			m_GM.NotifyPlayerAs(o.m_iPlayer, RZ_OpeningText.LeadTitle(), RZ_OpeningText.LeadArrived(o.m_iEnd), RZ_ENoticeTag.MISSION);
 			Finish(o, "found work at " + o.m_sEndPlace);
 			return;
+		}
+
+		// The favour: fetched (the hand-over next), or your background's way done (no hand-over)
+		if (stage == RZ_EOpeningStage.FAVOUR)
+		{
+			if (o.m_bWayTaken)
+				RZ_OpeningFavours.WayDone(o.m_sBackground, e.m_vPlace);
+			else
+				o.m_bFetched = true;
 		}
 
 		if (stage == RZ_EOpeningStage.TASK)
@@ -1933,6 +2272,17 @@ class RZ_Openings
 		}
 
 		o.m_sSpeaker = "Someone in a doorway";
+		// The runner's case is still out there: the chain goes on to it by itself
+		int caseAt = o.m_aPlan.Find(RZ_EOpeningStage.CASE);
+		if (caseAt > o.m_iStage)
+		{
+			o.m_bSpoke = true;
+			o.m_iStage = caseAt;
+			o.m_bNext = true;
+			o.m_fNextAt = m_fClock + NEXT_STEP_DELAY;
+			return;
+		}
+
 		m_GM.NotifyPlayer(o.m_iPlayer, o.m_sSpeaker, RZ_OpeningText.ContactDied(h.m_sName));
 		int walk = o.m_aPlan.Find(RZ_EOpeningStage.WALK);
 		if (walk < 0)
@@ -1979,8 +2329,12 @@ class RZ_Openings
 
 		o.m_bEnded = true;
 		DropStep(o, why);
+		RZ_OpeningLine.Cleanup(o.m_Line);
 		// A Sample's remains go back to the engine's own corpse cleanup
 		RZ_OpeningTasks.KeepBody(o.m_Remains, false);
+		if (o.m_Line && o.m_Line.m_Body && o.m_Line.m_Body != o.m_Remains)
+			RZ_OpeningTasks.KeepBody(o.m_Line.m_Body, false);
+
 		o.m_Remains = null;
 		SetFlag(o, FLAG_STEP, 4);
 		SetFlag(o, FLAG_FIRST, 0);
@@ -2110,7 +2464,283 @@ class RZ_Openings
 			return;
 		}
 
+		// The favour started without the question (it was said only on its card): it's asked now
+		if (Stage(o) == RZ_EOpeningStage.FAVOUR && !o.m_bHabitAsked)
+			AskWhoYouWere(o, lines);
+
 		lines.Insert(Remind(o, o.m_iStep));
+	}
+
+	// ================================================================ Beat 1 and beat 2's other way
+	//------------------------------------------------------------------------------------------------
+	//! Beat 1: the contact asks who you were, in passing, and three replies settle a habit
+	//! (Backgrounds/RZ_Habits.c). A veteran's door asks nothing: the last character's habit carries.
+	protected void AskWhoYouWere(RZ_Opening o, notnull array<string> lines)
+	{
+		o.m_bHabitAsked = true;
+		RZ_PlayerProfile profile = m_GM.GetProfile(o.m_iPlayer);
+		if (o.m_iLevel >= 3 && RZ_Habits.Carry(profile))
+		{
+			o.m_bHabitPicked = true;
+			RZ_Log.Info(string.Format("Openings: %1 keeps the habit %2 (a veteran's door asks nothing)", RZ_Util.PlayerName(o.m_iPlayer), RZ_Habits.Name(RZ_Habits.Of(profile))));
+			return;
+		}
+
+		lines.Insert(RZ_OpeningFavours.Question(o.m_sBackground));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The habit replies on their talk screen (RZ_TalkOpening), while the question waits for an answer.
+	bool HabitReplies(int playerId, int id)
+	{
+		RZ_Opening o = ById(id);
+		return o && o.m_iPlayer == playerId && !o.m_bEnded && o.m_bHabitAsked && !o.m_bHabitPicked;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A habit reply picked: it's this character's, and they say something back.
+	void TakeHabit(int playerId, int id, int habit, notnull array<string> said)
+	{
+		if (!HabitReplies(playerId, id) || habit == RZ_EPlayerHabit.NONE)
+			return;
+
+		RZ_Opening o = ById(id);
+		o.m_bHabitPicked = true;
+		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+		RZ_Habits.Set(profile, habit);
+		said.Insert(RZ_OpeningFavours.HabitAnswer(habit));
+		RZ_Log.Info(string.Format("Openings: %1 is %2 (the habit, %3)", RZ_Util.PlayerName(playerId), RZ_Habits.Name(habit), RZ_Habits.Effect(habit)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Your background's way through the favour, a [Background] reply on their talk screen while
+	//! the fetch runs: its label and tag, and `need` when you lack what it takes (locked with it).
+	bool WayReply(int playerId, int id, IEntity user, out string label, out string tag, out string need)
+	{
+		label = "";
+		tag = "";
+		need = "";
+		RZ_Opening o = ById(id);
+		if (!o || o.m_iPlayer != playerId || o.m_bEnded || o.m_bWaitTalk || o.m_bResolved || o.m_bWayTaken)
+			return false;
+
+		if (Stage(o) != RZ_EOpeningStage.FAVOUR || !RZ_OpeningFavours.HasWay(o.m_sBackground))
+			return false;
+
+		// Your way is through your own background's favour, not the plain one that stood in for it
+		if (o.m_iFavour != RZ_OpeningFavours.For(o.m_sBackground))
+			return false;
+
+		if (!RZ_OpeningFavours.WayIsReply(o.m_sBackground) && !m_Favours.WayDef(o.m_sBackground))
+			return false;
+
+		label = RZ_OpeningFavours.WayLabel(o.m_sBackground);
+		tag = RZ_TalkJobs.Tag(RZ_DialogueTrees.BackgroundName(o.m_sBackground));
+		need = RZ_OpeningFavours.WayNeed(o.m_sBackground, user);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Your background's way picked. A reply way settles the favour there and then (no hand-over);
+	//! a way of its own hands its step instead of the fetch (the hold at his son, his car, the tracks,
+	//! the neighbour's door, the lad, the cold water), tracked, and it settles the favour when done.
+	void TakeWay(int playerId, int id, IEntity user, notnull array<string> said)
+	{
+		string label;
+		string tag;
+		string need;
+		if (!WayReply(playerId, id, user, label, tag, need))
+			return;
+
+		RZ_Opening o = ById(id);
+		if (!need.IsEmpty())
+		{
+			said.Insert(RZ_OpeningText.HandOverMissing());
+			return;
+		}
+
+		RZ_Errands errands = m_GM.GetErrands();
+		RZ_Errand e;
+		if (errands && o.m_iErrand >= 0)
+			e = errands.FindById(o.m_iErrand);
+
+		if (!e)
+			return;
+
+		o.m_bWayTaken = true;
+		if (RZ_OpeningFavours.WayIsReply(o.m_sBackground))
+		{
+			RZ_OpeningFavours.WayLines(o.m_sBackground, said);
+			if (!errands.FinishNow(e, user))
+			{
+				o.m_bWayTaken = false;
+				return;
+			}
+
+			RZ_Log.Info(string.Format("Openings: %1 settled the favour by their background's way (%2), there and then", RZ_Util.PlayerName(playerId), o.m_sBackground));
+			return;
+		}
+
+		// A step of its own, instead of the fetch: the fetch goes quietly
+		RZ_OpeningStepDef d = m_Favours.WayDef(o.m_sBackground);
+		vector giverAt = o.m_Place.m_vPos;
+		if (o.m_Contact)
+			giverAt = o.m_Contact.GetOrigin();
+
+		vector place = RZ_OpeningFavours.WayPlace(o.m_sBackground, giverAt, o.m_vFavour);
+		string placeText = o.m_sSearch;
+		if (place == giverAt)
+			placeText = o.m_sName;
+		else if (o.m_sBackground == "mechanic" || o.m_sBackground == "hunter")
+			placeText = "his place";
+
+		errands.Drop(e, "done");
+		RZ_Errand way = errands.Hand(d, playerId, "opening:" + o.m_iId.ToString(), o.m_sName, o.m_sSpeaker, RZ_EFaction.SURVIVORS, giverAt, place, placeText, user);
+		if (!way)
+		{
+			o.m_bWayTaken = false;
+			Finish(o, "the background's way couldn't be handed");
+			return;
+		}
+
+		o.m_iErrand = way.m_iId;
+		o.m_bResolved = false;
+		o.m_fStepAt = m_fClock;
+		RZ_UIFeed feed = m_GM.GetUIFeed();
+		if (feed && feed.GetTracker())
+			feed.GetTracker().Follow(playerId, -(RZ_UIFeed.ERRAND_ID_BASE + way.m_iId), way.Fill(d.m_sTitle));
+
+		RZ_Log.Info(string.Format("Openings: %1 took their background's way (%2, %3) at %4", RZ_Util.PlayerName(playerId), o.m_sBackground, d.m_sKey, RZ_SettlementScanner.GridReference(place)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Walking with you: one line at each thing worth knowing, once each (a door mark, an infected, a
+	//! locked door; the broadcast after a while).
+	protected void Remarks(RZ_Opening o, IEntity me)
+	{
+		if (o.m_fWalkFrom <= 0)
+			o.m_fWalkFrom = m_fClock;
+
+		if (RZ_Util.DistXZ(o.m_Contact.GetOrigin(), me.GetOrigin()) > SPEAK_RANGE)
+			return;
+
+		RZ_Dialogue dialogue = m_GM.GetDialogue();
+		if (dialogue && dialogue.GetSession(o.m_iPlayer))
+			return;
+
+		vector at = me.GetOrigin();
+		int what = -1;
+		if ((o.m_iRemarks & 1) == 0 && MarkNear(at))
+			what = 0;
+		else if ((o.m_iRemarks & 2) == 0 && m_GM.GetSpawner() && m_GM.GetSpawner().CountInfectedNear(at, REMARK_INFECTED) > 0)
+			what = 1;
+		else if ((o.m_iRemarks & 4) == 0 && LockedNear(at))
+			what = 2;
+		else if ((o.m_iRemarks & 8) == 0 && m_fClock - o.m_fWalkFrom > REMARK_BROADCAST)
+			what = 3;
+
+		if (what < 0)
+			return;
+
+		o.m_iRemarks = o.m_iRemarks | (1 << what);
+		m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningFavours.Remark(what), o.m_Contact);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A door mark (Traces) placed within a few metres.
+	protected bool MarkNear(vector at)
+	{
+		RZ_Traces traces = m_GM.GetTraces();
+		if (!traces || !traces.GetDoors())
+			return false;
+
+		foreach (RZ_MarkedDoor d : traces.GetDoors().GetDoors())
+		{
+			if (d.m_bPlaced && !d.m_aLayers.IsEmpty() && RZ_Util.DistXZ(d.m_vPos, at) <= REMARK_MARK)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A locked building (the locks' own) within a few metres.
+	protected bool LockedNear(vector at)
+	{
+		array<IEntity> buildings = {};
+		RZ_BuildingQuery.FindBuildings(at, REMARK_LOCKED, buildings, 8);
+		foreach (IEntity b : buildings)
+		{
+			if (b && RZ_LockedSpots.IsLockedBuilding(b))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its id (the talk screen's), -1 without one.
+	int OpeningIdOf(int playerId)
+	{
+		RZ_Opening o = Running(playerId);
+		if (!o)
+			return -1;
+
+		return o.m_iId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stage under way (RZ_EOpeningStage), NONE without one.
+	int StageOf(int playerId)
+	{
+		RZ_Opening o = Running(playerId);
+		if (!o)
+			return RZ_EOpeningStage.NONE;
+
+		return Stage(o);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errand of the step under way, null without one.
+	RZ_Errand StepErrand(int playerId)
+	{
+		RZ_Opening o = Running(playerId);
+		RZ_Errands errands = m_GM.GetErrands();
+		if (!o || !errands || o.m_iErrand < 0)
+			return null;
+
+		return errands.FindById(o.m_iErrand);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The next stage now, not a moment from now (the tests').
+	void NextNow(int playerId, IEntity me)
+	{
+		RZ_Opening o = Running(playerId);
+		if (!o || !o.m_bNext)
+			return;
+
+		o.m_bNext = false;
+		Ready(o, me);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The favour under way (the tests' read), NONE without an opening.
+	int FavourOf(int playerId)
+	{
+		foreach (RZ_Opening o : m_aOpenings)
+		{
+			if (o.m_iPlayer == playerId && !o.m_bEnded)
+				return o.m_iFavour;
+		}
+
+		return RZ_EFavour.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_OpeningFavours GetFavours()
+	{
+		return m_Favours;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2123,6 +2753,13 @@ class RZ_Openings
 		RZ_Opening o = ById(id);
 		if (!o || o.m_iPlayer != playerId || o.m_bEnded || o.m_bWaitTalk || o.m_bResolved || o.m_bTended)
 			return false;
+
+		// The favour's hand-over: the thing is fetched (held for you), so nothing can be missing
+		if (Stage(o) == RZ_EOpeningStage.GIVE && o.m_bFetched)
+		{
+			label = RZ_OpeningFavours.GiveLabel(o.m_iFavour);
+			return true;
+		}
 
 		if (Stage(o) != RZ_EOpeningStage.TASK || !RZ_OpeningTasks.HandsOver(o.m_iTask))
 			return false;
@@ -2160,7 +2797,10 @@ class RZ_Openings
 		// step said into this same talk (Ready finds it open). Never later, for walking back.
 		o.m_bTended = true;
 		int before = said.Count();
-		said.Insert(RZ_OpeningText.HandedOver(o.m_iTask));
+		if (Stage(o) == RZ_EOpeningStage.GIVE)
+			said.Insert(RZ_OpeningFavours.Thanks(o.m_iFavour));
+		else
+			said.Insert(RZ_OpeningText.HandedOver(o.m_iTask));
 		if (!e || !errands.FinishNow(e, user))
 		{
 			o.m_bTended = false;
@@ -2169,7 +2809,7 @@ class RZ_Openings
 			return;
 		}
 
-		RZ_Log.Info(string.Format("Openings: %1 handed over to %2 (step 2, task %3), done there and then", RZ_Util.PlayerName(playerId), o.m_sName, o.m_iTask));
+		RZ_Log.Info(string.Format("Openings: %1 handed over to %2 (step %3, task %4, favour %5), done there and then", RZ_Util.PlayerName(playerId), o.m_sName, o.m_iStep, o.m_iTask, o.m_iFavour));
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,32 +1,70 @@
 //! What duties find (docs/ERRANDS.md, "Things that happen"): the beats a patrol meets at a point, a
 //! hunter at the snares, and the small turns a chore takes. Each is drawn from the world as it is
-//! at that spot (Traces' door marks and scenes, the rumours going round, the weather, the hour, the
-//! stage, how sick the town is), most of them not a fight, with a choice where one fits. Data for
-//! RZ_DutyScenes. Server only.
+//! at that spot (Traces' door marks, the rumours going round, how sick the town is), most of them not
+//! a fight, with a choice where one fits. A patrol's find always has its thing really there (a real
+//! door, a grave, a radio, remains, a box under a step) with its one prompt on it; a find whose
+//! thing can't stand near the stop isn't used. Data for RZ_DutyScenes. Server only.
 class RZ_DutyFinds
 {
 	protected static const float FIND_TIMEOUT = 150;	// a patrol waits this long at a find
+	static const float FIND_REACH = 120;				// a find stands this far from the patrol's stop at most
+	protected static const float DOORSTEP = 0.8;		// a door find's prompt stands this far out of the doorway
+
+	// What stands at a find (tools/camp_kit/props.txt: base-game props, measured in footprints.json)
+	protected static const ResourceName GRAVE = "{EAD2277399B3C658}Prefabs/Props/Military/Graves/Grave_USSR_02.et";
+	protected static const ResourceName RADIO = "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et";
+	protected static const ResourceName BOX = "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et";
+	protected static const ResourceName REMAINS = "{85EFAE5E2B52E5A1}Prefabs/Props/Remains/SkeletonRemains/SkeletonRemains_05_clothes.et";
 
 	//------------------------------------------------------------------------------------------------
-	protected static RZ_DutyBeat Find(string key, string line)
+	//! A find at a real spot: its thing stands there and its one prompt is on it.
+	protected static RZ_DutyBeat Find(string key, string line, vector at, ResourceName thing, string goal)
 	{
-		RZ_DutyBeat b = new RZ_DutyBeat(key, line, RZ_DutyBeat.AT_NEAR);
+		RZ_DutyBeat b = new RZ_DutyBeat(key, line, RZ_DutyBeat.AT_SET);
+		b.m_vAt = at;
+		b.m_sProp = thing;
+		b.m_sGoal = goal;
 		b.m_fTimeout = FIND_TIMEOUT;
+		b.m_bFind = true;
 		return b;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! What stands off a patrol's point: one find (and what it leads to) from those that are true
-	//! there, into `beats`. Nothing when none is.
-	static void Patrol(RZ_GameModeComponent gm, RZ_Errand e, vector at, notnull array<ref RZ_DutyBeat> beats)
+	//! A doorstep in front of a real outside door within FIND_REACH of `at` (`houses`: a house's).
+	//! False when there's none: no door find there.
+	protected static bool DoorStep(vector at, bool houses, out vector step)
 	{
+		IEntity door;
+		vector centre;
+		vector normal;
+		step = vector.Zero;
+		if (!RZ_DoorGeometry.NearestOuterDoor(at, 0, FIND_REACH, houses, door, centre, normal))
+			return false;
+
+		step = RZ_Util.GroundPos(centre + normal * DOORSTEP);
+		return !RZ_Util.IsWater(step);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spot in the open 10-45 m from `at` (the errands' "out" need: dry, mainland, not steep).
+	protected static bool OpenSpot(vector at, out vector spot)
+	{
+		spot = RZ_PlaceFind.Near(at, 10, 45, RZ_PlaceNeeds.Get("errand.out"));
+		return spot != vector.Zero;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a patrol stops for near its point `at`: one find (and what it leads to) from those that
+	//! are true there AND have their thing really standing there (docs/MISSION_RULES.md, rules 2
+	//! and 3), into `beats`, its first beat set at the thing; what the lead calls out is `call`.
+	//! False when none fits (logged): the patrol walks on.
+	static bool Patrol(RZ_GameModeComponent gm, RZ_Errand e, vector at, string lead, notnull array<ref RZ_DutyBeat> beats, out string call)
+	{
+		call = "";
 		RZ_WorldFacts facts = gm.GetFacts();
 		RZ_Settlement town = gm.GetSettlement(gm.FindNearestSettlement(at));
-		bool rain = gm.GetEnvironment() && gm.GetEnvironment().IsRaining();
-		bool dusk = facts && (facts.IsDusk() || facts.IsNight());
-		bool late = facts && facts.Stage() >= RZ_EOutbreakStage.COLLAPSE;
 		bool sick = town && town.m_fInfection >= 40;
-		array<string> kinds = {"drawing", "dog", "cache", "body"};
+		array<string> kinds = {"body", "cache", "house"};
 		string markKey = RZ_Traces.OldMarkKey(at);
 		if (!markKey.IsEmpty())
 		{
@@ -46,155 +84,156 @@ class RZ_DutyFinds
 		if (!rumours.IsEmpty())
 			kinds.Insert("radio");
 
-		if (rain || late)
-			kinds.Insert("tracks");
-
-		if (dusk || (town && facts && !facts.IsLivedIn(gm.FindNearestSettlement(at))))
-			kinds.Insert("smoke");
-
-		if (sick)
-			kinds.Insert("pit");
-
-		if (late)
-			kinds.Insert("truck");
-
-		kinds.Insert("others");
-		string kind = kinds[Math.RandomInt(0, kinds.Count())];
-		RZ_DutyBeat b;
-		RZ_DutyOption o;
-		switch (kind)
+		// In a random order, the first whose thing can stand there
+		for (int k = kinds.Count() - 1; k > 0; k--)
 		{
-			case "door":
-			{
-				string mark = RZ_Traces.OldMarkLine(markKey, e.m_iAsker);
-				if (mark.IsEmpty())
-					mark = "It wasn't there yesterday.";
-
-				b = Find("door", "A door off the path, and a mark on it. " + mark);
-				o = b.Opt("Copy the mark into the patrol book", "Copied down as it stands. Someone at the gate will know what it means.");
-				o.Fx("report,record").Told("That mark you copied down was read last night. It mattered.");
-				b.Opt("Leave the door alone", "Left as it was. Some marks aren't meant for patrols.");
-				break;
-			}
-
-			case "grave":
-			{
-				b = Find("grave", "A fresh grave by the hedge. A stick cross, a name in pencil, already running in the damp.");
-				o = b.Opt("Read the name for the report", "The name goes in the book. Somebody will want to know where.");
-				o.Fx("report,record");
-				o = b.Opt("Set the cross straight and go over the name", "Straightened, and the name gone over in pencil. Nobody saw who did it.");
-				o.Work(RZ_EWork.WRITE, 5).Fx("later").Later("", "Someone set the cross straight on that grave by the hedge. The family asked who. I said I didn't know.");
-				break;
-			}
-
-			case "radio":
-			{
-				string heard = rumours[Math.RandomInt(0, rumours.Count())];
-				b = Find("radio", "A radio still talking in an empty kitchen. The battery can't have long.");
-				o = b.Opt("Listen, and write down what it says", "It says this, twice over, then hiss. " + heard);
-				o.Fx("report");
-				o = b.Opt("Switch it off", "Quiet. One less voice calling things to the house.");
-				break;
-			}
-
-			case "drawing":
-			{
-				b = Find("drawing", "A child's drawing pinned inside a gate. Four people and a dog, and a sun with a face.");
-				o = b.Opt("Take it back for the board", "Folded into your coat, carefully. It'll go on the board.");
-				o.Fx("later,regard+").Later("", "That drawing you brought in is up on the board. Three people have stood in front of it today, not saying anything.");
-				b.Opt("Leave it where it's pinned", "Left for whoever comes back for it. If anyone does.");
-				break;
-			}
-
-			case "tracks":
-			{
-				b = Find("tracks", "Tracks in the mud, a great many, barefoot, all going the one way.");
-				o = b.Opt("Count them and mark the way they went", "Thirty, near enough, and going towards the low ground. Marked.");
-				o.Fx("report,record").Told("They moved the night post because of the tracks you counted. Nothing came. That's how you know it worked.");
-				b.Opt("Scuff them out", "Gone. Nobody else will be frightened by them.");
-				break;
-			}
-
-			case "smoke":
-			{
-				b = Find("smoke", "Smoke from a chimney that ought to be cold.");
-				o = b.Opt("Go to the door", "You knock. Something moves inside, and stops.");
-				o.Flag("door").Next("hiding");
-				o = b.Opt("Mark the house for the report", "Marked. Someone else will knock, another day.");
-				o.Fx("report,hook");
-				beats.Insert(b);
-				b = Find("hiding", "A voice through the door, low. Don't write us down. They'll move us on. Please.");
-				b.m_iWhere = RZ_DutyBeat.AT_SAME;
-				b.m_sIf = "door";
-				o = b.Opt("Put them in the report", "In the book. They'll be fetched in, or moved on. That isn't yours to choose.");
-				o.Fx("report").Told("The ones you found behind that door have been brought in. They aren't grateful yet.");
-				o = b.Opt("Say nothing, and walk on", "Nothing written. The door stays shut behind you.");
-				o.Shady(1).Fx("local").Later("who was behind the door with the cold chimney", "You didn't write us down. I know what that could have cost you.");
-				o = b.Opt("Leave a tin on the step", "A tin on the step. The door opens a hand's width after you've gone.");
-				o.Needs(RZ_EErrandItem.FOOD, 1).Fx("local").Later("who was behind the door with the cold chimney", "There was a tin on our step. I never saw your face, but I asked about you.");
-				break;
-			}
-
-			case "pit":
-			{
-				b = Find("pit", "One of the infected in a drainage pit, up to its chest, reaching. It can't climb out. It hasn't made a sound yet.");
-				o = b.Opt("Finish it with the knife", "Done, and quietly. One fewer for the town to send.");
-				o.Work(RZ_EWork.HANDS, 6).Fx("infect-");
-				o = b.Opt("Mark the pit for the report", "Marked. Someone will come with a pole and a sack.");
-				o.Fx("report");
-				break;
-			}
-
-			case "body":
-			{
-				b = Find("body", "A body in the ditch, a week old. Papers in the coat. A watch on the wrist, still going.");
-				o = b.Opt("Take the papers for the report", "The papers, and nothing else. There's a name on them.");
-				o.Fx("report,record").Told("The papers you brought in had a name on them. Someone here knew it.");
-				o = b.Opt("Take the watch", "The strap is stiff. It comes off.");
-				o.Shady(1).Fx("watch");
-				break;
-			}
-
-			case "truck":
-			{
-				b = Find("truck", "A truck off the road, nose down, its load still roped. Nobody has found it yet.");
-				o = b.Opt("Mark it for the quartermaster", "Marked on the map, with what's on it. That's a week of someone's stores.");
-				o.Fx("report,morale+").Told("They brought that truck's load in this morning. That was yours, and it's been said.");
-				o = b.Opt("Take a share before anyone counts", "One thing off the back, into your pack. The ropes go back as they were.");
-				o.Shady(2).Fx("give");
-				break;
-			}
-
-			case "dog":
-			{
-				b = Find("dog", "A dog in a gateway, thin, watching. A collar with the name worn off.");
-				o = b.Opt("Give it something to eat", "It takes it from the ground, not from your hand. Then it follows, at a distance.");
-				o.Needs(RZ_EErrandItem.FOOD, 1).Fx("later,morale+").Later("", "That dog followed your patrol in. It sleeps by the gate now. The children have given it four names.");
-				b.Opt("Send it off", "It goes, looking back twice.");
-				break;
-			}
-
-			case "cache":
-			{
-				b = Find("cache", "A tin box under a loose step. The dust on it is fresh.");
-				o = b.Opt("Hand it in unopened", "Unopened, into the pack, for the gate.");
-				o.Fx("report").Told("The box you handed in was somebody's savings. Paper money. Worthless, and they cried anyway.");
-				o = b.Opt("Open it and take what's in it", "Open. Most of it is paper. One thing isn't.");
-				o.Shady(1).Fx("give");
-				break;
-			}
-
-			default:
-			{
-				b = Find("others", "Another patrol across the field, not ours, stopped as you are stopped. Nobody has raised anything yet.");
-				o = b.Opt("Raise an open hand", "A hand goes up over there too. Then they turn and go.");
-				o.Fx("record,morale+");
-				b.Opt("Stand until they go", "They go first. Somebody will call that a win.");
-				break;
-			}
+			int swap = Math.RandomInt(0, k + 1);
+			string held = kinds[k];
+			kinds[k] = kinds[swap];
+			kinds[swap] = held;
 		}
 
-		beats.Insert(b);
+		RZ_DutyBeat b;
+		RZ_DutyOption o;
+		vector spot;
+		foreach (string kind : kinds)
+		{
+			switch (kind)
+			{
+				case "door":
+				{
+					vector markPos;
+					vector markOut;
+					if (!RZ_Traces.MarkedDoorAt(markKey, markPos, markOut))
+						break;
+
+					vector markStep = RZ_Util.GroundPos(markPos + markOut * DOORSTEP);
+					if (RZ_Util.DistXZ(markStep, at) > FIND_REACH)
+						break;
+
+					spot = markStep;
+					string mark = RZ_Traces.OldMarkLine(markKey, e.m_iAsker);
+					if (mark.IsEmpty())
+						mark = "It wasn't there yesterday.";
+
+					call = "Hold up. That door's been marked. Go and read it to me, I'll wait.";
+					b = Find("door", "A door off the path, and a mark beside it. " + mark, spot, "", string.Format("Read the mark on the door, %1 waiting", lead));
+					o = b.Opt("Copy the mark into the patrol book", "Good. Someone at the gate will know what it means.");
+					o.Fx("report,record").Told("That mark you copied down was read last night. It mattered.");
+					b.Opt("Leave the door alone", "Fair. Some marks aren't meant for patrols.");
+					break;
+				}
+
+				case "grave":
+				{
+					vector graveAt;
+					if (!OpenSpot(at, graveAt))
+						break;
+
+					spot = graveAt;
+					call = "Grave at the field edge. Fresh. Read me the name.";
+					b = Find("grave", "A fresh grave. A stick cross, a name in pencil, already running in the damp.", spot, GRAVE, "Read the name on the fresh grave");
+					o = b.Opt("Read the name for the report", "Say it again. Right. Somebody will want to know where.");
+					o.Fx("report,record");
+					o = b.Opt("Set the cross straight and go over the name", "Leave it like that. Nobody needs to know who.");
+					o.Work(RZ_EWork.WRITE, 5).Fx("later").Later("", "Someone set the cross straight on that grave at the field edge. The family asked who. I said I didn't know.");
+					break;
+				}
+
+				case "radio":
+				{
+					vector room;
+					if (!RZ_WorkSites.Indoors(at, FIND_REACH, "house", room))
+						break;
+
+					spot = room;
+					string heard = rumours[Math.RandomInt(0, rumours.Count())];
+					call = "Hear that? A radio, in that house. Go and see what it's saying.";
+					b = Find("radio", "A radio still talking in an empty house. The battery can't have long.", spot, RADIO, "Find the radio talking in the empty house");
+					o = b.Opt("Listen, and write down what it says", "Write it as you heard it. " + heard);
+					o.Fx("report");
+					b.Opt("Switch it off", "Good. One less voice calling things to the house.");
+					break;
+				}
+
+				case "house":
+				{
+					vector houseStep;
+					if (!DoorStep(at, true, houseStep))
+						break;
+
+					spot = houseStep;
+					call = "That house. Path trodden to the door, curtains drawn. Somebody's in. Go and knock, softly.";
+					b = Find("house", "A trodden path to the door. The curtains are drawn tight, and the step's been swept.", spot, "", "Knock at the house with the trodden path");
+					o = b.Opt("Knock", "Something moved in there. Wait.");
+					o.Flag("door").Next("hiding");
+					o = b.Opt("Mark the house for the report", "Marked. Someone else can knock another day.");
+					o.Fx("report,hook");
+					beats.Insert(b);
+					b = new RZ_DutyBeat("hiding", "Don't write us down. They'll move us on. Please.", RZ_DutyBeat.AT_SAME);
+					b.m_sIf = "door";
+					b.m_fTimeout = FIND_TIMEOUT;
+					b.m_bFind = true;
+					b.m_sGoal = "Answer the voice behind the door";
+					o = b.Opt("Put them in the report", "In the book, then. They'll be fetched in, or moved on. That isn't ours to choose.");
+					o.Fx("report").Told("The ones you found behind that door have been brought in. They aren't grateful yet.");
+					o = b.Opt("Say nothing, and walk on", "Nothing written. I didn't see it either.");
+					o.Shady(1).Fx("local").Later("who was behind the door of the house with the trodden path", "You didn't write us down. I know what that could have cost you.");
+					o = b.Opt("Leave a tin on the step", "A tin on the step. Go on, before the door opens.");
+					o.Needs(RZ_EErrandItem.FOOD, 1).Fx("local").Later("who was behind the door of the house with the trodden path", "There was a tin on our step. I never saw your face, but I asked about you.");
+					break;
+				}
+
+				case "body":
+				{
+					vector bodyAt;
+					if (!OpenSpot(at, bodyAt))
+						break;
+
+					spot = bodyAt;
+					ResourceName remains = RZ_ErrandSettings.Get().Props().m_sDutyBody;
+					if (remains.IsEmpty())
+						remains = REMAINS;
+
+					call = "Something in the grass there. Go on, I've got you covered.";
+					b = Find("body", "What's left of someone, still in his coat. Papers in the pocket. A watch on the wrist, still going.", spot, remains, "Look at the remains in the grass");
+					o = b.Opt("Take the papers for the report", "A name? Someone at the gate will know it.");
+					o.Fx("report,record").Told("The papers you brought in had a name on them. Someone here knew it.");
+					o = b.Opt("Take the watch", "I didn't see that.");
+					o.Shady(1).Fx("watch");
+					break;
+				}
+
+				case "cache":
+				{
+					// A step at any building's outside door (a shed, a shop), not only a house's
+					vector cacheStep;
+					if (!DoorStep(at, false, cacheStep))
+						break;
+
+					spot = cacheStep;
+					call = "Loose step on that porch. Have a look underneath.";
+					b = Find("cache", "A metal box under the loose step. The dust on it is fresh.", spot, BOX, "Look under the loose step");
+					o = b.Opt("Hand it in unopened", "Unopened. Good. It goes to the gate as it is.");
+					o.Fx("report").Told("The box you handed in was somebody's savings. Paper money. Worthless, and they cried anyway.");
+					o = b.Opt("Open it and take what's in it", "I'll not ask what was in it.");
+					o.Shady(1).Fx("give");
+					break;
+				}
+			}
+
+			if (b)
+			{
+				beats.Insert(b);
+				RZ_Log.Info(string.Format("Duty finds: %1 at %2, %3 m from the patrol's stop at %4 (errand %5).", kind, RZ_SettlementScanner.GridReference(spot), RZ_Util.RoundToInt(RZ_Util.DistXZ(spot, at)), RZ_SettlementScanner.GridReference(at), e.m_iId));
+				return true;
+			}
+
+			RZ_Log.Info(string.Format("Duty finds: no %1 by the patrol's stop at %2: its thing can't stand there, left out.", kind, RZ_SettlementScanner.GridReference(at)));
+		}
+
+		beats.Clear();
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

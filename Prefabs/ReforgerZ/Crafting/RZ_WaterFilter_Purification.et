@@ -1,0 +1,14 @@
+GenericEntity : "{AF005259833BF007}Prefabs/ReforgerZ/Interactions/RZ_Tablets.et" {
+ ID "700EFCA2CE8A1EB0"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName SCR_InventoryUIInfo "{5222EB4D07D865FA}" {
+     Name "Water filter"
+     Description "Charcoal and cloth packed in the neck of a bottle. Pour one bottle of untreated water through it and it's safe to drink."
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -1,0 +1,55 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  MeshObject "{6AD67DC2C18B0001}" {
+   Object "{79CA5DD14C0940E9}Assets/Items/Equipment/Kits/MedicalKit_01/MedicalKit_01.xob"
+  }
+  RigidBody "{6AD67DC2C18B0002}" {
+   Mass 4
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Halcyon cold case"
+     Description "A sealed case with Halcyon's stencil on the lid and a luggage tag on the handle: HALCYON. FIELD STATION. LIVE. KEEP COLD. Whatever's inside is meant to stay cold."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 4
+     SizeSetupStrategy Manual
+     ItemVolume 3000
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{6AD67DC2C18B0003}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 0.6
+     }
+    }
+    m_Size SLOT_2x2
+   }
+  }
+  RZ_ColdCaseComponent "{6AD67DC2C18B0004}" {
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{508AC2ABEC97066C}" {
+     Radius 0.6
+    }
+   }
+   additionalActions {
+    RZ_ReadCaseTagAction "{6AD67DC2C18B0005}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6AD67DC2C18B0006}" {
+      Name "Read the tag"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

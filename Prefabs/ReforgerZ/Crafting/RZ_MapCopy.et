@@ -1,0 +1,14 @@
+GenericEntity : "{13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et" {
+ ID "6039DFB5262EABE7"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Hand-drawn map"
+     Description "The roads and towns, drawn from memory on squared paper. Good enough to find your way."
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

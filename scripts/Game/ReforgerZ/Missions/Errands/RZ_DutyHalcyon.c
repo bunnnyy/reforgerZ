@@ -337,7 +337,7 @@ class RZ_DutyHalcyon
 			RZ_DutyScript.O("Shout for the orderlies", "Three of them, with a blanket and a pole. It takes all three. The ward watches it happen.", "hold:3 morale- infect+", "", "", "A subject turned on the ward on your round. You'd written something else on the chart. Two orderlies are being stitched.");
 		}
 
-		RZ_DutyScript.T("chart", "The researcher, at the ward door, with the day's sheet. The trial needs the fevers written as responses, he says. It's only a word.", RZ_DutyBeat.AT_HERE);
+		RZ_DutyScript.T("chart", "The researcher, by the ward, with the day's sheet. The trial needs the fevers written as responses, he says. It's only a word.", RZ_DutyBeat.AT_HERE);
 		RZ_DutyScript.O("Write the charts as they are", "As they are. He reads them, and his mouth goes thin, and he takes them.", "write record regard+ research", "", "", "You wrote the ward's charts true. The trial's numbers are worse for it, and right for it. That's worth more than a good week.");
 		RZ_DutyScript.O("Write them his way", "His way. Three fevers become three responses. The trial has a good day, on paper.", "write shady2 +1");
 	}

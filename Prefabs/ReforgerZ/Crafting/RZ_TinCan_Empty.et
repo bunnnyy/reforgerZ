@@ -1,0 +1,34 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "BD7674DDF8A49403"
+ components {
+  MeshObject "{06C9E87A275F9BBD}" {
+   Object "{FACB1ED350C087F9}Assets/Props/Garbage/Generic/LitterInterior_01/LitterInterior_01_TinCan_01.xob"
+  }
+  RigidBody "{6BB1A8CFD94B9A1B}" {
+   Mass 0.1
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Empty tin"
+     Description "Licked clean by someone. It still rattles if you put stones in it."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.1
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{9D1FD1A7D51E51D4}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 0.6
+     }
+    }
+    m_Size SLOT_1x1
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -103,6 +103,9 @@ class RZ_GuidanceSettings
 	[Attribute("{9C3E5A71D2B84F06}Prefabs/ReforgerZ/Guidance/RZ_OpeningCompanion.et", UIWidgets.ResourcePickerThumbnail, "Openings: the contact who walks with you (Mechanic, Hunter, Lab Technician, Unemployed, Raider, Ex-Con, Radio Operator): a one-man AI group of a person with the puzzle components. Empty: they hand you on to the next person instead", "et")]
 	ResourceName m_sCompanionPrefab;
 
+	[Attribute("{5B7C2E91A4D63F08}Prefabs/ReforgerZ/Guidance/RZ_ColdCase.et", UIWidgets.ResourcePickerThumbnail, "Openings: Halcyon's cold case, by the runner at the chain's end (an item with RZ_ColdCaseComponent and RZ_ReadCaseTagAction). Empty: no case, and the chain ends at the nearest place with work as before", "et")]
+	ResourceName m_sColdCasePrefab;
+
 	[Attribute("10", UIWidgets.Slider, "Openings: Fame with the faction the chain ends with, at the end of its walk (small pay: never season Fame)", "0 20 1")]
 	int m_iOpeningFame;
 

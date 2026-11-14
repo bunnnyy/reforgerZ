@@ -1260,6 +1260,13 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Infected bodies the spawner tracks within `radius` of `pos` (the opening's walking contact asks).
+	int CountInfectedNear(vector pos, float radius)
+	{
+		return CountNear(pos, radius);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected int CountNear(vector pos, float radius)
 	{
 		int n = 0;

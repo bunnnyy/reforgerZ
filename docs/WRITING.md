@@ -13,6 +13,7 @@ built from parts here (below).
 - [Everyone is right about something](#everyone-is-right-about-something)
 - [The voices](#the-voices)
 - [By channel](#by-channel)
+- [Spoken lines and notices](#spoken-lines-and-notices)
 - [Talk](#talk)
 - [The government broadcast](#the-government-broadcast)
 - [Information comes first](#information-comes-first)
@@ -93,7 +94,10 @@ hard edges are each faction's in [LORE.md](LORE.md#the-factions-as-people).
   talks like a neighbour on a doorstep: plain, relieved, a little embarrassed, never an institution.
   Nobody is new, so they never say you're new and never explain the Zone: the story comes one piece a
   step, in their own life (*"My brother tried the river road. The loudspeaker said his name. Then it
-  didn't."*), and the ask comes in their own need, never as a lesson.
+  didn't."*), and the ask comes in their own need, never as a lesson. They ask who you were in
+  passing, as a guess from how you stand or what you carry (*"Those hands have seen engines."*), never
+  as a form; your background's way through their favour is said in your own trade's voice (*"Leave the
+  key. Knocking is my job."*), dry, and their thanks are about their problem, not about you.
   - **Someone from before** knew you through your background: one shared detail from before (the
     stitches, the van, the apple every morning). Each background has a line for each reason: in
     the hiding place they'd stopped knocking; with your group gone they're the one who came back
@@ -149,6 +153,18 @@ while, about food. The boss always jokes. The director never jokes on purpose.
 | Outcomes | What happened, then one reaction | Three beats ([below](#phrasing-choices-and-outcomes)) | Only in the reaction | A verdict. Numbers inside the voiced beats |
 | Guidance | A voiced speaker, or nobody | Voiced tips: the speaker's register. Plain hints: plain | Voiced tips: the speaker's. Plain hints, veterans' short lines, standing and pay notices: none | Burying a critical instruction: it comes first and can't be misread |
 | The Long Table | The family | Homely | None, ever | Describing anything |
+
+### Spoken lines and notices
+
+**People say it; a notice is the last resort** ([MISSION_RULES.md](MISSION_RULES.md), rule 29). A
+line a person present would say is written as that person's words and said by them: the subtitle
+over them, with their name and arrow, or the talk screen when there's a choice. A patrol's lead
+calls the stop ("Grave at the field edge. Fresh. Read me the name."), and answers what you chose
+("Fair. Some marks aren't meant for patrols."). What you see when you get there (the grave, the
+mark, the box under the step) is the spot's menu text, read when you press its prompt, in the
+plain present tense of what's there. A notice card carries only what nobody present can say: a
+system line (what you carry, where to go next, a trust milestone), someone out of earshot or dead,
+or what happened while you were away.
 
 **Shared text is the same for everyone who hears it.** The broadcast, the open and secure channels,
 headlines, rumours on the roads, notices and boards never depend on one listener: not their

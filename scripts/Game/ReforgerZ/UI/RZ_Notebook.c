@@ -739,6 +739,11 @@ class RZ_StandingPage : RZ_NotebookPage
 				if (!picture.IsEmpty())
 					who = who + "   " + picture;
 
+				// The habit (Backgrounds/RZ_Habits.c), after it
+				string habit = RZ_UIText.Str(f, 5);
+				if (!habit.IsEmpty())
+					who = who + "   " + habit;
+
 				RZ_UIW.SetText(m_wRoot, "Header", who);
 			}
 			else if (tag == "F")

@@ -1434,6 +1434,11 @@ class RZ_WorkSites
 					s.m_aNear.Insert(playerId);
 					s.m_aSince.Insert(m_fClock);
 					s.m_aHealth.Insert(health);
+					// Steady hands (Backgrounds/RZ_Habits.c): this player's hold is a little shorter
+					float steady = RZ_Habits.HoldSpeed(playerId);
+					if (steady > 1)
+						SetFast(s.m_sKey, playerId, steady);
+
 					continue;
 				}
 

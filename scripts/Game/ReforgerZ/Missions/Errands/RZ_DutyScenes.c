@@ -136,6 +136,7 @@ class RZ_DutyBeat
 	vector m_vAt;
 	ResourceName m_sProp;		// what stands there (the first option's before look)
 	string m_sIf;				// a flag the scene must have ("!flag": must not); "" always
+	bool m_bFind;				// a patrol's find (RZ_DutyFinds): what's seen is in its spot's menu, what's said is the lead's
 	float m_fWait;				// seconds after the last beat before it opens (a watch's sightings)
 	float m_fTimeout;			// > 0: left alone this long, it passes with nothing chosen
 	bool m_bScored;				// counts in the scene's score
@@ -188,6 +189,7 @@ class RZ_DutyScene
 	int m_iBeat;					// the current one
 	bool m_bOpen;
 	bool m_bSaid;
+	bool m_bGathered;				// the open beat's options are one prompt and a menu, which shows its line
 	bool m_bDone;
 	float m_fClock;
 	float m_fOpenAt;
@@ -669,11 +671,7 @@ class RZ_DutyScenes
 		if (!s.m_bSaid && RZ_Util.DistXZ(at, b.m_vAt) <= SAY_RANGE)
 		{
 			s.m_bSaid = true;
-			if (!b.m_sLine.IsEmpty())
-			{
-				m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, b.m_sLine);
-				Log(s, b.m_sLine, RZ_HandsOn.TONE_PLAIN);
-			}
+			Tell(s, b);
 		}
 
 		// No work sites here: the first thing you could do is what's done, by standing there
@@ -713,7 +711,8 @@ class RZ_DutyScenes
 			if (passed.IsEmpty())
 				passed = "Left as it was. Time to move on.";
 
-			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, passed);
+			if (!(b.m_bFind && m_Dealer.GetSquads().Answer(s.m_iErrand, "Leave it. We're moving.")))
+				m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, passed);
 			Advance(s, "");
 		}
 	}
@@ -1047,7 +1046,8 @@ class RZ_DutyScenes
 
 		// Several things to do at the one spot (side by side, or round a bed): one prompt where they
 		// stood, its name, and the list. A place of its own to go and look at keeps its own prompt.
-		if (together.Count() > 1)
+		s.m_bGathered = together.Count() > 1;
+		if (s.m_bGathered)
 			sites.Gather(SpotKey(s), SpotName(s, b), together, middle * (1.0 / together.Count()), b.m_sLine, yaw);
 
 		// Its prompt opens it up close (not where someone stands to be talked to: that's the talk)
@@ -1139,18 +1139,58 @@ class RZ_DutyScenes
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Where the beat is, for the player: the errand's place moves to it (so the journal and the
-	//! tracker point there, and the step ends where the last beat was), and a beat more than 15 m off
-	//! is said with its direction. A patrol's finds leave the errand's place alone: its step ends at
-	//! the gate.
+	//! Where the beat is, for the player: the errand's place moves to it, so the journal and the
+	//! tracker point there and the step ends where the last beat was (no card saying which way: the
+	//! marker does). A patrol's finds leave the errand's place alone: the squad's own steps point at
+	//! the find (RZ_DutySquads.Objectives), and its step ends at the gate.
 	protected void PointTo(RZ_DutyScene s, RZ_DutyBeat b, IEntity me)
 	{
 		RZ_Errand e = m_Dealer.FindById(s.m_iErrand);
 		if (e && !s.m_bLoose)
 			e.m_vPlace = b.m_vAt;
+	}
 
-		if (RZ_Util.DistXZ(me.GetOrigin(), b.m_vAt) > 15)
-			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, string.Format("%1.", RZ_Util.Capitalize(RZ_Util.DirectionText(me.GetOrigin(), b.m_vAt))));
+	//------------------------------------------------------------------------------------------------
+	//! What's seen as the player reaches the beat: in the spot's menu when its options are one prompt
+	//! (pressing it shows the line); a voice behind a door says it from there; else, with nobody to
+	//! say it, a card (docs/MISSION_RULES.md, rule 29).
+	protected void Tell(RZ_DutyScene s, RZ_DutyBeat b)
+	{
+		if (b.m_sLine.IsEmpty())
+			return;
+
+		if (b.m_bFind && b.m_sKey == "hiding")
+		{
+			m_GM.SayAt(s.m_iPlayer, "A voice behind the door", -1, b.m_sLine, b.m_vAt);
+			Log(s, b.m_sLine, RZ_HandsOn.TONE_PLAIN);
+			return;
+		}
+
+		if (s.m_bGathered)
+			return;
+
+		m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, b.m_sLine);
+		Log(s, b.m_sLine, RZ_HandsOn.TONE_PLAIN);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The patrol's find waiting or open now: where its thing stands and its step's words. False:
+	//! none (the squad walks on).
+	bool OpenFind(int errandId, out vector at, out string goal)
+	{
+		at = vector.Zero;
+		goal = "";
+		RZ_DutyScene s = Find(errandId);
+		if (!s || s.m_iBeat >= s.m_aBeats.Count())
+			return false;
+
+		RZ_DutyBeat b = s.m_aBeats[s.m_iBeat];
+		if (!b.m_bFind || b.m_vAt == vector.Zero)
+			return false;
+
+		at = b.m_vAt;
+		goal = b.m_sGoal;
+		return !goal.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1246,7 +1286,7 @@ class RZ_DutyScenes
 		if (!o.m_sTold.IsEmpty() && !seen && s.m_aTold.Count() < 2)
 			s.m_aTold.Insert(o.m_sTold);
 
-		if (!said.IsEmpty())
+		if (!said.IsEmpty() && !(b.m_bFind && m_Dealer.GetSquads().Answer(s.m_iErrand, said)))
 		{
 			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, said);
 			int tone = RZ_HandsOn.TONE_PLAIN;

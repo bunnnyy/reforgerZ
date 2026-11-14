@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **369 prefab fields**: 46 on `RZ_GameModeComponent`, 306 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **346 entries**: 201 prefabs the plugin creates, 38 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **382 prefab fields**: 46 on `RZ_GameModeComponent`, 319 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **364 entries**: 218 prefabs the plugin creates, 39 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 107 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 51 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -768,6 +768,12 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | the RZ_Opening_* compositions in Prefabs/ReforgerZ/Guidance/Openings/, built by tools/camp_kit/build.py from pieces.py's OPENINGS, which also fills the slots | — | Guidance > Opening scenes (each key's prefab) | optional | the openings' props by the door you come out of: three scenes per reason and each background's own things (docs/DESIGN.md, Openings); a key with none = nothing there |
 | (existing prefab) | a person with the puzzle components, as Puzzles > Civilian is (a plainer civilian for variety) | — | Guidance > Contact | optional | whoever's outside an opening's door (someone from before, a stranger, an earlier life's wanderer); empty = Puzzles > Civilian (no body at all: nobody outside, and the scene's read points at the nearest work) |
 
+#### Guidance
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_ColdCase.et` | an inventory item with the medical kit's case mesh (no medical or arsenal parts) | `RZ_ColdCaseComponent`; `RZ_ReadCaseTagAction` | Guidance > Cold case | optional | the runner's case at the opening's end: picked up by the runner, taken to Halcyon's field station (empty = no case, the chain ends as before). The repo's is vanilla Item_Base with MedicalKit_01's mesh, 4 kg, 2x2. It must show vanilla's pick-up prompt on the ground; check its collision, since ModelGeometry reads the kit's own colliders |
+
 #### Power grid and radio station
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
@@ -795,7 +801,7 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | vanilla drivable civilian cars | — | Interactions > Cars > Car prefabs (list) | optional | what a fixed car becomes (empty = no fixable cars) |
 | `RZ_CarBattery.et` | an item; keep "battery" in its name | — | Interactions > Cars > Battery | optional | car parts |
 | `RZ_Tyre.et` | an inventory item with a tyre mesh; keep "tyre" in its name | — | Interactions > Cars > Tyre | optional | car parts. The repo's is vanilla Item_Base with the UAZ tyre's mesh: 9 kg, 2x2 |
-| `RZ_SparkPlugs.et` | an item; keep "spark" in its name | — | Interactions > Cars > Spark | optional | car parts |
+| `RZ_SparkPlugs.et` | an item; keep "spark" in its name | — | Interactions > Cars > Spark; Interactions > Crafting > Plugs | optional | car parts |
 | `RZ_FuelCan_Full.et` | a full jerrycan item | — | Interactions > Cars > Fuel prefab | optional | the hand pump, fuel, fire |
 | `RZ_BoardedDoorway.et` | planks across a door frame, with collision | — | Interactions > Traps > Barricade prefab | optional | the boarded doorway |
 | `RZ_TripwireSet.et` | a set tripwire prop | — | Interactions > Traps > Tripwire set | optional | look of a set tripwire (optional) |
@@ -811,11 +817,33 @@ and the UI files) need none, and eight have no base:
 | `RZ_Water_Dirty.et` | Metabolism's water bottle, named "Untreated water", with B_FoodWaterGadgetComponent's m_fSicknessChance 0.5 (its name matches the dirty-water keywords) | — | Interactions > General > Dirty water | optional | wells, stoves |
 | (existing prefab) | Metabolism's WaterBottle.et ({D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et) | — | Interactions > General > Clean water | optional | wells, stoves |
 
+#### Crafting
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_Rags.et` | an item with the gauze bandage mesh; keep "rag" in its name (Cloth keywords) | — | Interactions > Crafting > Rags | optional | the cloth for bandages, molotovs, dressings and filters |
+| `RZ_Lockpick.et` | a small item (the pen mesh); keep "lockpick" in its name (Search > Lockpick keywords) | — | Interactions > Crafting > Lockpick | optional | picking a locked door quietly |
+| `RZ_WaterFilter_Purification.et` | the tablets item renamed; keep "purification" in its name (a Water tablet keyword) and no "charcoal" | — | Interactions > Crafting > Filter | optional | cleaning a bottle of untreated water |
+| `RZ_RadioLure.et` | the tin rattle with the small radio mesh and a longer noise (RZ_NoisemakerComponent: 8 bursts 9 s apart, 25 heat each) | — | Interactions > Crafting > Lure | optional | drawing the infected away |
+| `RZ_MapCopy.et` | vanilla's folded paper map renamed | — | Interactions > Crafting > Map copy | optional | a map you can open |
+| `RZ_SterileDressing_Swab.et` | the field dressing renamed; keep "swab" (an Antiseptic keyword) and "dressing" (a Bandage keyword) in its name | — | Interactions > Crafting > Sterile | optional | a bandage that cleans a bite |
+| `RZ_Charcoal.et` | an item with the kindling mesh; keep "charcoal" in its name | — | Interactions > Crafting > Charcoal | optional | the water filter |
+| `RZ_Stew.et` | Metabolism's MRE with more food and some drink (B_FoodWaterGadgetComponent) | — | Interactions > Crafting > Stew | optional | food |
+| (existing prefab) | the dried meat (Metabolism's food) | — | Interactions > Crafting > Jerky | optional | food that keeps |
+
 #### Loot items
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_Planks.et` | an inventory item with a planks mesh | `RZ_PlaceableComponent` (Kind BARRICADE); `RZ_PlaceAction` | (loot or shop) | optional | barricades. The repo's is vanilla Item_Base with the junk planks' mesh: 4 kg, 2x2. Its prefab name has "plank", so crafting uses it too |
+| `RZ_Wire.et` | an inventory item with the metal fragment mesh; keep "wire" in its name | — | (loot or shop) | optional | tripwires, rattles, spears, lockpicks, spark plugs. Search > Extra finds (MOD_STACK.md) |
+| `RZ_Nails.et` | an inventory item with a tin mesh; keep "nail" in its name | — | (loot or shop) | optional | spike traps, barricade planks. Search > Extra finds (MOD_STACK.md) |
+| `RZ_TinCan_Empty.et` | an inventory item with a tin mesh; keep "tincan" in its name | — | (loot or shop) | optional | tin rattles, tripwires. Search > Extra finds (MOD_STACK.md) |
+| `RZ_Scrap.et` | an inventory item with the metal fragment mesh; keep "scrap" in its name | — | (loot or shop) | optional | salvaged spark plugs. Search > Extra finds (MOD_STACK.md) |
+| `RZ_Salt.et` | an inventory item with a tin mesh; keep "salt" in its name | — | (loot or shop) | optional | jerky. Search > Extra finds (MOD_STACK.md) |
+| `RZ_Cells.et` | an inventory item with a small box mesh; keep "rz_cells" in its name and never "battery" (a car part keyword) | — | (loot or shop) | optional | the radio lure. Search > Extra finds (MOD_STACK.md) |
+| `RZ_WritingPad.et` | an inventory item with the notebook mesh; keep "writingpad" in its name | — | (loot or shop) | optional | the hand-drawn map. Search > Extra finds (MOD_STACK.md) |
+| `RZ_Bleach.et` | an inventory item with a plastic bottle mesh; keep "bleach" in its name and never "bottle" | — | (loot or shop) | optional | purification tablets. Search > Extra finds (MOD_STACK.md) |
+| `RZ_Planks.et` | an inventory item with a planks mesh | `RZ_PlaceableComponent` (Kind BARRICADE); `RZ_PlaceAction` | Interactions > Crafting > Barricade (and loot or shop) | optional | barricades. The repo's is vanilla Item_Base with the junk planks' mesh: 4 kg, 2x2. Its prefab name has "plank", so crafting uses it too |
 | `RZ_PortableGenerator.et` | a generator item | `RZ_PlaceableComponent` (Kind GENERATOR); `RZ_PlaceAction`; `RZ_PlaceAction` (Refuel on) | (loot or shop) | optional | a generator |
 | `RZ_Bottle.et` | a vanilla grenade with the explosion removed and a bottle mesh | `RZ_NoisemakerComponent` (Heat 20, On throw on, Delete after on) | (loot or shop) | optional | a thrown noise |
 | `RZ_Firecracker.et` | a small item | `RZ_NoisemakerComponent` (Heat 15, Delay 5, Pulses 4, Pulse interval 3, On throw off, Delete after on, Arm label Light the fuse); `RZ_ArmNoisemakerAction` | (loot or shop) | optional | a timed noise |
@@ -1562,6 +1590,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
 | World | Power grid | `m_PowerSettings` | Control prefab, **Use cabinets** (on: the map's own electrical cabinet at the station carries the control as an invisible spot), **Control yaw** (0: turns the control prefab if its front doesn't face out from the wall), **Generator sound prefab** and **Dressing prefab** (both set; empty = that part is off), **Street lamps** (on: the map's own lamps stay dark at night but in towns with power; off = left as the map has them), region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
 | World | Radio station | `m_RadioStationSettings` | Console prefab, takeover (30 s), cooldown (10 min, halved with power) |
+| World | Masts | `m_MastSettings` | On (1), masts at least (3) and at most (5), region (2500 m), climb hold (25 s), bearing hold (10 s), fog cleared (1000 m), minutes between warnings (6), overheard lines (9), the drone operators (15), trapped voices (90) and how long one calls (30), Fame for handing one to a faction (5), Red Hand Favor for selling one (15), **Cabinet prefab** (empty: Puzzles > Radio mast) ([DESIGN.md](DESIGN.md#the-masts)) |
 | World | Wildlife | `m_WildlifeSettings` | **Doe** and **Buck** prefabs (WildlifeExpansion's; no doe = off), **Meat** (the raw meat leg), herds on the server (2), does a herd (up to 3), buck chance (0.7), chance a minute for a player in the country (0.25; ×0.5 at night), minutes before the same player gets another (20), put out 150 to 300 m away and put away past 450 m, margin from towns and faction places (150 m), meat a deer (1 to 2), shot range (260 m), deer a minute that leave meat (4) ([DESIGN.md](DESIGN.md#wildlife)) |
 | World | Placed things | `m_PlacedSettings` | **Enabled** (on), **Placed prefabs** (keywords in the prefab names of what players build: `fm_campfire`, the fireplace of Make Fire Campfire & Wood; a tent mod's own names go here), **Unused days** (3 real days; fractions work for a test), use radius (15 m), clear distance (never cleared with a player within 100 m), most tracked (40) ([DESIGN.md](DESIGN.md#things-players-build)) |
 | World | Long Table | `m_LongTableSettings` | **Enabled**, **Chance** a season has one (0.75), hunger per hour (6), take hours (3, ÷ season speed), body radius (300 m), the host on the road (on), the **guest rule** (on), **trade keywords** (ammunition and medicine) ([DESIGN.md](DESIGN.md#the-long-table)) |
@@ -1616,6 +1645,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 4–12 s, 11 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout**, the **object row layout** (the object menu; empty = world prompts) ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
 | Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits), **Work sites** (on, reach 3 m, time scale 1, 40 sites at once; while holding: **Lock movement** on, **Hands animation** on, **Dig with the tool** on) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
+| Map | Map fog | `m_MapFogSettings` | **On** (the map shows only what this character has seen), **Reveal radius** (150 m), **High radius** (400 m) with **Tower height** (6 m) and **Hill rise** (35 m), **Square** (100 m; changing it clears every fog), **How dark** (0.82), **Town radius** (500 m: a found paper map, a notice board), **Camp radius** (300 m: a faction you're Known with), **Road strip** (200 m: asking about the roads), **Places as rumours** (on) ([UI.md](UI.md#the-maps-fog)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
 | Debug | (top level) |  | Status log every few minutes (on) |
 <!-- /manifest:settings -->
@@ -1701,7 +1731,8 @@ prompt whose words name a pot, the wood or the washing line without a look of th
 in one objective line, a hand-in by walking up to someone, a spawned door, carrying done as a hold, a
 person's marker on a stored spot, a woman's name or word in a line the game shows (everyone met is a man; women only mentioned are in the allowlist), a building named
 where nothing asks for one, a kind of job the tracker can't list, an opening step that only sends you
-back, and an input action without a pad binding. Python 3 only, about ten seconds. Run it before
+back, an input action without a pad binding, a duty beat whose words put you at a door set on a patch
+of ground, and a notice card in task code where someone present could say it (rule 29). Python 3 only, about ten seconds. Run it before
 every commit that adds or changes a task; with `--strict` it must end `mission_rules: OK`.
 
 ```bash
@@ -1836,6 +1867,47 @@ or the pot), never a cardboard box; then one at the nearest cook pot a camp has 
 it with nothing more put out. Lines `RZT kitchen: ...`, the sum `RZT kitchen: done, N failures`, and
 `RZT kitchen FAIL ...` for each miss (the run fails on any).
 
+**The masts** (`RZT_Masts.c`, [DESIGN.md](DESIGN.md#the-masts)): twelve seconds in, before the
+missions move the tester: the masts are found, each on dry mainland; a crewman's promise settles a
+mast and binds it to the Red Hand; the first mast is put up with its part (a jerrycan for its fuel,
+the base game's: the crafting items don't go into a pack on the test server), the part is taken, the
+fog is cleared 800 m off it, and kept open it's everyone's; it has something to overhear; with a
+second handed to the Haven, a trapped voice starts calling, one bearing doesn't fix him, two do, and
+a Distress Call starts at the spot. Lines `RZT masts: <name> at <grid>, missing <part>, trouble
+<kind>`, `RZT masts: overheard: ...`, `RZT masts OK|FAIL ...` and the sum `RZT masts: N checks, N
+failed` (the run fails on any FAIL).
+
+**The map's fog** (`RZT_Fog.c`, [UI.md](UI.md#the-maps-fog)): first, a few seconds in, before
+anything moves the tester: where he stands is seen and ground 1.5 km off isn't; walking 600 m reveals
+new ground; a paper map put in his pack, registered as found in a far town, reveals that town; the
+profile's fog survives the save's JSON round trip; the payload is small. Lines `RZT fog OK|FAIL ...`
+and the sum `RZT fog: N checks, N failed` (the run fails on any FAIL).
+
+**A patrol's finds and its marker** (`RZT_Patrol.c`, [ERRANDS.md](ERRANDS.md#things-that-happen)):
+six minutes in, the finds asked for at eight stops 180 m round the tester: each one returned must be
+within its reach (120 m) of its stop, a door, house or loose-step find must have its prompt within
+1.5 m of a real doorway, every other find must have its thing (its look), and each must have a step
+for the tracker and a line for the lead. Then an escort walking a route must give its objective at
+itself as it walks, not at the route's end. Lines `RZT patrol: find <kind> at <grid>, N m from the
+stop; called "..."; goal "..."`, `RZT patrol: finds at N of 8 stops, N with none that fits`,
+`RZT patrol: walking, the marker is N m from him and N m from the route's end`, the sum `RZT patrol:
+done, N failures`, and `RZT patrol FAIL ...` for each miss (the run fails on any).
+
+**The new recipes and the lockpick** (`RZT_Craft.c`, [DESIGN.md](DESIGN.md#light-crafting)): three
+minutes in, each of the eighteen new item prefabs (the recipes' outputs and the loot's junk) must
+load and spawn with an inventory item on it. Then each of the eleven new recipes is made for the
+tester through the bench's own `FinishRecipe`, from its inputs put in his pack (a pack on his back
+first): it must make as many as it says (two rags, three filters, two jerky), take every input and
+keep a tool (the knife, the wrench). On the dedicated server a text-written item spawns but doesn't
+go into a pack until Workbench has registered it (opening it once), so these recipes run with
+base-game stand-ins: the test sets their keywords and outputs (an aspirin bottle for the nails,
+cells, pad and salt, a compass for the wire, gauze for a rag...). Then the nearest locked building
+gets a door spot and its lock is picked (the pick's chance set to 1): it must open. Lines `RZT craft:
+N of 18 of the recipes' and the loot's own prefabs load as items`, `RZT craft: <recipe> at the
+bench|stove: N made from N inputs[, the tool kept]`, `RZT craft: the lockpick opened the locked door,
+quietly`, the sum `RZT craft: done, N failures`, and `RZT craft FAIL ...` for each miss (the run
+fails on any).
+
 **Carrying** (`RZT_Carry.c`, [DESIGN.md](DESIGN.md#carrying)): four minutes in, the tester carries
 three crates from the open into the nearest building with a ground floor (each hold done for him):
 at the pile its crate and the others beside it stand; carrying, a put-down prompt opens inside, on
@@ -1897,15 +1969,53 @@ doorway fits in it and is refused in the open; and the contacts' names and the N
 printed (`RZT openings OK|FAIL <what>`, then `RZT openings: N checks, N failed`; the run fails on
 FAIL). Just before, **a fresh spawn** (`RZT_Fresh.c`), as a veteran (level 3, where the author's
 play-test went wrong): every running job drops the new life; its opening has its contact standing
-within 15 m and step 1 first, not the lead to work; the Quests tab lists no taken job; and later,
+within 15 m and the door's favour first, not the lead to work; the Quests tab lists no taken job; and later,
 once a questline runs, a part from the last life doesn't put it in the new life's journal while the
 story still remembers the player (`RZT fresh OK|FAIL <what>`, `RZT fresh: N checks, N failed`; the run
-fails on FAIL). The fake player logs `Openings: Tester <background>: NO OPENING` at boot: it isn't
+fails on FAIL). Then **the door and the favour** (`RZT_Favour.c`), for every background, each opening
+started from the middle of the nearest town: the first talk asks who you were (the background's
+line), the habit answers show and go once one is picked, and the one picked is the character's;
+each habit's effect (Steady hands shortens a hold, Light feet is quieter crouched, A good liar makes
+only the first persuade of a talk easier) and the Standing page's line; the favour's fetch is handed
+at a place a walk away (or the log says there's no place here); done, the hand-over is next,
+standing by him doesn't hand it over, its reply does, and the chain goes on to the runner; and for
+every background with a way of its own (all but the Unemployed and the Drifter), the tagged reply
+shows, a reply way settles it there and then, a way of its own hands its step instead of the fetch,
+and no hand-over follows (`RZT favour OK|FAIL <what>`, `RZT favour: a place for the favour found for N
+of 13 backgrounds, from the middle of <town>`, `RZT favour: N checks, N failed`; the run fails on
+FAIL). Then **the runner's case** (`RZT_Case.c`): a place for the runner by the first town,
+him dead there and the case by him with its tag; the case carried counts as the step done and the
+lead is handed; 15 s with it leaves the lead waiting; an hour out of the cold reads warm; a death
+keeps it as data, off the body, and it's given back as warm as it was; a Halcyon speaker lists the
+hand-over first and picking it takes the case, ends the lead, sets the state and banks the season's
+tissue (`case.tissue` 1), with Proof's part checked when Proof runs; a second case that season banks
+nothing; a Red Hand speaker lists the sale, and selling sets Get It Back going. The test server
+can't put a text-written prefab in a pack (no registered resource id), so the tester holds the case
+through the case's test stand-in (`RZ_ColdCaseComponent.s_TestCarried`) and says so (`RZT case OK|FAIL
+<what>`, `RZT case: N checks, N failed`; the run fails on FAIL). Then **the line** (`RZT_Line.c`): a
+road above the line near some town (150–250 m outside the warning zone, 600 m to 2 km off; the
+test world has no road network, so open ground stands in, as in play on such a map), where he'd fall
+in the warning zone and not the kill zone; the scene played with the tester held at the viewpoint:
+the loudspeakers, a runner who breaks from cover, shot in the warning zone (on this server Guidance >
+Companion is an unregistered text prefab and a base-game group stands in for him; when that has no
+members in time he's laid down where he'd have fallen, and the check says so), dead there with the
+case by him, the line said, and the tester never shot and never in the zones (`RZT line OK|FAIL
+<what>`, `RZT line: the runner N s in: state ...`, `RZT line: N checks, N failed`; the run fails on
+FAIL). The fake player logs `Openings: Tester <background>: NO OPENING` at boot: it isn't
 spawned through the spawn screen, so no place is rolled for it. From then
 on the fake player can't hold a prompt, so while it stands at a mission the open work sites within 25 m of
 it are done for it (the others wait until the tracker sends it there) (`RZT work sites: N done for '<title>'`), and a job finished that way ends by itself. An objection
 to a hold, a truth kept after a restart, a reason starting a contract and a locked player refused need
-a play (§8).
+a play (§8). Then **the fixer** (`RZT_Ferda.c`): Ferda Kroupa comes for
+the tester's case (the case held through the case check's stand-in where the pack refuses it) with
+two men, "Talk to Ferda Kroupa" tracked on him, and the Red Hand's people leave the sale to him;
+his replies listed (hand it over, the story about Bastion, the street); the street rallied (its
+door job at a real doorway, each job done for the tester at its site, then standing with it:
+RALLIED, Haven Fame and Red Hand Infamy up); the hand-over (sold, Get It Back next) and the
+neighbour warned (WARNED); the good liar's story (TALKED, no standing changed); slipping away
+(SLIPPED, Haven Infamy up); Ferda killed (FOUGHT, Red Hand Infamy up); his note on a real door's
+step; a veteran's note only (`RZT ferda OK|FAIL <what>`, `RZT ferda: N checks, N failed`; the run
+fails on FAIL).
 
 **The epilogue week.** Then, from the finale's cure, **Epilogue > Test scale** goes to 0.02 and the
 week runs scripted (`RZT_Epilogue.c`): the commit (its record holding the release's terms), the hall's freeze, beats and phase A; phase B;
@@ -2168,8 +2278,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **198** lines with the tag, all but one in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
+There are **208** lines with the tag, all but one in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
@@ -2179,7 +2289,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-38)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-39)
 come last.
 
 ### High risk: the core loop (2)
@@ -2191,7 +2301,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (95)
+### Medium risk: big features, with a fallback (97)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2206,8 +2316,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_Loot.c:391` | a building's furniture props are found: as its children, or by the sphere query over every entity in its box (vanilla's props aren't flagged static and have no `Hierarchy`) | Loose loot lies only on the floor points in each building's box, and upstairs only on the guessed floor above: the `Loot: put out` lines say 0 on furniture everywhere |
 | `Interactions/RZ_Loot.c:1555` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
 | `Core/RZ_Util.c:787` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
-| `World/RZ_Perimeter.c:270` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
-| `World/RZ_Perimeter.c:953`, `:968` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
+| `World/RZ_Perimeter.c:294` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
+| `World/RZ_Perimeter.c:977`, `:992` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
 | `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Locks** off (nothing is locked) |
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:67` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
@@ -2295,17 +2405,26 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1475` | a quartermaster or the medic moved and turned with `SetWorldTransform` on the server stays at their hand-placed spot, facing its way, on every client | They stand where they spawned; the quartermaster turns to serve as before |
 | `World/HandBuilt/RZ_HandSpots.c:402` | a short flat trace through a spot inside a wall, a crate or a tent's side reports a hit (the spot turns red), and the excluded marker cone doesn't | A spot in a wall isn't flagged; the author sees it in play |
 
-### Low risk: contained or cosmetic (47)
+### Low risk: contained or cosmetic (54)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `World/RZ_MapFog.c:119` | the map's fog's grid from `BaseWorld.GetBoundBox()` covers the terrain (the log's `Map fog: <w> x <h> squares`) | A box larger than the map only adds squares nobody walks; a smaller one leaves its edge never fogged |
+| `World/RZ_MapFog.c:512` | a paper map in a character's inventory has the character as its root parent, so a found map is seen as carried | A found map never reveals its town; walking and boards still do |
+| `Interactions/RZ_Crafting.c:579` | what you wear or hold is never a recipe's input: worn clothes sit in the character's loadout storage, what's in the hands in its weapon storage, a worn watch or compass in an equipment storage the character owns, and a pocket's or a pack's things in the clothing's own storage | A worn shirt or trousers could be cut up into rags, or a worn item used for a bandage: take it off and say so |
 | `World/HandBuilt/RZ_SiteBuilderEditor.c:121` | setting the manual camera's world transform moves Game Master's camera to look at the site (**Go there**) | The camera stays: fly it to your character |
 | `World/HandBuilt/RZ_SiteBuilderEditor.c:170` | debug shapes made on a game client (`Shape.CreateLines`, `CreateSphere`) draw in the world for that player, Game Master's camera too, not only in Workbench | The menu's words only: the checklist and where the first red spot is |
 | `Interactions/RZ_Interactions.c:187` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
+| `Guidance/RZ_OpeningCase.c:255` | the runner (Puzzles > Civilian) killed the moment he's spawned falls and lies where he was put, for every client, as A Sample's remains | He stands, dead to the server: the case still lies by him |
+| `Guidance/RZ_ColdCase.c:75` | `GetItems()` finds the cold case in a bag inside another bag, as for keys | A case carried that deep isn't seen: the hand-over reply doesn't show until it's in a pocket or the pack itself |
+| `Guidance/RZ_OpeningCase.c:825` | deleting the case while it's still in a dead body's storage (when `TryDeleteItem` refuses) leaves the body's storage sound | The body's inventory shows an empty slot or an error; the case still comes back on respawn |
+| `Guidance/RZ_OpeningFixer.c:1105` | Ferda Kroupa's two men are the Red Hand's own AI: fired on (your shot within 40 m of them, or one of them down), they answer by their faction's AI, nothing here makes them shoot | They stand and take it: the visit still ends as a fight (FOUGHT) with its Red Hand Infamy |
+| `Guidance/RZ_OpeningLine.c:284` | the line's runner (Guidance > Companion, a one-man civilian group on a move waypoint) sprints when `SetMovementTypeWanted(SPRINT)` is asked of him, as the infected's behaviour layer does | He walks or jogs at the line: the scene still plays, only slower (he's shot where he stands after 60 s) |
+| `Guidance/RZ_OpeningLine.c:378` | the line's drone (Perimeter > Drone prefab) moved with `SetOrigin` over the runner shows moving on every client | It hangs where it first appeared, over the place he broke from cover |
 | `Guidance/RZ_OpeningSteps.c:516` | A Sample's remains: a special spawned and killed at once on the server (`RZ_Util.KillCharacter`) falls and lies where it was spawned, for every client | The body stands, or isn't seen: the place check still passes (it's dead there). Spawn it a frame later, or use a body prop |
-| `Guidance/RZ_Openings.c:1149` | an opening's contact who walks with you: a one-man civilian AI group (**Guidance > Companion**, `RZ_OpeningCompanion.et`) follows the player on `RZ_Escort`'s move orders, and its leader (the `RZ_Civilian` body) carries the talk tags | They stand still where they were swapped in, or "Talk to" is missing on them: the log's `Openings: <name> walks with <player>` is there. The steps still start on their cards after a minute; report it, and set **Companion** empty (they hand you on instead) |
+| `Guidance/RZ_Openings.c:1183` | an opening's contact who walks with you: a one-man civilian AI group (**Guidance > Companion**, `RZ_OpeningCompanion.et`) follows the player on `RZ_Escort`'s move orders, and its leader (the `RZ_Civilian` body) carries the talk tags | They stand still where they were swapped in, or "Talk to" is missing on them: the log's `Openings: <name> walks with <player>` is there. The steps still start on their cards after a minute; report it, and set **Companion** empty (they hand you on instead) |
 | `Guidance/RZ_OpeningSteps.c:532` | the remains withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stay until the opening ends, then go with the engine's cleanup once inserted again (as the vigil's body) | The body goes with the engine's usual cleanup during the step; the sample still lies there |
 | `Guidance/RZ_Guidance.c:480` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
@@ -2347,7 +2466,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PowerLooks.c:102` | the power station's generator: `RZ_PowerGeneratorSound.et` (no mesh, vanilla's diesel generator sounds on a `StaticSoundComponent`), spawned by the server, plays on every client that streams it in and stops when the server deletes it, as vanilla's placed generators do | No sound at a running station: empty **World > Power grid > Generator sound prefab**; the panel and the notices still say it runs |
 | `UI/RZ_PowerLampsClient.c:185` | street lamps: `StreetLampComponent.SetBroken(true)` on a client puts that lamp out there (its light and its glow), and `SetBroken(false)` lets it light itself at night again | Lamps stay lit in dark towns, or stay out after the main switch: turn **World > Power grid > Street lamps** off, and every lamp is left as the map has it |
 
-### The UI (38)
+### The UI (39)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -2390,7 +2509,8 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `Interactions/RZ_RadioScreen.c:54` | the server runs `PerformAction` for an action on a carried radio in vanilla's inspection context (`knob_toggle`, beside Turn on/off), as for vanilla's own | View radio in hand does nothing: use it with the radio on the ground or at a house radio; or make the action local and ask the server through `RZ_PlayerUIComponent` |
 | `UI/RZ_DeathBrief.c:425` | the death brief, opened with `OpenMenu` while the spawn screen (or vanilla's deploy menu) is open, goes on top and takes the input: the screen under it ignores A and B until the brief closes, and the press that closes it (A's release, or Space, a click or B with the 0.4 s wait) doesn't deploy or open the pause menu under it | A press that closes the brief also deploys or opens the pause menu: lengthen `LEAVE_DELAY` in `RZ_DeathBriefMenu`, or turn **UI > Death brief** off |
 | `UI/RZ_DeathBrief.c:174` | a server tick after a death, the dead character's damage manager still gives the instigator of the last blow: an AI's or an infected's entity (`GetInstigatorEntity`), a player's id, nothing for a fall | The brief says "Nobody saw how" (or "The infected" with one standing over the body) where it could have named a faction; nothing else depends on it |
-| `UI/RZ_MapIcons.c:642` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
+| `UI/RZ_MapIcons.c:659` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
+| `UI/RZ_MapFogDraw.c:187` | the map's fog: `PolygonDrawCommand` quads on a script-made `CanvasWidget` over the full-screen map draw in screen pixels, a few hundred without a hitch when the map pans or zooms, and at **How dark** 0.82 the map's roads and coast show faintly through | Turn **Map > Map fog > On** off: the map is as before (the places' pins come back too) |
 | `UI/RZ_UIData.c:1223` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
 | `UI/RZ_ObjectMenu.c:328` | `FrameSlot.SetSize` on the object menu's centred panel (anchor and alignment 0.5) keeps it centred as it grows for [the status strip](UI.md#the-status-strip-and-locked-rows) (940 tall) and shrinks without one (810) | The panel jumps off-centre or keeps one height: set its slot to 1,200 × 940 in `RZ_ObjectMenu.layout` and remove the `SetSize` line; things without a strip then have a gap above their text |
 | `UI/RZ_CraftMenu.c:384` | the same on the crafting screen's panel: 960 tall at a stove (the strip), 858 at a workbench | As above, with `RZ_CraftMenu.layout` at 1,600 × 960 |
@@ -2420,6 +2540,8 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] No checkpoint barricade prefab set: road checkpoints are off (the roads give 0 spots).
 [ReforgerZ] Power grid: <the station> at grid G (picked), N towns in its region, dark, locked up. Control <where>; <its looks>.
 [ReforgerZ] Radio station: the radio mast near Beauregard at grid 31-27 (picked).
+[ReforgerZ] Masts: <name> (<n>) at <grid>, missing <part>, trouble NONE|MAN|CREW|PACK, down|up, <whose> (found|save).
+[ReforgerZ] Masts: N on this map, N up.
 [ReforgerZ] Haven safehouses: 2 (picked).
 [ReforgerZ] Wanderers: 7 on the roads (new roster, seed S).
 [ReforgerZ] Faction leaders: 5 (new, seed S). Haven 2, Bastion 1, Red Hand 1, Halcyon 1
@@ -2592,6 +2714,9 @@ Warnings worth acting on:
 | `Camp life: <Faction> <KIND> at <grid>: solved, <n> pieces and <l> of its layers (the wire <p>% closed), <i> indoors, <d> dropped, laid out <where>; <c> counter(s).` | The first time a run dresses a place, once its ground is read and solved ([SITES.md](SITES.md#the-solver)) |
 | `Camp life: <Faction> <KIND> at <grid>: laid out again as before (<n> pieces and <l> of its layers, <where>), <c> counter(s).` | Each later visit in the run: the kept layout, no reading |
 | `Spawn timing: <place> <n> pieces in <t> ms, player at <d> m (now <d2> m); <c> ms of server time in all, the longest tenth <l> ms.` / `Spawn timing: <place> left with <n> pieces up and <k> still to come, <t> ms after it came (...)` | Once per visit, when a place's last piece is up (or it went before): how long it took from the moment its people came, and what it cost ([SITES.md](SITES.md#how-fast-a-place-fills)). Over a few seconds when you arrive on foot means **Spawn ms** is too low or a site wasn't pre-read |
+| `Map fog: <w> x <h> squares of <m> m from <x>, <z> (on\|off)` | Once at start ([UI.md](UI.md#the-maps-fog)): the fog's grid over this map (Everon about 128 x 128) |
+| `Map fog: player <id> learnt the ground round <grid> (<n> squares)` | A found paper map carried, or a town's notice board read: its town revealed |
+| `Map fog: player <id> has seen <n> of <m> squares; payload <k> characters` | `/fog` (admins), and after `/fog all` or `/fog reset` |
 | `Hand-built: <world> has <n> sites (<s> shipped, <h> saved on this machine), <u> in use, <o> objects.` | Once at start ([SITES.md](SITES.md#hand-built-sites)): the hand-built saves for this map. 0 sites on a map nobody built on |
 | `Camp life: <title> at <grid>: hand-built (<n> objects, <r> role spots, saved <date>), automated layout off; its spots: complete` (or `<k> missing (Gate, Cook spot, ...)`) / `... being built by hand, automated layout off.` | A place with a hand-built save in use comes out near a player (its objects, no automated piece), or one the site builder is building |
 | `Site builder: <player> went to <site> (<id>).` / `... builds <site> (<id>), empty / from the automated layout (<n> pieces) / from its save (<n> objects).` / `... stopped building <site> (<id>); <n> objects cleared, the site is <STATE>.` | The site builder's **Go there**, **Build here** and **Stop building** |
@@ -2764,20 +2889,26 @@ records.` and `Shared: N callbacks waiting, N season records.`
 
 Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one life each: `Openings: started
 for <player>: <background>, <kind> in <town> (<grid>), level N, <hiding|group|fever>, <before|stranger|earlier|nobody>:
-<who>, chain <search, task, walk> to <place>` (levels 2-3: `chain search, task, lead` or `chain search, lead`), `Openings: <name> called <player> over before step N`, `Openings: step 1 for <background> is <words> (<prefab>, <kind>), the spot N m from its middle` (the building step 1 sends you into, and the words its kind gave), `Openings: <name> talked to by <player> before
+<who>, chain favour, give, case to <place>`, `Openings: <name> called <player> over before step N`, `Openings: the favour (<FAVOUR>) is at <words> (<prefab>, <kind>), N m from the contact` (the building the favour sends you into, and the words its kind gave) or `Openings: no place for the favour (<FAVOUR>) for <player> at <grid>, on to the runner`, `Openings: no place for <player>'s favour (<FAVOUR>) here, <TIN|SACK> instead`, `Openings: <player> is <habit> (the habit, <effect>)` or `Openings: <player> keeps the habit <habit> (a veteran's door asks nothing)`, `Openings: <player> took their background's way (<background>, <key>) at <grid>` or `Openings: <player> settled the favour by their background's way (<background>), there and then`, `Openings: the neighbour's door at <grid> opened (<background>)`, `Openings: <player> handed over to <name> (step N, task N, favour N), done there and then`, `Openings: <name> talked to by <player> before
 step N`, `Openings: <name> went on talking with <player> into step N`,
 `Errands: opening.<step> handed to <player> (<name>)` (a step that didn't end where it's done is made to, with `Errands: handed <key> didn't end where it's done; it does now (no walking back to hand it in)`), the pattern at the end of `started` (`, they walk with you` or `, handed on`), `Openings: <name> walks with <player>` (or `can't walk with <player> (no escort room), the steps start where you are`), `Openings: <first> sent <player> on to <next> at <place>, <direction>` (or `Openings: no house for the next person for <player> at <grid>, back to <name> instead`), `Openings: <player> handed over to <name> (step 2, task N), done there and then`, `Openings: the scratched door is a real door at <grid>, N m from the opening` (or `Openings: no real door within 80 m of <grid> for the scratched door, no clue`), `Openings: <name> step N (<key>) for <player>,
 <direction>`, `Openings: <name> step N done by <player> in N s`, `Openings: <name> died (step N for
 <player>)`, `Openings: <name>'s bitten friend was lost (the clock ran out for <player>)` and `Openings: ended
-for <player>: <why> (step N, N min)`; the fallbacks' `Openings: no step 2 can run for <player> here
-(<background>)`, `Openings: no
+for <player>: <why> (step N, N min)`; the fallbacks' `Openings: no
 <background> place fits for <player>, a house instead`, `Openings: no place for <player> (<background>),
-the spawn point instead: <why doors were refused, e.g. a pack's lair x22>`, `Openings: no house down
-the road for <player> at <grid>, step 1 skipped`, `Openings: <player> <background> at <grid>: contact <name> spawned at <n> m`
+the spawn point instead: <why doors were refused, e.g. a pack's lair x22>`, `Openings: <player> <background> at <grid>: contact <name> spawned at <n> m`
 (every life), `Openings: <player> <background> at <grid>: NO CONTACT (<why: no body prefab, or the engine
 refused the spawn>), the scene's read instead`, `Openings: the story budget is full near <grid>; the contact
 stands all the same`, `Openings: <player> <background>: NO OPENING (no place was rolled for this spawn)` and
 `Missions: <player> began a new life, off N job(s) the last one held`; a lead's end is `Openings: ended for <player>: found work at <place> (step 3, N min)`.
+The case ([DESIGN.md](DESIGN.md#the-case)): `Openings: no runner's case for <player> at <grid>, the old end
+instead`, `Openings: the runner and his case put out for <player> at <grid>`, `Openings: ended for <player>:
+took the runner's case`, `Openings: the case's lead for <player>: <place> (<direction>)`, `Openings: <player>
+handed the case over (to Halcyon|sold to the Red Hand|to Bastion, cold|warm)`, `Openings: the season's first
+live case is in: live tissue for Halcyon's route, banked`, `Openings: <stage> for <player> at <place>`,
+`Openings: <player> died with the case; it's kept for the next spawn`, `Openings: the kept case given back
+to <player>`, and a warning `Openings: the cold case prefab has no RZ_ColdCaseComponent` when the slot is
+wrong.
 
 Task places ([PLACES.md](PLACES.md#the-live-check)): nothing while every place is true to its words;
 `Place check: <need> at <grid> ("<text>") fails: <why>` (a warning) when a placed task's place, or a
@@ -2800,7 +2931,11 @@ or road in near: the giver's own door (<grid>).`, a sorting's places `Duty sorti
 N stands at <grid>.` (or `... thing for errand N dropped: no clear, level spot in 10 tries.`) and the
 line at a gate `Duty sorting: the line for errand N stands at <how> (<grid>).`, and a house marked by a patrol, `Errands: found hook hiding at <grid>
 from a duty`; a cull, `Duty squad: cull at <grid>, N strays (errand N).`; a duty's people, `Duty
-squad: the patrol out with <player> from <grid>, N points (errand N).`; a contract
+squad: the patrol out with <player> from <grid>, N points (errand N).`; what the lead says,
+`Duty squad: <lead> says to <player>: <line>`; a patrol's find, `Duty finds: <kind> at <grid>, N m from the patrol's
+stop at <grid> (errand N).`, or `Duty finds: no <kind> by the patrol's stop at <grid>: its thing can't stand there,
+left out.` (each kind tried in turn); a find further off, `Duty squad: <lead> walks over to wait by the find at
+<grid> (errand N).`; a contract
 a giver made because they were asked, `Mission N '<title>' made on asking: <player> asked <faction>.`, after
 `Reach: made on asking N '<title>', D m from the giver` (its distance; offer reach, [MISSIONS.md](MISSIONS.md#who-gets-offered-what)); while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
@@ -2809,7 +2944,7 @@ dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by
 `Work sites: <key> "<label>" done by <player>` (a mission's are `mission.<id>.point.N`, `.truck`,
 `.tissue`, `.well`, `.sample`, `.chain`, `.charge.N`; the Red Hand van's `cargovan.N`; a stranger's `stranger.N`), `Work sites: measured <look>: W x D m`
 once per look, `Work sites: <key> look <look> fits at <grid> (N m off, heading N)` or `... doesn't fit at <grid>, <plainer look> instead` (then its own fits line), `Work sites: <key> has nothing of its kind at <grid> (<look> and its plainer looks don't fit within 8 m): only its prompt` (a fault), kitchen work: `Errands: <errand> kitchen work at the camp's cook pot, <grid> (N m from the place)` (or `the hand-built site's cook spot`) or `Errands: <errand> kitchen work: no cook pot laid out within 60 m of <grid>, at its own table`, `Errands: <errand> '<prompt>' has nothing standing at its work site (no look, no person)` (a fault: the words name a thing nothing stands for), carrying for real ([DESIGN.md](DESIGN.md#carrying)): `Carry: errand.N, 3 crates from <grid> (outside) to <grid> (indoors, on the ground floor)`, `Carry: errand.N, N of 3 crates put down indoors, on the ground floor`, `Carry: errand.N, a crate put down at <grid>, not at the stack`, `Errands: <errand> carries <things>, but no building within 60 m of <grid>: carried to its door`, `Carry: the thing in the arms didn't attach to the character; ...` (once),
-`Work sites: <key> after look <look> doesn't fit ...`, `Work sites: <key> has no room for its person at <grid>, left out`, `Doors: <prop> left out at <grid> (<key>): no real doorway within 1.2 m, and no door is ever spawned in the open`, `Duties: no real door within reach for beat <key> at <grid>: it stands in the open (no door is spawned)`, `Work sites: the Site prefab has no
+`Work sites: <key> after look <look> doesn't fit ...`, `Work sites: <key> has no room for its person at <grid>, left out`, `Doors: <prop> left out at <grid> (<key>): no real doorway within 1.2 m, and no door is ever spawned in the open`, `Doors: lock picked at <grid> by player <id>` and `Doors: a pick snapped at <grid> (player <id>)` (a lockpick at a locked door), `Duties: no real door within reach for beat <key> at <grid>: it stands in the open (no door is spawned)`, `Work sites: the Site prefab has no
 RZ_WorkSiteComponent, so it shows no prompt` once if the prefab is wrong, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
 <place> fixed`, every 30 minutes `Errands | live N | asked N, called out N | <family>: dealt N,
 declined N, lapsed N, overtaken N, done N, Favor N, Fame N (amends N), ways ...`, and `Errands admin
@@ -3000,11 +3135,17 @@ session, tick off:
   place's real way in, queued along the road outside facing in, the barrier at the gate and the wash
   and holding room just inside; the log says where (`Duty sorting: the line for errand N stands at
   ...`). Without UI > Object row layout: the old prompts side by side come back.
-- [ ] Things that happen ([ERRANDS.md](ERRANDS.md#things-that-happen)): on a patrol's short leg, at
-  least one point stops the patrol with *"something off the path"*. Go to it: its line is said, and
-  one prompt stands there, the spot's name; press it and pick from two or three rows, then hold
-  the prompt; what follows is said and the patrol moves on. Walk off three steps: the list again.
-  Take the shady one (the watch, the truck's share) within 20 m of them: *"You were seen, and it was
+- [ ] Things that happen ([ERRANDS.md](ERRANDS.md#things-that-happen)): on a patrol's short leg, with
+  a pad: the tracker's marker rides on the lead (*Lance Corporal ...*) as he walks, not at the gate.
+  At least one point stops the patrol and the lead **says** what's there over his head (a subtitle
+  with his name and arrow, no card): *"Grave at the field edge. Fresh. Read me the name."* The
+  marker moves to the thing, and the thing is really there: a grave mound, a radio in a house,
+  remains in the grass, a red box on a doorstep, or a real door (a mark beside it, or a house with
+  a trodden path), never empty ground or a field (`Duty finds:` lines). A find further off: they walk
+  over and wait in sight of it. Its one prompt stands on the thing; press it and the menu shows what
+  you see, pick a row, hold it; the lead answers out loud and the patrol moves on. Walk off three
+  steps: the list again. Knock at a house: the voice comes from the door. Take the shady one (the
+  watch, the box's contents) within 20 m of them: *"You were seen, and it was
   undone"*, Infamy, and the giver says so. Take it further off: nothing is said. Report a find: the
   hand-in pays 1 more Favor. After a chore, sometimes one more prompt pair comes up where you
   worked (the pot a ladle short); the step is done only when you've chosen.
@@ -3123,6 +3264,22 @@ session, tick off:
   is in it and the status line says "Done: ...". B closes it; work under way goes on while you
   stay. The mouse: click a recipe, then Craft. Text reads from the sofa on a TV. With **UI > Craft
   row layout** empty, the Make actions and "Use the workbench" as a notice are back.
+- [ ] The new recipes (DESIGN.md, "Light crafting"), with a pad: check **Interactions > Crafting**'s
+  new outputs came through (Rags, Lockpick, Barricade, Filter, Lure, Plugs, Map copy, Sterile,
+  Charcoal, Jerky, Stew). At a workbench the list has fifteen and scrolls; a kept tool (Knife,
+  Wrench) is a row of its own and is still in your pack afterwards. Cut a shirt from your pack into
+  two rags, and make sure the shirt you're **wearing** is never used (VERIFY
+  `Interactions/RZ_Crafting.c:579`). At a stove or a lit campfire: Sterile dressing (boil), Charcoal
+  (burn), Jerky (dry), Stew (cook). The new items look right in the hand and the inventory and lie
+  on a table without falling through it (their meshes are props': wire and scrap a metal fragment,
+  nails, salt and the empty tin a tin, cells a paper wrap, the pad a notebook, bleach a plastic
+  bottle, rags the gauze, the lockpick a pen, charcoal kindling). Throw the radio lure: it hisses
+  for over a minute and the infected come. A hand-drawn map opens as a map. A water filter cleans a
+  bottle as a tablet does; a sterile dressing cleans a fresh bite (**Clean the bite**).
+- [ ] Pick a lock: at a locked place's outside door, **Pick the lock (lockpick)** with a pick in
+  your pack takes about 14 s, quietly; it opens (not broken: its key locks it again) or the pick
+  snaps. Log: `Doors: lock picked at <grid> by player <id>` or `Doors: a pick snapped at <grid>
+  (player <id>)`.
 - [ ] The object menu, with a pad (**UI > Object row layout** set, the `RZ_ObjectMenu` preset added):
   at a stove only **Look at the stove** shows; it opens the menu with "Stove", the town, what you
   see and the options (Boil water, Brew a home remedy). The D-pad moves, A on Boil water starts it
@@ -3571,9 +3728,53 @@ when it happens)
 - [ ] **A fresh life, as a veteran** (the author has played many lives, so this is the usual case on the
   PC). Die and respawn: someone stands at the door every time (log: `Openings: <you> <background> at
   <grid>: contact <name> spawned at <n> m`; never `NO CONTACT` or `NO OPENING`: paste those lines if
-  seen), and his first ask is step 1, *Down the Road*, never *Where the Work Is* straight away. The
+  seen), and his first ask is the door's favour, never *Where the Work Is* straight away. The
   Quests tab lists only that step: none of the last life's questlines, majors or jobs, and no "Quest
   started" card for them (log: `Missions: <you> began a new life, off N job(s) the last one held`).
+- [ ] **The case** ([DESIGN.md](DESIGN.md#the-case)), with a pad. Open `Prefabs/ReforgerZ/Guidance/RZ_ColdCase.et`
+  once so its id registers (on the cloud's test server it can't go into a pack until it is: the
+  test used a stand-in), and check **Guidance > Cold case** came through. At the end of any opening:
+  a dead man lies by a road or in a yard 200–600 m off, never in a field, the water or at the line,
+  and a case with Halcyon's look lies by him (it uses the medical kit's mesh: say if it looks wrong
+  or floats). **Read the tag** on the ground: the tag, its date and "cold to the touch". Pick it up
+  with vanilla's prompt: it fits in your pack (2x2, 4 kg: say if a civilian's pockets refuse it), the
+  step ends and *The Case* is tracked to Halcyon's field station by name. Stand at the station 30 s:
+  nothing happens. Talk to anyone of Halcyon's: **[Errand] Hand over the runner's case** is first;
+  pick it: the director (or whoever) speaks of the date on the tag, the case leaves your pack, +10
+  Halcyon Fame, and before 25% cure *The Date on the Tag* is tracked to the clinic (its file inside,
+  a 10 s search). Another life: sell it at a Red Hand person (**[Trade] Sell the runner's case**,
+  +15 Favor): *Get It Back* at their holding, an 8 s unseen take, and it's back in your pack, warm.
+  Again at Bastion: *The Case at the Post*. Die carrying it: it isn't on the body, and the respawned
+  character has it in the pack ("You still have the runner's case."). Keep it a game day: Halcyon's
+  channel asks after it once. Log lines as in [DESIGN.md](DESIGN.md#the-case).
+- [ ] **The line** ([DESIGN.md](DESIGN.md#the-line)), with a pad, as a brand-new character (level 0
+  or 1), on Everon. After the favour the contact says he's going to try the line: *The Line* is
+  tracked, the marker on him, and he leads you to a road above the line (600 m to 2 km off). There:
+  the loudspeakers, the Perimeter's drone over the road ahead, and a man with a pack breaks from
+  cover 100 m ahead and runs (does he sprint? VERIFY `Guidance/RZ_OpeningLine.c:284`); as he enters
+  the warning zone the loudspeaker shouts at him and the drone follows him (VERIFY `:378`); 15 m in,
+  the shot: he drops. Quiet, then *"Eleven days. They said aid was coming."* Then *The Runner*: the
+  marker on his body, the case by him (walking to him puts you in the warning zone: the loudspeaker
+  and drone run as built, no shot unless you go on into the kill zone). Say how long the scene feels,
+  whether he's visible from the viewpoint, and whether you were ever shot at. As a familiar or veteran
+  character (or with two other players near the line): no scene, the shot heard and the contact's
+  *"That came from the line. Somebody tried it."*, the runner found already down. Log lines as in
+  [DESIGN.md](DESIGN.md#the-line): paste the `Openings: the line ...` ones.
+- [ ] **The fixer** ([DESIGN.md](DESIGN.md#the-fixer)), with a pad, as a brand-new character on Everon.
+  Take the runner's case and go back to the street you started from: 2 to 4 minutes later Ferda
+  Kroupa and two men stand at the end of the street (are they Red Hand to look at? do they stand
+  well, not in a wall?); he asks the contact first, then *Ferda Kroupa* is tracked on him. Talk to
+  him: his greeting, then **[Trade] Hand it over**, the story about Bastion (locked unless you're
+  the good liar or a Police Officer, Soldier, Ex-Con or Raider) and **[Street] Wait here...**.
+  Play each way on a fresh character: hand it over (+15 Red Hand Favor, Get It Back next; then a
+  neighbour at his door to warn), the story, rally the street (board his door: are the planks in a
+  real doorway? clean the rifle on a step, show the lookout the corner; then **The street's with
+  me.**), walk off with it (120 m for 10 s), and fire near his men (do they shoot back? VERIFY
+  `Guidance/RZ_OpeningFixer.c:1105`). That evening the radio says what happened; twenty minutes
+  later his note lies on the step of a real door near you (**Read the note on the step**); at a Red
+  Hand toll his men ask after you. As a familiar character he comes half a minute after the case,
+  as a veteran only his note. Log lines as in [DESIGN.md](DESIGN.md#the-fixer): paste the
+  `Openings: Ferda ...` ones.
 - [ ] **Openings** ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), with a pad. The spawn
   screen has no place picker: under Start, only the kind of place the picked background starts at
   ("A clinic, or a house near one"); left and right do nothing. Deploy as a Nurse: you stand 2 m out
@@ -3584,53 +3785,53 @@ when it happens)
   *Outside the Door*, "Talk to *his name*.", and the map's diamond is on him. Wait two minutes
   nearby without talking: he calls once more. Talk to him: the talk screen opens with "Look at you.
   Alive." (with **Dialogue > Trees** on, the greeting about your stitches), the day and the roads,
-  then the ask, and *"When you're done there, don't come back for me. Go on to Emil, the father
-  with the sick son, at Emil's house in Morton."*; the tracker now shows *Down the Road*, 150–450 m
-  off, and the Quests tab has it under ERRANDS, tracked. Ask "What was it you needed?": the step word
-  for word, then "Then on to Emil, at Emil's house in Morton." Search the house for 20 s: it's done
-  there, nobody calls you back, and *Find Emil* is tracked at a house 200–600 m further on (its
-  diamond on him). Within 25 m he calls (*"You're the one Pavel sent? Over here."*); talk to him: the
-  broadcast, nobody coming, and *The Fever*, his son's (below). Then *To Halcyon*
-  starts where you stand, with the Perimeter and the cure, the tracker pointing at Halcyon's nearest
-  holding or the lab; ask Emil again and he says that step word for word. Go back to Pavel on the
-  way: *"Go on. Emil's waiting for you, not me."*; leave him 150 m behind and he's gone. As a
-  **Mechanic** (they walk with you): after the first ask, close the talk screen and the regular from
-  the garage comes with you (*"I'm coming with you. ... You lead."*), 4 m behind; search the garage
-  down the road with them beside you, and *The Pump* starts there, said by them (no Back to); walk
-  off fast and the next step waits up to a minute for them to catch up. Fill a can at the pump: *To
-  the Haven* starts there, and they walk you to the safehouse (*"This is it. I'll find a corner."*).
-  Let infected near them: they stop and can be killed (the walk then goes to the nearest safehouse).
-  With **Contracts > Max escorts** full or **Companion** empty, they stay and each next step starts
-  where you are, on its card. Do the same pass once each for a Hunter, Lab Technician, Unemployed,
-  Raider, Ex-Con and Radio Operator (they walk with you) and a Doctor, Elder, Soldier, Police Officer
-  and Drifter (sent on: the man whose friend was bitten, the man between two families, the one
-  keeping the gate, the shopkeeper who kept your station's keys, someone who heard you help); every
-  step is a new place, none sends you back. With the talk screen off (**UI > Talk reply
-  layout** empty), **Talk to** says the same lines as subtitles, in order. Arrive: one line there and
-  +10 Halcyon Fame. Time the whole chain (about 15 minutes) and note the log's minutes. Respawn: the
-  next start is a different town (2 km from the last two). A Soldier ends at Bastion, a
-  Mechanic at the Haven. Shoot the contact during step 1: a line from "Someone in a doorway" and the
-  walk to the nearest safehouse. Nobody waves you over for an errand while it runs. By the open door:
-  your background's own things (the nurse's blanket and drum, the soldier's sandbags and lantern).
-  Step 2 is your background's own: the Nurse treats the sick son, lying there, with something from the bag (*The
-  Fever*); a Soldier holds the gate a minute while the infected come to the noise; a Mechanic fills a
-  can at a petrol station's pump (empty can: the card says fill it first); a Police Officer is given a
-  key and goes into a locked building; a Hunter watches a pack's ground hidden for 30 s (seen, the
-  clock stops); a Radio Operator, with Trees on, answers on the open channel (*Call on the open
-  channel* on the wind-up radio); a Lab Technician picks up a sample by the remains; an Unemployed
-  catches a wanderer (with a tin: +3 Haven Favor); a Raider collects at a door (+1 Haven Infamy); an
-  Elder settles the two families in talk; a Doctor finds the antidote by the clinic door and has 10
-  minutes; a Drifter gets up to three asks in a row. With nothing that can run (no pump in reach),
-  water or the cut instead. Why today: over a few lives you also come out of a door because your
-  group is gone (four bedrolls, a note under a stone, a car in the ditch or Halcyon's flyer) or the
+  then **who you were** (*"You're steady with that bag. Still a nurse, under all that?"*) and his
+  problem (*"My son's burning up..."*): the tracker shows *The Medicine*, the chemist's (else the old
+  aid post, else the doctor's house) 90–450 m off, and the Quests tab has it under ERRANDS, tracked.
+  First in the replies, three answers tagged **[Steady hands]**, **[Light feet]**, **[A good liar]**:
+  pick one; he answers, the three go, and the Notebook's Standing header ends with *HABIT: ...*. Above
+  them, **[Nurse] That's not a fever, that's an infection. Hold him still.** (locked "Something medical
+  in your bag" without a dressing). Close the screen: he comes with you, 4 m behind (*"I'm coming with
+  you. ... You lead."*). On the way he says a line at a door mark, at an infected within 40 m, at a
+  locked building, and about the broadcast a minute and a half in: once each. Search the shelves (10
+  s): done there; *Give Him the Medicine* is tracked on him. Stand by him a minute: nothing. Talk to
+  him: **[Errand] Here's the boy's medicine.** first; pick it: his thanks, and *The Runner* starts
+  there, said by him. Again as a Nurse with a dressing: pick the [Nurse] reply instead: *The Fever*'s
+  son lies by him (below), **Treat his fever** (8 s), and *The Runner* follows: no hand-over. Do the
+  same once for each background, both ways where it has two (the Unemployed and the Drifter have one):
+
+  | Background | His problem, the fetch | The way |
+  |---|---|---|
+  | Doctor | as the Nurse | [Doctor] the same, "It's the water" |
+  | Mechanic | his car; a battery at the garage or petrol station (a toolbox there) | [Mechanic] **Hotwire it** at the car by him |
+  | Hunter | his hens; the shells at his farm's shed (else his old house) | [Hunter] **Read the tracks** near him, quiet |
+  | Police Officer | his neighbour; **Look under the mat** on the doorstep of a real house's door over the way | [Police] **Knock: it's the police** there: the door opens |
+  | Ex-Con | the same | [Ex-Con] **Work the lock, quietly** there, unseen: the door opens |
+  | Lab Technician | his insulin; the cool box at the school (else aid post, chemist's) | [Lab Technician] **Pack it in cold water** by him |
+  | Radio Operator | his brother; a battery at the shop | [Radio Operator] settled in the talk; locked without a radio on you |
+  | Soldier | his rifle; **Take the rifle off him** at the lad's house, the lad standing there | [Soldier] **Give it here, son** at the lad |
+  | Raider | his tin; a tin in the house next door | [Raider] settled in the talk |
+  | Elder | the well; **Take the rota off the board** at the church (else the hall), papers there | [Elder] settled in the talk |
+  | Unemployed, Drifter | his sack; the old shop's back room | none |
+
+  Every place's words are true of the building (no "chemist's" at a shed, no "garage" at a house), the
+  thing (or a toolbox, a crate, papers) stands at the hold, and the neighbour's door is a real door.
+  With **Contracts > Max escorts** full or **Companion** empty, he stays and each next step starts where
+  you are, on its card; the hand-over is the reply at him where he stands. As a veteran (**Guidance**'s counted
+  lives for level 3 lowered to your count) the door asks nothing and the habit of
+  the last life carries (log: `keeps the habit`). With the talk screen off (**UI > Talk reply layout**
+  empty), **Talk to** says the same lines as subtitles, in order. Take the case: the chain ends and
+  *The Case* is tracked. Time the whole chain (about 25 minutes) and note the log's minutes. Respawn:
+  the next start is a different town (2 km from the last two). Shoot the contact during the favour: a
+  line from "Someone in a doorway" and the walk to the nearest safehouse. Nobody waves you over for an
+  errand while it runs. By the open door: your background's own things (the nurse's blanket and drum,
+  the soldier's sandbags and lantern). Why today: over a few lives you also come out of a door because
+  your group is gone (four bedrolls, a note under a stone, a car in the ditch or Halcyon's flyer) or the
   fever broke (chalk on the door, a dead soldier or a dead raider); the card says which. One time in
   four the one outside is a stranger ("someone who saw them go"); after a few lives, a wanderer you
   met before may be the one outside ("You look like someone I knew.") and is back on the road once you
-  leave. With **Guidance > Lives familiar** lowered to 1, a second life gets your background's step
-  and then *Where the Work Is* to the nearest safehouse or holding (no Fame); a veteran gets the
-  one-line read, no clue, and someone outside only one time in three (without: the read's own line
-  hands you *Where the Work Is*). Turn **Puzzles > Civilian** and **Contact** empty: nobody outside,
-  the read hands you the work, and a brand-new player's wanderer comes looking.
+  leave. Turn **Puzzles > Civilian** and **Contact** empty: nobody outside, the read hands you the
+  work, and a brand-new player's wanderer comes looking.
 - [ ] **The Fever and The Clock: the one in need is there**, with a pad (the author's play-test: no
   boy, the marker on the father, and walking away and back finished it with no talk). As a Nurse on
   *The Fever*: the son lies on a mattress (a blanket and a bucket by it) on the ground floor of the
@@ -4005,6 +4206,17 @@ when it happens)
 - [ ] You are here: open the map and a yellow arrow on a dark disc sits where you stand, above the
   other icons; turn round and it turns with you (an arrow pointing the wrong way, or turning about a
   corner, is the rotation VERIFY); it follows you in a car; dead, it's gone.
+- [ ] The map's fog ([UI.md](UI.md#the-maps-fog)), with a pad and on a TV: open the map on a fresh profile and
+  all but the ground round you is under a dark grey layer, with the roads and the coast still faintly
+  visible through it (too dark or too light: **Map > Map fog > How dark**). Pan and zoom: the fog moves
+  with the map, without a stutter, its squares' edges on the grid (fog off its place, missing, or a
+  hitch is the drawing VERIFY `UI/RZ_MapFogDraw.c:187`). Walk 300 m and open it again: a trail
+  150 m wide is clear; climb a tower or a hill and more opens. A safehouse you haven't seen is a
+  yellow ring labelled "Safehouse, somewhere here", not on the house; walk to it and its marker
+  comes. Your tracked objective always shows. Pick up a paper map found in a town's loot (not the
+  one you start with): its town clears within 5 s with a notice. Read a safehouse's board: its
+  town clears. Die and come back: the fog is as you left it. `/fog all` and `/fog reset` (or the
+  talk screen's [Admin] row) clear and fog your map.
 - [ ] The map key: open the full-screen map zoomed out and the key is in the bottom-left, its icons
   in their colours, its last row the diamond (Your objective) and the amber disc (Search area); zoom in on a town and it fades out, zoom out and it comes back. I (pad Y) hides
   it and shows it again, and it stays hidden the next time you open the map. It covers none of
@@ -4565,6 +4777,15 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
 
 **World**
 - [ ] Walking near the map edge: drone and loudspeaker at 300 m, warning shot at 100 m.
+- [ ] The masts ([DESIGN.md](DESIGN.md#the-masts)), with a pad: at a mast, **Look at the mast**
+  opens its menu with the tag's words; the climb is locked with its reason until the trouble is
+  settled and the part is on you. Talk to the old radio man and give him what he asks for by the
+  reply; at a crew's mast try the tins, the Red Hand word and the promise. Climb (25 s, held): the
+  part is taken, the map clears for 1 km round it, and the set speaks. Hand it to a faction, keep it
+  open, or sell it: the line on the radio, the Fame or Favor once. With a radio in its region, wait
+  for a warning (6 min) and an overheard line (9 min); near the line, the drone operators. With two
+  up, wait for the trapped voice (or set **Masts > Minutes between trapped voices** low), take a
+  bearing at two masts and find the Distress Call where they cross. Log lines `Masts: ...`.
 - [ ] A safehouse shows occupants; you can hand in food, declare a bite at a Shelter (smaller
   slowdown) and a Town (bigger), and buy expired antibiotics for 5 Favor.
 - [ ] As a Haven Champion, walk into a safehouse with a hunter squad on you: it turns away, and

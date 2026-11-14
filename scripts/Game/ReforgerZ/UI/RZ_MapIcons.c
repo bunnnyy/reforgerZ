@@ -24,6 +24,9 @@
 //! shown while the map is zoomed out and faded as you zoom in. RZ_MapLegend (I, pad Y) shows or
 //! hides it; the choice lasts the session.
 //!
+//! The map's fog (docs/UI.md, "The map's fog") is drawn first, under everything, by RZ_MapFogDraw;
+//! it needs no layout, only this component on the map.
+//!
 //! Add RZ_MapIconsUI to the components of the map configuration the game uses (the full-screen map
 //! config; WORKBENCH_SETUP.md, "Setting up the UI") and set UI > Map icon layout. Without the
 //! layout, the layer does nothing and the vanilla text markers stay (and there's no legend).
@@ -61,6 +64,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 	protected int m_iSeen = -1;
 	protected float m_fAsk;
 	protected bool m_bOpen;
+	protected ref RZ_MapFogDraw m_Fog = new RZ_MapFogDraw();	// the map's fog, under everything else (UI/RZ_MapFogDraw.c)
 
 	//------------------------------------------------------------------------------------------------
 	override void OnMapOpen(MapConfiguration config)
@@ -69,6 +73,15 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 		m_bOpen = true;
 		m_iSeen = -1;
 		m_fAsk = 0;
+		// The fog first, so the markers draw above it; it doesn't need the icon layout
+		if (m_RootWidget)
+		{
+			m_Fog.Make(m_RootWidget);
+			RZ_PlayerUIComponent fogUi = RZ_PlayerUIComponent.GetLocal();
+			if (fogUi)
+				fogUi.Ask(RZ_UIFeed.PAYLOAD_FOG);
+		}
+
 		MakeCanvas();
 		Ask();
 		MakeLegend();
@@ -83,6 +96,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 		RemoveSelf();
 		RemoveLegend();
 		RemoveCanvas();
+		m_Fog.Remove();
 		super.OnMapClose(config);
 	}
 
@@ -90,6 +104,9 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 	override void Update(float timeSlice)
 	{
 		super.Update(timeSlice);
+		if (m_bOpen)
+			m_Fog.Update(m_MapEntity);
+
 		RZ_UISettings settings = RZ_UISettings.Get();
 		if (!m_bOpen || !settings.UsesMapIcons())
 			return;

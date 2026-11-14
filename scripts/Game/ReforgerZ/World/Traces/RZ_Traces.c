@@ -816,6 +816,26 @@ class RZ_Traces
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where the mark with this key stands on its real door (beside it, on the wall) and the way out
+	//! of the wall. False while it isn't bound to a door on the map (no door: no find there).
+	static bool MarkedDoorAt(string key, out vector pos, out vector normal)
+	{
+		pos = vector.Zero;
+		normal = vector.Zero;
+		RZ_Traces t = Get();
+		if (!t || key.IsEmpty())
+			return false;
+
+		RZ_MarkedDoor d = t.GetDoors().FindByKey(key);
+		if (!d || !d.IsBound())
+			return false;
+
+		pos = d.m_vPos;
+		normal = d.m_vNormal;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The old mark's words, at this reader's level. "" if it's gone.
 	static string OldMarkLine(string key, int playerId)
 	{

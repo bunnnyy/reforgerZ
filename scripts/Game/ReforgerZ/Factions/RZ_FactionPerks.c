@@ -1252,6 +1252,11 @@ class RZ_FactionPerks
 		if (killer < 0 && m_GM.GetTribes())
 			m_GM.GetTribes().OnPlayerDied(victim, at);
 		RZ_WorldWriters.Death(victim, at);
+		// A quest item stays yours: the runner's case is kept as data and comes back on respawn (Guidance/RZ_OpeningCase.c)
+		RZ_OpeningCase cases = RZ_OpeningCase.Get();
+		if (cases)
+			cases.OnPlayerDied(victim, body);
+
 		if (m_GM.GetErrands())
 			m_GM.GetErrands().OnPlayerDied(victim);
 

@@ -1549,6 +1549,10 @@ class RZ_Loot
 		if (!it.m_Ent)
 			return false;
 
+		// A paper map found here: whoever carries it learns this town (the map's fog, World/RZ_MapFog.c)
+		if (RZ_MapFog.IsPaperMap(it.m_sPrefab) && m_GM && m_GM.GetMapFog())
+			m_GM.GetMapFog().RegisterFoundMap(it.m_Ent, it.m_vPos);
+
 		m_iLying++;
 		return true;
 	}

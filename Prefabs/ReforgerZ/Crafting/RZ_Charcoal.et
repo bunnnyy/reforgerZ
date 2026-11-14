@@ -1,0 +1,34 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "A3B74A7BF6AE9AB0"
+ components {
+  MeshObject "{AE06C30855846842}" {
+   Object "{B91CE31467CC6D56}Assets/Props/Civilian/WoodKindling_01/WoodKindling_01.xob"
+  }
+  RigidBody "{D0A49B97ECB60C98}" {
+   Mass 0.4
+   LinearDamping 0.5
+   AngularDamping 0.5
+   AngularSleepingThreashold 1
+   ModelGeometry 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Charcoal"
+     Description "Wood burned down to black. Crushed in a bottle with a rag, it cleans water."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.4
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{D1857A9A23DE885E}" {
+      CameraOrbitAngles 0 30 0
+      CameraDistanceToItem 0.6
+     }
+    }
+    m_Size SLOT_1x1
+   }
+  }
+ }
+ coords 0 0 0
+}

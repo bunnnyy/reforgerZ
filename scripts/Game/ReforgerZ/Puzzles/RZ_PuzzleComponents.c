@@ -335,6 +335,16 @@ class RZ_PuzzleActionHelper
 			return true;
 		}
 
+		// The opening's fixer (Guidance/RZ_OpeningFixer.c): his lines, or his note
+		if (comp.GetMissionId() == RZ_OpeningFixer.TAG)
+		{
+			RZ_OpeningFixer fixer = RZ_OpeningFixer.Get();
+			if (fixer)
+				fixer.HandleRead(playerId, comp.GetObjectIndex(), owner);
+
+			return true;
+		}
+
 		// A safehouse's named person (World/RZ_NamedPeople.c)
 		// A stranger at a spot (Missions/Errands/RZ_Strangers.c)
 		if (comp.GetMissionId() == RZ_Strangers.TAG)
@@ -429,6 +439,15 @@ class RZ_PuzzleActionHelper
 			return true;
 		}
 
+		// A mast's cabinet (World/RZ_Masts.c): its rows as prompts, without the object menu
+		if (comp.GetMissionId() == RZ_Masts.TAG)
+		{
+			if (RZ_Masts.Get())
+				RZ_Masts.Get().HandleChoice(playerId, option, owner, user);
+
+			return true;
+		}
+
 		// World interactions: search spots, wrecks, workbenches, wells, bells, radios, cars
 		if (comp.GetMissionId() == RZ_Interactions.TAG)
 		{
@@ -487,6 +506,16 @@ class RZ_PuzzleActionHelper
 			RZ_Openings contact = RZ_Openings.Get();
 			if (contact)
 				contact.HandleTalk(playerId, comp.GetClueIndex(), owner);
+
+			return true;
+		}
+
+		// The opening's fixer, a neighbour, or his note on a step (Guidance/RZ_OpeningFixer.c)
+		if (comp.GetMissionId() == RZ_OpeningFixer.TAG)
+		{
+			RZ_OpeningFixer note = RZ_OpeningFixer.Get();
+			if (note)
+				note.HandleRead(playerId, comp.GetClueIndex(), owner);
 
 			return true;
 		}
@@ -573,6 +602,15 @@ class RZ_PuzzleActionHelper
 		{
 			if (gm.GetRadioStation())
 				gm.GetRadioStation().HandleRead(playerId);
+
+			return true;
+		}
+
+		// A mast's cabinet (World/RZ_Masts.c): its menu
+		if (comp.GetMissionId() == RZ_Masts.TAG)
+		{
+			if (RZ_Masts.Get())
+				RZ_Masts.Get().HandleRead(playerId, owner);
 
 			return true;
 		}

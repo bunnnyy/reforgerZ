@@ -5422,73 +5422,82 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
      RZ_LootTable "{4848BC40B751278D}" {
       m_sType "house"
       m_aCommon {
-       "{E7FF723379730BD5}Prefabs/Items/PersonalBelongings/PersonalBelongings_CIV.et" "{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et" "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et" "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et" "{2085CF5A65EFCD11}Prefabs/Characters/Uniforms/Shirt/Shirt2.et" "{3A948BD491BC06DE}Prefabs/Characters/Uniforms/Jacket_Tracksuit/Jacket_Tracksuit_Navy.et" "{821386465B3C63AB}Prefabs/Characters/Uniforms/Pants_Tracksuit/Pants_Tracksuit_Navy.et" "{72F5D322882653AF}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap.et" "{B5B3D0AFBB4DE757}Prefabs/Items/Core/FM_WoodStick.et"
+       "{E7FF723379730BD5}Prefabs/Items/PersonalBelongings/PersonalBelongings_CIV.et" "{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et" "{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et" "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et" "{2085CF5A65EFCD11}Prefabs/Characters/Uniforms/Shirt/Shirt2.et" "{3A948BD491BC06DE}Prefabs/Characters/Uniforms/Jacket_Tracksuit/Jacket_Tracksuit_Navy.et" "{821386465B3C63AB}Prefabs/Characters/Uniforms/Pants_Tracksuit/Pants_Tracksuit_Navy.et" "{72F5D322882653AF}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap.et" "{B5B3D0AFBB4DE757}Prefabs/Items/Core/FM_WoodStick.et" "{7A359D186C2E013F}Prefabs/ReforgerZ/Crafting/RZ_TinCan_Empty.et" "{6403BD4E5B4F0C04}Prefabs/ReforgerZ/Crafting/RZ_Salt.et" "{268E3FCBD96622AD}Prefabs/ReforgerZ/Crafting/RZ_WritingPad.et" "{9D7456C2552534E9}Prefabs/ReforgerZ/Crafting/RZ_Bleach.et" "{F51872C09AA3A89A}Prefabs/ReforgerZ/Crafting/RZ_Cells.et" "{C51983A3690A5A7A}Prefabs/Characters/Uniforms/Shirt/Shirt3.et" "{A858DFF9316E3075}Prefabs/Characters/Uniforms/Pants_Jeans/Pants_Jeans_02.et" "{79BA6111D025ED88}Prefabs/Characters/Footwear/Sandals/Sandals_01.et" "{3F155F317D83D375}Prefabs/Characters/Handwear/Gloves_Wool_01/Gloves_Wool_Black.et" "{BB8A010B433AB6FB}Prefabs/Characters/HeadGear/Hood_Sweatshirt/Hood_Sweatshirt.et"
       }
       m_aRare {
-       "{3DE0155EC9767B98}Prefabs/Items/Equipment/Backpacks/Backpack_Veshmeshok.et" "{3805C0B87B9D2AB0}prefabs/weapons/Melee/Knife.et" "{0CF6E65BB0AAFDE6}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_PearlNecklace.et"
+       "{3DE0155EC9767B98}Prefabs/Items/Equipment/Backpacks/Backpack_Veshmeshok.et" "{3805C0B87B9D2AB0}prefabs/weapons/Melee/Knife.et" "{0CF6E65BB0AAFDE6}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_PearlNecklace.et" "{2E0FAA5F39CBA66C}Prefabs/ReforgerZ/Crafting/RZ_Wire.et" "{52570F84961707C2}Prefabs/Characters/Uniforms/Jacket_Trench/Jacket_Trench_Brown.et" "{A6E6212E02313CAD}Prefabs/Characters/Uniforms/Sweatshirt/Sweatshirt_Dirty.et" "{6FD6C96121905202}Prefabs/Items/Equipment/Watches/Watch_Vostok.et" "{FDA7B6630DB87991}Prefabs/Items/Equipment/Backpacks/Backpack_M70_Swiss.et"
+      }
+      m_aElectronics {
+       "{842711C53E9F890C}Prefabs/Items/Equipment/Misc/Portable_Radio.et"
       }
      }
      RZ_LootTable "{1DC03D14FE15948B}" {
       m_sType "shop"
       m_aCommon {
-       "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et" "{72F5D322882653AF}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap.et" "{DCDF534783F9C73D}Prefabs/Items/Medicine/Vodka_Bottle/Vodka_Bottle.et" "{FF742375E12302B4}Prefabs/Characters/Misc/Cigarette.et" "{0F7F7BD8A462D8F5}Prefabs/Characters/Waist/Waist_Pack.et" "{C542EA4B3ED3B61B}Prefabs/Characters/Uniforms/Pants_Cargo/Pants_Cargo_Tan.et"
+       "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et" "{72F5D322882653AF}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap.et" "{DCDF534783F9C73D}Prefabs/Items/Medicine/Vodka_Bottle/Vodka_Bottle.et" "{FF742375E12302B4}Prefabs/Characters/Misc/Cigarette.et" "{0F7F7BD8A462D8F5}Prefabs/Characters/Waist/Waist_Pack.et" "{C542EA4B3ED3B61B}Prefabs/Characters/Uniforms/Pants_Cargo/Pants_Cargo_Tan.et" "{6403BD4E5B4F0C04}Prefabs/ReforgerZ/Crafting/RZ_Salt.et" "{F51872C09AA3A89A}Prefabs/ReforgerZ/Crafting/RZ_Cells.et" "{268E3FCBD96622AD}Prefabs/ReforgerZ/Crafting/RZ_WritingPad.et" "{9D7456C2552534E9}Prefabs/ReforgerZ/Crafting/RZ_Bleach.et" "{7A359D186C2E013F}Prefabs/ReforgerZ/Crafting/RZ_TinCan_Empty.et" "{7CC37DEB059F14CE}Prefabs/Characters/Uniforms/Jacket_Tracksuit/Jacket_Tracksuit_Black.et" "{AC7F9BCA3DA1002D}Prefabs/Characters/Uniforms/Pants_Tracksuit/Pants_Tracksuit_Black.et"
       }
       m_aRare {
-       "{A870260CF6ECB936}Prefabs/Items/Equipment/Backpacks/Backpack_IIFS_FieldPack_hiking.et" "{696CC1F6BC5BE3F7}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_StackofCash.et"
+       "{A870260CF6ECB936}Prefabs/Items/Equipment/Backpacks/Backpack_IIFS_FieldPack_hiking.et" "{696CC1F6BC5BE3F7}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_StackofCash.et" "{78ED4FEF62BBA728}Prefabs/Items/Equipment/Watches/Watch_SandY184A.et" "{5526D553AF43CE6B}Prefabs/Characters/Uniforms/Jacket_Trench/Jacket_Trench_Black.et" "{CDDA2A133111E1A6}Prefabs/Characters/Handwear/Gloves_Leather_01/Gloves_Leather_Black.et"
+      }
+      m_aElectronics {
+       "{842711C53E9F890C}Prefabs/Items/Equipment/Misc/Portable_Radio.et"
       }
      }
      RZ_LootTable "{7AD0265CF776FD5D}" {
       m_sType "farm"
       m_aCommon {
-       "{128A19AA9F731095}prefabs/Items/Food/MeatLeg_01.et" "{8A89D3F70713E55B}Prefabs/Items/Equipment/Accessories/ETool_MPL50/ETool_MPL50.et" "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et" "{C717AE6CBE1C162E}Prefabs/Characters/Uniforms/Overalls/Denim_overalls2.et" "{50C997103F92E752}Prefabs/Characters/Uniforms/Overalls/Overalls1.et" "{7B8BBB818BD62015}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/US RAINCOAT.et" "{1E8E0AF46736D299}Prefabs/Characters/HeadGear/Hat_Boonie_US_01/Hat_Boonie_US_dark.et" "{B5B3D0AFBB4DE757}Prefabs/Items/Core/FM_WoodStick.et"
+       "{128A19AA9F731095}prefabs/Items/Food/MeatLeg_01.et" "{8A89D3F70713E55B}Prefabs/Items/Equipment/Accessories/ETool_MPL50/ETool_MPL50.et" "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et" "{C717AE6CBE1C162E}Prefabs/Characters/Uniforms/Overalls/Denim_overalls2.et" "{50C997103F92E752}Prefabs/Characters/Uniforms/Overalls/Overalls1.et" "{7B8BBB818BD62015}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/US RAINCOAT.et" "{1E8E0AF46736D299}Prefabs/Characters/HeadGear/Hat_Boonie_US_01/Hat_Boonie_US_dark.et" "{B5B3D0AFBB4DE757}Prefabs/Items/Core/FM_WoodStick.et" "{2E0FAA5F39CBA66C}Prefabs/ReforgerZ/Crafting/RZ_Wire.et" "{267D3FAF0F92499F}Prefabs/ReforgerZ/Crafting/RZ_Nails.et" "{6403BD4E5B4F0C04}Prefabs/ReforgerZ/Crafting/RZ_Salt.et" "{7277FBDCDC013DDF}Prefabs/Characters/Handwear/Gloves_Wool_01/Gloves_Wool_Dirty.et" "{CABF701DF5212647}Prefabs/Characters/Footwear/Sneakers/Sneakers_Dirty.et" "{129457E7C45EB342}Prefabs/Characters/HeadGear/Hat_M70_01/Hat_woodland_cap.et"
       }
       m_aRare {
-       "{3805C0B87B9D2AB0}prefabs/weapons/Melee/Knife.et" "{202B26ADA1621199}prefabs/weapons/Melee/Machete.et" "{87FAD1AE2D462BD2}Prefabs/Weapons/Melee/Fire Axe.et"
+       "{3805C0B87B9D2AB0}prefabs/weapons/Melee/Knife.et" "{202B26ADA1621199}prefabs/weapons/Melee/Machete.et" "{87FAD1AE2D462BD2}Prefabs/Weapons/Melee/Fire Axe.et" "{6CB732A4814E2F43}Prefabs/ReforgerZ/Crafting/RZ_Scrap.et" "{21DC09217E13C1C7}Prefabs/Characters/Uniforms/Pants_Cargo/Pants_Cargo_Black.et"
       }
      }
      RZ_LootTable "{A03A5468AA91C124}" {
       m_sType "pharmacy"
       m_aCommon {
-       "{C07A52D13353AB2F}Prefabs/Clothing/ZEL_FaceClothing_Base.et" "{D8326FEE52670D2A}Prefabs/Characters/Handwear/Gloves_Blue/Medical_Gloves_Blue_Base.et" "{C1FF82A0F6813A48}Prefabs/Characters/Uniforms/Jacket_EMS.et"
+       "{C07A52D13353AB2F}Prefabs/Clothing/ZEL_FaceClothing_Base.et" "{D8326FEE52670D2A}Prefabs/Characters/Handwear/Gloves_Blue/Medical_Gloves_Blue_Base.et" "{C1FF82A0F6813A48}Prefabs/Characters/Uniforms/Jacket_EMS.et" "{9D7456C2552534E9}Prefabs/ReforgerZ/Crafting/RZ_Bleach.et" "{B8F5E8DB8D633E31}Prefabs/Characters/Uniforms/Pants_EMS.et" "{A38C67B3E56B7D26}Prefabs/Characters/Footwear/paramedic_boots.et"
       }
       m_aRare {
-       "{FB66C1EC2E5DB34C}Prefabs/Clothing/Gas_Mask.et" "{BF54108D935086E5}Prefabs/Characters/Uniforms/Suit_Hazmat/Suit_Hazmat_Hood_HiVis.et"
+       "{FB66C1EC2E5DB34C}Prefabs/Clothing/Gas_Mask.et" "{BF54108D935086E5}Prefabs/Characters/Uniforms/Suit_Hazmat/Suit_Hazmat_Hood_HiVis.et" "{AE578EEA4244D41F}Prefabs/Items/Equipment/Kits/MedicalKit_01/MedicalKit_01_US.et" "{21EF98BFC1EB3793}Prefabs/Items/Equipment/Kits/MedicalKit_01/MedicalKit_01_USSR.et" "{85C22207DAACE451}Prefabs/Characters/HeadGear/Mask_Hazmat/Mask_Hazmat_Gas_01.et" "{E8A79A239F0C2167}Prefabs/Characters/Uniforms/Suit_Hazmat/Suit_Hazmat_Hood_Black.et" "{46135132F35261D2}Prefabs/Characters/Vests/Vest_SRU21P/Paramedic_vest.et"
       }
      }
      RZ_LootTable "{4450069726D9B4FD}" {
       m_sType "garage"
       m_aCommon {
-       "{0619993AE6CDBF85}Prefabs/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE.et" "{5C7E23A702959B1C}Prefabs/Characters/HeadGear/Helmet_M1_01/Helmet_CIV_Firefighter.et"
+       "{0619993AE6CDBF85}Prefabs/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE.et" "{5C7E23A702959B1C}Prefabs/Characters/HeadGear/Helmet_M1_01/Helmet_CIV_Firefighter.et" "{2E0FAA5F39CBA66C}Prefabs/ReforgerZ/Crafting/RZ_Wire.et" "{267D3FAF0F92499F}Prefabs/ReforgerZ/Crafting/RZ_Nails.et" "{6CB732A4814E2F43}Prefabs/ReforgerZ/Crafting/RZ_Scrap.et" "{F51872C09AA3A89A}Prefabs/ReforgerZ/Crafting/RZ_Cells.et" "{EF604A05A5998102}Prefabs/Characters/Handwear/Gloves_Pilot_US_01/Gloves_Pilot_US_Black.et"
       }
       m_aRare {
-       "{FB66C1EC2E5DB34C}Prefabs/Clothing/Gas_Mask.et" "{CAB1F18E563F8489}Prefabs/Items/Equipment/Backpacks/firefighter oxygen tank.et" "{87FAD1AE2D462BD2}Prefabs/Weapons/Melee/Fire Axe.et"
+       "{FB66C1EC2E5DB34C}Prefabs/Clothing/Gas_Mask.et" "{CAB1F18E563F8489}Prefabs/Items/Equipment/Backpacks/firefighter oxygen tank.et" "{87FAD1AE2D462BD2}Prefabs/Weapons/Melee/Fire Axe.et" "{C347738A4C9E58EE}Prefabs/Characters/Uniforms/Suit_Pilot_US_01/firefighter_suit.et" "{CB716A41903571AD}prefabs/weapons/Melee/Knife_US.et" "{62D174018D1046F5}Prefabs/Items/Equipment/Canteens/Canteen_Soviet_01_Black.et"
+      }
+      m_aElectronics {
+       "{842711C53E9F890C}Prefabs/Items/Equipment/Misc/Portable_Radio.et"
       }
      }
      RZ_LootTable "{EDFF39A7847DC844}" {
       m_sType "police"
       m_aCommon {
-       "{50084B2B2B8004FA}Prefabs/Items/Equipment/Accessories/Holster_PM/Holster_PM.et" "{CBE373D32DA18749}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_POLICE.et" "{EF0516E165E01874}Prefabs/Characters/Uniforms/Overalls/Prisoner_uniform.et"
+       "{50084B2B2B8004FA}Prefabs/Items/Equipment/Accessories/Holster_PM/Holster_PM.et" "{CBE373D32DA18749}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_POLICE.et" "{EF0516E165E01874}Prefabs/Characters/Uniforms/Overalls/Prisoner_uniform.et" "{268E3FCBD96622AD}Prefabs/ReforgerZ/Crafting/RZ_WritingPad.et" "{F51872C09AA3A89A}Prefabs/ReforgerZ/Crafting/RZ_Cells.et"
       }
       m_aRare {
-       "{D41D22DD1B8E921E}Prefabs/Weapons/Grenades/M18/Smoke_M18_Green.et" "{77EAE5E07DC4678A}Prefabs/Weapons/Grenades/Smoke_RDG2.et" "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et" "{9C948630078D154D}Prefabs/Weapons/Rifles/VZ58/Rifle_VZ58P.et" "{1D0B60CC90DA7330}Prefabs/Characters/HeadGear/Helmet_M1_01/Helmet_M1_No Strap.et" "{7B605E8E4B952837}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_GoldBrick.et" "{D0476EFD1BB2CCB3}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_CreditCards.et"
+       "{D41D22DD1B8E921E}Prefabs/Weapons/Grenades/M18/Smoke_M18_Green.et" "{77EAE5E07DC4678A}Prefabs/Weapons/Grenades/Smoke_RDG2.et" "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et" "{9C948630078D154D}Prefabs/Weapons/Rifles/VZ58/Rifle_VZ58P.et" "{1D0B60CC90DA7330}Prefabs/Characters/HeadGear/Helmet_M1_01/Helmet_M1_No Strap.et" "{7B605E8E4B952837}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_GoldBrick.et" "{D0476EFD1BB2CCB3}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_CreditCards.et" "{D2DC2EF790917302}Prefabs/Characters/HeadGear/Helmet_Altyn/Helmet_Altyn_Black_01.et" "{1E3FDB052BD59DFD}Prefabs/Characters/Vests/Vest_6B2/Vest_6B2_Black.et" "{C26A13DD20F4E9AD}Prefabs/Characters/HeadGear/ShM-62/Mask_Gas_ShM-62_Black.et" "{F2539FA5706E51E4}Prefabs/Items/Equipment/Binoculars/Binoculars_B12/Binoculars_B12.et" "{06B68C58B72EAAC6}Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et" "{CB716A41903571AD}prefabs/weapons/Melee/Knife_US.et"
       }
      }
      RZ_LootTable "{4BB93579379FFBCF}" {
       m_sType "body"
       m_aCommon {
-       "{E7FF723379730BD5}Prefabs/Items/PersonalBelongings/PersonalBelongings_CIV.et" "{DCDF534783F9C73D}Prefabs/Items/Medicine/Vodka_Bottle/Vodka_Bottle.et" "{FF742375E12302B4}Prefabs/Characters/Misc/Cigarette.et" "{C500301CF7AE1ACB}Prefabs/Characters/HeadGear/Balaclava/Balaclava_Wool_Black.et"
+       "{E7FF723379730BD5}Prefabs/Items/PersonalBelongings/PersonalBelongings_CIV.et" "{DCDF534783F9C73D}Prefabs/Items/Medicine/Vodka_Bottle/Vodka_Bottle.et" "{FF742375E12302B4}Prefabs/Characters/Misc/Cigarette.et" "{C500301CF7AE1ACB}Prefabs/Characters/HeadGear/Balaclava/Balaclava_Wool_Black.et" "{7A359D186C2E013F}Prefabs/ReforgerZ/Crafting/RZ_TinCan_Empty.et" "{F51872C09AA3A89A}Prefabs/ReforgerZ/Crafting/RZ_Cells.et" "{4E872D34D13AB8B6}Prefabs/Characters/HeadGear/Hood/Hood_Black.et" "{7277FBDCDC013DDF}Prefabs/Characters/Handwear/Gloves_Wool_01/Gloves_Wool_Dirty.et"
       }
       m_aRare {
-       "{77EAE5E07DC4678A}Prefabs/Weapons/Grenades/Smoke_RDG2.et" "{3805C0B87B9D2AB0}prefabs/weapons/Melee/Knife.et" "{696CC1F6BC5BE3F7}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_StackofCash.et"
+       "{77EAE5E07DC4678A}Prefabs/Weapons/Grenades/Smoke_RDG2.et" "{3805C0B87B9D2AB0}prefabs/weapons/Melee/Knife.et" "{696CC1F6BC5BE3F7}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_StackofCash.et" "{DB053443800A3FCB}Prefabs/Characters/Uniforms/Jacket_Bandit/Jacket_Bandit_01.et" "{5FA71197901F8EEF}Prefabs/Characters/Uniforms/Jacket_Bandit/Jacket_Bandit_02.et" "{907106BB556066E9}Prefabs/Characters/HeadGear/Balaclava/Balaclava_Three-Hole_Black.et" "{2E0FAA5F39CBA66C}Prefabs/ReforgerZ/Crafting/RZ_Wire.et"
       }
      }
      RZ_LootTable "{A98A77B7E90A7EA6}" {
       m_sType "car"
       m_aCommon {
-       "{8A89D3F70713E55B}Prefabs/Items/Equipment/Accessories/ETool_MPL50/ETool_MPL50.et" "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et"
+       "{8A89D3F70713E55B}Prefabs/Items/Equipment/Accessories/ETool_MPL50/ETool_MPL50.et" "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et" "{6CB732A4814E2F43}Prefabs/ReforgerZ/Crafting/RZ_Scrap.et" "{2E0FAA5F39CBA66C}Prefabs/ReforgerZ/Crafting/RZ_Wire.et"
       }
       m_aRare {
-       "{A870260CF6ECB936}Prefabs/Items/Equipment/Backpacks/Backpack_IIFS_FieldPack_hiking.et"
+       "{A870260CF6ECB936}Prefabs/Items/Equipment/Backpacks/Backpack_IIFS_FieldPack_hiking.et" "{F51872C09AA3A89A}Prefabs/ReforgerZ/Crafting/RZ_Cells.et"
       }
      }
     }
@@ -5526,6 +5535,17 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sTripwirePrefab "{645A7C7B76A27EB9}Prefabs/ReforgerZ/Interactions/RZ_TripwireKit.et"
     m_sSpikeTrapPrefab "{78A4BF5FD8650690}Prefabs/ReforgerZ/Interactions/RZ_SpikeTrapKit.et"
     m_sTabletsPrefab "{AF005259833BF007}Prefabs/ReforgerZ/Interactions/RZ_Tablets.et"
+    m_sRagsPrefab "{9B0770D65A7CBEC2}Prefabs/ReforgerZ/Crafting/RZ_Rags.et"
+    m_sLockpickPrefab "{5CB9F2D4C344D632}Prefabs/ReforgerZ/Crafting/RZ_Lockpick.et"
+    m_sBarricadePrefab "{0A101873E8C9274C}Prefabs/ReforgerZ/Interactions/RZ_Planks.et"
+    m_sFilterPrefab "{349CE5A1F50F9799}Prefabs/ReforgerZ/Crafting/RZ_WaterFilter_Purification.et"
+    m_sLurePrefab "{CD06FAC27E299703}Prefabs/ReforgerZ/Crafting/RZ_RadioLure.et"
+    m_sPlugsPrefab "{6CEB9445ED635609}Prefabs/ReforgerZ/Interactions/RZ_SparkPlugs.et"
+    m_sMapCopyPrefab "{EDDE944F7E4788F2}Prefabs/ReforgerZ/Crafting/RZ_MapCopy.et"
+    m_sSterilePrefab "{7CAFE5B9FFAE60EA}Prefabs/ReforgerZ/Crafting/RZ_SterileDressing_Swab.et"
+    m_sCharcoalPrefab "{86CC36A7C8FC6221}Prefabs/ReforgerZ/Crafting/RZ_Charcoal.et"
+    m_sJerkyPrefab "{C22A2F123CD609FC}Prefabs/Items/Food/Meat_01_Dry.et"
+    m_sStewPrefab "{5250D25C2785A697}Prefabs/ReforgerZ/Crafting/RZ_Stew.et"
    }
    m_TrapSettings RZ_TrapSettings "{6AD67DC2BB5CD356}" {
     m_sBarricadePrefab "{828D8E56E748FB2D}Prefabs/ReforgerZ/Interactions/RZ_BoardedDoorway.et"

@@ -676,9 +676,18 @@ class RZ_QuestTracker
 			return;
 		}
 
+		// A duty walked with their people (a patrol's round): the marker rides on their lead, and
+		// moves to what they stop for (docs/MISSION_RULES.md, rule 9); then the way back
+		RZ_DutyScenes scenes = errands.GetScenes();
+		RZ_DutySquads squads = errands.GetSquads();
+		if (squads && !e.m_bStepDone && squads.Objectives(e, list, scenes))
+		{
+			list.Add(back, RZ_EObjState.NEXT, backAt);
+			return;
+		}
+
 		// A duty's scene names its own steps (take the box, carry it, hand it over, sign): each
 		// is one objective, then the way back
-		RZ_DutyScenes scenes = errands.GetScenes();
 		if (scenes && scenes.Objectives(e, list, wayR, e.m_bStepDone))
 		{
 			if (e.m_bStepDone || list.First(RZ_EObjState.CURRENT).IsEmpty())
@@ -1069,5 +1078,25 @@ class RZ_QuestTracker
 			return ln.Add("objective_area").AddInt(-1).AddInt(x).AddInt(z).Add(now).AddInt(RZ_Util.RoundToInt(j.m_fRadius)).End();
 
 		return ln.Add("objective_spot").AddInt(-1).AddInt(x).AddInt(z).Add(now).End();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the tracked job's current objective is (the map's mark, and the map's fog when asking
+	//! about the roads). False if nothing is tracked or it has no place.
+	bool ObjectivePlace(int playerId, out vector at, out bool rough, out float radius)
+	{
+		int id = TrackedFor(playerId);
+		if (id == 0)
+			return false;
+
+		RZ_ObjList list = new RZ_ObjList();
+		RZ_QuestJob j = JobFor(playerId, id, GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId), list);
+		if (!j || !j.m_bHasPlace || j.m_vPlace == vector.Zero)
+			return false;
+
+		at = j.m_vPlace;
+		rough = j.m_bRough;
+		radius = j.m_fRadius;
+		return true;
 	}
 }

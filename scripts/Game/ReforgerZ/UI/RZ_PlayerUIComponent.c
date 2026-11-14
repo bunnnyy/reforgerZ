@@ -51,6 +51,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected float m_fDetailAskAt = -100;
 	protected string m_sBackgrounds;
 	protected string m_sMap;
+	protected string m_sFog;		// the map's fog (World/RZ_MapFog.c): F and R records, "" off
 	protected string m_sBoard;
 	protected string m_sHall;
 	protected string m_sSeason;
@@ -59,9 +60,11 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected string m_sHistory;			// the Journal's past jobs (RZ_UIFeed.PAYLOAD_HISTORY)
 	protected int m_iHistoryVersion;
 	protected float m_fHistoryAsk = -100;
+	protected float m_fFogAsk = -100;
 	protected int m_iBoardVersion;
 	protected int m_iHallVersion;
 	protected int m_iMapVersion;
+	protected int m_iFogVersion;
 	protected ref set<string> m_aLockedLoadouts = new set<string>();
 	protected int m_iStandingVersion;
 	protected int m_iJournalVersion;
@@ -98,6 +101,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	static const int CMD_ANON = 9;		// /anonymous [off]: keep your name out of the world's text, the reel and the hall
 	static const int CMD_LASTENTRY = 10;	// /lastentry <text>: your line on the Names board (a pad writes one without typing)
 	static const int CMD_TRACES = 11;	// /traces (admins): the door marks near you, to the server log (World/Traces)
+	static const int CMD_FOG = 13;		// /fog (admins): the map's fog read-out; "all" clears your map, "reset" fogs it again (World/RZ_MapFog.c)
 	static const int CMD_SITES = 12;	// /sites (admins, game masters): the site builder (World/HandBuilt/RZ_SiteBuilder.c)
 	static const int CMD_COUNT = 13;	// one more than the last CMD_*: the table of when each was last asked (a command past it was dropped unheard)
 
@@ -369,6 +373,11 @@ class RZ_PlayerUIComponent : ScriptComponent
 			m_sMap = payload;
 			m_iMapVersion++;
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_FOG)
+		{
+			m_sFog = payload;
+			m_iFogVersion++;
+		}
 		else if (kind == RZ_UIFeed.PAYLOAD_BOARD)
 		{
 			// The server sends the board when it's read: open the board menu if it isn't open
@@ -626,6 +635,20 @@ class RZ_PlayerUIComponent : ScriptComponent
 			int asker = OwnerPlayerId();
 			if (asker > 0)
 				SendPayload(kind, gm.GetUIFeed().BuildPayload(asker, kind));
+
+			return;
+		}
+
+		// The map's fog, when the map opens: sent by the fog itself (it marks the time)
+		if (kind == RZ_UIFeed.PAYLOAD_FOG)
+		{
+			if (now - m_fFogAsk < ASK_GAP)
+				return;
+
+			m_fFogAsk = now;
+			int fogAsker = OwnerPlayerId();
+			if (fogAsker > 0 && gm.GetMapFog())
+				gm.GetMapFog().Send(fogAsker);
 
 			return;
 		}
@@ -1048,6 +1071,12 @@ class RZ_PlayerUIComponent : ScriptComponent
 				RZ_SiteBuilder.Open(playerId);
 				break;
 			}
+			case CMD_FOG:
+			{
+				if (gm.GetMapFog())
+					gm.GetMapFog().Command(playerId, note);
+				break;
+			}
 			case CMD_MYDEAD:
 			{
 				int hidden = -1;
@@ -1138,6 +1167,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	int GetDetailVersion() { return m_iDetailVersion; }
 	string GetBackgrounds() { return m_sBackgrounds; }
 	string GetMap() { return m_sMap; }
+	string GetFog() { return m_sFog; }
+	int GetFogVersion() { return m_iFogVersion; }
 	string GetBoard() { return m_sBoard; }
 	string GetHall() { return m_sHall; }
 	string GetSeason() { return m_sSeason; }

@@ -381,7 +381,7 @@ class RZ_TalkScene
 		foreach (int i, IEntity p : players)
 		{
 			if (ids[i] == playerId || RZ_Util.DistXZ(p.GetOrigin(), at) <= HEAR_RANGE)
-				gm.NotifyPlayerAs(ids[i], m_sName, text, m.NoticeTag());
+				gm.Say(ids[i], m_sName, -1, text, m_Person);
 		}
 	}
 

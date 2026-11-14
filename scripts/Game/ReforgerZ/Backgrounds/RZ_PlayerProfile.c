@@ -22,6 +22,29 @@ class RZ_PlayerProfile
 	ref array<string> m_aGuideSeen = {};	// once-only tips already given
 	ref array<float> m_aStarts = {};	// openings (Guidance/RZ_Openings.c): the last two starts, x and z, newest first
 
+	// The runner's case (Guidance/RZ_OpeningCase.c): a quest item that stays yours across a death
+	int m_iCaseState;					// RZ_OpeningCase.STATE_*: none, carried (the lead), to Halcyon, sold, to Bastion
+	int m_iCaseLife = -1;				// the character the state belongs to (RZ_OpeningCase.CharacterStamp)
+	int m_iCaseSeason = -1;				// the season this player's case last counted (one a season)
+	bool m_bCaseHeld;					// died carrying it: it comes back in the next spawn's pack
+	float m_fCaseWarm;					// and how warm it was then (0 cold, 1 warm)
+
+	// The map's fog (World/RZ_MapFog.c): one bit per square seen, kept across deaths (per character
+	// once characters last: designs/PERSISTENCE.md); m_sFogGrid is the grid it was kept for
+	ref array<int> m_aFog = {};
+	string m_sFogGrid;
+
+	// The habit (Backgrounds/RZ_Habits.c): picked at the opening's door, kept for the character
+	int m_iHabit;						// RZ_EPlayerHabit
+	int m_iHabitLife = -1;				// the character it belongs to (RZ_OpeningCase.CharacterStamp)
+
+	// The fixer (Guidance/RZ_OpeningFixer.c): what this character did when Ferda Kroupa came for the case
+	int m_iFerdaWay;					// RZ_EFerdaWay
+	int m_iFerdaLife = -1;				// the character it belongs to (RZ_OpeningCase.CharacterStamp)
+	int m_iFerdaDay;					// the season day of his visit
+	string m_sFerdaTown;				// the street he came to
+	int m_iFerdaAfter;					// what came after (RZ_OpeningFixer.AFTER_*: the radio, his note, the toll, his voice)
+
 	// The quest tracker (UI/RZ_Quests.c): the job this player follows, kept across relogs
 	int m_iTrackedId;					// its journal row id, 0 = none
 	string m_sTrackedTitle;				// its title, to find it again after a restart

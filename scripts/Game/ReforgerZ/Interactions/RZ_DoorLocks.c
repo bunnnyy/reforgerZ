@@ -534,6 +534,7 @@ class RZ_DoorLocks
 	protected static const int SPOTS_PER_BUILDING = 3;
 	protected static const float NOTICE_SECONDS = 4;
 	protected static const float KEY_TURN_SECONDS = 5;	// one Lock or Unlock per building this often
+	static const int PICK_ARG = 1;						// the force task's arg when it's a lockpick (RZ_Interactions.Complete)
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Interactions m_Hub;
@@ -787,7 +788,7 @@ class RZ_DoorLocks
 			return true;
 		}
 
-		Notice(playerId, "Locked", string.Format("It won't budge. A key tagged \"%1\" would open it, or a crowbar and a lot of noise.", m_Search.KeyTagForBuilding(pos, type)));
+		Notice(playerId, "Locked", string.Format("It won't budge. A key tagged \"%1\" would open it, a lockpick and some patience, or a crowbar and a lot of noise.", m_Search.KeyTagForBuilding(pos, type)));
 		return false;
 	}
 
@@ -850,13 +851,13 @@ class RZ_DoorLocks
 
 	// ================================================================ The spot at the door
 	//------------------------------------------------------------------------------------------------
-	//! 0 Unlock, 1 Lock, 2 Force the door. Slots that don't apply are hidden ("|" labels them all).
+	//! 0 Unlock, 1 Lock, 2 Force the door, 3 Pick the lock. Slots that don't apply are hidden ("|" labels them all).
 	void Labels(RZ_Spot s, out string read, out string choiceLabels)
 	{
 		read = "Look at " + s.m_sNoun;
 		if (m_Search.IsLocked(s))
 		{
-			choiceLabels = "Unlock (key)||Force the door (crowbar)";
+			choiceLabels = "Unlock (key)||Force the door (crowbar)|Pick the lock (lockpick)";
 			return;
 		}
 
@@ -882,8 +883,8 @@ class RZ_DoorLocks
 
 		if (m_Search.IsLocked(s))
 		{
-			string text = string.Format("Locked, and solid. Its key would have a tag saying \"%1\". Or a crowbar: about %2 seconds, and everything for a mile hears it.",
-				m_Search.KeyTagForBuilding(s.m_vBuilding, s.m_sType), RZ_Util.RoundToInt(m_Settings.m_fForceSeconds));
+			string text = string.Format("Locked, and solid. Its key would have a tag saying \"%1\". Or a crowbar: about %2 seconds, and everything for a mile hears it. Or a lockpick: about %3 seconds, quiet, if the pick holds.",
+				m_Search.KeyTagForBuilding(s.m_vBuilding, s.m_sType), RZ_Util.RoundToInt(m_Settings.m_fForceSeconds), RZ_Util.RoundToInt(m_Settings.m_fPickSeconds));
 			if (m_Search.HasKey(playerId, m_Search.KeyForBuilding(s.m_vBuilding, s.m_sType)))
 				text += " One of your keys should fit.";
 
@@ -911,9 +912,9 @@ class RZ_DoorLocks
 		}
 
 		bool locked = m_Search.IsLocked(s);
-		if (locked && (option == 0 || option == 2) && IsReinforced(s.m_sBuildingKey))
+		if (locked && (option == 0 || option == 2 || option == 3) && IsReinforced(s.m_sBuildingKey))
 		{
-			m_GM.NotifyPlayer(playerId, title, "Someone's changed this lock. A steel plate over the old keyhole, bolted through, and a keypad beside the frame. No key or crowbar will touch it. The code's out there somewhere.");
+			m_GM.NotifyPlayer(playerId, title, "Someone's changed this lock. A steel plate over the old keyhole, bolted through, and a keypad beside the frame. No key, pick or crowbar will touch it. The code's out there somewhere.");
 			return;
 		}
 
@@ -962,6 +963,12 @@ class RZ_DoorLocks
 			return;
 		}
 
+		if (option == 3)
+		{
+			StartPick(playerId, s, user, locked, title);
+			return;
+		}
+
 		if (option != 2)
 			return;
 
@@ -980,6 +987,50 @@ class RZ_DoorLocks
 		m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_FORCE, s.m_iId, 0, m_Settings.m_fForceSeconds, "the door", false);
 		m_GM.GetHeat().AddHeat(s.m_vPos, m_Settings.m_fForceHeat * 0.4);
 		m_GM.NotifyPlayer(playerId, title, string.Format("You jam the crowbar into the frame and lean on it. It's loud. About %1 seconds; stay close.", RZ_Util.RoundToInt(m_Settings.m_fForceSeconds)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pick the lock: a lockpick from the bench, a quiet timed hold (the force task with arg 1).
+	protected void StartPick(int playerId, RZ_Spot s, IEntity user, bool locked, string title)
+	{
+		if (!locked)
+		{
+			m_GM.NotifyPlayer(playerId, title, "It's open.");
+			return;
+		}
+
+		if (!RZ_ItemHelper.Has(user, m_Settings.m_sLockpickWords))
+		{
+			m_GM.NotifyPlayer(playerId, title, "You'd need a lockpick. Bend one out of wire with a knife, at a workbench.");
+			return;
+		}
+
+		m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_FORCE, s.m_iId, PICK_ARG, m_Settings.m_fPickSeconds, "picking the lock", false);
+		m_GM.NotifyPlayer(playerId, title, string.Format("You kneel at the lock and feel for the pins. About %1 seconds; keep still.", RZ_Util.RoundToInt(m_Settings.m_fPickSeconds)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The pick's hold is done: the lock opens quietly (not broken: it locks again with its key),
+	//! or the pick snaps and is gone. Either way a little noise.
+	void CompletePick(int playerId, RZ_Spot s, IEntity user)
+	{
+		if (!s || !m_Search.IsLocked(s))
+			return;
+
+		string title = m_Hub.Title(s);
+		m_GM.GetHeat().AddHeat(s.m_vPos, m_Settings.m_fPickHeat);
+		if (Math.RandomFloat01() < m_Settings.m_fPickChance)
+		{
+			KeyTurned(s.m_sBuildingKey);
+			m_Search.OpenBuilding(s.m_sBuildingKey, false);
+			m_GM.NotifyPlayer(playerId, title, "The last pin gives and the lock turns. Open, and nobody heard a thing.");
+			RZ_Log.Info(string.Format("Doors: lock picked at %1 by player %2", RZ_SettlementScanner.GridReference(s.m_vPos), playerId));
+			return;
+		}
+
+		RZ_ItemHelper.Take(user, m_Settings.m_sLockpickWords, 1);
+		m_GM.NotifyPlayer(playerId, title, "The pick snaps off in the lock. The lock holds. You'll need another.");
+		RZ_Log.Info(string.Format("Doors: a pick snapped at %1 (player %2)", RZ_SettlementScanner.GridReference(s.m_vPos), playerId));
 	}
 
 	//------------------------------------------------------------------------------------------------

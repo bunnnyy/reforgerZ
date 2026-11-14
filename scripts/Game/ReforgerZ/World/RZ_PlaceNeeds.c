@@ -811,6 +811,8 @@ class RZ_PlaceThings
 			case "sample": return gm.GetSamplePrefab();
 			case "antidote": return gm.GetAntidotePrefab();
 			case "remains": return RZ_OpeningTasks.RemainsPrefab(gm);
+			case "runner": return gm.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
+			case "case": return RZ_OpeningCase.CasePrefab(gm);
 			case "spawnpoint": return gm.GetSpawnPointPrefab();
 			case "contact": return ContactPrefab(gm);
 			case "key":
@@ -841,6 +843,8 @@ class RZ_PlaceThings
 			case "sample": return "Cure > Sample prefab";
 			case "antidote": return "Cure > Antidote prefab";
 			case "remains": return "Zombies > Special prefabs (one that doesn't burst)";
+			case "runner": return "Puzzles > Civilian";
+			case "case": return "Guidance > Cold case prefab";
 			case "spawnpoint": return "World > Spawn point prefab";
 			case "contact": return "Guidance > Contact prefab, else Puzzles > Civilian";
 			case "key": return "Interactions > Search > Key prefab";
@@ -1230,6 +1234,14 @@ class RZ_PlaceNeeds
 		n.Building("house", 15);
 		n.Steep(30);
 
+		n = Add("opening.favour", "where the contact's favour sends you: the chemist's, the garage, his shed, the school, the shop, the church, the house next door");
+		n.Building("house", 15);
+		n.Steep(30);
+
+		n = Add("opening.favour.door", "the neighbour's door: a real outside door, its doorstep");
+		n.Building("house", 6);
+		n.Steep(30);
+
 		n = Add("opening.water", "the well");
 		n.Water(8);
 
@@ -1253,6 +1265,27 @@ class RZ_PlaceNeeds
 		n.NotLocked();
 		n.Thing(RZ_EThingKind.REMAINS, "the remains", "remains", 4, NOT_OFFERED);
 		n.Thing(RZ_EThingKind.ITEM, "the sample", "sample", 4, NOT_OFFERED);
+
+		n = Add("opening.runner", "the runner, fallen by the road, and the case he carried");
+		n.Road(15);
+		n.Steep(25);
+		n.NotLocked();
+		n.Thing(RZ_EThingKind.REMAINS, "the runner", "runner", 4, NOT_OFFERED);
+		n.Thing(RZ_EThingKind.ITEM, "the case", "case", 4, NOT_OFFERED);
+
+		n = Add("opening.line", "the road above the line, where you watch it with him");
+		n.Road(10);
+		n.Steep(20);
+
+		n = Add("opening.line.open", "the rise above the line, where you watch it with him (a world with no road network)");
+		n.Steep(20);
+
+		n = Add("opening.runner.yard", "the runner, fallen in a yard on the edge of town, and the case he carried");
+		n.Houses(1, 25);
+		n.Steep(25);
+		n.NotLocked();
+		n.Thing(RZ_EThingKind.REMAINS, "the runner", "runner", 4, NOT_OFFERED);
+		n.Thing(RZ_EThingKind.ITEM, "the case", "case", 4, NOT_OFFERED);
 
 		n = Add("opening.sample.yard", "what's left of a big one in a yard over the way, and the sample by it");
 		n.Houses(1, 20);
