@@ -5,7 +5,7 @@
 //       come out as their kind, and a cottage on a pier is a room, not a pier;
 //   (2) the kinds in the world: the buildings within 1.5 km of the tester, counted by kind;
 //   (3) every kind has a table, and each new kind's rolls come from its own table or the shared
-//       food, drink and low medicine;
+//       food, drink and low medicine (or the Long Table's jar, near its farm);
 //   (4) medicine in two levels: an open pharmacy, a house and an army post never roll the high level
 //       (morphine, saline, first-aid kits); a hospital does;
 //   (5) the caps: rifles held as data up to the cap, and an army post then rolls no rifle;
@@ -186,6 +186,14 @@ class RZT_Loot
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected static string Lower(string s)
+	{
+		string t = s;
+		t.ToLower();
+		return t;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! (2) The kinds in the world round the tester.
 	protected static void World(RZ_Search search, vector at)
 	{
@@ -246,6 +254,8 @@ class RZT_Loot
 					own++;
 				else if (RZ_LootGroups.IsShared(RZ_LootGroups.GroupOf(p)))
 					shared++;
+				else if (Lower(p).Contains("tablejar"))
+					shared++;	// the Long Table's jar near its farm (RZ_LongTableReach.AddLoot): any building there
 				else
 					stray += ShortName(p) + " ";
 			}
