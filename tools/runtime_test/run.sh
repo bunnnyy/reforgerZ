@@ -64,6 +64,7 @@
 #   The Long Table (RZT_LongTable.c): the family stands at the farm in its own looks with the tester 60 m off, the farm laid out, a supper sign at a junction, the bell and the voice, a death near the farm taken at dawn, a jar in loot, the door mark, the host on the road, the injured man at dusk, the boy in a town, the harvest supper ("RZT table OK|FAIL ...", "RZT table: done");
 #   The line (RZT_Line.c): a road above the line near a town (150-250 m outside the warning zone, 600 m to 2 km off), the scene played with the tester at it: the loudspeakers, a runner who breaks from cover (or is laid down), shot in the warning zone not the kill zone, dead there with the case by him, the line said, the tester never shot and never in the zones ("RZT line OK|FAIL ...", "RZT line: N checks");
 #   A fresh spawn (RZT_Fresh.c): as a veteran, the opening has its contact within 15 m and the chain starting at the door, not the lead to work, the last life's questline part and jobs aren't the new one's, and the Quests tab lists nothing taken ("RZT fresh OK|FAIL ...", "RZT fresh: N checks");
+#   The loot pool (RZT_Loot.c), half a minute in: the building kinds by name and in the world, every kind's table and a new kind's rolls from its own items or the shared food, drink and low medicine, the high medicine only at a hospital, the rifle cap, near the line x1.5 and the evacuation road, a downed drone's spot and one put out by the tester ("RZT loot OK|FAIL ...", "RZT loot: N checks");
 #   Tonight (RZT_Tonight.c): the card waits for the opening and starts "Tonight:"; one to three lines, one a kind, each within reach; a town never seen (the fog cleared for it) is something to find; a row per line of kind Tonight; picking a row tracks it, its objective has a place, reaching it ends the line; a row that is a job tracks the job; off, no card and no rows ("RZT tonight OK|FAIL ...", "RZT tonight line ...", "RZT tonight: N checks");
 #   Eating and drinking (RZT_Eat.c, in the core run and the full run): the hunger and thirst mod's five foods carry its food component; the inventory's Use on an MRE in the kit raises the food level and uses it up, a canteen raises the water level and is used up, an MRE lying 2 m off is eaten, one 10 m off refused ("RZT eat OK|FAIL ...", "RZT eat: N checks");
 #   Wildlife (RZT_Wildlife.c): the rates (4 herds, 1 in 2 a minute, 8 min a player, 80 m from a town's edge, 6 deer a minute with meat), four herds put out 150-300 m off in the country and never a fifth, meat by a shot deer, every herd put away with the tester far off; a box stands in for the deer, as the mod isn't loaded on Linux ("RZT wildlife OK|FAIL ...", "RZT wildlife: N checks");
@@ -318,6 +319,9 @@ cp "$ROOT"/Prefabs/ReforgerZ/People/LongTable/RZ_Table_*.et* "$ADDON/Prefabs/Ref
 mkdir -p "$ADDON/Prefabs/ReforgerZ/Crafting" "$ADDON/Prefabs/ReforgerZ/Interactions"
 cp "$ROOT"/Prefabs/ReforgerZ/Crafting/RZ_*.et* "$ADDON/Prefabs/ReforgerZ/Crafting/"
 cp "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_Planks.et* "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_SparkPlugs.et* "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_Tablets.et* "$ROOT"/Prefabs/ReforgerZ/Interactions/RZ_TinRattle.et* "$ADDON/Prefabs/ReforgerZ/Interactions/"
+# The crashed drone's wreck (Missions > Contracts > Crashed drone), for the loot check's downed drone (RZT_Loot.c)
+mkdir -p "$ADDON/Prefabs/ReforgerZ/Missions"
+cp "$ROOT"/Prefabs/ReforgerZ/Missions/RZ_DroneWreck.et* "$ADDON/Prefabs/ReforgerZ/Missions/"
 # The road patrols' groups (Territory > Road patrols names them by default), for the road patrols check (RZT_RoadPatrols.c)
 mkdir -p "$ADDON/Prefabs/ReforgerZ/Patrols"
 cp "$ROOT"/Prefabs/ReforgerZ/Patrols/RZ_Patrol_*.et* "$ADDON/Prefabs/ReforgerZ/Patrols/"
@@ -378,6 +382,7 @@ grep -E 'RZT persist' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT tonight' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT eat' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT wildlife' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT loot' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT favour' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT kitchen' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT fog' "$LOG" | sed 's/.*RZT /  /'
@@ -407,6 +412,7 @@ grep -q 'RZT persist FAIL' "$LOG" && { echo "FAILED: a character who lasts (RZT_
 grep -q 'RZT eat FAIL' "$LOG" && { echo "FAILED: eating and drinking (RZT_Eat.c: the mod's foods, the inventory's Use, a canteen)"; exit 1; }
 grep -q 'RZT wildlife FAIL' "$LOG" && { echo "FAILED: wildlife (RZT_Wildlife.c: the rates, herds put out in the country and capped, meat, put away)"; exit 1; }
 grep -q 'RZT tonight FAIL' "$LOG" && { echo "FAILED: Tonight (RZT_Tonight.c: the card, one line a kind within reach, the rows, tracking a line to its place)"; exit 1; }
+grep -q 'RZT loot FAIL' "$LOG" && { echo "FAILED: the loot pool (RZT_Loot.c: the kinds, groups and mixes, medicine in two levels, the caps, near the line, a downed drone)"; exit 1; }
 grep -q 'RZT fresh FAIL' "$LOG" && { echo "FAILED: a fresh spawn (its contact, the chain from the door, a clean Quests tab: RZT_Fresh.c)"; exit 1; }
 grep -q 'RZT fog FAIL' "$LOG" && { echo "FAILED: the map's fog (RZT_Fog.c: walking reveals, a found map, the save, the payload)"; exit 1; }
 grep -q 'RZT masts FAIL' "$LOG" && { echo "FAILED: the masts (RZT_Masts.c: found, put up, given, overheard, a voice found by bearings)"; exit 1; }

@@ -638,6 +638,11 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec == 40)
 			RZT_Persist.Tick(this);
 
+		// The loot pool (RZT_Loot.c): the kinds, groups and mixes, medicine in two levels, the caps,
+		// near the line, a downed drone put out by the tester (never moves him: before the rest)
+		if (m_iRZTSec >= RZT_Loot.START)
+			RZT_Loot.Tick(this);
+
 		// The map's fog (RZT_Fog.c): walking reveals, a found map, the save, the payload; first, so
 		// nothing else moves the tester while it walks him
 		if (m_iRZTSec >= 12 && !RZT_Fog.Tick(this))

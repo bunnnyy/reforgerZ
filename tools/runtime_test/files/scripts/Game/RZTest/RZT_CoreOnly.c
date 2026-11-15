@@ -186,5 +186,17 @@ class RZT_CoreOnly
 
 		Check(!RZ_Features.On(RZ_EFeature.SHOPS), "shops are off (no Trade, no shop actions)");
 		Check(gm.GetFeaturesOff().Length() > 2, "the clients are told what's off: " + gm.GetFeaturesOff());
+
+		// Loot is core, but its rare places that need the Perimeter stay away (docs/DESIGN.md, "Rare places")
+		RZ_Interactions hub = RZ_Interactions.Get();
+		if (hub && hub.GetLoot() && hub.GetSearch())
+		{
+			Check(!hub.GetLoot().DronesOn() && hub.GetLoot().CountDrones() == 0, "no downed drones with the Perimeter off: " + hub.GetLoot().CountDrones().ToString());
+			vector here = vector.Zero;
+			if (RZT_Fake.s_Ent)
+				here = RZT_Fake.s_Ent.GetOrigin();
+
+			Check(hub.GetSearch().NearLineMult(here) == 1 && !hub.GetSearch().IsEvacRoad(here), "no near-line bonus or evacuation road with the Perimeter off");
+		}
 	}
 }

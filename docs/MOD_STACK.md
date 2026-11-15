@@ -188,9 +188,9 @@ kind of place it belongs. Checked against the mods' own files: every one is a pi
 |---|---|---|---|
 | Functional Knives | Knife, machete | House, farm, body (rare) | A blade for the spear recipe |
 | Metabolism | Water bottle | House, shop, farm, a wreck's boot | Drinkable; also a bottle for the Molotov recipe |
-| Domins Civilian Expansion | Fire axe, gas mask, oxygen tank, fireman's helmet, paramedic jacket | Garage and farm (the axe), pharmacy, garage | The gas mask counts as a Halcyon head piece for the disguise |
-| BasicHazmatSuit | Hazmat suit (hi-vis) | Pharmacy (rare) | The Halcyon coat for the disguise: findable now, not only bought or taken |
-| MedicalAccessories | Face mask, blue nitrile gloves | Pharmacy | — |
+| Domins Civilian Expansion | Fire axe, gas mask, oxygen tank, fireman's helmet, paramedic jacket | Fire station and farm (the axe), pharmacy and hospital, fire station | The gas mask counts as a Halcyon head piece for the disguise |
+| BasicHazmatSuit | Hazmat suit (hi-vis) | Pharmacy and hospital (rare) | The Halcyon coat for the disguise: findable now, not only bought or taken |
+| MedicalAccessories | Face mask, blue nitrile gloves | Pharmacy, hospital | — |
 | Clothing_pack_v2 | Denim and work overalls, a shirt, police trousers, a prisoner's uniform | Farm, house, police | — (its hats stay out: wrong GUIDs) |
 | BanditGear | Vodka, cigarettes, a tracksuit, a baseball cap, cargo trousers, a waist pack, a hiking backpack, a balaclava | Shop, house, body, a wreck's boot | Vodka is alcohol: it cleans a fresh bite and brews the home remedy (and works as vanilla morphine does) |
 | Lamas vanilla plus gear pack | US raincoat, boonie hat, M1 helmet | Farm, police (rare) | — |
@@ -211,23 +211,30 @@ takes them, a system uses them, they're worn, or the fence buys them):
 | Sandals, dirty sneakers, black and dirty wool gloves, black leather gloves, black tracksuit, second jeans, black cargo trousers, dirty sweatshirt, trench coats, a sweatshirt hood, a black hood | BanditGear | house, shop, farm, body (common; trench coats rare) | worn; gloves lower the bite chance; trousers and shirts cut up into rags |
 | Bandit jackets, a three-hole balaclava | BanditGear | body (rare) | worn; "bandit" counts as Red Hand clothing for the disguise |
 | Altyn helmet, 6B2 vest, ShM-62 gas mask | BanditGear | police (rare) | protection; the helmet lowers the bite chance |
-| Hazmat mask, black hazmat suit | BasicHazmatSuit | pharmacy (rare) | Halcyon's coat and beak for the disguise |
-| Pilot gloves | BasicHazmatSuit | garage | worn; lower the bite chance |
+| Hazmat mask, black hazmat suit | BasicHazmatSuit | pharmacy, hospital (rare) | Halcyon's coat and beak for the disguise |
+| Pilot gloves | BasicHazmatSuit | garage, fire station | worn; lower the bite chance |
 | Third shirt | Clothing_pack_v2 | house | worn; cuts up into rags |
-| Paramedic trousers, boots and vest; firefighter suit | Domins Civilian Expansion | pharmacy (the vest rare), garage (the suit rare) | worn |
+| Paramedic trousers, boots and vest; firefighter suit | Domins Civilian Expansion | pharmacy and hospital (the vest rare), fire station (the suit rare) | worn |
 | US knife | Functional Knives | garage, police (rare) | a blade: the rags' and lockpick's tool, the spear |
 | Woodland cap | Lamas vanilla plus gear pack | farm | worn |
-| First-aid kits (US, Soviet) | base game | pharmacy (rare) | heal; clean a fresh bite (Disinfect and bandage it) |
+| First-aid kits (US, Soviet) | base game | hospital, a locked pharmacy, an evacuation-road boot (rare: the high medicine, [DESIGN.md](DESIGN.md#medicine-in-two-levels)) | heal; clean a fresh bite (Disinfect and bandage it) |
 | Vostok and SandY watches, B12 binoculars | base game | house, shop, police (rare) | the fence buys watches and binoculars |
 | Swiss and ALICE backpacks, black canteen | base game | house, police, garage (rare) | storage; the canteen holds water |
 
 Left out as decoration or broken: Suspicious Item Props' other things (props, not items), MoreGMProps,
 Timmmmmbs' compositions, JTF's props, the hand bandages (gloves whose name would count as a bandage),
 the Altyn's visors and damaged copies, Clothing_pack_v2's caps (wrong GUIDs), weapon parts, pouches
-and scabbards. Table sizes now (common / rare / electronics): house 40/13/3, shop 25/8/3, farm 26/8/2,
-pharmacy 15/10/2, garage 15/9/3, police 17/17/2, body 21/10/2, wreck's boot 13/4/2. A house holds a
-tin, salt, bleach, a pad or torch cells about one time in ten each; a garage wire, nails or scrap
-about four times in ten.
+and scabbards. The log's `Search:` lines give each kind's table size (common / rare / electronics).
+Everyday finds go by each kind's mix of groups ([DESIGN.md](DESIGN.md#groups-and-mixes)), so a
+longer list no longer means less food.
+
+**The new kinds** ([DESIGN.md](DESIGN.md#building-kinds)) draw on the same items: the fire station
+takes Domins' fire axe, oxygen tank, firefighter suit and fireman's helmet, and the gas mask, from
+the garage's list; the hospital gets the pharmacy's extra finds (Zelik's face clothing, the EMS
+clothes, the paramedic's, the hazmat suits and the first-aid kits); the office takes Suspicious
+Item Props' cash, credit cards and gold bar; the army post the base game's M16A2 and Vz. 58 (both
+capped), PASGT and 6B3 vests, BDU jackets and M65 trousers; the downed drone the mod's own cells,
+wire, scrap and fuse. No new download.
 
 From the base game, also as extra finds: a raw meat leg (farms; the stove's Cook meat), smoke
 grenades, the M9 pistol and a Vz. 58 rifle (police, rare), entrenching tools, a pistol holster and

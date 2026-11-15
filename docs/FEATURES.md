@@ -82,7 +82,7 @@ Spawn, loot, fight, die, come round. Always on: these have no switch.
 | **The infected**: spawner, heat, the director, bodies near players | `Zombies/RZ_ZombieSpawner`, `RZ_InfectedBodies`, `Director/RZ_HeatMap`, `RZ_Director` | hordes, tribes, crawlers, samples build on it | `run.sh core` | infected near you in town, few in the open; gunfire draws more; they go when you leave |
 | **Eating and drinking**: left click or R (RT) eats what's in the hand, the hint, the inventory's Use, a canteen | `Interactions/RZ_Eating` | hunger and thirst can be fed | RZT_Eat | hold an MRE: the hint shows; left click eats it; Use on a canteen in the pack drinks it |
 | **Bites and infection** | `Zombies/RZ_BiteDetector`, `Cure/RZ_Infection`, `RZ_Meds`, `Zombies/RZ_PlayerEffects` | the cure's doses, declaring a bite | none | a scratch isn't a bite; a bite runs Fever, Weakness, Final |
-| **Loot** | `Interactions/RZ_Loot`, `RZ_Search`, `Core/RZ_LooseItems` | crafting, missions' finds | none | houses hold things on furniture; refill after a while |
+| **Loot** (sixteen building kinds, groups and mixes, medicine in two levels, caps; the rare places that need the Perimeter, the downed drones, the evacuation road's boots and better finds near the line, stay away until it's on) | `Interactions/RZ_Loot`, `RZ_Search`, `RZ_LootGroups`, `Core/RZ_LooseItems` | crafting, missions' finds | RZT_Loot, `run.sh core` | houses hold things on furniture; refill after a while; a church, an office, a warehouse, an army post each hold their own kind of thing; morphine and first-aid kits only in a hospital or a locked pharmacy; the `Loot caps:` line never over a cap |
 | **Backgrounds and the spawn** | `Backgrounds/RZ_Background`, `UI/RZ_SpawnMenu`, `UI/RZ_LoadoutLock` | the opening's favours | none | each background spawns with its kit |
 | **A character who lasts** | `Backgrounds/RZ_Character`, `RZ_PlayerProfile`, `Persistence/RZ_SaveData` | coming round at a camp needs a holding that takes you in (else a random start) | RZT_Persist, RZT_Fresh | die: same character, things gone, quest items back |
 | **Factions holding towns** | `Factions/RZ_Territory`, `RZ_Factions`, `RZ_FactionRelations` | camps, shops, trucks, patrols, missions need a holding | none | four factions, each in a few towns; nobody in most of the map |
@@ -155,7 +155,7 @@ Work sites moved here from stage 4: errands and the opening are made of their st
 | **Being hunted**: hunter squads, the bounty board, disguises | Hunted | Hunter squad minutes 0, Services > Bounty board, Hostility > Disguises | — | Hunted still means they fire; nobody comes looking | none | Hunted brings a squad; a disguise fools a post |
 | **The Long Table** | LongTable | Long Table > Enabled | — | — | RZT_LongTable | the farm, its signs, the host on the road |
 | **Time and weather's effects** | Weather | Environment > Enabled | — | night and fog change nothing | none | at night they hear further |
-| **The Perimeter** | Perimeter | Perimeter > Enabled | — | no sealed edge, no perimeter missions | none | warning zone, kill zone, drones; no visible wall |
+| **The Perimeter** | Perimeter | Perimeter > Enabled | — | no sealed edge, no perimeter missions; loot's downed drones, evacuation road and near-line finds stay away | RZT_Loot | warning zone, kill zone, drones; no visible wall; a downed drone within a few hours |
 
 ## Stage 6: Story
 

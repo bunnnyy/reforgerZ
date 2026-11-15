@@ -197,7 +197,10 @@ and one way to end it: **research the cure.**
   map region by region (a fuse, then the breaker), lines break and are spliced, and the Red Hand pay
   to have a rival's lights cut (Lights Out) while the dark towns ask for them back (Lights Back).
 - **Loot the world**: a few things lie loose in every building, on worktops and floors and suited
-  to it (medicine in a pharmacy, tools in a garage), and you pick them up the game's way; picked-over
+  to it (sixteen kinds, after DayZ: medicine in a pharmacy, the good medicine only in a hospital,
+  tools in a garage or a warehouse, magazines at an abandoned army post), and you pick them up the
+  game's way; rifles, pistols, armour and treatments capped across the map; a downed Perimeter drone
+  near the line now and then; picked-over
   towns are thin; bodies looted like any body, car wrecks' boots to open like any storage; treating each other is the
   game's own, and a Nurse or Doctor also slows a bite; locked doors that keep the infected out (they bang on them)
   and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting (twenty recipes at the bench and the stove, with junk to find for them; a lockpick for locked doors),
@@ -331,7 +334,7 @@ scripts/Game/ReforgerZ/
   Cure/          research, lab, samples, antidotes, infection stages, treatments and meds; the
                  cure finale's controller (tracks, locks, pacts, the batch, the stand's clean room)
   Guidance/      experience levels, tips, openings, open radio channels
-  Interactions/  loose loot, wrecks' boots, door locks, doorway blockers and keys, building queries (mission
+  Interactions/  loose loot (its kinds, groups and mixes, caps, downed drones), wrecks' boots, door locks, doorway blockers and keys, building queries (mission
                  spots kept out of locked buildings), cars (a car's room to stand, the hotwire's
                  loom), a work site's hold (its animation and movement lock), petrol pumps as vanilla fuel, crafting and
                  the stove (and their screen's server side), the object menu's server side and grouped

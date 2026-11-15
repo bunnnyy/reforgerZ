@@ -8040,13 +8040,13 @@
    "category": "Interactions",
    "object": "Search",
    "field": "m_SearchSettings",
-   "covers": "**Loot pool**, loot tables, **Extra finds** (items added to one building type's table), **Food weight** (2), **Not buildings** (name keywords of things with no loot: piers, bollards, rubble), chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15)"
+   "covers": "**Loot pool**, loot tables, **Extra finds** (items added to one building kind's table), **Loot mixes** (a kind's everyday mix of groups, optional: [DESIGN.md](DESIGN.md#groups-and-mixes)), **Near line mult** (1.5) and **Near line reach** (1000 m), **Evacuation road** (500 m), **Not buildings** (name keywords of things with no loot: piers, bollards, rubble), chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15)"
   },
   {
    "category": "Interactions",
    "object": "Loot",
    "field": "m_LootSettings",
-   "covers": "**Loose loot** (on; off = nothing lies in houses), put out within 55 m (6 buildings a tick), put away past 80 m (after a minute), never rolled fresh with a player within 20 m, **refill** (45 min ÷ the town's loot level), at most 500 items lying on the server, slots per building (house 6, shop and farm 9, pharmacy, police and garage 10; locked +1), slot chance 0.75, 2 sure items, town loot per item taken (0.01), kept clear 20 m past a faction's place, the loot log (on) ([DESIGN.md](DESIGN.md#loot-in-houses))"
+   "covers": "**Loose loot** (on; off = nothing lies in houses), put out within 55 m (6 buildings a tick), put away past 80 m (after a minute), never rolled fresh with a player within 20 m, **refill** (45 min ÷ the town's loot level), at most 500 items lying on the server, slots per building (house 6, shop, farm, school, office and industrial 9, pharmacy, hospital, police, army post, garage and fire station 10, church and prison 3; locked +1), slot chance 0.75, 2 sure items, town loot per item taken (0.01), kept clear 20 m past a faction's place, the loot log (on); the caps (rifles 4, pistols 8, vests and helmets 6, treatments 5: [DESIGN.md](DESIGN.md#caps-on-the-rare-things)); downed drones (2 at most, every 3 h, 6 h each, within 1000 m of the line, put out within 150 m; they need the Perimeter on and **Missions > Contracts > Crashed drone**: [DESIGN.md](DESIGN.md#rare-places)) ([DESIGN.md](DESIGN.md#loot-in-houses))"
   },
   {
    "category": "Interactions",
@@ -9062,7 +9062,9 @@
     "m_fFindChance": "0.6",
     "m_fBootChance": "0.8",
     "m_fBootTwoChance": "0.4",
-    "m_iFoodWeight": "2",
+    "m_fNearLineMult": "1.5",
+    "m_fNearLineReach": "1000",
+    "m_fEvacReach": "500",
     "m_sNotBuildingWords": "pier,bollard,retainingwall,brickpile,woodpile,houseruin,well_",
     "m_fRareChance": "0.1",
     "m_fElectronicsChance": "0.1",
@@ -9113,7 +9115,16 @@
     "m_iSureItems": "2",
     "m_fTownLootPerItem": "0.01",
     "m_fClearRadius": "20",
-    "m_bLog": "1"
+    "m_bLog": "1",
+    "m_iCapRifles": "4",
+    "m_iCapPistols": "8",
+    "m_iCapArmour": "6",
+    "m_iCapTreatments": "5",
+    "m_iDronesMax": "2",
+    "m_fDroneHours": "3",
+    "m_fDroneLifeHours": "6",
+    "m_fDroneReach": "1000",
+    "m_fDroneSpawnRadius": "150"
    }
   },
   {
