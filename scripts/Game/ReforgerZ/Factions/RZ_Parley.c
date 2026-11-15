@@ -307,6 +307,10 @@ class RZ_Parley
 	//! Recon), the Red Hand's Fence the Goods, Halcyon's Field Samples. The brief, "" if none placed.
 	string ReserveAmends(int playerId, int f)
 	{
+		// The amends jobs are contracts (Features > Contracts)
+		if (!RZ_Features.On(RZ_EFeature.CONTRACTS))
+			return "";
+
 		array<typename> types = {};
 		switch (f)
 		{

@@ -643,6 +643,10 @@ class RZ_MissionManager
 	//! picked within offer reach of it when one fits (RZ_OfferReach), and that giver always offers it.
 	bool MakeFor(int playerId, RZ_EFaction faction, vector at = vector.Zero)
 	{
+		// Features > Contracts (docs/FEATURES.md): with contracts off nobody makes one on asking
+		if (!RZ_Features.On(RZ_EFeature.CONTRACTS))
+			return false;
+
 		string askKey = playerId.ToString() + ":" + faction.ToString();
 		float askedAt;
 		if (m_mAskAt.Find(askKey, askedAt) && m_fClock - askedAt < ASK_GAP)

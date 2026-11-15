@@ -30,6 +30,7 @@ enum RZ_EFeature
 	GUIDANCE,
 	OPENING,
 	HABITS,
+	PERSONAL_GOALS,
 	// Stage 3: Map
 	MAP_FOG,
 	ROAD_PATROLS,
@@ -117,6 +118,9 @@ class RZ_FeatureSettings
 	[Attribute("1", desc: "Stage 2. Habits: the door's answer and what it does (a shorter hold, a quieter crouch...). Off: no habit is asked for or counts")]
 	bool m_bHabits;
 
+	[Attribute("1", desc: "Stage 2. Personal goals: one small goal for each character (reach a town, stay alive, earn a faction's trust...). Off: no goal is given, shown or counted. A goal whose feature is off is never picked")]
+	bool m_bPersonalGoals;
+
 	// ---- Stage 3: Map
 	[Attribute("1", desc: "Stage 3. The map's fog (Map fog > On). Off: the whole map shows")]
 	bool m_bMapFog;
@@ -146,7 +150,7 @@ class RZ_FeatureSettings
 	[Attribute("1", desc: "Stage 4. Cars: fixable cars, wrecks, hotwiring (Interactions > Cars > Enabled)")]
 	bool m_bCars;
 
-	[Attribute("1", desc: "Stage 4. Crafting, fires and traps (Crafting > Enabled, Traps > Enabled)")]
+	[Attribute("1", desc: "Stage 4. Crafting at workbenches and traps (Crafting > Enabled, Traps > Enabled). The stove is core: it cooks whatever this says")]
 	bool m_bCrafting;
 
 	[Attribute("1", desc: "Stage 4. Secure radio channels and house radios (Secure radio > Enabled)")]
@@ -255,6 +259,14 @@ class RZ_Features
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Can anyone offer a job at all? Contracts, a leader's own job, or a questline's or story arc's
+	//! step. With none of them on (stage 0), the talk screen shows no job rows and nobody makes one.
+	static bool AnyJobs()
+	{
+		return On(RZ_EFeature.CONTRACTS) || On(RZ_EFeature.LEADERS) || On(RZ_EFeature.QUESTLINES) || On(RZ_EFeature.STORY_ARCS);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! ";3;7;": the switches that are off, for the clients.
 	static string OffList()
 	{
@@ -290,6 +302,7 @@ class RZ_Features
 			case RZ_EFeature.GUIDANCE: return "Guidance";
 			case RZ_EFeature.OPENING: return "Opening";
 			case RZ_EFeature.HABITS: return "Habits";
+			case RZ_EFeature.PERSONAL_GOALS: return "PersonalGoals";
 			case RZ_EFeature.MAP_FOG: return "MapFog";
 			case RZ_EFeature.ROAD_PATROLS: return "RoadPatrols";
 			case RZ_EFeature.SUPPLY_TRUCKS: return "SupplyTrucks";
@@ -335,7 +348,7 @@ class RZ_Features
 		if (f <= RZ_EFeature.CHECKPOINTS)
 			return 1;
 
-		if (f <= RZ_EFeature.HABITS)
+		if (f <= RZ_EFeature.PERSONAL_GOALS)
 			return 2;
 
 		if (f <= RZ_EFeature.TONIGHT)
@@ -388,6 +401,7 @@ class RZ_Features
 		s_aOn[RZ_EFeature.GUIDANCE] = s.m_bGuidance;
 		s_aOn[RZ_EFeature.OPENING] = s.m_bOpening;
 		s_aOn[RZ_EFeature.HABITS] = s.m_bHabits;
+		s_aOn[RZ_EFeature.PERSONAL_GOALS] = s.m_bPersonalGoals;
 		s_aOn[RZ_EFeature.MAP_FOG] = s.m_bMapFog;
 		s_aOn[RZ_EFeature.ROAD_PATROLS] = s.m_bRoadPatrols;
 		s_aOn[RZ_EFeature.SUPPLY_TRUCKS] = s.m_bSupplyTrucks;
