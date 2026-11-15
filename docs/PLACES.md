@@ -148,7 +148,7 @@ or way isn't offered here.
 | `opening.runner` | the runner, fallen by the road, and the case he carried | ROAD(15) NOT_STEEP(25) NOT_LOCKED | REMAINS the runner within 4 m [Puzzles > Civilian], ITEM the case within 4 m [Guidance > Cold case] (either empty: not offered) | The Runner (the opening's step 4, the line's short form, [DESIGN.md](DESIGN.md#the-case)) |
 | `opening.runner.yard` | the runner, fallen in a yard on the edge of town, and the case he carried | HOUSES(1/25) NOT_STEEP(25) NOT_LOCKED | the same | The Runner, with no road near |
 | `opening.gate` | the gate | NOT_STEEP(30) | | Hold the Gate |
-| `opening.debt` | the house with the owing in it | HOUSES(1/15) | | The Debt |
+| `opening.debt` | the house down the road | HOUSES(1/15) | | The Debt |
 | `opening.toll` | the Red Hand's toll or gate | NEAR_FACTION(Red Hand/120) | | The Toll |
 | `opening.swap` | the wanderer on the road | | | A Fair Swap |
 | `spawn.point` | a spawn point named after its town | IN_TOWN(+0) HOUSES(1/60) NOT_STEEP(30) | SLOT the spawn point (empty: none spawn, the map's own) | `RZ_GameModeComponent.SpawnPointSpot` |

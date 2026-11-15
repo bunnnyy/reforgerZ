@@ -485,7 +485,7 @@ class RZ_OpeningTasks
 	protected bool Debt(vector from, out vector place, out string text)
 	{
 		place = RZ_PlaceFind.Near(from, 60, 250, RZ_PlaceNeeds.Get("opening.debt"));
-		text = "the house with the owing in it";
+		text = "the house down the road";
 		return place != vector.Zero;
 	}
 

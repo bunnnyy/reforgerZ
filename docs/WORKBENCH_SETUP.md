@@ -3938,7 +3938,7 @@ when it happens)
   Take the runner's case and go on your way: 3 minutes later, wherever you are, Ferda
   Kroupa and two men stand at the end of the street (are they Red Hand to look at? do they stand
   well, not in a wall?); he asks the contact first, then *Ferda Kroupa* is tracked on him. Talk to
-  him: his greeting, then **[Trade] Hand it over**, the story about Bastion (locked unless you're
+  him: his greeting, then **[Trade] Here's the case. Call it square.**, the story about Bastion (locked unless you're
   the good liar or a Police Officer, Soldier, Ex-Con or Raider) and **[Street] Wait here...**.
   Play each way on a fresh character: hand it over (+15 Red Hand Favor, Get It Back next; then a
   neighbour at his door to warn), the story, rally the street (board his door: are the planks in a
@@ -3959,12 +3959,12 @@ when it happens)
   *Outside the Door*, "Talk to *his name*.", and the map's diamond is on him. Wait two minutes
   nearby without talking: he calls once more. Talk to him: the talk screen opens with "Look at you.
   Alive." (with **Dialogue > Trees** on, the greeting about your stitches), the day and the roads,
-  then **who you were** (*"You're steady with that bag. Still a nurse, under all that?"*) and his
-  problem (*"My son's burning up..."*): the tracker shows *The Medicine*, the chemist's (else the old
+  then **who you were** (*You were a nurse at the clinic before all this. Tell me, how have you
+  kept yourself alive...?*) and his problem (*My son has had a fever since last night...*): the tracker shows *The Medicine*, the chemist's (else the old
   aid post, else the doctor's house) 90–450 m off, and the Quests tab has it under ERRANDS, tracked.
   First in the replies, three answers tagged **[Steady hands]**, **[Light feet]**, **[A good liar]**:
   pick one; he answers, the three go, and the Notebook's Standing header ends with *HABIT: ...*. Above
-  them, **[Nurse] That's not a fever, that's an infection. Hold him still.** (locked "Something medical
+  them, **[Nurse] That's an infection, not just a fever. Let me treat him now.** (locked "Something medical
   in your bag" without a dressing). Close the screen: he comes with you, 4 m behind (*"I'm coming with
   you. ... You lead."*). On the way he says a line at a door mark, at an infected within 40 m, at a
   locked building, and about the broadcast a minute and a half in: once each. Search the shelves (10
@@ -3976,14 +3976,14 @@ when it happens)
 
   | Background | His problem, the fetch | The way |
   |---|---|---|
-  | Doctor | as the Nurse | [Doctor] the same, "It's the water" |
-  | Mechanic | his car; a battery at the garage or petrol station (a toolbox there) | [Mechanic] **Hotwire it** at the car by him |
-  | Hunter | his hens; the shells at his farm's shed (else his old house) | [Hunter] **Read the tracks** near him, quiet |
+  | Doctor | as the Nurse | [Doctor] the same, "It's not the fever, it's bad water" |
+  | Mechanic | his car; a battery at the garage or petrol station (a toolbox there) | [Mechanic] **Hotwire the car** at the car by him |
+  | Hunter | his hens; the shells at the shed on the farm (else the old house up the lane) | [Hunter] **Read the tracks** near him, quiet |
   | Police Officer | his neighbour; **Look under the mat** on the doorstep of a real house's door over the way | [Police] **Knock: it's the police** there: the door opens |
   | Ex-Con | the same | [Ex-Con] **Work the lock, quietly** there, unseen: the door opens |
-  | Lab Technician | his insulin; the cool box at the school (else aid post, chemist's) | [Lab Technician] **Pack it in cold water** by him |
+  | Lab Technician | his insulin; the cool box at the school (else aid post, chemist's) | [Lab Technician] **Pack the insulin in cold water** by him |
   | Radio Operator | his brother; a battery at the shop | [Radio Operator] settled in the talk; locked without a radio on you |
-  | Soldier | his rifle; **Take the rifle off him** at the lad's house, the lad standing there | [Soldier] **Give it here, son** at the lad |
+  | Soldier | his rifle; **Take the rifle off the lad** at the lad's house, the lad standing there | [Soldier] **Ask the lad for the rifle** at the lad |
   | Raider | his tin; a tin in the house next door | [Raider] settled in the talk |
   | Elder | the well; **Take the rota off the board** at the church (else the hall), papers there | [Elder] settled in the talk |
   | Unemployed, Drifter | his sack; the old shop's back room | none |
