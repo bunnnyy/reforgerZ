@@ -481,11 +481,11 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | two fence palings and a mound (`RZ_Trace_Grave.et`): an empty root with an RplComponent, vanilla props as children, no physics | — | World > Traces > Kit > Grave | optional | P3, a grave where a notable character died; without it the grave is its approach line. Check the log for no Dressing: removed line after placing it once |
 | (existing prefab) | a black patch decal or mesh, a burnt pallet, a burnt tyre and a post (`RZ_Trace_Pyre.et`) | — | World > Traces > Kit > Pyre | optional | P2, ash where a job burned the bodies. As the grave |
 | (existing prefab) | 3-5 jam jars with candles (`RZ_Trace_CandleJars.et`), the lit twin with its light on LIT_ON_SPAWN and no switch action | — | World > Traces > Kit > Candle jars | optional | P3b, the memorial candles on every safehouse's step. As the grave; the lit light is a VERIFY of the Traces spike |
-| (existing prefab) | a sheet on two posts (`RZ_SeasonMark_Sheet.et`) | — | World > Traces > Kit > Season mark, rescue | optional | P5, the town log's season mark for people brought in alive. Empty = Shared > Season mark prefab |
-| (existing prefab) | a board on a post (`RZ_SeasonMark_Board.et`) | — | World > Traces > Kit > Season mark, burned and other jobs | optional | P5, the season mark for a town burned or a job. Empty = Shared > Season mark prefab |
-| (existing prefab) | a stencilled board (`RZ_SeasonMark_Stencil.et`) | — | World > Traces > Kit > Season mark, taken | optional | P5, the season mark for an outpost taken. Empty = Shared > Season mark prefab |
-| (existing prefab) | tape between two posts (`RZ_SeasonMark_Tape.et`) | — | World > Traces > Kit > Season mark, sealed | optional | P5, the season mark's look for a sealed place (no town log kind uses it yet). Empty = Shared > Season mark prefab |
-| (existing prefab) | flowers tied to a post (`RZ_SeasonMark_Flowers.et`) | — | World > Traces > Kit > Season mark, emptied | optional | P5, the season mark for a safehouse emptied. Empty = Shared > Season mark prefab |
+| (existing prefab) | a sheet on two posts (`RZ_SeasonMark_Sheet.et`) | `RZ_ReadMarkAction` | World > Traces > Kit > Season mark, rescue | optional | P5, the town log's season mark for people brought in alive. Empty = Shared > Season mark prefab |
+| (existing prefab) | a board on a post (`RZ_SeasonMark_Board.et`) | `RZ_ReadMarkAction` | World > Traces > Kit > Season mark, burned and other jobs | optional | P5, the season mark for a town burned or a job. Empty = Shared > Season mark prefab |
+| (existing prefab) | a stencilled board (`RZ_SeasonMark_Stencil.et`) | `RZ_ReadMarkAction` | World > Traces > Kit > Season mark, taken | optional | P5, the season mark for an outpost taken. Empty = Shared > Season mark prefab |
+| (existing prefab) | tape between two posts (`RZ_SeasonMark_Tape.et`) | `RZ_ReadMarkAction` | World > Traces > Kit > Season mark, sealed | optional | P5, the season mark's look for a sealed place (no town log kind uses it yet). Empty = Shared > Season mark prefab |
+| (existing prefab) | flowers tied to a post (`RZ_SeasonMark_Flowers.et`) | `RZ_ReadMarkAction` | World > Traces > Kit > Season mark, emptied | optional | P5, the season mark for a safehouse emptied. Empty = Shared > Season mark prefab |
 | (existing prefab) | a static civilian car wreck, a hatchback, doors open, a suitcase on the roof; no vehicle component (`RZ_Trace_QueueCar_A.et`) | — | World > Traces > Kit > Column car A | optional | F1, the column's tail: 4-8 cars nose to tail on the verge of the road in from the north barrier; empty = text only. An empty root with an RplComponent and vanilla meshes as children, nothing with physics. Check the log for no Dressing: removed line and that AI aren't trapped on the verge (VERIFY 7) |
 | (existing prefab) | a static saloon wreck, doors open (`RZ_Trace_QueueCar_B.et`) | — | World > Traces > Kit > Column car B | optional | F1; empty = car A again. As car A |
 | (existing prefab) | a static estate wreck, a coat on the grass (`RZ_Trace_QueueCar_C.et`) | — | World > Traces > Kit > Column car C | optional | F1; empty = car A again. As car A |
@@ -2392,7 +2392,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **233** lines with the tag, all but one in the game scripts (one is the comment in
+There are **239** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 50 are in `UI/`: [the UI's](#the-ui-48), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; three are in `Dialogue/` (the talk
 screen's, and the two of the nametags' names), two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
