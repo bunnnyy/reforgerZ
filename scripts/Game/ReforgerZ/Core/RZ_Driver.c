@@ -48,6 +48,11 @@ class RZ_Driver
 	protected vector m_vLastPos;
 	protected float m_fStillFor;
 	protected int m_iJumps;
+	protected static int s_iStance = 1;		// the stance asked for: 1 standing, 2 crouched, 3 prone (STANCECHANGE_*)
+	protected static int s_iStanceSet = 1;	// the one last set
+	protected static vector s_vStart;		// where this trip began
+	protected static bool s_bSkipped;		// the long-trip jump done (once a trip)
+	protected static vector s_vSteer;		// where the look-ahead says to head now (Plan), zero: straight at the goal
 	protected static bool s_bDetour;		// heading for a side spot round an obstacle first
 	protected static vector s_vDetour;
 	protected float m_fDetourFor;
@@ -55,6 +60,8 @@ class RZ_Driver
 	protected vector m_vGlideLast;
 	protected int m_iSlow;				// frames the controls didn't move us (Workbench not in focus)
 	protected static const float GLIDE_MS = 50;
+	protected static const float LONG_TRIP = 1200;	// a trip this long or more: walk the first part, then on to this far short
+	protected static const float WALK_FIRST = 400;
 
 	//------------------------------------------------------------------------------------------------
 	static void Start(RZ_GameModeComponent gm)
@@ -565,6 +572,9 @@ class RZ_Driver
 		s_fSpeed = speed;
 		s_fStopAt = Arg(a, 3, 3);
 		s_bGoing = true;
+		s_vStart = me.GetOrigin();
+		s_bSkipped = false;
+		s_vSteer = vector.Zero;
 		m_vLastPos = me.GetOrigin();
 		m_vGlideLast = me.GetOrigin();
 		m_iSlow = 0;
@@ -605,16 +615,51 @@ class RZ_Driver
 			return;
 		}
 
-		// In the sea with the goal on land (the author: never swim a big water, unless the goal's in
-		// it): out at the first dry ground on the way, else the nearest round us
-		if (RZ_Util.IsWater(RZ_Util.GroundPos(here)) && !RZ_Util.IsWater(RZ_Util.GroundPos(s_vGoal)))
+		// A long trip (the author): walk the first 400 m, then on to 1.2 km short of the goal
+		if (!s_bSkipped && left > LONG_TRIP && RZ_Util.DistXZ(s_vStart, here) >= WALK_FIRST)
 		{
-			vector dry = DryToward(here, s_vGoal);
+			s_bSkipped = true;
+			vector way = s_vGoal - here;
+			way[1] = 0;
+			way.Normalize();
+			vector near = RZ_Util.GroundPos(s_vGoal - way * LONG_TRIP);
+			if (RZ_Util.IsWater(near))
+				near = DryToward(near, s_vGoal);
+
+			SCR_Global.TeleportLocalPlayer(near + Vector(0, 0.3, 0));
+			m_vLastPos = near;
+			Note("long trip: on to 1.2 km short, at " + Pos(near));
+			return;
+		}
+
+		// In water (swimming, or the sea under us) with the goal on land (the author: never swim a
+		// big water, unless the goal's in it): out at the first dry ground on the way, else the nearest
+		SCR_CharacterControllerComponent swim = SCR_CharacterControllerComponent.Cast(me.FindComponent(SCR_CharacterControllerComponent));
+		bool wet = RZ_Util.IsWater(RZ_Util.GroundPos(here)) || (swim && swim.IsSwimming());
+		if (wet && !RZ_Util.IsWater(RZ_Util.GroundPos(s_vGoal)))
+		{
+			// A lake or river: dry is ground above the water we're swimming in
+			float waterline = -1000;
+			if (swim && swim.IsSwimming())
+				waterline = here[1];
+
+			vector dry = DryToward(here, s_vGoal, waterline);
 			SCR_Global.TeleportLocalPlayer(dry + Vector(0, 0.3, 0));
 			m_vLastPos = dry;
 			Note("out of the water at " + Pos(dry));
 			return;
 		}
+
+		// Look ahead: the clear way nearest the goal's bearing, 20 m out
+		s_vSteer = Plan(here, s_vGoal);
+
+		// What's right in front on that way: a door (open it), something low (jump or climb over),
+		// something at chest height with room under (crouch), room only at the ground (prone)
+		vector ahead = s_vGoal;
+		if (s_vSteer != vector.Zero)
+			ahead = s_vSteer;
+
+		Obstacle(me, here, ahead);
 
 		// A side spot round an obstacle: reached, or given 4 s
 		if (s_bDetour)
@@ -695,7 +740,7 @@ class RZ_Driver
 	//------------------------------------------------------------------------------------------------
 	//! The first dry ground on the way from `from` to `to` (every 20 m), else the nearest dry ground
 	//! round `from` (out to 2 km), else `to`.
-	protected static vector DryToward(vector from, vector to)
+	protected static vector DryToward(vector from, vector to, float waterline = -1000)
 	{
 		vector way = to - from;
 		way[1] = 0;
@@ -706,7 +751,7 @@ class RZ_Driver
 			for (float d = 20; d < len; d += 20)
 			{
 				vector p = RZ_Util.GroundPos(from + way * d);
-				if (!RZ_Util.IsWater(p))
+				if (!RZ_Util.IsWater(p) && p[1] > waterline + 0.2)
 					return p;
 			}
 		}
@@ -716,7 +761,7 @@ class RZ_Driver
 			for (int k = 0; k < 16; k++)
 			{
 				vector q = RZ_Util.GroundPos(RZ_Compass.PointAt(from, k * 22.5, r));
-				if (!RZ_Util.IsWater(q))
+				if (!RZ_Util.IsWater(q) && q[1] > waterline + 0.2)
 					return q;
 			}
 		}
@@ -758,6 +803,9 @@ class RZ_Driver
 			return;
 
 		vector aim = s_vGoal;
+		if (s_vSteer != vector.Zero)
+			aim = s_vSteer;
+
 		if (s_bDetour)
 			aim = s_vDetour;
 
@@ -786,10 +834,130 @@ class RZ_Driver
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The look-ahead: 24 ways round the goal's bearing (nearest first, 15 degrees apart), each traced
+	//! at knee and chest height out to 20 m (walls, fences, cars, trees, props) and its ground checked
+	//! every 2 m (no climb steeper than 45 degrees, no sea). The first way clear for 8 m (or to the goal)
+	//! wins; with none, the longest clear one. A spot up to 10 m along it, or zero for straight on.
+	protected static vector Plan(vector here, vector goal)
+	{
+		vector toGoal = goal - here;
+		toGoal[1] = 0;
+		float left = toGoal.Length();
+		if (left < 1)
+			return vector.Zero;
+
+		float bearing = Math.Atan2(toGoal[0], toGoal[2]) * Math.RAD2DEG;
+		float need = Math.Min(8, left);
+		float bestClear = -1;
+		vector bestDir = vector.Zero;
+		for (int i = 0; i < 24; i++)
+		{
+			// 0, +15, -15, +30, -30 ... 180
+			int half = (i + 1) / 2;
+			float off = half * 15;
+			if (i % 2 == 0)
+				off = -off;
+
+			float rad = (bearing + off) * Math.DEG2RAD;
+			vector dir = Vector(Math.Sin(rad), 0, Math.Cos(rad));
+			float clear = Clearance(here, dir, Math.Min(20, left + 1));
+			if (clear >= need)
+				return RZ_Util.GroundPos(here + dir * Math.Min(clear, 10));
+
+			if (clear > bestClear)
+			{
+				bestClear = clear;
+				bestDir = dir;
+			}
+		}
+
+		if (bestClear < 1)
+			return vector.Zero;
+
+		return RZ_Util.GroundPos(here + bestDir * bestClear);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far (m) one can walk from `here` along `dir`, up to `max`: traces at knee and chest height,
+	//! and the ground every 2 m (a rise of over 2 m in 2 m, or the sea, ends it).
+	protected static float Clearance(vector here, vector dir, float max)
+	{
+		vector knee = here + Vector(0, 0.5, 0);
+		vector chest = here + Vector(0, 1.3, 0);
+		float hit = max;
+		float k = TraceFrac(knee, knee + dir * max);
+		float c = TraceFrac(chest, chest + dir * max);
+		hit = Math.Min(k, c) * max;
+
+		vector last = here;
+		for (float d = 2; d <= hit; d += 2)
+		{
+			vector g = RZ_Util.GroundPos(here + dir * d);
+			if (g[1] - last[1] > 2 || RZ_Util.IsWater(g))
+				return d - 2;
+
+			last = g;
+		}
+
+		return hit;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static float TraceFrac(vector from, vector to)
+	{
+		TraceParam param = new TraceParam();
+		param.Start = from;
+		param.End = to;
+		param.LayerMask = EPhysicsLayerPresets.Projectile;
+		param.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+		return ChimeraCharacter.TraceMoveWithoutCharacters(GetGame().GetWorld(), param);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The way 2 m ahead at five heights (0.3, 0.7, 1.1, 1.5, 1.85 m): sets the stance to ask for, a
+	//! jump for something low, and opens a door in the way.
+	protected void Obstacle(IEntity me, vector here, vector toward)
+	{
+		vector dir = toward - here;
+		dir[1] = 0;
+		if (dir.Length() < 0.1)
+			return;
+
+		dir.Normalize();
+		bool ankle = TraceFrac(here + Vector(0, 0.3, 0), here + Vector(0, 0.3, 0) + dir * 2) < 0.999;
+		bool knee = TraceFrac(here + Vector(0, 0.7, 0), here + Vector(0, 0.7, 0) + dir * 2) < 0.999;
+		bool waist = TraceFrac(here + Vector(0, 1.1, 0), here + Vector(0, 1.1, 0) + dir * 2) < 0.999;
+		bool chest = TraceFrac(here + Vector(0, 1.5, 0), here + Vector(0, 1.5, 0) + dir * 2) < 0.999;
+		bool head = TraceFrac(here + Vector(0, 1.85, 0), here + Vector(0, 1.85, 0) + dir * 2) < 0.999;
+
+		int want = 1;
+		if ((ankle || knee) && !chest && !head)
+		{
+			// Low: a fence, a low wall, a log: over it
+			s_fJumpUntil = GetGame().GetWorld().GetWorldTime() + 400;
+		}
+		else if ((chest || head) && !ankle && !knee && !waist)
+		{
+			want = 2;	// a beam, a low roof, a pipe: under it, crouched
+		}
+		else if (waist && !ankle)
+		{
+			want = 3;	// room only at the ground: prone
+		}
+		else if (ankle && knee && waist && chest)
+		{
+			OpenDoorNear(me);	// a wall: a door in it, if there is one (the look-ahead goes round otherwise)
+		}
+
+		s_iStance = want;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void Stop(string why)
 	{
 		bool was = s_bGoing;
 		s_bGoing = false;
+		s_iStance = 1;
 		if (!was && why != "stopped")
 			return;
 
@@ -826,6 +994,9 @@ class RZ_Driver
 			return false;
 
 		vector aim = s_vGoal;
+		if (s_vSteer != vector.Zero)
+			aim = s_vSteer;
+
 		if (s_bDetour)
 			aim = s_vDetour;
 
@@ -847,6 +1018,13 @@ class RZ_Driver
 		ctx.SetMovement(s_fSpeed, local);
 		if (GetGame().GetWorld().GetWorldTime() < s_fJumpUntil)
 			ctx.SetJump(1);
+
+		// Crouch or prone to get under, back up after
+		if (s_iStance != s_iStanceSet && ctrl.CanChangeStance(s_iStance))
+		{
+			ctrl.SetStanceChange(s_iStance); // VERIFY: SetStanceChange from the control hooks crouches, prones and stands a player character
+			s_iStanceSet = s_iStance;
+		}
 
 		return true;
 	}
