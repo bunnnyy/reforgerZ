@@ -218,6 +218,31 @@ class RZ_OpeningFavours
 		return d;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! A favour's step by its key (a saved held errand, RZ_Errands.FindDef); null if not a favour's.
+	RZ_ErrandDef Find(string key)
+	{
+		foreach (int fetch, RZ_OpeningStepDef f : m_mFetch)
+		{
+			if (f && f.m_sKey == key)
+				return f;
+		}
+
+		foreach (int give, RZ_OpeningStepDef g : m_mGive)
+		{
+			if (g && g.m_sKey == key)
+				return g;
+		}
+
+		foreach (string bg, RZ_OpeningStepDef w : m_mWay)
+		{
+			if (w && w.m_sKey == key)
+				return w;
+		}
+
+		return null;
+	}
+
 	// ================================================================ Who gets which
 	//------------------------------------------------------------------------------------------------
 	static int For(string bg)

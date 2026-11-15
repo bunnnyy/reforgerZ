@@ -448,7 +448,8 @@ class RZ_ErrandDef
 }
 
 //------------------------------------------------------------------------------------------------
-//! One errand dealt to one player: about 120 bytes of data. Runtime only (a restart lets it lapse).
+//! One errand dealt to one player: about 120 bytes of data. A held one is saved (RZ_ErrandSave) and
+//! rebuilt on load, unbound (m_iAsker -1) until its owner's character is back (RZ_Errands.Bind).
 class RZ_Errand
 {
 	int m_iId;
@@ -474,6 +475,8 @@ class RZ_Errand
 	RZ_EErrandState m_eState = RZ_EErrandState.OFFERED;
 	int m_iWay = -1;
 	vector m_vPlace;			// the taken way's place
+	vector m_vWorkFrom;			// the place before a work site moved it (re-opened from here, so it never drifts)
+	bool m_bEndOnBind;			// restored from a duty's game that isn't rebuilt: ends unpaid when its owner is back
 	float m_fProgress;
 	bool m_bStepDone;
 	vector m_vFirst;			// the way's first place (RZ_ErrandWay.First), zero: none
@@ -489,7 +492,6 @@ class RZ_Errand
 	int m_iBonus;				// Favor added to the way's before the caps (a duty's scene: what you chose on the way)
 	float m_fOfferedAt;			// the dealer's clock
 	float m_fTakenAt;
-	float m_fOfflineSince = -1;
 	bool m_bTold;				// the "come back" line has been said
 	ref array<int> m_aHelpers = {};
 	IEntity m_Carried;			// a carried way's item, weak (RZ_ErrandsPay); null on the ground's loss
@@ -772,8 +774,72 @@ class RZ_ErrandLedger
 }
 
 //------------------------------------------------------------------------------------------------
+//! A held errand, saved (docs/ERRANDS.md, "Saved across restarts"): its definition by key, its
+//! owner by identity and character, every place as floats, its text slots flattened, and when it
+//! was taken as real time, so its own time limit runs on in real seconds.
+class RZ_ErrandSave
+{
+	int id;
+	string def;
+	string ident;
+	int life;
+	string giver;
+	string giverName;
+	string giverTitle;
+	int faction = -1;
+	float gx;
+	float gy;
+	float gz;
+	float ox;
+	float oy;
+	float oz;
+	int holding = -1;
+	int house = -1;
+	int wanderer = -1;
+	int settlement = -1;
+	string subject;
+	float sx;
+	float sy;
+	float sz;
+	float tx;
+	float ty;
+	float tz;
+	int value = -1;
+	string word;
+	int way = -1;
+	float px;
+	float py;
+	float pz;
+	float wx;
+	float wy;
+	float wz;
+	float progress;
+	bool stepDone;
+	float fx;
+	float fy;
+	float fz;
+	bool firstDone;
+	float firstProgress;
+	bool noisy;
+	bool unasked;
+	bool fallout;
+	bool twist;
+	bool suspect;
+	int cap = -1;
+	int fameCap = -1;
+	int bonus;
+	bool carried;
+	bool endOnBind;
+	int takenUnix;
+	ref array<string> textKeys = {};
+	ref array<string> textValues = {};
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_ErrandsSave
 {
+	int nextId;									// the errand id counter, so a restored id never repeats
+	ref array<ref RZ_ErrandSave> held = {};		// the held errands (RZ_Errands.SaveHeld)
 	ref array<ref RZ_ErrandLedger> ledgers = {};
 	ref array<ref RZ_NamedHouseSave> houses = {};
 	ref array<string> counterKeys = {};		// the server's errand counters (per house: turns done)

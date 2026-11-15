@@ -388,4 +388,30 @@ class RZ_OpeningChain
 
 		return m_aWalk[faction];
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A step's definition by its key (a saved held errand, RZ_Errands.FindDef); null if not the chain's.
+	RZ_ErrandDef Find(string key)
+	{
+		array<RZ_ErrandDef> own = {m_TalkFirst, m_TalkNext, m_Lead, m_LeadNote, m_Case, m_CaseSeen, m_LineWalk, m_LineWatch};
+		foreach (RZ_ErrandDef d : own)
+		{
+			if (d && d.m_sKey == key)
+				return d;
+		}
+
+		foreach (RZ_OpeningStepDef walk : m_aWalk)
+		{
+			if (walk && walk.m_sKey == key)
+				return walk;
+		}
+
+		foreach (int task, RZ_OpeningStepDef t : m_mTasks)
+		{
+			if (t && t.m_sKey == key)
+				return t;
+		}
+
+		return null;
+	}
 }
