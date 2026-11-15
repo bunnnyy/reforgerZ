@@ -477,7 +477,8 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	{
 		string line = RZ_UIText.Str(f, 2);
 		string place = RZ_UIText.Str(f, 3);
-		if (place.IsEmpty())
+		// Not twice (seen in play: "Go back to Corporal Ruth Weber at Upper Fields · Upper Fields")
+		if (place.IsEmpty() || line.Contains(place))
 			return line;
 
 		return line + " · " + place;
@@ -680,6 +681,24 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 
 		Widget stack = RZ_UIW.Find(m_wRoot, "NoticeStack");
 		int maxCards = Math.Max(1, settings.m_iNoticeStack);
+
+		// A screen is open (the talk screen, the notebook, a reader, a shop): no card over it (seen in
+		// play: a world event's card on top of a speaker's name and of the notebook's tabs). The
+		// cards hide, and what's waiting waits, fresh, until the screen closes
+		MenuManager menus = GetGame().GetMenuManager();
+		bool screenOpen = menus && menus.GetTopMenu() != null;
+		if (stack)
+			stack.SetVisible(!screenOpen);
+
+		if (screenOpen)
+		{
+			foreach (RZ_QueuedNotice held : m_aQueue)
+			{
+				held.m_fAt = now;
+			}
+
+			return;
+		}
 
 		// An urgent one doesn't wait behind a full stack: the least important card makes room
 		if (!m_aQueue.IsEmpty() && m_aQueue[0].m_Style.m_iPriority == RZ_ENoticePriority.URGENT && m_aCards.Count() >= maxCards)

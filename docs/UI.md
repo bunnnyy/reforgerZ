@@ -244,7 +244,10 @@ tab.
 
 ### Notices
 
-Notice cards are for what matters now. Everything else goes **quietly into the notebook** (the
+Notice cards are for what matters now. **No card shows over a screen** (the talk screen, the
+notebook, a reader, a shop: any open menu): the cards hide and the waiting ones wait, kept fresh,
+until it closes (seen in play: a world event's card over a speaker's name and the notebook's tabs).
+Everything else goes **quietly into the notebook** (the
 Radio tab) without a card, and the line under the cards counts it, "+3 in your notebook", until you
 next open the notebook or spawn again.
 

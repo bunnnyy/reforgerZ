@@ -130,7 +130,10 @@ rewrite them; it wraps them:
 - **A pick** runs that slot's handler, capturing again. Their answer shows on its own, then
   the replies after it (the hub's again, or the node's), New Vegas style: the two steps are the
   client's, from one node ([UI.md](UI.md#the-talk-screen)). A reply that says nothing
-  at all is answered "(They have nothing to add to that.)"; a tree's pick back to the hub with
+  at all is answered "(They have nothing to add to that.)", except taking a job or one of its ways,
+  which is always answered by the speaker's side (*"Understood. Report back when it's done."* for
+  Bastion, the Red Hand's *"Good. Don't make me wait."*, Halcyon's *"Noted. We'll expect you."*, else
+  *"Thank you. Come back when it's done."*; `RZ_Dialogue.Agreed`); a tree's pick back to the hub with
   nothing new shows no line, only the replies. It closes only when you leave, when
   danger or distance ends it, or when the reply opens another screen (the shop, the reader): that
   screen takes over. A tree choice that ends the conversation (`end`) shows their last words with

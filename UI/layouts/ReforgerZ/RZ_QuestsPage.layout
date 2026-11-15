@@ -108,16 +108,17 @@ FrameWidgetClass "{3F581F09E6E5985A}" {
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 584
-      OffsetRight -584
-      SizeY 32
-      OffsetBottom -32
+      SizeX 520
+      OffsetRight -520
+      SizeY 140
+      OffsetBottom -140
       Alignment 0.5 0.5
      }
      Color 0.639 0.62 0.565 1
      Text "No jobs yet."
      "Font Size" 18
      "Min Font Size" 18
+     Wrap 1
      "Horizontal Alignment" Center
      "Vertical Alignment" Center
      FontProperties FontProperties "{E86F158BC6A0F193}" {

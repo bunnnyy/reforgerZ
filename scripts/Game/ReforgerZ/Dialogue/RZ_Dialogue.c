@@ -837,11 +837,28 @@ class RZ_Dialogue
 		bool backAtHub = s.m_Tree && RZ_DialogueTrees.IsOurs(replyId) && !s.m_Tree.m_bInNode;
 		if (s.m_aNew.IsEmpty() && (s.m_bSilent || backAtHub))
 			s.m_aSaid.Clear();
+		else if (s.m_aNew.IsEmpty() && (reply.m_bJob || reply.m_bWay))
+			s.m_aNew.Insert(Agreed(s.m_iFaction));	// taking a job or one of its ways always gets an answer
 		else if (s.m_aNew.IsEmpty())
 			s.m_aNew.Insert(NO_ANSWER);
 
 		TakeNew(s);
 		SendNode(s, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What someone says when you take a job or one of its ways and the job has no words of its own
+	//! for it (seen in play: "(They have nothing to add to that.)" after a job was taken).
+	protected static string Agreed(int faction)
+	{
+		switch (faction)
+		{
+			case RZ_EFaction.MILITARY: return "Understood. Report back when it's done.";
+			case RZ_EFaction.BANDITS: return "Good. Don't make me wait.";
+			case RZ_EFaction.INSTITUTE: return "Noted. We'll expect you.";
+		}
+
+		return "Thank you. Come back when it's done.";
 	}
 
 	//------------------------------------------------------------------------------------------------
