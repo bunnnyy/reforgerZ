@@ -934,8 +934,9 @@ where it fell. Log: `Openings: <player>'s opening put away (<why>) at stage <n> 
 
 **The kit.** What you wear stays (clothes, vest, helmet, pack). Of what the loadout carried, one
 bandage, one water bottle and the background's own tool (the Mechanic's wrench, the Radio
-Operator's radio, the Nurse's and Doctor's dressing) stay; every weapon, magazine, round and
-anything else goes. The compass, paper map and wind-up radio come again a few seconds later, unless
+Operator's radio, the Nurse's and Doctor's dressing, the Hunter's rifle and its five rounds) stay;
+every other weapon, magazine, round and anything else goes. The Hunter is the one background whose
+tool is a weapon (`RZ_Character.ToolIsArms`). The compass, paper map and wind-up radio come again a few seconds later, unless
 you still have one; the new character's meal doesn't. No other cost: no debuff, no Favor owed, no longer timer than vanilla's.
 
 **Reset character.** A button on the notebook's Season page, **Reset character**: a click, or A with

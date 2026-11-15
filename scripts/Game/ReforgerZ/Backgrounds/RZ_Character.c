@@ -584,7 +584,8 @@ class RZ_Character
 	// ================================================================ The kit
 	//------------------------------------------------------------------------------------------------
 	//! What a character comes round with: what they wear, one bandage, one water bottle and the
-	//! background's own tool. Never a weapon, ammunition or anything else the loadout carried.
+	//! background's own tool (the Hunter's is his rifle and its rounds). Never another weapon,
+	//! ammunition or anything else the loadout carried.
 	//! Returns how many carried things were kept.
 	static int StripKit(IEntity me, RZ_Background bg)
 	{
@@ -598,6 +599,7 @@ class RZ_Character
 		RZ_ItemHelper.Words("canteen,water,bottle,flask", water);
 		array<string> tool = {};
 		RZ_ItemHelper.Words(SignatureTool(bg), tool);
+		bool armsAreTool = ToolIsArms(bg);
 		bool hasBandage = false;
 		bool hasWater = false;
 		bool hasTool = false;
@@ -619,6 +621,13 @@ class RZ_Character
 			if (!hasWater && RZ_ItemHelper.Matches(item, water))
 			{
 				hasWater = true;
+				kept++;
+				continue;
+			}
+
+			// A background whose tool is its weapon (the Hunter) keeps the loadout's weapon and rounds
+			if (armsAreTool && IsWeapon(item))
+			{
 				kept++;
 				continue;
 			}
@@ -647,7 +656,7 @@ class RZ_Character
 		switch (bg.m_sId)
 		{
 			case "mechanic": return "wrench,repairkit,repair_kit";
-			case "radio_operator": return "radio";
+			case "radioham": return "radio";
 			case "nurse": return "dressing,bandage";
 			case "doctor": return "dressing,bandage";
 		}
@@ -656,7 +665,14 @@ class RZ_Character
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A weapon, a magazine or ammunition (never kept at coming round).
+	//! A background whose tool is its weapon: it comes round with the loadout's weapon and rounds.
+	static bool ToolIsArms(RZ_Background bg)
+	{
+		return bg && bg.m_sId == "hunter";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A weapon, a magazine or ammunition (kept at coming round only by ToolIsArms).
 	protected static bool IsWeapon(IEntity item)
 	{
 		if (item.FindComponent(WeaponComponent) || item.FindComponent(MagazineComponent))
