@@ -3621,7 +3621,7 @@ or **RT** on a pad). Before, the only other way was a double click on the hotbar
 |---|---|
 | **Left click** with food or water in the hand | The same as R: eats or drinks it (the `RZ_Eat` input, mouse only, so a pad's RT never eats twice). At most once a second |
 | **The hint** under the crosshair while it's in the hand | *"EAT: LEFT CLICK OR R"*, *"DRINK: LEFT CLICK OR R"*, or *"EAT: RT"* on a pad ([UI.md](UI.md#screens), the HUD) |
-| **The inventory's Use** on a food or drink in your kit | Eats or drinks it where it lies, no hotbar needed: vanilla's own Use button, its key and its pad button. On the server: the mod's own values and sickness roll, the item used up (command `CMD_EAT`, at most every 2 s) |
+| **The inventory's Use** on a food or drink in your kit, or lying loose on the ground within 3 m (the inventory's vicinity) | Eats or drinks it where it lies, no hotbar needed: vanilla's own Use button, its key and its pad button. On the server: the mod's own values and sickness roll, the item used up (command `CMD_EAT`, at most every 2 s) |
 | **A canteen** | The mod can't drink it, so its Use gives water by **Interactions > Drink water** (0.1 on the mod's 0-1 scale) and uses it up (**Interactions > Drink keywords**, `canteen`; never a name with "empty") |
 
 What can be eaten or drunk: the mod's five (crackers, the raw meat leg, dry meat, the MRE, its water
@@ -3631,7 +3631,8 @@ inedible. A drink is an item with more water than food ("Drink", not "Eat").
 
 *Simplified:* left click calls the held item's own action, the mod's path, so it eats as R does,
 on the client first and then the server; that it works from script is a VERIFY. A canteen is used
-up, not emptied.
+up, not emptied. Food in a crate, a car or someone else's kit isn't eaten in place: take it
+first (only loose food on the ground is, `RZ_Eating.LyingInReach`).
 
 ### Treating each other
 

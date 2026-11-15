@@ -45,6 +45,8 @@ modded class B_FoodWaterGadgetComponent
 //------------------------------------------------------------------------------------------------
 class RZ_Eating
 {
+	static const float GROUND_REACH = 3.0;	// food lying loose this close can be eaten where it lies
+
 	protected static const float CLICK_GAP = 1.0;		// a second between clicks: one bite per click
 	protected static float s_fLastClick = -100;
 	protected static ref array<string> s_aDrinkWords;
@@ -205,12 +207,15 @@ class RZ_Eating
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! This character eats or drinks this item from their kit (server): the mod's values and its
-	//! sickness roll (a canteen: Interactions > Drink water), the item used up. False if it isn't
-	//! edible, isn't theirs, or they have no metabolism.
+	//! This character eats or drinks this item from their kit or off the ground within reach (server):
+	//! the mod's values and its sickness roll (a canteen: Interactions > Drink water), the item used
+	//! up. False if it isn't edible, isn't theirs or lying in reach, or they have no metabolism.
 	static bool EatBy(IEntity me, IEntity item)
 	{
-		if (!me || !item || !IsEdible(item) || !Carries(me, item))
+		if (!me || !item || !IsEdible(item))
+			return false;
+
+		if (!Carries(me, item) && !LyingInReach(me, item))
 			return false;
 
 		B_FoodWaterGadgetComponent food = FoodOf(item);
@@ -238,6 +243,17 @@ class RZ_Eating
 			SCR_EntityHelper.DeleteEntityAndChildren(item);
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The item lies loose on the ground (in nothing: not a crate, a car or someone else's kit) within
+	//! GROUND_REACH of this character.
+	static bool LyingInReach(IEntity me, IEntity item)
+	{
+		if (item.GetParent())
+			return false;
+
+		return vector.Distance(me.GetOrigin(), item.GetOrigin()) <= GROUND_REACH;
 	}
 
 	//------------------------------------------------------------------------------------------------
