@@ -1822,7 +1822,9 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
   (`RZ_CampLife.BoxFits`, [SITES.md](SITES.md)): outdoors nothing in it at knee or chest height,
   nothing overhead and its corners within 0.4 m of level, on the ground; indoors a floor under every
   corner and nothing in the way. Its own spot and heading first, then the other three headings, then
-  spots around it (1, 2 and 3 m off outdoors, 0.75 m indoors), and the prompt moves with it. Nowhere:
+  spots around it (1, 2 and 3 m off outdoors, 0.75 m indoors), and the prompt moves with it. A look wider or longer than 1.4 m (a car, a
+  generator) has its prompt 0.4 m out from its side, at its middle, not inside it, where nothing
+  could be aimed at (seen in play: *Hotwire it* inside the wreck). Nowhere:
   the plainer looks **of the same kind**, each tried the same way (the way's own `Fallback` chain,
   then the kind's plainest thing: a kitchen's is the pot on its own, a bench's an old table, filling's
   a bucket, sandbags' one sack, a "Take ..." prompt's and a search's the base game's cardboard box),

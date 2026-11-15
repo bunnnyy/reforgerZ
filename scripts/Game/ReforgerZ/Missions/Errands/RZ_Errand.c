@@ -526,10 +526,30 @@ class RZ_Errand
 		string s = text;
 		foreach (string key, string value : m_mText)
 		{
-			s.Replace("{" + key + "}", value);
+			// A word that starts a sentence is capitalised ("Humour me. The garage.", not "the garage")
+			string tag = "{" + key + "}";
+			string capital = Capital(value);
+			if (s.StartsWith(tag))
+				s = capital + s.Substring(tag.Length(), s.Length() - tag.Length());
+
+			s.Replace(". " + tag, ". " + capital);
+			s.Replace("! " + tag, "! " + capital);
+			s.Replace("? " + tag, "? " + capital);
+			s.Replace(tag, value);
 		}
 
 		return RZ_WorldFacts.Get().Fill(s);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string Capital(string value)
+	{
+		if (value.IsEmpty())
+			return value;
+
+		string first = value.Substring(0, 1);
+		first.ToUpper();
+		return first + value.Substring(1, value.Length() - 1);
 	}
 
 	//------------------------------------------------------------------------------------------------

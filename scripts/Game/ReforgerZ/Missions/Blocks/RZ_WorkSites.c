@@ -267,6 +267,8 @@ class RZ_WorkSites
 	protected static const float ARMED_FOR = 60;		// a picked row waits this long for its hold, then it's the list again
 	protected static const float SLACK = 1.5;			// seconds the server forgives (its 1 s poll, the hold's network trip)
 	protected static const float LIFT = 0.6;			// the prompt stands this high over the ground
+	protected static const float BIG_LOOK = 1.4;		// a look wider or longer than this (m) has its prompt at its side, not inside it
+	protected static const float LOOK_SIDE = 0.4;		// that far (m) out from the look's side
 	protected static const float PERSON_OFF = 1.2;		// the person stands this far behind the site
 	protected static const float LIE_LIFT = 0.12;		// someone lying on the work's bed lies this far above its spot (a mattress)
 	protected static const float LIE_SIDE = 0.8;		// and its prompt is this far to their side
@@ -1529,6 +1531,22 @@ class RZ_WorkSites
 		{
 			float side = (s.m_fYaw + 90) * Math.DEG2RAD;
 			at = at + Vector(Math.Sin(side), 0, Math.Cos(side)) * LIE_SIDE;
+		}
+		else if (s.m_BeforeProp)
+		{
+			// A big look (a car, a generator): its middle is inside it, out of reach of a look, so
+			// the prompt stands at its side, as you'd stand at a car's door (seen in play: Hotwire It)
+			vector lmin;
+			vector lmax;
+			if (BoxOf(s.m_sBefore, s.m_vPos, lmin, lmax) && (lmax[0] - lmin[0] > BIG_LOOK || lmax[2] - lmin[2] > BIG_LOOK))
+			{
+				float rightRad = (s.m_fYaw + 90) * Math.DEG2RAD;
+				float aheadRad = s.m_fYaw * Math.DEG2RAD;
+				float outX = lmax[0] + LOOK_SIDE;
+				float midZ = (lmin[2] + lmax[2]) * 0.5;
+				at = at + Vector(Math.Sin(rightRad), 0, Math.Cos(rightRad)) * outX + Vector(Math.Sin(aheadRad), 0, Math.Cos(aheadRad)) * midZ;
+				at = RZ_Util.GroundPos(at);
+			}
 		}
 
 		at[1] = at[1] + LIFT;
