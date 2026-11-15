@@ -282,6 +282,16 @@ class RZ_OpeningTasks
 			case "police": return "police post";
 			case "shop": return "shop";
 			case "farm": return "farmhouse";
+			case "hospital": return "hospital";
+			case "firestation": return "fire station";
+			case "school": return "school";
+			case "office": return "office";
+			case "church": return "church";
+			case "industrial": return "warehouse";
+			case "hunting": return "hunting lodge";
+			case "coast": return "boat shed";
+			case "prison": return "prison";
+			case "army": return "army post";
 		}
 
 		return "house";

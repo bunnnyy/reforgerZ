@@ -33,6 +33,14 @@
 //! - Left: nobody within Despawn radius for a minute, and untaken items are deleted and kept as
 //!   data. Only the rolled and emptied times are saved: after a restart a building rolls again
 //!   once its refill time has passed. Nothing physical is saved.
+//! - Caps (docs/DESIGN.md, "Caps on the rare things"): rifles, pistols, vests and helmets, and the
+//!   treatments each have a map-wide cap, counted over every record's items as data (rolled, lying
+//!   or kept), so an untaken rifle still holds its place. A pick over its cap is an everyday find
+//!   instead.
+//! - Downed Perimeter drones (docs/DESIGN.md, "Rare places"): with the Perimeter on, now and then a
+//!   drone the line didn't come back for lies inside the Zone near the line, at most Drones at once.
+//!   A place record like a building's, without a building: data until a player is near, then the
+//!   wreck (Missions > Contracts > Crashed drone) and its things beside it.
 
 //------------------------------------------------------------------------------------------------
 //! Settings on RZ_GameModeComponent > Interactions > Loot.
@@ -83,6 +91,33 @@ class RZ_LootSettings
 
 	[Attribute("1", desc: "Loot log: a line per building put out (its key, type, anchors and items) and a summary every 2 minutes, for checking loot in play")]
 	bool m_bLog;
+
+	[Attribute("4", desc: "Cap: most rifles (and shotguns) lying in loot across the map at once, counted as data (rolled, lying or kept). A rifle over the cap is an everyday find instead")]
+	int m_iCapRifles;
+
+	[Attribute("8", desc: "Cap: most pistols lying in loot across the map at once")]
+	int m_iCapPistols;
+
+	[Attribute("6", desc: "Cap: most vests and helmets (ones that stop something) lying in loot across the map at once")]
+	int m_iCapArmour;
+
+	[Attribute("5", desc: "Cap: most treatments (Cure > Treatments: antibiotics, the suppressant, the stabiliser...) lying in loot across the map at once")]
+	int m_iCapTreatments;
+
+	[Attribute("2", desc: "Downed drones: most on the map at once (a Perimeter drone the line didn't come back for, lying inside the Zone near the line, with its battery cells, wire and sometimes a radio). Needs the Perimeter on and Missions > Contracts > Crashed drone set. 0 = none")]
+	int m_iDronesMax;
+
+	[Attribute("3", desc: "Downed drones: real hours between new ones (each a little earlier or later)")]
+	float m_fDroneHours;
+
+	[Attribute("6", desc: "Downed drones: real hours one lies before it's gone (sooner once emptied and nobody's near)")]
+	float m_fDroneLifeHours;
+
+	[Attribute("1000", desc: "Downed drones: how far (m) inside the Perimeter's edge one can lie (never in the warning zone)")]
+	float m_fDroneReach;
+
+	[Attribute("150", desc: "Downed drones: the wreck and its things are put out when a player is this close (m); it's in the open, so it's seen from further than a house's loot")]
+	float m_fDroneSpawnRadius;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -118,6 +153,9 @@ class RZ_LootHouse
 	int m_iPart = -1;		// a plain one: -1 not checked yet, 1 inside a destructible building's box (no loot of its own), 0 its own
 	float m_fClearAt = -1000;	// when Kept clear was last checked
 	bool m_bClear;			// kept clear of loose loot (by a faction's place)
+	bool m_bPlace;			// a rare place with no building (a downed drone): its anchors are on the ground round it
+	float m_fBornAt = -1;	// a place: when it was made
+	IEntity m_Prop;			// a place's look (the drone's wreck), while it's out
 	ref array<vector> m_aAnchors = {};
 	ref array<ref RZ_LootItem> m_aItems = {};
 }
@@ -655,6 +693,10 @@ class RZ_Loot
 	protected int m_iTaken;
 	protected int m_iNoAnchors;
 	protected int m_iParts;
+	protected int m_iCapped;		// picks over a cap, turned into everyday finds (since the last summary)
+	// Downed drones (rare places)
+	protected int m_iDroneSeq;
+	protected float m_fNextDroneAt = -1;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Loot(RZ_GameModeComponent gm, RZ_Interactions hub, RZ_LootSettings settings)
@@ -678,7 +720,7 @@ class RZ_Loot
 		float keep = m_Settings.m_fRefillMinutes * 60 * STALE_MULT * 4;
 		foreach (string key, RZ_LootHouse h : m_mHouses)
 		{
-			if (h.m_fRolledAt >= 0 && now - h.m_fRolledAt < keep && data.lootKey.Count() < TIMES_KEPT)
+			if (!h.m_bPlace && h.m_fRolledAt >= 0 && now - h.m_fRolledAt < keep && data.lootKey.Count() < TIMES_KEPT)
 			{
 				data.lootKey.Insert(key);
 				data.lootRolled.Insert(h.m_fRolledAt);
@@ -738,6 +780,8 @@ class RZ_Loot
 
 		RZ_Log.Info(string.Format("Loose loot: %1 sure items a building (one in a picked-over town), kept clear %2 m past faction places, loot log %3.",
 			m_Settings.m_iSureItems, RZ_Util.RoundToInt(m_Settings.m_fClearRadius), logOn));
+		RZ_Log.Info(string.Format("Loose loot: caps %1 rifles, %2 pistols, %3 vests and helmets, %4 treatments lying at once; downed drones %5 at most, one every %6 h, within %7 m of the line.",
+			m_Settings.m_iCapRifles, m_Settings.m_iCapPistols, m_Settings.m_iCapArmour, m_Settings.m_iCapTreatments, m_Settings.m_iDronesMax, m_Settings.m_fDroneHours, RZ_Util.RoundToInt(m_Settings.m_fDroneReach)));
 	}
 
 	// ================================================================ From the look-around
@@ -908,6 +952,7 @@ class RZ_Loot
 	void Tick(array<IEntity> players)
 	{
 		MaybeSummary();
+		DronesTick(players);
 		if (m_mHouses.IsEmpty())
 			return;
 
@@ -923,7 +968,7 @@ class RZ_Loot
 				continue;
 			}
 
-			if (near <= m_Settings.m_fSpawnRadius && CanHaveLoot(h))
+			if (near <= SpawnRadiusOf(h) && CanHaveLoot(h))
 			{
 				wantKeys.Insert(key);
 				wantDist.Insert(near);
@@ -953,6 +998,9 @@ class RZ_Loot
 	//------------------------------------------------------------------------------------------------
 	protected bool CanHaveLoot(RZ_LootHouse h)
 	{
+		if (h.m_bPlace)
+			return true;
+
 		if (!h.m_Building || IsPart(h) || m_Hub.GetTraps().IsBurned(h.m_vPos))
 			return false;
 
@@ -995,8 +1043,11 @@ class RZ_Loot
 		{
 			string known = string.Format("Loot: %1 items lying in %2 buildings out; %3 known, %4 kept clear by faction places, %5 parts of another building.",
 				m_iLying, outCount, m_mHouses.Count(), clearCount, partCount);
-			RZ_Log.Info(known + string.Format(" Last 2 min: %1 buildings put out, %2 items placed, %3 taken, %4 with no anchors, %5 sightings of a building's parts.",
-				m_iPutOut, m_iPlaced, m_iTaken, m_iNoAnchors, m_iParts));
+			RZ_Log.Info(known + string.Format(" Last 2 min: %1 buildings put out, %2 items placed, %3 taken, %4 with no anchors, %5 sightings of a building's parts, %6 picks over a cap.",
+				m_iPutOut, m_iPlaced, m_iTaken, m_iNoAnchors, m_iParts, m_iCapped));
+			RZ_Log.Info(string.Format("Loot caps: %1/%2 rifles, %3/%4 pistols, %5/%6 vests and helmets, %7/%8 treatments; %9 downed drones.",
+				CountCapped(RZ_LootGroups.CAP_RIFLE), m_Settings.m_iCapRifles, CountCapped(RZ_LootGroups.CAP_PISTOL), m_Settings.m_iCapPistols, CountCapped(RZ_LootGroups.CAP_ARMOUR), m_Settings.m_iCapArmour,
+				CountCapped(RZ_LootGroups.CAP_TREATMENT), m_Settings.m_iCapTreatments, CountDrones()));
 		}
 
 		m_iPutOut = 0;
@@ -1004,6 +1055,7 @@ class RZ_Loot
 		m_iTaken = 0;
 		m_iNoAnchors = 0;
 		m_iParts = 0;
+		m_iCapped = 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1019,10 +1071,10 @@ class RZ_Loot
 		}
 
 		CheckTaken(h);
-		if (missionKeys)
+		if (missionKeys && !h.m_bPlace)
 			AddMissionKeys(h);
 
-		if (near <= m_Settings.m_fDespawnRadius)
+		if (near <= DespawnRadiusOf(h))
 		{
 			h.m_fAwaySince = -1;
 			h.m_fSeen = m_Hub.GetClock();
@@ -1111,6 +1163,10 @@ class RZ_Loot
 			it.m_Ent = null;
 		}
 
+		if (h.m_Prop)
+			SCR_EntityHelper.DeleteEntityAndChildren(h.m_Prop);
+
+		h.m_Prop = null;
 		h.m_bOut = false;
 		h.m_fAwaySince = -1;
 	}
@@ -1180,10 +1236,19 @@ class RZ_Loot
 		switch (type)
 		{
 			case "pharmacy": return m_Settings.m_iMaxSpecial;
+			case "hospital": return m_Settings.m_iMaxSpecial;
 			case "police": return m_Settings.m_iMaxSpecial;
 			case "garage": return m_Settings.m_iMaxSpecial;
+			case "firestation": return m_Settings.m_iMaxSpecial;
+			case "army": return m_Settings.m_iMaxSpecial;
 			case "shop": return m_Settings.m_iMaxShop;
 			case "farm": return m_Settings.m_iMaxShop;
+			case "industrial": return m_Settings.m_iMaxShop;
+			case "office": return m_Settings.m_iMaxShop;
+			case "school": return m_Settings.m_iMaxShop;
+			case "church": return Math.Max(2, m_Settings.m_iMaxHouse / 2);
+			case "prison": return Math.Max(2, m_Settings.m_iMaxHouse / 2);
+			case "drone": return 5;
 		}
 
 		return m_Settings.m_iMaxHouse;
@@ -1203,6 +1268,10 @@ class RZ_Loot
 		if (h.m_fRolledAt < 0)
 			return true;
 
+		// A rare place is rolled once: what's taken from it doesn't come back
+		if (h.m_bPlace)
+			return false;
+
 		float now = m_Hub.GetClock();
 		float refill = RefillSeconds(h);
 		if (now - h.m_fRolledAt >= refill * STALE_MULT)
@@ -1220,9 +1289,17 @@ class RZ_Loot
 		if (!h.m_bAnchored)
 		{
 			h.m_bAnchored = true;
-			h.m_iFurniture = RZ_LootAnchors.Find(h.m_Building, h.m_aAnchors, RZ_LootAnchors.MAX_ANCHORS);
+			if (h.m_bPlace)
+				PlaceAnchors(h);
+			else
+				h.m_iFurniture = RZ_LootAnchors.Find(h.m_Building, h.m_aAnchors, RZ_LootAnchors.MAX_ANCHORS);
+
 			ShuffleAnchors(h);
 		}
+
+		// A rare place's look (the drone's wreck)
+		if (h.m_bPlace && !h.m_Prop)
+			h.m_Prop = SpawnPlaceProp(h);
 
 		bool rolled = false;
 		if (NeedsRoll(h) && (h.m_fRolledAt < 0 || near > m_Settings.m_fFreshDistance))
@@ -1232,7 +1309,7 @@ class RZ_Loot
 		}
 
 		// A stash someone wrote about: two more good finds (not what's already here)
-		if (m_Settings.m_bEnabled && m_Hub.GetSearch().TakeStashNear(h.m_vPos))
+		if (m_Settings.m_bEnabled && !h.m_bPlace && m_Hub.GetSearch().TakeStashNear(h.m_vPos))
 		{
 			array<ResourceName> stash = {};
 			PrefabsHere(h, stash);
@@ -1244,7 +1321,9 @@ class RZ_Loot
 			}
 		}
 
-		AddMissionKeys(h);
+		if (!h.m_bPlace)
+			AddMissionKeys(h);
+
 		h.m_bOut = true;
 		h.m_fAwaySince = -1;
 		int placed = 0;
@@ -1314,8 +1393,12 @@ class RZ_Loot
 			how = "rolled";
 
 		string at = string.Format("%1 %2", RZ_Util.RoundToInt(h.m_vPos[0]), RZ_Util.RoundToInt(h.m_vPos[2]));
+		string building = "no building";
+		if (h.m_Building)
+			building = ShortName(RZ_Util.GetPrefabName(h.m_Building));
+
 		RZ_Log.Info(string.Format("Loot: put out %1 (%2, %3) at %4: %5 anchors (%6 on furniture), %7 %8 items, %9 spawned: " + items,
-			h.m_sKey, h.m_sType, ShortName(RZ_Util.GetPrefabName(h.m_Building)), at, h.m_aAnchors.Count(), h.m_iFurniture, how, h.m_aItems.Count(), placed));
+			h.m_sKey, h.m_sType, building, at, h.m_aAnchors.Count(), h.m_iFurniture, how, h.m_aItems.Count(), placed));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1353,7 +1436,10 @@ class RZ_Loot
 		h.m_fRolledAt = m_Hub.GetClock();
 		h.m_fEmptiedAt = -1;
 
-		bool locked = m_Hub.GetDoors().HasDoorLock(h.m_Building);
+		bool locked = false;
+		if (h.m_Building)
+			locked = m_Hub.GetDoors().HasDoorLock(h.m_Building);
+
 		RZ_Search search = m_Hub.GetSearch();
 		if (m_Settings.m_bEnabled)
 		{
@@ -1373,21 +1459,39 @@ class RZ_Loot
 			if (InFactionTown(h.m_vPos))
 				chance *= 0.5;
 
+			// A downed drone always has its things (it wasn't picked over)
+			if (h.m_bPlace)
+				sure = most;
+
 			array<ResourceName> picks = {};
 			search.PickHouseLootAt(h.m_sType, h.m_vPos, locked, most, sure, chance, picks);
+			ApplyCaps(h.m_sType, locked, picks);
 			foreach (ResourceName pick : picks)
 			{
 				AddItem(h, pick, "", "", -1, -1);
 			}
 
-			// Treatments (docs/DESIGN.md, "Treatments"): one roll, better behind a lock
-			RZ_Infection infection = m_GM.GetInfection();
-			if (infection)
+			if (h.m_bPlace)
 			{
+				if (!HasItems(h))
+					h.m_fEmptiedAt = h.m_fRolledAt;
+
+				return;
+			}
+
+			// Treatments (docs/DESIGN.md, "Treatments"): one roll, better behind a lock; a hospital
+			// rolls a pharmacy's finds. Never over the treatments' cap
+			RZ_Infection infection = m_GM.GetInfection();
+			if (infection && CountCapped(RZ_LootGroups.CAP_TREATMENT) < m_Settings.m_iCapTreatments)
+			{
+				string medType = h.m_sType;
+				if (medType == "hospital")
+					medType = "pharmacy";
+
 				int med;
-				ResourceName treatment = infection.PickMedFind(h.m_sType, locked, med);
+				ResourceName treatment = infection.PickMedFind(medType, locked, med);
 				if (!treatment.IsEmpty())
-					AddItem(h, treatment, "", "", -1, -1);
+					AddItem(h, treatment, "", RZ_LootGroups.CAP_TREATMENT, -1, -1);
 			}
 
 			// The keys of this town's fixable car, sometimes
@@ -1596,7 +1700,7 @@ class RZ_Loot
 		array<float> seen = {};
 		foreach (string key, RZ_LootHouse h : m_mHouses)
 		{
-			if (h.m_bOut)
+			if (h.m_bOut || h.m_bPlace)
 				continue;
 
 			keys.Insert(key);
@@ -1625,5 +1729,374 @@ class RZ_Loot
 
 		if (m_mTimes.Count() > TIMES_KEPT)
 			m_mTimes.Clear();
+	}
+	// ================================================================ Caps on the rare things
+	//------------------------------------------------------------------------------------------------
+	//! A cap's limit (Interactions > Loot > Cap ...).
+	protected int CapLimit(string cap)
+	{
+		if (cap == RZ_LootGroups.CAP_RIFLE)
+			return m_Settings.m_iCapRifles;
+
+		if (cap == RZ_LootGroups.CAP_PISTOL)
+			return m_Settings.m_iCapPistols;
+
+		if (cap == RZ_LootGroups.CAP_ARMOUR)
+			return m_Settings.m_iCapArmour;
+
+		if (cap == RZ_LootGroups.CAP_TREATMENT)
+			return m_Settings.m_iCapTreatments;
+
+		return 1000000;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cap an item counts against ("" none): a treatment by its tag, the rest by its prefab.
+	protected static string CapOf(RZ_LootItem it)
+	{
+		if (it.m_sTag == RZ_LootGroups.CAP_TREATMENT && it.m_sKey.IsEmpty())
+			return RZ_LootGroups.CAP_TREATMENT;
+
+		if (it.m_iNote >= 0 || !it.m_sKey.IsEmpty() || it.m_sPrefab.IsEmpty())
+			return "";
+
+		return RZ_LootGroups.CapKind(it.m_sPrefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many of a capped kind lie in loot across the map, as data: every record's items, rolled,
+	//! lying or kept (taken ones have left their record).
+	int CountCapped(string cap)
+	{
+		int count = 0;
+		foreach (string key, RZ_LootHouse h : m_mHouses)
+		{
+			foreach (RZ_LootItem it : h.m_aItems)
+			{
+				if (CapOf(it) == cap)
+					count++;
+			}
+		}
+
+		return count;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A roll's capped picks over their cap become everyday finds of the same kind of place.
+	protected void ApplyCaps(string kind, bool locked, notnull array<ResourceName> picks)
+	{
+		map<string, int> have = new map<string, int>();
+		for (int i = 0; i < picks.Count(); i++)
+		{
+			string cap = RZ_LootGroups.CapKind(picks[i]);
+			if (cap.IsEmpty())
+				continue;
+
+			int n;
+			if (!have.Find(cap, n))
+				n = CountCapped(cap);
+
+			if (n < CapLimit(cap))
+			{
+				have.Set(cap, n + 1);
+				continue;
+			}
+
+			have.Set(cap, n);
+			m_iCapped++;
+			ResourceName instead = m_Hub.GetSearch().PickEverydayFor(kind, locked);
+			if (instead.IsEmpty() || !RZ_LootGroups.CapKind(instead).IsEmpty())
+			{
+				picks.Remove(i);
+				i--;
+				continue;
+			}
+
+			picks[i] = instead;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For the test (RZT_Loot): what a building of this kind would hold here, rolled as loose loot
+	//! is (the kind's table, the caps), without placing anything.
+	void TestRoll(string kind, vector pos, bool locked, int slots, notnull array<ResourceName> picks)
+	{
+		m_Hub.GetSearch().PickHouseLootAt(kind, pos, locked, slots, slots, 1, picks);
+		ApplyCaps(kind, locked, picks);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For the test: a record holding these items as data (as a building's kept list), so the caps
+	//! count them. Returns its key.
+	string TestHold(vector pos, notnull array<ResourceName> items)
+	{
+		RZ_LootHouse h = new RZ_LootHouse();
+		m_iDroneSeq++;
+		h.m_sKey = "test:" + m_iDroneSeq.ToString();
+		h.m_vPos = pos;
+		h.m_sType = "house";
+		h.m_bPlace = true;
+		h.m_fBornAt = m_Hub.GetClock();
+		h.m_fRolledAt = m_Hub.GetClock();
+		foreach (ResourceName r : items)
+		{
+			RZ_LootItem it = new RZ_LootItem();
+			it.m_sPrefab = r;
+			it.m_vPos = pos;
+			h.m_aItems.Insert(it);
+		}
+
+		m_mHouses.Set(h.m_sKey, h);
+		return h.m_sKey;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For the test: forget a record (TestHold's, or a drone's) and whatever of it is out.
+	void TestForget(string key)
+	{
+		RZ_LootHouse h;
+		if (!m_mHouses.Find(key, h))
+			return;
+
+		PutAway(h);
+		ClearItems(h);
+		m_mHouses.Remove(key);
+	}
+
+	// ================================================================ Rare places: downed drones
+	//------------------------------------------------------------------------------------------------
+	//! Downed drones can lie: loose loot on, Downed drones above 0, the Perimeter on and running,
+	//! and a wreck to show (Missions > Contracts > Crashed drone).
+	bool DronesOn()
+	{
+		if (!m_Settings.m_bEnabled || m_Settings.m_iDronesMax <= 0 || !RZ_Features.On(RZ_EFeature.PERIMETER))
+			return false;
+
+		RZ_Perimeter perimeter = m_GM.GetPerimeter();
+		if (!perimeter || !perimeter.IsActive())
+			return false;
+
+		return !DroneWreckPrefab().IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ResourceName DroneWreckPrefab()
+	{
+		RZ_ContractSettings cs = m_GM.GetContractSettings();
+		if (!cs)
+			return "";
+
+		return cs.m_sDroneWreckPrefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int CountDrones()
+	{
+		int count = 0;
+		foreach (string key, RZ_LootHouse h : m_mHouses)
+		{
+			if (h.m_bPlace && h.m_sType == "drone")
+				count++;
+		}
+
+		return count;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The downed drones' positions (the test, the spot finder).
+	void GetDrones(notnull array<vector> into)
+	{
+		foreach (string key, RZ_LootHouse h : m_mHouses)
+		{
+			if (h.m_bPlace && h.m_sType == "drone")
+				into.Insert(h.m_vPos);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected float SpawnRadiusOf(RZ_LootHouse h)
+	{
+		if (h.m_bPlace)
+			return m_Settings.m_fDroneSpawnRadius;
+
+		return m_Settings.m_fSpawnRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected float DespawnRadiusOf(RZ_LootHouse h)
+	{
+		if (h.m_bPlace)
+			return m_Settings.m_fDroneSpawnRadius + 25;
+
+		return m_Settings.m_fDespawnRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On the 5 s tick: old and emptied drones go (never while out), and a new one lies every Drone
+	//! hours while there are fewer than Downed drones.
+	protected void DronesTick(array<IEntity> players)
+	{
+		bool on = DronesOn();
+		float now = m_Hub.GetClock();
+		array<string> gone = {};
+		foreach (string key, RZ_LootHouse h : m_mHouses)
+		{
+			if (!h.m_bPlace || h.m_sType != "drone" || h.m_bOut)
+				continue;
+
+			bool old = now - h.m_fBornAt >= m_Settings.m_fDroneLifeHours * 3600;
+			bool emptied = h.m_fRolledAt >= 0 && !HasItems(h);
+			if (!on || old || emptied)
+				gone.Insert(key);
+		}
+
+		foreach (string g : gone)
+		{
+			RZ_LootHouse d = m_mHouses.Get(g);
+			if (m_Settings.m_bLog)
+				RZ_Log.Info(string.Format("Loot: the downed drone %1 at %2 %3 is gone.", g, RZ_Util.RoundToInt(d.m_vPos[0]), RZ_Util.RoundToInt(d.m_vPos[2])));
+
+			ClearItems(d);
+			m_mHouses.Remove(g);
+		}
+
+		if (!on)
+			return;
+
+		// The first a little after the start, then one every Drone hours (a quarter either way)
+		if (m_fNextDroneAt < 0)
+			m_fNextDroneAt = now + Math.RandomFloat(600, 1800);
+
+		if (now < m_fNextDroneAt || CountDrones() >= m_Settings.m_iDronesMax)
+			return;
+
+		m_fNextDroneAt = now + m_Settings.m_fDroneHours * 3600 * Math.RandomFloat(0.75, 1.25);
+		vector at;
+		if (FindDroneSpot(at))
+			AddDrone(at);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Somewhere inside the Zone between the warning zone and Drone reach from the edge, on dry
+	//! mainland (the line's own place need), and 1 km from the other drones. A few tries.
+	bool FindDroneSpot(out vector at)
+	{
+		RZ_Perimeter perimeter = m_GM.GetPerimeter();
+		if (!perimeter)
+			return false;
+
+		float minIn = perimeter.GetWarnDistance() + 100;
+		float maxIn = Math.Max(minIn + 50, m_Settings.m_fDroneReach);
+		RZ_PlaceNeed need = RZ_PlaceNeeds.Get("mission.line");
+		array<vector> others = {};
+		GetDrones(others);
+		for (int attempt = 0; attempt < 12; attempt++)
+		{
+			vector pos;
+			if (!perimeter.RandomNearLine(minIn, maxIn, pos))
+				return false;
+
+			if (need && !RZ_PlaceCheck.Fits(pos, need))
+				continue;
+
+			bool tooNear = false;
+			foreach (vector o : others)
+			{
+				if (RZ_Util.DistXZ(o, pos) < 1000)
+					tooNear = true;
+			}
+
+			if (tooNear)
+				continue;
+
+			at = pos;
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A downed drone lies here (data until a player is near). Returns its key. Public for the test.
+	string AddDrone(vector at)
+	{
+		m_iDroneSeq++;
+		RZ_LootHouse h = new RZ_LootHouse();
+		h.m_sKey = "drone:" + m_iDroneSeq.ToString();
+		h.m_vPos = RZ_Util.GroundPos(at);
+		h.m_sType = "drone";
+		h.m_bPlace = true;
+		h.m_fBornAt = m_Hub.GetClock();
+		h.m_fSeen = m_Hub.GetClock();
+		m_mHouses.Set(h.m_sKey, h);
+		if (m_Settings.m_bLog)
+			RZ_Log.Info(string.Format("Loot: a downed drone %1 lies at %2 %3, %4 m in from the line.", h.m_sKey, RZ_Util.RoundToInt(h.m_vPos[0]), RZ_Util.RoundToInt(h.m_vPos[2]), RZ_Util.RoundToInt(EdgeIn(h.m_vPos))));
+
+		return h.m_sKey;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected float EdgeIn(vector pos)
+	{
+		RZ_Perimeter perimeter = m_GM.GetPerimeter();
+		if (!perimeter)
+			return -1;
+
+		return perimeter.EdgeDistance(pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A place's anchors: points on the ground in a ring round it, 1.5 to 4 m out (the drone's
+	//! things scattered where it came down).
+	protected void PlaceAnchors(RZ_LootHouse h)
+	{
+		h.m_aAnchors.Clear();
+		for (int i = 0; i < 8; i++)
+		{
+			float angle = i * 45 + Math.RandomFloat(-15, 15);
+			float dist = Math.RandomFloat(1.5, 4);
+			vector off = Vector(Math.Cos(angle * Math.DEG2RAD) * dist, 0, Math.Sin(angle * Math.DEG2RAD) * dist);
+			h.m_aAnchors.Insert(RZ_Util.GroundPos(h.m_vPos + off));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected IEntity SpawnPlaceProp(RZ_LootHouse h)
+	{
+		if (h.m_sType != "drone")
+			return null;
+
+		ResourceName wreck = DroneWreckPrefab();
+		if (wreck.IsEmpty())
+			return null;
+
+		return RZ_Util.SpawnPrefab(wreck, h.m_vPos, Math.RandomFloat(0, 360));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For the test: a record's state, "out" / "data" / "" (no such record); `items` how many it holds.
+	string TestState(string key, out int items)
+	{
+		items = 0;
+		RZ_LootHouse h;
+		if (!m_mHouses.Find(key, h))
+			return "";
+
+		items = h.m_aItems.Count();
+		if (h.m_bOut)
+			return "out";
+
+		return "data";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For the test: a record's prop (the drone's wreck) while it's out.
+	IEntity TestProp(string key)
+	{
+		RZ_LootHouse h;
+		if (!m_mHouses.Find(key, h))
+			return null;
+
+		return h.m_Prop;
 	}
 }

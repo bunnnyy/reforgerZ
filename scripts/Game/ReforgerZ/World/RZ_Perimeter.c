@@ -379,6 +379,30 @@ class RZ_Perimeter
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A random ground point inside the Zone, between `minIn` and `maxIn` metres in from the edge,
+	//! away from the corners (the loot's downed drones). False before the edge is known.
+	bool RandomNearLine(float minIn, float maxIn, out vector pos)
+	{
+		if (!m_bActive || m_fMaxX - m_fMinX < 1 || m_fMaxZ - m_fMinZ < 1)
+			return false;
+
+		float depth = Math.RandomFloat(minIn, Math.Max(minIn, maxIn));
+		float t = Math.RandomFloat(0.1, 0.9);
+		vector edge;
+		vector inward;
+		switch (Math.RandomInt(0, 4))
+		{
+			case 0: { edge = Vector(m_fMinX, 0, m_fMinZ + (m_fMaxZ - m_fMinZ) * t); inward = Vector(1, 0, 0); break; }
+			case 1: { edge = Vector(m_fMaxX, 0, m_fMinZ + (m_fMaxZ - m_fMinZ) * t); inward = Vector(-1, 0, 0); break; }
+			case 2: { edge = Vector(m_fMinX + (m_fMaxX - m_fMinX) * t, 0, m_fMinZ); inward = Vector(0, 0, 1); break; }
+			default: { edge = Vector(m_fMinX + (m_fMaxX - m_fMinX) * t, 0, m_fMaxZ); inward = Vector(0, 0, -1); break; }
+		}
+
+		pos = PointInside(edge, inward, depth);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The ground `depth` metres inside the edge from an edge point.
 	vector PointInside(vector edge, vector inward, float depth)
 	{

@@ -1652,8 +1652,8 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (200, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)), **Site grid** (on), **Site read ms** (2), **Pre-read** (on), **Audit threshold** (70), **Solver** (on), **Candidates a piece** (24), **Layers** (on), **Board windows** (on), **Layer pieces** (60) ([SITES.md](SITES.md#settings)) |
 | Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), clue minutes (20), flyers, shout minutes (30), wanderer finds, the clue prefabs (car wreck, door, flyer, table radio, the two bodies, barricade); **Openings** (on), **Group gone weight** (18) and **Fever weight** (12), **Opening scenes** (the reasons' scenes and each background's props, filled by `tools/camp_kit/build.py`; a key with none: nothing there), **Contact** (empty: Puzzles > Civilian), **Opening Fame** (10) |
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, **door spot prefab** (on the door leaf), scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
-| Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, **Extra finds** (items added to one building type's table), **Food weight** (2), **Not buildings** (name keywords of things with no loot: piers, bollards, rubble), chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
-| Interactions | Loot | `m_LootSettings` | **Loose loot** (on; off = nothing lies in houses), put out within 55 m (6 buildings a tick), put away past 80 m (after a minute), never rolled fresh with a player within 20 m, **refill** (45 min ÷ the town's loot level), at most 500 items lying on the server, slots per building (house 6, shop and farm 9, pharmacy, police and garage 10; locked +1), slot chance 0.75, 2 sure items, town loot per item taken (0.01), kept clear 20 m past a faction's place, the loot log (on) ([DESIGN.md](DESIGN.md#loot-in-houses)) |
+| Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, **Extra finds** (items added to one building kind's table), **Loot mixes** (a kind's everyday mix of groups, optional: [DESIGN.md](DESIGN.md#groups-and-mixes)), **Near line mult** (1.5) and **Near line reach** (1000 m), **Evacuation road** (500 m), **Not buildings** (name keywords of things with no loot: piers, bollards, rubble), chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
+| Interactions | Loot | `m_LootSettings` | **Loose loot** (on; off = nothing lies in houses), put out within 55 m (6 buildings a tick), put away past 80 m (after a minute), never rolled fresh with a player within 20 m, **refill** (45 min ÷ the town's loot level), at most 500 items lying on the server, slots per building (house 6, shop, farm, school, office and industrial 9, pharmacy, hospital, police, army post, garage and fire station 10, church and prison 3; locked +1), slot chance 0.75, 2 sure items, town loot per item taken (0.01), kept clear 20 m past a faction's place, the loot log (on); the caps (rifles 4, pistols 8, vests and helmets 6, treatments 5: [DESIGN.md](DESIGN.md#caps-on-the-rare-things)); downed drones (2 at most, every 3 h, 6 h each, within 1000 m of the line, put out within 150 m; they need the Perimeter on and **Missions > Contracts > Crashed drone**: [DESIGN.md](DESIGN.md#rare-places)) ([DESIGN.md](DESIGN.md#loot-in-houses)) |
 | Interactions | Cars | `m_CarSettings` | Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), **Wire cutting** (on: the repair screen's hotwire is the loom, a wire to follow; Loom turns 3, Loom strikes 2, Wrong cut heat share 0.5), keys (0.2 a car, 0.1 a search), **Fuel pump station** (empty = the hand pump: its timings, heat and cooldown), pump litres (60, full again after the cooldown), a car's fuel from a vanilla jerrycan (5 litres; the can is kept), **Wreck boot prefab** (empty = wrecks hold nothing), wreck part chance (0.3), wreck return (120 min), Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix), [Fuel](DESIGN.md#fuel), [Car wrecks](DESIGN.md#car-wrecks-one-boot-to-open)) |
 | Interactions | Crafting | `m_CraftSettings` | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
 | Interactions | Traps | `m_TrapSettings` | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs, **Fuel in your hands** (on; off = a full can anywhere on you), seconds to set it going (5) ([DESIGN.md](DESIGN.md#fire)) |
@@ -1824,7 +1824,8 @@ of `run.sh` writes `all` to its profile's `RZ_Features.txt`, so the checks see t
 `RZT_CoreOnly.c` for 7 minutes (about 10 with the boot) while the fake player walks the first towns.
 Every 30 s it looks for what a switched-off feature would have put out: camp pieces, road patrols,
 safehouses, supply trucks, errands, leaders, tribes, the Long Table, wildlife herds, any running
-job, an opening, a Tonight line or a habit for the fake player. Each time it also asks every
+job, an opening, a Tonight line or a habit for the fake player; at the end, no downed drone and no
+near-line bonus or evacuation road (the Perimeter's off). Each time it also asks every
 faction for work as the talk screen does (`RZ_TalkJobs.Build`, and `MakeFor` directly) and reads its
 Quests tab and personal goal: no job row, no job made, no quest row, no goal. At the end the towns were found, the
 fake player is in the world, research hasn't moved, shops are off and the clients' list of what's
@@ -2061,7 +2062,17 @@ OK|FAIL <what>`, `RZT persist: N checks, N failed`; the run fails on FAIL). **To
 reach, a town never seen among them; a row of kind Tonight per line; picking a row tracks it, its one
 objective has a place, and reaching the place ends the line; a row that's a real job tracks the job;
 with **UI > Tonight** off, no card and no rows (`RZT tonight OK|FAIL <what>`, `RZT tonight line
-<kind>: <line>`, `RZT tonight: N checks, N failed`; the run fails on FAIL). **A fresh spawn**
+<kind>: <line>`, `RZT tonight: N checks, N failed`; the run fails on FAIL). **The loot pool**
+(`RZT_Loot.c`, half a minute in, never moving the fake player): Everon's own prefab names (and
+made-up ones for the kinds Everon lacks) come out as their building kind, a cottage on a pier is a
+room; the buildings within 1.5 km are counted by kind (`RZT loot kinds in the world ...`); every
+kind has a table, and each new kind's rolls are its own items or the shared food, drink and low
+medicine; an open pharmacy, a house and an army post never roll the high medicine, a hospital does;
+four rifles held as data meet the rifle cap and an army post then rolls none (and under it, one now
+and then); rare finds are x1.5 just inside the line and as usual 1.1 km in; a wreck by a sealed
+checkpoint is on the evacuation road (when the world has checkpoints); a downed drone's spot is past
+the warning zone near the line, and one laid 20 m from the fake player is put out with its wreck and
+its things (`RZT loot OK|FAIL <what>`, `RZT loot: N checks, N failed`; the run fails on FAIL). **A fresh spawn**
 (`RZT_Fresh.c`), as a veteran (level 3, where the author's play-test went wrong): every running job
 drops the new character; its opening has its contact standing
 within 15 m and the chain starting at the door (its favour, which a veteran's skips once talked to: the opening by level, below), not the lead to work; the Quests tab lists no taken job; and later,
@@ -2922,6 +2933,9 @@ Warnings worth acting on:
 | `Wildlife: player <id> shot a deer at <grid>; <m> meat (<t> of <n> from that herd).` | The server believed a client's report of a shot deer and laid the meat. Missing after a deer fell: the VERIFY rows for `World/RZ_Wildlife.c` |
 | `Loose loot: off.` | Expected only if you turned **Loot > Loose loot** off: nothing lies in houses |
 | `Loot: put out <key> (<type>, <building>) at <x z>: <a> anchors (<f> on furniture), rolled\|kept <n> items, <s> spawned: <items>` | With **Loot > Loot log** on, one line each time a building's loot is put out: its record's key (the same building under two keys is a building rolled twice: report it), its type and prefab, its spots (how many on vanilla's item spots or furniture), whether it was rolled now or put out as it was left, and what lies there (`note`, `key` or the prefab's name). 0 anchors: nothing can lie there (a box the floor traces miss). 0 on furniture in every building: the furniture isn't found (the VERIFY on `RZ_Loot.c`'s children walk, and the sphere query): loot still lies on the floors |
+| `Loot caps: <n>/<cap> rifles, <n>/<cap> pistols, <n>/<cap> vests and helmets, <n>/<cap> treatments; <d> downed drones.` | With **Loot > Loot log** on, with the summary: each capped kind counted as data against its cap ([DESIGN.md](DESIGN.md#caps-on-the-rare-things)). A count over its cap: report it. The summary's `picks over a cap` says how many rolls the caps turned into everyday finds |
+| `Loot: a downed drone drone:<n> lies at <x z>, <m> m in from the line.` / `Loot: the downed drone drone:<n> at <x z> is gone.` | With **Loot > Loot log** on: a downed Perimeter drone came down (data until a player is within 150 m), or went (old, or emptied with nobody near). Never with the Perimeter off ([DESIGN.md](DESIGN.md#rare-places)) |
+| `Search: the new kinds (common/rare/electronics): hospital ..., ... army ...` / `Search: shared groups: <f> food, <d> drink, <m> low medicine; ...` | At start: each new building kind's table size and the shared groups' ([DESIGN.md](DESIGN.md#groups-and-mixes)). A 0 everyday count: the kind has nothing (report it) |
 | `Loot: <n> items lying in <b> buildings out; <k> known, <c> kept clear by faction places, <p> parts of another building. Last 2 min: ...` | With **Loot > Loot log** on, every 2 minutes while anything is out: the totals, and since the last one the buildings put out, items placed and taken, buildings with no anchors, and sightings of a building's parts (doors, its light probe, its furniture prefab) counted as the building or as nothing. Many with no anchors, or nothing put out while you walk a town: report the lines |
 | `Fuel pump station: no SCR_FuelManagerComponent on ...` | **Cars > Fuel pump station** names a prefab without vanilla's fuel manager: build `RZ_FuelPumpStation.et` with it ([§4](#4-the-prefab-manifest)), or empty the slot for the hand pump |
 | `Wreck boots: off (...). Wrecks hold nothing.` | **Cars > Wreck boot prefab** is empty (or **Cars > Enabled** is off): set it to `RZ_WreckBoot.et` |
@@ -5133,10 +5147,17 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   the timed job: about 45 s (15 s as a Mechanic), draws infected, and fails about one time in three (rarely for
   a Mechanic) with "The wires spit..."; trying again can work. Keys are rare. Starting it gives a
   drivable car and the log line `Cars: ... fixed by player N.`
-- [ ] Loot's keywords (**Search > Food weight** 2, **Not buildings**): a fresh town's houses have food
-  about as often as before, jerrycans only in garages, farms and wrecks, torches far less often in
-  houses and shops; a pier, a bollard or a ruin's rubble never has loot (the `Loot: put out` lines
-  name no `Pier`, `Bollard`, `RetainingWall` or `BrickPile`).
+- [ ] Loot's kinds and mixes (**Search > Loot mixes**, **Not buildings**): a fresh town's houses have
+  food about as often as before, jerrycans only in garages, farms, warehouses and wrecks; a pier, a
+  bollard or a ruin's rubble never has loot (the `Loot: put out` lines name no `Pier`, `Bollard`,
+  `RetainingWall` or `BrickPile`), but a boat shed or a cottage on a pier does (`coast`). On Everon
+  the `Loot: put out` lines show churches (`church`), offices, warehouses and sawmills, army posts
+  (barracks no faction holds) and medical barracks (`hospital`); morphine, saline and first-aid kits
+  only in a hospital or a locked pharmacy.
+- [ ] The caps and the rare places (with the Perimeter on): the `Loot caps:` line never shows a count
+  over its cap; within a few hours a `Loot: a downed drone` line, and walking to it (its grid) its
+  wreck and its cells, wire and scrap lie on the ground; a wreck by a sealed checkpoint's boot holds
+  a little more.
 - [ ] A campfire is a stove (**World > Placed things > Fire heat** 4, **Fire heat at night** 2): build
   one, look at it cold (FIRE OUT, every row locked), light it, then boil water, brew and cook meat on
   it with a pad; put it out mid-way and try again. Stand near it lit for a few minutes at night and

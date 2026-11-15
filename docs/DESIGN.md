@@ -3127,36 +3127,54 @@ floors. Pick them up with vanilla's **Pick up** (or from the inventory's "nearby
 no search prompts in buildings and no timers. A fresh town looks lived-in and left in a hurry; a
 picked-over one is thin.
 
-| Building type (from the prefab name) | What it tends to have | Items (slots) |
+#### Building kinds
+
+Sixteen kinds, from the building's prefab name (`RZ_Search.BuildingType`, checked in this order,
+so a fisherman's shed is the coast's before it's a farm's, and a medical barracks is a hospital
+before it's an army post). Everon's own buildings were checked by name; it has no school, fire
+station, prison, hunting lodge or hospital building of its own, so those kinds are for other maps
+(its medical barracks are hospitals).
+
+| Kind (name words) | What it tends to have | Slots |
 |---|---|---|
-| Pharmacy (pharmacy, hospital, clinic) | Field dressings, gauze, aspirin, tourniquets, saline, medical gloves, face masks; rare: morphine, a medical bag, a gas mask, a hazmat suit | 10 |
-| Garage (garage, workshop, repair, fire station) | Jerrycans, the wrench kit, torches, work gloves, a hard hat, a fireman's helmet, overalls, a spade, maps; rare: a fire axe, a gas mask, an oxygen tank, a backpack | 10 |
+| Hospital (hospital, clinic, a medical barracks) | Dressings, gauze, aspirin, tourniquets, saline, medical gloves, EMS clothes; rare: morphine, first-aid kits, a medical bag, a hazmat suit, a gas mask | 10 |
+| Pharmacy (pharmacy, drugstore) | Dressings, gauze, aspirin, tourniquets, gloves, face masks; rare: a medical bag, a gas mask (the high medicine only when it's locked: [Medicine in two levels](#medicine-in-two-levels)) | 10 |
+| Fire station (fire station) | A fireman's helmet, work gloves, overalls, torches, a canteen, a hard hat; rare: a fire axe, an oxygen tank, a firefighter's suit, a gas mask | 10 |
+| Garage (garage, workshop, repair) | Jerrycans, the wrench kit, torches, work gloves, overalls, a spade, wire, nails, scrap, maps; rare: a fuse, a knife, a backpack | 10 |
+| Police (police, gendarmerie) | Pistol and rifle magazines, torches, dressings, tourniquets, caps, gloves, a holster, police trousers, a prisoner's uniform; rare: a pistol, a Vz. 58 rifle, smoke grenades, a vest, a helmet, a radio (pistols, rifles, vests and helmets capped) | 10 |
+| Army post (barracks, bunker, guardhouse, radar, control tower, HQ) | Magazines, BDU jackets and M65 trousers, MREs, canteens, smoke; rare: an M16 or a Vz. 58 (capped), a helmet, a vest (capped). Never one a faction holds (kept clear as any faction place) | 10 |
+| Prison (prison, jail) | A prisoner's uniform, crackers | 3 |
+| School (school, kindergarten) | Snacks, water, a writing pad, sneakers, a sweatshirt, a map; rare: a watch, a backpack | 9 |
+| Office (office, town hall, post office, bank) | Maps, writing pads, watches, cash, credit cards, water; rare: a gold bar, a radio | 9 |
+| Church (church, chapel) | A little food and water; rare: a writing pad | 3 |
+| Industrial (factory, warehouse, depot, sawmill, hangar) | Wire, nails, scrap, jerrycans, planks, wood, overalls, work gloves, a hard hat; rare: a fuse, the wrench kit, a spade | 9 |
+| Coast (boathouse, boat shed, fisherman's shed, a cottage on a pier) | Raincoats, fisherman's trousers, crackers, water; rare: binoculars, a backpack | 6 |
+| Hunting (hunting lodge, hunter's stand) | A knife, binoculars, a compass, a map, a raincoat, a boonie hat, dried meat; rare: binoculars, a compass, a backpack (the stack has no hunting rifle) | 6 |
 | Farm (farm, barn, stable, shed, vet clinic) | Food, raw meat, water, canteens, wood, wool gloves and hats, overalls, raincoats, a spade, jerrycans; rare: a fire axe, a machete, a knife, binoculars, a compass, a backpack | 9 |
-| Police (police, gendarmerie) | Pistol and rifle magazines, torches, dressings, tourniquets, caps, gloves, a holster, police trousers, a prisoner's uniform; rare: a pistol (PM or M9), a Vz. 58 rifle, smoke grenades, a vest, a helmet, a radio | 10 |
 | Shop (shop, store, market, kiosk, petrol station, pub) | Food, water, canteens, vodka, cigarettes, watches, maps, gloves, hats and caps, a waist pack; rare: binoculars, a compass, a hiking backpack | 9 |
 | House (anything else) | Food, water, dressings, aspirin, a watch, a map, wood, clothes, someone's belongings; rare: a knife, binoculars, a compass, a backpack | 6 |
 
 Every destructible building has loot, whatever else its name makes it (a petrol station's
-building is a shop).
+building is a shop). A cottage on a pier and a boat shed are rooms, though their names hold
+"pier" (**Not buildings**).
 
 - **What it's rolled from.** Each type's table is the hand-set loot table for it, else the
   **Loot pool** items whose prefab names hold the type's keywords, always with the **built-in
   vanilla items** for the type added (the table above; `RZ_LootDefaults` in
   `Interactions/RZ_Search.c`), so a type's table is wide and no type is bare when the pool is
   short or empty. **Extra finds** (Search) then add items to one type's table on top: items no
-  keyword reaches, and items that belong in one kind of place only (a fire axe in garages and
-  farms). The game mode sets 45 of them, from the base game and from mods already in the stack
+  keyword reaches, and items that belong in one kind of place only (a fire axe in fire stations and
+  farms). The game mode sets them for the house, shop, farm, pharmacy, hospital, garage, fire
+  station, police, body and car tables, from the base game and from mods already in the stack
   ([MOD_STACK.md](MOD_STACK.md#what-the-stack-gives-the-loot)). A list set by hand is kept as it
   is: no extra finds, and topped up with the built-in items only while it's thin (fewer than 8
-  everyday finds, or 3 rare ones). Every item in a list is equally likely, so a longer list means
-  less of each: the slots per building were raised with the extra finds to keep food and medicine
-  as common as before. The log's `Search:` lines give each table's size and how many extra finds
-  were added.
+  everyday finds, or 3 rare ones). Everyday finds are picked by the kind's mix of groups
+  ([Groups and mixes](#groups-and-mixes)); rare and electronics finds are equally likely within
+  their list. The log's `Search:` lines give each table's size, the new kinds' and the shared
+  groups', and how many extra finds were added.
 - **One entry a prefab, by its GUID.** Two spellings of one prefab (Metabolism's copies of the
   MRE, the crackers and the dried meat are `prefabs/...`, the base game's `Prefabs/...`) are one
-  entry. **Food weighs double:** each food item (a prefab under `/food/`) is in the everyday list
-  twice (**Search > Food weight** 2), so a house holds about 0.8 food items, a shop 2.2 and a farm
-  2.4 (before the GUID match, by accident, 0.75, 1.9 and 2.1).
+  entry.
 - **Keywords mean what they say.** "can" isn't a keyword (it caught jerrycans and canteens): jerrycans
   are a garage's, a farm's and a wreck's, canteens where the built-in lists put them. Torches are
   electronics (10% of finds, 15% where the power's on) and a garage's, a police station's and a
@@ -3231,12 +3249,109 @@ building is a shop).
 (the props' origins at their feet), and spots are traced once per building, so an item can sit on
 a low shelf or in a corner. Wrecks' boots and bodies hold their things (below).
 
+#### Groups and mixes
+
+Everyday finds are picked in two steps (`Interactions/RZ_LootGroups.c`): first a **group** by the
+kind's weights, then one item of that group. The groups are read from each prefab's path and name:
+
+| Group | What's in it |
+|---|---|
+| food, drink, medlow | Food; water, canteens, vodka; dressings, gauze, aspirin, tourniquets, bleach. **Shared:** every kind that draws one draws from one list (every such item in any building's table and the pool), so a mod's new food reaches every kind at once |
+| medhigh | Morphine, saline, first-aid kits, antibiotics, epinephrine ([Medicine in two levels](#medicine-in-two-levels)) |
+| clothes, tools, gear, fence, electronics, ammo, armour, weapon | The kind's own items of that group: a garage's tools, a police station's magazines, an office's cash and watches (fence: what the fence buys) |
+
+| Kind | Everyday mix |
+|---|---|
+| House | food 4, drink 2, medlow 2, clothes 3, gear 1, tools 1, fence 1 |
+| Shop | food 5, drink 3, gear 2, clothes 1, fence 2, tools 1 |
+| Farm | food 4, drink 2, tools 3, clothes 2, gear 1 |
+| Pharmacy | medlow 6, clothes 2, gear 1 |
+| Hospital | medlow 5, medhigh 2, clothes 2, gear 1 |
+| Garage | tools 5, clothes 2, drink 1, gear 1 |
+| Fire station | tools 3, clothes 3, gear 1 |
+| Police | ammo 4, clothes 2, medlow 1, gear 2 |
+| School | food 3, drink 2, gear 3, clothes 1 |
+| Office | gear 4, fence 3, food 1, drink 1 |
+| Church | food 2, drink 2, gear 1 |
+| Industrial | tools 6, clothes 2, drink 1 |
+| Hunting | gear 3, tools 2, clothes 2, food 1, drink 1 |
+| Coast | clothes 3, tools 2, food 2, drink 1 |
+| Prison | clothes 3, food 2 |
+| Army post | ammo 4, clothes 3, food 2, drink 2, gear 1 |
+| Body | fence 2, medlow 2, ammo 2, food 1, clothes 1, tools 1 |
+| Wreck's boot | tools 4, drink 2, food 1, gear 1 |
+
+A group the kind has nothing of is skipped. **Search > Loot mixes** sets a kind's mix by hand
+("food 4, drink 2, clothes 3"). This replaced the old rule of every item equally likely, with food
+listed twice.
+
+#### Medicine in two levels
+
+The **low** medicine (dressings, gauze, aspirin, tourniquets) lies in houses, pharmacies, on
+bodies and in every kind that draws it. The **high** medicine (morphine, saline, first-aid kits)
+lies only in a **hospital** and a **locked pharmacy** (and an evacuation-road boot's first-aid
+kit): anywhere else a high pick is drawn again (`RZ_LootGroups.AllowedAt`). So the hospital is
+worth the walk, and a pharmacy's lock is worth the crowbar.
+
+*Simplified:* the treatments (antibiotics, the suppressant, the stabiliser...) keep their own find
+list ([Treatments](#treatments)), as before; a hospital rolls a pharmacy's. They have a map-wide
+cap (below).
+
+#### Caps on the rare things
+
+Some things are capped across the whole map, counted as data: every building record's items,
+rolled, lying or kept for when someone comes back. So a rifle nobody picks up still holds its
+place, and a new one isn't rolled until it's taken.
+
+| Capped | At once (**Interactions > Loot**) |
+|---|---|
+| Rifles (and shotguns, machine guns) | 4 (**Cap: rifles**) |
+| Pistols | 8 (**Cap: pistols**) |
+| Vests and helmets that stop something (not a fireman's helmet or a hard hat) | 6 (**Cap: armour**) |
+| Treatments | 5 (**Cap: treatments**) |
+
+A pick over its cap becomes an everyday find of the same building instead. Everyday things aren't
+capped: the slot chance and the town's loot level keep them in hand. The log's `Loot caps:` line
+(with the summary) gives each count against its cap.
+
+#### Rare places
+
+The Zone's own crash sites: nothing flies in (it's sealed), but the line's things come down, and
+the army left posts behind.
+
+- **A downed Perimeter drone.** With the Perimeter on, now and then a drone the line didn't come
+  back for lies inside the Zone, past the warning zone and within **1 km** of the edge (**Downed
+  drones reach**), on dry mainland (the line's own place need), 1 km from another. At most **2** at
+  once (**Downed drones**), a new one every **3 hours** (a quarter either way; the first 10 to 30
+  minutes after a start), each lying **6 hours** (**Downed drones life**) or until it's emptied
+  and nobody's near. Data until a player is within **150 m** (it's in the open), then its wreck
+  (**Missions > Contracts > Crashed drone**) and its things on the ground round it: battery cells,
+  wire, scrap, a fuse, a torch; rare: a radio. Up to five things (none twice); it's rolled once and
+  doesn't refill. Not saved: after a restart new ones come down. Log: `Loot: a downed drone ...
+  lies at ...`, `... is gone`.
+- **Abandoned army posts.** The army post kind above: barracks, bunkers and guardhouses no faction
+  holds. Their rifles, vests and helmets count against the caps.
+- **The old evacuation road.** A wreck within **500 m** of a sealed road checkpoint (**Search >
+  Evacuation road**), with the Perimeter on: its boot holds something more often (+25%), two things
+  at least half the time, and one more thing from the evac table (MREs, crackers, dried meat,
+  canteens, water, a dressing; rare: a hiking backpack, a backpack, a first-aid kit). The last
+  people who tried to drive out.
+
+*Simplified:* the drone has no camera to take (the stack has none); its rare find is a radio.
+
+#### Near the line
+
+The nearer the Perimeter, the less was taken: people fled inward, away from the snipers. Within
+**1 km** inside the edge (**Search > Near line reach**) a building's and a boot's rare finds are
+**x1.5** as likely (**Near line mult**), never over half the finds. Bodies don't change. Only with
+the Perimeter on; the danger there pays for it.
+
 ### Bodies and car wrecks
 
 | What | What it tends to have |
 |---|---|
-| Body (an infected killed within 60 m of a player) | Dressings, magazines, food, vodka, cigarettes, a watch, someone's belongings; rare: morphine, a knife, a smoke grenade; sometimes a key or something to read |
-| A wreck's boot | Jerrycans, the wrench kit, a spade, food, water, a torch, a map; rare: binoculars, a hiking backpack; sometimes a car part |
+| Body (an infected killed within 60 m of a player) | Dressings, magazines, food, vodka, cigarettes, a watch, someone's belongings; rare: a knife, a smoke grenade (never the high medicine); sometimes a key or something to read |
+| A wreck's boot | Jerrycans, the wrench kit, a spade, food, water, a torch, a map; rare: binoculars, a hiking backpack; sometimes a car part. On the old evacuation road, more ([Rare places](#rare-places)) |
 
 **Bodies are looted with the vanilla inventory.** There's no prompt: when an infected dies within
 60 m of a player, what it carries is rolled at once: something 60% of the time, sometimes two

@@ -4,16 +4,20 @@
 //! RZ_WreckBoots.c); bodies are looted with vanilla's inventory (OnZombiesKilled). There are no
 //! search prompts left.
 //!
-//! - Loot suits the building: pharmacy, garage, farm, police, shop or house, from the prefab
-//!   name of the building. Tables are configurable per type; anything left empty is filled from
-//!   one flat loot pool by keywords (bandage words for pharmacies, tool and fuel words for
-//!   garages...) plus the built-in vanilla items for its type (RZ_LootDefaults), so a table is wide
-//!   and no type is bare when the pool is short or empty; a list set by hand gets them only while
-//!   it's thin; Extra finds add items per type on top (not onto a list set by hand). No prefab
-//!   twice in one roll unless it stacks (PickFresh). Scaled by the town's loot
-//!   level (RZ_TownMemory.GetLootLevel); electronics get the power grid's multiplier
-//!   (RZ_PowerGrid.LootMult).
-//! - A wreck's boot is a container (RZ_WreckBoots.c), rolled when it's first put out near a player.
+//! - Loot suits the building: sixteen kinds from the prefab name of the building (BuildingType:
+//!   house, shop, farm, pharmacy, hospital, garage, fire station, police, school, office, church,
+//!   industrial, hunting, coast, prison, army post). Tables are configurable per kind; anything
+//!   left empty is filled from one flat loot pool by keywords (bandage words for pharmacies, tool
+//!   and fuel words for garages...) plus the built-in vanilla items for its kind (RZ_LootDefaults),
+//!   so a table is wide and no kind is bare when the pool is short or empty; a list set by hand
+//!   gets them only while it's thin; Extra finds add items per kind on top (not onto a list set by
+//!   hand). Everyday finds go by the kind's mix of shared groups (RZ_LootGroups: food 4, drink 2...);
+//!   the high medicine only at a hospital or a locked pharmacy. No prefab twice in one roll unless
+//!   it stacks (PickFresh). Scaled by the town's loot level (RZ_TownMemory.GetLootLevel);
+//!   electronics get the power grid's multiplier (RZ_PowerGrid.LootMult); rare finds x1.5 near
+//!   the line (NearLineMult).
+//! - A wreck's boot is a container (RZ_WreckBoots.c), rolled when it's first put out near a player;
+//!   one on the old evacuation road (near a sealed checkpoint) is better (IsEvacRoad).
 //!   A body is rolled when it dies and its things go into its inventory (or beside it).
 //! - Locks: some pharmacies, garages, police stations, shops and houses are locked (seeded
 //!   from the building's position, so the same ones stay locked). The lock is on the building's
@@ -30,7 +34,7 @@
 [BaseContainerProps(), SCR_BaseContainerCustomTitleField("m_sType")]
 class RZ_LootTable
 {
-	[Attribute("house", desc: "Building type: pharmacy, garage, farm, police, shop, house, body (infected bodies) or car (wrecks' boots)")]
+	[Attribute("house", desc: "Building kind: house, shop, farm, pharmacy, hospital, garage, firestation, police, school, office, church, industrial, hunting, coast, prison, army; body (infected bodies), car (wrecks' boots), evac (a boot on the evacuation road, on top of car) or drone (a downed Perimeter drone)")]
 	string m_sType;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Everyday finds", "et")]
@@ -69,8 +73,17 @@ class RZ_SearchSettings
 	[Attribute("0.4", desc: "At full town loot: the chance a wreck's boot that holds anything holds a second thing")]
 	float m_fBootTwoChance;
 
-	[Attribute("2", desc: "Food weight: each food item (a prefab under /food/) is in a building's everyday list this many times, so food stays common in houses, shops and farms. 1 = no extra weight")]
-	int m_iFoodWeight;
+	[Attribute(desc: "Loot mixes (optional): a kind's everyday mix of groups by weight, e.g. house \"food 4, drink 2, clothes 3, medlow 2\". Food, drink and the low medicine are shared lists (every kind draws the same food); the other groups are the kind's own items. Empty: the built-in mixes (docs/DESIGN.md, \"Groups and mixes\")")]
+	ref array<ref RZ_LootMix> m_aMixes;
+
+	[Attribute("1.5", desc: "Near the line: rare finds are this many times as likely within Near line reach of the Perimeter (people fled inward; the snipers and drones are there). 1 = no change. Only with the Perimeter on")]
+	float m_fNearLineMult;
+
+	[Attribute("1000", desc: "Near line reach (m): how far inside the Perimeter's edge rare finds are better")]
+	float m_fNearLineReach;
+
+	[Attribute("500", desc: "The old evacuation road (m): a wreck's boot this close to a sealed road checkpoint is fuller (the last people who tried to drive out) and gets one thing from the evac table. Only with the Perimeter on. 0 = off")]
+	float m_fEvacReach;
 
 	[Attribute("pier,bollard,retainingwall,brickpile,woodpile,houseruin,well_", desc: "Not buildings: keywords in the names of things the map counts as destructible buildings that aren't rooms to loot (piers, bollards, retaining walls, ruins' rubble, wells). They get no loose loot")]
 	string m_sNotBuildingWords;
@@ -204,6 +217,12 @@ class RZ_Search
 	protected RZ_Interactions m_Hub;
 	protected RZ_SearchSettings m_Settings;
 	protected ref map<string, ref RZ_LootTable> m_mTables = new map<string, ref RZ_LootTable>();
+	// Groups and mixes (RZ_LootGroups): the shared lists (food, drink, the low medicine), each kind's
+	// own items by group, and each kind's everyday mix
+	protected ref map<string, ref array<ResourceName>> m_mShared = new map<string, ref array<ResourceName>>();
+	protected ref map<string, ref map<string, ref array<ResourceName>>> m_mOwn = new map<string, ref map<string, ref array<ResourceName>>>();
+	protected ref map<string, ref array<string>> m_mMixGroups = new map<string, ref array<string>>();
+	protected ref map<string, ref array<float>> m_mMixWeights = new map<string, ref array<float>>();
 	protected ref map<string, float> m_mOpened = new map<string, float>();
 	protected ref map<string, float> m_mForced = new map<string, float>();	// opened by force: broken until the reset
 	protected ref array<ref RZ_Readable> m_aNotes = {};
@@ -275,18 +294,24 @@ class RZ_Search
 		RZ_ItemHelper.Words("radio,battery,batteries,flashlight,torch,electronic,gps,walkie,lamp_portable", m_aElectronicsWords);
 		RZ_ItemHelper.Words(m_Settings.m_sNotBuildingWords, m_aNotBuildingWords);
 
-		array<string> types = {"pharmacy", "garage", "farm", "police", "shop", "house", "body", "car"};
+		array<string> types = {};
+		RZ_LootGroups.Kinds(types);
 		foreach (string type : types)
 		{
 			BuildTable(type);
 		}
 
+		BuildGroups(types);
 		int pool = 0;
 		if (m_Settings.m_aLootPool)
 			pool = m_Settings.m_aLootPool.Count();
 
 		RZ_Log.Info(string.Format("Search: %1 items in the loot pool, %2 tables set by hand. Tables (common/rare/electronics): %3, %4, %5, %6, %7, %8, %9.",
 			pool, CountConfigured(), TableSizes("house"), TableSizes("shop"), TableSizes("farm"), TableSizes("pharmacy"), TableSizes("garage"), TableSizes("police"), TableSizes("body")));
+		RZ_Log.Info(string.Format("Search: the new kinds (common/rare/electronics): %1, %2, %3, %4, %5, %6, %7, %8, %9.",
+			TableSizes("hospital"), TableSizes("firestation"), TableSizes("school"), TableSizes("office"), TableSizes("church"), TableSizes("industrial"), TableSizes("hunting"), TableSizes("coast"), TableSizes("army")));
+		RZ_Log.Info(string.Format("Search: shared groups: %1 food, %2 drink, %3 low medicine; %4 kinds with a mix set by hand. Prison %5, downed drone %6, evacuation road %7.",
+			SharedCount(RZ_LootGroups.FOOD), SharedCount(RZ_LootGroups.DRINK), SharedCount(RZ_LootGroups.MED_LOW), CountMixes(), TableSizes("prison"), TableSizes("drone"), TableSizes("evac")));
 
 		if (m_iExtras > 0)
 			RZ_Log.Info(string.Format("Search: %1 extra finds added to the tables (Search > Extra finds).", m_iExtras));
@@ -394,35 +419,162 @@ class RZ_Search
 			}
 		}
 
-		// Food weighs more: each food item is in the everyday list Food weight times
-		AddFoodWeight(t.m_aCommon);
 		m_mTables.Set(type, t);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Each food item (a prefab under /food/) in `list` is there Food weight times in all.
-	protected void AddFoodWeight(notnull array<ResourceName> list)
+	//! After the tables: the shared lists (every kind's everyday items and the pool, by group: food,
+	//! drink, the low medicine), each kind's own items by group, and each kind's mix (Loot mixes,
+	//! else RZ_LootGroups.DefaultMix).
+	protected void BuildGroups(array<string> kinds)
 	{
-		int extra = Math.Max(1, m_Settings.m_iFoodWeight) - 1;
-		if (extra <= 0)
-			return;
+		m_mShared.Clear();
+		m_mOwn.Clear();
+		m_mMixGroups.Clear();
+		m_mMixWeights.Clear();
+		array<ResourceName> everything = {};
+		if (m_Settings.m_aLootPool)
+			AppendNew(m_Settings.m_aLootPool, everything);
 
-		array<ResourceName> food = {};
-		foreach (ResourceName r : list)
+		foreach (string kind : kinds)
 		{
-			string lower = r;
-			lower.ToLower();
-			if (lower.Contains("/food/"))
-				food.Insert(r);
+			RZ_LootTable t;
+			if (!m_mTables.Find(kind, t))
+				continue;
+
+			map<string, ref array<ResourceName>> own = new map<string, ref array<ResourceName>>();
+			foreach (ResourceName r : t.m_aCommon)
+			{
+				string g = RZ_LootGroups.GroupOf(r);
+				array<ResourceName> list;
+				if (!own.Find(g, list))
+				{
+					list = {};
+					own.Set(g, list);
+				}
+
+				if (!HasSame(list, r))
+					list.Insert(r);
+
+				// A kind's own food and drink feed everyone's (bodies and boots excepted: they aren't rooms)
+				if (kind != "body" && kind != "car" && kind != "drone" && kind != "evac" && !HasSame(everything, r))
+					everything.Insert(r);
+			}
+
+			m_mOwn.Set(kind, own);
+			array<string> groups = {};
+			array<float> weights = {};
+			RZ_LootGroups.ParseMix(MixFor(kind), groups, weights);
+			m_mMixGroups.Set(kind, groups);
+			m_mMixWeights.Set(kind, weights);
 		}
 
-		for (int n = 0; n < extra; n++)
+		foreach (ResourceName e : everything)
 		{
-			foreach (ResourceName f : food)
+			string sg = RZ_LootGroups.GroupOf(e);
+			if (!RZ_LootGroups.IsShared(sg))
+				continue;
+
+			array<ResourceName> shared;
+			if (!m_mShared.Find(sg, shared))
 			{
-				list.Insert(f);
+				shared = {};
+				m_mShared.Set(sg, shared);
+			}
+
+			shared.Insert(e);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A kind's mix: the one set by hand, else the built-in one.
+	protected string MixFor(string kind)
+	{
+		if (m_Settings.m_aMixes)
+		{
+			foreach (RZ_LootMix m : m_Settings.m_aMixes)
+			{
+				if (m && m.m_sType == kind && !m.m_sMix.IsEmpty())
+					return m.m_sMix;
 			}
 		}
+
+		return RZ_LootGroups.DefaultMix(kind);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int CountMixes()
+	{
+		if (!m_Settings.m_aMixes)
+			return 0;
+
+		return m_Settings.m_aMixes.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many items a shared group has (for the log and the test).
+	int SharedCount(string group)
+	{
+		array<ResourceName> list;
+		if (!m_mShared.Find(group, list))
+			return 0;
+
+		return list.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A kind's everyday pick by its mix: a group by weight (among the groups it has anything of),
+	//! then one of that group's items (a shared list for food, drink and the low medicine). "" if the
+	//! kind has nothing.
+	protected ResourceName PickEveryday(string kind, RZ_LootTable t)
+	{
+		array<string> groups;
+		array<float> weights;
+		map<string, ref array<ResourceName>> own;
+		if (!m_mMixGroups.Find(kind, groups) || !m_mMixWeights.Find(kind, weights) || !m_mOwn.Find(kind, own))
+		{
+			if (t && !t.m_aCommon.IsEmpty())
+				return t.m_aCommon.GetRandomElement();
+
+			return "";
+		}
+
+		float total = 0;
+		array<ref array<ResourceName>> lists = {};
+		array<float> live = {};
+		foreach (int i, string g : groups)
+		{
+			array<ResourceName> list;
+			if (RZ_LootGroups.IsShared(g))
+				m_mShared.Find(g, list);
+			else
+				own.Find(g, list);
+
+			if (!list || list.IsEmpty())
+				continue;
+
+			lists.Insert(list);
+			live.Insert(weights[i]);
+			total += weights[i];
+		}
+
+		if (total <= 0)
+		{
+			if (t && !t.m_aCommon.IsEmpty())
+				return t.m_aCommon.GetRandomElement();
+
+			return "";
+		}
+
+		float roll = Math.RandomFloat(0, total);
+		foreach (int n, float w : live)
+		{
+			roll -= w;
+			if (roll <= 0)
+				return lists[n].GetRandomElement();
+		}
+
+		return lists[lists.Count() - 1].GetRandomElement();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -457,6 +609,10 @@ class RZ_Search
 	//! The map counts it as a building but it's no room to loot (a pier, a bollard, rubble).
 	bool IsNotBuilding(string lowerName)
 	{
+		// A cottage on a pier or a boat shed is a room, whatever the pier words say
+		if (IsCoastName(lowerName))
+			return false;
+
 		return RZ_ItemHelper.NameHas(lowerName, m_aNotBuildingWords);
 	}
 
@@ -591,6 +747,78 @@ class RZ_Search
 				r = "battery,spark,toolbox,binocular";
 				break;
 			}
+			case "hospital":
+			{
+				c = "bandage,dressing,gauze,tourniquet,saline,pill,tablet,painkiller,syringe,iodine,glove";
+				r = "morphine,antibiotic,epinephrine,adrenaline,medkit,medicalkit,hazmat";
+				break;
+			}
+			case "firestation":
+			{
+				c = "firefighter,helmet_civ,glove,overall,flashlight,rope,canteen";
+				r = "fire axe,fire_axe,oxygen,firefighter_suit,gas_mask";
+				break;
+			}
+			case "school":
+			{
+				c = "food,tin,water,bottle,writingpad,cloth,shirt,sneaker,map";
+				r = "watch,binocular";
+				break;
+			}
+			case "office":
+			{
+				c = "map,writingpad,watch,cash,creditcard,water,bottle";
+				r = "goldbrick,radio";
+				break;
+			}
+			case "church":
+			{
+				c = "food,water,bottle,candle";
+				r = "writingpad";
+				break;
+			}
+			case "industrial":
+			{
+				c = "wire,nail,scrap,jerrycan,plank,rope,overall,glove,hard";
+				r = "fuse,toolbox,wrench,crowbar";
+				break;
+			}
+			case "hunting":
+			{
+				c = "knife,binocular,compass,map,raincoat,boonie,canteen";
+				r = "rifle,shotgun";
+				break;
+			}
+			case "coast":
+			{
+				c = "raincoat,fisherman,rope,food,tin,water";
+				r = "drybag,binocular";
+				break;
+			}
+			case "prison":
+			{
+				c = "prisoner,food,tin";
+				r = "";
+				break;
+			}
+			case "army":
+			{
+				c = "magazine,mag_,ammo,bdu,m65,mre,canteen,smoke";
+				r = "rifle,helmet,vest";
+				break;
+			}
+			case "drone":
+			{
+				c = "cells,battery,wire,scrap,fuse";
+				r = "radio";
+				break;
+			}
+			case "evac":
+			{
+				c = "mre,cracker,food,canteen,water,dressing";
+				r = "backpack,medkit,medicalkit";
+				break;
+			}
 		}
 
 		RZ_ItemHelper.Words(c, common);
@@ -599,21 +827,53 @@ class RZ_Search
 
 	// ================================================================ Recognising things
 	//------------------------------------------------------------------------------------------------
-	//! The building type from its lower-case prefab or mesh name.
+	//! The building kind from its lower-case prefab or mesh name (docs/DESIGN.md, "Building kinds").
+	//! The order matters: a fisherman's shed is the coast's before it's a farm's shed, a medical
+	//! barracks is a hospital before it's an army post.
 	string BuildingType(string name)
 	{
 		// Vet clinics stock what farms do (the veterinary antiviral), not a pharmacy's shelves
 		if (name.Contains("veterin") || name.Contains("vet_") || name.Contains("vetclinic"))
 			return "farm";
 
+		if (name.Contains("hospital") || name.Contains("clinic") || (name.Contains("barracks") && name.Contains("medical")))
+			return "hospital";
+
 		if (RZ_LandmarkFinder.Matches("pharmacy", name) || name.Contains("drugstore") || name.Contains("apothec"))
 			return "pharmacy";
 
-		if (name.Contains("garage") || name.Contains("workshop") || name.Contains("firestation") || name.Contains("carservice") || name.Contains("car_service") || name.Contains("autoservice") || name.Contains("repair") || name.Contains("mechanic"))
+		if (name.Contains("firestation") || name.Contains("fire_station") || name.Contains("firehouse"))
+			return "firestation";
+
+		if (name.Contains("garage") || name.Contains("workshop") || name.Contains("carservice") || name.Contains("car_service") || name.Contains("autoservice") || name.Contains("repair") || name.Contains("mechanic"))
 			return "garage";
 
 		if (name.Contains("police") || name.Contains("gendarm") || name.Contains("sheriff"))
 			return "police";
+
+		if (name.Contains("prison") || name.Contains("jail"))
+			return "prison";
+
+		if (name.Contains("barrack") || name.Contains("bunker") || name.Contains("guardhouse") || name.Contains("radar") || name.Contains("controltower") || name.Contains("headquarters") || name.Contains("ammodump"))
+			return "army";
+
+		if (name.Contains("school") || name.Contains("kindergarten"))
+			return "school";
+
+		if (name.Contains("office") || name.Contains("townhall") || name.Contains("town_hall") || name.Contains("postoffice") || name.Contains("post_office") || name.Contains("bank_"))
+			return "office";
+
+		if (name.Contains("church") || name.Contains("chapel"))
+			return "church";
+
+		if (name.Contains("factory") || name.Contains("warehouse") || name.Contains("depot") || name.Contains("sawmill") || name.Contains("hangar") || name.Contains("concreteplant") || name.Contains("boilerhouse"))
+			return "industrial";
+
+		if (IsCoastName(name))
+			return "coast";
+
+		if (name.Contains("hunting") || name.Contains("hunterstand") || name.Contains("hunter_stand") || name.Contains("lodge"))
+			return "hunting";
 
 		if (name.Contains("farm") || name.Contains("barn") || name.Contains("stable") || name.Contains("shed") || name.Contains("silo") || name.Contains("cowshed"))
 			return "farm";
@@ -622,6 +882,13 @@ class RZ_Search
 			return "shop";
 
 		return "house";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A boathouse, a fisherman's shed, a cottage on a pier: the coast's kind.
+	static bool IsCoastName(string name)
+	{
+		return name.Contains("boathouse") || name.Contains("boatshed") || name.Contains("fisherman") || name.Contains("cottagepier") || name.Contains("pier_shed");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -635,6 +902,16 @@ class RZ_Search
 			case "police": return "the police station";
 			case "shop": return "the shop";
 			case "body": return "the body";
+			case "hospital": return "the hospital";
+			case "firestation": return "the fire station";
+			case "school": return "the school";
+			case "office": return "the office";
+			case "church": return "the church";
+			case "industrial": return "the warehouse";
+			case "hunting": return "the hunting lodge";
+			case "coast": return "the boat shed";
+			case "prison": return "the prison";
+			case "army": return "the army post";
 		}
 
 		return "the house";
@@ -650,6 +927,16 @@ class RZ_Search
 			case "garage": return "Garage";
 			case "police": return "Police";
 			case "shop": return "Shop, back door";
+			case "hospital": return "Hospital";
+			case "firestation": return "Fire station";
+			case "school": return "School";
+			case "office": return "Office";
+			case "church": return "Church, vestry";
+			case "industrial": return "Warehouse";
+			case "hunting": return "Lodge";
+			case "coast": return "Boat shed";
+			case "prison": return "Prison";
+			case "army": return "Army post";
 		}
 
 		if (colour.IsEmpty())
@@ -700,9 +987,16 @@ class RZ_Search
 		switch (type)
 		{
 			case "pharmacy": share = m_Settings.m_fLockPharmacy; break;
+			case "hospital": share = m_Settings.m_fLockPharmacy; break;
 			case "police": share = m_Settings.m_fLockPolice; break;
+			case "army": share = m_Settings.m_fLockPolice; break;
+			case "prison": share = m_Settings.m_fLockPolice; break;
 			case "garage": share = m_Settings.m_fLockGarage; break;
+			case "firestation": share = m_Settings.m_fLockGarage; break;
+			case "industrial": share = m_Settings.m_fLockGarage; break;
 			case "shop": share = m_Settings.m_fLockShop; break;
+			case "office": share = m_Settings.m_fLockShop; break;
+			case "school": share = m_Settings.m_fLockShop; break;
 		}
 
 		int gx = Math.Floor(buildingPos[0] / 4);
@@ -1012,7 +1306,7 @@ class RZ_Search
 		Odds("body", pos, false, true, rare, electronics);
 		for (int i = 0; i < count; i++)
 		{
-			ResourceName pick = PickFrom(t, rare, electronics);
+			ResourceName pick = PickFresh(t, "body", false, rare, electronics, picks);
 			if (!pick.IsEmpty())
 				picks.Insert(pick);
 		}
@@ -1055,6 +1349,52 @@ class RZ_Search
 			rare = Math.Min(0.5, rare * RZ_Seasons.Mods().m_fMilitaryLootMult);
 
 		electronics = m_Settings.m_fElectronicsChance * RZ_PowerGrid.LootMult(pos, "electronics");
+
+		// Near the line less was taken (people fled inward): rare finds are better (not on bodies)
+		if (!body)
+			rare = Math.Min(0.5, rare * NearLineMult(pos));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Perimeter is on and running (its Features switch and the system itself).
+	protected RZ_Perimeter LivePerimeter()
+	{
+		if (!RZ_Features.On(RZ_EFeature.PERIMETER))
+			return null;
+
+		RZ_Perimeter perimeter = m_GM.GetPerimeter();
+		if (!perimeter || !perimeter.IsActive())
+			return null;
+
+		return perimeter;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Near line (x the rare chance): Near line mult within Near line reach inside the Perimeter's
+	//! edge, else 1. 1 with the Perimeter off.
+	float NearLineMult(vector pos)
+	{
+		RZ_Perimeter perimeter = LivePerimeter();
+		if (!perimeter || m_Settings.m_fNearLineMult <= 1)
+			return 1;
+
+		float edge = perimeter.EdgeDistance(pos);
+		if (edge < 0 || edge > m_Settings.m_fNearLineReach)
+			return 1;
+
+		return m_Settings.m_fNearLineMult;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A wreck here stands on the old evacuation road: within Evacuation road of a sealed road
+	//! checkpoint, with the Perimeter on.
+	bool IsEvacRoad(vector pos)
+	{
+		if (m_Settings.m_fEvacReach <= 0)
+			return false;
+
+		RZ_Perimeter perimeter = LivePerimeter();
+		return perimeter && perimeter.GetCheckpointDistance(pos) <= m_Settings.m_fEvacReach;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1092,7 +1432,7 @@ class RZ_Search
 			if (i >= sure && Math.RandomFloat01() >= Math.Clamp(odds, 0, 0.95))
 				continue;
 
-			ResourceName pick = PickFresh(t, rare, electronics, picks);
+			ResourceName pick = PickFresh(t, type, locked, rare, electronics, picks);
 			if (!pick.IsEmpty())
 				picks.Insert(pick);
 		}
@@ -1103,17 +1443,61 @@ class RZ_Search
 
 	//------------------------------------------------------------------------------------------------
 	//! A pick that isn't in `picks` yet, unless it stacks (ammo, food, dressings: two of those in one
-	//! place is normal). A few tries, then "" (the slot stays empty rather than doubling up).
-	protected ResourceName PickFresh(RZ_LootTable t, float rare, float electronics, array<ResourceName> picks)
+	//! place is normal), and may lie in this kind of place (the high medicine only at a hospital or a
+	//! locked pharmacy: RZ_LootGroups.AllowedAt). A few tries, then "" (the slot stays empty).
+	protected ResourceName PickFresh(RZ_LootTable t, string kind, bool locked, float rare, float electronics, array<ResourceName> picks)
 	{
-		for (int attempt = 0; attempt < 6; attempt++)
+		for (int attempt = 0; attempt < 8; attempt++)
 		{
-			ResourceName pick = PickFrom(t, rare, electronics);
-			if (pick.IsEmpty() || picks.Find(pick) < 0 || Stacks(pick))
+			ResourceName pick = PickFrom(t, kind, rare, electronics);
+			if (pick.IsEmpty())
+				return pick;
+
+			if (!RZ_LootGroups.AllowedAt(pick, kind, locked))
+				continue;
+
+			if (picks.Find(pick) < 0 || Stacks(pick))
 				return pick;
 		}
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One everyday find for this kind (RZ_Loot's caps: in place of a capped rare one). "" if none.
+	ResourceName PickEverydayFor(string kind, bool locked)
+	{
+		RZ_LootTable t = TableFor(kind);
+		for (int attempt = 0; attempt < 6; attempt++)
+		{
+			ResourceName pick = PickEveryday(kind, t);
+			if (pick.IsEmpty() || RZ_LootGroups.AllowedAt(pick, kind, locked))
+				return pick;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sizes of a kind's table, for the test: everyday, rare, electronics.
+	vector TableCounts(string kind)
+	{
+		RZ_LootTable t;
+		if (!m_mTables.Find(kind, t))
+			return vector.Zero;
+
+		return Vector(t.m_aCommon.Count(), t.m_aRare.Count(), t.m_aElectronics.Count());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A kind's table has this prefab (any list), for the test.
+	bool TableHas(string kind, ResourceName prefab)
+	{
+		RZ_LootTable t;
+		if (!m_mTables.Find(kind, t))
+			return false;
+
+		return HasSame(t.m_aCommon, prefab) || HasSame(t.m_aRare, prefab) || HasSame(t.m_aElectronics, prefab);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1144,7 +1528,9 @@ class RZ_Search
 
 		float level = RZ_TownMemory.GetLootLevel(pos);
 		float chance = m_Settings.m_fBootChance * level;
-		if (stash)
+		// The old evacuation road: the last people who tried to drive out left fuller boots
+		bool evac = IsEvacRoad(pos);
+		if (stash || evac)
 			chance += 0.25;
 
 		if (Math.RandomFloat01() >= Math.Clamp(chance, 0, 0.95))
@@ -1152,7 +1538,7 @@ class RZ_Search
 
 		int count = 1;
 		float twoChance = m_Settings.m_fBootTwoChance * level;
-		if (stash)
+		if (stash || evac)
 			twoChance = Math.Max(0.5, twoChance);
 
 		if (Math.RandomFloat01() < twoChance)
@@ -1163,14 +1549,28 @@ class RZ_Search
 		Odds("car", pos, stash, false, rare, electronics);
 		for (int i = 0; i < count; i++)
 		{
-			ResourceName pick = PickFresh(t, rare, electronics, picks);
+			ResourceName pick = PickFresh(t, "car", false, rare, electronics, picks);
 			if (!pick.IsEmpty())
 				picks.Insert(pick);
 		}
+
+		// The evacuation road's boot: one more thing a family packed to leave (a bag, food for days,
+		// a first-aid kit)
+		RZ_LootTable evacTable = TableFor("evac");
+		if (!evac || !evacTable)
+			return;
+
+		float evacRare;
+		float evacElectronics;
+		Odds("evac", pos, true, false, evacRare, evacElectronics);
+		ResourceName extra = PickFresh(evacTable, "evac", false, evacRare, 0, picks);
+		if (!extra.IsEmpty())
+			picks.Insert(extra);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected ResourceName PickFrom(RZ_LootTable t, float rare, float electronics)
+	//! Electronics, a rare find, or an everyday one by the kind's mix (PickEveryday).
+	protected ResourceName PickFrom(RZ_LootTable t, string kind, float rare, float electronics)
 	{
 		float roll = Math.RandomFloat01();
 		if (roll < electronics && !t.m_aElectronics.IsEmpty())
@@ -1179,8 +1579,9 @@ class RZ_Search
 		if (roll < electronics + rare && !t.m_aRare.IsEmpty())
 			return t.m_aRare.GetRandomElement();
 
-		if (!t.m_aCommon.IsEmpty())
-			return t.m_aCommon.GetRandomElement();
+		ResourceName everyday = PickEveryday(kind, t);
+		if (!everyday.IsEmpty())
+			return everyday;
 
 		if (m_Settings.m_aLootPool && !m_Settings.m_aLootPool.IsEmpty())
 			return m_Settings.m_aLootPool.GetRandomElement();
@@ -1590,6 +1991,44 @@ class RZ_LootDefaults
 	protected static const string FISHER_PANTS = "{0B1F0174869E0351}Prefabs/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_green.et";
 	protected static const string OVERALLS = "{DFE230A386D20BFB}Prefabs/Characters/Uniforms/Overalls/Mechanic_uniform.et";
 	protected static const string SNEAKERS = "{553F83578D29670C}Prefabs/Characters/Footwear/Sneakers/Sneakers_Black.et";
+	// The new kinds (docs/DESIGN.md, "Building kinds"): base-game items and the mod's own crafting things
+	protected static const string WATER = "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et";
+	protected static const string MEDKIT_US = "{AE578EEA4244D41F}Prefabs/Items/Equipment/Kits/MedicalKit_01/MedicalKit_01_US.et";
+	protected static const string MEDKIT_SU = "{21EF98BFC1EB3793}Prefabs/Items/Equipment/Kits/MedicalKit_01/MedicalKit_01_USSR.et";
+	protected static const string HAZMAT = "{BF54108D935086E5}Prefabs/Characters/Uniforms/Suit_Hazmat/Suit_Hazmat_Hood_HiVis.et";
+	protected static const string GAS_MASK = "{FB66C1EC2E5DB34C}Prefabs/Clothing/Gas_Mask.et";
+	protected static const string HELMET_FIRE = "{5C7E23A702959B1C}Prefabs/Characters/HeadGear/Helmet_M1_01/Helmet_CIV_Firefighter.et";
+	protected static const string FIRE_AXE = "{87FAD1AE2D462BD2}Prefabs/Weapons/Melee/Fire Axe.et";
+	protected static const string OXYGEN = "{CAB1F18E563F8489}Prefabs/Items/Equipment/Backpacks/firefighter oxygen tank.et";
+	protected static const string FIRE_SUIT = "{C347738A4C9E58EE}Prefabs/Characters/Uniforms/Suit_Pilot_US_01/firefighter_suit.et";
+	protected static const string PAD = "{268E3FCBD96622AD}Prefabs/ReforgerZ/Crafting/RZ_WritingPad.et";
+	protected static const string CASH = "{696CC1F6BC5BE3F7}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_StackofCash.et";
+	protected static const string CARDS = "{D0476EFD1BB2CCB3}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_CreditCards.et";
+	protected static const string GOLD = "{7B605E8E4B952837}PrefabsEditable/Auto/Props/Civilian/Suspicious Items/E_GoldBrick.et";
+	protected static const string RADIO_PORTABLE = "{842711C53E9F890C}Prefabs/Items/Equipment/Misc/Portable_Radio.et";
+	protected static const string WIRE = "{2E0FAA5F39CBA66C}Prefabs/ReforgerZ/Crafting/RZ_Wire.et";
+	protected static const string NAILS = "{267D3FAF0F92499F}Prefabs/ReforgerZ/Crafting/RZ_Nails.et";
+	protected static const string SCRAP = "{6CB732A4814E2F43}Prefabs/ReforgerZ/Crafting/RZ_Scrap.et";
+	protected static const string FUSE = "{01C470CBEFA41D39}Prefabs/ReforgerZ/Crafting/RZ_Fuse.et";
+	protected static const string CELLS = "{F51872C09AA3A89A}Prefabs/ReforgerZ/Crafting/RZ_Cells.et";
+	protected static const string PLANKS = "{0A101873E8C9274C}Prefabs/ReforgerZ/Interactions/RZ_Planks.et";
+	protected static const string WOOD = "{B5B3D0AFBB4DE757}Prefabs/Items/Core/FM_WoodStick.et";
+	protected static const string ETOOL = "{0619993AE6CDBF85}Prefabs/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE.et";
+	protected static const string KNIFE = "{3805C0B87B9D2AB0}prefabs/weapons/Melee/Knife.et";
+	protected static const string BOONIE = "{1E8E0AF46736D299}Prefabs/Characters/HeadGear/Hat_Boonie_US_01/Hat_Boonie_US_dark.et";
+	protected static const string RAINCOAT_US = "{7B8BBB818BD62015}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/US RAINCOAT.et";
+	protected static const string PRISONER = "{EF0516E165E01874}Prefabs/Characters/Uniforms/Overalls/Prisoner_uniform.et";
+	protected static const string MAG_VZ58 = "{48720FC416263FC1}Prefabs/Weapons/Magazines/Vz58/Magazine_762x39_Vz58_30rnd_Ball.et";
+	protected static const string MAG_STANAG = "{2EBF60EF24B108FC}Prefabs/Weapons/Magazines/Magazine_556x45_STANAG_30rnd_M855_Ball.et";
+	protected static const string BDU = "{293F577C298061E3}Prefabs/Characters/Uniforms/Jacket_US_BDU_02.et";
+	protected static const string M65 = "{86BB79B9A2233780}Prefabs/Characters/Uniforms/Pants_US_M65.et";
+	protected static const string SMOKE_RU = "{77EAE5E07DC4678A}Prefabs/Weapons/Grenades/Smoke_RDG2.et";
+	protected static const string SMOKE_US = "{D41D22DD1B8E921E}Prefabs/Weapons/Grenades/M18/Smoke_M18_Green.et";
+	protected static const string RIFLE_M16 = "{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et";
+	protected static const string RIFLE_VZ58 = "{9C948630078D154D}Prefabs/Weapons/Rifles/VZ58/Rifle_VZ58P.et";
+	protected static const string HELMET_ARMY = "{B74A4FF0DD8BB116}Prefabs/Characters/HeadGear/Helmet_PASGT_01/Helmet_PASGT_01.et";
+	protected static const string VEST_6B3 = "{4CBDC206FEF9897C}Prefabs/Characters/Vests/Vest_6B3/Vest_6B3.et";
+	protected static const string HIKING_BAG = "{A870260CF6ECB936}Prefabs/Items/Equipment/Backpacks/Backpack_IIFS_FieldPack_hiking.et";
 
 	//------------------------------------------------------------------------------------------------
 	static void For(string type, notnull array<ResourceName> common, notnull array<ResourceName> rare, notnull array<ResourceName> electronics)
@@ -1652,6 +2091,100 @@ class RZ_LootDefaults
 				Add(common, common13);
 				array<string> rare14 = {BINOCULARS, WRENCH};
 				Add(rare, rare14);
+				return;
+			}
+			case "hospital":
+			{
+				array<string> commonHosp = {DRESSING_US, DRESSING_SU, GAUZE_1, GAUZE_2, ASPIRIN, TOURNIQUET_US, TOURNIQUET_SU, SALINE_SU, SALINE_US, GLOVES_MED};
+				Add(common, commonHosp);
+				array<string> rareHosp = {MORPHINE, MEDKIT_US, MEDKIT_SU, MED_BAG, HAZMAT};
+				Add(rare, rareHosp);
+				return;
+			}
+			case "firestation":
+			{
+				array<string> commonFire = {HELMET_FIRE, GLOVES_LEATHER, OVERALLS, TORCH_SU, CANTEEN_US, HAT_HARD};
+				Add(common, commonFire);
+				array<string> rareFire = {FIRE_AXE, OXYGEN, FIRE_SUIT, GAS_MASK};
+				Add(rare, rareFire);
+				return;
+			}
+			case "school":
+			{
+				array<string> commonSchool = {CRACKERS, WATER, PAD, SNEAKERS, SWEATSHIRT, MAP};
+				Add(common, commonSchool);
+				array<string> rareSchool = {WATCH, BAG};
+				Add(rare, rareSchool);
+				return;
+			}
+			case "office":
+			{
+				array<string> commonOffice = {MAP, PAD, WATCH, WATCH_2, CASH, CARDS, WATER};
+				Add(common, commonOffice);
+				array<string> rareOffice = {GOLD, RADIO_PORTABLE};
+				Add(rare, rareOffice);
+				return;
+			}
+			case "church":
+			{
+				array<string> commonChurch = {CRACKERS, WATER, CANTEEN_SU};
+				Add(common, commonChurch);
+				array<string> rareChurch = {PAD};
+				Add(rare, rareChurch);
+				return;
+			}
+			case "industrial":
+			{
+				array<string> commonInd = {WIRE, NAILS, SCRAP, JERRYCAN, PLANKS, WOOD, OVERALLS, GLOVES_LEATHER, HAT_HARD};
+				Add(common, commonInd);
+				array<string> rareInd = {FUSE, WRENCH, ETOOL};
+				Add(rare, rareInd);
+				return;
+			}
+			case "hunting":
+			{
+				array<string> commonHunt = {KNIFE, BINOCULARS, COMPASS, MAP, RAINCOAT, BOONIE, CANTEEN_SU, MEAT};
+				Add(common, commonHunt);
+				array<string> rareHunt = {BINOCULARS, COMPASS_US, BAG};
+				Add(rare, rareHunt);
+				return;
+			}
+			case "coast":
+			{
+				array<string> commonCoast = {RAINCOAT, RAINCOAT_US, FISHER_PANTS, CRACKERS, WATER, CANTEEN_SU};
+				Add(common, commonCoast);
+				array<string> rareCoast = {BINOCULARS, BAG};
+				Add(rare, rareCoast);
+				return;
+			}
+			case "prison":
+			{
+				array<string> commonPrison = {PRISONER, CRACKERS};
+				Add(common, commonPrison);
+				return;
+			}
+			case "army":
+			{
+				array<string> commonArmy = {MAG_PM, MAG_AK, MAG_VZ58, MAG_STANAG, BDU, M65, MRE, CANTEEN_US, CANTEEN_SU, SMOKE_RU, SMOKE_US};
+				Add(common, commonArmy);
+				array<string> rareArmy = {RIFLE_M16, RIFLE_VZ58, HELMET_ARMY, VEST, VEST_6B3};
+				Add(rare, rareArmy);
+				return;
+			}
+			case "drone":
+			{
+				array<string> commonDrone = {CELLS, WIRE, SCRAP, FUSE, TORCH_SU};
+				Add(common, commonDrone);
+				array<string> rareDrone = {RADIO, RADIO_PORTABLE};
+				Add(rare, rareDrone);
+				return;
+			}
+			case "evac":
+			{
+				array<string> commonEvac = {MRE, CRACKERS, MEAT, CANTEEN_US, CANTEEN_SU, WATER, DRESSING_US};
+				Add(common, commonEvac);
+				array<string> rareEvac = {HIKING_BAG, BAG, MEDKIT_US};
+				Add(rare, rareEvac);
 				return;
 			}
 		}
