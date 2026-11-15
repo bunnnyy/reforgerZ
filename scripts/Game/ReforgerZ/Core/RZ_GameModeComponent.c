@@ -992,6 +992,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 #ifdef WORKBENCH
 		// Workbench play only, and only with $profile:RZ_PhotoTour.txt (docs/PC_SETUP.md, "Photos of the sites")
 		RZ_PhotoTour.Start(this);
+		// The driver: Claude Code plays through $profile:RZ_Control/ (Core/RZ_Driver.c)
+		RZ_Driver.Start(this);
 #endif
 	}
 

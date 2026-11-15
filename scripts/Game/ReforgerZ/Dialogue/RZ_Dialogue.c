@@ -271,6 +271,15 @@ class RZ_Dialogue
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! This player's open conversation, or null (the Workbench driver reads it, Core/RZ_Driver.c).
+	RZ_TalkSession SessionOf(int playerId)
+	{
+		RZ_TalkSession s;
+		m_mSessions.Find(playerId, s);
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Every open conversation with this speaker.
 	void SessionsWith(IEntity speaker, notnull array<RZ_TalkSession> result)
 	{
