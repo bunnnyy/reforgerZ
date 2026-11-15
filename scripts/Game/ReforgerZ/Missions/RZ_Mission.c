@@ -50,6 +50,7 @@ class RZ_Mission
 	float m_fParticipationRadius = 150;
 	RZ_EMissionState m_eState = RZ_EMissionState.ACTIVE;
 	ref array<int> m_aParticipants = {};
+	ref map<int, string> m_mGivenBy = new map<int, string>();	// player -> who gave it them (RZ_TalkJobs.GiverKey): one job at a time from a giver
 	ref array<int> m_aOfferedTo = {};	// hired: offered in person by its giver or a thing of its (Hire)
 	ref array<int> m_aHeardBy = {};		// told on the radio who to ask for it (not hired)
 	int m_iMarkerId = -1;			// map marker handle (RZ_MapMarkers), -1 = none

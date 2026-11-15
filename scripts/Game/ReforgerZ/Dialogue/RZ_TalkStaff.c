@@ -299,7 +299,7 @@ class RZ_TalkStaff : RZ_TalkSpeaker
 		m_iPitch = -1;
 		if ((replyId == RZ_TalkJobs.TAKE || replyId == RZ_TalkJobs.LEAVE) && pitched >= 0)
 		{
-			RZ_TalkJobs.Take(gm, playerId, pitched, replyId == RZ_TalkJobs.TAKE, s.m_sHeader, m_Talk.GetFaction(), GiverName(gm), user);
+			RZ_TalkJobs.Take(gm, playerId, pitched, replyId == RZ_TalkJobs.TAKE, s.m_sHeader, m_Talk.GetFaction(), GiverName(gm), user, SeatLeader(gm));
 			return;
 		}
 

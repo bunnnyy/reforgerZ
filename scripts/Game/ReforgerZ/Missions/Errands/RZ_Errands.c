@@ -2571,7 +2571,7 @@ class RZ_Errands
 			step += string.Format(" Before %1 (about %2 real minutes).", RZ_GameTime.Clock(w.m_fBefore), RZ_Util.RoundToInt(RZ_GameTime.RealMinutesUntil(w.m_fBefore)));
 
 		// The start card (RZ_JobCards): what, from whom, and the step with its direction
-		RZ_JobCards.Started(m_GM, e.m_iAsker, "Errand", e.Fill(e.m_Def.m_sTitle), GiverWords(e), step + "\n" + RZ_Util.Capitalize(RZ_Util.DirectionText(user.GetOrigin(), e.m_vPlace)) + ".");
+		RZ_JobCards.Started(m_GM, e.m_iAsker, "Errand", e.Fill(e.m_Def.m_sTitle), GiverWords(e), step + "\n" + RZ_Util.Capitalize(RZ_Util.DirectionText(user.GetOrigin(), e.m_vPlace)) + ".", RZ_Dialogue.ForErrand(e.m_iId));
 		RZ_Log.Info(string.Format("Errands: %1 taken by %2, way %3 (%4)", e.m_Def.m_sKey, RZ_Util.PlayerName(e.m_iAsker), w.m_iIndex, w.m_sWay));
 	}
 
@@ -4260,7 +4260,7 @@ class RZ_Errands
 
 		Say(e, Pick(w.m_aTake), false);
 		if (w.HasStep())
-			RZ_JobCards.Started(m_GM, playerId, "Errand", e.Fill(d.m_sTitle), GiverWords(e), e.Fill(w.StepText()) + "\n" + RZ_Util.Capitalize(RZ_Util.DirectionText(user.GetOrigin(), place)) + ".");
+			RZ_JobCards.Started(m_GM, playerId, "Errand", e.Fill(d.m_sTitle), GiverWords(e), e.Fill(w.StepText()) + "\n" + RZ_Util.Capitalize(RZ_Util.DirectionText(user.GetOrigin(), place)) + ".", RZ_Dialogue.ForErrand(e.m_iId));
 
 		RZ_Log.Info(string.Format("Errands: %1 handed to %2 (%3)", d.m_sKey, RZ_Util.PlayerName(playerId), giverName));
 		return e;

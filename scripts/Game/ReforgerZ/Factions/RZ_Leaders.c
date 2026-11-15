@@ -1800,6 +1800,8 @@ class RZ_Leaders
 		if (job.Hire(playerId))
 			RZ_Log.Info(string.Format("Mission %1 '%2' taken by %3 from %4", job.m_iId, job.m_sTitle, RZ_Util.PlayerName(playerId), l.m_sName));
 
+		job.m_mGivenBy.Set(playerId, RZ_TalkJobs.GiverKey(l.m_eFaction, l));
+
 		m_GM.NotifyPlayer(playerId, l.GetHeader(), RZ_LeaderVoice.Agreed(l.m_eFaction));
 		string giver = RZ_JobCards.LeaderGiver(l);
 		if (job.m_bRogueJob)

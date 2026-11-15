@@ -7,11 +7,16 @@
 class RZ_JobCards
 {
 	//------------------------------------------------------------------------------------------------
-	//! "<Kind> started: <title>", then "From <giver>." and the first objective.
-	static void Started(RZ_GameModeComponent gm, int playerId, string kind, string title, string giver, string objective)
+	//! "<Kind> started: <title>", then "From <giver>." and the first objective. The job just taken
+	//! is the one tracked (`trackId`: its Quests tab row, RZ_Dialogue.ForMission / ForErrand; 0 none).
+	static void Started(RZ_GameModeComponent gm, int playerId, string kind, string title, string giver, string objective, int trackId = 0)
 	{
 		if (!gm || playerId <= 0 || title.IsEmpty())
 			return;
+
+		RZ_UIFeed feed = gm.GetUIFeed();
+		if (trackId != 0 && feed && feed.GetTracker())
+			feed.GetTracker().Follow(playerId, trackId, title);
 
 		string text = "";
 		if (!giver.IsEmpty())
@@ -48,7 +53,7 @@ class RZ_JobCards
 		if (!kindOverride.IsEmpty())
 			kind = kindOverride;
 
-		Started(gm, playerId, kind, m.m_sTitle, giver, first);
+		Started(gm, playerId, kind, m.m_sTitle, giver, first, RZ_Dialogue.ForMission(gm, m, playerId));
 	}
 
 	//------------------------------------------------------------------------------------------------

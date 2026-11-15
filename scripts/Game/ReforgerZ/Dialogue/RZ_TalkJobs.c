@@ -95,6 +95,14 @@ class RZ_TalkJobs
 			return;
 		}
 
+		// One job at a time from the same giver (the author): until it's done, no other job from them
+		RZ_Mission held = HeldFrom(gm, playerId, GiverKey(faction, l));
+		if (held)
+		{
+			Nothing(rows, ids, faction, string.Format("Finish %1 first", held.m_sTitle));
+			return;
+		}
+
 		array<RZ_Mission> open = {};
 		array<RZ_Mission> locked = {};
 		// A leader's own job (an Independent or Rogue leader's, a questline's in-person stage) first
@@ -154,6 +162,31 @@ class RZ_TalkJobs
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Who gives a job, for the one-at-a-time rule: a leader (a quartermaster stands for the leader
+	//! seated there), else the faction's people at large.
+	static string GiverKey(int faction, RZ_Leader l)
+	{
+		if (l)
+			return "L" + l.m_iId.ToString();
+
+		return "F" + faction.ToString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The job this player took from this giver and hasn't finished, or null.
+	static RZ_Mission HeldFrom(RZ_GameModeComponent gm, int playerId, string key)
+	{
+		foreach (RZ_Mission m : gm.GetMissions().GetActive())
+		{
+			string by;
+			if (m.m_eState == RZ_EMissionState.ACTIVE && m.m_aParticipants.Contains(playerId) && m.m_mGivenBy.Find(playerId, by) && by == key)
+				return m;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Nothing to list: why, short. Every job of theirs already yours, or nothing going now.
 	protected static string WhyNothing(RZ_GameModeComponent gm, int playerId, int faction)
 	{
@@ -193,7 +226,7 @@ class RZ_TalkJobs
 	//------------------------------------------------------------------------------------------------
 	//! Your answer to a pitched job from someone who isn't its leader: yes takes it at once (your
 	//! Quests tab and the start card), no leaves it with them.
-	static void Take(RZ_GameModeComponent gm, int playerId, int jobId, bool yes, string header, int faction, string giver, IEntity user)
+	static void Take(RZ_GameModeComponent gm, int playerId, int jobId, bool yes, string header, int faction, string giver, IEntity user, RZ_Leader seated = null)
 	{
 		if (!yes)
 		{
@@ -210,6 +243,8 @@ class RZ_TalkJobs
 
 		if (job.Hire(playerId))
 			RZ_Log.Info(string.Format("Mission %1 '%2' taken by %3 from %4", job.m_iId, job.m_sTitle, RZ_Util.PlayerName(playerId), giver));
+
+		job.m_mGivenBy.Set(playerId, GiverKey(faction, seated));
 
 		gm.NotifyPlayer(playerId, header, RZ_LeaderVoice.Agreed(faction));
 		RZ_JobCards.MissionStarted(gm, playerId, job, giver, user);

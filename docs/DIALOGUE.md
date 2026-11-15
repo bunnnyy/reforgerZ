@@ -164,6 +164,13 @@ plainly, never behind a topic, and says why when they have none. Code: `Dialogue
 adapters in `Dialogue/RZ_TalkSpeakers.c` and `RZ_TalkStaff.c`, `RZ_Mission.LockReason` and
 `ChoiceLock`, `RZ_Errands.TalkErrand`, `WayLock` and `HandIn`.
 
+- **One job at a time from a giver** (the author): while you hold a job a leader gave you (or a
+  quartermaster, for the leader seated there; else the faction's people at large), they list no
+  other, only a locked *Ask for work* with *Finish <job> first* (`RZ_TalkJobs.GiverKey`, `HeldFrom`,
+  the mission's `m_mGivenBy`). Jobs, errands and quests count apart: an errand giver already has one
+  errand for you at a time.
+- **The job you take is the one tracked** (the author): taking a job, an errand or a quest's new stage
+  points the tracker at it (`RZ_JobCards.Started`).
 - **One reply a job, tagged by its kind** in front, New Vegas style, in the engine's tag style:
   **[Quest]** for a questline's or a major's stage, **[Job]** for a contract, a leader's own job and
   a wanderer's job (the Courier's *Got anything that needs carrying?*, the Mechanic's *Know of any cars
