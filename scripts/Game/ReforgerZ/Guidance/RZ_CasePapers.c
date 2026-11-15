@@ -30,8 +30,8 @@ class RZ_CasePapers
 	static const int OWNER_WAIT = 3;	// handed to its own faction; its major isn't running yet
 	static const int GIVEN = 10;	// 10 + the faction it was given to instead
 
-	// Talk reply ids: 53 + paper x 3 + kind (the case's are 50-52)
-	static const int REPLY_BASE = 53;
+	// Talk reply ids: 720 + paper x 3 + kind (the case's are 50-52); never 53-61: those are a quartermaster's Trade and In charge and a mast keeper's replies (seen in play: two replies with id 60)
+	static const int REPLY_BASE = 720;
 	static const int R_HAND = 0;	// hand it to its own faction
 	static const int R_JOB = 1;		// take the job of carrying it to them
 	static const int R_RIVAL = 2;	// give it to this speaker's faction instead
