@@ -642,7 +642,7 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 		string labels = "Hand the readings in to Halcyon";
 		if (truth == "brother")
 		{
-			labels = "Wait for him and walk him back to the lab|Leave him with his brother (half your pay)";
+			labels = "Wait, then walk him back to the lab|Leave him with his brother (half your pay)";
 			m_Choice.Asset(OPT_SECOND, RZ_CureFinale.INDEP);
 		}
 		else if (truth == "line")
@@ -652,7 +652,7 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 		}
 		else if (m_iHouse >= 0)
 		{
-			labels += "|Give the Haven house the water readings too";
+			labels += "|Give the house the water readings too";
 			m_Choice.Asset(OPT_SECOND, RZ_EFaction.SURVIVORS);
 		}
 

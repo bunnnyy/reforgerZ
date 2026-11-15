@@ -273,8 +273,8 @@ coming round at a Bastion post; fixed ones are in the commits, these aren't yet)
 | Hotwire It's car | The car "that won't turn over" is a rusted, burnt-out wreck (`RZ_CarWreck`, a UAZ wreck): it should be a whole car that looks like it could run |
 | Cards in the first minutes | Three world-event cards during the opening's first talk (Distress Call, Stash Note, Prison Break) |
 | A death while idle | Killed by an infected two minutes in, standing still at the petrol station start |
-| The well (Local Law) | A three-button menu with one line of context at the end of a 3 km run: no people, no stakes, nothing to do there (designs/QUESTS_IN_THE_WORLD.md) |
-| Confusing lines | Givers' and steps' lines read as riddles; it isn't clear what's wrong, who it matters to, and what each choice changes (designs/QUESTS_IN_THE_WORLD.md, section 4) |
+| The well (Local Law) | Still a menu at the end of a 3 km run, with nobody standing there and nothing to do (designs/QUESTS_IN_THE_WORLD.md). Its context and stakes are fixed: both families say who they are and what they want, and each label says who leaves |
+| Confusing lines | Givers' and steps' lines read as riddles. Fixed for the opening, every job's choice, the errand routines and the duties ([WRITING.md](WRITING.md#plain-words)); the errand cards, briefs, questline stages and conversations are still to go (designs/QUESTS_IN_THE_WORLD.md, section 4) |
 | Nametags | Not every person has one, and a person's name should never change |
 
 In this order, because later ones depend on earlier ones:

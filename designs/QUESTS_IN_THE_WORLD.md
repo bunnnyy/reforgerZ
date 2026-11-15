@@ -59,18 +59,16 @@ style, all live in the world; **the first one you finish settles it** and the ot
   to deal with there (the families at the well, the pump, the rota on the board). A job with only a
   button at the far end gets people and a scene, or its place comes nearer.
 
-## 4. Every job has an event at its place, and plain words
+## 4. Every job has an event at its place
 
 - **Something happens where it sends you:** every errand and quest has at least one meaningful
   interaction at its place: people with a stake, something that goes on while you're there (an
   argument that heats up, infected drawn by the noise, a rival who arrives), or a find that changes
   the job. A job whose place has nothing gets one; a step that is only a button gets a reason.
-- **Plain words:** every giver's lines, every step and every way say, in order, *what's wrong*, *who
-  it matters to*, *what they want you to do*, and *what happens if you do each thing*. No riddles, no
-  lines that assume you already know the story. Mood stays ([WRITING.md](../docs/WRITING.md)), but
-  clarity comes first; a line a first-time player can't act on is rewritten.
-- **A writing pass** over every giver line, step text, way label and choice: the voice lint learns
-  the new rule (a way's label says what you do; a choice names who it affects).
+- **The rest of the writing pass:** the errand cards, contract and quest pitches and briefs,
+  questline stages and the givers' conversations, rewritten to the rule in
+  [WRITING.md](../docs/WRITING.md#plain-words) (the opening, every job's choice, the errand routines
+  and the duties are done).
 
 ## Order of building
 
@@ -81,4 +79,4 @@ style, all live in the world; **the first one you finish settles it** and the ot
 5. Missions' choices (`RZ_OneChoice` and the talk scenes' DECIDE) as ways at people, with context and
    stakes.
 6. Missions and contracts saved (offered again to their taker when they can't be rebuilt).
-7. Events at every job's place, and the writing pass for plain words.
+7. Events at every job's place, and the rest of the writing pass.

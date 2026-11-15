@@ -17,6 +17,7 @@ built from parts here (below).
 - [Talk](#talk)
 - [The government broadcast](#the-government-broadcast)
 - [Information comes first](#information-comes-first)
+- [Plain words](#plain-words)
 - [The season mood](#the-season-mood)
 - [The voice bank](#the-voice-bank)
 - [Conversations](#conversations)
@@ -536,6 +537,50 @@ count. Their information clause is fixed, as a token the code fills in. A joke m
 in its place, so players never learn that jokes are filler they can skip. The lint checks that these
 lines keep their token.
 
+## Plain words
+
+Every job's text is read by someone who may never have heard of anyone in it. Every giver's lines,
+every step and every way or choice say, in this order and in plain words:
+
+1. **What's wrong.** The problem as a fact: *My car won't start*, not *It won't turn over*.
+2. **Who it matters to.** The people in it, named, with who they are: *two families on this street,
+   the Kerns and the Orlovs*. A faction is named the first time with what it is (*the Red Hand, the
+   gang that runs the roads round here*), and so is its jargon (*Stag at the wire: sentry duty*).
+3. **What they want you to do.** One plain ask, with the place: *Bring one back here and I'll fit it.*
+4. **What happens if you do each thing.** Each way or choice says what it changes and for whom.
+
+The voice and the mood stay ([The voices](#the-voices), [The season mood](#the-season-mood)), but
+clarity comes first. A line a first-time player can't act on is rewritten.
+
+- **No riddles.** No line that leans on something nobody has said yet (*I know where he is. I'd
+  rather not know.*), no pronoun for a person or a thing that hasn't been named (*It won't turn
+  over*), and no in-joke that only works if you know the story already.
+- **One thought per line.** A line that says two unrelated things is two lines, each complete; a
+  question is asked as a question, and leads into the replies that answer it.
+- **A way's label says what you do,** as a verb and its object: *Hotwire the car*, *Ask the lad for
+  the rifle*, not *Give it here, son*. A reply way says it as speech that still says what you'll do:
+  *Forget the battery. Show me the car and I'll hotwire it.*
+- **A choice names whom it pleases or angers**, in short brackets after the action: *Give the well
+  to the Novaks (the Vogels leave)*, *Split the days (neither family is happy)*, *Hand him to the
+  crew (Bastion blames you)*. These are consequences people would see coming, so they don't break the
+  rule against showing rewards ([Grey choices](#grey-choices)): pay and standing stay out of labels,
+  but a cost to you (*half your pay*, *Bastion pays nothing*) is a cost and is shown. An errand's way
+  is said as *I'll ...* ([Talk](#talk)), so its brackets never say "you".
+- **Before a choice, the sides speak:** who they are and what they want, a line each, and the
+  prompt says why the giver's side cares and what each way does in a sentence. A prompt is never
+  only mood.
+
+| Not | But |
+|---|---|
+| Those hands have seen engines. Don't tell me they haven't. | You used to fix engines at the garage. I'd know those hands anywhere. How have you kept yourself alive since the roads shut? |
+| It won't turn over. Not a click. It's the battery, it has to be. | My car won't start. Not even a click, so it's the battery. If the infected come down this street, I want to drive away, not run. |
+| Everyone is watching to see whose side Bastion takes. Nobody has a gun out. Yet. (*Give the well to the Novaks / to the Vogels / Split the days between them*) | The Novaks say the well is theirs: their grandfather dug it. The Vogels say they need it for their baby, and they've guarded it since the seal. Bastion needs this village calm. Give the well to one family and the other leaves. Split the days and neither is happy, but both stay. (*Give the well to the Novaks (the Vogels leave)* ...) |
+| One on the gate, and the relief missing. Asleep on watch is the stockade and extra duties. I know where he is. I'd rather not know. | I've been on this gate all shift, and my relief never came. He's asleep in a car out on the road, and asleep on watch means the stockade if it's reported. Wake him and get him here, or stand his post yourself. |
+| Turn them back / Let them through | Turn them back (they stay in the infested town) / Let them through (Bastion's commander won't thank you) |
+
+The text lint's `stakes` check holds the choices to it ([Checking text](#checking-text)); whether
+each line says the four things is still the author's call.
+
 ## Grey choices
 
 **The grey test.** Every choice passes all seven:
@@ -552,8 +597,9 @@ lines keep their token.
 6. **Something comes back later, at least sometimes.**
 7. **Doing nothing and failing are outcomes too.**
 
-**Labels show costs and requirements, and hide rewards and consequences.** *"Pay their dues
-yourself (20 Red Hand Favor)"* is right; *"(+10 Haven Fame)"* is not.
+**Labels show costs and requirements, and hide rewards.** *"Pay their dues yourself (20 Red Hand
+Favor)"* is right; *"(+10 Haven Fame)"* is not. Whom a way pleases or angers, as people in the world
+would see it coming, is named ([Plain words](#plain-words)); a twist the job hides stays hidden.
 
 The mechanics behind tests 3, 6 and 7 (the reaction beat, nobody chose, someone else made the call,
 the clever way closing the honest one, givers who lie, callback deeds, boards of record) are
@@ -798,6 +844,7 @@ Two tools check the scripts' text; how to run them is in
 | `clue-echo` | An ambient line never repeats a clue's text |
 | `seed-name` | Seeded name lists never use a name LORE.md gives a person |
 | `punchline` | A short last sentence ends one line only |
+| `stakes` | A job's choice (the labels a mission hands its choice's `Set()`, or builds in a `labels` variable) names whom its ways please or anger: at least one way has a stake or cost in brackets, or names a side (the Haven, Bastion, the Red Hand, Halcyon, a crew). A set whose ways all start with the same verb is a game ("Read the first bed") and passes. Those labels are held to the label length limits too ([Plain words](#plain-words)) |
 | `objective` | An objective line ([Objective lines](#objective-lines): `m_sObjective`, `ObjSteps`, an errand's or opening's `m_sStep`, a finale route's `StageObjective`, the lines `UI/RZ_Quests.c` and the step chain build) has no he, she, him, her, his, they, them or their without a person named in the same line (a capitalised name, a person's `{token}` or a `%1`), and three words or more. A stage title never leans on a pronoun ("His number"). Every class that sets a mission's brief (`m_sBrief`, or `scene.m_sBrief`) also sets its `m_sObjective` |
 
 `tools/voice_lint_baseline.txt` holds the findings in today's text (the check, the file and a hash of

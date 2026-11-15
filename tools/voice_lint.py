@@ -43,6 +43,12 @@ docs/WRITING.md:
                  capitalised name, a person's {token} or a %1), and three words or more;
                  a stage title is never only a pronoun and a noun ("His number"); every mission
                  that sets a brief names its objective (m_sObjective) in the same class
+    stakes       a job's choice (the labels a mission passes to its choice's Set(), or builds in
+                 a `labels` variable) names whom its ways please or anger: at least one way has a
+                 stake or cost in brackets, or names a side (the Haven, Bastion, the Red Hand,
+                 Halcyon, a crew). A set whose ways all start with the same verb is a game
+                 ("Read the first bed"), not a choice, and passes. Those labels are held to the
+                 label length limits too
 
 The baseline (tools/voice_lint_baseline.txt) holds today's findings as check, file and a hash of
 the literal, so the lint fails only on new or changed text. Fixing a line drops it from the
@@ -296,6 +302,34 @@ def label_parts(text):
     return [p.strip() for p in text.split("|") if p.strip()]
 
 
+# A way names whom it touches: a stake or cost in brackets, or a side by name
+STAKES_RE = re.compile(r"[\(\[]|\b(?:Haven|Bastion|Red Hand|Halcyon|crews?)\b")
+
+
+def choice_sets(all_lits):
+    """A job's choices (RZ_OneChoice, docs/WRITING.md "Plain words"): the labels passed straight to a
+    choice's Set(prompt, labels, ...), and the pieces a mission builds in a `labels` variable (one
+    set per function). Yields (first literal, [labels])."""
+    sets = []
+    built = {}
+    for lit in all_lits:
+        if "/Missions/" not in lit.file.replace("\\", "/") or lit.file.endswith(".rzd"):
+            continue
+        calls = getattr(lit, "calls", None) or []
+        if calls and calls[0][0] == "Set" and calls[0][1] == 1 and "|" in lit.text:
+            sets.append((lit, label_parts(lit.text)))
+        elif getattr(lit, "target", "") == "labels":
+            key = (lit.file, lit.function)
+            group = built.get(key)
+            if not group or lit.line - group[2] > 40:  # the same name in another class: a new set
+                group = [lit, [], lit.line]
+                built[key] = group
+                sets.append(group)
+            group[1].extend(label_parts(lit.text))
+            group[2] = lit.line
+    return [(g[0], g[1]) for g in sets]
+
+
 def last_sentence(text):
     t = text.strip().strip("\"'").strip()
     sentences = SENTENCE_RE.findall(t)
@@ -542,6 +576,19 @@ def check(lits, all_lits):
                     and not re.search(r"[%{0-9]", last) and not FORMULA_RE.fullmatch(last)):
                 punchlines[last.lower()].add(t)
 
+    # stakes: a job's choice (RZ_OneChoice's labels) names whom its ways please or anger
+    for first, parts in choice_sets(all_lits):
+        for part in parts:
+            action = re.split(r"\s[\(\[]", part, maxsplit=1)[0]
+            if len(action) > LABEL_ACTION_LIMIT or len(part) > LABEL_LIMIT:
+                findings.append(Finding("length", first, "choice '%s' (action %d, whole %d; limits %d and %d)"
+                                        % (excerpt(part, 50), len(action), len(part), LABEL_ACTION_LIMIT, LABEL_LIMIT)))
+                break
+        firsts = {p.split()[0] for p in parts if p.split()}
+        if len(parts) >= 2 and len(firsts) > 1 and not any(STAKES_RE.search(p) for p in parts):
+            findings.append(Finding("stakes", first, "a choice where no way says whom it pleases or angers ('%s')"
+                                    % excerpt(" | ".join(parts), 60)))
+
     # split: a conversation node's says together
     for (path, node), (first, total) in node_lengths(lits).items():
         if total > SPLIT_LIMIT:
@@ -613,6 +660,7 @@ SELF_TEST = [
     ("objective", "objective", "Halcyon", "", "Find out his number."),
     ("objective", "objective", "Haven", "", "Go back to her."),
     ("objective", "objective", "-", "", "Burn it."),
+    ("stakes", None, "Bastion", "SetupPuzzle", "Give the well to the %1s|Give the well to the %2s|Split the days between them"),
 ]
 
 
@@ -625,7 +673,11 @@ def self_test(all_lits):
         lit.node, lit.cond, lit.role = "", "", False
         lit.function, lit.faction, lit.channel = function, faction, channel
         lit.register, lit.repeats = "PLAIN", 1
-        got = {f.check for f in check([lit], all_lits) if not f.warning}
+        pool = all_lits
+        if want == "stakes":  # a job's choice: the labels handed to its choice's Set()
+            lit.file, lit.calls = "self-test/Missions/choice", [("Set", 1, "")]
+            pool = [lit]
+        got = {f.check for f in check([lit], pool) if not f.warning}
         want_check = "length" if want == "label" else want
         status = "ok" if want_check in got else "FAILED"
         if status != "ok":

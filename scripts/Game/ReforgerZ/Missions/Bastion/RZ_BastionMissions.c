@@ -677,7 +677,7 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 		else if (m_sTruth == "orders")
 		{
 			prompt = string.Format("A private from Bastion's post has come out on a bike. The sergeant's log is open on his knee. Last order, signed by the post's own CO: proceed to the line, grid %1, weather permitting. The CO sent his own patrol towards the Perimeter's guns. \"Weather,\" the private says.", RZ_SettlementScanner.GridReference(m_vPos));
-			labels += "|Read their last order on the open channel (Bastion blames you)";
+			labels += "|Read their last order out on the radio (Bastion blames you)";
 		}
 
 		m_Choice.Set(prompt, labels, "decide what's done with the patrol", OPT_NAIL);
