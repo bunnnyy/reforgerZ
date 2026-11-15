@@ -286,7 +286,7 @@ class RZ_Guidance
 		p.m_iGuideRefreshLeft = 0;
 		p.m_bGuideCounted = true;
 		RZ_Log.Info(string.Format("Guidance: %1 set to level %2 (%3 counted lives) by /level.", RZ_Util.PlayerName(playerId), want, lives));
-		m_GM.NotifyPlayer(playerId, "Guidance level", string.Format("Level %1 from your next character. Reset your character (the Standing page) to start an opening at it.", want));
+		m_GM.NotifyPlayer(playerId, "Guidance level", string.Format("Level %1 from your next character. Reset your character (the notebook's Season page) to start an opening at it.", want));
 	}
 
 	//------------------------------------------------------------------------------------------------

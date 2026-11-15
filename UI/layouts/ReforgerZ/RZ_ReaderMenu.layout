@@ -107,6 +107,23 @@ FrameWidgetClass "{89CDB25CD448A0BF}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
      }
     }
+    FrameWidgetClass "{601E950EF31DCDAF}" {
+     Name "PaperFigure"
+     Slot FrameWidgetSlot "{8E540D775A0E5CEC}" {
+      Anchor 0 0 0 0
+      PositionX 72
+      OffsetLeft 72
+      PositionY 150
+      OffsetTop 150
+      SizeX 816
+      OffsetRight -888
+      SizeY 380
+      OffsetBottom -530
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     "Ignore Cursor" 1
+    }
     TextWidgetClass "{4779A0009907B347}" {
      Name "PaperText"
      Slot FrameWidgetSlot "{AB79FA4069DE9AE9}" {

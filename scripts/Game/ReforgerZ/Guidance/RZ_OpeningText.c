@@ -103,13 +103,6 @@ class RZ_OpeningText
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The calendar on the step: the days crossed off since the gates closed.
-	static string Calendar(int day)
-	{
-		return string.Format("This month's page. Every day up to Day %1 is crossed off in pencil, one stroke a morning. Day 2 has a ring round it and two words: ROADS SHUT. The last few strokes shake.", day);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! What the scene gives you to read, by why today: its title (also the giver when nobody's outside).
 	static string ReadTitle(int reason)
 	{
@@ -135,8 +128,10 @@ class RZ_OpeningText
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The read itself: the calendar, the group's note with the town they went to circled, the words
-	//! on the door. `brief`: a veteran's one line.
+	//! The read itself, drawn where it's a picture (UI/RZ_Reader.c, RZ_PaperFigure): the calendar,
+	//! crossed off up to today with Day 2 ringed; the group's note, its words and under them their
+	//! pencil map with the town they went to ringed; the chalk on the door and its strokes. Only the
+	//! words a picture can't say are text. `brief`: a veteran's shorter read.
 	static string Read(int reason, int day, string circled, bool brief)
 	{
 		switch (reason)
@@ -146,22 +141,20 @@ class RZ_OpeningText
 				if (brief)
 					return "A note under a stone: \"Back by dark.\" That was three days ago.";
 
-				return string.Format("A page torn from a school exercise book, under a stone: \"Gone to see about %1. Back by dark. Don't eat the peaches.\" Under it, a map of the district, %1 circled twice. Three days of dark since.", circled);
+				return RZ_PaperFigure.RingedMap(circled) + "\n" + string.Format("A page from a school exercise book, under a stone: \"Gone to see about %1. Back by dark. Don't eat the peaches.\" Three days of dark since.", circled);
 			}
 
 			case RZ_EOpeningReason.FEVER:
 			{
 				if (brief)
-					return "Chalk on the door: IF YOU'RE READING THIS, YOU'RE YOU.";
+					return RZ_PaperFigure.DoorChalk(4, "IF YOU'RE READING THIS,", "YOU'RE YOU.", "");
 
-				return "Chalk on the inside of the door, in big careful capitals: IF YOU'RE READING THIS, YOU'RE YOU. COME FIND US. Under it, four strokes, one for each morning somebody checked.";
+				return RZ_PaperFigure.DoorChalk(4, "IF YOU'RE READING THIS,", "YOU'RE YOU.", "COME FIND US.") + "\n" + "One stroke for each morning somebody checked.";
 			}
 		}
 
-		if (brief)
-			return string.Format("The calendar, crossed off up to Day %1.", day);
-
-		return Calendar(day);
+		// The calendar needs no words: the strokes, the ring and ROADS SHUT are all on the page
+		return RZ_PaperFigure.Calendar(day, 2, "ROADS SHUT");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -496,13 +496,28 @@ The Standing page's header ends with the character's habit, when it has one (*"H
   journal's and the Quests tab's lists, highlight the next faction's row on the Standing page,
   and scroll the other tabs' lists; A or Enter selects the journal row with the focus, on the
   Quests tab tracks or untracks the job with the focus (Y or T too), and on the Standing page opens
-  the highlighted row or closes it; on the Standing page Y (T or Space) is **Reset character**: the
-  first press asks, a second within 10 seconds resets (one a real day,
-  [DESIGN.md](DESIGN.md#a-character-who-lasts)); X or F (or a click on the chip) cycles the Radio filter; B or
-  Esc closes.
+  the highlighted row or closes it; on The season A or Enter presses **Reset character** (below);
+  X or F (or a click on the chip) cycles the Radio filter; B or Esc closes (with the reset pop-up
+  open, it cancels the pop-up instead).
 - The footer shows the open tab's prompts (`RZ_NotebookPage.Prompts`, made again on each tab
   switch): Standing choose and open, Quests choose and track / untrack, Radio filter, Journal
-  choose, and on every tab tabs and close.
+  choose, and on every tab tabs and close. Reset character has no key and no footer prompt: it's
+  the Season page's button.
+- **Reset character** is a button at the top right of The season (`ResetButton`, *"RESET CHARACTER"*
+  in a red-bordered box, a dim line under it: *"Ends this character and starts someone new. One a
+  real day."*). The pad's focus is on it when the tab opens, so A presses it; the mouse clicks it.
+  It opens a pop-up over the page (`ResetPopup`): *"RESET CHARACTER?"*, the character as the Standing
+  payload's head line has it (name, background, deaths: *"MAREK · NURSE · 3 DEATHS"*), and a plain
+  warning: they die where they stand and what they carry stays on the body; gone with them are
+  standing and Favor with every faction, the errand givers' trust, the quests and errands held, the
+  habit and what the map has uncovered; kept are Legacy, unlocks and the hall of fame; one reset a
+  real day. Two buttons, **Confirm** and **Cancel**: the focus starts on Cancel, left/right move
+  between them (the chosen one has a bone border), A presses, B or Esc cancels, and a click presses
+  either. Confirm asks the server (`RZ_PlayerUIComponent.AskReset`), which resets at once
+  ([DESIGN.md](DESIGN.md#a-character-who-lasts)), and closes the notebook. While today's reset is
+  used, the pop-up says *"One reset a real day. You can reset again in N hours."* and has only
+  Cancel (the hours come from the `H` record's seventh field, whether there's a character at all
+  from its eighth). The pop-up has its own prompts (`ResetPrompts`: A Choose, B Cancel).
 - On the Standing page the mouse highlights the row it's over and a click opens it (a click on the
   open row closes it). Rows open only on a click, A or Enter; one at most, and with none open the
   four share the page. The highlighted and open rows are kept for the session. Hover only does
@@ -813,12 +828,37 @@ orders), guidance notes and safehouse flyers, and the readable things a search t
 objects and people stay as they are.
 
 How: `RZ_Reader.Show(gm, playerId, title, how, text)` opens a screen-guard entry and sends
-`PAYLOAD_READER` (`P|title|how`, then the text, at most 5,600 characters) to that player only; the
+`PAYLOAD_READER` (`P|title|how|figure`, the figure only for a [drawn page](#subtitles-and-the-reader), then the text, at most 5,600 characters) to that player only; the
 client splits the pages and opens `RZ_ReaderMenu`, and tells the server when the player closes it.
 An empty `PAYLOAD_READER` from the server closes it. With **UI > Reader** off, no UI component, or
 the server at its cap of open screens, it's a notice card; a client that can't open the menu (no
 preset or layout) shows it as a card too. *Simplified:* the "how it looks" line is set only for
 flyers so far.
+
+**Drawn pages.** A paper that *is* a picture (a calendar crossed off, chalk on a door, a pencil map
+with a place ringed) is drawn on the paper, not described: the rule is that a visual thing is shown
+as the thing. Its text starts with a tag, `[fig:kind;field;...]` (made by `RZ_PaperFigure.Calendar`,
+`DoorChalk` and `RingedMap`, `UI/RZ_Reader.c`), then a line break and only the words a picture
+can't say. `RZ_Reader.Show` takes the tag off and sends it as the head line's fourth field
+(`P|title|how|figure`); the reader draws it on page one in `PaperFigure` (816 × 380, under the
+title), with the words under it in `PaperText` when they're short (170 characters at most), else on
+the pages after. The drawing (`RZ_PaperFigureDraw`) is a canvas under (fills), the words as small
+labels made from `RZ_PaperLabel.layout` (condensed 24, tinted by the script), and a canvas over (the
+strokes); every hand-drawn wobble comes from the tag, so the page looks the same each time.
+
+| Kind | Drawn | Used by |
+|---|---|---|
+| `calendar;day;ringed;note` | This month's page: the weekdays, a printed grid of 31 days (the 1st on a Thursday), each day up to `day` struck through in pencil bottom left to top right, the last four strokes shakier each morning; day `ringed` ringed by hand with `note` written in it. No words under it | The opening's calendar (*"ROADS SHUT"* on Day 2), the full and the veteran's read |
+| `door;strokes;line;line;line` | The inside of a door, painted dark with two panels and a handle, up to three lines of chalk capitals, and the strokes under them in gates of five | The fever opening's door (4 strokes; the veteran's read without *"COME FIND US."*), with *"One stroke for each morning somebody checked."* under it |
+| `map;place` | A pencil sketch of the district: three roads, villages as squares, `place` written in at the end of the main road and ringed twice | The group opening's note, with its words (*"Gone to see about ..."*) under it |
+
+Where it can't be drawn (a notice card when the reader is off or can't open, the object menu
+reading a prop) the tag is said in words (`RZ_PaperFigure.Describe`, the old prose), so nothing is
+lost. *Not drawn yet* (still prose): the house list with a name crossed out (The List, Haven's lore
+contract and questline), *"AID IS ON ITS WAY"* with AID underlined (a scene's government sheet), a
+tally of days chalked on a door (a vignette), the road map with a town circled that a search can
+turn up, and the epilogue's chalk tallies and roster strokes; door marks on real doors are their
+own decals ([TRACES.md](TRACES.md#doors-you-can-see)).
 
 ### The car repair screen
 
@@ -1365,7 +1405,7 @@ would, after the welcome screen and after every death. There's no faction or gro
 faction is forced to `SURV` (`SCR_MenuSpawnLogic`'s **Forced faction**). On the left, the 13
 backgrounds in the game mode's order, a locked one dim with a lock and LOCKED. While a character
 goes on ([DESIGN.md](DESIGN.md#a-character-who-lasts)) every background but theirs shows LOCKED with
-*"Your character goes on as someone else. Reset your character (the notebook's Standing page) to start
+*"Your character goes on as someone else. Reset your character (the notebook's Season page) to start
 as this."*, and the server refuses any other loadout; after a reset all of them open again. On the right, the
 picked one: its name in large type, AVAILABLE or LOCKED, its perk and flaw, its **starting gear**
 (what that loadout really spawned with the last time anyone took it, noted by the server up to
@@ -1554,8 +1594,8 @@ nothing before that. Your objective and the packs' rings are as above.
 **The data.** One bit per square (**Square**, 100 m; at most 256 a side: Everon is 128 × 128, about
 2 KB), kept on the player's profile (`m_aFog`, with `m_sFogGrid`, the grid it was kept for; another
 grid clears it), so it's saved with the profile, kept across deaths, and starts over with a wipe's
-fresh state. A character reset (planned, [designs/PERSISTENCE.md](../designs/PERSISTENCE.md)) clears
-it (`RZ_MapFog.ClearFor`). The server sends the whole fog to its player alone as run lengths (payload
+fresh state. A new character (a reset) starts with nothing seen (`RZ_PlayerProfile.StartCharacter`
+clears it). The server sends the whole fog to its player alone as run lengths (payload
 kind 25: `F|x0|z0|cell|w|h|opacity|1`, then `R|` alternating unseen and seen runs, row by row, unseen
 first): when the map opens (the client asks) and at most every 3 s while it changes. The client
 merges unseen runs into rectangles once per change and draws them as polygons only when the map
@@ -1769,8 +1809,8 @@ Infamy that may fade.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; fifteen mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and its loom, the radio screen, the shop, the crafting screen, and the quest tracker with the Quests tab, the power panel). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the Journal's past jobs, the season page with the hall of fame), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches and the cooking screen at stoves, the radio screen (View radio), the object menu on props and places with its status strip and locked rows (the strip shared with the cooking screen), the hold prompt at work sites, the power panel at the power station, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, the kind of place you start at, Deploy) and locked backgrounds refused by the server, the death brief over it at each death, the map's icon layer with you-are-here, the tracked job's objective (a diamond or a search area, no other job) and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
+| Built | The icon set and its renderer; fifteen mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and its loom, the radio screen, the shop, the crafting screen, and the quest tracker with the Quests tab, the power panel). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the Journal's past jobs, the season page with the hall of fame and the Reset character button and its pop-up), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches and the cooking screen at stoves, the radio screen (View radio), the object menu on props and places with its status strip and locked rows (the strip shared with the cooking screen), the hold prompt at work sites, the power panel at the power station, the reader's drawn pages (the opening's calendar, door and map), the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, the kind of place you start at, Deploy) and locked backgrounds refused by the server, the death brief over it at each death, the map's icon layer with you-are-here, the tracked job's objective (a diamond or a search area, no other job) and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
 | Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting, radio, object menu, power panel and spawn screens', the death brief's and the map key's written as text, with images on the static icons; the icon atlas and the `RZ_Icons` imageset; the car picture (`RZ_CarSide.edds`, set in **UI > Car picture**); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop, crafting, spawn screen, death brief, radio and power panel presets; N, 1–5, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend, power breaker and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards and the stealth bar (then two bars: merged since); on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons (in their old line-icon style); the notebook's five pages with their icons (the Radio page's channel list too) and the HUD's noise icon. In the layout preview at 1920 × 1080: the crafting, car repair, shop, reader, talk and notice board screens, each within its slots |
-| Not checked in play | The map's design A markers (disc, ring, emblem, badge) and the key's discs and badges; the objective's diamond and search area, and their row in the key; the infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); the tabs' new order and the Journal's past jobs; the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen, its picture, its FITTED and MISSING tags and the hotwire's loom; the shop screen and its item picture; the crafting screen; the cooking screen (**UI > Cook row layout** isn't set yet); the radio screen (**UI > Radio channel layout** isn't set yet, and **View radio** in hand needs vanilla's inspection checked); the object menu (its preset and **UI > Object row layout** aren't set yet); the power panel (its preset and **UI > Power breaker layout** are set); the death brief; the subtitles; the hold prompt (its bar's speed and its starting again when hurt are VERIFY); mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
+| Not checked in play | The map's design A markers (disc, ring, emblem, badge) and the key's discs and badges; the objective's diamond and search area, and their row in the key; the infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); the tabs' new order and the Journal's past jobs; the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen, its picture, its FITTED and MISSING tags and the hotwire's loom; the shop screen and its item picture; the crafting screen; the cooking screen (**UI > Cook row layout** isn't set yet); the radio screen (**UI > Radio channel layout** isn't set yet, and **View radio** in hand needs vanilla's inspection checked); the object menu (its preset and **UI > Object row layout** aren't set yet); the power panel (its preset and **UI > Power breaker layout** are set); the death brief; the subtitles; the hold prompt (its bar's speed and its starting again when hurt are VERIFY); mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set), its Reset character button and pop-up; the reader's drawn pages (canvas strokes and script-made labels on the paper) |
 | Planned | Mockups of the notice board, the object menu and the season page; the Journal's mockup with its past jobs; the lock card as a screen of its own (today a notice, or the [Point of no return] node with **Dialogue > Trees** on: [FINALE.md](FINALE.md#the-lock)) |

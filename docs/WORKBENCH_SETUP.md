@@ -2386,8 +2386,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **225** lines with the tag, all but one in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 47 are in `UI/`: [the UI's](#the-ui-45), the loadout
+There are **229** lines with the tag, all but one in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 49 are in `UI/`: [the UI's](#the-ui-47), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
@@ -2397,7 +2397,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-45)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-47)
 come last.
 
 ### High risk: the core loop (2)
@@ -2586,7 +2586,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PowerLooks.c:102` | the power station's generator: `RZ_PowerGeneratorSound.et` (no mesh, vanilla's diesel generator sounds on a `StaticSoundComponent`), spawned by the server, plays on every client that streams it in and stops when the server deletes it, as vanilla's placed generators do | No sound at a running station: empty **World > Power grid > Generator sound prefab**; the panel and the notices still say it runs |
 | `UI/RZ_PowerLampsClient.c:185` | street lamps: `StreetLampComponent.SetBroken(true)` on a client puts that lamp out there (its light and its glow), and `SetBroken(false)` lets it light itself at night again | Lamps stay lit in dark towns, or stay out after the main switch: turn **World > Power grid > Street lamps** off, and every lamp is left as the map has it |
 
-### The UI (45)
+### The UI (47)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -2605,7 +2605,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `World/HandBuilt/RZ_SiteBuilderEditor.c:222` | a preview made on a Game Master client shows see-through at the cursor, as vanilla's own | No ghost while placing: the spot still goes down |
 | `World/HandBuilt/RZ_SiteBuilderEditor.c:486` | `ProjWorldToScreen` gives reference-resolution units, z below 0 behind the camera (as the nametags read it) | The cones' labels sit in the wrong place |
 | `UI/RZ_UIData.c:1014` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
-| `UI/RZ_Notebook.c:207` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
+| `UI/RZ_Notebook.c:224` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:31` | with **Gadget anim variable** MX991 the character takes the notebook item into the left hand as it does the MX991 flashlight (with none, the take never finishes: the old bug), and its `IN_HAND` mode switch, or the HUD's watch, opens the notebook | N says in the log "not in the hand 1.5 s after N" and opens the notebook anyway; the pause menu and **Read the notebook** still work. Try the map's hold instead (**Gadget anim variable** MAP, the paper map's `paper_map.agr`/`player_map.asi`) |
 | `UI/RZ_NotebookItem.c:260` | `CanEquipGadget` is true for the notebook item on foot (the inventory's **Equip** asks the same) | N opens the notebook without taking the item; the inventory has no Equip for it. Check the prefab against vanilla's map |
@@ -2613,7 +2613,9 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_NotebookItem.c:76` | a carried notebook has a parent and one on the ground has none, so **Read the notebook** shows on the ground, and in hand only while it's held up and looked at (vanilla's inspection) | The prompt shows in the wrong place: N and the pause menu still open it |
 | `UI/RZ_NotebookItem.c:94` | **Read the notebook**, a local-only action, runs `PerformAction` on the machine of the player who used it | It does nothing: N and the pause menu still open it |
 | `UI/RZ_Notebook.c:96` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_Notebook.c:1080` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
+| `UI/RZ_Notebook.c:1140` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
+| `UI/RZ_Notebook.c:2215` | the pad's focus shows on the Season page's blank-style **Reset character** button and its pop-up's Confirm and Cancel, and A on a focused one comes as `MenuSelect` (and maybe its click as well: one press is taken) | Only the look is lost: the button has its red border, and the pop-up's chosen button its bone border, drawn by the script; A still presses |
+| `UI/RZ_Reader.c:193` | a drawn page's canvases and labels, made in the reader's `PaperFigure` frame, draw in the order they were made (the fill canvas under the words, the strokes over them), with the canvas's commands in pixels from the frame's top left | The calendar's strokes sit under its numbers or the figure is off its place on the paper: the words under it and the pages still read. Report what shows |
 | `UI/RZ_TalkMenu.c:51` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
 | `UI/RZ_Menus.c:55` | `OnMouseEnter` and `OnMouseLeave` reach `RZ_MenuClick` on every row and button it hears clicks on (also when the cursor comes over the button's children), so on every screen the row or button under the mouse lights as the pad's selection does and goes back when the cursor leaves ([UI.md](UI.md#controllers), "Hover") | Only hover is lost: the pad, the keys and a click still work. If a lit row stays lit after the cursor leaves, the leave isn't arriving: report which screen |
 | `UI/RZ_UIData.c:1083` | the hover look on a button that isn't a row (a lighter fill and a 5-wide amber bar on its left, `ImageWidget`s made in script in the button's Overlay with `OverlaySlot` alignment) covers the button, sits over its content without hiding its text, and doesn't take the cursor or the click | Buttons show no hover, or the fill covers the label or swallows the click: make `RZ_UIW.HoverMark` return false at its top (rows still light) and report what showed |
@@ -4312,6 +4314,20 @@ when it happens)
   up and looked at (vanilla's inspection), the same. The log has no "not in the hand 1.5 s after N".
 - [ ] The same with a pad only: View + RB, then the quick slot wheel (the notebook's slot), then
   **Equip** in the inventory with A; B closes the notebook and the item goes back.
+- [ ] **Reset character** ([UI.md](UI.md#the-notebook)): the Standing page's footer has no reset
+  prompt and Y does nothing there. On The season, the **RESET CHARACTER** button sits top right
+  (the list beside it doesn't run under it). With the mouse, click it: the pop-up shows your name,
+  background and deaths and the warning; Cancel and Esc close it and the notebook stays open. With
+  a pad only: the button has the focus, A opens the pop-up on Cancel, left/right move the bone
+  border, B cancels; A on Confirm closes the notebook, the character dies where they stand (the log:
+  `Character: <player> reset character <n> (<k> deaths)`), and the next spawn is a new character. Open
+  the pop-up again the same day: it says the hours left and has no Confirm.
+- [ ] **Drawn pages** ([UI.md](UI.md#subtitles-and-the-reader)): a new character with the
+  hiding-place opening (the calendar) reads it: the reader shows a month's grid with the days up to
+  today struck through in pencil (the last ones shakier) and the 2nd ringed with ROADS SHUT in it,
+  and no prose. The group opening's note shows the pencil map with the town ringed twice and the
+  note's words under it; the fever opening's door is dark with the chalk capitals and four strokes.
+  With **UI > Reader** off the same reads come as cards in words.
 - [ ] A new contract offer shows a count on the Quests tab, a radio message one on Radio; looking
   at the tab clears it.
 - [ ] With **Board menus** on (the default), reading a board opens the board menu, and typing in

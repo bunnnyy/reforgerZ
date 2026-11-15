@@ -513,7 +513,15 @@ class RZ_PlayerUIComponent : ScriptComponent
 
 		array<string> f = {};
 		RZ_UIText.Split(payload.Substring(0, nl), RZ_UIText.SEP, f);
-		gm.ShowNotice(RZ_UIText.Str(f, 1), payload.Substring(nl + 1, payload.Length() - nl - 1), RZ_ENoticeTag.AUTO);
+		string words = payload.Substring(nl + 1, payload.Length() - nl - 1);
+		// A drawn page's figure (P|title|how|figure) in words on the card
+		string said = RZ_PaperFigure.Describe(RZ_UIText.Str(f, 3));
+		if (!said.IsEmpty() && words.IsEmpty())
+			words = said;
+		else if (!said.IsEmpty())
+			words = said + "\n" + words;
+
+		gm.ShowNotice(RZ_UIText.Str(f, 1), words, RZ_ENoticeTag.AUTO);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -608,8 +616,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Reset character from the Standing page: the first press asks, a second within the window
-	//! resets (the server keeps the window: Backgrounds/RZ_Character.c).
+	//! Reset character, confirmed in the Season page's pop-up: the server resets now, once a real day
+	//! (Backgrounds/RZ_Character.c).
 	void AskReset()
 	{
 		if (Replication.IsServer())

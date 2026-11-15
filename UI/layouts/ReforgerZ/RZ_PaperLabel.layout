@@ -1,0 +1,40 @@
+FrameWidgetClass "{BB03BC8013540668}" {
+ Name "PaperLabel"
+ Slot FrameWidgetSlot "{9D3F05B3168315CE}" {
+  Anchor 0 0 0 0
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 120
+  OffsetRight -120
+  SizeY 32
+  OffsetBottom -32
+  Alignment 0 0
+ }
+ {
+  TextWidgetClass "{7177E893E62E4CDC}" {
+   Name "LabelText"
+   Slot FrameWidgetSlot "{7AAB57CAF1BB2B22}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+   Color 0.11 0.102 0.086 1
+   Text ""
+   "Font Size" 24
+   "Min Font Size" 24
+   "Horizontal Alignment" Center
+   FontProperties FontProperties "{7C152A76F099A4D0}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+ }
+}
