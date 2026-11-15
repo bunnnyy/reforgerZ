@@ -48,6 +48,10 @@ class RZ_Driver
 	protected vector m_vLastPos;
 	protected float m_fStillFor;
 	protected int m_iJumps;
+	protected static bool s_bDetour;		// heading for a side spot round an obstacle first
+	protected static vector s_vDetour;
+	protected float m_fDetourFor;
+	protected int m_iSide = 1;
 
 	//------------------------------------------------------------------------------------------------
 	static void Start(RZ_GameModeComponent gm)
@@ -583,25 +587,80 @@ class RZ_Driver
 			return;
 		}
 
-		if (RZ_Util.DistXZ(here, m_vLastPos) < 0.3)
+		// A side spot round an obstacle: reached, or given 4 s
+		if (s_bDetour)
+		{
+			m_fDetourFor += 0.25;
+			if (RZ_Util.DistXZ(here, s_vDetour) < 1.5 || m_fDetourFor > 4)
+				s_bDetour = false;
+		}
+
+		// No headway: open a door in the way, else go round (one side, then the other, wider each
+		// time), a jump only now and then (a fence, a low wall)
+		if (RZ_Util.DistXZ(here, m_vLastPos) < 0.15)
 		{
 			m_fStillFor += 0.25;
 			if (m_fStillFor >= 1)
 			{
 				m_fStillFor = 0;
 				m_iJumps++;
-				s_fJumpUntil = GetGame().GetWorld().GetWorldTime() + 400;
-				if (m_iJumps >= 6)
+				if (!OpenDoorNear(me))
+				{
+					vector way = s_vGoal - here;
+					way[1] = 0;
+					way.Normalize();
+					float sideSign = m_iSide;
+					vector side = Vector(way[2] * sideSign, 0, -way[0] * sideSign);
+					float wide = 4 + m_iJumps * 2;
+					s_vDetour = here + side * wide - way * 1.5;
+					s_bDetour = true;
+					m_fDetourFor = 0;
+					m_iSide = -m_iSide;
+					if (m_iJumps % 3 == 0)
+						s_fJumpUntil = GetGame().GetWorld().GetWorldTime() + 400;
+				}
+
+				if (m_iJumps >= 12)
 					Stop("stuck at " + Pos(here) + ", " + RZ_Util.RoundToInt(left).ToString() + " m to go");
 			}
 		}
 		else
 		{
 			m_fStillFor = 0;
-			m_iJumps = 0;
+			if (!s_bDetour)
+				m_iJumps = 0;
 		}
 
 		m_vLastPos = here;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A shut door within 2.5 m: opened (its own prompt). True when one was.
+	protected bool OpenDoorNear(IEntity me)
+	{
+		m_aFound.Clear();
+		GetGame().GetWorld().QueryEntitiesBySphere(me.GetOrigin(), 2.5, OnThing, null, EQueryEntitiesFlags.ALL);
+		foreach (IEntity e : m_aFound)
+		{
+			if (!e.FindComponent(DoorComponent) || RZ_DoorGeometry.IsOpen(e))
+				continue;
+
+			ActionsManagerComponent am = ActionsManagerComponent.Cast(e.FindComponent(ActionsManagerComponent));
+			array<BaseUserAction> list = {};
+			am.GetActionsList(list);
+			foreach (BaseUserAction act : list)
+			{
+				ScriptedUserAction sa = ScriptedUserAction.Cast(act);
+				if (sa && sa.CanBePerformedScript(me))
+				{
+					sa.PerformAction(e, me);
+					Note("opened a door at " + Pos(e.GetOrigin()));
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -644,7 +703,11 @@ class RZ_Driver
 		if (!ctx)
 			return false;
 
-		vector way = s_vGoal - owner.GetOrigin();
+		vector aim = s_vGoal;
+		if (s_bDetour)
+			aim = s_vDetour;
+
+		vector way = aim - owner.GetOrigin();
 		way[1] = 0;
 		if (way.Length() < 0.01)
 			return false;
@@ -656,7 +719,10 @@ class RZ_Driver
 		ctrl.SetHeadingAngle(bearing, true); // VERIFY: CharacterControllerComponent.SetHeadingAngle turns a player character, the aim following (adjustAimingYaw)
 		vector local = owner.VectorToLocal(way);
 		local[1] = 0;
-		ctx.SetMovement(s_fSpeed, local); // VERIFY: CharacterInputContext.SetMovement from OnPrepareControls moves a player character (1 walk, 2 run, 3 sprint)
+		// The controller's own movement, as the base game's cutscenes move a character (its speed: 1
+		// walk, 2 run, 3 sprint); the input context too, so the frame's own input doesn't win
+		ctrl.SetMovement(s_fSpeed, local); // VERIFY: CharacterControllerComponent.SetMovement from the control hooks moves a player character
+		ctx.SetMovement(s_fSpeed, local);
 		if (GetGame().GetWorld().GetWorldTime() < s_fJumpUntil)
 			ctx.SetJump(1);
 
@@ -731,6 +797,13 @@ modded class SCR_CharacterControllerComponent
 		super.OnPrepareControls(owner, am, dt, player);
 		if (player)
 			RZ_Driver.Drive(this, owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnApplyControls(IEntity owner, float timeSlice)
+	{
+		super.OnApplyControls(owner, timeSlice);
+		RZ_Driver.Drive(this, owner);
 	}
 }
 #endif
