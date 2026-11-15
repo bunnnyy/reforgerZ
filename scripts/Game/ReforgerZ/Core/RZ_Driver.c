@@ -60,8 +60,9 @@ class RZ_Driver
 	protected vector m_vGlideLast;
 	protected int m_iSlow;				// frames the controls didn't move us (Workbench not in focus)
 	protected static const float GLIDE_MS = 50;
-	protected static const float LONG_TRIP = 1200;	// a trip this long or more: walk the first part, then on to this far short
-	protected static const float WALK_FIRST = 400;
+	protected static const float LONG_TRIP = 500;	// a trip this long or more (the author): walk the first part, then on to NEAR_GOAL short
+	protected static const float NEAR_GOAL = 350;
+	protected static const float WALK_FIRST = 150;
 
 	//------------------------------------------------------------------------------------------------
 	static void Start(RZ_GameModeComponent gm)
@@ -615,20 +616,20 @@ class RZ_Driver
 			return;
 		}
 
-		// A long trip (the author): walk the first 400 m, then on to 1.2 km short of the goal
+		// A long trip (the author): walk the first 150 m, then on to 350 m short of the goal
 		if (!s_bSkipped && left > LONG_TRIP && RZ_Util.DistXZ(s_vStart, here) >= WALK_FIRST)
 		{
 			s_bSkipped = true;
 			vector way = s_vGoal - here;
 			way[1] = 0;
 			way.Normalize();
-			vector near = RZ_Util.GroundPos(s_vGoal - way * LONG_TRIP);
+			vector near = RZ_Util.GroundPos(s_vGoal - way * NEAR_GOAL);
 			if (RZ_Util.IsWater(near))
 				near = DryToward(near, s_vGoal);
 
 			SCR_Global.TeleportLocalPlayer(near + Vector(0, 0.3, 0));
 			m_vLastPos = near;
-			Note("long trip: on to 1.2 km short, at " + Pos(near));
+			Note("long trip: on to 350 m short, at " + Pos(near));
 			return;
 		}
 
