@@ -934,7 +934,8 @@ where it fell. Log: `Openings: <player>'s opening put away (<why>) at stage <n> 
 **The kit.** What you wear stays (clothes, vest, helmet, pack). Of what the loadout carried, one
 bandage, one water bottle and the background's own tool (the Mechanic's wrench, the Radio
 Operator's radio, the Nurse's and Doctor's dressing) stay; every weapon, magazine, round and
-anything else goes; the new character's compass, paper map and wind-up radio aren't given again. No other cost: no debuff, no Favor owed, no longer timer than vanilla's.
+anything else goes. The compass, paper map and wind-up radio come again a few seconds later, unless
+you still have one; the new character's meal doesn't. No other cost: no debuff, no Favor owed, no longer timer than vanilla's.
 
 **Reset character.** A button on the notebook's Season page, **Reset character**: a click, or A with
 the pad (its focus starts there), opens a pop-up with the character's name, background and deaths
@@ -4235,7 +4236,7 @@ chain (its last step is the walk to where they belong).
 - Every new character also gets **one meal** (vanilla's MRE, **UI > Meal prefab**) at the same
   time, on top of whatever its loadout carries, in case food is slow to find (the author's call).
   Coming round after a death gets none (no free loot).
-- Every new character gets a **wind-up radio** (unless they carry one). It picks up the **open
+- Every spawn, coming round after a death included, gets a **wind-up radio** (unless they carry one). It picks up the **open
   channels**: the Haven ("If you can hear this, *town* is open. Bring water if you can. Bring
   yourself either way."), Bastion's net and the Red Hand's taunts. About every 12 minutes for a
   brand-new player, up to 42 for a veteran.
