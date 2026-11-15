@@ -366,6 +366,8 @@ class RZ_CampPlace
 	float m_fCourierTimer;
 	int m_iAsleepGuards;		// slept as data: they come back in the morning
 	int m_iAsleepExtras;
+	ref array<string> m_aSleptGuards = {};	// who they are (RZ_PersonTags keys), so the same people wake
+	ref array<string> m_aSleptExtras = {};
 	ref RZ_CampSite m_Site;		// the building it has moved into; null = rings round m_vPos
 	vector m_vHome;				// where people gather and stay near: the site's yard, else m_vPos
 	vector m_vCentre;			// what the patrol and the courier walk round: the building, else m_vPos
@@ -6440,11 +6442,21 @@ class RZ_CampLife
 			if (w.m_bWrapped)
 				RZ_Util.UnwrapGroup(w.m_Unit, w.m_Group);
 
+			// Who goes to bed is who gets up (the nametags)
+			string sleeper = RZ_PersonTags.KeyOf(w.m_Unit);
 			RZ_Util.DeleteUnit(w.m_Unit);
 			if (w.m_iRole == ROLE_EXTRA)
+			{
 				p.m_iAsleepExtras++;
+				if (!sleeper.IsEmpty())
+					p.m_aSleptExtras.Insert(sleeper);
+			}
 			else
+			{
 				p.m_iAsleepGuards++;
+				if (!sleeper.IsEmpty())
+					p.m_aSleptGuards.Insert(sleeper);
+			}
 
 			p.m_aWorkers.Remove(i);
 		}
@@ -6494,7 +6506,42 @@ class RZ_CampLife
 			w.m_iRole = ROLE_EXTRA;
 
 		p.m_aWorkers.Insert(w);
+		NameOwned(p, body, extra);
 		return body;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who someone coming out of the tents is (the nametags, RZ_PersonTags): whoever went to bed
+	//! there, else the place's lowest extra slot nobody holds ("h12:x0"), so the first extra at a
+	//! place is the same person every visit.
+	protected void NameOwned(RZ_CampPlace p, IEntity body, bool extra)
+	{
+		array<string> slept = p.m_aSleptGuards;
+		if (extra)
+			slept = p.m_aSleptExtras;
+
+		string key = "";
+		if (!slept.IsEmpty())
+		{
+			key = slept[slept.Count() - 1];
+			slept.Remove(slept.Count() - 1);
+		}
+
+		for (int i = 0; i < 32 && key.IsEmpty(); i++)
+		{
+			string spare = p.m_sKey + ":x" + i.ToString();
+			if (!RZ_PersonTags.InUse(spare) && !p.m_aSleptExtras.Contains(spare) && !p.m_aSleptGuards.Contains(spare))
+				key = spare;
+		}
+
+		if (key.IsEmpty())
+			return;
+
+		string role = RZ_PersonTags.GuardRole(p.m_eFaction);
+		if (extra)
+			role = RZ_PersonTags.RoleFor(key, p.m_eFaction);
+
+		RZ_PersonTags.Mark(body, key, p.m_eFaction, role);
 	}
 
 	//------------------------------------------------------------------------------------------------

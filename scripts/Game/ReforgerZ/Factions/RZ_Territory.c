@@ -1867,6 +1867,8 @@ class RZ_Territory
 
 			h.m_aBodies.Insert(guard);
 			guardBodies.Insert(guard);
+			// The same guard post, the same person, each time it spawns (the nametags)
+			RZ_PersonTags.Mark(guard, string.Format("h%1:g%2", h.m_iId, g), h.m_eFaction, RZ_PersonTags.GuardRole(h.m_eFaction));
 			if (hostility)
 				hostility.WatchUnit(guard, h.m_eFaction);
 		}
@@ -1903,6 +1905,7 @@ class RZ_Territory
 			{
 				h.m_aBodies.Insert(qm);
 				keeperBodies.Insert(qm);
+				RZ_PersonTags.Mark(qm, string.Format("h%1:qm", h.m_iId), h.m_eFaction, "quartermaster");
 			}
 		}
 

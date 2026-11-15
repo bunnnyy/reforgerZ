@@ -987,6 +987,9 @@ class RZ_RoadPatrols
 		if (shared)
 			shared.AddBody(RZ_BodyBudget.WANDERER, p.m_Group);
 
+		// Its people are the same each time it's seen (the nametags; its leader goes by m_sLeader)
+		RZ_PersonTags.Mark(p.m_Group, "patrol:" + p.m_iId.ToString(), p.m_eFaction, "patrol");
+
 		RZ_Hostility hostility = m_GM.GetHostility();
 		if (hostility)
 			hostility.WatchUnit(p.m_Group, p.m_eFaction);

@@ -11,7 +11,8 @@ are written is in [WRITING.md](WRITING.md#conversations).
 Code: `Dialogue/RZ_Dialogue.c` (sessions), `Dialogue/RZ_TalkSpeakers.c` (who someone is),
 `Dialogue/RZ_TalkStrangers.c` (strangers), `Dialogue/RZ_TalkStaff.c` (a quartermaster's and the
 medic's Talk prompt and replies), `Dialogue/RZ_Nametags.c` (who's near each player, for the
-[nametags](UI.md#nametags)), `Dialogue/RZ_DialogueRadio.c` (the open channel and its
+[nametags](UI.md#nametags)), `Dialogue/RZ_PersonTags.c` (the stable names of the people nobody
+else names: guards, crews, quartermasters), `Dialogue/RZ_DialogueRadio.c` (the open channel and its
 action), `Dialogue/RZ_DialogueTrees.c` (hubs, nodes, checks, effects), `Dialogue/RZ_DialogueDB.c` (the
 compiled conversations), `Dialogue/RZ_DialogueCond.c` (conditions and tokens),
 `Dialogue/RZ_DialogueMemory.c` (memory and `dialogue.json`), `Dialogue/RZ_DialogueScenes.c` (several
@@ -109,8 +110,9 @@ rewrite them; it wraps them:
   leaves it with them (`RZ_Leaders.PitchJob`, `TakeWork`). A conversation's `call:slot:0` (or
   `offer:`) has them explain their first job for you the same way, then waits on your yes or no
   (`PitchFirst`); with none, they say there's nothing today.
-- **A quartermaster or the medic** (`RZ_TalkStaff`): their name is their role ("The quartermaster",
-  sub-line "The Haven - quartermaster - Morton"), no greeting (they have nothing to say until you
+- **A quartermaster or the medic** (`RZ_TalkStaff`): their own name, the one their
+  [nametag](UI.md#nametags) shows ("Private Emil Kral"; "The quartermaster" only if there's none),
+  sub-line "The Haven - quartermaster - Morton", no greeting (they have nothing to say until you
   do). A faction's quartermaster gives its work first: every job of the faction's here, one reply each,
   locked with what it needs, and the seat leader's own job while they're in the chair ([Jobs on the
   first replies](#jobs-on-the-first-replies)); picked, it's explained in the seat leader's words (the
@@ -312,7 +314,7 @@ ReforgerZ action but **Talk to the ...** hides (Trade, Talk to whoever's in char
 asks, the trial dose, the house's services; the shop's own rows hide while the shop screen is
 used). Without it, or on a client where the screen can't open, nothing hides and the old prompts
 work as actions, with notices (the quartermaster's leader asks and services in the object menu).
-**Nametags** over the people you can talk to are the HUD's ([UI.md](UI.md#nametags)).
+**Nametags** over every person near you are the HUD's ([UI.md](UI.md#nametags)).
 
 ## Trees: hubs, topics and nodes
 

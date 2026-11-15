@@ -502,6 +502,12 @@ class RZ_Checkpoints
 			return;
 
 		post.m_aBodies.Insert(crew);
+		// The post's crew are the same people each time (the nametags): by the post's place on the road
+		string crewRole = "checkpoint guard";
+		if (post.m_eFaction == RZ_EFaction.BANDITS)
+			crewRole = "roadblock crew";
+
+		RZ_PersonTags.Mark(crew, PostKey(post) + ":crew", post.m_eFaction, crewRole);
 		RZ_Hostility hostility = m_GM.GetHostility();
 		if (hostility)
 			hostility.WatchUnit(crew, post.m_eFaction);
