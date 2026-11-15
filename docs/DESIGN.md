@@ -1020,7 +1020,9 @@ earned by doing, are planned ([designs/HABITS.md](../designs/HABITS.md)).
 their cabin, the Ex-Con goes back for an old stash): reach a town 1.2–4 km away (in it or at its
 edge: [arriving](#mission-building-blocks)), survive a while,
 deliver samples, take part in missions, or become Trusted with a faction. Completing it gives a
-**Legacy** point and 10 Haven Fame, never loot, so a fresh character can't farm crates. A player's first character that lasts 10 minutes is always
+**Legacy** point and 10 Haven Fame, never loot, so a fresh character can't farm crates. Personal goals come back
+with their own switch in stage 2 ([FEATURES.md](FEATURES.md)); a goal whose feature is off is never
+picked. A player's first character that lasts 10 minutes is always
 **Find the Haven**: reach a safehouse ([New-player guidance](#new-player-guidance)), unless its
 opening runs the whole chain, whose walk takes you where your background belongs.
 
@@ -3477,6 +3479,9 @@ runs: it already runs, needs only its keys (always lying in the one house the jo
 isn't saved and doesn't count toward the replacement timer.
 
 ### Light crafting
+
+The workbench comes with the Crafting switch (stage 4); the stove (boiled water, the home remedy, the
+stove recipes) is core and cooks whatever **Crafting > Enabled** says ([FEATURES.md](FEATURES.md)).
 
 At a workbench, sixteen built-in recipes, and more can be added as data (twenty-four in all at most). A
 recipe whose output prefab isn't set is hidden. A recipe takes its time at the bench (5 to 20 s;

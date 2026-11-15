@@ -81,6 +81,10 @@ class RZ_TalkJobs
 		if (!missions || !user || !RZ_Factions.IsValid(faction))
 			return;
 
+		// Nothing that offers jobs is on (stage 0, docs/FEATURES.md): no job rows at all
+		if (!RZ_Features.AnyJobs())
+			return;
+
 		// They won't deal with you at all: one locked row, saying so
 		RZ_ETier tier = gm.GetTier(playerId, faction);
 		if (RZ_Reputation.IsHunted(tier))

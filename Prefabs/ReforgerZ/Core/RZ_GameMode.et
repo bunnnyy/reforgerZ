@@ -17,6 +17,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_bGuidance 0
     m_bOpening 0
     m_bHabits 0
+    m_bPersonalGoals 0
     m_bMapFog 0
     m_bRoadPatrols 0
     m_bSupplyTrucks 0

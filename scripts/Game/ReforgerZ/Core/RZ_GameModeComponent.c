@@ -614,6 +614,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (!RZ_Features.On(RZ_EFeature.CARS))
 			m_CarSettings.m_bEnabled = false;
 
+		// The workbench and traps only: the stove (cooking, boiled water, the home remedy) is core and
+		// never reads Crafting > Enabled (Interactions/RZ_Crafting.c)
 		if (!RZ_Features.On(RZ_EFeature.CRAFTING))
 		{
 			m_CraftSettings.m_bEnabled = false;
@@ -2161,8 +2163,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			whereLine += "\n\n" + tonightNew;
 
 		NotifyPlayerAs(playerId, bg.m_sName, whereLine, RZ_ENoticeTag.SPAWN);
-		string intro = string.Format("Perk: %1\nFlaw: %2\n\nYour goal: %3",
-			bg.m_sPerk, bg.m_sFlaw, RZ_Objectives.Describe(this, profile));
+		string intro = string.Format("Perk: %1\nFlaw: %2", bg.m_sPerk, bg.m_sFlaw);
+		string goalLine = RZ_Objectives.Describe(this, profile);
+		if (!goalLine.IsEmpty())
+			intro = intro + "\n\nYour goal: " + goalLine;
+
 		NotifyPlayerAs(playerId, bg.m_sName, intro, RZ_ENoticeTag.QUIET);
 
 		// 2. The state of the world (first spawn of this session only)
@@ -3083,10 +3088,17 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Tribes.OnTurned(playerId, pos);
 
 		// World event: the turned player roams with their gear nearby
-		RZ_Mission_TurnedPlayer turned = new RZ_Mission_TurnedPlayer();
-		turned.Configure(this);
-		turned.Prepare(RZ_Names.Public(playerId), pos);
-		if (!m_Missions.StartMission(turned))
+		// (Features > World events: with events off it's one of them, no event to take)
+		bool started = false;
+		if (RZ_Features.On(RZ_EFeature.WORLD_EVENTS))
+		{
+			RZ_Mission_TurnedPlayer turned = new RZ_Mission_TurnedPlayer();
+			turned.Configure(this);
+			turned.Prepare(RZ_Names.Public(playerId), pos);
+			started = m_Missions.StartMission(turned);
+		}
+
+		if (!started)
 		{
 			m_Spawner.SpawnZombie(pos, false, -1, -1);
 			NotifyAll("Turned", RZ_Names.Public(playerId) + " has turned.");

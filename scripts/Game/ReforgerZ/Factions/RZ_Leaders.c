@@ -1963,6 +1963,9 @@ class RZ_Leaders
 	//! fits (or the leader is Loyal: their work is the stronghold's, on the radio).
 	RZ_Mission TryCreateJob(RZ_Leader l)
 	{
+		if (!RZ_Features.On(RZ_EFeature.LEADERS))
+			return null;
+
 		if (!l || !l.IsPresent() || l.m_iHeldBy >= 0 || l.m_eLoyalty == RZ_ELoyalty.LOYAL)
 			return null;
 

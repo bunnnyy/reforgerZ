@@ -1,7 +1,7 @@
 //! Core only (run.sh core): the server boots with every Features switch off (docs/FEATURES.md), the
 //! tester walks the first towns for a few minutes, and nothing a switched-off feature does happens:
 //! no camp pieces, patrols, trucks, safehouses, wanderers, errands, jobs, opening, Tonight, habit,
-//! research, tribes, Long Table, wildlife. Only this check runs (RZT_Diag hands it the tick).
+//! research, tribes, Long Table, wildlife, and no job when the tester asks every faction for work. Only this check runs (RZT_Diag hands it the tick).
 //! "RZT core OK|FAIL ...", "RZT core: N checks, M failed", "RZT core done".
 class RZT_CoreOnly
 {
@@ -131,6 +131,47 @@ class RZT_CoreOnly
 		}
 
 		Check(RZ_Habits.OfPlayer(RZT_Fake.ID) == RZ_EPlayerHabit.NONE, "the tester has no habit" + at);
+		AskForWork(gm, at);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tester asks every faction for work as the talk screen does (a guard or quartermaster at a
+	//! holding or outpost: RZ_TalkJobs.Build, which makes a contract on asking), and his Quests tab
+	//! and personal goal are read: no job row, no job made, no quest row, no goal.
+	protected static void AskForWork(RZ_GameModeComponent gm, string at)
+	{
+		IEntity me = RZT_Fake.s_Ent;
+		if (!me)
+			return;
+
+		int made = 0;
+		int rowsSeen = 0;
+		for (int f = 0; f < RZ_Factions.COUNT; f++)
+		{
+			array<int> ids = {};
+			array<ref RZ_TalkReply> rows = {};
+			RZ_TalkJobs.Build(gm, RZT_Fake.ID, me, f, null, ids, rows);
+			rowsSeen += rows.Count();
+			// And straight at the engine, past the ask gap's memory: a made contract would show here
+			if (gm.GetMissions().MakeFor(RZT_Fake.ID, f, me.GetOrigin()))
+				made++;
+		}
+
+		Check(rowsSeen == 0, "no job rows in talk at any faction: " + rowsSeen.ToString() + at);
+		Check(made == 0, "asking makes no job: " + made.ToString() + at);
+		Check(gm.GetMissions().GetActive().IsEmpty(), "still no jobs after asking: " + gm.GetMissions().GetActive().Count().ToString() + at);
+
+		RZ_UIFeed feed = gm.GetUIFeed();
+		if (feed && feed.GetTracker())
+		{
+			array<ref RZ_QuestJob> jobs = {};
+			feed.GetTracker().Jobs(RZT_Fake.ID, me, jobs);
+			Check(jobs.IsEmpty(), "no rows on the Quests tab: " + jobs.Count().ToString() + at);
+		}
+
+		RZ_PlayerProfile profile = gm.GetProfile(RZT_Fake.ID);
+		if (profile)
+			Check(RZ_Objectives.Describe(gm, profile).IsEmpty(), "no personal goal: " + profile.m_iObjType.ToString() + at);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -19,7 +19,15 @@ below is off. The other designs in [designs/](../designs/README.md) wait until e
 - **Needs.** A switch whose needs are off is off too, whatever it says: Camp life needs Camp sites;
   the Opening needs Guidance, Errands and Work sites; Puzzles need Contracts; Behaviour needs
   Tribes; Majors need Questlines; the Finale needs Research and Majors; the Epilogue needs the Finale.
-- **The log** says what's on at start: `Features: <n> of 46 on: <names>. Off: <names>`.
+- **No job in stage 0.** With Contracts, Leaders, Questlines and Story arcs all off, nobody offers
+  or makes a job: the talk screen shows no job row at all, and asking a guard or quartermaster for
+  work makes nothing (`RZ_Features.AnyJobs`). The first play-test of stage 0 got a job at an outpost:
+  asking a giver for work made a contract on the spot (`RZ_MissionManager.MakeFor`, "ask and you
+  get"), which only the director's own timer checked the Contracts switch. Now gated: `MakeFor`
+  and the parley's amends job (`RZ_Parley.ReserveAmends`) by Contracts, a leader's own job
+  (`RZ_Leaders.TryCreateJob`) by Leaders, the turned player's event by World events, the talk
+  screen's job rows by any of them, and personal goals by their own switch (stage 2).
+- **The log** says what's on at start: `Features: <n> of 47 on: <names>. Off: <names>`.
 - **The clients** get the result from the server (`RZ_GameModeComponent.GetFeaturesOff`), so a
   prompt or a reply hidden on the server is hidden on their screen too.
 
@@ -83,6 +91,7 @@ Spawn, loot, fight, die, come round. Always on: these have no switch.
 | **Places** | `World/RZ_PlaceNeeds`, `RZ_PlaceFind`, `RZ_PlaceAudit` | every task's spot | `run.sh tasks` | (a helper: no world of its own) |
 | **The mission engine** | `Missions/RZ_MissionManager`, `RZ_MissionRegistry` | questlines, majors, leaders and the finale run their steps through it | none | (its offers are the Contracts switch) |
 | **Memory's store and world facts** | `RZ_WorldFacts`, `RZ_WorldMemory`, `World/RZ_Lies`, `Core/RZ_Deeds` | conversations, conditions, the epilogue read them | none | (the spoken parts are the Memory switch) |
+| **Cooking at a stove**: Use the stove, the cooking screen, boiled water, the home remedy, the stove recipes; a fire you light | `Interactions/RZ_Crafting` (its stove half), `RZ_Fires`, `UI/RZ_CraftMenu` (stove mode) | food and clean water, the home remedy for a bite | (in RZT_Craft, RZT_Kitchen) | a stove or lit fire cooks; boil water; the home remedy brews |
 | **Things players build** cleared in time | `World/RZ_PlacedThings` | — | none | a fire you build clears after a few days unused |
 | **Saving** | `Persistence/RZ_SaveData`, `RZ_HallOfFame` | everything saved | none | restart the server: standing, character and the world come back |
 
@@ -110,6 +119,7 @@ Work sites moved here from stage 4: errands and the opening are made of their st
 | **Guidance and tips**: levels, tips, the wind-up radio, the open channels | Guidance | Guidance > Enabled | — | no radio given, no tips, no first goal | none | a new player gets a radio; tips once; `/level` |
 | **The opening** | Opening | Guidance > Openings | Guidance, Errands, Work sites | a new character starts at a random place | RZT_Openings, RZT_Favour, RZT_Line, RZT_Case, RZT_Ferda, RZT_OpeningChain | each background's favour; the runner's case; Ferda comes 3 min after |
 | **Habits** | Habits | the switch only | — | the door asks nothing; nobody has a habit (one settled earlier waits) | (in RZT_Favour, RZT_Persist) | your answer at the door becomes a habit |
+| **Personal goals**: one small goal per character (reach a town, stay alive, earn a faction's trust, deliver samples, finish missions; Find the Haven on a first life) | PersonalGoals | the switch only | — | no goal given, shown on the spawn card or counted (one held from before waits). On, a goal whose feature is off is never picked: no samples goal with Research off, no missions goal with Contracts and World events off, no Find the Haven with Guidance or Safehouses off | (in RZT_CoreOnly) | the spawn card's "Your goal"; it finishes and pays Legacy |
 
 ## Stage 3: Map
 
@@ -129,7 +139,7 @@ Work sites moved here from stage 4: errands and the opening are made of their st
 | **Puzzles** | Puzzles | the switch only | Contracts | no puzzle contract | none | a puzzle's notes read true; its objects use one menu |
 | **Doors and locks** | Locks | Search > Locks | — | no door is locked; jobs behind a lock find another place | (in RZT_Craft) | a locked door needs its key or a pick |
 | **Cars** | Cars | Cars > Enabled | — | — | none | a rare car can be fixed; the hotwire game |
-| **Crafting, fires and traps** | Crafting | Crafting > Enabled, Traps > Enabled | — | — | RZT_Craft | a recipe at a workbench; a trap trips |
+| **Crafting and traps**: recipes at a workbench, traps | Crafting | Crafting > Enabled, Traps > Enabled | — | no workbench recipes, no traps; the stove still cooks (core) | RZT_Craft | a recipe at a workbench; a trap trips |
 | **Radios**: secure channels, house radios | Radios | Secure radio > Enabled | — | — | none | a Radio Operator cracks a channel |
 
 ## Stage 5: Threat

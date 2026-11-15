@@ -1824,7 +1824,9 @@ of `run.sh` writes `all` to its profile's `RZ_Features.txt`, so the checks see t
 `RZT_CoreOnly.c` for 7 minutes (about 10 with the boot) while the fake player walks the first towns.
 Every 30 s it looks for what a switched-off feature would have put out: camp pieces, road patrols,
 safehouses, supply trucks, errands, leaders, tribes, the Long Table, wildlife herds, any running
-job, an opening, a Tonight line or a habit for the fake player. At the end the towns were found, the
+job, an opening, a Tonight line or a habit for the fake player. Each time it also asks every
+faction for work as the talk screen does (`RZ_TalkJobs.Build`, and `MakeFor` directly) and reads its
+Quests tab and personal goal: no job row, no job made, no quest row, no goal. At the end the towns were found, the
 fake player is in the world, research hasn't moved, shops are off and the clients' list of what's
 off is set (`RZT core OK|FAIL <what>`, `RZT core: N checks, N failed`, `RZT core done`; the run fails
 on FAIL, a script exception, or no `done`). The run prints the `Features:` log line first.
@@ -2672,7 +2674,7 @@ Every line starts with `[ReforgerZ]`. This is what the server printed on Arland 
 but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in this order:
 
 ```
-[ReforgerZ] Features: 0 of 46 on: none (only the core). Off: CampSites CampLife Safehouses ... Epilogue
+[ReforgerZ] Features: 0 of 47 on: none (only the core). Off: CampSites CampLife Safehouses ... Epilogue
 [ReforgerZ] Features: $profile:RZ_Features.txt read
 [ReforgerZ] Features: $profile:RZ_Features.txt names no switch "<word>"
 [ReforgerZ] No common zombie prefabs configured. Set them on RZ_GameModeComponent > Zombies.

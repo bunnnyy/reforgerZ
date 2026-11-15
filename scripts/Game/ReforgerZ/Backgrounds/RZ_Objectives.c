@@ -21,8 +21,17 @@ class RZ_Objectives
 	//------------------------------------------------------------------------------------------------
 	static void Assign(RZ_GameModeComponent gm, RZ_PlayerProfile profile, RZ_Background bg, vector spawnPos)
 	{
-		// A player's first life that counts is always about finding the Haven
-		if (gm.GetGuidance() && gm.GetGuidance().WantsHavenGoal(profile))
+		// Features > Personal goals (docs/FEATURES.md): off, no goal at all
+		if (!RZ_Features.On(RZ_EFeature.PERSONAL_GOALS))
+		{
+			profile.m_iObjType = -1;
+			profile.m_bObjDone = false;
+			return;
+		}
+
+		// A player's first life that counts is always about finding the Haven (never with the
+		// safehouses off)
+		if (gm.GetGuidance() && gm.GetGuidance().WantsHavenGoal(profile) && RZ_Features.On(RZ_EFeature.SAFEHOUSES) && gm.GetSafehouses())
 		{
 			int house = PickHavenGoal(gm, spawnPos);
 			if (house >= 0)
@@ -56,11 +65,21 @@ class RZ_Objectives
 		if (bg.m_fResearchMult > 1)
 			pool.Insert(RZ_EObjective.DELIVER_SAMPLES);
 
-		if (gm.GetCure().IsCured())
+		// Never a goal whose feature is off: samples need Research (and no cure yet), missions need
+		// Contracts or World events
+		if (gm.GetCure().IsCured() || !RZ_Features.On(RZ_EFeature.RESEARCH))
 		{
 			while (pool.Contains(RZ_EObjective.DELIVER_SAMPLES))
 			{
 				pool.RemoveItem(RZ_EObjective.DELIVER_SAMPLES);
+			}
+		}
+
+		if (!RZ_Features.On(RZ_EFeature.CONTRACTS) && !RZ_Features.On(RZ_EFeature.WORLD_EVENTS))
+		{
+			while (pool.Contains(RZ_EObjective.COMPLETE_MISSIONS))
+			{
+				pool.RemoveItem(RZ_EObjective.COMPLETE_MISSIONS);
 			}
 		}
 
@@ -96,6 +115,9 @@ class RZ_Objectives
 	//------------------------------------------------------------------------------------------------
 	static string Describe(RZ_GameModeComponent gm, RZ_PlayerProfile profile)
 	{
+		if (!RZ_Features.On(RZ_EFeature.PERSONAL_GOALS))
+			return "";
+
 		switch (profile.m_iObjType)
 		{
 			case RZ_EObjective.REACH_TOWN:
@@ -133,7 +155,7 @@ class RZ_Objectives
 	static void Tick(RZ_GameModeComponent gm, int playerId, RZ_PlayerProfile profile, IEntity ent, float dt)
 	{
 		profile.m_fLifeSeconds += dt;
-		if (profile.m_bObjDone || profile.m_iObjType < 0)
+		if (profile.m_bObjDone || profile.m_iObjType < 0 || !RZ_Features.On(RZ_EFeature.PERSONAL_GOALS))
 			return;
 
 		bool complete = false;

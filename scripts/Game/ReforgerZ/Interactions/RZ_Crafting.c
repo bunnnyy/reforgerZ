@@ -80,7 +80,7 @@ class RZ_Recipe
 [BaseContainerProps()]
 class RZ_CraftSettings
 {
-	[Attribute("1", desc: "Crafting at workbenches")]
+	[Attribute("1", desc: "Crafting at workbenches. The stove (Use the stove, the cooking screen, boiled water, the home remedy, the stove recipes) is core and runs whatever this says")]
 	bool m_bEnabled;
 
 	[Attribute("workbench,work_bench,toolbench,tool_bench,workshop_table,vise", desc: "Workbench prefab name keywords (a placed prefab with one of these in its name works too)")]
