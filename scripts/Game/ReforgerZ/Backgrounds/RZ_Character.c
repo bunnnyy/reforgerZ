@@ -3,13 +3,12 @@
 //! player resets it. At a death the quest items come off the body as data (RZ_PlayerProfile.m_aQi*)
 //! and go back in the pack on coming round; the character comes round at the nearest camp that will
 //! take them in (a holding or a safehouse at Stranger or better, the lab at Known), else at a random
-//! start (the openings' place rules, without the opening). Reset character ends one, once a real day.
+//! start (the openings' place rules, without the opening). Reset character ends one, as often as the player likes.
 //! Server only.
 class RZ_Character
 {
 	static const int TAKEN_IN_MAX = 3;			// a camp takes the same character in this many times ...
 	static const int TAKEN_IN_WINDOW = 3600;	// ... in this many real seconds, then "We're not your hospital."
-	static const int RESET_EVERY = 86400;		// one reset a real day
 	static const float HOME_REACH = 120;		// a camp's people within this of its holding: come round in their yard
 	static const int NO_MISSION = -2147;		// a held item with no mission id
 	static const int WATCHED_INFAMY = 15;		// Infamy's "some" band (RZ_Reputation.Band) ...
@@ -690,33 +689,12 @@ class RZ_Character
 	// ================================================================ Reset character
 	//------------------------------------------------------------------------------------------------
 	//! The Season page's Reset character button, confirmed in its pop-up on the client (RZ_SeasonPage,
-	//! UI/RZ_Notebook.c): resets now, once a real day. A refusal comes as a notice to that player.
+	//! UI/RZ_Notebook.c): resets now, with no limit. A refusal comes as a notice to that player.
 	static void AskReset(RZ_GameModeComponent gm, int playerId)
 	{
 		string why = Reset(gm, playerId);
 		if (!why.IsEmpty())
 			gm.NotifyPlayer(playerId, "Reset character", why);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Seconds until this player may reset again (0: now).
-	static int ResetWait(RZ_PlayerProfile profile)
-	{
-		if (!profile || profile.m_iResetUnix <= 0)
-			return 0;
-
-		return Math.Max(0, RESET_EVERY - (RZ_SeasonClock.Now() - profile.m_iResetUnix));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Whole hours until this player may reset again, rounded up (0: now), for the Season page's pop-up.
-	static int ResetWaitHours(RZ_PlayerProfile profile)
-	{
-		int wait = ResetWait(profile);
-		if (wait <= 0)
-			return 0;
-
-		return RZ_Util.RoundToInt(Math.Ceil(wait / 3600.0));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -728,10 +706,6 @@ class RZ_Character
 		RZ_PlayerProfile profile = gm.GetProfile(playerId);
 		if (!profile || !profile.HasCharacter())
 			return "You have no character to reset.";
-
-		int wait = ResetWait(profile);
-		if (wait > 0)
-			return string.Format("One reset a day. You can reset again in %1 hours.", Math.Ceil(wait / 3600.0));
 
 		profile.m_bResetPending = true;
 		profile.m_iResetUnix = RZ_SeasonClock.Now();

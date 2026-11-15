@@ -13,7 +13,7 @@ class RZ_PlayerProfile
 	int m_iLives;					// old saves' life number: read once into m_iCharacter (EnsureArrays), then 0
 	int m_iDeaths;					// deaths of this character (the death brief's "death 4")
 	bool m_bResetPending;			// Reset character was confirmed: the next spawn is a new character
-	int m_iResetUnix;				// real time of the last reset (one a real day)
+	int m_iResetUnix;				// real time of the last reset
 	bool m_bDiedBitten;				// the last death was bitten: nobody carries a bitten body in (a random start)
 	float m_fDiedX;					// where the last death was (coming round picks the camp nearest it)
 	float m_fDiedZ;

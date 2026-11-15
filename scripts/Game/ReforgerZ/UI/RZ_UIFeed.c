@@ -614,7 +614,7 @@ class RZ_UIFeed
 		if (p.HasCharacter())
 			hasCharacter = 1;
 
-		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iDeaths).Add(RZ_RepNamesPage.Header(m_GM, playerId)).Add(RZ_Habits.StandingLine(p)).AddInt(RZ_Character.ResetWaitHours(p)).AddInt(hasCharacter).End();
+		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iDeaths).Add(RZ_RepNamesPage.Header(m_GM, playerId)).Add(RZ_Habits.StandingLine(p)).AddInt(hasCharacter).End();
 		IEntity standingEnt = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		vector standingAt = vector.Zero;
 		if (standingEnt)

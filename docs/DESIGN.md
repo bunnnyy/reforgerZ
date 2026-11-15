@@ -942,8 +942,7 @@ you still have one; the new character's meal doesn't. No other cost: no debuff, 
 the pad (its focus starts there), opens a pop-up with the character's name, background and deaths
 and a plain warning (*"This person is gone. They die where they stand ... Their name stays on the
 wall."*, then what goes and what's kept), and **Confirm** and **Cancel** (Cancel has the focus; B or
-Esc cancels; [UI.md](UI.md#the-notebook)). Confirm resets at once. One a real day: until then the
-pop-up says how many hours are left and has no Confirm, and the server refuses anyway. The character is killed where they stand; the next spawn picks a background and runs the
+Esc cancels; [UI.md](UI.md#the-notebook)). Confirm resets at once, as often as the player likes (no limit). The character is killed where they stand; the next spawn picks a background and runs the
 opening. A reset clears standing, Favor, the trust ladder, quests and errands held, the habit and
 the fog; Legacy, unlocks, the season record and the hall of fame stay
 ([REPUTATION.md](REPUTATION.md#characters-and-carry-over): Word gets around, the name carried as

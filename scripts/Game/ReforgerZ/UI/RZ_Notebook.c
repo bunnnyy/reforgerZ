@@ -2174,7 +2174,7 @@ class RZ_RadioPage : RZ_NotebookPage
 //! (ResetPopup) that says who you are and what a reset takes and keeps, with Confirm and Cancel:
 //! the pad's focus starts on the button and on Cancel in the pop-up, left/right move between the
 //! two, A presses, B or Esc cancels; the mouse clicks either. Confirm asks the server
-//! (RZ_PlayerUIComponent.AskReset), which resets once a real day (Backgrounds/RZ_Character.c).
+//! (RZ_PlayerUIComponent.AskReset), which resets at once, as often as the player likes (Backgrounds/RZ_Character.c).
 class RZ_SeasonPage : RZ_NotebookPage
 {
 	protected static const int CHOICE_CONFIRM = 0;
@@ -2398,15 +2398,14 @@ class RZ_SeasonPage : RZ_NotebookPage
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The pop-up's words from the Standing payload's head line (H|name|background|deaths|...|hours
-	//! until a reset|has a character): who this is, and what a reset takes and keeps.
+	//! The pop-up's words from the Standing payload's head line (H|name|background|deaths|...|has a
+	//! character): who this is, and what a reset takes and keeps.
 	protected void DrawAsk()
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		string name = "";
 		string background = "";
 		int deaths = 0;
-		int hours = 0;
 		bool hasChar = true;
 		bool heard = false;
 		if (ui)
@@ -2422,10 +2421,9 @@ class RZ_SeasonPage : RZ_NotebookPage
 				name = RZ_UIText.Str(f, 1);
 				background = RZ_UIText.Str(f, 2);
 				deaths = RZ_UIText.Int(f, 3);
-				hours = RZ_UIText.Int(f, 6);
 				// An older server sends no seventh field: take it there's a character
-				if (f.Count() > 7)
-					hasChar = RZ_UIText.Int(f, 7) == 1;
+				if (f.Count() > 6)
+					hasChar = RZ_UIText.Int(f, 6) == 1;
 			}
 		}
 
@@ -2441,11 +2439,9 @@ class RZ_SeasonPage : RZ_NotebookPage
 		RZ_UIW.Show(m_wRoot, "ResetWho", !who.IsEmpty());
 
 		string body;
-		m_bCanReset = hasChar && hours <= 0;
+		m_bCanReset = hasChar;
 		if (!hasChar)
 			body = "You have no character to reset yet. The next spawn starts one.";
-		else if (hours > 0)
-			body = string.Format("One reset a real day. You can reset again in %1.", RZ_SeasonPage.HoursText(hours));
 		else
 			body = RZ_SeasonPage.WarningText();
 
@@ -2463,7 +2459,7 @@ class RZ_SeasonPage : RZ_NotebookPage
 		string s = "This person is gone. They die where they stand, and what they carry stays on the body. Their name stays on the wall.\n\n";
 		s += "Gone with them: your standing and Favor with every faction, the trust the errand givers had in you, the quests and errands you hold, your habit, and what your map has uncovered.\n\n";
 		s += "Kept: your Legacy, your unlocks and the hall of fame.\n\n";
-		s += "One reset a real day. The next spawn is someone new.";
+		s += "The next spawn is someone new.";
 		return s;
 	}
 
@@ -2474,15 +2470,6 @@ class RZ_SeasonPage : RZ_NotebookPage
 			return "1 death";
 
 		return string.Format("%1 deaths", deaths);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	static string HoursText(int hours)
-	{
-		if (hours == 1)
-			return "an hour";
-
-		return string.Format("%1 hours", hours);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -554,14 +554,12 @@ The Standing page's header ends with the character's habit, when it has one (*"H
   payload's head line has it (name, background, deaths: *"MAREK · NURSE · 3 DEATHS"*), and a plain
   warning: they die where they stand and what they carry stays on the body; gone with them are
   standing and Favor with every faction, the errand givers' trust, the quests and errands held, the
-  habit and what the map has uncovered; kept are Legacy, unlocks and the hall of fame; one reset a
-  real day. Two buttons, **Confirm** and **Cancel**: the focus starts on Cancel, left/right move
+  habit and what the map has uncovered; kept are Legacy, unlocks and the hall of fame; no limit on
+  resets. Two buttons, **Confirm** and **Cancel**: the focus starts on Cancel, left/right move
   between them (the chosen one has a bone border), A presses, B or Esc cancels, and a click presses
   either. Confirm asks the server (`RZ_PlayerUIComponent.AskReset`), which resets at once
-  ([DESIGN.md](DESIGN.md#a-character-who-lasts)), and closes the notebook. While today's reset is
-  used, the pop-up says *"One reset a real day. You can reset again in N hours."* and has only
-  Cancel (the hours come from the `H` record's seventh field, whether there's a character at all
-  from its eighth). The pop-up has its own prompts (`ResetPrompts`: A Choose, B Cancel).
+  ([DESIGN.md](DESIGN.md#a-character-who-lasts)), and closes the notebook. With no character yet, the pop-up says so and has
+  only Cancel (whether there's a character comes from the `H` record's seventh field). The pop-up has its own prompts (`ResetPrompts`: A Choose, B Cancel).
 - On the Standing page the mouse highlights the row it's over and a click opens it (a click on the
   open row closes it). Rows open only on a click, A or Enter; one at most, and with none open the
   four share the page. The highlighted and open rows are kept for the session. Hover only does

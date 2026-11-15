@@ -4379,8 +4379,8 @@ when it happens)
   background and deaths and the warning; Cancel and Esc close it and the notebook stays open. With
   a pad only: the button has the focus, A opens the pop-up on Cancel, left/right move the bone
   border, B cancels; A on Confirm closes the notebook, the character dies where they stand (the log:
-  `Character: <player> reset character <n> (<k> deaths)`), and the next spawn is a new character. Open
-  the pop-up again the same day: it says the hours left and has no Confirm.
+  `Character: <player> reset character <n> (<k> deaths)`), and the next spawn is a new character. Reset
+  again at once: it works every time (no limit).
 - [ ] **Drawn pages** ([UI.md](UI.md#subtitles-and-the-reader)): a new character with the
   hiding-place opening (the calendar) reads it: the reader shows a month's grid with the days up to
   today struck through in pencil (the last ones shakier) and the 2nd ringed with ROADS SHUT in it,
