@@ -99,9 +99,9 @@ class RZ_Mission_BanditDeadDrop : RZ_Mission
 		sc.Ask(n0, "What are they for?", n1, reveal, true);
 		sc.Way(n0, "Pay me in person.", RZ_TalkScene.TRUST, RZ_EFaction.BANDITS, 1, WAY_FACE, "Face to face, then. Better rate. Longer memory.", "In the drop, like everyone.");
 		if (truth == "cut")
-			sc.Decide(n1, "Warn the houses", "warn the houses about the doses", WAY_WARN, "You'll put it on the house radio: the cheap cure is saline. The buyer packs his box without a word.", RZ_EFaction.SURVIVORS);
+			sc.Decide(n1, "Warn the houses the cheap cure is saline (no sale)", "warn the houses about the doses", WAY_WARN, "You'll put it on the house radio: the cheap cure is saline. The buyer packs his box without a word.", RZ_EFaction.SURVIVORS);
 		else if (truth == "halcyon")
-			sc.Decide(n1, "Take them to the lab instead", "take the samples to the lab", WAY_LAB, "\"Your funeral. Theirs pays worse.\" He shuts the box.", RZ_EFaction.INSTITUTE);
+			sc.Decide(n1, "Take the samples to the lab instead (it pays worse)", "take the samples to the lab", WAY_LAB, "\"Your funeral. Theirs pays worse.\" He shuts the box.", RZ_EFaction.INSTITUTE);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -319,8 +319,8 @@ class RZ_Mission_FightPit : RZ_Mission_Hold
 	{
 		m_Story = new RZ_MissionStory("pit");
 		m_Choice = new RZ_OneChoice();
-		m_Choice.Set("Between rounds a man you don't know grabs the rope: \"I've my whole debt on you going down in this round. Go down and I'm out of the book. You'll get half. Please.\" Answer him at the rope.",
-			"Fight it out|Go down this round", "decide how the round ends", 0);
+		m_Choice.Set("Between rounds a man you don't know grabs the rope: \"I've bet my whole debt to the Red Hand's book on you going down this round. Go down, and I win enough to be free of what I owe. You'll get half. Please.\" Answer him at the rope.",
+			"Fight it out (he stays in debt)|Go down this round (half your pay; he goes free)", "decide how the round ends", 0);
 		m_Choice.Asset(1, RZ_CureFinale.INDEP);
 		m_Choice.m_bManual = true;
 		m_Choice.m_bEnds = false;
@@ -509,16 +509,16 @@ class RZ_Mission_SmugglersRun : RZ_Mission_Delivery
 		if ((m_sTruth == "doses" && m_iHouse < 0) || (m_sTruth == "pages" && !bastion))
 			m_sTruth = "goods";
 
-		string prompt = "The crew's runner holds out both hands. \"All of it. Unopened, I'd hope.\"";
-		string labels = "Hand it over";
+		string prompt = "The crew's runner at the drop holds out both hands for the package. \"All of it. Unopened, I'd hope.\"";
+		string labels = "Hand the package to the crew";
 		if (m_sTruth == "doses")
 		{
-			labels += "|Take the doses back to the house they came from";
+			labels += "|Take the doses back to their Haven house (the crew pays nothing)";
 			m_Choice.Asset(OPT_SECOND, RZ_EFaction.SURVIVORS);
 		}
 		else if (m_sTruth == "pages")
 		{
-			labels += "|Take the pages to Bastion's post";
+			labels += "|Take the pages to Bastion's post (the crew pays nothing)";
 			m_Choice.Asset(OPT_SECOND, RZ_EFaction.MILITARY);
 		}
 
@@ -879,8 +879,8 @@ class RZ_Mission_StealAntidotes : RZ_Mission_Hold
 	{
 		m_Story = new RZ_MissionStory("antidotes");
 		m_Choice = new RZ_OneChoice();
-		m_Choice.Set("You've the two doses. On the way out a Haven medic is waiting by the wire: \"There's a house with three sick and nothing. The crews will sell them for more than you'll ever see.\" Decide here.",
-			"To the black market|To the Haven medic", "decide where the doses go", 0);
+		m_Choice.Set("You've the two stolen antidote doses. On the way out a Haven medic is waiting by the wire: \"There's a house with three sick and nothing to treat them. The crews will sell those doses for more than you'll ever see.\" Decide here.",
+			"To the black market, as the crew wants|Give them to the Haven medic (the crews pay nothing)", "decide where the doses go", 0);
 		m_Choice.Asset(1, RZ_EFaction.SURVIVORS);
 	}
 

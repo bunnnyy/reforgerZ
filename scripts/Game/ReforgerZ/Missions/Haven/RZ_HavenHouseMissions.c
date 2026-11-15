@@ -155,7 +155,7 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 		int n1 = sc.Node("Go on, then. What do you want done with it?");
 		sc.Ask(n0, "Who are they for?", n1, reveal, true);
 		if (m_sTruth == "crew")
-			sc.Decide(n1, "Burn the red one", "burn the crew's letter", WAY_BURN, "The red-sealed letter goes in the stove. The rest go on the shelf by the door.", RZ_EFaction.SURVIVORS);
+			sc.Decide(n1, "Burn the crew's red-sealed letter (it never arrives)", "burn the crew's letter", WAY_BURN, "The red-sealed letter goes in the stove. The rest go on the shelf by the door.", RZ_EFaction.SURVIVORS);
 
 		return true;
 	}

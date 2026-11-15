@@ -546,25 +546,25 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 		sc.Way(n0, "When does it turn?", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_GAP, "\"Watch me. When I scratch my ear, go.\" He scratches his ear a lot.", "Turns when it likes. Like a cat.");
 		sc.Way(n0, "Two tins for its turns", RZ_TalkScene.FOOD, -1, 2, WAY_GAP, "He takes the tins and counts the turns out loud for you, slowly.");
 
-		string labels = "Give it to the house";
+		string labels = "Give the package to the Haven house";
 		if (truth == "medicine")
 		{
-			labels += "|Let him take it home";
+			labels += "|Let him take it home to his dad (nobody pays)";
 			m_Choice.Asset(OPT_SECOND, RZ_CureFinale.INDEP);
 		}
 		else if (truth == "passes")
 		{
-			labels += "|Take the passes to Bastion's post";
+			labels += "|Take the passes to Bastion's post (the Haven pays nothing)";
 			m_Choice.Asset(OPT_SECOND, RZ_EFaction.MILITARY);
 		}
 		else
 		{
-			labels += "|Sell the turns to the crew|Burn the drawings";
+			labels += "|Sell the drone turns to the crew (the Haven blames you)|Burn the drawings (less pay)";
 			m_Choice.Asset(OPT_SECOND, RZ_EFaction.BANDITS);
 			m_Choice.Asset(OPT_THIRD, RZ_CureFinale.INDEP);
 		}
 
-		m_Choice.Set("The runner meets you at the door, arm in a sling. \"I ran. The drone was faster. I'd like that to be the last thing I learn about drones.\"", labels, "decide where the package goes", OPT_HOUSE);
+		m_Choice.Set("The Haven runner who dropped the package meets you at the house's door, arm in a sling. \"I ran. The drone was faster. I'd like that to be the last thing I learn about drones. So, what's in it, and who gets it?\"", labels, "decide where the package goes", OPT_HOUSE);
 	}
 
 	//------------------------------------------------------------------------------------------------

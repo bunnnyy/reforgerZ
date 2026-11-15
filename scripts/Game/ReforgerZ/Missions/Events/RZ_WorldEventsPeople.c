@@ -305,16 +305,16 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 			// Real: where they go is one choice when they're out; his leg is a fixed fact
 			m_bBitten = m_Rng.Chance(0.25);
 			m_iSister = SisterHouse(gm);
-			string sister = "Bastion's post: \"the soldiers\"";
-			string labels = "The nearest house";
+			string sister = "Bastion's post (the soldiers shelter them)";
+			string labels = "The nearest Haven house";
 			if (m_iSister >= 0)
-				labels += "|" + string.Format("My brother's in %1", gm.GetSafehouses().Get(m_iSister).m_sName);
+				labels += "|" + string.Format("His brother's house in %1 (a longer walk)", gm.GetSafehouses().Get(m_iSister).m_sName);
 			else
-				labels += "|The nearest house, the long way";
+				labels += "|The nearest house, the long way round";
 
 			labels += "|" + sister;
 			m_Choice = new RZ_OneChoice();
-			m_Choice.Set(string.Format("They're out. %1 holds the man up and looks at you: \"Where now? My brother's house is further, but he's there. Or the soldiers.\" Answer him here.", m_sCaller), labels, "decide where they go", WHERE_NEAREST);
+			m_Choice.Set(string.Format("They're out. %1 holds the hurt man up and looks at you: \"Where now? The nearest house is close. My brother's house is further, but he's there. Or the soldiers at Bastion's post.\" Answer him here.", m_sCaller), labels, "decide where they go", WHERE_NEAREST);
 		}
 
 		if (m_sTruth != REAL)
@@ -1675,7 +1675,7 @@ class RZ_Event_CollapseShelter : RZ_PuzzleMission
 		if (truth == "inside")
 			sc.Decide(n1, "Tell the house it was number nine", "tell the house how it started", WAY_NAME, "You'll tell them. He nods and goes on crossing out names.");
 		else if (truth == "chained")
-			sc.Decide(n1, "Take the chain to the house", "take Bastion's chain to the house", WAY_CHAIN, "The chain goes in your pack, padlock and all. The house will want to see it.", RZ_EFaction.SURVIVORS);
+			sc.Decide(n1, "Take the chain to the house as proof", "take Bastion's chain to the house", WAY_CHAIN, "The chain goes in your pack, padlock and all. The house will want to see it.", RZ_EFaction.SURVIVORS);
 	}
 
 	//------------------------------------------------------------------------------------------------

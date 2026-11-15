@@ -270,8 +270,8 @@ class RZ_HordeWhere
 	//------------------------------------------------------------------------------------------------
 	static void Set(RZ_OneChoice c, int def)
 	{
-		c.Set("They're turned, not gone. By morning they'll drift somewhere, and the noise you make now decides where. Choose at the spot.",
-			"An empty town|Past Bastion's post|Past a Red Hand camp", "decide where the horde drifts", def);
+		c.Set("The horde's turned back, not gone. By morning it'll drift somewhere, and the noise you make now decides where. An empty town costs nobody. Past a post or a camp, the people there have a long night and know who sent it. Choose at the spot.",
+			"An empty town (nobody is hurt)|Past Bastion's post (Bastion blames you)|Past a Red Hand camp (the Red Hand blame you)", "decide where the horde drifts", def);
 	}
 
 	//------------------------------------------------------------------------------------------------

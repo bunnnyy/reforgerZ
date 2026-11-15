@@ -221,8 +221,8 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 	{
 		m_Story = new RZ_MissionStory("survey");
 		m_Choice = new RZ_OneChoice();
-		m_Choice.Set("The samples are in. The analyst reads the strip twice: one town is next. \"Halcyon logs it. Whether the Haven hears is up to whoever carried the bottles.\" Decide at the last point.",
-			"Halcyon only|Tell the Haven too", "decide who hears about the town at risk", 0);
+		m_Choice.Set("The samples are in. The analyst reads the strip twice: one town's water shows the infection, and that town is next to turn. \"Halcyon logs it. Whether the Haven hears, and gets its people out in time, is up to whoever carried the bottles.\" Decide at the last point.",
+			"Tell Halcyon only (the Haven isn't warned)|Tell the Haven too (it moves its people out)", "decide who hears about the town at risk", 0);
 		m_Choice.Asset(1, RZ_EFaction.SURVIVORS);
 	}
 
@@ -1187,7 +1187,7 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 		sc.Way(n0, "Where's the drive?", RZ_TalkScene.TRUST, RZ_EFaction.INSTITUTE, 1, WAY_SHOW, "He fetches it from a drawer and wipes it on his coat before he hands it over.", "Which drive? There are no drives. There's a floor.");
 		sc.Way(n0, "A tin for the drive", RZ_TalkScene.FOOD, -1, 1, WAY_SHOW, "He takes the tin and points under the counter with the broom.");
 		if (truth == "trials")
-			sc.Decide(n1, "Give the names to the house", "give the trial's names to the house", WAY_HOUSE, "The drive goes to the house that's on it. Halcyon will hear where.", RZ_EFaction.SURVIVORS);
+			sc.Decide(n1, "Give the trial's names to the house (Halcyon hears)", "give the trial's names to the house", WAY_HOUSE, "The drive goes to the house that's on it. Halcyon will hear where.", RZ_EFaction.SURVIVORS);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1353,8 +1353,8 @@ class RZ_Mission_LabDefence : RZ_Mission_Hold
 	{
 		m_Story = new RZ_MissionStory("labraid");
 		m_Choice = new RZ_OneChoice();
-		m_Choice.Set("A raider throws his rifle out of the hedge and his hands up after it: \"Done. I'm done.\" The guard at the gate looks at you. Decide at the gate.",
-			"Bastion's stockade|Give him back to the crew|To Halcyon, for the trial", "decide what happens to the raider", 0);
+		m_Choice.Set("A raider from the crew that hit the lab throws his rifle out of the hedge and his hands up after it: \"Done. I'm done.\" Bastion would lock him in its stockade, his crew would take him back, and Halcyon wants people for its serum trial. The guard at the gate looks at you. Decide at the gate.",
+			"Hand him to Bastion's stockade|Give him back to his crew (they'll owe you)|Give him to Halcyon's trial (the Red Hand blame you)", "decide what happens to the raider", 0);
 		m_Choice.Asset(0, RZ_EFaction.MILITARY);
 		m_Choice.Asset(1, RZ_EFaction.BANDITS);
 		m_Choice.Asset(2, RZ_EFaction.INSTITUTE);

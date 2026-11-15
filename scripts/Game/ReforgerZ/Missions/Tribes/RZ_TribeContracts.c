@@ -525,7 +525,7 @@ class RZ_Mission_BringThemHome : RZ_TribeContract
 				array<string> values = {"named", "other"};
 				array<float> weights = {0.7, 0.3};
 				m_Job.Draw(this, "named:" + who, values, weights);
-				m_Choice.Set("The house's clerk turns the card over in his hands. \"Family first, or does somebody want paying?\"", "The card to the family|Sell the keepsake to the fence", "decide where the keepsake goes", OPT_FAMILY);
+				m_Choice.Set("The Haven house's clerk turns the dead one's card over in his hands. It has a name on it, and the family is here in the house. \"Family first, or does somebody want paying? A fence gives good tins for a keepsake.\"", "Give the card to the family|Sell the keepsake to the fence (the family never knows)", "decide where the keepsake goes", OPT_FAMILY);
 				m_Choice.Asset(OPT_FENCE, RZ_EFaction.BANDITS);
 				return true;
 			}
@@ -1054,7 +1054,7 @@ class RZ_Mission_ClearTheTrail : RZ_TribeContract
 				if (m_bLostPost)
 				{
 					m_Choice = new RZ_OneChoice();
-					m_Choice.Set("A corporal walks the trail with a torch, turning faces over. \"Ours, some of them. Tags to the nail? Or leave them walking?\"", "Their tags to the nail|Leave them walking", "decide what's done with Bastion's dead", OPT_NAIL);
+					m_Choice.Set("A Bastion corporal walks the trail with a torch, turning faces over. Some of the infected you put down were Bastion's own soldiers. \"Ours, some of them. Do we take their tags back for the post's nail board, so they're mourned? Or leave them out here, tags on?\"", "Take their tags back to the post (Bastion mourns them)|Leave them where they fell (the post never knows)", "decide what's done with Bastion's dead", OPT_NAIL);
 					m_Choice.Asset(OPT_NAIL, RZ_EFaction.MILITARY);
 					m_Choice.Asset(OPT_WALK, RZ_CureFinale.INDEP);
 				}
