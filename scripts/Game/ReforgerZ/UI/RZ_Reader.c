@@ -285,7 +285,8 @@ class RZ_PaperFigureDraw
 		for (int d = 1; d <= MONTH; d++)
 		{
 			int cell = FIRST + d - 1;
-			float x = (cell % 7) * cw;
+			int column = cell % 7;
+			float x = column * cw;
 			float y = top + (cell / 7) * ch;
 			Label(d.ToString(), x + 4, y + 2, 44, 30, ink);
 			if (d <= crossed)
@@ -519,7 +520,8 @@ class RZ_PaperFigureDraw
 		if (h < 0)
 			h = -h;
 
-		return (h % 2001) / 1000.0 - 1;
+		int spread = h % 2001;
+		return spread / 1000.0 - 1;
 	}
 }
 
