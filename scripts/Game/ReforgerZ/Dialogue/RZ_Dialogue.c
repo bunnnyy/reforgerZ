@@ -482,6 +482,24 @@ class RZ_Dialogue
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The person you talk to turns to you (seen in play: a corporal talking to a barn wall): only
+	//! someone standing on their feet, not in a seat or a vehicle, and not already roughly facing you.
+	protected static void FaceYou(IEntity owner, IEntity user)
+	{
+		ChimeraCharacter c = ChimeraCharacter.Cast(owner);
+		if (!c || !user || c.IsInVehicle() || !RZ_Util.IsCharacterAlive(c))
+			return;
+
+		float want = RZ_Compass.Bearing(owner.GetOrigin(), user.GetOrigin());
+		float have = owner.GetYawPitchRoll()[0];
+		float off = Math.AbsFloat(Math.Repeat(want - have + 540, 360) - 180);
+		if (off < 30)
+			return;
+
+		RZ_QuartermasterHelper.Face(owner, want);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool Start(int playerId, IEntity owner, IEntity user, RZ_TalkSpeaker adapter, bool calledOver = false)
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
@@ -512,6 +530,7 @@ class RZ_Dialogue
 
 		m_mSessions.Insert(playerId, s);
 		s.m_Tree = m_Trees.Begin(s, user);
+		FaceYou(owner, user);
 
 		// No filler greeting: unless they called you over or speak first (an opening's contact, a
 		// stranger), the screen opens on your replies and they say only what's real now

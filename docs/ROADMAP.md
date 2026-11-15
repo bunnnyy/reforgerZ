@@ -269,7 +269,7 @@ coming round at a Bastion post; fixed ones are in the commits, these aren't yet)
 | What | Seen |
 |---|---|
 | Prompt hints overlap | The talk screen's footer ("Say it", "Page", "Leave" run into each other); "N, OR START AND NOTEBOOK" and "1-5: a reply..." drawn over the HUD's status icons |
-| People don't turn to you | Corporal Ruth Weber stood facing a barn wall and talked to it; camp people placed facing walls |
+| People don't turn to you | Fixed for talking (they turn to you); camp people are still placed facing walls (Corporal Ruth Weber at a barn wall) |
 | Coming round in a hedge | Came round at a Bastion post facing into a hedge against the fence |
 | Hotwire It's car | The car "that won't turn over" is a rusted, burnt-out wreck (`RZ_CarWreck`, a UAZ wreck): it should be a whole car that looks like it could run |
 | Cards in the first minutes | Three world-event cards during the opening's first talk (Distress Call, Stash Note, Prison Break) |

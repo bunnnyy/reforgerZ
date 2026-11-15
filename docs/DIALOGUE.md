@@ -255,6 +255,12 @@ Hand, a paper from the case's lid handed to its own people (not given to a rival
 person's choices and hand-overs, a giver's held errand, an opening's step and Ferda's visit. A
 node's choices and the [Admin] list are never narrowed.
 
+### They turn to you
+
+✅ Whoever you talk to turns to face you when the talk opens, if they're standing on their feet (not
+seated or in a vehicle) and more than 30° off (`RZ_Dialogue.FaceYou`; seen in play: a corporal
+talking to a barn wall).
+
 ### No filler greeting
 
 ✅ The author's rule from play-testing: nobody says a default hello. When you talk to someone, the
