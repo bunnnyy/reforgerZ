@@ -809,22 +809,24 @@ lie down, run from people and gunfire, and fall to a shot. The mod puts none on 
 does. Off while **World > Wildlife > Doe** is empty.
 
 - **Herds are data until someone is out there.** Once a minute, a player out in the country has a
-  one-in-four chance (half that at night) of a herd near them: two or three does standing together
+  one-in-two chance (half that at night) of a herd near them: two or three does standing together
   and, seven times in ten, a buck 20 to 30 m off. It's put out **150 to 300 m** away, out of the
   player's sight where a spot is found (one traced line; else a spot past 220 m in the open), and
   at least 150 m from every other player.
-- **Only in the country.** Never within 150 m of a town's edge, a faction's place, a safehouse, a
-  road post or the lab, never by the line, never on an island, never in water.
-- **Caps.** Two herds on the server, 400 m apart; one herd a player every 20 minutes. A herd is
+- **Only in the country.** Never within 80 m of a town's edge (so a herd can graze the fields just
+  past a village), a faction's place, a safehouse, a road post or the lab, never by the line, never
+  on an island, never in water.
+- **Caps.** Four herds on the server, 300 m apart; one herd a player every 8 minutes. A herd is
   put away (its deer deleted, shot ones too) once every player is 450 m from where it was put out.
   Nothing is saved: after a restart there are none until the next one is put out.
 - **Not AI.** A deer is a plain entity moved by the mod's own script every frame, with no AI agent,
   no group and no navmesh. Herds take nothing from the infected's
-  [agent budget](INFECTED.md#the-agent-budget) and nothing from the engine's active-AI limit; ten
-  deer at most cost ten small scripts a frame. Nothing in ReforgerZ sets the infected on them, and
+  [agent budget](INFECTED.md#the-agent-budget) and nothing from the engine's active-AI limit; four
+  herds of at most four deer cost sixteen small scripts a frame. Nothing in ReforgerZ sets the
+  infected on them, and
   the mod's deer react only to players and gunfire.
 - **Meat.** A shot deer leaves **one or two raw meat legs** beside it (the item the stove's Cook
-  meat takes), at most four deer a minute on the server. They're loose items: picked up with
+  meat takes), at most six deer a minute on the server. They're loose items: picked up with
   vanilla's Pick up, cleaned up like any [loose item](#loose-items). The shot makes heat as any
   shot does.
 

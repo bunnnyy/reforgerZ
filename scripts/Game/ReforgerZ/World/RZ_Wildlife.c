@@ -36,7 +36,7 @@ class RZ_WildlifeSettings
 	[Attribute("{128A19AA9F731095}Prefabs/Items/Food/MeatLeg_01.et", UIWidgets.ResourcePickerThumbnail, "Meat a shot deer leaves: the raw meat leg the stove's Cook meat takes. Empty = no meat", "et")]
 	ResourceName m_sMeatPrefab;
 
-	[Attribute("2", desc: "Most herds out on the server at once")]
+	[Attribute("4", desc: "Most herds out on the server at once")]
 	int m_iMaxHerds;
 
 	[Attribute("3", desc: "Does in a herd, at most (2 to this many)")]
@@ -45,13 +45,13 @@ class RZ_WildlifeSettings
 	[Attribute("0.7", desc: "Chance a herd has a buck (needs the buck prefab)")]
 	float m_fBuckChance;
 
-	[Attribute("0.25", desc: "Chance each minute that a player out in the country gets a herd near them (while under the caps)")]
+	[Attribute("0.5", desc: "Chance each minute that a player out in the country gets a herd near them (while under the caps)")]
 	float m_fChancePerMinute;
 
 	[Attribute("0.5", desc: "That chance at night is multiplied by this")]
 	float m_fNightMult;
 
-	[Attribute("20", desc: "Minutes before the same player can get another herd")]
+	[Attribute("8", desc: "Minutes before the same player can get another herd")]
 	float m_fPlayerMinutes;
 
 	[Attribute("150", desc: "A herd is put out at least this far (m) from every player")]
@@ -63,7 +63,7 @@ class RZ_WildlifeSettings
 	[Attribute("450", desc: "A herd is put away once every player is this far (m) from where it was put out")]
 	float m_fAwayRadius;
 
-	[Attribute("150", desc: "No herd this close (m) to a town's edge, a faction's place or the lab")]
+	[Attribute("80", desc: "No herd this close (m) to a town's edge, a faction's place or the lab (80: herds graze the fields at a village's edge)")]
 	float m_fTownMargin;
 
 	[Attribute("1", desc: "Meat legs a shot deer leaves, at least")]
@@ -75,7 +75,7 @@ class RZ_WildlifeSettings
 	[Attribute("260", desc: "A deer counts as shot only if it fell within this many metres of the shooter (the mod's own kill range is 250)")]
 	float m_fShotRange;
 
-	[Attribute("4", desc: "Most deer a minute that leave meat, on the whole server")]
+	[Attribute("6", desc: "Most deer a minute that leave meat, on the whole server")]
 	int m_iMeatPerMinute;
 }
 
@@ -94,7 +94,7 @@ class RZ_Wildlife
 {
 	protected static const float CHECK_SECONDS = 60;
 	protected static const int TRIES = 8;
-	protected static const float HERD_APART = 400;		// two herds are never closer than this (m)
+	protected static const float HERD_APART = 300;		// two herds are never closer than this (m)
 	protected static const float HERD_REACH = 650;		// a shot deer belongs to a herd put out within this (m): a deer flees up to 300 m, twice
 	protected static const float SHOT_SECONDS = 4;		// a report counts only this soon after the player's own shot
 	protected static const float FAR_ENOUGH = 220;		// a spot in plain sight is still taken past this (m)
@@ -403,9 +403,17 @@ class RZ_Wildlife
 		if (vector.DistanceXZ(ground, player.GetOrigin()) > m_Settings.m_fShotRange || RZ_Util.IsWater(ground))
 			return;
 
+		LayMeat(playerId, ground);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A believed kill at `ground`: its herd's meat beside it, under the server's meat cap. Returns
+	//! the meat laid (0: no herd with a deer to give, or the cap reached).
+	protected int LayMeat(int playerId, vector ground)
+	{
 		RZ_Herd herd = HerdFor(ground);
 		if (!herd)
-			return;
+			return 0;
 
 		if (m_fClock - m_fMeatMinuteAt >= 60)
 		{
@@ -414,7 +422,7 @@ class RZ_Wildlife
 		}
 
 		if (m_iMeatThisMinute >= Math.Max(0, m_Settings.m_iMeatPerMinute))
-			return;
+			return 0;
 
 		m_iMeatThisMinute++;
 		herd.m_iTaken++;
@@ -433,6 +441,7 @@ class RZ_Wildlife
 
 		RZ_Log.Info(string.Format("Wildlife: player %1 shot a deer at %2; %3 meat (%4 of %5 from that herd).",
 			playerId, RZ_SettlementScanner.GridReference(ground), laid, herd.m_iTaken, herd.m_aDeer.Count()));
+		return laid;
 	}
 
 	//------------------------------------------------------------------------------------------------
