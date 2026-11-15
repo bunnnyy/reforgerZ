@@ -55,6 +55,7 @@ class RZ_PlayerProfile
 	int m_iCaseSeason = -1;				// the season this player's case last counted (one a season)
 	bool m_bCaseHeld;					// died carrying it: it comes back in the next spawn's pack
 	float m_fCaseWarm;					// and how warm it was then (0 cold, 1 warm)
+	bool m_bCaseOnLeave;				// carried it at the last look (RZ_Character.Take): a logout gives it back too
 	ref array<int> m_aPapers = {};		// the papers from the case's lid (Guidance/RZ_CasePapers.c): each one's state, three long
 	int m_iPapersLife = -1;				// the character they belong to (RZ_OpeningCase.CharacterStamp)
 

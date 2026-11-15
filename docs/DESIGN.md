@@ -900,7 +900,7 @@ character still alive they wait. *Simplified:* what they wear comes back as the 
 loadout wears it (changed clothes aren't kept); a magazine keeps its rounds (VERIFY in
 `RZ_Character.c`); a weapon comes back as its prefab spawns, in the pack, not in the hands. Log:
 `Character: <player> comes back where they left off (<grid>)`, `Character: <player> came back with
-<k> of <n> things`.
+<k> of <n> things`. The runner's case comes back too (it isn't in the carried list: `m_bCaseOnLeave`, then the death's way back, `RZ_OpeningCase.GiveBack`; seen in play: a logout lost the case and left its lead with nothing to hand over).
 
 **What's under way comes back too.** ✅ A logout, a lost connection, a server restart or a crash
 never costs a held errand or the opening, nor where you were in them; a death doesn't either.

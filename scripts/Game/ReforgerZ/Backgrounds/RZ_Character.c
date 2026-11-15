@@ -468,6 +468,13 @@ class RZ_Character
 		profile.m_aLeftQiPrefab.Clear();
 		profile.m_aLeftQiMission.Clear();
 		profile.m_aLeftQiGoods.Clear();
+
+		// The runner's case isn't in the list (it keeps itself), but a logout must keep it too
+		RZ_ColdCaseComponent carriedCase = RZ_ColdCaseComponent.Of(RZ_ColdCaseComponent.CarriedBy(me));
+		profile.m_bCaseOnLeave = carriedCase != null;
+		if (carriedCase)
+			profile.m_fCaseWarm = carriedCase.GetWarm();
+
 		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(me.FindComponent(SCR_InventoryStorageManagerComponent));
 		if (!inv)
 			return;
@@ -553,6 +560,13 @@ class RZ_Character
 			RZ_GameModeComponent.TrackLooseItem(thing);
 			RZ_Util.InsertIntoInventory(me, thing);
 			back++;
+		}
+
+		// The runner's case carried then comes back as after a death (RZ_OpeningCase.GiveBack, next tick)
+		if (profile.m_bCaseOnLeave)
+		{
+			profile.m_bCaseHeld = true;
+			profile.m_bCaseOnLeave = false;
 		}
 
 		// The quest items carried then come back by the death's path, each while its job still runs
