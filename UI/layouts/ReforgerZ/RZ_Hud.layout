@@ -903,6 +903,36 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
     }
    }
   }
+  HorizontalLayoutWidgetClass "{4A8E2C61B7D35F90}" {
+   Name "HeldPanel"
+   Slot FrameWidgetSlot "{4A8E2C61B7D35F91}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionY 72
+    OffsetTop 72
+    SizeX 400
+    SizeY 26
+    Alignment 0.5 0
+    SizeToContent 1
+   }
+   "Is Visible" 0
+   Opacity 0.95
+   {
+    TextWidgetClass "{4A8E2C61B7D35F92}" {
+     Name "HeldText"
+     Slot LayoutSlot "{4A8E2C61B7D35F93}" {
+      HorizontalAlign 1
+      VerticalAlign 1
+     }
+     Color 0.91 0.886 0.816 1
+     Text "EAT: LEFT CLICK OR R"
+     "Font Size" 22
+     "Min Font Size" 20
+     FontProperties FontProperties "{4A8E2C61B7D35F94}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+   }
+  }
   HorizontalLayoutWidgetClass "{7C1E4A9B2D3F5061}" {
    Name "LookPanel"
    Slot FrameWidgetSlot "{8D2F5BAC3E406172}" {

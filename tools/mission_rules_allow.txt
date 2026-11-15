@@ -161,6 +161,9 @@
 23 RZ_HalcyonContracts.c Follow the first case's trail  # a step chain: its steps are the objectives (RZ_StepChain), this line never shows
 23 RZ_PuzzleLogic.c Work out who infected the ward  # a puzzle: the thinking has no place; the answer at the lab is the one step
 
+# 27: input actions with no gamepad binding of their own
+27 chimeraInputCommon.conf Action RZ_Eat has no gamepad binding  # left click only: a pad's RT is vanilla's GadgetActivate, which already eats what's in the hand (a second RT binding would eat twice)
+
 # 29: people say it; a notice is the last resort (the audit, 2026-11-14)
 29 RZ_Openings.c m_GM.NotifyPlayerAs(o.m_iPlayer, RZ_OpeningText.LeadTitle(),  # pending: the opening's rebuild (designs/OPENING.md, phases 2-5) has the contact say these
 29 RZ_Openings.c m_GM.NotifyPlayerAs(o.m_iPlayer, RZ_OpeningText.WalkTitle(o.  # pending: the opening's rebuild (designs/OPENING.md, phases 2-5) has the contact say these

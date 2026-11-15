@@ -141,6 +141,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		super.DisplayStartDraw(owner);
 		s_Instance = this;
 		GetGame().GetInputManager().AddActionListener("RZ_OpenNotebook", EActionTrigger.DOWN, OpenNotebook);
+		GetGame().GetInputManager().AddActionListener("RZ_Eat", EActionTrigger.DOWN, EatHeld);
 		Refresh();
 	}
 
@@ -148,6 +149,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	override protected void DisplayStopDraw(IEntity owner)
 	{
 		GetGame().GetInputManager().RemoveActionListener("RZ_OpenNotebook", EActionTrigger.DOWN, OpenNotebook);
+		GetGame().GetInputManager().RemoveActionListener("RZ_Eat", EActionTrigger.DOWN, EatHeld);
 		foreach (Widget w : m_aCards)
 		{
 			RZ_UIW.Remove(w);
@@ -199,6 +201,14 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		RZ_NotebookItem.OpenByKey();
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Left click with food or water in the hand eats or drinks it (Interactions/RZ_Eating.c; the
+	//! RZ_Eat input is only live while a gadget is in the hand, GadgetContextToggleable).
+	protected void EatHeld(float value = 0, EActionTrigger reason = 0)
+	{
+		RZ_Eating.ClickEat();
+	}
+
 	// ================================================================ Drawing
 	//------------------------------------------------------------------------------------------------
 	protected void Refresh()
@@ -219,6 +229,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		}
 		else
 		{
+			RZ_UIW.Show(m_wRoot, "HeldPanel", false);
 			RZ_UIW.Show(m_wRoot, "TrackerPanel", false);
 			m_bTrackShown = false;
 			m_iTrackerDrawn = -1;
@@ -228,6 +239,9 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			RZ_UIW.Show(m_wRoot, "RadioPanel", false);
 			RZ_UIW.Show(m_wRoot, "NoisePanel", false);
 		}
+
+		if (ui)
+			DrawHeld();
 
 		DrawNotices(settings);
 		DrawSubtitle(settings);
@@ -379,6 +393,17 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		RZ_UIW.Show(m_wRoot, "StandPanel", !line.IsEmpty());
 		if (!line.IsEmpty())
 			RZ_UIW.SetText(m_wRoot, "StandText", line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Food or water in the hand: the button that eats or drinks it, under the crosshair (HeldPanel,
+	//! HeldText: "EAT: LEFT CLICK OR R", "DRINK: RT" on a pad). A layout without it shows nothing.
+	protected void DrawHeld()
+	{
+		string line = RZ_Eating.HeldHint();
+		RZ_UIW.Show(m_wRoot, "HeldPanel", !line.IsEmpty());
+		if (!line.IsEmpty())
+			RZ_UIW.SetText(m_wRoot, "HeldText", line);
 	}
 
 	//------------------------------------------------------------------------------------------------

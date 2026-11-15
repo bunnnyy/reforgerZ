@@ -150,6 +150,8 @@ Frame  (root, full screen)
 │  └─ Text    NoiseText         mono bold 18, dim (HIDDEN, LOW, NOTICEABLE, SEEN, IN PLAIN SIGHT, LOUD)
 ├─ HorizontalLayout StandPanel  anchor bottom-left, offset (552, -30), 90% opacity; hidden unless the cure finale's stand line is fresh
 │  └─ Text    StandText         mono bold 18, bone ("CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00.")
+├─ HorizontalLayout HeldPanel   anchor centre, offset (0, 72) below the crosshair, 95% opacity; hidden unless food or water is in the hand
+│  └─ Text    HeldText          bold 22 (min 20), bone, centred ("EAT: LEFT CLICK OR R", "DRINK: RT")
 ├─ HorizontalLayout LookPanel   anchor bottom-left, offset (552, -122), 8 apart, 95% opacity; hidden unless borrowed kit's look is coming (RZ_Hud_Look)
 │  ├─ Image   LookIcon          24 × 24, the tier_watched eye (static Texture and Image, set again by code), gold
 │  └─ Text    LookText          bold 20 (min 18), bone ("PASS AS BASTION: 2 OF 2", or "PASS AS BASTION: SEEN THROUGH")

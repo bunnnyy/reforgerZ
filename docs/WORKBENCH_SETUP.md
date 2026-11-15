@@ -2055,7 +2055,11 @@ Known with the Haven, a death by its safehouse comes round at that camp, near wh
 hunted by every faction, no camp takes them in; the held item comes back in the pack; on a profile of
 its own a confirmed reset ends the character and starts a new one (number +1, no deaths), Watched with
 a faction the last one was hunted by; an old save's life number becomes its character (`RZT persist
-OK|FAIL <what>`, `RZT persist: N checks, N failed`; the run fails on FAIL). **Tonight**
+OK|FAIL <what>`, `RZT persist: N checks, N failed`; the run fails on FAIL). **Eating and
+drinking** (`RZT_Eat.c`, from 20 s, in the core run and the full run): the mod's five foods carry its
+food component; the inventory's Use (the server's eat) on an MRE in the kit raises the food level and
+uses it up, on a canteen raises the water level and uses it up, and an MRE on the ground isn't eaten
+(`RZT eat OK|FAIL <what>`, `RZT eat: N checks, N failed`; either run fails on FAIL). **Tonight**
 (`RZT_Tonight.c`, once after the openings' checks): the card waits for an opening and otherwise starts
 *Tonight:*; with the fake player's fog cleared, one to three lines, one of each kind, each within
 reach, a town never seen among them; a row of kind Tonight per line; picking a row tracks it, its one
@@ -2406,7 +2410,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **239** lines with the tag, all but one in the game scripts (one is the comment in
+There are **242** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 50 are in `UI/`: [the UI's](#the-ui-48), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; three are in `Dialogue/` (the talk
 screen's, and the two of the nametags' names), two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2541,10 +2545,13 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1475` | a quartermaster or the medic moved and turned with `SetWorldTransform` on the server stays at their hand-placed spot, facing its way, on every client | They stand where they spawned; the quartermaster turns to serve as before |
 | `World/HandBuilt/RZ_HandSpots.c:402` | a short flat trace through a spot inside a wall, a crate or a tent's side reports a hit (the spot turns red), and the excluded marker cone doesn't | A spot in a wall isn't flagged; the author sees it in play |
 
-### Low risk: contained or cosmetic (62)
+### Low risk: contained or cosmetic (65)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `Interactions/RZ_Eating.c:152` | a held food's `ActivateAction`, called from script on left click, eats it as the gadget key (R, RT) does | Left click does nothing: R, RT and the inventory's Use still eat |
+| `Interactions/RZ_Eating.c:254` | an item in a character's storages has the character up its parent chain, so the server finds it's yours | The inventory's Use eats nothing: eat from the hand |
+| `Interactions/RZ_Eating.c:287` | the inventory's Use reaches `SCR_InventoryMenuUI.Action_UseItem` with the food focused (our `CanUseItem_Inventory` shows it) | No Use on food: eat from the hand |
 | `Dialogue/RZ_PersonTags.c:145` | `string.Hash()` gives the same number for the same key on every run and machine, so a guard's name is the same after a restart | Names stay put while the server runs but change at a restart: seed from a hash of our own in `RZ_PersonTags.NameFor` |
 | `Dialogue/RZ_PersonTags.c:274` | a body spawned on the server has its RplId at once (if not, its mark waits in `s_aPending` and is filed on the next ask) | None needed; if a guard shows only their side's word ("Soldier"), the mark never got an id: report it |
 | `Factions/RZ_SiteGrid.c:667` | a downward trace's `TraceMaterial` names the surface hit, with a word that tells paved ground from soft (on Everon: grass_01 to grass_03, dirt_01, cobblestone_01_wave) | Soft ground isn't told from paving: sites treat all ground alike |
@@ -3245,6 +3252,9 @@ items of the stages that are on, and say on the board which stage you played. Th
 `Features:` line says what was on.
 
 **Start**
+- **Eating and drinking** (core): take an MRE into the hand: *"EAT: LEFT CLICK OR R"* shows under the crosshair
+  (*"EAT: RT"* on a pad); left click eats it and the mod's hunger bar rises over a few minutes. Open the
+  inventory: Use on a water bottle or a canteen in the pack drinks it without the hotbar.
 - [ ] It compiles; every log line in section 7 appears with sensible numbers.
 - [ ] Each background spawns with its loadout and its perk and flaw (try Nurse and Ex-Con).
 - [ ] **A character who lasts** ([DESIGN.md](DESIGN.md#a-character-who-lasts)), with a pad: take an

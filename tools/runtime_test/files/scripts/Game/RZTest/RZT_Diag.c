@@ -604,6 +604,10 @@ modded class RZ_GameModeComponent
 			HandlePlayerSpawned(RZT_Fake.ID, e);
 		}
 		// Core only (run.sh core, every Features switch off: RZT_CoreOnly.c): only that check runs
+		// Eating and drinking (RZT_Eat.c): the mod's five foods, the inventory's Use, a canteen; core, so both runs
+		if (m_iRZTSec >= 20)
+			RZT_Eat.Tick(m_iRZTSec);
+
 		if (RZT_CoreOnly.IsCore())
 		{
 			RZT_CoreOnly.Tick(this, m_iRZTSec, m_aRZTRoute);

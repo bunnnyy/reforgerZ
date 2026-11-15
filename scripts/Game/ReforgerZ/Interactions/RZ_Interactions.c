@@ -100,6 +100,13 @@ class RZ_InteractionSettings
 	[Attribute("30", desc: "Seconds to boil water")]
 	float m_fBoilSeconds;
 
+	// ---------------------------------------------------------------- Eating and drinking (Interactions/RZ_Eating.c)
+	[Attribute("canteen", desc: "Drinks the hunger and thirst mod can't drink (prefab name keywords, never an empty one): drunk with the inventory's Use, and the item is used up. Empty = none (docs/DESIGN.md, Eating and drinking)")]
+	string m_sDrinkWords;
+
+	[Attribute("0.1", desc: "Water one of those drinks gives, on the hunger and thirst mod's 0-1 scale (its water bottle gives 0.05)")]
+	float m_fDrinkWater;
+
 	// ---------------------------------------------------------------- Medical items (the bite) and treating each other
 	[Attribute("medkit,firstaid,first_aid,ifak", desc: "First-aid kit keywords (cleaning a fresh bite with Disinfect and bandage it)")]
 	string m_sMedkitWords;

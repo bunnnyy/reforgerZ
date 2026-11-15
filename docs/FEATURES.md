@@ -80,6 +80,7 @@ Spawn, loot, fight, die, come round. Always on: these have no switch.
 |---|---|---|---|---|
 | **Towns and the map scan**: finding the settlements, the mainland, the land | `World/RZ_SettlementScanner`, `RZ_Settlement`, `RZ_Mainland`, `RZ_Land` | everything places itself by towns | the boot log | the log lists Everon's towns; no town on an island or at sea |
 | **The infected**: spawner, heat, the director, bodies near players | `Zombies/RZ_ZombieSpawner`, `RZ_InfectedBodies`, `Director/RZ_HeatMap`, `RZ_Director` | hordes, tribes, crawlers, samples build on it | `run.sh core` | infected near you in town, few in the open; gunfire draws more; they go when you leave |
+| **Eating and drinking**: left click or R (RT) eats what's in the hand, the hint, the inventory's Use, a canteen | `Interactions/RZ_Eating` | hunger and thirst can be fed | RZT_Eat | hold an MRE: the hint shows; left click eats it; Use on a canteen in the pack drinks it |
 | **Bites and infection** | `Zombies/RZ_BiteDetector`, `Cure/RZ_Infection`, `RZ_Meds`, `Zombies/RZ_PlayerEffects` | the cure's doses, declaring a bite | none | a scratch isn't a bite; a bite runs Fever, Weakness, Final |
 | **Loot** | `Interactions/RZ_Loot`, `RZ_Search`, `Core/RZ_LooseItems` | crafting, missions' finds | none | houses hold things on furniture; refill after a while |
 | **Backgrounds and the spawn** | `Backgrounds/RZ_Background`, `UI/RZ_SpawnMenu`, `UI/RZ_LoadoutLock` | the opening's favours | none | each background spawns with its kit |

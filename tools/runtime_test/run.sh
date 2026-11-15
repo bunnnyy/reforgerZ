@@ -65,6 +65,7 @@
 #   The line (RZT_Line.c): a road above the line near a town (150-250 m outside the warning zone, 600 m to 2 km off), the scene played with the tester at it: the loudspeakers, a runner who breaks from cover (or is laid down), shot in the warning zone not the kill zone, dead there with the case by him, the line said, the tester never shot and never in the zones ("RZT line OK|FAIL ...", "RZT line: N checks");
 #   A fresh spawn (RZT_Fresh.c): as a veteran, the opening has its contact within 15 m and the chain starting at the door, not the lead to work, the last life's questline part and jobs aren't the new one's, and the Quests tab lists nothing taken ("RZT fresh OK|FAIL ...", "RZT fresh: N checks");
 #   Tonight (RZT_Tonight.c): the card waits for the opening and starts "Tonight:"; one to three lines, one a kind, each within reach; a town never seen (the fog cleared for it) is something to find; a row per line of kind Tonight; picking a row tracks it, its objective has a place, reaching it ends the line; a row that is a job tracks the job; off, no card and no rows ("RZT tonight OK|FAIL ...", "RZT tonight line ...", "RZT tonight: N checks");
+#   Eating and drinking (RZT_Eat.c, in the core run and the full run): the hunger and thirst mod's five foods carry its food component; the inventory's Use on an MRE in the kit raises the food level and uses it up, a canteen raises the water level and is used up, an MRE on the ground is refused ("RZT eat OK|FAIL ...", "RZT eat: N checks");
 #   A character who lasts (RZT_Persist.c): a death keeps standing, the habit, the fog and the character, counts a death and clears the bite; a quest item is held as data and comes back; coming round at the nearest camp that takes you in, none when hunted by all, never bitten; a reset starts a new character, Watched where the last was hunted; an old save migrates ("RZT persist OK|FAIL ...", "RZT persist: N checks");
 #   - starts every registered mission type one at a time, moves the player where the quest tracker
 #     points, then ends it (alternately won and failed) so Setup, Update, rewards and cleanup all run;
@@ -350,6 +351,8 @@ grep -A6 'Virtual Machine Exception' "$LOG" | grep -E 'Reason|Function|scripts/'
 grep -E '\[ReforgerZ\] Features: ' "$LOG" | head -2 | sed 's/.*\[ReforgerZ\] /  /'
 if [ "$MODE" = core ]; then
 	grep -E 'RZT core' "$LOG" | sed 's/.*RZT /  /'
+	grep -E 'RZT eat' "$LOG" | sed 's/.*RZT /  /'
+	grep -q 'RZT eat FAIL' "$LOG" && { echo "FAILED: eating and drinking (RZT_Eat.c: the mod's foods, the inventory's Use, a canteen)"; exit 1; }
 	grep -q 'Virtual Machine Exception' "$LOG" && exit 1
 	grep -q 'RZT core done' "$LOG" || { echo "FAILED: the core run didn't finish (see the log)"; exit 1; }
 	grep -q 'RZT core FAIL' "$LOG" && { echo "FAILED: core only (RZT_CoreOnly.c: a switched-off feature did something)"; exit 1; }
@@ -372,6 +375,7 @@ grep -E 'RZT chain' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT fresh' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT persist' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT tonight' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT eat' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT favour' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT kitchen' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT fog' "$LOG" | sed 's/.*RZT /  /'
@@ -398,6 +402,7 @@ grep -q 'RZT line FAIL' "$LOG" && { echo "FAILED: the opening's line (a road abo
 grep -q 'RZT ferda FAIL' "$LOG" && { echo "FAILED: the opening's fixer (he comes for the case, each way through him, his note on a real door: RZT_Ferda.c)"; exit 1; }
 grep -q 'RZT chain FAIL' "$LOG" && { echo "FAILED: the opening by level (RZT_OpeningChain.c: the door, the favour, the line's short form, the runner, Ferda by level, the case at Halcyon)"; exit 1; }
 grep -q 'RZT persist FAIL' "$LOG" && { echo "FAILED: a character who lasts (RZT_Persist.c: a death keeps them, coming round at a camp, a reset, an old save)"; exit 1; }
+grep -q 'RZT eat FAIL' "$LOG" && { echo "FAILED: eating and drinking (RZT_Eat.c: the mod's foods, the inventory's Use, a canteen)"; exit 1; }
 grep -q 'RZT tonight FAIL' "$LOG" && { echo "FAILED: Tonight (RZT_Tonight.c: the card, one line a kind within reach, the rows, tracking a line to its place)"; exit 1; }
 grep -q 'RZT fresh FAIL' "$LOG" && { echo "FAILED: a fresh spawn (its contact, the chain from the door, a clean Quests tab: RZT_Fresh.c)"; exit 1; }
 grep -q 'RZT fog FAIL' "$LOG" && { echo "FAILED: the map's fog (RZT_Fog.c: walking reveals, a found map, the save, the payload)"; exit 1; }

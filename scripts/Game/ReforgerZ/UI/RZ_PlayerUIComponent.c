@@ -104,7 +104,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	static const int CMD_FOG = 13;		// /fog (admins): the map's fog read-out; "all" clears your map, "reset" fogs it again (World/RZ_MapFog.c)
 	static const int CMD_SITES = 12;	// /sites (admins, game masters): the site builder (World/HandBuilt/RZ_SiteBuilder.c)
 	static const int CMD_LEVEL = 14;	// /level [0-3] (admins): your guidance level, set from your next character (Guidance/RZ_Guidance.c)
-	static const int CMD_COUNT = 15;	// one more than the last CMD_*: the table of when each was last asked (a command past it was dropped unheard)
+	static const int CMD_EAT = 15;		// the inventory's Use on food or drink: its RplId (Interactions/RZ_Eating.c)
+	static const int CMD_COUNT = 16;	// one more than the last CMD_*: the table of when each was last asked (a command past it was dropped unheard)
 
 	//------------------------------------------------------------------------------------------------
 	//! The local player's component (client), or null.
@@ -1112,6 +1113,11 @@ class RZ_PlayerUIComponent : ScriptComponent
 			{
 				if (gm.GetMapFog())
 					gm.GetMapFog().Command(playerId, note);
+				break;
+			}
+			case CMD_EAT:
+			{
+				RZ_Eating.ServerEat(playerId, note);
 				break;
 			}
 			case CMD_LEVEL:

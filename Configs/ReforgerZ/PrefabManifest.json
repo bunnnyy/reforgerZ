@@ -9045,6 +9045,8 @@
     "m_sWellWords": "well,waterpump,water_pump,handpump,hand_pump,pump_water",
     "m_sStoveWords": "stove,oven,fireplace,campfire,furnace,hearth",
     "m_fBoilSeconds": "30",
+    "m_sDrinkWords": "canteen",
+    "m_fDrinkWater": "0.1",
     "m_sMedkitWords": "medkit,firstaid,first_aid,ifak",
     "m_sBandageWords": "bandage,dressing,gauze",
     "m_fTreatSlowsInfection": "1.15"
