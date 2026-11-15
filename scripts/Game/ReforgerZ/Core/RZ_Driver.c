@@ -52,7 +52,10 @@ class RZ_Driver
 	protected static int s_iStanceSet = 1;	// the one last set
 	protected static vector s_vStart;		// where this trip began
 	protected static bool s_bSkipped;		// the long-trip jump done (once a trip)
-	protected static vector s_vSteer;		// where the look-ahead says to head now (Plan), zero: straight at the goal
+	protected static vector s_vSteer;
+	protected static ref array<vector> s_aPath = {};	// the planned waypoints (BuildPath)
+	protected static int s_iPathAt;
+	protected static float s_fPathAge;		// where the look-ahead says to head now (Plan), zero: straight at the goal
 	protected static bool s_bDetour;		// heading for a side spot round an obstacle first
 	protected static vector s_vDetour;
 	protected float m_fDetourFor;
@@ -573,6 +576,7 @@ class RZ_Driver
 		s_fSpeed = speed;
 		s_fStopAt = Arg(a, 3, 3);
 		s_bGoing = true;
+		s_aPath.Clear();
 		s_vStart = me.GetOrigin();
 		s_bSkipped = false;
 		s_vSteer = vector.Zero;
@@ -651,21 +655,11 @@ class RZ_Driver
 			return;
 		}
 
-		// Look ahead: the clear way nearest the goal's bearing, 20 m out. A way already chosen is kept
-		// while it's still clear for 4 m and not more than 90 degrees off the goal, so it doesn't flip
-		bool keep = false;
-		if (s_vSteer != vector.Zero && RZ_Util.DistXZ(here, s_vSteer) > 2)
-		{
-			vector kept = s_vSteer - here;
-			kept[1] = 0;
-			vector toGoal = s_vGoal - here;
-			toGoal[1] = 0;
-			kept.Normalize();
-			toGoal.Normalize();
-			keep = vector.Dot(kept, toGoal) > 0 && Clearance(here, kept, 4) >= 4;
-		}
-
-		if (!keep)
+		// The way: a path planned over the ground ahead (round fences and walls to a gate), followed
+		// waypoint by waypoint, planned again at its end, when stuck, or every 20 s; the plain
+		// look-ahead when no path is found
+		s_vSteer = Follow(here);
+		if (s_vSteer == vector.Zero)
 			s_vSteer = Plan(here, s_vGoal);
 
 		// What's right in front on that way: a door (open it), something low (jump or climb over),
@@ -693,6 +687,7 @@ class RZ_Driver
 			{
 				m_fStillFor = 0;
 				m_iJumps++;
+				s_aPath.Clear();
 				if (!OpenDoorNear(me))
 				{
 					vector way = s_vGoal - here;
@@ -968,6 +963,191 @@ class RZ_Driver
 		}
 
 		s_iStance = want;
+	}
+
+	// ================================================================ The path
+	protected static const float CELL = 2.5;		// the grid's square (m)
+	protected static const int HALF = 32;			// squares each way from the middle (80 m)
+	protected static const int EXPAND_MAX = 1200;	// squares looked at before giving up
+
+	//------------------------------------------------------------------------------------------------
+	//! The waypoint to head for now, planning a path when there's none (or it's used up, or old).
+	protected vector Follow(vector here)
+	{
+		s_fPathAge += 0.25;
+		if (s_aPath.IsEmpty() || s_iPathAt >= s_aPath.Count() || s_fPathAge > 20)
+		{
+			s_aPath.Clear();
+			s_iPathAt = 0;
+			s_fPathAge = 0;
+			vector target = s_vGoal;
+			vector way = s_vGoal - here;
+			way[1] = 0;
+			if (way.Length() > 70)
+			{
+				way.Normalize();
+				target = here + way * 70;
+			}
+
+			if (!BuildPath(here, RZ_Util.GroundPos(target), s_aPath))
+			{
+				s_aPath.Clear();
+				return vector.Zero;
+			}
+		}
+
+		while (s_iPathAt < s_aPath.Count() - 1 && RZ_Util.DistXZ(here, s_aPath[s_iPathAt]) < 2)
+		{
+			s_iPathAt++;
+		}
+
+		return s_aPath[s_iPathAt];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A* over a 65 x 65 grid of 2.5 m squares round `from` to `to`: a step is open when nothing's in
+	//! the way at knee and chest height (objects), the ground doesn't rise more than 1.5 m and isn't
+	//! the sea. False when no way is found within the search; `result` gets the waypoints (every
+	//! second square), the last one the reachable square nearest `to`.
+	protected static bool BuildPath(vector from, vector to, notnull array<vector> result)
+	{
+		int side = HALF * 2 + 1;
+		int n = side * side;
+		array<float> g = {};
+		array<float> hgt = {};
+		array<int> parent = {};
+		array<bool> closed = {};
+		g.Resize(n);
+		hgt.Resize(n);
+		parent.Resize(n);
+		closed.Resize(n);
+		for (int i = 0; i < n; i++)
+		{
+			g[i] = 1000000;
+			hgt[i] = -9999;
+			parent[i] = -1;
+			closed[i] = false;
+		}
+
+		int start = HALF * side + HALF;
+		int goalX = HALF + RZ_Util.RoundToInt((to[0] - from[0]) / CELL);
+		int goalZ = HALF + RZ_Util.RoundToInt((to[2] - from[2]) / CELL);
+		goalX = Math.ClampInt(goalX, 0, side - 1);
+		goalZ = Math.ClampInt(goalZ, 0, side - 1);
+		int goal = goalZ * side + goalX;
+
+		g[start] = 0;
+		hgt[start] = from[1];
+		array<int> open = {start};
+		int best = start;
+		float bestH = 1000000;
+		int expanded = 0;
+		while (!open.IsEmpty() && expanded < EXPAND_MAX)
+		{
+			// The open square with the least cost so far plus the straight distance left
+			int pick = 0;
+			float pickF = 1000000000;
+			foreach (int oi, int o : open)
+			{
+				int ox = o % side;
+				int oz = o / side;
+				float f = g[o] + Math.Sqrt((ox - goalX) * (ox - goalX) + (oz - goalZ) * (oz - goalZ)) * CELL;
+				if (f < pickF)
+				{
+					pickF = f;
+					pick = oi;
+				}
+			}
+
+			int cur = open[pick];
+			open.Remove(pick);
+			if (closed[cur])
+				continue;
+
+			closed[cur] = true;
+			expanded++;
+			int cx = cur % side;
+			int cz = cur / side;
+			float left = Math.Sqrt((cx - goalX) * (cx - goalX) + (cz - goalZ) * (cz - goalZ)) * CELL;
+			if (left < bestH)
+			{
+				bestH = left;
+				best = cur;
+			}
+
+			if (cur == goal)
+				break;
+
+			vector curPos = Vector(from[0] + (cx - HALF) * CELL, hgt[cur], from[2] + (cz - HALF) * CELL);
+			for (int dz = -1; dz <= 1; dz++)
+			{
+				for (int dx = -1; dx <= 1; dx++)
+				{
+					if (dx == 0 && dz == 0)
+						continue;
+
+					int nx = cx + dx;
+					int nz = cz + dz;
+					if (nx < 0 || nz < 0 || nx >= side || nz >= side)
+						continue;
+
+					int nb = nz * side + nx;
+					if (closed[nb])
+						continue;
+
+					if (hgt[nb] < -9000)
+						hgt[nb] = RZ_Util.GroundPos(Vector(from[0] + (nx - HALF) * CELL, 0, from[2] + (nz - HALF) * CELL))[1];
+
+					vector nbPos = Vector(from[0] + (nx - HALF) * CELL, hgt[nb], from[2] + (nz - HALF) * CELL);
+					if (nbPos[1] - curPos[1] > 1.5 || RZ_Util.IsWater(nbPos))
+						continue;
+
+					vector knee = Vector(0, 0.6, 0);
+					vector chest = Vector(0, 1.3, 0);
+					if (TraceFrac(curPos + knee, nbPos + knee) < 0.999 || TraceFrac(curPos + chest, nbPos + chest) < 0.999)
+						continue;
+
+					float step = CELL;
+					if (dx != 0 && dz != 0)
+						step = CELL * 1.414;
+
+					float cost = g[cur] + step + Math.AbsFloat(nbPos[1] - curPos[1]);
+					if (cost < g[nb])
+					{
+						g[nb] = cost;
+						parent[nb] = cur;
+						open.Insert(nb);
+					}
+				}
+			}
+		}
+
+		if (best == start)
+			return false;
+
+		// Back from the best square to the start, every second square kept
+		array<vector> back = {};
+		int at = best;
+		int k = 0;
+		while (at != -1 && at != start)
+		{
+			if (k % 2 == 0 || at == best)
+			{
+				int bx = at % side;
+				int bz = at / side;
+				back.Insert(Vector(from[0] + (bx - HALF) * CELL, hgt[at], from[2] + (bz - HALF) * CELL));
+			}
+
+			at = parent[at];
+			k++;
+		}
+
+		for (int b = back.Count() - 1; b >= 0; b--)
+		{
+			result.Insert(back[b]);
+		}
+
+		return !result.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
