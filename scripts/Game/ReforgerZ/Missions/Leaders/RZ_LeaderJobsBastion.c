@@ -314,16 +314,16 @@ class RZ_Job_LocalLaw : RZ_LeaderPuzzle
 		if (m_sFamilyB == m_sFamilyA)
 			m_sFamilyB = "Kowal";
 
-		int a = AddClue("The " + m_sFamilyA + "s", string.Format("Our grandfather dug that well. The %1s moved here in the spring, and now they drink first and wash their car in it. Their car. There isn't a litre of petrol in the Zone to drive it.", m_sFamilyB));
-		int b = AddClue("The " + m_sFamilyB + "s", string.Format("We have a baby, and the %1s have goats. Goats. Ask them who's been sleeping by the well with a shotgun since the Zone closed. Go on, ask.", m_sFamilyA));
-		m_iJudge = AddClue("The village", "Everyone is watching to see whose side Bastion takes. Nobody has a gun out. Yet.");
+		int a = AddClue("The " + m_sFamilyA + "s", string.Format("Our grandfather dug that well, and we've drawn from it for sixty years. The %1s moved here in the spring, and now they drink first and wash their car in it. Their car, with no petrol in the Zone to drive it. We want the well back as ours.", m_sFamilyB));
+		int b = AddClue("The " + m_sFamilyB + "s", string.Format("We have a baby, and the %1s have goats. A baby needs clean water more than goats do. And it's us who've slept by the well with a shotgun since the Zone closed, keeping the infected off it. We want our fair share.", m_sFamilyA));
+		m_iJudge = AddClue("The village", string.Format("The %1s say the well is theirs: their grandfather dug it. The %2s say they need it for their baby, and they've guarded it since the seal. Bastion needs this village calm. Give the well to one family and the other leaves. Split the days and neither is happy, but both stay.", m_sFamilyA, m_sFamilyB));
 		SpawnClue(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(m_vPos, 6, 10), a, "Talk to the " + m_sFamilyA + "s");
 		SpawnClue(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(m_vPos, 6, 10), b, "Talk to the " + m_sFamilyB + "s");
-		string labels = string.Format("Give the well to the %1s|Give the well to the %2s|Split the days between them", m_sFamilyA, m_sFamilyB);
+		string labels = string.Format("Give the well to the %1s (the %2s leave)|Give the well to the %2s (the %1s leave)|Split the days (neither family is happy)", m_sFamilyA, m_sFamilyB);
 		SpawnObject(gm, RZ_EPuzzleProp.WELL, m_vPos, 0, "", labels, m_iJudge, "Look at the well");
 
 		m_sTitle = "Local Law";
-		m_sBrief = string.Format("Two families in %1 are about to kill each other over a well. If Bastion settles it with rifles, we're the Red Hand with better boots. Settle it with words. No shots. Not one.",
+		m_sBrief = string.Format("Two families in %1 are about to kill each other over the village well. Bastion keeps the peace out there, and if we settle it with rifles, we're the Red Hand with better boots. Hear both families, look at the well, then decide who gets it. Settle it with words. One shot, and both families go for their guns.",
 			s.m_sName);
 		m_sObjective = string.Format("Settle the well dispute in %1 without a shot.", s.m_sName);
 		return true;
@@ -351,7 +351,7 @@ class RZ_Job_LocalLaw : RZ_LeaderPuzzle
 		ChosenBy(playerId);
 		if (option == 2)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "Odd days and even days. Nobody likes it. Nobody shoots anybody. That's the job.");
+			gm.NotifyPlayer(playerId, m_sTitle, "Odd days to one family, even days to the other. Nobody likes it, both families stay, and nobody shoots anybody. That's the job.");
 			m_eState = RZ_EMissionState.SUCCEEDED;
 			return;
 		}
@@ -361,7 +361,7 @@ class RZ_Job_LocalLaw : RZ_LeaderPuzzle
 			loser = m_sFamilyA;
 
 		m_fRewardScale = 0.8;
-		gm.NotifyPlayer(playerId, m_sTitle, string.Format("You decide. The %1s pack a handcart that night and leave the village. It's quiet, which isn't the same as peace.", loser));
+		gm.NotifyPlayer(playerId, m_sTitle, string.Format("You give the well to one family. The %1s pack a handcart that night and leave the village. It's quiet, which isn't the same as peace.", loser));
 		m_eState = RZ_EMissionState.SUCCEEDED;
 	}
 }

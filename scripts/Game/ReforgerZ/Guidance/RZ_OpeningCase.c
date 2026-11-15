@@ -116,8 +116,8 @@ class RZ_OpeningCase
 		w.m_fRadius = 60;
 		w.m_bEndsThere = true;
 		w.m_sStep = "Take the case to {place}. Hand it to Halcyon's people there.";
-		w.Take("Halcyon's station is {place}. I can't keep it: I've enough to carry. Take it to them.",
-			"{place}. That's where the lab people are. Go before it warms up.");
+		w.Take("That case belongs to Halcyon, the lab people working on the cure, and what's inside has to stay cold. Their station is {place}. I can't keep it: I've enough to carry. Take it to them.",
+			"{place}. That's where the Halcyon lab people are. The case has to stay cold, so go before it warms up.");
 
 		m_Date = new RZ_CaseStepDef("opening.case.date", "The Date on the Tag", KIND_DATE);
 		m_Date.m_fLapseMinutes = 600;
@@ -130,10 +130,10 @@ class RZ_OpeningCase
 		w.m_sInside = "clinic";
 		w.m_sStep = "Find the first case's file in {place}.";
 		w.Work(RZ_EWork.SEARCH, "Find the first case's file", 10);
-		w.Take("The date on that tag is a filing error. I'd like you to forget you read it.",
-			"If you can't forget it, there's {place}. They kept a file on their first case. Go and read the date on it.");
-		w.Done("The same date. Three weeks before the gates. Somebody underlined it twice.",
-			"So it wasn't a filing error.");
+		w.Take("The tag on that case is dated three weeks before the roads shut. That's a filing error, nothing more. I'd like you to forget you read it.",
+			"If you can't let the date on the tag go, there's {place}. They kept a file on the Zone's first fever case. Go and read the date on it yourself.");
+		w.Done("The file's date is the tag's date: three weeks before the roads shut. And under it, 'Notify the Institute', underlined twice.",
+			"So it wasn't a filing error. The clinic's first case and the case's tag carry the same date.");
 
 		m_Back = new RZ_CaseStepDef("opening.case.back", "Get It Back", KIND_BACK);
 		m_Back.m_fLapseMinutes = 600;
@@ -146,9 +146,9 @@ class RZ_OpeningCase
 		w.m_sInside = "any";
 		w.m_sStep = "Take the case back from the Red Hand's lock-up at {place}, unseen.";
 		w.Work(RZ_EWork.SEARCH, "Take the case back, quietly", 8);
-		w.Take("Somebody sold our case to the Red Hand. It's in their lock-up at {place}. We'd like it back. We won't ask how.",
-			"The book has a new line in it: one Halcyon case. It's at {place}. It shouldn't be.");
-		w.Done("You have it. Now take it where it was going.");
+		w.Take("Somebody sold the runner's case to the Red Hand, and it's warming in their lock-up at {place}. What's in it is live, and it's for the cure. Take it back without being seen and bring it to us. We won't ask how.",
+			"The Red Hand's book has a new line in it: one Halcyon case, in their lock-up at {place}. It shouldn't be there. Take it back unseen and bring it to us before it spoils.");
+		w.Done("You've got the case back. Now take it to Halcyon's people, where it was going.");
 
 		m_Post = new RZ_CaseStepDef("opening.case.post", "The Case at the Post", KIND_POST);
 		m_Post.m_fLapseMinutes = 600;
@@ -161,9 +161,9 @@ class RZ_OpeningCase
 		w.m_sInside = "any";
 		w.m_sStep = "Take the case from Bastion's stores at {place}, unseen.";
 		w.Work(RZ_EWork.SEARCH, "Take the case from the stores, quietly", 8);
-		w.Take("Bastion signed our case into its stores at {place}. Evidence, they call it. It's warming on a shelf.",
-			"Our case is on a shelf at {place}, with a Bastion label over ours. Bring it here.");
-		w.Done("You have it. Now take it where it was going.");
+		w.Take("Bastion took the runner's case into its stores at {place}. Evidence, they call it, and it's warming on a shelf. What's inside is live, and it's for the cure. Take it back without being seen and bring it to us.",
+			"Our case is on a shelf in Bastion's stores at {place}, with a Bastion label over ours. Take it back unseen and bring it here before it spoils.");
+		w.Done("You've got the case back. Now take it to Halcyon's people, where it was going.");
 	}
 
 	//------------------------------------------------------------------------------------------------

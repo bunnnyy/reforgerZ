@@ -128,7 +128,7 @@
 10 RZ_Quest_LastPilot.c gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You find wher  # the helicopter (she)
 10 RZ_Quest_TheList.c string notes = string.Format("Ration notes, %1, in the counc  # ration notes about a farm's old cook; never met
 10 RZ_Quest_HouseWentQuiet.c m_iBoots = AddClue("The boots", "A row of boots by the door,  # the dead's boots (a woman's); never met
-10 RZ_RedHandContracts.c m_Choice.Set("The driver's on his knees by the cab with his  # a driver's wife; an idiom (I'm not your mother)
+10 RZ_RedHandContracts.c m_Choice.Set("Bastion's driver is on his knees by the cab with  # a driver's wife; an idiom (I'm not your mother)
 10 RZ_RedHandContracts.c int n1 = sc.Node("Leave it in the tray. Or don't. I'm not yo  # a driver's wife; an idiom (I'm not your mother)
 10 RZ_Grey.c Version("He volunteered, for the record.", "The debtor says  # a debtor's sister in the book; never met
 10 RZ_PuzzleMystery.c int n2 = AddClue("A letter, never sent", string.Format("The  # a letter never sent; never met

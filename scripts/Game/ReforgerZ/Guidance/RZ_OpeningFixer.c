@@ -192,8 +192,8 @@ class RZ_OpeningFixer
 		w.m_bPerson = true;
 		w.m_sStep = "Board up {giver}'s door, {place}.";
 		w.Work(RZ_EWork.BOARDS, "Board up the door", 15);
-		w.Take("If he comes in, he comes in through wood. Help me with the planks.");
-		w.Done("That'll hold a minute. A minute is more than nothing.");
+		w.Take("If Ferda's Red Hand crew come back for that case, they'll come through my door. Help me board it up with these planks.");
+		w.Done("That'll hold them a minute. A minute is more than nothing.");
 
 		m_Rifle = new RZ_FixerStepDef("opening.fixer.rifle", "Clean the Rifle", KIND_RIFLE);
 		w = m_Rifle.Way("do");
@@ -204,7 +204,7 @@ class RZ_OpeningFixer
 		w.m_bPerson = true;
 		w.m_sStep = "Clean {giver}'s rifle, {place}.";
 		w.Work(RZ_EWork.BENCH, "Clean the rifle", 12);
-		w.Take("It's been in the loft since my father had it. It might fire. Might.");
+		w.Take("If the Red Hand come back, I want something that fires. This rifle's been in the loft since my father had it. Clean it for me, so it might.");
 		w.Done("It fires now. Let's hope it doesn't have to.");
 
 		m_Lookout = new RZ_FixerStepDef("opening.fixer.lookout", "Post a Lookout", KIND_LOOKOUT);
@@ -215,9 +215,9 @@ class RZ_OpeningFixer
 		w.m_bEndsThere = true;
 		w.m_bPerson = true;
 		w.m_sStep = "Show {giver} where to watch the road from, {place}.";
-		w.Work(RZ_EWork.HANDS, "Show him the road", 8);
-		w.Take("Put me where I can see the road. I'll whistle.");
-		w.Done("I see the road. I'll whistle if there's more of them.");
+		w.Work(RZ_EWork.HANDS, "Show the lookout the road", 8);
+		w.Take("Put me somewhere I can see the road into the street. If Ferda's crew come back, I'll whistle and we'll all know.");
+		w.Done("I can see the road. I'll whistle if the Red Hand come back.");
 
 		m_Stand = new RZ_FixerStepDef("opening.fixer.stand", "Stand With the Street", KIND_STAND);
 		w = m_Stand.Way("talk");
@@ -225,7 +225,7 @@ class RZ_OpeningFixer
 		w.m_fSeconds = 1;
 		w.m_fRadius = 8;
 		w.m_bEndsThere = true;
-		w.m_sStep = "Stand with the street. Tell Ferda Kroupa.";
+		w.m_sStep = "Tell Ferda Kroupa the street stands with you.";
 
 		m_Warn = new RZ_FixerStepDef("opening.fixer.warn", "Warn the Street", KIND_WARN);
 		w = m_Warn.Way("talk");
@@ -650,8 +650,8 @@ class RZ_OpeningFixer
 		if (v.m_iPhase == PHASE_TALK && !v.m_bGreeted)
 		{
 			v.m_bGreeted = true;
-			lines.Insert("Ferda Kroupa. I collect for the book. Nothing personal: the book doesn't do personal.");
-			lines.Insert("The runner owed. What he carried pays it, and it's in your pack. A cold case, Halcyon's tag on it. Am I warm?");
+			lines.Insert("I'm Ferda Kroupa. I collect debts for the Red Hand's book, the ledger of who owes us. Nothing personal: the book doesn't do personal.");
+			lines.Insert("The runner shot on the line road owed the book. What he carried pays his debt, and it's in your pack: a cold case, Halcyon's tag on it. Hand it over and we're square. Keep it, and the book writes your name down instead.");
 			return;
 		}
 
@@ -691,7 +691,7 @@ class RZ_OpeningFixer
 
 		if (v.m_iPhase == PHASE_STAND)
 		{
-			replies.InsertAt(Job(REPLY_STAND, "The street's with me.", "Street", "", v.m_iErrand), 0);
+			replies.InsertAt(Job(REPLY_STAND, "The whole street's with me. You're not getting the case.", "Street", "", v.m_iErrand), 0);
 			return;
 		}
 
@@ -699,7 +699,7 @@ class RZ_OpeningFixer
 			return;
 
 		if (!v.m_bShort)
-			replies.InsertAt(Job(REPLY_RALLY, "Wait here. I'll talk to the street first.", "Street", "", v.m_iErrand), 0);
+			replies.InsertAt(Job(REPLY_RALLY, "Wait here. I'll get the street to stand with me first.", "Street", "", v.m_iErrand), 0);
 
 		string tag;
 		string need = BluffNeed(playerId, tag);
@@ -709,7 +709,7 @@ class RZ_OpeningFixer
 		if (!RZ_OpeningCase.Carries(user))
 			missing = "You don't have it on you";
 
-		replies.InsertAt(Job(REPLY_HAND, "Hand it over", "Trade", missing, v.m_iErrand), 0);
+		replies.InsertAt(Job(REPLY_HAND, "Here's the case. Call it square.", "Trade", missing, v.m_iErrand), 0);
 	}
 
 	//------------------------------------------------------------------------------------------------

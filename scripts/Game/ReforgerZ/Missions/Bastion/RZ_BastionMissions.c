@@ -478,8 +478,8 @@ class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 	{
 		m_Story = new RZ_MissionStory("barrier");
 		m_Choice = new RZ_OneChoice();
-		m_Choice.Set("The line held. Now a dozen people stand at the barrier with bags: \"We're not sick. Look at us.\" The sergeant says turn them back. He also says it's your call, since you're the one with the rifle on it.",
-			"Turn them back|Let them through", "decide who passes the barrier", 0);
+		m_Choice.Set("The line held. Now a dozen people from the infested town stand at the barrier with bags: \"We're not sick. Look at us.\" Bastion's order is that nobody leaves an infested town, in case they carry it out. The sergeant says turn them back, but it's your call, since you're the one with the rifle on it.",
+			"Turn them back (they stay in the infested town)|Let them through (Bastion's commander won't thank you)", "decide who passes the barrier", 0);
 		m_Choice.Asset(1, RZ_CureFinale.INDEP);
 	}
 
@@ -667,17 +667,17 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 		if (m_sTruth == "ambushed" && !crew)
 			m_sTruth = "turned";
 
-		string prompt = string.Format("A private from the post has come out on a bike. He looks at what's left of %1, not at you. \"Tags to the nail? Or leave them with their lads?\"", m_sCall);
-		string labels = "Their tags to the nail|Bury them here, tags and all";
+		string prompt = string.Format("A private from Bastion's post has come out on a bike. He looks at what's left of %1, not at you. \"Do we take their tags back for the nail board, so the post knows they're dead? Or bury them here, tags and all?\"", m_sCall);
+		string labels = "Take their tags back to the post (Bastion mourns them)|Bury them here, tags and all (Bastion pays nothing)";
 		if (m_sTruth == "ambushed")
 		{
-			prompt = string.Format("A private from the post has come out on a bike. Their rifles are gone, every one. A toll chit in the sergeant's pocket, from %1. \"That's a red hand on it,\" he says, and waits.", m_sCrew);
-			labels += "|Tell the post a crew did it|Sell the crew a quiet word";
+			prompt = string.Format("A private from Bastion's post has come out on a bike. The patrol's rifles are gone, every one, and there's a Red Hand toll chit from %1 in the sergeant's pocket: a crew robbed them before the infected got them. \"That's a red hand on it,\" he says, and waits for you to say what the post is told.", m_sCrew);
+			labels += "|Tell the post a Red Hand crew did it (the crew blames you)|Sell the crew a quiet word (Bastion pays nothing)";
 		}
 		else if (m_sTruth == "orders")
 		{
-			prompt = string.Format("A private from the post has come out on a bike. The sergeant's log is open on his knee. Last order: proceed to the line, grid %1, weather permitting. Signed by the CO. \"Weather,\" the private says.", RZ_SettlementScanner.GridReference(m_vPos));
-			labels += "|Read their last order on the open channel";
+			prompt = string.Format("A private from Bastion's post has come out on a bike. The sergeant's log is open on his knee. Last order, signed by the post's own CO: proceed to the line, grid %1, weather permitting. The CO sent his own patrol towards the Perimeter's guns. \"Weather,\" the private says.", RZ_SettlementScanner.GridReference(m_vPos));
+			labels += "|Read their last order out on the radio (Bastion blames you)";
 		}
 
 		m_Choice.Set(prompt, labels, "decide what's done with the patrol", OPT_NAIL);
@@ -1551,23 +1551,23 @@ class RZ_Mission_RaidRedHand : RZ_Mission
 		sc.Way(n1, "Tell them to clear out", RZ_TalkScene.FEAR, RZ_EFaction.BANDITS, 2, WAY_GO, "He runs. A minute later the camp is packing up, fast and badly.", "He laughs, and shouts for the others.");
 		sc.Way(n1, "Three tins and you never saw me", RZ_TalkScene.FOOD, -1, 3, WAY_GATE, "He takes the tins and walks off into the trees. One fire fewer in the camp tonight.");
 
-		string labels = "Burn the camp";
+		string labels = "Burn the camp, stores and all";
 		if (truth == "held")
 		{
-			labels = "Bastion's truck takes them|Walk them to the house";
+			labels = "Bastion's truck takes them (to a Bastion shelter)|Walk them to the Haven house (the Haven takes them in)";
 			m_Choice.Asset(OPT_OTHER, RZ_EFaction.SURVIVORS);
 		}
 		else if (truth == "deserters")
 		{
-			labels = "Their tags to the post|Burn the paint and say nothing";
+			labels = "Their tags to the post (Bastion learns they deserted)|Burn the paint, say nothing (Bastion pays nothing)";
 			m_Choice.Asset(OPT_OTHER, RZ_CureFinale.INDEP);
 		}
 		else
 		{
-			labels += "|Leave the stores to scavengers";
+			labels += "|Leave the stores to scavengers (no crate for Bastion)";
 		}
 
-		m_Choice.Set("The camp's quiet now. Bastion's corporal walks up the track with a clipboard. \"Well?\"", labels, "decide what's done with the camp", OPT_BURN);
+		m_Choice.Set("The camp's quiet now. Bastion's corporal walks up the track with a clipboard, to write down what's done with the camp and whoever was in it. \"Well?\"", labels, "decide what's done with the camp", OPT_BURN);
 	}
 
 	//------------------------------------------------------------------------------------------------

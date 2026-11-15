@@ -1293,7 +1293,7 @@ class RZ_PlaceNeeds
 		n = Add("opening.gate", "the gate");
 		n.Steep(30);
 
-		n = Add("opening.debt", "the house with the owing in it");
+		n = Add("opening.debt", "the house down the road");
 		n.Houses(1, 15);
 
 		n = Add("opening.toll", "the Red Hand's toll or gate");

@@ -403,19 +403,19 @@ class RZ_Mission_ColdChain : RZ_Mission_Delivery
 		sc.Way(n1, "Pack it properly.", RZ_TalkScene.TRUST, RZ_EFaction.INSTITUTE, 1, WAY_PACK, "He packs it in ice and newspaper, tight. \"Twenty-five minutes. Don't drop it.\"", "Pack it yourself. I'm on my break.");
 		sc.Way(n1, "Two tins for his ice", RZ_TalkScene.FOOD, -1, 2, WAY_PACK, "The tins buy his good ice, the stuff he keeps for himself.");
 
-		string labels = "Hand them over";
+		string labels = "Hand the box over and say nothing";
 		if (truth == "short")
 		{
-			labels += "|Tell them two are missing";
+			labels += "|Tell them two doses are missing (Halcyon looks bad)";
 			m_Choice.Asset(OPT_TELL, RZ_EFaction.SURVIVORS);
 		}
 		else if (truth == "trial")
 		{
-			labels += "|Tell the nurse it's a trial";
+			labels += "|Tell the nurse it's an untested trial (Halcyon pays nothing)";
 			m_Choice.Asset(OPT_TELL, RZ_CureFinale.INDEP);
 		}
 
-		m_Choice.Set(string.Format("The nurse at %1 holds out his hands for the box. \"All of it?\"", h.m_sName), labels, "decide what the nurse hears", OPT_HAND);
+		m_Choice.Set(string.Format("The nurse at %1, the Haven house the antidotes are for, holds out his hands for Halcyon's box. \"All of it? Is there anything I should know about this batch before I use it on people?\"", h.m_sName), labels, "decide what the nurse hears", OPT_HAND);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -639,24 +639,24 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 		sc.Way(n1, "Take the last one yourself.", RZ_TalkScene.TRUST, RZ_EFaction.INSTITUTE, 1, WAY_SHORT, "\"Fine. Two for you, one for me.\" He picks up a case and walks off whistling.", "For you? No.");
 		sc.Way(n1, "Two tins for the last site", RZ_TalkScene.FOOD, -1, 2, WAY_SHORT, "He pockets the tins. \"Two sites for you, then. I'll do the far one.\"");
 
-		string labels = "Hand the readings in";
+		string labels = "Hand the readings in to Halcyon";
 		if (truth == "brother")
 		{
-			labels = "Wait for him|Leave him with him";
+			labels = "Wait, then walk him back to the lab|Leave him with his brother (half your pay)";
 			m_Choice.Asset(OPT_SECOND, RZ_CureFinale.INDEP);
 		}
 		else if (truth == "line")
 		{
-			labels += "|Burn the drone times|Copy them for the crew";
+			labels += "|Burn the drone times (Halcyon pays nothing)|Copy the drone times for the Red Hand (Halcyon hears)";
 			m_Choice.Asset(OPT_THIRD, RZ_EFaction.BANDITS);
 		}
 		else if (m_iHouse >= 0)
 		{
-			labels += "|Give the house the water readings";
+			labels += "|Give the house the water readings too";
 			m_Choice.Asset(OPT_SECOND, RZ_EFaction.SURVIVORS);
 		}
 
-		m_Choice.Set("He snaps the case shut for the last time and looks at you. \"So. What happens to these?\"", labels, "decide what happens to the readings", OPT_HAND);
+		m_Choice.Set("The scientist snaps his case shut after the last site and looks at you. \"So. What happens to what I've written down? Halcyon is expecting all of it.\"", labels, "decide what happens to the readings", OPT_HAND);
 	}
 
 	//------------------------------------------------------------------------------------------------

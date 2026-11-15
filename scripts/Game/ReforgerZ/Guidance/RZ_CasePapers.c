@@ -184,11 +184,11 @@ class RZ_CasePapers
 	{
 		switch (paper)
 		{
-			case ORDERS: return "Command's stamp, Day 3. Bastion's at {place}. Whatever's on that sheet, they'll want it back before anyone reads it out.";
-			case PAGE: return "That's a page out of the book. The crews are at {place}. They count their pages.";
+			case ORDERS: return "That sheet has Bastion Command's stamp on it, dated Day 3. Bastion's people are at {place}. Whatever those orders say, they'll want them back before anyone reads them out.";
+			case PAGE: return "That's a page torn out of the Red Hand's book, their ledger of who owes them. The crews are at {place}. They count their pages, and they'll want it back.";
 		}
 
-		return "Those are Haven names. The chair's people are at {place}. Somebody there will know whose hand that is.";
+		return "That's a list of Haven people's names, in a Haven hand. The chair's people, who run the Haven, are at {place}. Somebody there will know who wrote it, and why.";
 	}
 
 	//------------------------------------------------------------------------------------------------

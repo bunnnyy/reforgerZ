@@ -186,7 +186,7 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 				if (!cook || IsDrained())
 				{
 					// The Book Without Him, or the still moved to the lorry: the tally's method at half speed
-					scene.m_sBrief = "No cook, or no pan. The tally on the kitchen wall says how. It says slowly.";
+					scene.m_sBrief = "The cook is gone, or his pan is. The base can still be made at the still without him, by the method he chalked on the kitchen wall, but only at half speed, and the smoke draws the infected.";
 					scene.m_sObjective = run.Fill("Run the still near {still} at half speed, by the tally on the kitchen wall.");
 					int lorry = scene.Person(still, "the still, by the tally", "Look at the still", "His chalk on the boards: temperatures, times, a cut every twenty minutes.");
 					scene.Choice(lorry, "Run the still at half speed").Sets("do:base").HoldAt(still, 960, OUT_PIECE, -1).Says("Sixteen minutes by his chalk, not eight. The smoke will bring them.", "ran the still by the tally");

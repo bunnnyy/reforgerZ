@@ -458,7 +458,7 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 		{
 			RZ_TalkScene mum = m_Job.Scene("Their father", "trail.mum", LandPointNear(m_aSpots[2], 3, 6));
 			int m0 = mum.Node(string.Format("A man with a bandaged arm sits by %1. \"Don't make me send them home. Don't make me keep them either.\"", m_sName));
-			mum.Decide(m0, "Leave them together", "leave them with their father", WAY_STAY, "You'll tell the house you didn't find them. Nobody pays for that.", RZ_CureFinale.INDEP);
+			mum.Decide(m0, "Leave the kids with their father (nobody pays)", "leave them with their father", WAY_STAY, "You'll tell the house you didn't find them. Nobody pays for that.", RZ_CureFinale.INDEP);
 			return;
 		}
 
@@ -466,7 +466,7 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 		int l0 = look.Node(string.Format("A crew lookout sits on a wall by %1. \"New hire. Keen. Can't shoot, but keen.\"", m_sName));
 		look.Way(l0, "Let the kid go home.", RZ_TalkScene.TRUST, RZ_EFaction.BANDITS, 1, WAY_FREE, "He shrugs. \"Go on, then. We'll keep your bunk.\"", "The kid signed. Well. Drew a hand.");
 		look.Way(l0, "Three tins for the kid", RZ_TalkScene.FOOD, -1, 3, WAY_FREE, "\"Sold.\" He counts the tins twice.");
-		look.Decide(l0, "Leave the kid with the crew", "leave the kid with the crew", WAY_CREW, "\"Smart.\" The lookout nods to you like a colleague.", RZ_EFaction.BANDITS);
+		look.Decide(l0, "Leave the kid with the crew (the kid stays a raider)", "leave the kid with the crew", WAY_CREW, "\"Smart.\" The lookout nods to you like a colleague.", RZ_EFaction.BANDITS);
 	}
 
 	//------------------------------------------------------------------------------------------------

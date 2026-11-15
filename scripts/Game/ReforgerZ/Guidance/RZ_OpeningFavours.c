@@ -49,63 +49,63 @@ class RZ_OpeningFavours
 		RZ_ErrandWay w;
 		// Nurse, Doctor
 		w = Fetch(RZ_EFavour.FEVER, "The Medicine", "Find the boy's medicine at {place}.", RZ_EWork.SEARCH, "Search the shelves for it", 10, RZ_EErrandProp.NONE);
-		w.Take("My son's burning up. Since last night. There's {place}: whatever they had for a fever, it'll be on a shelf. Fetch it, would you?",
-			"The boy's got a fever and I've got nothing. {place} might still have something on the shelves. I'll sit with him.");
+		w.Take("My son has had a fever since last night, and it's getting worse. I've no medicine in the house. {place} might still have something for a fever on a shelf. Fetch it and bring it back to me, and I'll get it into him tonight.",
+			"My boy's burning up with a fever and I've nothing to give him. Look on the shelves at {place} for fever medicine and bring it here. I'll stay and sit with him till you're back.");
 		Give(RZ_EFavour.FEVER, "Give Him the Medicine", "Give {giver} the boy's medicine.");
 
 		// Mechanic
 		w = Fetch(RZ_EFavour.CAR, "The Battery", "Find a battery that holds a charge at {place}.", RZ_EWork.SEARCH, "Find a battery", 10, RZ_EErrandProp.PARTS);
-		w.Take("It won't turn over. Not a click. It's the battery, it has to be. {place} will have one that still holds a charge.",
-			"I've been trying to start it since the roads shut, as if there's anywhere to go. Humour me. {place}. A battery.");
+		w.Take("My car won't start. Not even a click, so it's the battery. If the infected come down this street, I want to drive away, not run. {place} should have a battery that still holds a charge. Bring one back here and I'll fit it.",
+			"My car's battery is dead, and that car is my only way off this street if things go bad. There'll be a battery at {place}. Fetch one that still holds a charge and bring it to me.");
 		Give(RZ_EFavour.CAR, "Give Him the Battery", "Give {giver} the battery.");
 
 		// Hunter
 		w = Fetch(RZ_EFavour.HENS, "The Last Box", "Find the last box of shells at {place}.", RZ_EWork.SEARCH, "Find the box of shells", 8, RZ_EErrandProp.CRATE);
-		w.Take("Something's been at my hens. Three gone this week. My last box of shells is in {place}. I'm not walking over there in the dark.",
-			"Fox, or worse. I've got a gun and nothing to put in it. The shells are in {place}.");
+		w.Take("Something has been taking my hens. Three gone this week, and they're all the food I have. I've a gun but no shells: my last box is in {place}. Bring it to me and I'll sit up tonight and deal with it.",
+			"A fox, or worse, is eating my hens, and they're what feeds me. My gun's empty and my last box of shells is in {place}. I won't walk there in the dark. Fetch it here for me?");
 		Give(RZ_EFavour.HENS, "Give Him the Shells", "Give {giver} the box of shells.");
 
 		// Police Officer, Ex-Con
 		w = Fetch(RZ_EFavour.NEIGHBOUR, "The Spare Key", "Find the spare key under the mat at {place}.", RZ_EWork.HANDS, "Look under the mat", 3, RZ_EErrandProp.NONE);
-		w.Take("My neighbour's not answered since yesterday. {place}. He keeps a spare key under the mat. I can't make myself look.",
-			"He always answers. Always. {place}, and the key's under the mat. I'd go, but I know what I'd find.");
+		w.Take("My neighbour in {place} hasn't answered his door since yesterday, and he always answers. He keeps a spare key under the mat. I can't face going in. Fetch me the key, so at least we can find out if he's alive.",
+			"The man in {place} has always answered when I knock. Since yesterday, nothing. He could be ill, or worse. His spare key is under the mat. Bring it to me. I'd go, but I'm scared of what I'd find.");
 		Give(RZ_EFavour.NEIGHBOUR, "Give Him the Key", "Give {giver} the spare key.");
 
 		// Lab Technician
 		w = Fetch(RZ_EFavour.INSULIN, "The Cool Box", "Find the cool box at {place}.", RZ_EWork.SEARCH, "Find the cool box", 10, RZ_EErrandProp.CRATE);
-		w.Take("My insulin's gone warm. Two days without a fridge. {place} had a cool box in the lab. Ice packs, if we're lucky.",
-			"I need my insulin cold, and there's no cold left anywhere. The lab at {place} kept a cool box.");
+		w.Take("I'm diabetic, and my insulin stops working if it isn't kept cold. Two days without a fridge and it's going warm. There was a cool box with ice packs at {place}. Bring it to me and the insulin will last.",
+			"My insulin has to stay cold, and there isn't a working fridge left on this street. Without it I'm in real trouble within weeks. {place} kept a cool box. Fetch it back here for me.");
 		Give(RZ_EFavour.INSULIN, "Give Him the Cool Box", "Give {giver} the cool box.");
 
 		// Radio Operator
-		w = Fetch(RZ_EFavour.BROTHER, "A Battery for the Set", "Find a battery for his set at {place}.", RZ_EWork.SEARCH, "Find a battery", 8, RZ_EErrandProp.PARTS);
-		w.Take("I can't raise my brother. The set's fine, it's the battery. {place} might have one. He's two towns over, and he worries.",
-			"My brother calls every night at nine. He hasn't. My set's dead. {place} sold batteries, once.");
+		w = Fetch(RZ_EFavour.BROTHER, "A Battery for the Set", "Find a battery for {giver}'s radio at {place}.", RZ_EWork.SEARCH, "Find a battery", 8, RZ_EErrandProp.PARTS);
+		w.Take("I can't reach my brother. He lives two towns over and we talk on the radio every night at nine, but my set's battery is dead. {place} might have one. Bring me a battery so I can find out if he's alive.",
+			"My radio's battery is flat, and the radio is the only way I can talk to my brother two towns over. He hasn't heard from me in days. Look for a battery at {place} and bring it here.");
 		Give(RZ_EFavour.BROTHER, "Give Him the Battery", "Give {giver} the battery for the set.");
 
 		// Soldier: the lad is there (a work site's person, standing)
-		w = Fetch(RZ_EFavour.RIFLE, "The Rifle", "Take the rifle back from the lad at {place}.", RZ_EWork.HANDS, "Take the rifle off him", 10, RZ_EErrandProp.NONE);
+		w = Fetch(RZ_EFavour.RIFLE, "The Rifle", "Take the rifle back from the lad at {place}.", RZ_EWork.HANDS, "Take the rifle off the lad", 10, RZ_EErrandProp.NONE);
 		w.m_bPerson = true;
-		w.Take("A lad from the end house took my rifle. Says he's going to the line to shoot his way out. He's at {place}. Get it back before he tries.",
-			"The boy's got my rifle and a head full of nonsense. {place}. Get it off him. Gently, if you can.");
+		w.Take("A lad from down the road took my rifle. He says he'll walk to the Perimeter and shoot his way out, and the snipers there will kill him long before he's close. He's at {place}. Get the rifle off him, gently if you can, and bring it back to me.",
+			"The boy's taken my rifle and means to fight his way through the line. That's how you die in here. He's at {place}. Take the rifle off him and bring it back, and he'll live to be angry with me.");
 		Give(RZ_EFavour.RIFLE, "Give Him the Rifle", "Give {giver} the rifle.");
 
 		// Raider
 		w = Fetch(RZ_EFavour.TIN, "A Tin", "Find a tin of anything at {place}.", RZ_EWork.SEARCH, "Find a tin", 8, RZ_EErrandProp.CRATE);
-		w.Take("I owe the crews a tin. One tin. They come round at dusk. {place}'s empty: they left in a hurry. There'll be something in a cupboard.",
-			"One tin, or they take the door off. {place} is empty now. Anything in a tin.");
+		w.Take("I owe the Red Hand crews one tin of food. They collect at dusk, and if I can't pay they take my front door, and then the infected walk in. {place} is empty: the family left in a hurry. Find a tin of anything in a cupboard and bring it to me.",
+			"One tin of food, or the Red Hand take my front door off tonight. That's their price for leaving me be. The family in {place} left in a hurry. Look in their cupboards and bring me a tin.");
 		Give(RZ_EFavour.TIN, "Give Him the Tin", "Give {giver} the tin.");
 
 		// Elder
 		w = Fetch(RZ_EFavour.WELL, "The Rota", "Take the well rota off the board at {place}.", RZ_EWork.HANDS, "Take the rota off the board", 3, RZ_EErrandProp.PAPERS);
-		w.Take("Two families, one well, and they're about to come to blows. The rota's pinned on the board at {place}. They'll listen to paper.",
-			"The Kerns say it's their morning at the well. The Orlovs say it's theirs. The rota's at {place}. Fetch it and we'll see.");
+		w.Take("Two families on this street, the Kerns and the Orlovs, both say tomorrow morning at the well is theirs, and they're close to a fight. The written rota is pinned on the board at {place}. Bring it here and the paper can settle whose morning it is.",
+			"The Kerns and the Orlovs share one well, and each says the morning turn is theirs. It'll come to blows soon. The rota is pinned on the board at {place}. Fetch it to me and we'll see what it says.");
 		Give(RZ_EFavour.WELL, "Give Him the Rota", "Give {giver} the well rota.");
 
 		// Unemployed, Drifter
-		w = Fetch(RZ_EFavour.SACK, "The Last Sack", "Find his sack of potatoes in the back room at {place}.", RZ_EWork.SEARCH, "Find the sack", 8, RZ_EErrandProp.CRATE);
-		w.Take("My last sack of potatoes is in the back room at {place}. I hid it there on the second day. Clever, I thought. Then I couldn't face the walk.",
-			"I hid food in the back of {place} when it started. Potatoes. A whole sack. Fetch it and we'll both eat tonight.");
+		w = Fetch(RZ_EFavour.SACK, "The Last Sack", "Find {giver}'s sack of potatoes in the back room at {place}.", RZ_EWork.SEARCH, "Find the sack", 8, RZ_EErrandProp.CRATE);
+		w.Take("I hid my last sack of potatoes in the back room at {place} on the second day. It's all the food I've got left, and I couldn't face the walk there on my own. Fetch it back here and we'll both eat tonight.",
+			"When it started I hid a whole sack of potatoes in the back of {place}. It's the last food I have. Bring it back to me and you'll eat tonight too.");
 		Give(RZ_EFavour.SACK, "Give Him the Sack", "Give {giver} the sack of potatoes.");
 
 		// The background's second ways that are steps of their own
@@ -116,28 +116,28 @@ class RZ_OpeningFavours
 			m_mWay.Set("doctor", fever);
 		}
 
-		w = WayStep("mechanic", "Hotwire It", "Hotwire his car at {place}.", RZ_EWork.HANDS, "Hotwire it", 12, RZ_EErrandProp.CAR);
-		w.Done("It's running. Listen to that. Where did you learn that? No. Don't tell me.",
-			"Running, and no battery. I'm not going to ask.");
-		w = WayStep("hunter", "The Tracks", "Read the tracks by his hens at {place}.", RZ_EWork.HANDS, "Read the tracks", 8, RZ_EErrandProp.NONE);
+		w = WayStep("mechanic", "Hotwire It", "Hotwire {giver}'s car at {place}.", RZ_EWork.HANDS, "Hotwire the car", 12, RZ_EErrandProp.CAR);
+		w.Done("The car's running, and without a new battery. If I have to get away now, I can. Where did you learn that? No. Don't tell me.",
+			"It's running with the old battery still in it. That's my way off this street sorted. I'm not going to ask how.");
+		w = WayStep("hunter", "The Tracks", "Read the tracks by {giver}'s hens at {place}.", RZ_EWork.HANDS, "Read the tracks", 8, RZ_EErrandProp.NONE);
 		w.m_bQuiet = true;
-		w.Done("A man? Boots? Then it's not a fox that wants my hens. It's a neighbour. That's worse.",
-			"Size nine, and hungry. I know whose boots those are. I'll have a word.");
+		w.Done("Boot prints, not paws? Then it's a man taking my hens, not a fox. A hungry neighbour. That's worse, but I don't need shells for it.",
+			"Size nine boots, and hungry. I know whose boots those are. I'll have a word with him, and my hens stay mine.");
 		w = WayStep("police", "Open Up", "Knock at {place} as the police.", RZ_EWork.HANDS, "Knock: it's the police", 4, RZ_EErrandProp.NONE);
-		w.Done("He opened the door. He actually opened the door. Asleep in his chair, he says. Asleep for a day.",
-			"He heard 'police' and came running. Habit. Thank you.");
+		w.Done("He opened the door for you. He's alive. Asleep in his chair, he says. Asleep for a whole day. Thank you.",
+			"He heard 'police' and came to the door. Habit. He's alive, and that's all I wanted to know.");
 		w = WayStep("excon", "The Back Door", "Work the back lock at {place}, quietly.", RZ_EWork.HANDS, "Work the lock, quietly", 10, RZ_EErrandProp.NONE);
 		w.m_bQuiet = true;
 		w.m_bUnseen = true;
-		w.Done("He's in there. Alive, asleep in his chair. I won't ask where you learned that.",
-			"Open. Quiet as you like. Remind me to put a better lock on mine.");
-		w = WayStep("labtech", "Kept Cold", "Pack his insulin in cold water at {place}.", RZ_EWork.FILL, "Pack it in cold water", 8, RZ_EErrandProp.NONE);
-		w.Done("Cold water and a wet cloth. That's all it needed? You've saved me a walk and a week.",
-			"It's cold to the touch. I could kiss you. I won't.");
-		w = WayStep("soldier", "Give It Here", "Talk the lad at {place} out of the rifle.", RZ_EWork.HANDS, "Give it here, son", 3, RZ_EErrandProp.NONE);
+		w.Done("You got in. He's alive, asleep in his chair. I was sure he was dead. I won't ask where you learned that.",
+			"The back door's open, quiet as you like, and he's alive in there. Remind me to put a better lock on mine.");
+		w = WayStep("labtech", "Kept Cold", "Pack {giver}'s insulin in cold water at {place}.", RZ_EWork.FILL, "Pack the insulin in cold water", 8, RZ_EErrandProp.NONE);
+		w.Done("Cold water and a wet cloth round it, and it keeps? Then my insulin lasts, and nobody has to walk anywhere for a cool box.",
+			"It's cold to the touch again. My insulin will keep. I could kiss you. I won't.");
+		w = WayStep("soldier", "Give It Here", "Talk the lad at {place} out of the rifle.", RZ_EWork.HANDS, "Ask the lad for the rifle", 3, RZ_EErrandProp.NONE);
 		w.m_bPerson = true;
-		w.Done("He just handed it over? To you? I've been shouting at him for an hour.",
-			"Back on its nail. And the lad's gone home. You've a way with them.");
+		w.Done("He handed the rifle over? To you? I've been shouting at him for an hour. He'll live now.",
+			"The rifle's back on its nail, and the lad's gone home instead of to the line. You've a way with them.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -454,8 +454,8 @@ class RZ_OpeningFavours
 			case RZ_EFavour.HENS:
 			{
 				if (kind == "farm")
-					return "his farm's shed";
-				return "his old house up the lane";
+					return "the shed on the farm";
+				return "the old house up the lane";
 			}
 			case RZ_EFavour.NEIGHBOUR: return "the house over the way";
 			case RZ_EFavour.INSULIN:
@@ -487,21 +487,21 @@ class RZ_OpeningFavours
 	{
 		switch (bg)
 		{
-			case "nurse": return "You're steady with that bag. Still a nurse, under all that?";
-			case "doctor": return "You've got the doctor's look. Like you're counting something in me.";
-			case "mechanic": return "Those hands have seen engines. Don't tell me they haven't.";
-			case "hunter": return "You walk like you're listening. Still hunting, are you?";
-			case "police": return "You've still got the walk. You can take off the uniform, but not the walk.";
-			case "excon": return "You've done time, haven't you? It's all right. Everyone's doing time now.";
-			case "labtech": return "You were at the institute. You've still got the gloves in your pocket.";
-			case "radioham": return "You're the one with the aerial on the roof. Half the street heard you at night.";
-			case "soldier": return "You stand like a soldier. Even now.";
-			case "raider": return "I know your face. Most people on this street do. Most of them wish they didn't.";
-			case "elder": return "People listen when you talk. They always did. I'm counting on it.";
-			case "drifter": return "You're not from here. Doesn't matter. Nobody's from anywhere now.";
+			case "nurse": return "You were a nurse at the clinic before all this. Tell me, how have you kept yourself alive in there since the roads shut?";
+			case "doctor": return "You were a doctor before the seal. You still look at people like you're checking them over. How have you kept alive since the roads shut?";
+			case "mechanic": return "You used to fix engines at the garage. I'd know those hands anywhere. How have you kept yourself alive since the roads shut?";
+			case "hunter": return "You used to hunt the woods round here. You still walk like you're listening for something. How have you stayed alive since the roads shut?";
+			case "police": return "You were a police officer before the seal. You still walk like one. How have you kept yourself alive since the roads shut?";
+			case "excon": return "You did time before all this. It's all right: we're all locked in now. How have you kept yourself alive since the roads shut?";
+			case "labtech": return "You worked in the labs at the institute. You've still got gloves in your pocket. How have you kept yourself alive since the roads shut?";
+			case "radioham": return "You're the one with the aerial on the roof. Half the street heard you on the radio at night. How have you kept alive since the roads shut?";
+			case "soldier": return "You were a soldier before the seal. You still stand like one. How have you kept yourself alive since the roads shut?";
+			case "raider": return "I know your face. You robbed half this street before the seal. How have you kept yourself alive since the roads shut?";
+			case "elder": return "People on this street always listened to you, and they still will. How have you kept yourself alive since the roads shut?";
+			case "drifter": return "You're not from round here, are you? Doesn't matter: nobody gets to leave now. How have you kept yourself alive since the roads shut?";
 		}
 
-		return "Still out of work? Me too. Everyone is now. We're all equals at last.";
+		return "You were out of work before all this, like me. Everyone is now. How have you kept yourself alive since the roads shut?";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -524,10 +524,10 @@ class RZ_OpeningFavours
 		switch (habit)
 		{
 			case RZ_EPlayerHabit.STEADY: return "Good. Steady's worth more than clever, these days.";
-			case RZ_EPlayerHabit.LIGHT: return "Sensible. The ones who don't are the ones we hear about.";
+			case RZ_EPlayerHabit.LIGHT: return "Sensible. The loud ones are the ones the infected find first.";
 		}
 
-		return "Then don't tell me anything. I'd believe it.";
+		return "Useful. A good word gets you further in here than a gun. Just don't use it on me.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -536,17 +536,17 @@ class RZ_OpeningFavours
 	{
 		switch (bg)
 		{
-			case "nurse": return "That's not a fever, that's an infection. Hold him still.";
-			case "doctor": return "That's not a fever. It's the water he's been drinking. Hold him still.";
-			case "mechanic": return "Forget the battery. Show me the car.";
-			case "hunter": return "Before anyone fetches shells, let me see the tracks.";
-			case "police": return "Leave the key. Knocking is my job.";
-			case "excon": return "Back doors are never as good as front ones.";
-			case "labtech": return "Insulin doesn't need a fridge. It needs cold. Get me water.";
-			case "radioham": return "Never mind your set. I'll raise him on mine.";
-			case "soldier": return "Leave the lad to me.";
-			case "raider": return "I know who collects on this street. It's forgotten.";
-			case "elder": return "Fetch both of them out here. I'll settle it in the street.";
+			case "nurse": return "That's an infection, not just a fever. Let me treat him now.";
+			case "doctor": return "It's not the fever, it's bad water. Let me treat him now.";
+			case "mechanic": return "Forget the battery. Show me the car and I'll hotwire it.";
+			case "hunter": return "Before you load a gun, let me read the tracks by your hens.";
+			case "police": return "Leave the key. I'll knock as the police. He'll answer me.";
+			case "excon": return "Forget the key. I'll open his back door myself, quietly.";
+			case "labtech": return "Insulin just needs cold. I'll pack it in cold water for you.";
+			case "radioham": return "Never mind your set. I'll call your brother on my radio.";
+			case "soldier": return "Leave the lad to me. I'll talk the rifle off him.";
+			case "raider": return "I know who collects on this street. I'll get your tin forgotten.";
+			case "elder": return "Fetch both families out here. I'll settle the well in the street.";
 		}
 
 		return "";
@@ -576,19 +576,19 @@ class RZ_OpeningFavours
 		{
 			case "radioham":
 			{
-				lines.Insert("Static, static, then a voice. Yes. Yes, he's alive. He says the bridge is out and to stop worrying.");
+				lines.Insert("Static, then a voice. That's him. That's my brother. He's alive. He says the bridge is out, that's why he couldn't come, and I'm to stop worrying.");
 				lines.Insert("He never stopped worrying in his life. Thank you. I'll sleep tonight.");
 				return;
 			}
 			case "raider":
 			{
-				lines.Insert("Forgotten? Just like that? I won't ask what he owes you.");
+				lines.Insert("They'll forget the tin because you said so? Then I keep my door, and I owe them nothing. I won't ask what the collector owes you.");
 				lines.Insert("Keep your voice down when you say things like that. Somebody might believe you.");
 				return;
 			}
 			case "elder":
 			{
-				lines.Insert("Mornings to the Kerns, evenings to the Orlovs, and the bucket stays at the well.");
+				lines.Insert("So it's agreed: mornings at the well to the Kerns, evenings to the Orlovs, and the bucket stays at the well for both.");
 				lines.Insert("They shook on it. They didn't smile, but they shook. You made it look easy.");
 				return;
 			}
@@ -602,14 +602,14 @@ class RZ_OpeningFavours
 		switch (favour)
 		{
 			case RZ_EFavour.FEVER: return "Two now, two at bedtime, it says. I'll read it to him. Thank you. I mean it.";
-			case RZ_EFavour.CAR: return "It'll turn over now. Not that there's anywhere to drive to. It's the principle.";
-			case RZ_EFavour.HENS: return "Shells. Now whatever it is had better come back tonight.";
+			case RZ_EFavour.CAR: return "The car will start now. Not that there's anywhere to drive to in here, but if I have to get off this street, I can.";
+			case RZ_EFavour.HENS: return "Shells. Now if whatever's taking my hens comes back tonight, I'm ready for it.";
 			case RZ_EFavour.NEIGHBOUR: return "I'll go round now. Whatever's in there, I'd rather know.";
 			case RZ_EFavour.INSULIN: return "Cold. Properly cold. You've bought me a month. Maybe two.";
 			case RZ_EFavour.BROTHER: return "It's on. It's on, and that's his voice. He's alive. He's complaining. That's him.";
 			case RZ_EFavour.RIFLE: return "Back on its nail. And the lad's still breathing. Good work, both of you.";
-			case RZ_EFavour.TIN: return "Peaches. They'll take peaches. Thank you. That's one more week of having a door.";
-			case RZ_EFavour.WELL: return "Mornings to the Kerns. It's in writing. They can argue with the paper now.";
+			case RZ_EFavour.TIN: return "Peaches. The Red Hand will take peaches. Thank you. That's my front door safe for another week.";
+			case RZ_EFavour.WELL: return "The rota says mornings to the Kerns. It's in writing, so the Orlovs can argue with the paper now, not with their fists.";
 		}
 
 		return "A whole sack. We eat tonight. Both of us, sit down.";
@@ -643,11 +643,11 @@ class RZ_OpeningFavours
 		switch (what)
 		{
 			case 0: return "See the chalk on that door? A cross means the dead are inside. A circle, someone's still home.";
-			case 1: return "There. See it? They hear you before they see you. Keep low.";
-			case 2: return "That one's locked. Somebody locked it from inside, or somebody's coming back. Either way, not us.";
+			case 1: return "There, see it? One of the infected. They hear you before they see you, so keep low and keep quiet.";
+			case 2: return "That door's locked. Somebody locked it from inside, or somebody means to come back. Either way, it's not ours to open.";
 		}
 
-		return "Hear that? The broadcast. Aid is on its way. Eleven days it's been saying that.";
+		return "Hear that? The government broadcast. It says aid is on its way, every hour, and it has since the roads shut. Nobody has come.";
 	}
 
 	//------------------------------------------------------------------------------------------------

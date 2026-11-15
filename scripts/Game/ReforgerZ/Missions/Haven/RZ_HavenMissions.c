@@ -108,19 +108,19 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 		sc.Ask(n1, "Look at the lids", -1, reveal, true);
 		sc.Service(n1, "Dress his cut hand", "nurse,doctor", 20, WAY_TINS, "\"That's better than tins.\" He flexes the hand and walks off, waving it.");
 
-		string labels = "Take it to the Haven";
+		string labels = "Take it all to the Haven";
 		if (truth == "larder")
 		{
-			labels += "|Leave it for the family";
+			labels += "|Leave it for the family (nobody pays you)";
 			m_Choice.Asset(OPT_OTHER, RZ_CureFinale.INDEP);
 		}
 		else if (truth == "stash")
 		{
-			labels += "|Leave the crew's stash alone";
+			labels += "|Leave the crew's stash alone (the Haven goes without)";
 			m_Choice.Asset(OPT_OTHER, RZ_EFaction.BANDITS);
 		}
 
-		m_Choice.Set("The Haven's scout comes up the street with a handcart. \"All of it? It's ours now, isn't it?\"", labels, "decide whose the cache is", OPT_HAVEN);
+		m_Choice.Set("The Haven's scout comes up the street with a handcart for the cache. \"All of it? The Haven needs every tin. It's ours now, isn't it?\"", labels, "decide whose the cache is", OPT_HAVEN);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -528,8 +528,8 @@ class RZ_Mission_RadioRelay : RZ_Mission_Hold
 	{
 		m_Story = new RZ_MissionStory("relay");
 		m_Choice = new RZ_OneChoice();
-		m_Choice.Set("The relay's up. The house's radio man comes on: \"Bastion's on this band too. Do we carry their traffic? They'd send a patrol past the house for it.\" Answer him at the relay.",
-			"The Haven's alone|Bastion's too, for a patrol", "decide whose net the relay carries", 0);
+		m_Choice.Set("The relay's up. The Haven house's radio man comes on: \"Bastion's on this band too. If we carry their traffic, they'll send a patrol past the house every dusk. But the Red Hand crews listen to this band, and they'll hear Bastion's business on it.\" Answer him at the relay.",
+			"Carry the Haven's net alone (no patrol for the house)|Carry Bastion's too (a patrol, and the crews listen)", "decide whose net the relay carries", 0);
 		m_Choice.Asset(1, RZ_EFaction.MILITARY);
 	}
 
@@ -616,8 +616,8 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 	{
 		m_Story = new RZ_MissionStory("nest");
 		m_Choice = new RZ_OneChoice();
-		m_Choice.Set("It's burning. A Halcyon runner who followed the smoke stands off at the edge: \"Leave me a piece before it's ash. The lab can use it.\" The house that asked you wants it gone, all of it. Choose at the fire.",
-			"Burn it all|Leave a piece for Halcyon", "decide what's left of the nest", 0);
+		m_Choice.Set("It's burning. A Halcyon runner who followed the smoke stands off at the edge: \"Leave me a piece before it's ash. The lab studies nests for the cure.\" The Haven house that asked you wants it gone, all of it. Choose at the fire.",
+			"Burn it all (as the house asked)|Leave a piece for Halcyon (the house won't forgive it)", "decide what's left of the nest", 0);
 		m_Choice.Asset(1, RZ_EFaction.INSTITUTE);
 	}
 
@@ -936,9 +936,9 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 		sc.Way(n0, "Three tins for the box", RZ_TalkScene.FOOD, -1, 3, WAY_GIVE, "He counts the tins twice and goes in for the box.");
 		sc.Ask(n0, "Who else wants it?", n1, reveal, true);
 		if (truth == "upstairs")
-			sc.Decide(n1, "Split it with him", "split the medicine with the chemist", WAY_SPLIT, "\"Half, then. Half's more than anyone's offered.\" He brings down what he'll part with.", RZ_CureFinale.INDEP);
+			sc.Decide(n1, "Split the medicine with the chemist (half for the house)", "split the medicine with the chemist", WAY_SPLIT, "\"Half, then. Half's more than anyone's offered.\" He brings down what he'll part with.", RZ_CureFinale.INDEP);
 		else if (truth == "looted")
-			sc.Decide(n1, "Sell it to the crew's runner", "sell the medicine to the crew", WAY_SELL, "The runner turns up on a bicycle, counts out the price and takes the box. He thanks you nicely.", RZ_EFaction.BANDITS);
+			sc.Decide(n1, "Sell the medicine to the crew (the house goes without)", "sell the medicine to the crew", WAY_SELL, "The runner turns up on a bicycle, counts out the price and takes the box. He thanks you nicely.", RZ_EFaction.BANDITS);
 		else
 			sc.Ask(n1, "Why are you still here?", -1, "Where would I go? I'm the only one left who can read his handwriting.");
 
@@ -1248,14 +1248,14 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 
 		if (m_sTruth == "selling")
 		{
-			m_Choice.Set(string.Format("The clerk reads %1's notes twice, then a third time. Between the stash and the weather there's a list: the house's water runs, days and times, and a price against each. %2's mark at the bottom.", m_sName, m_sCrew),
-				"Tell the council|Burn that page|Sell the page back to the crew", "decide what the house hears", 0);
+			m_Choice.Set(string.Format("The clerk reads %1's notes twice, then a third time. Between the stash and the weather there's a list: the house's water runs, days and times, and a price against each, with %2's mark at the bottom. %1 was selling the house's water runs to the Red Hand.", m_sName, m_sCrew),
+				"Tell the council (the crew loses its list)|Burn that page (less pay; his name stays clean)|Sell the page back to the crew (the Haven may find out)", "decide what the house hears", 0);
 			m_Choice.Asset(OPT_FOURTH - 1, RZ_EFaction.BANDITS);
 		}
 		else
 		{
-			m_Choice.Set(string.Format("The clerk reads %1's notes out: weather, tracks, and a stash he marked on his last day. \"The house could use that,\" he says. \"So could anybody.\"", m_sName),
-				"Keep the stash for the house|Read the stash out on the open channel", "decide where the stash goes", OPT_KEEP);
+			m_Choice.Set(string.Format("The Haven's clerk reads %1's notes out: weather, tracks, and a stash of supplies he marked on his last day. \"The house could use that,\" he says. \"So could anybody.\"", m_sName),
+				"Keep the stash for the house|Read the stash out on the open channel (anyone can take it)", "decide where the stash goes", OPT_KEEP);
 			m_Choice.Asset(OPT_SECOND, RZ_CureFinale.INDEP);
 		}
 
@@ -1459,16 +1459,16 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 		string labels = "Tell the Haven what happened";
 		if (truth == "debt")
 		{
-			labels += "|Keep his secret";
+			labels += "|Keep the trader's debt secret (the Haven isn't told)";
 			m_Choice.Asset(OPT_OTHER, RZ_CureFinale.INDEP);
 		}
 		else if (truth == "stores")
 		{
-			labels += "|Send Bastion's goods back";
+			labels += "|Send the stolen goods back to Bastion (the trader loses them)";
 			m_Choice.Asset(OPT_OTHER, RZ_EFaction.MILITARY);
 		}
 
-		m_Choice.Set("The trader wipes his hands on his coat. \"Well. What do you tell them in the house?\"", labels, "decide what the house hears", OPT_HAVEN);
+		m_Choice.Set("The trader wipes his hands on his coat. The Haven house that sent you will want to know why his caravan was attacked. \"Well. What do you tell them in the house?\"", labels, "decide what the house hears", OPT_HAVEN);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1613,8 +1613,8 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 	{
 		m_Story = new RZ_MissionStory("kids");
 		m_Choice = new RZ_OneChoice();
-		m_Choice.Set("The kids are out. The oldest one says their uncle is at Bastion's post: \"He's a cook there. He said to come if.\" Decide with them, here.",
-			"The nearest house|Their uncle at Bastion's post", "decide where the kids go", 0);
+		m_Choice.Set("The kids are out. The oldest says their uncle is a cook at Bastion's post: \"He said to come to him if anything happened.\" The Haven sent you to bring them to its nearest house. Decide with them, here.",
+			"The nearest Haven house (as the Haven asked)|Their uncle at Bastion's post (Bastion pays, not the Haven)", "decide where the kids go", 0);
 		m_Choice.Asset(1, RZ_EFaction.MILITARY);
 	}
 

@@ -1882,7 +1882,7 @@ class RZ_Openings
 			perimeter.SpawnEffect(at);
 
 		if (o.m_Contact)
-			m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, "That came from the line. Somebody tried it.", o.m_Contact);
+			m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, "That shot came from the Perimeter. Somebody tried to get out.", o.m_Contact);
 	}
 
 	//------------------------------------------------------------------------------------------------

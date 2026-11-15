@@ -16,8 +16,8 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 	{
 		m_Story = new RZ_MissionStory("harvest");
 		m_Choice = new RZ_OneChoice();
-		m_Choice.Set("The sacks are filled. The farmer leans on his spade: \"They're promised to our own house. I hear there's a hungrier one down the road. Your call, you stood the field.\" Answer him at the field.",
-			"The farm's own house|The hungriest house", "decide which house gets the food", 0);
+		m_Choice.Set("The sacks are filled. The farmer leans on his spade: \"These are promised to our own Haven house. I hear there's a hungrier one down the road, with children on half portions. Your call: you stood guard over the field.\" Answer him at the field.",
+			"The farm's own house (the promise is kept)|The hungriest house (the farm's own house goes short)", "decide which house gets the food", 0);
 		m_Choice.Asset(1, RZ_EFaction.SURVIVORS);
 	}
 
@@ -283,23 +283,23 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 		sc.Way(n1, "Two tins for a carter", RZ_TalkScene.FOOD, -1, 2, WAY_CART, "A man with a horse cart takes the tins and the grandfather. The rest climb on after him.");
 		sc.Service(n1, "Fix the carter's axle", "mechanic", 25, WAY_CART, "The axle holds. The carter takes the grandfather first, then the spoons, then the rest.");
 
-		string labels = "Let them all in";
+		string labels = "Let the whole family in";
 		if (truth == "bitten")
 		{
-			labels = "Tell them about the arm|Say nothing";
+			labels = "Tell them the nephew's bitten (they'll take him out)|Say nothing (a lie that may come out)";
 		}
 		else if (truth == "owed")
 		{
-			labels += "|Hand him to the crew";
+			labels += "|Hand the in-law to his crew (the Haven blames you)";
 			m_Choice.Asset(OPT_OTHER, RZ_EFaction.BANDITS);
 		}
 		else if (RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.MILITARY, m_vPos, 100000))
 		{
-			labels += "|Send them on to Bastion's post";
+			labels += "|Send them on to Bastion's post (Bastion shelters them)";
 			m_Choice.Asset(OPT_OTHER, RZ_EFaction.MILITARY);
 		}
 
-		m_Choice.Set("The house's door opens a crack. \"How many, and are they all well?\"", labels, "decide who goes in", OPT_IN);
+		m_Choice.Set("The Haven house's door opens a crack. They're short of food and can't risk the sick. \"How many of you, and are they all well? Tell me true.\"", labels, "decide who goes in", OPT_IN);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -667,14 +667,14 @@ class RZ_Mission_TheInformant : RZ_PuzzleMission
 
 		string labels = "Give the Haven the names";
 		if (truth == "bait")
-			labels += "|Burn the list";
+			labels += "|Burn the list (half your pay)";
 		else if (truth == "both")
 		{
-			labels += "|Sell Bastion a copy";
+			labels += "|Sell Bastion a copy (the Haven may find out)";
 			m_Choice.Asset(OPT_OTHER, RZ_EFaction.MILITARY);
 		}
 
-		m_Choice.Set("The council's clerk holds out a hand for the list. \"Is it good?\"", labels, "decide where the names go", OPT_GIVE);
+		m_Choice.Set("The Haven council's clerk holds out a hand for the informant's list of names. The house will plan its food runs round what's on it. \"Is it good?\"", labels, "decide where the names go", OPT_GIVE);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1537,9 +1537,9 @@ class RZ_QM_PilotDecide : RZ_QuestMission
 				talk = "{pilot} has a map open on one knee, and the black box beside it. \"You heard them. Turn back, and then they fired. On a medevac.\" The map gets folded, small. \"Somebody has to try again. Or somebody has to stop me.\"";
 
 			int clue = AddClue(QText(gm, "pilot"), QFill(gm, talk));
-			string labels = "Talk him down";
+			string labels = "Talk him down (he stays grounded)";
 			if (m_bHasFar)
-				labels += "|Help him: fuel for a far LZ";
+				labels += "|Help him: fuel for a far LZ (he tries the line)";
 
 			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPilot, OBJ_PILOT, "", labels, clue, "Talk to " + QText(gm, "pilot"));
 		}

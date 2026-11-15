@@ -252,26 +252,26 @@ class RZ_OpeningText
 	{
 		if (step <= 1)
 		{
-			lines.Insert(string.Format("Day %1. They shut the roads on the second, and nobody's opened one since. I counted. Somebody had to.", day));
+			lines.Insert(string.Format("It's day %1. The army sealed every road out on day 2, and nobody has been let out since. We're shut in here, all of us. I counted the days. Somebody had to.", day));
 			return;
 		}
 
 		if (step == 2)
 		{
-			lines.Insert("Listen. The radio's still on the same tape: aid is on its way. Every hour, the same voice. I used to wait for it.");
-			lines.Insert("Nobody's coming. Say it out loud once. It helps, I promise.");
+			lines.Insert("Hear the radio? The government broadcast still says aid is on its way, every hour, in the same voice. I used to wait for it.");
+			lines.Insert("Nobody's coming. Say it out loud once. It helps, I promise. Then you stop waiting and start looking after yourself.");
 			return;
 		}
 
-		lines.Insert("My brother tried the river road. The loudspeaker said his name. Then it didn't.");
-		lines.Insert("The lab people say there's a way out. A cure. Proof, they call it. It won't come to us in here, so we go to it.");
+		lines.Insert("My brother tried to get out by the river road. The loudspeakers on the Perimeter warned him by name, and then the snipers shot him. Nobody crosses the line.");
+		lines.Insert("The lab people, Halcyon, say there's one way out: a cure. Prove the Zone is clean and the roads open. It won't come to us in here, so we go to it.");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The runner's step's piece of the story (RZ_OpeningCase): the shot, out by the line.
 	static void CaseBeat(notnull array<string> lines)
 	{
-		lines.Insert("That was a shot. Out by the line. Somebody ran for it again.");
+		lines.Insert("That was a shot, out by the Perimeter. Somebody tried to run for it again, and the snipers got him.");
 		lines.Insert("They always go at dusk. They think the drones can't see in the dark. The drones can.");
 	}
 
@@ -336,17 +336,17 @@ class RZ_OpeningText
 				case RZ_EOpeningTask.FEVER: return "My son. He's lying just there. Whatever's in your bag.";
 				case RZ_EOpeningTask.BOILED: return "Water for the fever. I've got the fire going.";
 				case RZ_EOpeningTask.PUMP: return "A can of fuel from the pump. Just the one.";
-				case RZ_EOpeningTask.DOWNWIND: return "Watch where they go about. Don't let them see you.";
-				case RZ_EOpeningTask.KEYS: return "The locked door. You've got the key now.";
-				case RZ_EOpeningTask.TOLL: return "The toll. Talk, look, walk away. No shooting.";
-				case RZ_EOpeningTask.SAMPLE: return "The sample. By the remains, down the road.";
-				case RZ_EOpeningTask.CHANNEL: return "Call on the open channel. Somebody's asking.";
-				case RZ_EOpeningTask.SWAP: return "Catch the one on the road. See what they'll swap.";
-				case RZ_EOpeningTask.GATE: return "The gate. One minute.";
+				case RZ_EOpeningTask.DOWNWIND: return "Watch the infected from downwind and count them. Don't let them see you.";
+				case RZ_EOpeningTask.KEYS: return "Open the locked building with the keys I gave you.";
+				case RZ_EOpeningTask.TOLL: return "Go and look at the Red Hand's toll. Talk to them, don't shoot, and walk away.";
+				case RZ_EOpeningTask.SAMPLE: return "Take a sample from the dead infected down the road, for the lab.";
+				case RZ_EOpeningTask.CHANNEL: return "Answer the voice calling on the open channel, with your radio.";
+				case RZ_EOpeningTask.SWAP: return "Catch the trader on the road and see what they'll swap.";
+				case RZ_EOpeningTask.GATE: return "Hold the gate against the infected for one minute.";
 				case RZ_EOpeningTask.CLOCK: return "The antidote. He's lying just there. Now, while it still works.";
 				case RZ_EOpeningTask.CLOCK_MED: return "Keep him going. He's lying just there. A dressing, anything.";
-				case RZ_EOpeningTask.DEBT: return "The house that owes. Ask them.";
-				case RZ_EOpeningTask.SETTLE: return "The two families. Sit with me and hear it.";
+				case RZ_EOpeningTask.DEBT: return "Go to the house that owes me and make them pay.";
+				case RZ_EOpeningTask.SETTLE: return "The two families and their well. Talk it through with me.";
 			}
 		}
 
@@ -480,16 +480,16 @@ class RZ_OpeningText
 	static string NextAsk(int asksDone)
 	{
 		if (asksDone == 1)
-			return "That's one. The man at the end house heard you were about. He's got a thing too.";
+			return "That's one done. The man at the end house saw you help me, and he needs a hand with something too.";
 
-		return "Last one, I promise. The man with the cart asked. Everyone asks, once they've seen you'll do it.";
+		return "Last one, I promise. The man with the cart has a problem as well. Once people see you'll help, everyone asks.";
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The clock ran out.
 	static string ClockLost()
 	{
-		return "It's taken him. I stayed till it did. Don't come back this way: I'll see to it.";
+		return "The bite's taken him. He's gone, or he's turning. I stayed till the end. Don't come back this way: I'll deal with what's left.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -603,11 +603,11 @@ class RZ_OpeningText
 		switch (faction)
 		{
 			case RZ_EFaction.MILITARY: return "Go to {place}. The soldiers count you at the door. Let them. It's how they know you're real.";
-			case RZ_EFaction.BANDITS: return "Try {place}. They'll want to know what you're worth. Tell them, but not all of it.";
-			case RZ_EFaction.INSTITUTE: return "Go to {place}. The lab people say there's a way out. A cure. They'll want hands like yours.";
+			case RZ_EFaction.BANDITS: return "Try {place}. The Red Hand take in anyone useful, for a price. They'll want to know what you're worth. Tell them, but not all of it.";
+			case RZ_EFaction.INSTITUTE: return "Go to {place}. The Halcyon people there are working on a cure, the one thing that could open the roads. They'll want hands like yours.";
 		}
 
-		return "Get yourself to {place}. They feed you if you work. Go on. I'll follow when it's dark.";
+		return "Get yourself to {place}. The Haven people there feed anyone who works. Go on. I'll follow when it's dark.";
 	}
 
 	//------------------------------------------------------------------------------------------------

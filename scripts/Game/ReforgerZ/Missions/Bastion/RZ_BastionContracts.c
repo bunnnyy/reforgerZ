@@ -265,7 +265,7 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 		sc.Way(n0, "Show me where.", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_SHOW, "He takes you through the back and kicks the case out from under a bench.", "Show you? You've got the uniform and still no idea.");
 		sc.Way(n0, "A tin for the keys", RZ_TalkScene.FOOD, -1, 1, WAY_SHOW, "He drops a ring of keys in your hand and points with the broom.");
 		if (truth == "sold")
-			sc.Decide(n1, "Name the sergeant to the post", "name the sergeant to the post", WAY_NAME, "You'll put his name on the form. The caretaker sweeps a little more cheerfully.");
+			sc.Decide(n1, "Name the sergeant to the post (he'll be punished)", "name the sergeant to the post", WAY_NAME, "You'll put his name on the form. The caretaker sweeps a little more cheerfully.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -411,8 +411,8 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 	{
 		m_Story = new RZ_MissionStory("convoy");
 		m_Choice = new RZ_OneChoice();
-		m_Choice.Set("The truck's in. The driver catches your sleeve by the tailgate: \"Two crates fell off on the way. Raiders. You saw them. A hungry house is going to find them on its step tonight.\" Answer him at the truck.",
-			"Don't. They go in the store|Let him. Raiders took them", "decide what happened to two crates", 0);
+		m_Choice.Set("The truck's in at the outpost. The driver catches your sleeve by the tailgate: \"Let's say two crates fell off on the way, to raiders. You saw them. A hungry Haven house finds them on its step tonight, and Bastion's store is two crates short.\" Answer him at the truck.",
+			"Don't. They go in the store (a hungry house goes without)|Let him. Raiders took them (a lie Bastion may find)", "decide what happened to two crates", 0);
 		m_Choice.Asset(1, RZ_CureFinale.INDEP);
 	}
 
@@ -826,23 +826,23 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 		sc.Way(n0, "Two tins for the cart", RZ_TalkScene.FOOD, -1, 2, WAY_CART, "The tins buy the cart and the farmer's silence about the cabbages.");
 		sc.Service(n1, "Fix his water pump", "mechanic", 25, WAY_CART, "The pump coughs and runs. \"Take the cart. Take the pump if you like.\"");
 
-		string labels = "Engine failure";
+		string labels = "Say it was engine failure";
 		if (truth == "ditched")
 		{
-			labels = "Report what he did|Say it was the engine";
+			labels = "Report he tried for the line (the post loses heart)|Say it was the engine (a lie, and less pay)";
 			m_Choice.Asset(OPT_OTHER, RZ_CureFinale.INDEP);
 		}
 		else if (truth == "cargo")
 		{
-			labels = "Report the cargo|Tell the crew he's home";
+			labels = "Report the crew's cargo he carried|Tell the crew he's home (Bastion pays nothing)";
 			m_Choice.Asset(OPT_OTHER, RZ_EFaction.BANDITS);
 		}
 		else
 		{
-			labels += "|Ask the post to pay the farmer";
+			labels += "|Ask the post to pay the farmer (half your pay)";
 		}
 
-		m_Choice.Set("The post's medic gets him on a stretcher. The duty sergeant has a form. \"What happened out there?\"", labels, "decide what goes on the form", OPT_POST);
+		m_Choice.Set("The post's medic gets the pilot on a stretcher. The duty sergeant has a form to fill in about the lost helicopter, and what you say goes in Bastion's records. \"What happened out there?\"", labels, "decide what goes on the form", OPT_POST);
 	}
 
 	//------------------------------------------------------------------------------------------------

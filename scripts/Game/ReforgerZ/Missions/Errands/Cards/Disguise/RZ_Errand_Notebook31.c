@@ -15,7 +15,7 @@ class RZ_Errand_Notebook31 : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
 		Offer("{dead} did not come back from fieldwork {where_place}. Notebook {number} was in the coat pocket. The notes in it are the only copy of three weeks' readings, and a dead researcher's notebook belongs to the record. Please bring it back.",
-			"We have a numbered coat and notebook {number} unaccounted for, {where_place}. And {dead}, of course. Mostly {dead}. The name goes on the authors' list either way. The notebook decides what goes beside it.");
+			"We have a numbered coat and notebook {number} unaccounted for, {where_place}. And {dead}, of course. Mostly {dead}. The name goes on the authors' list either way. Bring the notebook back, and the three weeks of readings in it go beside the name in the record.");
 		Over("Notebook {number} has been returned by someone else. The record is complete, for once.");
 
 		RZ_ErrandWay w = Way("do");

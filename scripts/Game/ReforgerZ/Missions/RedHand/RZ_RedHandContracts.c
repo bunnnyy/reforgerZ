@@ -712,8 +712,8 @@ class RZ_Mission_HijackTheConvoy : RZ_Mission
 	{
 		m_Story = new RZ_MissionStory("hijack");
 		m_Choice = new RZ_OneChoice();
-		m_Choice.Set("The driver's on his knees by the cab with his hands on his head. \"I've a wife at the post. I drive. That's all I do.\" Decide at the truck.",
-			"Let him walk|Hand him to the crew|Leave him tied for Bastion", "decide what happens to the driver", 0);
+		m_Choice.Set("Bastion's driver is on his knees by the cab with his hands on his head. \"I've a wife at the post. I drive. That's all I do.\" The crew would take him to drive for them. Decide at the truck.",
+			"Let the driver walk|Hand him to the crew (Bastion blames you)|Leave him tied for Bastion (he'll name you)", "decide what happens to the driver", 0);
 		m_Choice.Asset(0, RZ_CureFinale.INDEP);
 		m_Choice.Asset(1, RZ_EFaction.BANDITS);
 	}
@@ -1031,21 +1031,21 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		string labels = "All of them to the crew";
 		if (truth == "boy")
 		{
-			labels += "|Let the boy go home";
+			labels += "|Let the boy go home (less pay; the crew is one short)";
 			m_Choice.Asset(OPT_SECOND, RZ_EFaction.SURVIVORS);
 		}
 		else if (truth == "talked")
 		{
-			labels += "|Tell them which one talked|Let him slip away";
+			labels += "|Tell them which one talked (they'll deal with him)|Let the one who talked slip away (less pay)";
 			m_Choice.Asset(OPT_THIRD, RZ_CureFinale.INDEP);
 		}
 		else
 		{
-			labels += "|Walk them past the drop";
+			labels += "|Walk them past the drop (the crew pays nothing)";
 			m_Choice.Asset(OPT_SECOND, RZ_CureFinale.INDEP);
 		}
 
-		m_Choice.Set("The crew's man counts heads at the drop. \"All ours?\"", labels, "decide who the crew gets", OPT_CREW);
+		m_Choice.Set("The crew's man counts the freed prisoners at the drop. The Red Hand paid to get its own people out, and he wants everyone you brought. \"All ours?\"", labels, "decide who the crew gets", OPT_CREW);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1401,7 +1401,7 @@ class RZ_Mission_DoubleAgent : RZ_Mission_Delivery
 		sc.Way(n1, "Put this on top of the pile.", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_TOP, "On top it goes. He reads the top one properly.", "Everybody wants the top.");
 		sc.Way(n1, "Two tins for the clerk", RZ_TalkScene.FOOD, -1, 2, WAY_TOP, "The tins vanish into a drawer. The pile gets a new top.");
 		if (truth == "real")
-			sc.Decide(n1, "Warn the house instead", "warn the house and keep the dossier", WAY_WARN, "You keep the dossier. The house will hear before Bastion does.", RZ_EFaction.SURVIVORS);
+			sc.Decide(n1, "Keep the dossier and warn the house (Bastion never sees it)", "warn the house and keep the dossier", WAY_WARN, "You keep the dossier. The house will hear before Bastion does.", RZ_EFaction.SURVIVORS);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1737,8 +1737,8 @@ class RZ_Mission_KillTheOfficer : RZ_Mission
 	{
 		m_Story = new RZ_MissionStory("officer");
 		m_Choice = new RZ_OneChoice();
-		m_Choice.Set("His aide comes out with his hands up and a key in one of them: \"The post's stores. All of it. Walk away and nobody writes anything down.\" Answer him at the post.",
-			"Take the stores, walk away|Do the job", "decide whether he lives", 1);
+		m_Choice.Set("The officer's aide comes out with his hands up and a key in one of them: \"The post's stores. All of it. Take them, walk away, and nobody writes anything down. The officer lives.\" The Red Hand sent you to kill him. Answer him at the post.",
+			"Take the stores and walk away (the crew's boss hears)|Do the job you were paid for", "decide whether he lives", 1);
 		m_Choice.Asset(0, RZ_EFaction.MILITARY);
 		m_Choice.m_bManual = true;
 		m_Choice.m_bEnds = false;

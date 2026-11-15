@@ -2546,7 +2546,7 @@ class RZ_Errands
 
 		// The suspect variant: the giver has a question first
 		if (e.m_bSuspect)
-			Say(e, "Where were you on Tuesday? Never mind. Don't answer that.", false);
+			Say(e, "Someone's been taking from our stores, and I'm keeping an eye on everyone. You too. But I still need this done.", false);
 
 		Say(e, Pick(e.m_Def.m_aOffer), false);
 		string farLine = FarLine(e);
@@ -3521,7 +3521,7 @@ class RZ_Errands
 			if (once)
 				ledger.threadsSaid.Insert(entry);
 
-			return string.Format("%1 says you %2.", parts[1], parts[2]);
+			return string.Format("%1 told me you %2. Thank you for that.", parts[1], parts[2]);
 		}
 
 		return "";
@@ -4155,7 +4155,7 @@ class RZ_Errands
 			// Jobs only by interaction: they wave you over and the errand waits as their open offer;
 			// they say what it is only when you ask ("Anything need doing?", Ask)
 			m_mLastUnasked.Set(m_GM.GetProfile(playerId).m_sIdentity, m_fClock);
-			m_GM.Say(playerId, caller.m_sTitle, caller.m_iFaction, e.Fill("You there. Have you got a minute? Something wants doing, when you're free."));
+			m_GM.Say(playerId, caller.m_sTitle, caller.m_iFaction, e.Fill(string.Format("You there. Have you got a minute? I need a hand with %1.", e.m_Def.m_sTitle)));
 		}
 	}
 

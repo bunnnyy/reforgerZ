@@ -226,10 +226,10 @@ class RZ_Event_WanderingTrader : RZ_Event_Timed
 		int n1 = sc.Node("So you know. Now what?");
 		sc.Ask(n0, "Where's it all from?", n1, reveal, true);
 		if (truth == "stolen" && m_iHouse >= 0)
-			sc.Decide(n1, "Send the crates home", "send the trader's crates back to the house", WAY_HOME, "He sighs and starts loading the crates back. \"He'll sulk for a week.\"", RZ_EFaction.SURVIVORS);
+			sc.Decide(n1, "Send the crates back to the house (the trader loses them)", "send the trader's crates back to the house", WAY_HOME, "He sighs and starts loading the crates back. \"He'll sulk for a week.\"", RZ_EFaction.SURVIVORS);
 		else if (truth == "roads")
 		{
-			sc.Decide(n1, "Tell the house he sells roads", "tell the house the trader sells the roads", WAY_TELL, "\"Then we'll be going.\" He whistles for him and the wagon's moving in a minute.");
+			sc.Decide(n1, "Tell the house he sells their roads (he'll leave)", "tell the house the trader sells the roads", WAY_TELL, "\"Then we'll be going.\" He whistles for him and the wagon's moving in a minute.");
 			sc.Way(n1, "Two tins and I wasn't here", RZ_TalkScene.FOOD, -1, 2, WAY_QUIET, "He tears a page out of his notebook and gives it to you. Your page.");
 		}
 		else
