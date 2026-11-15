@@ -13,7 +13,7 @@ class RZ_Errand_SmokeWasOurs : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
 		Offer("Our guns put shells down {where_place} this morning, on a horde that was heading for the wire. The log wants a count of what they hit, and the log always wants a count. I can't leave the post. Walk over and count for me?",
-			"That smoke {where_place} was ours: a fire mission on the infected. Somebody has to walk over and say what it hit, for the log. Preferably not me. The Haven has a house near there.");
+			"That smoke {where_place} was ours: a fire mission on the infected. Somebody has to walk over and say what it hit, for the log. Preferably not me. The Haven has a house near there, so if we missed any, they'll want to know.");
 		Over("Never mind. The count's been filed. Somebody guessed.");
 
 		RZ_ErrandWay w = Way("do");
