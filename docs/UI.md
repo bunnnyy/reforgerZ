@@ -1602,7 +1602,7 @@ nothing before that. Your objective and the packs' rings are as above.
 grid clears it), so it's saved with the profile, kept across deaths, and starts over with a wipe's
 fresh state. A new character (a reset) starts with nothing seen (`RZ_PlayerProfile.StartCharacter`
 clears it). The server sends the whole fog to its player alone as run lengths (payload
-kind 25: `F|x0|z0|cell|w|h|opacity|1`, then `R|` alternating unseen and seen runs, row by row, unseen
+kind 28: `F|x0|z0|cell|w|h|opacity|1`, then `R|` alternating unseen and seen runs, row by row, unseen
 first): when the map opens (the client asks) and at most every 3 s while it changes. The client
 merges unseen runs into rectangles once per change and draws them as polygons only when the map
 pans, zooms or the fog changes.
@@ -1735,7 +1735,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/traces`, `/sites`, `/fog`, `/rep`, `/talkdebug`, `/mydead`, `/season`, `/anonymous`, `/lastentry`, `/epilogue`, sent as commands to the server, which checks them again. Registered with the first notice. Each has a way without typing ([Controllers](#controllers)), but the admins' `/epilogue` |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards, the subtitles (the arrow to an in-person speaker every frame), the radio-line box and the quest tracker |
 | `RZ_SayLine`, `RZ_ESaySource` | server, client (`UI/RZ_UIData.c`) | A spoken line's who and how: name, role, faction, source, channel, where the speaker is ([Subtitles](#subtitles-and-the-reader)) |
-| `RZ_MapFog` (`World/RZ_MapFog.c`), `RZ_MapFogDraw` (`UI/RZ_MapFogDraw.c`) | server, on the second tick; client, in the map's icon layer | What each character has seen of the map (a bit per square on the profile), sent to its player as run lengths (payload kind 25); drawn over the map as merged rectangles ([The map's fog](#the-maps-fog)) |
+| `RZ_MapFog` (`World/RZ_MapFog.c`), `RZ_MapFogDraw` (`UI/RZ_MapFogDraw.c`) | server, on the second tick; client, in the map's icon layer | What each character has seen of the map (a bit per square on the profile), sent to its player as run lengths (payload kind 28); drawn over the map as merged rectangles ([The map's fog](#the-maps-fog)) |
 | `RZ_SpeakerFinder` | server (`UI/RZ_UIFeed.c`) | The nearest person to a player, for a spoken line whose caller gave no body |
 | `RZ_DoorMarkClient` | client, from the HUD's update | Traces' door marks as decals near the player, from the game mode's replicated list and the kit's atlas ([TRACES.md](TRACES.md#doors-you-can-see)); nothing without the atlas |
 | `RZ_PowerLampsClient` | client, from the HUD's update | The map's own lamps, dark but where there's power, from the game mode's replicated list: finds the lamps round the player once (a 100 m square at a time, out to 800 m) and puts out the ones outside it ([DESIGN.md](DESIGN.md#the-power-grid)); nothing with **World > Power grid > Street lamps** off |

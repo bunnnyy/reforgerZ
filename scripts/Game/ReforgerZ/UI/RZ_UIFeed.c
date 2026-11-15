@@ -100,7 +100,7 @@ class RZ_UIFeed
 	static const int PAYLOAD_SITEHUD = 26;	// the site builder's HUD while a site is built: B and C records; "" hides it (UI/RZ_SiteHud.c)
 	static const int PAYLOAD_HANDS = 27;	// the hands-on view: H, T, P, L, A, E records; X|reason closes (Interactions/RZ_HandsOn.c)
 	static const int PAYLOAD_SITEMARKS = 24;	// the site builder: the site's edge and its role spots, drawn while it's built; "" clears (World/HandBuilt/RZ_SiteBuilderEditor.c)
-	static const int PAYLOAD_FOG = 25;		// the map's fog: F and R records, "" off; asked when the map opens, sent while it changes (World/RZ_MapFog.c)
+	static const int PAYLOAD_FOG = 28;		// the map's fog: F and R records, "" off; asked when the map opens, sent while it changes (World/RZ_MapFog.c)
 	static const int DETAIL_MAX = 1500;
 	static const int ERRAND_ID_BASE = 100000;	// errand rows' ids: -(base + errand id)
 	static const int TRIBE_ID_BASE = 200000;	// the packs' rows (what you know of them): -(base + pack id)

@@ -1,6 +1,6 @@
 //! The map's fog on the client (docs/UI.md, "The map's fog"): the squares this character hasn't
 //! seen, drawn over the map on a canvas of their own, under the icon layer's markers. The server
-//! sends the whole fog as run lengths (World/RZ_MapFog.c, payload kind 25); here the unseen runs are
+//! sends the whole fog as run lengths (World/RZ_MapFog.c, payload kind 28); here the unseen runs are
 //! merged into rectangles once per change, and the rectangles are turned into screen polygons only
 //! when the map pans or zooms or the fog changes. Owned by the map's icon layer (RZ_MapIconsUI).
 class RZ_MapFogDraw
