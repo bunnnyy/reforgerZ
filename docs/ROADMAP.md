@@ -262,6 +262,21 @@ else waits is play, engine checks and the author's calls.
 
 ## Play-test priorities
 
+**Open from the play-through of 2026-11-15** (Workbench play on Everon, a fresh Mechanic, then
+coming round at a Bastion post; fixed ones are in the commits, these aren't yet):
+
+| What | Seen |
+|---|---|
+| Prompt hints overlap | The talk screen's footer ("Say it", "Page", "Leave" run into each other); "N, OR START AND NOTEBOOK" and "1-5: a reply..." drawn over the HUD's status icons |
+| People don't turn to you | Corporal Ruth Weber stood facing a barn wall and talked to it; camp people placed facing walls |
+| Coming round in a hedge | Came round at a Bastion post facing into a hedge against the fence |
+| Hotwire It's car | The car "that won't turn over" is a rusted, burnt-out wreck (`RZ_CarWreck`, a UAZ wreck): it should be a whole car that looks like it could run |
+| Cards in the first minutes | Three world-event cards during the opening's first talk (Distress Call, Stash Note, Prison Break) |
+| A death while idle | Killed by an infected two minutes in, standing still at the petrol station start |
+| The well (Local Law) | A three-button menu with one line of context at the end of a 3 km run: no people, no stakes, nothing to do there (designs/QUESTS_IN_THE_WORLD.md) |
+| Confusing lines | Givers' and steps' lines read as riddles; it isn't clear what's wrong, who it matters to, and what each choice changes (designs/QUESTS_IN_THE_WORLD.md, section 4) |
+| Nametags | Not every person has one, and a person's name should never change |
+
 In this order, because later ones depend on earlier ones:
 
 1. **AI in Workbench play.** The first plays had no AI world in the world, so no AI or infected
