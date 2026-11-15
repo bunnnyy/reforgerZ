@@ -77,7 +77,8 @@ enum RZ_EMissionKindUI
 	ERRAND,		// an errand you hold (Missions/Errands): mission_errand
 	PACK,		// a pack you know of (docs/INFECTED.md, Knowing): the range ring, the level as its time
 	DOORS,		// Read on doors (docs/TRACES.md): the last door lines you read, the puzzle icon
-	FINALE		// the cure's finale page (docs/FINALE.md): the readout, the worth, your route; the lab icon
+	FINALE,		// the cure's finale page (docs/FINALE.md): the readout, the worth, your route; the lab icon
+	TONIGHT		// a line of Tonight (UI/RZ_Tonight.c): the event icon, its own group first on the Quests tab
 }
 
 //------------------------------------------------------------------------------------------------
@@ -232,6 +233,12 @@ class RZ_UISettings
 
 	[Attribute("{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et", UIWidgets.ResourcePickerThumbnail, "One meal every new character is given (not at coming round), in case food is slow to find (vanilla MRE.et). Empty = none", "et")]
 	ResourceName m_sMealPrefab;
+
+	[Attribute("1", desc: "Tonight (docs/UI.md, \"Tonight\"): up to three true things near you on the spawn card and the Quests tab's Tonight rows (work, something happening, a town to see), after the opening. Off: neither")]
+	bool m_bTonight;
+
+	[Attribute("1500", desc: "Tonight's reach (m): only what's within this of you, kept to 300-5000. Walking reach")]
+	float m_fTonightReach;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The paper map every spawn is given (vanilla PaperMap_01_folded.et), unless the loadout already has one. Empty = none", "et")]
 	ResourceName m_sMapPrefab;
@@ -517,6 +524,7 @@ class RZ_UIText
 			case RZ_EMissionKindUI.PACK: return "marker_range";
 			case RZ_EMissionKindUI.DOORS: return "mission_puzzle";
 			case RZ_EMissionKindUI.FINALE: return "marker_lab";
+			case RZ_EMissionKindUI.TONIGHT: return "mission_event";
 		}
 
 		return "mission_contract";

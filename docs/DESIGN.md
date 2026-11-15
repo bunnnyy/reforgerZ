@@ -884,6 +884,7 @@ Not taken in: a bitten death (*nobody carries in a bitten body*), a camp under a
 last real hour. Then the next camp; with none, a **random start** rolled by the openings' place
 rules, without an opening. You come round in the camp's yard (its people's home), and one of its
 people says how you got back (a Haven man, a Bastion medic, a Red Hand crewman, a Halcyon orderly).
+The spawn card ends with [Tonight](UI.md#tonight)'s three things near you.
 
 **Coming back after a logout.** ✅ A character who left alive (logged out, lost the connection, or
 the server stopped) comes back **where they left off**, never at a camp or a random start (the

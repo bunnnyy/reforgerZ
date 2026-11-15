@@ -296,6 +296,7 @@ class RZ_QuestText
 			case RZ_EMissionKindUI.FINALE: return "The finale";
 			case RZ_EMissionKindUI.PACK: return "A pack";
 			case RZ_EMissionKindUI.DOORS: return "Doors";
+			case RZ_EMissionKindUI.TONIGHT: return "Tonight";
 		}
 
 		if (major)
@@ -565,6 +566,11 @@ class RZ_QuestTracker
 				result.Insert(je);
 			}
 		}
+
+		// Tonight's lines that aren't a real job (UI/RZ_Tonight.c): followed as one
+		RZ_UIFeed feed = m_GM.GetUIFeed();
+		if (feed && feed.GetTonight())
+			feed.GetTonight().Jobs(playerId, from, result);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -600,6 +606,15 @@ class RZ_QuestTracker
 		if (id <= -RZ_UIFeed.ERRAND_ID_BASE && id > -RZ_UIFeed.TRIBE_ID_BASE)
 		{
 			ErrandObjectives(playerId, -id - RZ_UIFeed.ERRAND_ID_BASE, list);
+			return;
+		}
+
+		if (RZ_UIFeed.IsTonightRow(id))
+		{
+			RZ_UIFeed tonightFeed = m_GM.GetUIFeed();
+			if (tonightFeed && tonightFeed.GetTonight())
+				tonightFeed.GetTonight().Objectives(playerId, id, list);
+
 			return;
 		}
 
@@ -811,6 +826,11 @@ class RZ_QuestTracker
 	{
 		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		// A Tonight row that is a real job (one you hold, a world event): tracking it tracks the job
+		RZ_UIFeed feed = m_GM.GetUIFeed();
+		if (feed && feed.GetTonight())
+			id = feed.GetTonight().TrackId(playerId, id);
+
 		array<ref RZ_QuestJob> jobs = {};
 		Jobs(playerId, ent, jobs);
 		RZ_QuestJob j = FindJob(jobs, id);
@@ -940,6 +960,16 @@ class RZ_QuestTracker
 		else
 		{
 			p.m_iTrackedId = 0;
+		}
+
+		// A Tonight line followed to its place is done there (UI/RZ_Tonight.c): whoever or whatever is
+		// there carries on; the tracker goes back to the newest job taken at its next look
+		RZ_UIFeed feed = m_GM.GetUIFeed();
+		if (tracked && RZ_UIFeed.IsTonightRow(tracked.m_iId) && feed && feed.GetTonight() && feed.GetTonight().CheckReached(playerId, tracked.m_iId, ent))
+		{
+			tracked = null;
+			p.m_iTrackedId = 0;
+			p.m_sTrackedTitle = "";
 		}
 
 		string payload = Build(playerId, ent, tracked);

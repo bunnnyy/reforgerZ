@@ -106,6 +106,7 @@ class RZ_UIFeed
 	static const int TRIBE_ID_BASE = 200000;	// the packs' rows (what you know of them): -(base + pack id)
 	static const int DOORS_ID = 300000;			// the one Read on doors row: -DOORS_ID (docs/TRACES.md)
 	static const int FINALE_ID = 400000;		// the one finale page row: -FINALE_ID (docs/FINALE.md)
+	static const int TONIGHT_ID_BASE = 700000;	// Tonight's rows: -(base + serial) (UI/RZ_Tonight.c); 500000s are past jobs
 
 	protected static const int MAX_PAYLOAD = 6000;
 	protected static const int MAX_CLUES = 30;
@@ -113,6 +114,7 @@ class RZ_UIFeed
 
 	protected RZ_GameModeComponent m_GM;
 	protected ref RZ_QuestTracker m_Tracker;
+	protected ref RZ_Tonight m_Tonight;
 	protected ref map<int, ref RZ_UIFeedState> m_mStates = new map<int, ref RZ_UIFeedState>();
 	protected ref map<int, ref array<ref RZ_UIClue>> m_mClues = new map<int, ref array<ref RZ_UIClue>>();
 	protected ref map<string, string> m_mGear = new map<string, string>();				// loadout name -> what it spawned with
@@ -127,12 +129,26 @@ class RZ_UIFeed
 	{
 		m_GM = gm;
 		m_Tracker = new RZ_QuestTracker(gm);
+		m_Tonight = new RZ_Tonight(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	RZ_QuestTracker GetTracker()
 	{
 		return m_Tracker;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_Tonight GetTonight()
+	{
+		return m_Tonight;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A Tonight row's id (UI/RZ_Tonight.c).
+	static bool IsTonightRow(int id)
+	{
+		return id <= -TONIGHT_ID_BASE && id > -(TONIGHT_ID_BASE + 100000);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -256,6 +272,7 @@ class RZ_UIFeed
 		}
 
 		// The quest tracker, owner-only, sent when it changes (UI/RZ_Quests.c)
+		m_Tonight.Tick(dt);
 		m_Tracker.Tick(dt, ids, players);
 
 		m_fVisitTimer += dt;
@@ -739,6 +756,8 @@ class RZ_UIFeed
 		RZ_MissionReasons.SortFor(m_GM, list, playerId, from);	// near, reason-started, a leader they helped first
 		RZ_UILine lnK = new RZ_UILine("K");
 		string s = lab + lnK.AddInt(m_Tracker.TrackedFor(playerId)).End();
+		// Tonight's rows early, so a long journal never cuts them (UI/RZ_Tonight.c)
+		s += m_Tonight.Rows(playerId, ent, from);
 		array<int> shown = {};
 		foreach (RZ_Mission m : list)
 		{
@@ -971,9 +990,20 @@ class RZ_UIFeed
 			return RZ_DialogueJournal.Detail(playerId, id);
 
 		string told = "";
+		if (IsTonightRow(id))
+		{
+			told = m_Tonight.Detail(playerId, id);
+			if (told.IsEmpty())
+				return "";
+		}
+
 		string found = "";
 		string went = "";
-		if (id == -DOORS_ID)
+		if (IsTonightRow(id))
+		{
+			// Its line, above; its one objective below
+		}
+		else if (id == -DOORS_ID)
 		{
 			RZ_Traces traces = m_GM.GetTraces();
 			array<string> read = {};

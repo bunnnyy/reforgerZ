@@ -1852,6 +1852,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (m_Guidance)
 			m_Guidance.OnPlayerSpawned(playerId, controlledEntity);
 
+		// Tonight's three, on the same card (UI/RZ_Tonight.c): never while the opening runs
+		string tonight = m_UIFeed.GetTonight().CardFor(playerId, controlledEntity);
+		if (!tonight.IsEmpty() && line.IsEmpty())
+			line = tonight;
+		else if (!tonight.IsEmpty())
+			line = line + "\n\n" + tonight;
+
 		if (!line.IsEmpty())
 			NotifyPlayerAs(playerId, bg.m_sName, line, RZ_ENoticeTag.SPAWN);
 	}
@@ -1952,6 +1959,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (!lockedLine.IsEmpty())
 			whereLine += "\n" + lockedLine;
+
+		// Tonight's three when no opening runs for this character (UI/RZ_Tonight.c)
+		string tonightNew = m_UIFeed.GetTonight().CardFor(playerId, controlledEntity);
+		if (!tonightNew.IsEmpty())
+			whereLine += "\n\n" + tonightNew;
 
 		NotifyPlayerAs(playerId, bg.m_sName, whereLine, RZ_ENoticeTag.SPAWN);
 		string intro = string.Format("Perk: %1\nFlaw: %2\n\nYour goal: %3",

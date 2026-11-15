@@ -9410,7 +9410,9 @@
     "m_fSubtitleCps": "11",
     "m_bReader": "1",
     "m_iReaderPageChars": "700",
-    "m_bDeathBrief": "1"
+    "m_bDeathBrief": "1",
+    "m_bTonight": "1",
+    "m_fTonightReach": "1500"
    }
   },
   {

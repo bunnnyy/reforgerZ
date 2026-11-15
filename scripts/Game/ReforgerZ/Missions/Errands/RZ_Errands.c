@@ -2232,6 +2232,25 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Tonight's look ahead (UI/RZ_Tonight.c): the errand or duty this giver would deal this player
+	//! if they asked now, as the talk screen's own look ahead finds it; null when nothing, when the
+	//! player holds something of theirs, is hunted by them or has their hands full. Deals nothing.
+	RZ_Errand PeekFor(int playerId, RZ_NamedPerson p, IEntity user)
+	{
+		if (!IsOn() || !p || !user || FindFor(playerId, p.m_sKey))
+			return null;
+
+		if (RZ_Factions.IsValid(p.m_iFaction) && RZ_Reputation.IsHunted(m_GM.GetTier(playerId, p.m_iFaction)))
+			return null;
+
+		if (CountHeld(playerId) >= m_Settings.m_iMaxHeld)
+			return null;
+
+		string why;
+		return Deal(playerId, p, user.GetOrigin(), false, why, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The duty a giver offers beside their pressing errand (docs/ERRANDS.md, "Duties"): true with
 	//! its `title` when they have something pressing for this player and a duty as well. False when
 	//! the errand reply is already their duty (nothing pressing), when the player holds something of

@@ -254,7 +254,9 @@ next open the notebook or spawn again.
 **At spawn: one card, then quiet.** A new character shows **one card**: who you are and where, in a line
 or two (the background's name, then where you wake: "A farmhouse cellar in Morton. Day 11. The last
 bottle is empty, so you open the door.", from the opening, or "You come to east of Levie."; a locked background adds
-"Soldier is locked. You're Survivor this character."). The rest goes into the notebook, no card each:
+"Soldier is locked. You're Survivor this character."). Coming round after a death or back from a logout, the
+same card says how you got back. Once no opening runs for the character, that one card ends with
+[Tonight](#tonight)'s lines, never a second card. The rest goes into the notebook, no card each:
 
 | What | Where it goes |
 |---|---|
@@ -411,8 +413,8 @@ no placeholders, nothing hidden.
 ### Notebook: Quests
 
 The one place to choose what the tracker follows, and the one place your other jobs are listed (the
-house mockup, `UI/Mockups/tracker.html`, right). Every job you have, in three groups, each under its
-heading (`RowGroup`). A job is yours only once a person or a thing offered it to you
+house mockup, `UI/Mockups/tracker.html`, right). [Tonight](#tonight)'s lines first, then every job you
+have, in three groups, each under its heading (`RowGroup`). A job is yours only once a person or a thing offered it to you
 ([MISSIONS.md](MISSIONS.md#who-gets-offered-what)): work you only heard of is on the Radio tab with
 who to ask, world events are news there and never here, and a job that ended moves to the Journal.
 Empty, the tab says *"No jobs yet. Ask a leader or a quartermaster for work, or use a safehouse
@@ -420,6 +422,7 @@ radio. The radio only says who's asking."*
 
 | Group | Jobs |
 |---|---|
+| TONIGHT, NEAR YOU | Tonight's lines ([below](#tonight)): *Near you* on the right, never counted as taken or offered |
 | THE SEASON'S STORY | The majors you took part in ([QUESTLINES.md](QUESTLINES.md)) |
 | QUESTLINES AND JOBS | Questlines you're part of, missions, contracts, events, leaders' jobs |
 | ERRANDS | The errands you hold ([ERRANDS.md](ERRANDS.md)), with the jobs the opening hands you: the case's lead, and a paper from its lid you agreed to carry to its owner ([DESIGN.md](DESIGN.md#the-papers-in-the-lid)) |
@@ -450,6 +453,44 @@ tracked job). The server answers with the tracker and a fresh list
 (`RZ_PlayerUIComponent.AskTrack`, at most three a second). The footer says so: *"D-pad: choose · A:
 track / untrack · LB/RB: tabs · B: close"*, as vanilla's input buttons (the key or the pad button by
 the device in use), or as that text where they can't be made.
+
+### Tonight
+
+✅ Up to three things worth doing near you right now, so the first minute after coming round or
+logging back in has a direction (`UI/RZ_Tonight.c`). Every line is something true that's there
+now, read from the systems: nothing is made up and nothing is spawned for it.
+
+**When.** Picked at every spawn and every join, but only once no opening runs for the character
+(while one runs, the opening is the direction). The lines go on the spawn card: coming round after
+a death, back from a logout, or a new character with no opening running. They stay on the Quests tab
+under TONIGHT, NEAR YOU. Each line is checked every 30 s; a line that's no longer true goes, and
+its kind is picked again. All of them are picked again after 15 minutes or once you're a kilometre
+from where they were picked, except the one you track.
+
+**What.** One line of each kind, within **UI > Tonight reach** (1.5 km, walking reach), never
+something your standing shuts you out of:
+
+| Kind | Read from | Line (example) | Tracks to |
+|---|---|---|---|
+| Work | The nearest safehouse or holding that will have you (not exiled, not hunted by its faction), each named person there asked as the talk screen asks (`RZ_Errands.PeekFor`: the errand or the duty they'd deal you now; nothing is dealt) | *"Marek Kovac, the cook at Levie, has work for you."* | the person, where they stand |
+| Yours | In Work's place when nobody near has work: the nearest job you hold with a place | *"Water for the kitchen is still yours: Levie, under a km north."* | the job itself |
+| Something happening | The nearest of: a supply truck on its way to a place within reach, a road patrol on a road within reach (not a faction that hunts you), a world event you could join, a pack you know of that's restless | *"A Bastion patrol from Morton is on the road north of you."* | the truck's stop, the patrol's leader, the event (the event itself), the pack's rough area |
+| Something to find | A town within reach you've never seen (the map's fog, [below](#the-maps-fog)) | *"You've never been to Brod. It's 1.2 km NE."* | the town |
+
+*Simplified:* Something to find reads only the map's fog for now; landmarks, heirlooms and the
+alpha hunts join it when they're built ([designs/TONIGHT.md](../designs/TONIGHT.md)). The dealer and
+toll changes aren't read yet.
+
+**Picking one.** A Tonight row is picked like a job (A on a pad, Enter, Y or T, or a double click)
+and the tracker follows it: its one objective (*"Ask Marek Kovac, the cook, what needs doing."*,
+*"Catch up with Corporal Pavel Novak."*, *"Go and see Brod."*), with the arrow and the map's mark. A row
+that's a real job (one you hold, a world event) tracks that job instead. Reaching where a line points
+ends it: whoever or whatever is there carries on, and the tracker goes back to your newest job. The
+row's detail is its line and *"It's true now, that's all: nobody's promised you anything."*
+
+Off with **UI > Tonight**: no lines on the card, no rows. Log: `Tonight: <player>, <n> lines within
+<m> m: [work: <who> at <place> (<errand>)] [happening: ...] [find: unseen <town>]` at each pick, and
+`Tonight: <player> reached <title> (<source>)`.
 
 ### Notebook: Journal
 
@@ -1744,6 +1785,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | Class | Runs on | Does |
 |---|---|---|
 | `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes**; with Stealth on, stealth's own update (every second) hands it each player's visibility, sent the same way as a level 0–5 and whether it counts as hidden (the timer also resyncs every minute, and at once when the time left jumps more than 5 s from what the client is counting down; the client counts down in between). A bite cleaned in time still shows the golden window until it would have closed, so the HUD never tells early whether the clean worked. Builds the standing, journal (the jobs with their kind and current objective, the tracked one, the questlines the player is part of, the notes and the lab's line), background, map, notice board, hall of fame and season tab data when asked (the season tab its own kind, 11, after the kinds only sent). Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
+| `RZ_Tonight` (`UI/RZ_Tonight.c`) | server, held by the UI feed | [Tonight](#tonight): each player's three lines, picked at spawn and join, checked every 30 s, the spawn card's lines, the Quests tab's rows (kind `TONIGHT`, ids from 700000), and each line as a job the tracker can follow and end where it points |
 | `RZ_QuestTracker`, `RZ_QuestText`, `RZ_ObjList`, `RZ_ObjPlace` (`UI/RZ_Quests.c`) | server, on the UI feed's tick | Each player's jobs, the tracked one (saved on the profile), the order they were taken in, each job's objectives with each one's place (the job points where its current one is done: `JobFor`) and the rough-area wording; sends the HUD's tracker (payload kind 13) only when it changes, and the tracked job's current objective for the map ([The quest tracker](#the-quest-tracker)) |
 | `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each payload kind and each command at most every 2 s; a command sent too soon gets a short notice instead of vanishing), and the client's cache. Keeps the Radio tab's notices on the client for this life and the notebook's unread counts. A notice board payload from the server opens the board menu; a reader or talk payload opens those screens. Carries talk picks and closed screens back |
 | `RZ_Dialogue`, `RZ_TalkSpeaker` (`RZ_TalkGeneric`, `RZ_TalkLeader`, `RZ_TalkStaff`), `RZ_TalkNeeds`, `RZ_DialogueTrees` | server | Conversations: sessions, capture, replies and their needs, picks; with Trees on, topics, nodes, checks and their tags ([DIALOGUE.md](DIALOGUE.md)) |
@@ -1844,8 +1886,8 @@ Infamy that may fade.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; fifteen mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and its loom, the radio screen, the shop, the crafting screen, and the quest tracker with the Quests tab, the power panel). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the Journal's past jobs, the season page with the hall of fame and the Reset character button and its pop-up), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches and the cooking screen at stoves, the radio screen (View radio), the object menu on props and places with its status strip and locked rows (the strip shared with the cooking screen), the hold prompt at work sites, the power panel at the power station, the reader's drawn pages (the opening's calendar, door and map), the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, the kind of place you start at, Deploy) and locked backgrounds refused by the server, the death brief over it at each death, the map's icon layer with you-are-here, the tracked job's objective (a diamond or a search area, no other job) and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
+| Built | The icon set and its renderer; fifteen mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and its loom, the radio screen, the shop, the crafting screen, and the quest tracker with the Quests tab, the power panel). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the Journal's past jobs, the season page with the hall of fame and the Reset character button and its pop-up), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, Tonight's lines on that card and the Quests tab, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches and the cooking screen at stoves, the radio screen (View radio), the object menu on props and places with its status strip and locked rows (the strip shared with the cooking screen), the hold prompt at work sites, the power panel at the power station, the reader's drawn pages (the opening's calendar, door and map), the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, the kind of place you start at, Deploy) and locked backgrounds refused by the server, the death brief over it at each death, the map's icon layer with you-are-here, the tracked job's objective (a diamond or a search area, no other job) and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
 | Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting, radio, object menu, power panel and spawn screens', the death brief's and the map key's written as text, with images on the static icons; the icon atlas and the `RZ_Icons` imageset; the car picture (`RZ_CarSide.edds`, set in **UI > Car picture**); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop, crafting, spawn screen, death brief, radio and power panel presets; N, 1–5, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend, power breaker and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards and the stealth bar (then two bars: merged since); on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons (in their old line-icon style); the notebook's five pages with their icons (the Radio page's channel list too) and the HUD's noise icon. In the layout preview at 1920 × 1080: the crafting, car repair, shop, reader, talk and notice board screens, each within its slots |
-| Not checked in play | The map's design A markers (disc, ring, emblem, badge) and the key's discs and badges; the objective's diamond and search area, and their row in the key; the infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); the tabs' new order and the Journal's past jobs; the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen, its picture, its FITTED and MISSING tags and the hotwire's loom; the shop screen and its item picture; the crafting screen; the cooking screen (**UI > Cook row layout** isn't set yet); the radio screen (**UI > Radio channel layout** isn't set yet, and **View radio** in hand needs vanilla's inspection checked); the object menu (its preset and **UI > Object row layout** aren't set yet); the power panel (its preset and **UI > Power breaker layout** are set); the death brief; the subtitles; the hold prompt (its bar's speed and its starting again when hurt are VERIFY); mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set), its Reset character button and pop-up; the reader's drawn pages (canvas strokes and script-made labels on the paper) |
+| Not checked in play | The map's design A markers (disc, ring, emblem, badge) and the key's discs and badges; the objective's diamond and search area, and their row in the key; the infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); Tonight's lines on the card and their rows; the tabs' new order and the Journal's past jobs; the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen, its picture, its FITTED and MISSING tags and the hotwire's loom; the shop screen and its item picture; the crafting screen; the cooking screen (**UI > Cook row layout** isn't set yet); the radio screen (**UI > Radio channel layout** isn't set yet, and **View radio** in hand needs vanilla's inspection checked); the object menu (its preset and **UI > Object row layout** aren't set yet); the power panel (its preset and **UI > Power breaker layout** are set); the death brief; the subtitles; the hold prompt (its bar's speed and its starting again when hurt are VERIFY); mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set), its Reset character button and pop-up; the reader's drawn pages (canvas strokes and script-made labels on the paper) |
 | Planned | Mockups of the notice board, the object menu and the season page; the Journal's mockup with its past jobs; the lock card as a screen of its own (today a notice, or the [Point of no return] node with **Dialogue > Trees** on: [FINALE.md](FINALE.md#the-lock)) |

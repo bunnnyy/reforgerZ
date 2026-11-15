@@ -10,7 +10,7 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 |---|---|---|---|
 | 0 | [QUESTS_IN_THE_WORLD.md](QUESTS_IN_THE_WORLD.md) | Missions and contracts saved (death, logout, restart; held errands and the opening already are); every way open at once and chosen by doing it, New Vegas style; choices with their context and stakes, at people in the world, never a lone menu | approved 2026-11-15, building first |
 | 1 | [PERSISTENCE.md](PERSISTENCE.md) | What still waits of a character who lasts (built: [DESIGN.md](../docs/DESIGN.md#a-character-who-lasts)): a mission's own item followed, coming round at a hand-built site's spots, a bandage and bottle given, escorts waiting, bounties' cooldown, the wall's numbers, a goal after a goal | approved 2026-11-14; the character who lasts is built |
-| 2 | [TONIGHT.md](TONIGHT.md) | Three true things near you at every respawn and join | approved 2026-11-14 |
+| 2 | [TONIGHT.md](TONIGHT.md) | What still waits of Tonight (built: [UI.md](../docs/UI.md#tonight)): the find lines from landmarks, heirlooms and hunts, a companion's errand, the dealer, tolls | approved 2026-11-14; Tonight is built |
 | 3 | [HABITS.md](HABITS.md) | Eight small habits earned by doing, three at a time, fading if unused | approved 2026-11-14 |
 | 4 | [LOCKER.md](LOCKER.md) | Three of your own items kept at one camp across deaths | approved 2026-11-14 |
 | 5 | [HEIRLOOMS.md](HEIRLOOMS.md) | Eighteen one-of-a-kind things a season, found by reading the world, left on your body at a death | approved 2026-11-14 |

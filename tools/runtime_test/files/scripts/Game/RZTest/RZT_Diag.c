@@ -685,6 +685,10 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 12)
 			RZT_OpeningChain.Tick(this);
 
+		// Tonight (RZT_Tonight.c): the card, the lines, the rows, tracking one; once, the tester put back
+		if (m_iRZTSec >= 12)
+			RZT_Tonight.Tick(this);
+
 		// The Long Table and its reach (RZT_LongTable.c, stepped from the house's own tick): nothing
 		// else moves the tester until it's done
 		if (m_iRZTSec >= 12 && !RZT_Table.s_bDone)
