@@ -38,6 +38,7 @@ class RZ_Driver
 	protected ref array<ScriptedUserAction> m_aActs = {};
 	protected ref array<IEntity> m_aFound = {};
 	protected ref array<string> m_aOut = {};
+	protected IEntity m_TalkTo;		// walking up to talk to them (weak)
 
 	// Going somewhere on foot (read by the character controller each frame, below)
 	protected static bool s_bGoing;
@@ -375,6 +376,35 @@ class RZ_Driver
 			return;
 		}
 
+		// Out of talking range (the screen guard would close it as left): walk up first, then talk
+		if (RZ_Util.DistXZ(me.GetOrigin(), who.GetOrigin()) > 2.5)
+		{
+			m_TalkTo = who;
+			s_vGoal = who.GetOrigin();
+			s_fSpeed = 1;
+			s_fStopAt = 1.8;
+			s_bGoing = true;
+			s_aPath.Clear();
+			s_vStart = me.GetOrigin();
+			s_bSkipped = true;
+			s_vSteer = vector.Zero;
+			m_vLastPos = me.GetOrigin();
+			m_vGlideLast = me.GetOrigin();
+			GetGame().GetCallqueue().Remove(Glide);
+			GetGame().GetCallqueue().CallLater(Glide, GLIDE_MS, true);
+			Say("walking up to " + Who(who) + ", then talking");
+			return;
+		}
+
+		TalkNow(me, who);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void TalkNow(IEntity me, IEntity who)
+	{
+		RZ_Dialogue talk = m_GM.GetDialogue();
+		Turn(me, who.GetOrigin());
+
 		if (!talk.Open(Me(), who, me))
 		{
 			Say("talk: they won't talk now");
@@ -607,9 +637,20 @@ class RZ_Driver
 
 		vector here = me.GetOrigin();
 		float left = RZ_Util.DistXZ(here, s_vGoal);
+		// Walking up to someone: they may move, so the goal follows them
+		if (m_TalkTo)
+			s_vGoal = m_TalkTo.GetOrigin();
+
 		if (left <= s_fStopAt)
 		{
 			Stop(string.Format("arrived (%1 m off) at %2", RZ_Util.RoundToInt(left), Pos(here)));
+			if (m_TalkTo)
+			{
+				IEntity who = m_TalkTo;
+				m_TalkTo = null;
+				TalkNow(me, who);
+			}
+
 			return;
 		}
 
