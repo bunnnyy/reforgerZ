@@ -11,6 +11,9 @@ class RZ_GameModeComponentClass : SCR_BaseGameModeComponentClass
 class RZ_GameModeComponent : SCR_BaseGameModeComponent
 {
 	// ---------------------------------------------------------------- General
+	[Attribute(desc: "Features: one switch per feature, by the stage it comes back in (docs/FEATURES.md). The core (stage 0) is always on; a feature runs only if its switch here and its own setting are both on. On the server $profile:RZ_Features.txt overrides them (all, stage N, a switch's name, -name)", category: "ReforgerZ")]
+	protected ref RZ_FeatureSettings m_FeatureSettings;
+
 	[Attribute("5", UIWidgets.Slider, "Server tick interval (seconds)", "1 30 1", category: "ReforgerZ")]
 	protected float m_fTickSeconds;
 
@@ -460,6 +463,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected string m_sReplTraceLights;		// lit windows near players, for the clients' lights (World/Traces/RZ_TraceSounds.c)
 
 	[RplProp()]
+	protected string m_sReplFeaturesOff;		// ";3;7;": the Features switches that are off (Core/RZ_Features.c), for the clients' prompts and screens
+
+	[RplProp()]
 	protected string m_sReplPowerLamps;			// where the map's own lamps may light, for the clients (RZ_PowerGrid.PushLamps); "" = left alone
 
 	// ---------------------------------------------------------------- Runtime (server)
@@ -538,6 +544,184 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected bool m_bServerRunning;
 
 	//------------------------------------------------------------------------------------------------
+	//! The Features switches that are off turn their features' own settings off (docs/FEATURES.md), so
+	//! each runs only if both are on. Features with no setting of their own ask RZ_Features.On.
+	protected void ApplyFeatures()
+	{
+		// Stage 1: People
+		if (!RZ_Features.On(RZ_EFeature.CAMP_SITES))
+		{
+			m_CampLifeSettings.m_bDressing = false;
+			m_CampLifeSettings.m_bBuildings = false;
+			m_CampLifeSettings.m_bLayers = false;
+		}
+
+		if (!RZ_Features.On(RZ_EFeature.CAMP_LIFE))
+		{
+			m_CampLifeSettings.m_bRoutines = false;
+			m_CampLifeSettings.m_iExtrasPerPlace = 0;
+			m_CampLifeSettings.m_iExtrasMax = 0;
+		}
+
+		if (!RZ_Features.On(RZ_EFeature.SAFEHOUSES))
+			m_SafehouseSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.LEADERS))
+			m_LeaderSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.ERRANDS))
+			m_ErrandSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.WORK_SITES))
+			m_SharedSettings.WorkSites().m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.WANDERERS))
+			m_WandererSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.FACTION_LIFE))
+			m_FactionLifeSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.CHECKPOINTS))
+		{
+			m_CheckpointSettings.m_bRoadPosts = false;
+			m_CheckpointSettings.m_bCamps = false;
+		}
+
+		// Stage 2: Start
+		if (!RZ_Features.On(RZ_EFeature.GUIDANCE))
+			m_GuidanceSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.OPENING))
+			m_GuidanceSettings.m_bOpenings = false;
+
+		// Stage 3: Map
+		if (!RZ_Features.On(RZ_EFeature.MAP_FOG))
+			m_MapFogSettings.m_bOn = false;
+
+		if (!RZ_Features.On(RZ_EFeature.ROAD_PATROLS))
+			m_RoadPatrolSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.SUPPLY_TRUCKS))
+			m_SupplySettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.TONIGHT))
+			RZ_UISettings.Get().m_bTonight = false;
+
+		// Stage 4: Work
+		if (!RZ_Features.On(RZ_EFeature.LOCKS))
+			m_SearchSettings.m_bLocks = false;
+
+		if (!RZ_Features.On(RZ_EFeature.CARS))
+			m_CarSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.CRAFTING))
+		{
+			m_CraftSettings.m_bEnabled = false;
+			m_TrapSettings.m_bEnabled = false;
+		}
+
+		if (!RZ_Features.On(RZ_EFeature.RADIOS))
+			m_RadioCrackSettings.m_bEnabled = false;
+
+		// Stage 5: Threat
+		if (!RZ_Features.On(RZ_EFeature.HORDES))
+		{
+			m_AdaptationSettings.m_bEnabled = false;
+			m_ZombieSettings.m_fHordeHeatThreshold = 1000000;
+		}
+
+		if (!RZ_Features.On(RZ_EFeature.CRAWLERS))
+			m_CrawlerSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.TRIBES))
+			m_TribeSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.BEHAVIOUR))
+			m_BehaviourSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.STEALTH))
+			m_StealthSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.HUNTED))
+		{
+			m_fHunterSquadMinutes = 0;
+			m_ServiceSettings.m_bBountyBoard = false;
+			m_HostilitySettings.m_bDisguises = false;
+		}
+
+		if (!RZ_Features.On(RZ_EFeature.LONG_TABLE))
+			m_LongTableSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.WEATHER))
+			m_EnvironmentSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.PERIMETER))
+			m_PerimeterSettings.m_bEnabled = false;
+
+		// Stage 6: Story
+		if (!RZ_Features.On(RZ_EFeature.STORY_ARCS))
+			m_StorySettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.QUESTLINES))
+			m_QuestlineSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.MAJORS))
+			m_MajorSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.MEMORY))
+		{
+			m_SharedSettings.m_bCallbacks = false;
+			RZ_ReputationSettings.Get().m_bNames = false;
+			RZ_ReputationSettings.Get().m_bCrewNames = false;
+		}
+
+		// Stage 7: World
+		if (!RZ_Features.On(RZ_EFeature.POWER))
+		{
+			m_PowerSettings.m_bEnabled = false;
+			if (!m_PowerSettings.m_Substations)
+				m_PowerSettings.m_Substations = RZ_SubstationSettings.Cast(RZ_Util.NewWithDefaults("RZ_SubstationSettings"));
+
+			m_PowerSettings.m_Substations.m_bEnabled = false;
+
+			m_MastSettings.m_bEnabled = false;
+		}
+
+		if (!RZ_Features.On(RZ_EFeature.RADIO_STATION))
+			m_RadioStationSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.TRACES))
+			m_TraceSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.TOWN_MEMORY))
+			m_TownMemorySettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.WILDLIFE))
+			m_WildlifeSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.SEASON_RULES))
+		{
+			m_SeasonSettings.m_bWinnerRules = false;
+			m_SeasonSettings.m_bStoryRules = false;
+			m_SeasonSettings.m_sRuleSets = "";
+		}
+
+		// Stage 8: Endgame
+		if (!RZ_Features.On(RZ_EFeature.FINALE))
+			m_FinaleSettings.m_bEnabled = false;
+
+		if (!RZ_Features.On(RZ_EFeature.EPILOGUE))
+			m_EpilogueSettings.m_bEnabled = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! ";3;7;": the Features switches that are off, as the server sent them ("" before it has).
+	string GetFeaturesOff()
+	{
+		return m_sReplFeaturesOff;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static RZ_GameModeComponent GetInstance()
 	{
 		return s_Instance;
@@ -550,6 +734,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		s_Instance = this;
 
 		// On every machine: the modded faction check (RZ_FactionRelations.c) decodes keys with these
+		// On every machine: the Features switches as the prefab has them (the server reads them again
+		// with its profile file at start, and sends the clients the result)
+		RZ_Features.Read(m_FeatureSettings, false);
+
 		if (m_HostilitySettings)
 			RZ_Factions.Configure(m_sPlayerFactionKey, m_HostilitySettings.m_sBastionKey, m_HostilitySettings.m_sRedHandKey, m_HostilitySettings.m_sHalcyonKey);
 		else
@@ -796,6 +984,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (!m_MapFogSettings)
 			m_MapFogSettings = RZ_MapFogSettings.Cast(RZ_Util.NewWithDefaults("RZ_MapFogSettings"));
+
+		// The Features switches (docs/FEATURES.md): read, then each feature's own setting turned off
+		// where its switch is off, before any system below is made
+		RZ_Features.Read(m_FeatureSettings, true);
+		ApplyFeatures();
+		m_sReplFeaturesOff = RZ_Features.OffList();
+		RZ_Log.Info("Features: " + RZ_Features.Describe());
 
 		if (!m_aBackgrounds || m_aBackgrounds.IsEmpty())
 		{
@@ -3032,6 +3227,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//------------------------------------------------------------------------------------------------
 	protected void UpdateReplicated()
 	{
+		m_sReplFeaturesOff = RZ_Features.OffList();
 		m_fReplCureProgress = m_Cure.ShownProgress();
 		m_fReplCureBacklog = m_Cure.GetBacklog();
 		m_bReplLabFull = m_Cure.IsLabFull();

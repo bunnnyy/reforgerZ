@@ -11,10 +11,16 @@ and Everon with the first Workbench build. Before it can be called working it st
 place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a game client
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 
+**Cut back to core (2026-11-15).** The branch boots with only the core on: every other feature is
+switched off on the game mode's **Features** panel and comes back a stage at a time, each played and
+fixed before the next ([FEATURES.md](FEATURES.md)). Stage 1 (People) is next. No new design is built
+until every stage is back on.
+
 ## Built
 
 | System | Design |
 |---|---|
+| Features: one switch per feature by the stage it comes back in, only the core on in `RZ_GameMode.et`, a profile file to override them on the server, and `run.sh core` | [FEATURES.md](FEATURES.md) |
 | Settlement detection, rotating spawn points, mission announcements, per-player map icons (vanilla text markers without them); the map's fog of war (only the ground this character has seen; walking, high ground, found maps, boards, asking about the roads and friends' camps reveal it; places show only once seen: [UI.md](UI.md#the-maps-fog)) | [Settlements](DESIGN.md#settlements-spawn-points-and-the-map) |
 | The Director: four outbreak stages, infection spread, paced for a season of about 45 real days from about 2 to 20 regulars (research scaled to the last week's player-hours; season speed and cure pace for other season lengths; `tools/pacing_sim.py` checks the tuning) | [The Director](DESIGN.md#the-director-outbreak-stages-and-spread), [Season pacing](DESIGN.md#season-pacing) |
 | Heat from presence, vehicles, gunfire (suppressors quieter), noisemakers; hordes toward noise | [Heat and noise](DESIGN.md#heat-and-noise) |
@@ -128,7 +134,8 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 
 ## Next
 
-Everything below is approved. Nine designs wait in [designs/](../designs/README.md), in this order: what still waits of a character who lasts (a mission's own item followed, bounties' cooldown, escorts waiting: [PERSISTENCE.md](../designs/PERSISTENCE.md)), Tonight's later sources (landmarks, heirlooms and hunts to find, the dealer: [TONIGHT.md](../designs/TONIGHT.md)), habits earned by doing ([HABITS.md](../designs/HABITS.md)), the locker ([LOCKER.md](../designs/LOCKER.md)), heirlooms ([HEIRLOOMS.md](../designs/HEIRLOOMS.md)), hand-built landmarks ([LANDMARKS.md](../designs/LANDMARKS.md)), the hunt for a named leader of the infected ([ALPHA_HUNT.md](../designs/ALPHA_HUNT.md)) and a companion ([COMPANION.md](../designs/COMPANION.md)); the map's fog waits only for its later parts (selling surveys, sharing maps, the roads followed for real: [MAP_FOG.md](../designs/MAP_FOG.md)). The duties are
+Bringing the stages back in comes first ([FEATURES.md](FEATURES.md#how-to-bring-in-a-stage)): stage 1,
+People, then 2 to 8 in order. Everything below is approved and waits for that. Nine designs wait in [designs/](../designs/README.md), in this order: what still waits of a character who lasts (a mission's own item followed, bounties' cooldown, escorts waiting: [PERSISTENCE.md](../designs/PERSISTENCE.md)), Tonight's later sources (landmarks, heirlooms and hunts to find, the dealer: [TONIGHT.md](../designs/TONIGHT.md)), habits earned by doing ([HABITS.md](../designs/HABITS.md)), the locker ([LOCKER.md](../designs/LOCKER.md)), heirlooms ([HEIRLOOMS.md](../designs/HEIRLOOMS.md)), hand-built landmarks ([LANDMARKS.md](../designs/LANDMARKS.md)), the hunt for a named leader of the infected ([ALPHA_HUNT.md](../designs/ALPHA_HUNT.md)) and a companion ([COMPANION.md](../designs/COMPANION.md)); the map's fog waits only for its later parts (selling surveys, sharing maps, the roads followed for real: [MAP_FOG.md](../designs/MAP_FOG.md)). The duties are
 built, sixty-nine of them, with their conversations, things on show, the whole Trusted rung and each
 faction's extras ([ERRANDS.md](ERRANDS.md#duties)). Every other approved design is built (simplified as each doc says). What
 else waits is play, engine checks and the author's calls.

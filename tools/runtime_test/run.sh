@@ -6,6 +6,10 @@
 #   SERVER_DIR=... tools/runtime_test/run.sh tasks [arland] [everon] [cain]   # the task place audit only (default arland)
 #   SERVER_DIR=... EXTRA_ADDONS_DIR=... tools/runtime_test/run.sh layer   # the behaviour layer test only (needs Bacon Zombies)
 #   SERVER_DIR=... tools/runtime_test/run.sh patrols [arland|everon]   # the road patrols check only, on the site audit's world (it has roads); 3 to 10 minutes
+#   SERVER_DIR=... tools/runtime_test/run.sh core       # core only: every Features switch off (RZT_CoreOnly.c); about 8 minutes
+#
+# Features (docs/FEATURES.md): RZ_GameMode.et ships with only the core on. Every mode but "core" writes
+# "all" to the profile's RZ_Features.txt, so the checks see the whole mod; "core" writes "core".
 #   EXTRA_ADDONS_DIR=...                                   # a folder holding the Workshop dependencies in addon.gproj
 #
 # The behaviour layer test (docs/WORKBENCH_SETUP.md, "Behaviour layer test without Workbench"): "layer"
@@ -100,6 +104,9 @@ if [ "${1:-}" = "sites" ]; then MODE=sites; shift; fi
 if [ "${1:-}" = "tasks" ]; then MODE=tasks; shift; fi
 if [ "${1:-}" = "layer" ]; then MODE=layer; shift; fi
 if [ "${1:-}" = "patrols" ]; then MODE=patrols; shift; fi
+if [ "${1:-}" = "core" ]; then MODE=core; shift; fi
+# The Features switches for a run: the profile's RZ_Features.txt ($profile: is <profile>/profile/)
+rz_features() { mkdir -p "$1/profile" && printf '%s\n' "$2" > "$1/profile/RZ_Features.txt"; }
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 HERE="$ROOT/tools/runtime_test"
 WORK="${WORK_DIR:-$HOME/rz_check}"
@@ -123,6 +130,7 @@ fi
 [ "$MODE" = tasks ] && ADDON="$WORK/tasks_addons/ReforgerZ"
 [ "$MODE" = layer ] && ADDON="$WORK/layer_addons/ReforgerZ"
 [ "$MODE" = patrols ] && ADDON="$WORK/patrols_addons/ReforgerZ"
+[ "$MODE" = core ] && { ADDON="$WORK/core_addons/ReforgerZ"; PROFILE="$WORK/core_profile"; rm -rf "$PROFILE"; }
 rm -rf "$ADDON" "$PROFILE/profile/ReforgerZ" && mkdir -p "$ADDON"
 cp "$ROOT/addon.gproj" "$ADDON/"
 . "$ROOT/tools/strip_missing_deps.sh"
@@ -166,6 +174,7 @@ if [ "$MODE" = tasks ]; then
 		esac
 		TPROFILE="$WORK/tasks_profile_$MAP"
 		rm -rf "$TPROFILE"
+		rz_features "$TPROFILE" all
 		( cd "$SERVER" && $WRAP timeout "${TIMEOUT:-3600}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$TPROFILE" \
 			-server "{7A1C2E3F4B5D6E90}Missions/$NAME.conf" -logStats 0 -maxFPS 30 -noBackend > /dev/null 2>&1 )
 		LOG="$(ls -td "$TPROFILE"/logs/logs_* | head -1)/console.log"
@@ -198,6 +207,7 @@ if [ "$MODE" = patrols ]; then
 	fi
 	PPROFILE="$WORK/patrols_profile"
 	rm -rf "$PPROFILE"
+	rz_features "$PPROFILE" all
 	( cd "$SERVER" && $WRAP timeout "${TIMEOUT:-2400}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$PPROFILE" \
 		-server "{7A1C2E3F4B5D6E90}Missions/$NAME.conf" -logStats 0 -maxFPS 30 -noBackend > /dev/null 2>&1 )
 	LOG="$(ls -td "$PPROFILE"/logs/logs_* | head -1)/console.log"
@@ -223,6 +233,7 @@ if [ "$MODE" = layer ]; then
 	fi
 	LPROFILE="$WORK/layer_profile"
 	rm -rf "$LPROFILE"
+	rz_features "$LPROFILE" all
 	( cd "$SERVER" && $WRAP timeout "${TIMEOUT:-4200}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$LPROFILE" \
 		-server "{7A1C2E3F4B5D6E90}Missions/RZSites_Arland.conf" -logStats 0 -maxFPS 30 -noBackend > /dev/null 2>&1 )
 	LOG="$(ls -td "$LPROFILE"/logs/logs_* | head -1)/console.log"
@@ -255,6 +266,7 @@ if [ "$MODE" = sites ]; then
 		esac
 		SPROFILE="$WORK/sites_profile_$MAP"
 		rm -rf "$SPROFILE"
+		rz_features "$SPROFILE" all
 		( cd "$SERVER" && $WRAP timeout "${TIMEOUT:-3000}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$SPROFILE" \
 			-server "{7A1C2E3F4B5D6E90}Missions/$NAME.conf" -logStats 0 -maxFPS 30 -noBackend > /dev/null 2>&1 )
 		LOG="$(ls -td "$SPROFILE"/logs/logs_* | head -1)/console.log"
@@ -317,8 +329,11 @@ WRAP=""
 if command -v unshare > /dev/null 2>&1 && unshare -n true > /dev/null 2>&1; then
 	WRAP="unshare -n"
 fi
+if [ "$MODE" = core ]; then rz_features "$PROFILE" core; else rz_features "$PROFILE" all; fi
+RUN_SECONDS="${1:-5400}"
+[ "$MODE" = core ] && RUN_SECONDS="${1:-900}"
 # Workshop dependencies come from EXTRA_ADDONS_DIR (comma-separated list, Windows form on Windows).
-$WRAP timeout "${1:-5400}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$PROFILE" \
+$WRAP timeout "$RUN_SECONDS" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$PROFILE" \
 	-server "{7A1C2E3F4B5D6E71}Missions/RZTest.conf" -bindPort 2001 -logStats 0 -maxFPS 30 -noBackend > /dev/null 2>&1
 LOG="$(ls -td "$PROFILE"/logs/logs_* | head -1)/console.log"
 
@@ -332,6 +347,14 @@ fi
 [ -n "$RZ_STRIP_NOTE" ] && echo "Ran${RZ_STRIP_NOTE#;}"
 echo "Script exceptions: $(grep -c 'Virtual Machine Exception' "$LOG")"
 grep -A6 'Virtual Machine Exception' "$LOG" | grep -E 'Reason|Function|scripts/' | sort | uniq -c | head -20
+grep -E '\[ReforgerZ\] Features: ' "$LOG" | head -2 | sed 's/.*\[ReforgerZ\] /  /'
+if [ "$MODE" = core ]; then
+	grep -E 'RZT core' "$LOG" | sed 's/.*RZT /  /'
+	grep -q 'Virtual Machine Exception' "$LOG" && exit 1
+	grep -q 'RZT core done' "$LOG" || { echo "FAILED: the core run didn't finish (see the log)"; exit 1; }
+	grep -q 'RZT core FAIL' "$LOG" && { echo "FAILED: core only (RZT_CoreOnly.c: a switched-off feature did something)"; exit 1; }
+	exit 0
+fi
 grep -E 'RZT all mission types tried' "$LOG" | sed 's/.*RZT //'
 grep -E 'RZT mission .* why: ' "$LOG" | sed -E 's/.*RZT mission ([A-Za-z_]+) why: /  did not start: \1: /'
 grep -E 'RZT (fake player already dead|killing|fake player died|perimeter: )' "$LOG" | sed 's/.*RZT /  /'

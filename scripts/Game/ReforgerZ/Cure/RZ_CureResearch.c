@@ -215,7 +215,8 @@ class RZ_CureResearch
 	void CatchUp()
 	{
 		TrackPlay(0, 0);
-		Work();
+		if (RZ_Features.On(RZ_EFeature.RESEARCH))
+			Work();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -334,6 +335,10 @@ class RZ_CureResearch
 	//! The backlog is at its cap: the lab refuses samples and mission research is lost.
 	bool IsLabFull()
 	{
+		// Features > Research off: the lab takes nothing, as when it's full (players keep their samples)
+		if (!RZ_Features.On(RZ_EFeature.RESEARCH))
+			return !m_bCured;
+
 		return !m_bCured && BacklogCap() >= 0 && BacklogRoom() <= EMPTY;
 	}
 
@@ -833,7 +838,7 @@ class RZ_CureResearch
 	//! pace by play), and the Empty lab bonus on the part that fills a near-empty backlog.
 	void AddSamples(int playerId, int count, float pointsPerSample)
 	{
-		if (m_bCured || count <= 0)
+		if (m_bCured || count <= 0 || !RZ_Features.On(RZ_EFeature.RESEARCH))
 			return;
 
 		RZ_ETier halcyon = m_GM.GetTier(playerId, RZ_EFaction.INSTITUTE);
@@ -867,7 +872,7 @@ class RZ_CureResearch
 	//! mission's result) says so. Returns the research kept.
 	float AddResearch(float points, string reason)
 	{
-		if (m_bCured || points <= 0)
+		if (m_bCured || points <= 0 || !RZ_Features.On(RZ_EFeature.RESEARCH))
 			return 0;
 
 		// Missions count a share of what they say (Cure > Mission research), x Cure pace, the pace by
@@ -911,7 +916,7 @@ class RZ_CureResearch
 		// The lab works in real time, once a minute (Work counts the real seconds, online or not);
 		// clients hear of its progress at most once a minute
 		m_fWorkTimer += dt;
-		if (m_fWorkTimer >= WORK_SECONDS)
+		if (m_fWorkTimer >= WORK_SECONDS && RZ_Features.On(RZ_EFeature.RESEARCH))
 		{
 			m_fWorkTimer = 0;
 			Work();

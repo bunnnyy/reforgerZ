@@ -246,7 +246,7 @@ class RZ_TalkStaff : RZ_TalkSpeaker
 		{
 			if (RZ_ShopOpenAction.Cast(a))
 			{
-				if (shop)
+				if (shop && RZ_Features.On(RZ_EFeature.SHOPS))
 					replies.Insert(Reply(TRADE, "Trade"));
 
 				continue;

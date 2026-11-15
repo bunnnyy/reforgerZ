@@ -235,6 +235,8 @@ server's runtime test and in Workbench play on Everon and Arland; every approved
 UI; before it can be called working it needs real prefabs in place of the stand-ins, the `VERIFY`
 behaviours checked and a play-test with a game client (on a Linux server, Special Zombies stops the
 mode loading: [MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
+**The branch boots with only the core on**: every other feature is switched off on the game mode's
+Features panel and comes back a stage at a time ([FEATURES.md](docs/FEATURES.md)).
 What's built, next and to test first is in [ROADMAP.md](docs/ROADMAP.md); start with
 [PC_SETUP.md](docs/PC_SETUP.md), then [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
@@ -252,7 +254,7 @@ What's built, next and to test first is in [ROADMAP.md](docs/ROADMAP.md); start 
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
 | [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, the tribes and their life cycle, borders, memory, who they are, how they move and hunt, the crawlers' life, the people's side (words, knowing, skills, your dead run, the moat, the cure, the last week), the great one, signs and sounds, the simulator's numbers |
 | [TRACES.md](docs/TRACES.md) | Traces: door marks written by the people who were there (who wrote what, how to read them by background, where they come from), doors you can see, player traces, the scenes (the first days, the line, vignettes, live traces), sound and light, the handover to the epilogue |
-| [FEATURES.md](docs/FEATURES.md) | Every feature by stage, for cutting back to core and bringing each in again (a draft) |
+| [FEATURES.md](docs/FEATURES.md) | The Features switches: every feature by stage, what it needs, its switch and own setting, its check and play-test items; how to bring in a stage; what stays on as core |
 | [MISSION_RULES.md](docs/MISSION_RULES.md) | The rules every task follows, where each is kept, and the checklist for a new task |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
 | [ERRANDS.md](docs/ERRANDS.md) | The small jobs named people ask in person: givers, the dealer, pay, the faults table, the routines and cards, and the duties (a place's own work, from the first day, on a trust ladder) |
@@ -271,7 +273,8 @@ scripts/Game/ReforgerZ/
   Core/          game mode component (the hub), helpers, map markers, loose-item cleanup,
                  seasons (the winner's rules, rule sets, the wipe cycle), AI groups' move
                  orders (one held waypoint each); the shared engine: the clocks, deeds, the
-                 callback queue, names in public text; the photo tour (Workbench play only)
+                 callback queue, names in public text; the photo tour (Workbench play only);
+                 the Features switches (RZ_Features: a stage at a time, docs/FEATURES.md)
   World/         settlements, the map's fog (what each character has seen), the Perimeter, safehouses and their notice boards, wanderers,
                  deer herds in the country and their meat, the things players build cleared
                  when unused (fireplaces, tents),

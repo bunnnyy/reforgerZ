@@ -322,6 +322,10 @@ class RZ_FactionShopAction : ScriptedUserAction
 	//! Hidden on a quartermaster while this machine uses the shop screen: it's a row there.
 	override bool CanBeShownScript(IEntity user)
 	{
+		// Features > Shops off: a quartermaster is a person with no shop (docs/FEATURES.md)
+		if (!RZ_Features.On(RZ_EFeature.SHOPS))
+			return false;
+
 		return !RZ_ShopMenu.HidesActionsOn(GetOwner());
 	}
 
@@ -649,6 +653,10 @@ class RZ_RequisitionAction : ScriptedUserAction
 	//! Hidden on a quartermaster while this machine uses the shop screen: it's a row there.
 	override bool CanBeShownScript(IEntity user)
 	{
+		// Features > Shops off: a quartermaster is a person with no shop (docs/FEATURES.md)
+		if (!RZ_Features.On(RZ_EFeature.SHOPS))
+			return false;
+
 		return !RZ_ShopMenu.HidesActionsOn(GetOwner());
 	}
 
@@ -714,7 +722,10 @@ class RZ_ShopOpenAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		// With the talk screen it's the reply Trade there (RZ_TalkStaff)
+		// With the talk screen it's the reply Trade there (RZ_TalkStaff); none with Features > Shops off
+		if (!RZ_Features.On(RZ_EFeature.SHOPS))
+			return false;
+
 		return RZ_ShopMenu.Available() && !RZ_TalkMenu.HidesActionsOn(GetOwner());
 	}
 

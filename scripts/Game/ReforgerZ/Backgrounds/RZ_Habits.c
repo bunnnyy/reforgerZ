@@ -23,7 +23,8 @@ class RZ_Habits
 	//! This character's habit, NONE if it hasn't one (or it was an earlier character's).
 	static int Of(RZ_PlayerProfile profile)
 	{
-		if (!profile || profile.m_iHabit == RZ_EPlayerHabit.NONE)
+		// Features > Habits off: nobody has one (docs/FEATURES.md); a habit already settled waits
+		if (!profile || profile.m_iHabit == RZ_EPlayerHabit.NONE || !RZ_Features.On(RZ_EFeature.HABITS))
 			return RZ_EPlayerHabit.NONE;
 
 		if (profile.m_iHabitLife != RZ_OpeningCase.CharacterStamp(profile))

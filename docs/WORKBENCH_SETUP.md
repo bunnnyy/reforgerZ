@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **403 prefab fields**: 46 on `RZ_GameModeComponent`, 340 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **376 entries**: 224 prefabs the plugin creates, 42 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 110 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 52 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **403 prefab fields**: 46 on `RZ_GameModeComponent`, 340 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **376 entries**: 224 prefabs the plugin creates, 42 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 110 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 53 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -1599,7 +1599,7 @@ automatic picking off (power and radio station: the first one wins).
 
 ## 5. Settings objects
 
-`RZ_GameModeComponent` holds 41 settings objects and two lists. Every value has a working
+`RZ_GameModeComponent` holds 42 settings objects and two lists. Every value has a working
 default, and every default is in the manifest's `settings` (synced from the scripts). This is
 what each one covers; defaults are in brackets where they matter for setup.
 
@@ -1607,6 +1607,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Category | Object | Field | Covers |
 |---|---|---|---|
 | ReforgerZ | (top level) |  | Tick seconds (5), **Player faction key** (SURV), **Wipe on start**, save seconds (120), **Season speed** (1: about 45 days, from about 2 to 20 regulars with Cure > Pace by play; research, the lab, stages, spread, territory, trucks, upkeep and the Long Table all follow it; [DESIGN.md](DESIGN.md#season-pacing)), **Day length** (4 real hours a game day, x6; 0 = the server's own clock; [DESIGN.md](DESIGN.md#the-clock)), **Keep time of day** (on: saved in state.json and set again at start) |
+| ReforgerZ | Features | `m_FeatureSettings` | One switch per feature by the stage it comes back in, 46 in all (on in the code; **off in `RZ_GameMode.et`**: only the core runs). A feature runs only if its switch and its own setting are both on; a switch whose needs are off is off too; `$profile:RZ_Features.txt` overrides them on the server ([FEATURES.md](FEATURES.md)) |
 | ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), minimum epilogue (56 h: a late cure pushes an After-weeks wipe back), weeks (10, timed modes only), warning (24 h), **No stand in the last hours** (off: near a timed wipe the stand is held back, [EPILOGUE.md](EPILOGUE.md#edge-cases)), **Story rules** (on: one small rule from each major that ended live, [QUESTLINES.md](QUESTLINES.md#next-season-the-story-rules)), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
 | World | (top level) |  | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20), **Loose item minutes** (30; 0 = off) |
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
@@ -1816,6 +1817,17 @@ a pronoun ([WRITING.md](WRITING.md#objective-lines)).
 | Text that breaks a rule a script can check, in literals the inventory finds | Whether a line is good, gives context or has narration in it. Text built from pieces (`"Talk to " + name`) is checked piece by piece. Channels and factions are guessed from the call, the folder and the nearest `case RZ_EFaction.X:` |
 
 ### Runtime test without Workbench
+
+**Features.** `RZ_GameMode.et` ships with only the core on ([FEATURES.md](FEATURES.md)). Every mode
+of `run.sh` writes `all` to its profile's `RZ_Features.txt`, so the checks see the whole mod, except
+`run.sh core`: it writes `core`, boots the test world with every switch off and runs only
+`RZT_CoreOnly.c` for 7 minutes (about 10 with the boot) while the fake player walks the first towns.
+Every 30 s it looks for what a switched-off feature would have put out: camp pieces, road patrols,
+safehouses, supply trucks, errands, leaders, tribes, the Long Table, wildlife herds, any running
+job, an opening, a Tonight line or a habit for the fake player. At the end the towns were found, the
+fake player is in the world, research hasn't moved, shops are off and the clients' list of what's
+off is set (`RZT core OK|FAIL <what>`, `RZT core: N checks, N failed`, `RZT core done`; the run fails
+on FAIL, a script exception, or no `done`). The run prints the `Features:` log line first.
 
 `tools/runtime_test/run.sh` runs the game mode on the same server, in a sub-scene of Arland with
 vanilla stand-ins for the minimum prefabs and a fake player (a spawned civilian the systems see as
@@ -2660,6 +2672,9 @@ Every line starts with `[ReforgerZ]`. This is what the server printed on Arland 
 but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in this order:
 
 ```
+[ReforgerZ] Features: 0 of 46 on: none (only the core). Off: CampSites CampLife Safehouses ... Epilogue
+[ReforgerZ] Features: $profile:RZ_Features.txt read
+[ReforgerZ] Features: $profile:RZ_Features.txt names no switch "<word>"
 [ReforgerZ] No common zombie prefabs configured. Set them on RZ_GameModeComponent > Zombies.
 [ReforgerZ] Stealth: on. Infected within 60 m see the most visible player near them (perception x0.3 to x1.2); losing them after 8 s hidden, searching 45 s: off (no move waypoint).
 [ReforgerZ] Camp life: dressing on, routines on, buildings on, 0 kits, smart actions off, lone characters stand.
@@ -3222,6 +3237,10 @@ mark>] | <the line>`, `Traces: scene <key> (<kind>) at <grid>, stage N, props|te
 
 What to test first and why is in [ROADMAP.md](ROADMAP.md), "Play-test priorities". On a
 session, tick off:
+
+**The stage on test.** The branch boots with only the core on ([FEATURES.md](FEATURES.md)): test the
+items of the stages that are on, and say on the board which stage you played. The log's first
+`Features:` line says what was on.
 
 **Start**
 - [ ] It compiles; every log line in section 7 appears with sensible numbers.

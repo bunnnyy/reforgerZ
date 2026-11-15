@@ -2808,6 +2808,13 @@ class RZ_Openings
 	protected void AskWhoYouWere(RZ_Opening o, notnull array<string> lines)
 	{
 		o.m_bHabitAsked = true;
+		// Features > Habits off: the door asks nothing and nothing is settled (docs/FEATURES.md)
+		if (!RZ_Features.On(RZ_EFeature.HABITS))
+		{
+			o.m_bHabitPicked = true;
+			return;
+		}
+
 		RZ_PlayerProfile profile = m_GM.GetProfile(o.m_iPlayer);
 		if (o.m_iLevel >= 2 && RZ_Habits.Carry(profile))
 		{

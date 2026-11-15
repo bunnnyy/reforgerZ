@@ -257,15 +257,17 @@ class RZ_MissionManager
 		int eventTarget = Math.Max(1, baseCount - 1) + ids.Count() / 6;
 		int contractTarget = Math.Min(MAX_CONTRACTS, 2 + ids.Count() / 3);
 
+		// Features > World events and Contracts (docs/FEATURES.md): the director's own offers only; the
+		// stories that run their steps as missions (questlines, majors, leaders, the finale) go on
 		m_fEventCooldown -= dt;
-		if (m_fEventCooldown <= 0 && CountActive(false) < eventTarget)
+		if (m_fEventCooldown <= 0 && CountActive(false) < eventTarget && RZ_Features.On(RZ_EFeature.WORLD_EVENTS))
 		{
 			m_fEventCooldown = EVENT_COOLDOWN;
 			CreateRandom(false, ids);
 		}
 
 		m_fContractCooldown -= dt;
-		if (m_fContractCooldown <= 0 && CountActive(true) < contractTarget)
+		if (m_fContractCooldown <= 0 && CountActive(true) < contractTarget && RZ_Features.On(RZ_EFeature.CONTRACTS))
 		{
 			m_fContractCooldown = CONTRACT_COOLDOWN;
 			CreateRandom(true, ids);
@@ -877,6 +879,10 @@ class RZ_MissionManager
 			if (m.m_bContract != contract)
 				continue;
 
+			// Features > Puzzles off: no puzzle contract is offered
+			if (RZ_PuzzleMission.Cast(m) && !RZ_Features.On(RZ_EFeature.PUZZLES))
+				continue;
+
 			// The shared check (world gates and facts, No Vehicles, one of each type, claims); the
 			// weight comes next, with the leader and faction-life multipliers
 			if (!CanRunNow(m, ids.Count(), false))
@@ -970,7 +976,7 @@ class RZ_MissionManager
 	protected void ReasonLane(array<int> ids)
 	{
 		RZ_MissionStorySettings ss = RZ_MissionStorySettings.Get();
-		if (!ss.m_bEnabled || !ss.m_bReasonLane || m_fClock < m_fReasonLaneAt)
+		if (!ss.m_bEnabled || !ss.m_bReasonLane || m_fClock < m_fReasonLaneAt || !RZ_Features.On(RZ_EFeature.CONTRACTS))
 			return;
 
 		int contractTarget = Math.Min(MAX_CONTRACTS, 2 + ids.Count() / 3);
@@ -997,6 +1003,9 @@ class RZ_MissionManager
 
 				m.Configure(m_GM);
 				if (!m.m_bContract || !CanRunNow(m, ids.Count()) || !m.AnyEligible(m_GM, ids))
+					continue;
+
+				if (RZ_PuzzleMission.Cast(m) && !RZ_Features.On(RZ_EFeature.PUZZLES))
 					continue;
 
 				m.m_sWhyNow = reason.text;

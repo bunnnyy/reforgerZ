@@ -216,6 +216,18 @@ boots the site audit's Arland world the same way and closes itself in about two 
 SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" EXTRA_ADDONS_DIR="<Documents>/My Games/ArmaReforger/addons" tools/runtime_test/run.sh patrols
 ```
 
+The core-only check ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#runtime-test-without-workbench)) boots
+the runtime test's world with every Features switch off and closes itself after about ten minutes;
+every other mode turns them all on for its run ([FEATURES.md](FEATURES.md)):
+
+```bash
+SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" EXTRA_ADDONS_DIR="<Documents>/My Games/ArmaReforger/addons" tools/runtime_test/run.sh core
+```
+
+For Workbench play, `RZ_Features.txt` in Workbench's profile folder switches stages on without
+changing the prefab (`stage 1`, a switch's name, `-name` or `all`, one a line; FEATURES.md, "The
+profile file"). Which folder that is on this PC is not yet confirmed.
+
 The text lint needs only Python and takes a second
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint)): `py tools/voice_lint.py`; so does the mission rules check, in about ten seconds ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#mission-rules-check)): `py tools/mission_rules.py --strict`. The compile check
 runs the dialogue lint first (`python3`, else `py -3`), and fails if a conversation pack is stale:

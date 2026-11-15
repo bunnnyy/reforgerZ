@@ -235,8 +235,9 @@ class RZ_CasePapers
 	//! Taken with the case, once a character: all three, in the lid.
 	void Gain(int playerId)
 	{
+		// Features > Majors off: the case comes without its papers (they start the majors; docs/FEATURES.md)
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
-		if (!profile || Mine(profile))
+		if (!profile || Mine(profile) || !RZ_Features.On(RZ_EFeature.MAJORS))
 			return;
 
 		profile.m_iPapersLife = RZ_OpeningCase.CharacterStamp(profile);
@@ -253,6 +254,9 @@ class RZ_CasePapers
 	//! The papers' part of the case's read: what's folded in the lid.
 	static string ReadText()
 	{
+		if (!RZ_Features.On(RZ_EFeature.MAJORS))
+			return "";
+
 		return string.Format("\n\nFolded into the lid, three papers that aren't Halcyon's: %1; %2; %3.", Looks(ORDERS), Looks(PAGE), Looks(LIST));
 	}
 

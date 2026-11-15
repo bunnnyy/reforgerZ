@@ -603,6 +603,13 @@ modded class RZ_GameModeComponent
 			Print("RZT spawned fake player at " + m_aRZTRouteName[0]);
 			HandlePlayerSpawned(RZT_Fake.ID, e);
 		}
+		// Core only (run.sh core, every Features switch off: RZT_CoreOnly.c): only that check runs
+		if (RZT_CoreOnly.IsCore())
+		{
+			RZT_CoreOnly.Tick(this, m_iRZTSec, m_aRZTRoute);
+			return;
+		}
+
 		// Every conversation's nodes, once, for the fake player; a lie, a promise and a callback
 		if (m_iRZTSec == 8 && RZ_DialogueTrees.Get())
 			Print("RZT " + RZ_DialogueTrees.Get().RunSelfTest(RZT_Fake.ID));

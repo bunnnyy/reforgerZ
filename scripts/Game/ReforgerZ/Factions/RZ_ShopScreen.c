@@ -43,6 +43,9 @@ class RZ_ShopScreen
 	//! quartermaster's actions again.
 	static void Open(RZ_GameModeComponent gm, int playerId, IEntity owner, IEntity user)
 	{
+		if (!RZ_Features.On(RZ_EFeature.SHOPS))
+			return;
+
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
 		if (!ui)
 			return;

@@ -3,6 +3,54 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
  components {
   RZ_GameModeComponent "{6AD67DC2A8FD39B3}" {
    m_sSpawnPointPrefab "{BAFE0A6ECC397363}Prefabs/ReforgerZ/Core/RZ_SpawnPoint.et"
+   m_FeatureSettings RZ_FeatureSettings "{5E0F3A1C7B2D4F61}" {
+    m_bCampSites 0
+    m_bCampLife 0
+    m_bSafehouses 0
+    m_bLeaders 0
+    m_bShops 0
+    m_bErrands 0
+    m_bWorkSites 0
+    m_bWanderers 0
+    m_bFactionLife 0
+    m_bCheckpoints 0
+    m_bGuidance 0
+    m_bOpening 0
+    m_bHabits 0
+    m_bMapFog 0
+    m_bRoadPatrols 0
+    m_bSupplyTrucks 0
+    m_bTonight 0
+    m_bContracts 0
+    m_bWorldEvents 0
+    m_bPuzzles 0
+    m_bLocks 0
+    m_bCars 0
+    m_bCrafting 0
+    m_bRadios 0
+    m_bHordes 0
+    m_bCrawlers 0
+    m_bTribes 0
+    m_bBehaviour 0
+    m_bStealth 0
+    m_bHunted 0
+    m_bLongTable 0
+    m_bWeather 0
+    m_bPerimeter 0
+    m_bStoryArcs 0
+    m_bQuestlines 0
+    m_bMajors 0
+    m_bMemory 0
+    m_bPower 0
+    m_bRadioStation 0
+    m_bTraces 0
+    m_bTownMemory 0
+    m_bWildlife 0
+    m_bSeasonRules 0
+    m_bResearch 0
+    m_bFinale 0
+    m_bEpilogue 0
+   }
    m_PowerSettings RZ_PowerSettings "{6AD67DC2B93AE26F}" {
     m_sControlPrefab "{9C7B3BF76C03455E}Prefabs/ReforgerZ/World/RZ_PowerControl.et"
     m_sGeneratorSoundPrefab "{214D4068B8CA7918}Prefabs/ReforgerZ/World/RZ_PowerGeneratorSound.et"
