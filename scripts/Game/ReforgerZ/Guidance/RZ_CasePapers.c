@@ -66,6 +66,31 @@ class RZ_CasePapers
 		}
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! A paper's job by its key (a saved held errand, RZ_Errands.FindDef); null if not a paper's.
+	RZ_ErrandDef FindDef(string key)
+	{
+		foreach (RZ_CaseStepDef d : m_aJob)
+		{
+			if (d.m_sKey == key)
+				return d;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A paper's job, restored or kept from a logout, is its carrier's again (RZ_Errands.Bind): the
+	//! map from them to the job is rebuilt, and the job's giver key names them.
+	void Rebind(RZ_Errand e, int paper)
+	{
+		if (paper < 0 || paper >= m_aJob.Count())
+			return;
+
+		m_mJobs.Set(JobKey(e.m_iAsker, paper), e.m_iId);
+		e.m_sGiver = "paper:" + e.m_iAsker.ToString() + ":" + paper.ToString();
+	}
+
 	// ================================================================ The papers
 	//------------------------------------------------------------------------------------------------
 	//! The major each paper belongs to.

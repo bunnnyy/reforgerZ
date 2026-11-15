@@ -117,6 +117,10 @@ class RZ_SaveData
 	// people, the houses' turns done. Older saves have none: everything starts empty
 	ref RZ_ErrandsSave errands;
 
+	// Openings put away (Guidance/RZ_Openings.c): one per identity whose first day was under way at a
+	// logout, a death or the save, resumed from its stage when they're back. Older saves have none
+	ref array<ref RZ_OpeningSave> openings = {};
+
 	// The Long Table (World/RZ_LongTable.c): this season's roll, the farm, its people, hunger,
 	// suspicion, what it took, its tells on the road and what it remembers of each character
 	ref RZ_LongTableSave longTable;

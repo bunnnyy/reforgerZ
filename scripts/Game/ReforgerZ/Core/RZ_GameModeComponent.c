@@ -613,8 +613,15 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (m_RepWatch)
 			m_RepWatch.Forget(playerId);
 
+		// Their opening is put away, then their held errands kept for them, unbound; and a save, so a
+		// restart before they're back keeps both (docs/DESIGN.md, "Coming back after a logout")
+		if (m_Guidance && m_Guidance.GetOpenings())
+			m_Guidance.GetOpenings().OnDisconnect(playerId);
+
 		if (m_Errands)
 			m_Errands.OnDisconnect(playerId);
+
+		SaveState();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1827,12 +1834,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		else
 			line = RZ_Character.ComeRound(this, playerId, controlledEntity, profile, bg);
 
-		// Back mid-opening: it runs again from the door it rolled
-		if (back && RZ_Character.Reopens(playerId) && m_Guidance && m_Guidance.GetOpenings())
-		{
-			line = "";
-			m_Guidance.GetOpenings().OnSpawned(playerId, controlledEntity, profile, bg);
-		}
+		// Mid-opening (back from a logout or a restart, or come round after a death): it goes on from
+		// its stage where they are, never from the start (Guidance/RZ_Openings.c, Resume)
+		if (m_Guidance && m_Guidance.GetOpenings())
+			m_Guidance.GetOpenings().Resume(playerId, controlledEntity, profile);
 
 		m_BiteDetector.Reset(playerId);
 		m_Stealth.Forget(playerId);
@@ -1860,6 +1865,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// they carried is gone (docs/DESIGN.md, "A character who lasts")
 		if (profile.HasCharacter())
 		{
+			// Their held errands kept while they were away (a logout, a restart) are theirs again,
+			// before the quest items come back for them (RZ_Errands.Bind)
+			if (m_Errands)
+				m_Errands.Bind(playerId);
+
 			ComeRound(playerId, controlledEntity, profile, RZ_Character.CameBack(playerId));
 			return;
 		}
@@ -3341,6 +3351,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Headlines.Restore(data.news);
 		m_Interactions.Restore(data.interactions);
 		m_Errands.Restore(data.errands);
+		if (m_Guidance && m_Guidance.GetOpenings())
+			m_Guidance.GetOpenings().Restore(data.openings);
+
 		m_Traces.Restore(data.traces);
 		if (m_Spawner.GetCrawlers())
 			m_Spawner.GetCrawlers().Restore(data.crawlers);
@@ -3457,6 +3470,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Errands)
 			data.errands = m_Errands.Save();
+
+		if (m_Guidance && m_Guidance.GetOpenings())
+			m_Guidance.GetOpenings().Save(data.openings);
 
 		if (m_Traces && m_Traces.IsOn())
 			data.traces = m_Traces.Save();

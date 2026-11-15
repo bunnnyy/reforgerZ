@@ -644,4 +644,46 @@ class RZ_OpeningText
 
 		return "Someone at the gate looks you over and steps aside. \"You'll want soup. Everyone wants soup.\"";
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Back mid-opening (a logout, a restart, a death): the contact says plainly where you left off,
+	//! by the stage it resumed at (RZ_Openings.Resume). `search`: where the favour's thing is;
+	//! `endPlace`: where the walk or the lead goes.
+	static string BackLine(int stage, string search, string endPlace)
+	{
+		if (stage == RZ_EOpeningStage.FAVOUR && search.IsEmpty())
+			return "You're back. Did you find it? I still need it.";
+
+		switch (stage)
+		{
+			case RZ_EOpeningStage.FAVOUR: return string.Format("You're back. Did you find it? It's at %1, if nobody's had it.", search);
+			case RZ_EOpeningStage.GIVE: return "You're back. Have you still got it? Give it here when you're ready.";
+			case RZ_EOpeningStage.LINE: return "You're back. That runner never got past the line. His case is still out there. I know where he fell.";
+			case RZ_EOpeningStage.CASE: return "You're back. That runner never got past the line. His case is still out there. I know where he fell.";
+			case RZ_EOpeningStage.WALK: return string.Format("You're back. We were going to %1. It's still there. Come on.", endPlace);
+			case RZ_EOpeningStage.LEAD: return string.Format("You're back. There's work at %1. Go and ask for it.", endPlace);
+		}
+
+		return "You're back. We'll carry on where we stopped.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The same with nobody to say it: a card.
+	static string BackNote(int stage, string endPlace)
+	{
+		switch (stage)
+		{
+			case RZ_EOpeningStage.CASE: return "The runner's case is still out there. Find where he fell.";
+			case RZ_EOpeningStage.WALK: return string.Format("You were on your way to %1.", endPlace);
+			case RZ_EOpeningStage.LEAD: return string.Format("You were on your way to %1, to ask for work.", endPlace);
+		}
+
+		return "Your first day goes on from where you stopped.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string BackTitle()
+	{
+		return "Where you left off";
+	}
 }

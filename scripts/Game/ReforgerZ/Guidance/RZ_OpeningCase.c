@@ -174,6 +174,40 @@ class RZ_OpeningCase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A step of the case's by its key (a saved held errand, RZ_Errands.FindDef); null if not the case's.
+	RZ_ErrandDef FindDef(string key)
+	{
+		array<RZ_CaseStepDef> own = {m_Lead, m_Date, m_Back, m_Post};
+		foreach (RZ_CaseStepDef d : own)
+		{
+			if (d && d.m_sKey == key)
+				return d;
+		}
+
+		return m_Papers.FindDef(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A step of the case's, restored or kept from a logout, is its carrier's again (RZ_Errands.Bind):
+	//! the lead's map from them to it (so no second lead is handed), a paper's, and the giver key.
+	void Rebind(RZ_Errand e)
+	{
+		RZ_CaseStepDef d = RZ_CaseStepDef.Cast(e.m_Def);
+		if (!d || e.m_iAsker <= 0)
+			return;
+
+		if (d.m_iKind == KIND_PAPER)
+		{
+			m_Papers.Rebind(e, d.m_iPaper);
+			return;
+		}
+
+		e.m_sGiver = "case:" + e.m_iAsker.ToString();
+		if (d.m_iKind == KIND_LEAD)
+			m_mLead.Set(e.m_iAsker, e.m_iId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static RZ_OpeningCase Get()
 	{
 		RZ_Openings openings = RZ_Openings.Get();

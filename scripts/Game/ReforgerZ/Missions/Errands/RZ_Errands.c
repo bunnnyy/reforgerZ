@@ -130,7 +130,7 @@ class RZ_ErrandSettings
 	[Attribute("40", UIWidgets.Slider, "Errand Favor per player per real hour (diminishing: x1, x1, x0.75, x0.5, x0.25)", "0 200 5")]
 	int m_iFavorPerHour;
 
-	[Attribute("45", UIWidgets.Slider, "Real minutes a held errand lapses after it's taken (20 if the player goes offline)", "10 180 5")]
+	[Attribute("45", UIWidgets.Slider, "Real minutes a held errand lapses after it's taken (in real time: a logout or a restart keeps it, and doesn't stop its clock)", "10 180 5")]
 	float m_fLapseMinutes;
 
 	[Attribute("1", desc: "Duties: a named person with nothing true to ask gives one of the place's own duties (the kitchen, the wood and water, washing down...), so work is there from the first day. Off: errands only while something is true (docs/ERRANDS.md, \"Duties\")")]
@@ -574,6 +574,8 @@ class RZ_Errands
 					m_mCounters.Set(m_Restored.counterKeys[i], m_Restored.counterValues[i]);
 				}
 			}
+
+			RestoreHeld(m_Restored);
 		}
 
 		m_Restored = null;
@@ -622,6 +624,7 @@ class RZ_Errands
 			data.counterValues.Insert(value);
 		}
 
+		SaveHeld(data);
 		return data;
 	}
 
@@ -629,6 +632,322 @@ class RZ_Errands
 	void Restore(RZ_ErrandsSave data)
 	{
 		m_Restored = data;
+	}
+
+	// ================================================================ Held errands, saved
+	//------------------------------------------------------------------------------------------------
+	//! Kept for its owner across a logout and a restart (docs/ERRANDS.md, "Saved across restarts"):
+	//! any held errand but a talk objective (its opening hands it again) and the fixer's steps (his
+	//! visit is a scene, not kept).
+	protected static bool Kept(RZ_Errand e)
+	{
+		if (!e || !e.m_Def || e.m_eState != RZ_EErrandState.HELD)
+			return false;
+
+		if (RZ_OpeningTalkDef.Cast(e.m_Def) || RZ_FixerStepDef.Cast(e.m_Def))
+			return false;
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A duty, or a game, squad or scene running for it: none of that is rebuilt, so it ends unpaid
+	//! (as at a death) rather than come back.
+	protected bool RunsLive(RZ_Errand e)
+	{
+		if (e.m_Def && e.m_Def.m_bDuty)
+			return true;
+
+		if (m_Games.Find(e.m_iId) != null || m_Squads.Find(e.m_iId) != null)
+			return true;
+
+		return m_Scenes.Find(e.m_iId) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every kept errand into the save, with the id counter. Time as real time: when it was taken,
+	//! counted back from now by the dealer's clock.
+	protected void SaveHeld(RZ_ErrandsSave data)
+	{
+		data.nextId = m_iNextId;
+		int now = RZ_SeasonClock.Now();
+		foreach (RZ_Errand e : m_aErrands)
+		{
+			if (!Kept(e))
+				continue;
+
+			RZ_ErrandSave s = new RZ_ErrandSave();
+			s.id = e.m_iId;
+			s.def = e.m_Def.m_sKey;
+			s.ident = e.m_sIdent;
+			s.life = e.m_iLife;
+			s.giver = e.m_sGiver;
+			s.giverName = e.m_sGiverName;
+			s.giverTitle = e.m_sGiverTitle;
+			s.faction = e.m_iFaction;
+			s.gx = e.m_vGiver[0];
+			s.gy = e.m_vGiver[1];
+			s.gz = e.m_vGiver[2];
+			s.ox = e.m_vOffer[0];
+			s.oy = e.m_vOffer[1];
+			s.oz = e.m_vOffer[2];
+			s.holding = e.m_iHolding;
+			s.house = e.m_iHouse;
+			s.wanderer = e.m_iWanderer;
+			s.settlement = e.m_iSettlement;
+			s.subject = e.m_sSubject;
+			s.sx = e.m_vSubject[0];
+			s.sy = e.m_vSubject[1];
+			s.sz = e.m_vSubject[2];
+			s.tx = e.m_vSubject2[0];
+			s.ty = e.m_vSubject2[1];
+			s.tz = e.m_vSubject2[2];
+			s.value = e.m_iValue;
+			s.word = e.m_sValue;
+			s.way = e.m_iWay;
+			s.px = e.m_vPlace[0];
+			s.py = e.m_vPlace[1];
+			s.pz = e.m_vPlace[2];
+			s.wx = e.m_vWorkFrom[0];
+			s.wy = e.m_vWorkFrom[1];
+			s.wz = e.m_vWorkFrom[2];
+			s.progress = e.m_fProgress;
+			s.stepDone = e.m_bStepDone;
+			s.fx = e.m_vFirst[0];
+			s.fy = e.m_vFirst[1];
+			s.fz = e.m_vFirst[2];
+			s.firstDone = e.m_bFirstDone;
+			s.firstProgress = e.m_fFirstProgress;
+			s.noisy = e.m_bNoisy;
+			s.unasked = e.m_bUnasked;
+			s.fallout = e.m_bFallout;
+			s.twist = e.m_bTwist;
+			s.suspect = e.m_bSuspect;
+			s.cap = e.m_iCap;
+			s.fameCap = e.m_iFameCap;
+			s.bonus = e.m_iBonus;
+			s.carried = e.m_bCarried;
+			s.endOnBind = e.m_bEndOnBind || RunsLive(e);
+			s.takenUnix = now - RZ_Util.RoundToInt(m_fClock - e.m_fTakenAt);
+			foreach (string slot, string text : e.m_mText)
+			{
+				s.textKeys.Insert(slot);
+				s.textValues.Insert(text);
+			}
+
+			data.held.Insert(s);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The saved held errands rebuilt, unbound (m_iAsker -1) until their owner's character is back
+	//! (Bind): each by its definition's key (a definition gone from the game drops it, said so), with
+	//! its own id, so the tracker row, a carried item's tag and an opening's step still find it.
+	protected void RestoreHeld(RZ_ErrandsSave data)
+	{
+		if (data.nextId > m_iNextId)
+			m_iNextId = data.nextId;
+
+		if (!data.held)
+			return;
+
+		int now = RZ_SeasonClock.Now();
+		int restored = 0;
+		int dropped = 0;
+		string why = "";
+		RZ_WorldFacts facts = m_GM.GetFacts();
+		foreach (RZ_ErrandSave s : data.held)
+		{
+			if (!s)
+				continue;
+
+			if (s.id + 1 > m_iNextId)
+				m_iNextId = s.id + 1;
+
+			RZ_ErrandDef d = FindDef(s.def);
+			string no = "";
+			if (!d)
+				no = "no definition " + s.def;
+			else if (s.way < 0 || s.way >= d.m_aWays.Count())
+				no = s.def + " has no way " + s.way.ToString();
+			else if (s.ident.IsEmpty())
+				no = s.def + " has no owner";
+			else if (RZ_OpeningTalkDef.Cast(d) || RZ_FixerStepDef.Cast(d))
+				no = s.def + " isn't kept";
+
+			if (!no.IsEmpty())
+			{
+				dropped++;
+				if (!why.IsEmpty())
+					why += "; ";
+
+				why += no;
+				RZ_Log.Warn("Errands: a saved held errand was dropped: " + no);
+				continue;
+			}
+
+			RZ_Errand e = new RZ_Errand();
+			e.m_iId = s.id;
+			e.m_Def = d;
+			e.m_iAsker = -1;
+			e.m_sIdent = s.ident;
+			e.m_iLife = s.life;
+			e.m_sGiver = s.giver;
+			e.m_sGiverName = s.giverName;
+			e.m_sGiverTitle = s.giverTitle;
+			e.m_iFaction = s.faction;
+			e.m_vGiver = Vector(s.gx, s.gy, s.gz);
+			e.m_vOffer = Vector(s.ox, s.oy, s.oz);
+			e.m_iHolding = s.holding;
+			e.m_iHouse = s.house;
+			e.m_iWanderer = s.wanderer;
+			e.m_iSettlement = s.settlement;
+			e.m_sSubject = s.subject;
+			e.m_vSubject = Vector(s.sx, s.sy, s.sz);
+			e.m_vSubject2 = Vector(s.tx, s.ty, s.tz);
+			e.m_iValue = s.value;
+			e.m_sValue = s.word;
+			e.m_eState = RZ_EErrandState.HELD;
+			e.m_iWay = s.way;
+			e.m_vPlace = Vector(s.px, s.py, s.pz);
+			e.m_vWorkFrom = Vector(s.wx, s.wy, s.wz);
+			e.m_fProgress = s.progress;
+			e.m_bStepDone = s.stepDone;
+			e.m_vFirst = Vector(s.fx, s.fy, s.fz);
+			e.m_bFirstDone = s.firstDone;
+			e.m_fFirstProgress = s.firstProgress;
+			e.m_bNoisy = s.noisy;
+			e.m_bUnasked = s.unasked;
+			e.m_bFallout = s.fallout;
+			e.m_bTwist = s.twist;
+			e.m_bSuspect = s.suspect;
+			e.m_iCap = s.cap;
+			e.m_iFameCap = s.fameCap;
+			e.m_iBonus = s.bonus;
+			e.m_bCarried = s.carried;
+			e.m_bEndOnBind = s.endOnBind || d.m_bDuty;
+			float ago = now - s.takenUnix;
+			if (ago < 0)
+				ago = 0;
+
+			e.m_fTakenAt = m_fClock - ago;
+			e.m_fOfferedAt = e.m_fTakenAt;
+			if (s.textKeys && s.textValues)
+			{
+				for (int t = 0; t < s.textKeys.Count() && t < s.textValues.Count(); t++)
+				{
+					e.SetText(s.textKeys[t], s.textValues[t]);
+				}
+			}
+
+			if (!e.m_sSubject.IsEmpty() && facts)
+				facts.SoftHold(e.m_sSubject, e.Owner());
+
+			m_aErrands.Insert(e);
+			restored++;
+		}
+
+		if (why.IsEmpty())
+			why = "none";
+
+		if (restored + dropped > 0)
+			RZ_Log.Info(string.Format("Errands: restored %1 held errands (%2 dropped: %3)", restored, dropped, why));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A definition by its key: the routines, cards and duties, then the ones the openings own (the
+	//! chain's steps, the favours, the case and its papers). Null if none has it.
+	RZ_ErrandDef FindDef(string key)
+	{
+		foreach (RZ_ErrandDef d : m_aDefs)
+		{
+			if (d.m_sKey == key)
+				return d;
+		}
+
+		RZ_Guidance guide = m_GM.GetGuidance();
+		if (guide && guide.GetOpenings())
+			return guide.GetOpenings().FindDef(key);
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This player's character is back (the game mode's spawn, before the quest items come back):
+	//! their held errands left unbound are theirs again (restored, or kept from a logout), and each
+	//! open step's prop, work site or carry is put out again where it stood. One from another
+	//! character of theirs ends quietly; a duty's game that wasn't kept ends unpaid.
+	void Bind(int playerId)
+	{
+		RZ_PlayerProfile profile = m_GM.FindProfile(playerId);
+		if (!profile || profile.m_sIdentity.IsEmpty())
+			return;
+
+		RZ_Openings openings = RZ_Openings.Get();
+		foreach (RZ_Errand e : m_aErrands)
+		{
+			if (e.m_iAsker >= 0 || e.m_eState != RZ_EErrandState.HELD || e.m_sIdent != profile.m_sIdentity)
+				continue;
+
+			if (e.m_iLife != profile.m_iCharacter)
+			{
+				End(e, "another character");
+				continue;
+			}
+
+			e.m_iAsker = playerId;
+			if (e.m_bEndOnBind)
+			{
+				End(e, "away");
+				continue;
+			}
+
+			RZ_ErrandWay w = e.GetWay();
+			if (w && !e.m_bStepDone)
+				PlaceProp(e, w);
+
+			// The openings' own maps (the case's lead, its papers) and their step: theirs again
+			if (openings)
+				openings.ErrandBound(e);
+
+			if (e.m_eState == RZ_EErrandState.HELD)
+				RZ_Log.Info(string.Format("Errands: %1 bound to %2", e.m_Def.m_sKey, RZ_Util.PlayerName(playerId)));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its owner left: still held, unbound, until they're back or its own time runs out. Its prop,
+	//! work site and carry come down (put out again by Bind; the work done at them is lost).
+	protected void Unbind(RZ_Errand e)
+	{
+		RemoveProp(e);
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (sites)
+			sites.Close(WorkKey(e));
+
+		RZ_Carries carries = RZ_Carries.Get();
+		if (carries)
+			carries.Close(WorkKey(e));
+
+		e.m_iAsker = -1;
+		e.m_Carried = null;
+		e.m_aHelpers.Clear();
+		e.m_mWith.Clear();
+		e.m_bTold = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Live errands with an owner here (the server's 12): one kept for someone away doesn't count.
+	protected int LiveCount()
+	{
+		int n = 0;
+		foreach (RZ_Errand e : m_aErrands)
+		{
+			if (e.m_eState != RZ_EErrandState.DONE && e.m_iAsker >= 0)
+				n++;
+		}
+
+		return n;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -743,15 +1062,22 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A player left: a held errand waits 20 minutes for them.
+	//! A player left: a held errand stays held for them, unbound, until they're back or its own time
+	//! runs out (Unbind, Bind). An offer, a duty and a game under way end ("left"); a talk objective
+	//! goes quietly (its opening hands it again when it's resumed).
 	void OnDisconnect(int playerId)
 	{
 		foreach (RZ_Errand e : m_aErrands)
 		{
-			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.HELD)
-				e.m_fOfflineSince = m_fClock;
-			else if (e.m_iAsker == playerId)
+			if (e.m_iAsker != playerId || e.m_eState == RZ_EErrandState.DONE)
+				continue;
+
+			if (e.m_eState == RZ_EErrandState.HELD && RZ_OpeningTalkDef.Cast(e.m_Def))
+				End(e, "done");
+			else if (!Kept(e) || RunsLive(e))
 				End(e, "left");
+			else
+				Unbind(e);
 		}
 	}
 
@@ -1071,15 +1397,9 @@ class RZ_Errands
 				continue;
 			}
 
+			// Its own time, in real seconds, whether its owner is here or away (a logout or a restart
+			// never ends it sooner)
 			float lapse = LapseSeconds(e);
-			if (e.m_fOfflineSince >= 0)
-			{
-				if (ids.Contains(e.m_iAsker))
-					e.m_fOfflineSince = -1;
-				else if (m_fClock - e.m_fOfflineSince > 1200)
-					lapse = 0;
-			}
-
 			if (m_fClock - e.m_fTakenAt > lapse)
 			{
 				// Its end card says so (RememberEnd: "Errand failed: ...", "{giver} stopped waiting.")
@@ -1087,6 +1407,10 @@ class RZ_Errands
 				End(e, "lapsed");
 				continue;
 			}
+
+			// Kept for someone away: the rest is checked again once they're back
+			if (e.m_iAsker < 0)
+				continue;
 
 			if ((!e.m_Def.m_bHanded && !m_People.Get(e.m_sGiver)) || !e.m_Def.Still(this, e) || Overtaken(e, facts))
 				Overtake(e);
@@ -1204,6 +1528,12 @@ class RZ_Errands
 	{
 		if (!w.IsWork() || e.m_vPlace == vector.Zero)
 			return false;
+
+		// Opened again (its owner back): from the step's own place, so it never drifts
+		if (e.m_vWorkFrom != vector.Zero)
+			e.m_vPlace = e.m_vWorkFrom;
+		else
+			e.m_vWorkFrom = e.m_vPlace;
 
 		// Carried for real: a pile of the things, and where they go
 		if (w.m_iCarry > 0 && OpenCarry(e, w))
@@ -1521,6 +1851,10 @@ class RZ_Errands
 		else if (why == "left")
 		{
 			line = "You left before it was done.";
+		}
+		else if (why == "away")
+		{
+			line = "It ended while you were away. Nothing's owed for it.";
 		}
 		else if (why == "sold at the fence" || why == "refused at the fence")
 		{
@@ -2583,7 +2917,7 @@ class RZ_Errands
 	RZ_Errand Deal(int playerId, RZ_NamedPerson p, vector from, bool unasked, out string why, bool peek = false, int mode = 0)
 	{
 		why = "";
-		if (m_aErrands.Count() >= MAX_LIVE)
+		if (LiveCount() >= MAX_LIVE)
 		{
 			why = "the server holds 12 errands already";
 			return null;

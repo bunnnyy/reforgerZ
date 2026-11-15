@@ -3035,7 +3035,14 @@ records.` and `Shared: N callbacks waiting, N season records.`
 **A character who lasts:** the `Character:` lines in [DESIGN.md](DESIGN.md#a-character-who-lasts)
 ("Log lines"): one at each new character, death, coming round (a camp, or a random start with why),
 quest items given back, and reset; and `Missions: <player> began a new character, off N job(s) the
-last one held` at a reset.
+last one held` at a reset. What's under way coming back ([DESIGN.md](DESIGN.md#a-character-who-lasts),
+[ERRANDS.md](ERRANDS.md#saved-across-restarts)): at load `Errands: restored N held errands (K dropped:
+<why, or none>)` (a dropped one also warns `Errands: a saved held errand was dropped: <why>`) and
+`Openings: N openings kept for their players to come back to`; at a logout or a death `Openings:
+<player>'s opening put away (left|away|came round) at stage N (<stage>), its step kept|handed again
+when they're back`; at the next spawn `Errands: <key> bound to <player>` for each held errand and
+`Openings: <player>'s opening resumed at stage N (<stage>), its step kept|handed again` (or
+`Openings: <player>'s step <key> had no opening to go back to: let go`).
 
 Openings ([DESIGN.md](DESIGN.md#openings-how-every-character-starts)), one each new character: `Openings: started
 for <player>: <background>, <kind> in <town> (<grid>), level N, <hiding|group|fever>, <before|stranger|earlier|nobody>:
@@ -3218,6 +3225,12 @@ session, tick off:
   LOCKED. Die bitten: a random start, no opening. Get Hunted by everyone (an admin standing change):
   a random start. On the Standing page press Y twice: the character dies, the spawn screen opens every
   background, and the opening runs again (`Character:` lines, section 7 via DESIGN).
+- [ ] **Coming back** ([ERRANDS.md](ERRANDS.md#saved-across-restarts)): take an errand with a step
+  away, start it, log out and back in: it's still tracked, its work site is where it was, and its
+  minutes left kept falling. Do it again across a server restart (`Errands: restored ...`, `...
+  bound to ...`). Mid-opening (the favour taken), log out and in, then die: each time the contact
+  stands near you, says where you left off ("You're back. Did you find it?") and the favour goes on;
+  during the line, you come back to the runner instead (`Openings: ... resumed at stage N`).
 - [ ] The government broadcast and the session news appear on first spawn.
 
 **Core loop**

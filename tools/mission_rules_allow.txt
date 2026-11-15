@@ -164,6 +164,7 @@
 # 29: people say it; a notice is the last resort (the audit, 2026-11-14)
 29 RZ_Openings.c m_GM.NotifyPlayerAs(o.m_iPlayer, RZ_OpeningText.LeadTitle(),  # pending: the opening's rebuild (designs/OPENING.md, phases 2-5) has the contact say these
 29 RZ_Openings.c m_GM.NotifyPlayerAs(o.m_iPlayer, RZ_OpeningText.WalkTitle(o.  # pending: the opening's rebuild (designs/OPENING.md, phases 2-5) has the contact say these
+29 RZ_Openings.c m_GM.NotifyPlayer(o.m_iPlayer, RZ_OpeningText.BackTitle(), o.m_sBackLine);  # nobody there to say it: a resumed opening whose contact is dead or never stood (with them, they say it)
 29 RZ_Openings.c m_GM.NotifyPlayer(o.m_iPlayer, o.m_sSpeaker, RZ_OpeningText.  # pending: the opening's rebuild (designs/OPENING.md, phases 2-5) has the contact say these
 29 RZ_BastionContracts.c He's already bandaged. It's holding.  # a talk choice's outcome: picked on the talk screen, it shows there as the conversation (RZ_Dialogue.Capture); a mixed line of narration and the man's words
 29 RZ_BastionContracts.c You press on the wound and it soaks through your fingers. Yo  # a talk choice's outcome: picked on the talk screen, it shows there as the conversation (RZ_Dialogue.Capture); a mixed line of narration and the man's words

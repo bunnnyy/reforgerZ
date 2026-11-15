@@ -850,7 +850,7 @@ nothing else; the character goes on with its name, background, standing and stor
 |---|---|
 | The background (locked: the spawn screen shows the others locked until a reset), perk and flaw | Everything carried, worn or held: it stays on the body |
 | Fame, Infamy and Favor with every faction, their tiers, the trust ladder, deeds, what people call you | The bite and its infection, and the meds' once-a-bite flags |
-| Questline and major parts, held errands and jobs (their own timers keep running) | A duty run under way (ended unpaid) and an errand only offered |
+| Questline and major parts, held errands and jobs (their own timers keep running), the opening (resumed from its stage) | A duty run under way (ended unpaid) and an errand only offered |
 | Leaders', wanderers', locals' and tribes' memory of you, lies told, disguise claims | |
 | The habit, the map's fog, the journal and the tracker's job, the personal goal | |
 | **Quest items** (below): they come back with you | |
@@ -895,14 +895,41 @@ the ground, on the ground), the loadout's carried things are swapped for what th
 quest items come back by the death's path, and the card says *"You're back where you left off."*
 No kit trimming, no death counted, and no spawn screen: a character who goes on is never asked who
 they were again (the screen deploys them as themselves, hidden; only a reset brings it back,
-[UI.md](UI.md#the-spawn-screen)). **Mid-opening:** a character who left before their opening ended
-(`m_iOpenLife`) has it run again from a new door, with what they carried (`Character: <player> comes
-back mid-opening: it runs again`), so the first quest is never lost to a logout. Game Master doesn't
-end an opening or Ferda's visit: with the character still alive they wait. *Simplified:* what they wear comes back as the background's
+[UI.md](UI.md#the-spawn-screen)). Game Master doesn't end an opening or Ferda's visit: with the
+character still alive they wait. *Simplified:* what they wear comes back as the background's
 loadout wears it (changed clothes aren't kept); a magazine keeps its rounds (VERIFY in
 `RZ_Character.c`); a weapon comes back as its prefab spawns, in the pack, not in the hands. Log:
 `Character: <player> comes back where they left off (<grid>)`, `Character: <player> came back with
 <k> of <n> things`.
+
+**What's under way comes back too.** ✅ A logout, a lost connection, a server restart or a crash
+never costs a held errand or the opening, nor where you were in them; a death doesn't either.
+
+| What | Kept (in `state.json`) | Coming back |
+|---|---|---|
+| A held errand | Saved with every save and at every disconnect ([ERRANDS.md](ERRANDS.md#saved-across-restarts)) | Bound to you again as your character spawns, before the quest items come back; its prop, work site or carry put out again where it stood |
+| The opening | `RZ_SaveData.openings` (`RZ_OpeningSave`, one per identity): its plan, stage and step, the favour and its place, whether your background's way was taken, the habit, where it ends, the contact's name and words, and the step's errand for the stages that keep it | Resumed from its stage, never run again (below) |
+| The tracked job | Already on the profile | Points at the same errand: restored errands keep their ids |
+
+**Mid-opening.** A character who leaves or dies before their opening ended (`m_iOpenLife`) has it
+**put away** (`RZ_Openings.Suspend`, at the disconnect, or on the poll after a death): saved for
+their identity and character, the contact goes, and the step goes on being held for the stages that
+keep it (the favour or your background's way through it, its hand-over, the walk, the lead); any
+other step is let go quietly. When the character next stands (back from a logout or a restart where
+they left off, or come round at a camp after a death), it's **resumed** (`RZ_Openings.Resume`), never
+rolled again and never moving you: the contact stands a few metres from you, walks with you again
+if they did, and a moment later says where you left off, by stage, in plain words (*"You're back.
+Did you find it? It's at the chemist's down the road, if nobody's had it."*; the hand-over: *"Have
+you still got it?"*; the runner: *"His case is still out there. I know where he fell."*; the walk and
+the lead name the place). The kept step goes on; otherwise the stage's step is handed again where
+you are. The line's scene isn't kept: it comes back as its short form, and the runner and his case
+are put out again near you (`RZ_OpeningCase.SpawnRunner`). A contact who was dead stays dead (the
+steps go on without them, the line on a card, *"Where you left off"*). A new character drops the
+old one's saved opening. *Simplified:* a favour handed again picks its place again near you, and
+your background's way is offered with it again; the case the runner dropped the first time stays
+where it fell. Log: `Openings: <player>'s opening put away (<why>) at stage <n> (<stage>), ...`,
+`Openings: <player>'s opening resumed at stage <n> (<stage>), its step kept | handed again`,
+`Openings: <n> openings kept for their players to come back to` (at load).
 
 **The kit.** What you wear stays (clothes, vest, helmet, pack). Of what the loadout carried, one
 bandage, one water bottle and the background's own tool (the Mechanic's wrench, the Radio
@@ -3651,8 +3678,8 @@ Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningScenes.c`, `RZ_
 `RZ_OpeningSteps.c`, `RZ_OpeningText.c`, `RZ_OpeningLine.c`, `RZ_OpeningFixer.c`, `Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
 
 Every new character starts somewhere random that suits who you were, coming out of a door for a
-reason (a death doesn't run an opening: the character comes round at a camp, [A character who
-lasts](#a-character-who-lasts)), and
+reason (a death doesn't run a new opening: the character comes round at a camp, and one under way
+goes on from its stage, [A character who lasts](#a-character-who-lasts)), and
 within a few seconds someone outside is talking to you and there is one obvious thing to do: the
 first of the steps that teach the Zone and tell its story, then hand you to the faction your
 background belongs with. Nobody is new: everyone has been trapped since the roads shut. How their
@@ -3886,9 +3913,10 @@ shot still kills them.
 **When it ends early.** The contact killed during the favour or its hand-over: the step ends and the chain goes
 straight on to The Runner by itself; without the case, whoever finds you says so and the chain goes
 to the walk to the nearest safehouse (or, without the walk, to Where the Work Is). The Clock lapsing loses the
-bitten friend (they say so) and the chain goes on; any other step that lapses, death or leaving ends
-it. Nobody waves you over for errands while it runs. One opening per character, runtime only
-(a restart ends it). None in the epilogue week (the place is still rolled). The contact leaves once
+bitten friend (they say so) and the chain goes on; any other step that lapses ends it. A death, a
+logout or a restart doesn't: the opening is put away and resumed from its stage
+([Mid-opening](#a-character-who-lasts)). Nobody waves you over for errands while it runs. One
+opening per character. None in the epilogue week (the place is still rolled). The contact leaves once
 nobody is within 150 m after the walk starts, or 45 minutes on with nobody within 50 m.
 
 **Log lines:** `Openings: started for ...` (background, place, town, grid, level, why today, who,

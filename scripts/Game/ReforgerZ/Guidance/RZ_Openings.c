@@ -46,9 +46,13 @@ enum RZ_EOpeningWho
 }
 
 //------------------------------------------------------------------------------------------------
-//! One life's opening. Runtime only: a restart or a death ends it.
+//! One life's opening. Put away as an RZ_OpeningSave when its player leaves or dies (and in every
+//! save), and resumed from its stage when they're back (RZ_Openings.Resume).
 class RZ_Opening
 {
+	bool m_bResumed;			// resumed from a save: its place is where you came back, not a door
+	string m_sBackLine;			// said once, a moment after a resume: where you left off
+	float m_fBackAt;
 	int m_iId;
 	int m_iPlayer;
 	int m_iLife;
@@ -123,6 +127,52 @@ class RZ_Opening
 }
 
 //------------------------------------------------------------------------------------------------
+//! One opening, saved per identity and character (docs/DESIGN.md, "Coming back after a logout"):
+//! enough to resume it from its stage, never to roll it again. Kept in state.json.
+class RZ_OpeningSave
+{
+	string ident;
+	int life;
+	string background;
+	int level;
+	bool full;
+	string town;
+	int reason;
+	int who;
+	int wanderer = -1;
+	bool hadContact;
+	bool contactDead;
+	string name;
+	string shortName;
+	string whoText;
+	string speaker;
+	int endFaction = -1;
+	float ex;
+	float ey;
+	float ez;
+	string endPlace;
+	ref array<int> plan = {};
+	int stage = -1;
+	int step;
+	bool spoke;
+	string search;
+	int task;
+	ref array<int> tasks = {};
+	int asks;
+	int favour;
+	float vx;
+	float vy;
+	float vz;
+	bool fetched;
+	bool wayTaken;
+	bool habitAsked;
+	bool habitPicked;
+	bool lineShort;
+	int errand = -1;		// the step's errand, kept by the errands (RZ_ErrandsSave.held); -1: handed again
+	int savedUnix;
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_Openings
 {
 	static const int TAG = -17;					// RZ_PuzzleObjectComponent / RZ_ClueComponent mission id: a contact
@@ -167,6 +217,7 @@ class RZ_Openings
 	protected ref RZ_OpeningFavours m_Favours;
 	protected ref RZ_OpeningFixer m_Fixer;
 	protected ref array<ref RZ_Opening> m_aOpenings = {};
+	protected ref array<ref RZ_OpeningSave> m_aSaved = {};		// put away (a logout, a death, a restart), one per identity
 	protected ref map<int, ref RZ_OpeningPlace> m_mPending = new map<int, ref RZ_OpeningPlace>();
 	protected ref map<int, bool> m_mMoved = new map<int, bool>();
 	protected ref array<int> m_aIds = {};
@@ -331,7 +382,7 @@ class RZ_Openings
 			if (o.m_bEnded)
 				continue;
 
-			if (o.m_Place && RZ_Util.DistXZ(o.m_Place.m_vPos, pos) <= radius)
+			if (o.m_Place && !o.m_bResumed && RZ_Util.DistXZ(o.m_Place.m_vPos, pos) <= radius)
 				return true;
 
 			if (o.m_vFavour != vector.Zero && RZ_Util.DistXZ(o.m_vFavour, pos) <= radius)
@@ -431,6 +482,10 @@ class RZ_Openings
 	void OnSpawned(int playerId, IEntity ent, RZ_PlayerProfile profile, RZ_Background bg)
 	{
 		EndFor(playerId, "a new character");
+		// An earlier character's opening put away is over: this is a new one
+		if (profile)
+			DropSaved(profile.m_sIdentity);
+
 		RZ_OpeningPlace place;
 		m_mPending.Find(playerId, place);
 		m_mPending.Remove(playerId);
@@ -453,8 +508,8 @@ class RZ_Openings
 		}
 
 		RZ_OpeningRoll.NoteStart(profile, ent.GetOrigin());
-		// Under way for this character until it ends for a reason of its own (a logout doesn't end it:
-		// coming back runs it again, RZ_Character.PlaceComeRound)
+		// Under way for this character until it ends for a reason of its own (a logout or a death
+		// doesn't end it: it's put away and resumed from its stage, Suspend and Resume)
 		profile.m_iOpenLife = profile.m_iCharacter;
 		RZ_WorldFacts facts = m_GM.GetFacts();
 		if (facts && facts.IsEpilogue())
@@ -991,11 +1046,28 @@ class RZ_Openings
 
 		if (idx < 0 || !profile || profile.m_iCharacter != o.m_iLife)
 		{
-			Finish(o, "died or left");
+			// Gone with the same character (a logout, a death): put away, and resumed from its stage
+			// when they're back (Resume); a new character ends it
+			if (profile && profile.m_iCharacter == o.m_iLife)
+				Suspend(o, "away");
+			else
+				Finish(o, "died or left");
+
 			return;
 		}
 
 		IEntity me = m_aPlayers[idx];
+		// Resumed: a moment after they're back, where they left off
+		if (!o.m_sBackLine.IsEmpty() && m_fClock >= o.m_fBackAt)
+		{
+			if (HasContact(o))
+				m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, o.m_sBackLine, o.m_Contact);
+			else
+				m_GM.NotifyPlayer(o.m_iPlayer, RZ_OpeningText.BackTitle(), o.m_sBackLine);
+
+			o.m_sBackLine = "";
+		}
+
 		bool dead;
 		if (o.m_Escort)
 			dead = o.m_Escort.IsDead();
@@ -2147,6 +2219,465 @@ class RZ_Openings
 			if (o.m_iPlayer == playerId && !o.m_bEnded)
 				Finish(o, why);
 		}
+	}
+
+	// ================================================================ Put away and resumed
+	//------------------------------------------------------------------------------------------------
+	//! The stages that come back with their own step, the errand the errands kept for it: the favour
+	//! (or your background's way through it), its hand-over, the walk and the lead. The line's scene
+	//! and the runner are put out again instead, and a talk objective is handed again.
+	protected static bool KeepsStep(RZ_Opening o)
+	{
+		if (o.m_bWaitTalk || o.m_bResolved || o.m_bNext || o.m_iErrand < 0)
+			return false;
+
+		int stage = Stage(o);
+		return stage == RZ_EOpeningStage.FAVOUR || stage == RZ_EOpeningStage.GIVE || stage == RZ_EOpeningStage.WALK || stage == RZ_EOpeningStage.LEAD;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_OpeningSave ToSave(RZ_Opening o, string ident, bool keepStep)
+	{
+		RZ_OpeningSave s = new RZ_OpeningSave();
+		s.ident = ident;
+		s.life = o.m_iLife;
+		s.background = o.m_sBackground;
+		s.level = o.m_iLevel;
+		s.full = o.m_bFull;
+		s.town = o.m_sTown;
+		s.reason = o.m_iReason;
+		s.who = o.m_iWho;
+		s.wanderer = o.m_iWanderer;
+		s.hadContact = o.m_bHadContact;
+		s.contactDead = o.m_bContactDead;
+		s.name = o.m_sName;
+		s.shortName = o.m_sShort;
+		s.whoText = o.m_sWho;
+		s.speaker = o.m_sSpeaker;
+		s.endFaction = o.m_iEnd;
+		s.ex = o.m_vEnd[0];
+		s.ey = o.m_vEnd[1];
+		s.ez = o.m_vEnd[2];
+		s.endPlace = o.m_sEndPlace;
+		s.plan.InsertAll(o.m_aPlan);
+		s.stage = o.m_iStage;
+		s.step = o.m_iStep;
+		s.spoke = o.m_bSpoke;
+		s.search = o.m_sSearch;
+		s.task = o.m_iTask;
+		s.tasks.InsertAll(o.m_aTasks);
+		s.asks = o.m_iAsks;
+		s.favour = o.m_iFavour;
+		s.vx = o.m_vFavour[0];
+		s.vy = o.m_vFavour[1];
+		s.vz = o.m_vFavour[2];
+		s.fetched = o.m_bFetched;
+		s.wayTaken = o.m_bWayTaken;
+		s.habitAsked = o.m_bHabitAsked;
+		s.habitPicked = o.m_bHabitPicked;
+		s.lineShort = o.m_bLineShort;
+		s.savedUnix = RZ_SeasonClock.Now();
+		if (keepStep)
+			s.errand = o.m_iErrand;
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every opening under way and every one put away, for the save (RZ_GameModeComponent.SaveState).
+	void Save(notnull array<ref RZ_OpeningSave> result)
+	{
+		foreach (RZ_OpeningSave kept : m_aSaved)
+		{
+			result.Insert(kept);
+		}
+
+		foreach (RZ_Opening o : m_aOpenings)
+		{
+			if (o.m_bEnded)
+				continue;
+
+			RZ_PlayerProfile profile = m_GM.FindProfile(o.m_iPlayer);
+			if (profile && !profile.m_sIdentity.IsEmpty())
+				result.Insert(ToSave(o, profile.m_sIdentity, KeepsStep(o)));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The openings put away in the save, waiting for their players (older saves have none).
+	void Restore(array<ref RZ_OpeningSave> data)
+	{
+		m_aSaved.Clear();
+		if (!data)
+			return;
+
+		foreach (RZ_OpeningSave s : data)
+		{
+			if (s && !s.ident.IsEmpty() && s.plan)
+				KeepSaved(s);
+		}
+
+		if (!m_aSaved.IsEmpty())
+			RZ_Log.Info(string.Format("Openings: %1 openings kept for their players to come back to", m_aSaved.Count()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void KeepSaved(RZ_OpeningSave s)
+	{
+		DropSaved(s.ident);
+		m_aSaved.Insert(s);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DropSaved(string ident)
+	{
+		for (int i = m_aSaved.Count() - 1; i >= 0; i--)
+		{
+			if (m_aSaved[i].ident == ident)
+				m_aSaved.Remove(i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_OpeningSave SavedFor(string ident)
+	{
+		foreach (RZ_OpeningSave s : m_aSaved)
+		{
+			if (s.ident == ident)
+				return s;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player left (RZ_GameModeComponent.OnPlayerDisconnected, before the errands let their steps
+	//! go unbound): their opening is put away now, not a second later.
+	void OnDisconnect(int playerId)
+	{
+		RZ_Opening o = Running(playerId);
+		if (o)
+			Suspend(o, "left");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Put away (a logout, a death; docs/DESIGN.md, "Coming back after a logout"): saved for this
+	//! identity and character, its step kept for the stages that come back with it (else let go
+	//! quietly), and whoever stood with you goes. Never "ended": the character's opening is still
+	//! under way (RZ_PlayerProfile.m_iOpenLife).
+	protected void Suspend(RZ_Opening o, string why)
+	{
+		if (o.m_bEnded)
+			return;
+
+		RZ_PlayerProfile profile = m_GM.FindProfile(o.m_iPlayer);
+		if (!profile || profile.m_sIdentity.IsEmpty())
+		{
+			Finish(o, "died or left");
+			return;
+		}
+
+		bool keep = KeepsStep(o);
+		if (!keep)
+			DropStep(o, "done");
+
+		KeepSaved(ToSave(o, profile.m_sIdentity, keep));
+		o.m_bEnded = true;
+		if (o.m_Escort)
+		{
+			ReleaseWanderer(o, o.m_Escort.m_vPos);
+			o.m_Escort.Cleanup();
+			o.m_Escort = null;
+			o.m_Contact = null;
+		}
+		else if (o.m_Contact)
+		{
+			ReleaseWanderer(o, o.m_Contact.GetOrigin());
+			RZ_Leaving.Remove(o.m_Contact);
+			o.m_Contact = null;
+		}
+		else if (o.m_Place)
+		{
+			ReleaseWanderer(o, o.m_Place.m_vPos);
+		}
+
+		RZ_OpeningTasks.KeepBody(o.m_Remains, false);
+		if (o.m_Line && o.m_Line.m_Body && o.m_Line.m_Body != o.m_Remains)
+			RZ_OpeningTasks.KeepBody(o.m_Line.m_Body, false);
+
+		RZ_OpeningLine.Cleanup(o.m_Line);
+		o.m_Line = null;
+		o.m_Remains = null;
+		string keptWord = "handed again when they're back";
+		if (keep)
+			keptWord = "its step kept";
+
+		RZ_Log.Info(string.Format("Openings: %1's opening put away (%2) at stage %3 (%4), %5", RZ_Util.PlayerName(o.m_iPlayer), why, o.m_iStage, StageName(o), keptWord));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string StageName(RZ_Opening o)
+	{
+		string name = typename.EnumToString(RZ_EOpeningStage, Stage(o));
+		name.ToLower();
+		return name;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A held errand of this player's is theirs again (RZ_Errands.Bind): the case's and its papers'
+	//! maps rebuilt. An opening's step stays only for the opening put away for this character, which
+	//! picks it up when it's resumed; one with no opening to go back to goes quietly.
+	void ErrandBound(RZ_Errand e)
+	{
+		m_Case.Rebind(e);
+		RZ_OpeningStepDef sd = RZ_OpeningStepDef.Cast(e.m_Def);
+		if (!sd)
+			return;
+
+		RZ_OpeningSave s = SavedFor(e.m_sIdent);
+		if (s && s.life == e.m_iLife && s.errand == e.m_iId)
+			return;
+
+		RZ_Errands errands = m_GM.GetErrands();
+		if (errands)
+			errands.Drop(e, "done");
+
+		RZ_Log.Info(string.Format("Openings: %1's step %2 had no opening to go back to: let go", RZ_Util.PlayerName(e.m_iAsker), sd.m_sKey));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A step's definition by its key, from everything the openings own (RZ_Errands.FindDef): the
+	//! chain's steps, the favours, the case and its papers. The fixer's aren't kept (his visit is a
+	//! scene).
+	RZ_ErrandDef FindDef(string key)
+	{
+		RZ_ErrandDef d = m_Chain.Find(key);
+		if (d)
+			return d;
+
+		d = m_Favours.Find(key);
+		if (d)
+			return d;
+
+		return m_Case.FindDef(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Coming back with an opening under way (RZ_GameModeComponent.ComeRound: after a logout, a
+	//! restart or a death): it goes on from its stage, never from the start and never moving you.
+	//! Its contact stands a few metres from where you are and says where you left off; the stage's
+	//! step is the one kept for it (the favour, its hand-over, the walk, the lead), else handed again
+	//! (the line comes back as its short form: on to the runner, put out again). True if resumed.
+	bool Resume(int playerId, IEntity ent, RZ_PlayerProfile profile)
+	{
+		if (!IsOn() || !ent || !profile)
+			return false;
+
+		// Still running (a death came quicker than the poll): put away first, then resumed as one
+		RZ_Opening live = Running(playerId);
+		if (live)
+			Suspend(live, "came round");
+
+		RZ_OpeningSave s = SavedFor(profile.m_sIdentity);
+		if (!s)
+			return false;
+
+		DropSaved(profile.m_sIdentity);
+		RZ_Errands errands = m_GM.GetErrands();
+		if (s.life != profile.m_iCharacter || profile.m_iOpenLife != profile.m_iCharacter)
+		{
+			RZ_Log.Info(string.Format("Openings: %1's saved opening was another character's: dropped", RZ_Util.PlayerName(playerId)));
+			return false;
+		}
+
+		if (!errands || !errands.IsOn())
+			return false;
+
+		RZ_Opening o = FromSave(s, playerId, ent.GetOrigin());
+		// The line's scene isn't kept: it comes back as its short form, on to the runner
+		if (Stage(o) == RZ_EOpeningStage.LINE)
+		{
+			o.m_bLineShort = true;
+			o.m_iStage++;
+		}
+
+		if (o.m_bSpoke && Stage(o) == RZ_EOpeningStage.NONE)
+		{
+			profile.m_iOpenLife = -1;
+			RZ_Log.Info(string.Format("Openings: %1's saved opening had nothing left: over", RZ_Util.PlayerName(playerId)));
+			return false;
+		}
+
+		// Whoever was outside, a few metres from where you are now (the walk with you starts again)
+		if (o.m_bHadContact && !o.m_bContactDead)
+		{
+			HoldAgain(o);
+			string why = SpawnContact(o, ent.GetOrigin());
+			if (o.m_Contact)
+			{
+				Pattern(o);
+				m_Guide.MarkOpening(playerId);
+			}
+			else
+			{
+				o.m_bContactDead = true;
+				ReleaseWanderer(o, ent.GetOrigin());
+				RZ_Log.Info(string.Format("Openings: %1's contact can't stand again (%2): the steps go on without them", RZ_Util.PlayerName(playerId), why));
+			}
+		}
+
+		m_aOpenings.Insert(o);
+		SetFlag(o, FLAG_WHY, o.m_iReason);
+		SetFlag(o, FLAG_WHO, o.m_iWho);
+		SetFlag(o, FLAG_FIRST, 0);
+		SetFlag(o, FLAG_STEP, o.m_iStep);
+		if (o.m_bSpoke)
+			SetFlag(o, FLAG_END, o.m_iEnd + 1);
+
+		if (o.m_iTask != RZ_EOpeningTask.NONE)
+			SetFlag(o, FLAG_TASK, o.m_iTask);
+
+		if (o.m_vFavour != vector.Zero)
+			SetFlag(o, RZ_OpeningFavours.FLAG_FAVOUR, o.m_iFavour);
+
+		// The step kept for it, else handed again a moment from now
+		int stage = Stage(o);
+		RZ_Errand kept;
+		if (s.errand >= 0)
+			kept = errands.FindById(s.errand);
+
+		if (kept && (kept.m_eState != RZ_EErrandState.HELD || kept.m_iAsker != playerId))
+			kept = null;
+
+		bool reuse = kept != null && o.m_bSpoke && (stage == RZ_EOpeningStage.FAVOUR || stage == RZ_EOpeningStage.GIVE || stage == RZ_EOpeningStage.WALK || stage == RZ_EOpeningStage.LEAD);
+		if (kept && !reuse)
+			errands.Drop(kept, "done");
+
+		if (reuse)
+		{
+			o.m_iErrand = kept.m_iId;
+			o.m_bResolved = false;
+			o.m_bNext = false;
+			o.m_fStepAt = m_fClock;
+			kept.m_sGiver = "opening:" + o.m_iId.ToString();
+			RZ_UIFeed feed = m_GM.GetUIFeed();
+			if (feed && feed.GetTracker())
+				feed.GetTracker().Follow(playerId, -(RZ_UIFeed.ERRAND_ID_BASE + kept.m_iId), kept.Fill(kept.m_Def.m_sTitle));
+		}
+		else
+		{
+			o.m_iErrand = -1;
+			o.m_bResolved = true;
+			// The favour handed again is the fetch: your background's way is offered again with it
+			if (stage == RZ_EOpeningStage.FAVOUR)
+				o.m_bWayTaken = false;
+
+			if (o.m_bSpoke)
+			{
+				o.m_bNext = true;
+				o.m_fNextAt = m_fClock + SPEAK_DELAY + NEXT_STEP_DELAY;
+			}
+			else
+			{
+				o.m_fNextAt = m_fClock + SPEAK_DELAY;
+			}
+		}
+
+		// Where you left off, said once they're back in the world (not before the first step: the
+		// call-over says it)
+		if (o.m_bSpoke && (reuse || o.m_iStep >= 1))
+		{
+			if (o.m_Contact)
+				o.m_sBackLine = RZ_OpeningText.BackLine(stage, o.m_sSearch, o.m_sEndPlace);
+			else
+				o.m_sBackLine = RZ_OpeningText.BackNote(stage, o.m_sEndPlace);
+
+			o.m_fBackAt = m_fClock + SPEAK_DELAY;
+		}
+
+		string stepWord = "handed again";
+		if (reuse)
+			stepWord = "its step kept";
+
+		RZ_Log.Info(string.Format("Openings: %1's opening resumed at stage %2 (%3), %4", RZ_Util.PlayerName(playerId), o.m_iStage, StageName(o), stepWord));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The opening from its save, for this player, its place where they came back (no door, no scene).
+	protected RZ_Opening FromSave(RZ_OpeningSave s, int playerId, vector at)
+	{
+		RZ_Opening o = new RZ_Opening();
+		o.m_iId = m_iNextId;
+		m_iNextId++;
+		o.m_bResumed = true;
+		o.m_iPlayer = playerId;
+		o.m_iLife = s.life;
+		o.m_sBackground = s.background;
+		o.m_iLevel = s.level;
+		o.m_bFull = s.full;
+		o.m_sTown = s.town;
+		o.m_iReason = s.reason;
+		o.m_iWho = s.who;
+		o.m_iWanderer = s.wanderer;
+		o.m_bHadContact = s.hadContact;
+		o.m_bContactDead = s.contactDead;
+		o.m_sName = s.name;
+		o.m_sShort = s.shortName;
+		o.m_sWho = s.whoText;
+		o.m_sSpeaker = s.speaker;
+		o.m_iEnd = s.endFaction;
+		o.m_vEnd = Vector(s.ex, s.ey, s.ez);
+		o.m_sEndPlace = s.endPlace;
+		o.m_aPlan.InsertAll(s.plan);
+		o.m_iStage = s.stage;
+		o.m_iStep = s.step;
+		o.m_bSpoke = s.spoke;
+		o.m_sSearch = s.search;
+		o.m_iTask = s.task;
+		if (s.tasks)
+			o.m_aTasks.InsertAll(s.tasks);
+
+		o.m_iAsks = s.asks;
+		o.m_iFavour = s.favour;
+		o.m_vFavour = Vector(s.vx, s.vy, s.vz);
+		o.m_bFetched = s.fetched;
+		o.m_bWayTaken = s.wayTaken;
+		o.m_bHabitAsked = s.habitAsked;
+		o.m_bHabitPicked = s.habitPicked;
+		o.m_bLineShort = s.lineShort;
+		o.m_fBorn = m_fClock;
+		o.m_fStepAt = m_fClock;
+		if (!o.m_bHadContact || o.m_bContactDead)
+			o.m_iWanderer = -1;
+
+		RZ_OpeningPlace place = new RZ_OpeningPlace();
+		place.m_vPos = at;
+		place.m_iTown = m_GM.FindNearestSettlement(at);
+		o.m_Place = place;
+		return o;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An earlier life's wanderer as the contact: held off the road again while they stand here, if
+	//! they're still free; else the contact is only their name.
+	protected void HoldAgain(RZ_Opening o)
+	{
+		RZ_Wanderers wanderers = m_GM.GetWanderers();
+		if (o.m_iWanderer < 0 || !wanderers)
+		{
+			o.m_iWanderer = -1;
+			return;
+		}
+
+		RZ_Wanderer w = wanderers.FindById(o.m_iWanderer);
+		if (!w || w.m_bHasBody)
+		{
+			o.m_iWanderer = -1;
+			return;
+		}
+
+		wanderers.Hold(o.m_iWanderer, HOLD_BASE + o.m_iId);
 	}
 
 	//------------------------------------------------------------------------------------------------

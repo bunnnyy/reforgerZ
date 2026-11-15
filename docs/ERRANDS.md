@@ -39,7 +39,7 @@ Server only, except the journal row.
 - [Board and radio asks](#board-and-radio-asks)
 - [Handed errands: the openings' chain](#handed-errands-the-openings-chain)
 - [Telemetry and the admin view](#telemetry-and-the-admin-view)
-- [Saving and performance](#saving-and-performance)
+- [Saving and performance](#saving-and-performance) ([saved across restarts](#saved-across-restarts))
 - [Simplified](#simplified)
 
 ## The idea
@@ -206,9 +206,11 @@ Don't answer that."* Every other card keeps the rule: never to whoever made its 
   for anyone. A **mission's claim** on the subject overtakes any errand on it at the next tick (a
   stage is happening there); a **questline's or an arc's** long hold overtakes only a card whose
   premise lists the subject, and routines go on.
-- **Lapse.** A held errand lapses 45 real minutes after it's taken, or 20 minutes after its player
-  went offline; the giver *"stopped waiting"*. No penalty.
-- **Death.** Held errands lapse quietly. Nothing is lost but the errand.
+- **Lapse.** A held errand lapses 45 real minutes after it's taken (a handed step: its own time),
+  counted in real time whether its player is online or not; the giver *"stopped waiting"*. No
+  penalty. A logout or a restart never ends it sooner ([Saved across restarts](#saved-across-restarts)).
+- **Death.** Held errands go on, their time still running; a duty run under way ends unpaid, an
+  offer not yet taken lapses ([DESIGN.md](DESIGN.md#a-character-who-lasts)).
 - **Before the hour.** A way that must be done before a game hour (Before Dark, by half past eight)
   says so in game time and real minutes, and ends if the hour passes.
 
@@ -1271,16 +1273,43 @@ after someone who walks.
 
 ## Saving and performance
 
-- **Not saved:** a duty's table and its people, like every held errand.
+- **Not saved:** a duty's table and its people, the work done at a work site or a carry.
 - **Saved** (state.json, wiped with the season): each identity's ledger (cards done, cooldowns, the
   hour's Favor, cards today, errand Fame today, amends this character, the last three families, errands
   done, the work done for each faction (the ladder's second rung), the houses whose errands are half as likely for you, the twist count, the threads), the safehouses' named
   people, the locals, each house's count of errands done there and the Haven's reading day of each lot
-  (Fresh Chalk). Held errands,
-  offers, faults, soft holds, strangers, found hooks and the footfall grid are runtime only: a restart
-  lets them lapse.
+  (Fresh Chalk), and every **held errand** (below). Offers, faults, soft holds (a restored errand
+  holds its subject again), strangers, found hooks and the footfall grid are runtime only: a
+  restart lets them go.
 - **Cheap**: no map scans. A deal checks one giver's anchored definitions; steps are distance
   checks on the 5 s tick; faults, guards and call-outs run every 30 s.
+
+### Saved across restarts
+
+✅ A held errand is saved with every save and at every disconnect (`RZ_ErrandsSave.held`,
+`RZ_ErrandSave`), with the errand id counter, and comes back on load.
+
+| Kept | How |
+|---|---|
+| Which errand | Its definition's key: the routines, cards and duties, or the openings' own (the chain's steps, the favours, the case and its papers; `RZ_Errands.FindDef`). A key no longer in the game drops it, logged |
+| Whose | The identity and the character; another character's ends quietly |
+| Everything it was dealt with | The giver (key, name, title, faction, spot), the offer's spot, the holding, house, wanderer and town, the subject and its spots, its own number and word, every text slot, the way taken and every place (the step's, the first place, where a work site was put) |
+| Where it got to | The step and first-place progress, done or not, the pay modifiers (noisy, unasked, fallout, twist, suspect, caps, bonus), whether its carried item was given |
+| Its time | When it was taken, as real time: its own limit runs on in real seconds through a logout and a restart |
+| Its id | Kept, so the tracker row, a carried item's tag (`-1000 - id`), an opening's step and the tracked job still find it |
+
+**Away and back.** A player who leaves keeps their held errands, unbound: the step's prop, work site
+and carry come down, and nothing about them is checked but their time. When their character next
+stands (`RZ_Errands.Bind`, from the game mode's spawn, before the quest items come back) each one
+is bound to them again and its prop, work site or carry is put out again where it stood (a work
+site from the step's own place, so it never drifts); the case's lead and its papers' jobs are mapped
+to them again (no second lead is handed). An offer, a duty, a game, squad or scene under way, a talk
+objective and the fixer's steps aren't kept: an offer and a duty end when you leave (*"You left
+before it was done."*); a duty saved while it ran ends unpaid when you're back (*"It ended while you
+were away. Nothing's owed for it."*). An errand kept for someone away doesn't count toward the
+server's 12. *Simplified:* the work done at a work site is lost (the site opens fresh); Ferda's visit
+is a scene, so a restart or a logout ends his steps. Log: `Errands: restored <n> held errands (<k>
+dropped: <why>)`, `Errands: <key> bound to <player>`.
 
 ## Simplified
 
