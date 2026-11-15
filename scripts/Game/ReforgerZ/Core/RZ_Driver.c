@@ -587,6 +587,17 @@ class RZ_Driver
 			return;
 		}
 
+		// In the sea with the goal on land (the author: never swim a big water, unless the goal's in
+		// it): out at the first dry ground on the way, else the nearest round us
+		if (RZ_Util.IsWater(RZ_Util.GroundPos(here)) && !RZ_Util.IsWater(RZ_Util.GroundPos(s_vGoal)))
+		{
+			vector dry = DryToward(here, s_vGoal);
+			SCR_Global.TeleportLocalPlayer(dry + Vector(0, 0.3, 0));
+			m_vLastPos = dry;
+			Note("out of the water at " + Pos(dry));
+			return;
+		}
+
 		// A side spot round an obstacle: reached, or given 4 s
 		if (s_bDetour)
 		{
@@ -661,6 +672,38 @@ class RZ_Driver
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first dry ground on the way from `from` to `to` (every 20 m), else the nearest dry ground
+	//! round `from` (out to 2 km), else `to`.
+	protected static vector DryToward(vector from, vector to)
+	{
+		vector way = to - from;
+		way[1] = 0;
+		float len = way.Length();
+		if (len > 0.1)
+		{
+			way.Normalize();
+			for (float d = 20; d < len; d += 20)
+			{
+				vector p = RZ_Util.GroundPos(from + way * d);
+				if (!RZ_Util.IsWater(p))
+					return p;
+			}
+		}
+
+		for (int r = 50; r <= 2000; r += 50)
+		{
+			for (int k = 0; k < 16; k++)
+			{
+				vector q = RZ_Util.GroundPos(RZ_Compass.PointAt(from, k * 22.5, r));
+				if (!RZ_Util.IsWater(q))
+					return q;
+			}
+		}
+
+		return RZ_Util.GroundPos(to);
 	}
 
 	//------------------------------------------------------------------------------------------------
