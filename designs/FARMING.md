@@ -21,8 +21,10 @@ time on the server, with no time skip; tuned in the settings.
 
 - **Greenhouses** on the map (the vanilla greenhouse props): a few beds each.
 - **Garden plots** by farmhouses: the soft ground beside them.
-- Found from the map the way kitchens and work sites are (by the prop's name and the ground), so it
-  works on any map. Nothing is placed for it.
+- **Beds you build**: turn the soil on soft ground anywhere outside a town's streets and a bed is
+  made there.
+- The greenhouses and garden plots are found from the map the way kitchens and work sites are (by
+  the prop's name and the ground), so it works on any map. Nothing is placed for them.
 
 ## Doing it
 
@@ -40,6 +42,10 @@ All in the world, one short prompt per step, gamepad ready:
 - Anyone can harvest a ripe bed: guard it or lose it.
 - A ripe bed left alone goes over after a while and the bed is empty again.
 - Saved with the world, so a restart keeps the beds.
+- **A bed you built is removed after 48 hours unused** (real time: nobody planted, watered or
+  harvested it), the same way the built things clean-up clears fires and tents
+  ([DESIGN.md](../docs/DESIGN.md#things-players-build)). The map's greenhouse and garden beds are
+  never removed; an unused one just goes back to bare soil.
 
 ## Not in this design
 
@@ -50,4 +56,4 @@ seasons and cold. Each can come later as its own design.
 
 1. Seeds in loot, the four crops as items, the beds found in greenhouses, the four steps, growth as
    data, plant models near players.
-2. Garden plots by farmhouses.
+2. Garden plots by farmhouses, and beds you build (with their 48-hour removal).
