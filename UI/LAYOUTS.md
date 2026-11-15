@@ -525,15 +525,32 @@ Frame SeasonPage (root)
 ├─ (in the frame: Header, "SEASON 3", from the hall)
 ├─ Frame  SeasonPanel  (at (96, 168), 1728 × 840)
 │  ├─ Image (SeasonBg)
-│  └─ ScrollLayout SeasonScroll  (up and down scroll it), 24 in
-│     └─ SizeLayout (SeasonWidth, 1,040 wide) → VerticalLayout (SeasonBody)
-│        ├─ Text MajorsLabel   "THIS SEASON'S STORIES"  │ Text MajorsList   condensed 20, wraps
-│        ├─ Text ZoneLabel     "AS THE ZONE TELLS IT"   │ Text ZoneList     condensed 20, wraps
-│        ├─ Text YouLabel      "AND YOU" (hidden empty) │ Text YouList      your lines, then UNFINISHED
-│        ├─ Text SeasonLabel   "THIS SEASON'S RECORDS"  │ Text SeasonList   each record "category: name (value)"
-│        ├─ Text AllTimeLabel  "ALL TIME" (hidden empty)│ Text AllTimeList
-│        └─ Text PastLabel     "THE LAST SEASONS" (hidden empty) │ Text PastList
-└─ Text   Waiting       centred, italic 18, "Asking around..." (until the data arrives)
+│  ├─ ScrollLayout SeasonScroll  (up and down scroll it), 24 in, its right edge 424 in (clear of the button)
+│  │  └─ SizeLayout (SeasonWidth, 1,040 wide) → VerticalLayout (SeasonBody)
+│  │     ├─ Text MajorsLabel   "THIS SEASON'S STORIES"  │ Text MajorsList   condensed 20, wraps
+│  │     ├─ Text ZoneLabel     "AS THE ZONE TELLS IT"   │ Text ZoneList     condensed 20, wraps
+│  │     ├─ Text YouLabel      "AND YOU" (hidden empty) │ Text YouList      your lines, then UNFINISHED
+│  │     ├─ Text SeasonLabel   "THIS SEASON'S RECORDS"  │ Text SeasonList   each record "category: name (value)"
+│  │     ├─ Text AllTimeLabel  "ALL TIME" (hidden empty)│ Text AllTimeList
+│  │     └─ Text PastLabel     "THE LAST SEASONS" (hidden empty) │ Text PastList
+│  ├─ Button ResetButton  380 × 60 at (1324, 24), the panel's top right
+│  │  └─ Overlay ResetBox: Image ResetBg (#331815), Panel ResetLine (outline_2px, #E4826F),
+│  │                       Text ResetText "RESET CHARACTER" bold 22, bone, centred
+│  └─ Text   ResetNote    at (1324, 94), 380 wide, condensed 18, dim, wraps: "Ends this character and starts someone new. One a real day."
+├─ Text   Waiting       centred, italic 18, "Asking around..." (until the data arrives)
+└─ Frame  ResetPopup    the whole page, hidden until the button is pressed
+   ├─ Image (ResetDim)     the whole page, #0A0C0D at 80%
+   └─ Frame  ResetCard     1000 × 640, centred
+      ├─ Image (ResetCardBg)   #121416 at 98%   │ Image (ResetCardBar) 6 wide down the left, #E4826F
+      ├─ Text  ResetTitle      at (48, 36), 904 wide, condensed bold 34, bone: "RESET CHARACTER?"
+      ├─ Text  ResetWho        at (48, 92), bold 24, hazard: name · background · deaths (hidden empty)
+      ├─ Text  ResetBody       at (48, 140), 904 × 330, condensed 24, bone, wraps: the warning
+      ├─ Button ResetConfirm   320 × 64 at (48, 490): Overlay ResetConfirmBox: Image ResetConfirmBg (#521E19),
+      │                        Panel ResetConfirmLine (outline_2px; the script tints it bone when chosen), Text ResetConfirmText "CONFIRM"
+      ├─ Button ResetCancel    320 × 64 at (392, 490): Overlay ResetCancelBox: Image ResetCancelBg (#1A1D20),
+      │                        Panel ResetCancelLine (as above), Text ResetCancelText "CANCEL"
+      ├─ HorizontalLayout ResetPrompts  at (48, 574), 664 wide: the pop-up's prompts the script makes (A Choose, B Cancel)
+      └─ Text  ResetPromptsText the same place, bold 20, dim, "A: CHOOSE   B / ESC: CANCEL" (shown only when the prompts can't be made)
 ```
 
 ## Talk screen: `RZ_TalkMenu.layout` and `RZ_TalkReply.layout`
@@ -610,7 +627,10 @@ Frame (root, full screen)
    ├─ Image  (PaperBg)      #EDE7D6, the whole sheet (flat; a paper texture later)
    ├─ Text   PaperTitle     at (72, 60), 816 wide, condensed bold 34, ink #1C1A16
    ├─ Text   PaperHow       at (72, 110), regular 21, #5F5C55 (hidden when empty)
-   ├─ Text   PaperText      at (72, 160), 816 × 520, regular 30, ink, wraps
+   ├─ Frame  PaperFigure    at (72, 150), 816 × 380, ignores the cursor, hidden: a drawn page's figure, filled by the
+   │                        script (two canvases and RZ_PaperLabel labels, docs/UI.md "Drawn pages")
+   ├─ Text   PaperText      at (72, 160), 816 × 520, regular 30, ink, wraps; under a figure the script moves it to
+   │                        (72, 544), 816 × 136
    ├─ Image  (PaperRule)    across the paper, 100 above its foot, ink at 16%
    ├─ Button PrevButton     44 × 44 at the bottom left (72, -30), "<" in amber on ink (hidden on the first page)
    ├─ Text   PaperPages     at (128, -38), 100 wide, bold 21, #5F5C55, centred ("1 / 2")
@@ -621,6 +641,14 @@ Frame (root, full screen)
 ```
 
 Unlike the mockup, the paper has no grain or folds (they'd need a texture) and is a fixed 800 high.
+
+`RZ_PaperLabel.layout` is one word or number on a drawn page, made from script into `PaperFigure`
+as many times as the figure needs (`RZ_PaperFigureDraw.LABEL_LAYOUT`, by its GUID; no setting):
+
+```
+Frame PaperLabel (root, 120 × 32; the script sets its place and size)
+└─ Text  LabelText   fills it, condensed regular 24, ink, centred (the script sets the words and tints it)
+```
 
 ## Death brief: `RZ_DeathBrief.layout`
 

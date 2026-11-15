@@ -137,10 +137,20 @@ class RZ_NotebookMenu : RZ_MenuBase
 	protected int m_iTab = -1;
 	protected ref RZ_NotebookPage m_Page;
 	protected Widget m_wPage;
+	protected static RZ_NotebookMenu s_Open;
+
+	//------------------------------------------------------------------------------------------------
+	//! Closes the notebook if it's open (the Season page after Reset character is confirmed).
+	static void CloseOpen()
+	{
+		if (s_Open)
+			s_Open.Close();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnOpened()
 	{
+		s_Open = this;
 		RZ_Notebook.OnOpened();
 		InputManager input = GetGame().GetInputManager();
 		input.AddActionListener("MenuTabLeft", EActionTrigger.DOWN, OnTabLeft);
@@ -150,6 +160,8 @@ class RZ_NotebookMenu : RZ_MenuBase
 		input.AddActionListener("MenuSelect", EActionTrigger.DOWN, OnSelect);
 		input.AddActionListener("RZ_RadioFilter", EActionTrigger.DOWN, OnFilter);
 		input.AddActionListener("RZ_TrackJob", EActionTrigger.DOWN, OnTrack);
+		input.AddActionListener("MenuLeft", EActionTrigger.DOWN, OnLeft);
+		input.AddActionListener("MenuRight", EActionTrigger.DOWN, OnRight);
 		for (int t = 0; t < RZ_Notebook.TABS; t++)
 		{
 			RZ_UIW.OnClick(m_wRoot, "Tab" + t.ToString(), m_Click);
@@ -170,8 +182,13 @@ class RZ_NotebookMenu : RZ_MenuBase
 		input.RemoveActionListener("MenuSelect", EActionTrigger.DOWN, OnSelect);
 		input.RemoveActionListener("RZ_RadioFilter", EActionTrigger.DOWN, OnFilter);
 		input.RemoveActionListener("RZ_TrackJob", EActionTrigger.DOWN, OnTrack);
+		input.RemoveActionListener("MenuLeft", EActionTrigger.DOWN, OnLeft);
+		input.RemoveActionListener("MenuRight", EActionTrigger.DOWN, OnRight);
 		if (m_Page)
 			m_Page.Close();
+
+		if (s_Open == this)
+			s_Open = null;
 
 		RZ_Notebook.OnClosed(Math.Max(0, m_iTab));
 		super.OnMenuClose();
@@ -397,6 +414,31 @@ class RZ_NotebookMenu : RZ_MenuBase
 		if (m_Page && m_wPage)
 			m_Page.Track();
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Left (-1) or right (1): the D-pad, the left stick, the arrows (the Season page's pop-up).
+	protected void OnLeft(float value = 0, EActionTrigger reason = 0)
+	{
+		if (m_Page && m_wPage)
+			m_Page.Side(-1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnRight(float value = 0, EActionTrigger reason = 0)
+	{
+		if (m_Page && m_wPage)
+			m_Page.Side(1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! B or Esc: a page's pop-up closes first (the Season page's Reset character); else the notebook.
+	override protected void Back()
+	{
+		if (m_Page && m_wPage && m_Page.Back())
+			return;
+
+		Close();
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -481,6 +523,19 @@ class RZ_NotebookPage
 	//------------------------------------------------------------------------------------------------
 	void Track()
 	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Left (-1) or right (1). Nothing by default.
+	void Side(int dir)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! B or Esc: true if the page used it (a pop-up closed), false to close the notebook.
+	bool Back()
+	{
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -589,25 +644,13 @@ class RZ_StandingPage : RZ_NotebookPage
 		AddChoose(actions, labels);
 		actions.Insert("MenuSelect");
 		labels.Insert("Open");
-		actions.Insert("RZ_TrackJob");
-		labels.Insert("Reset character");
 		AddTabsAndClose(actions, labels);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override string PromptLine()
 	{
-		return "D-pad: choose · A: open · Y: reset character · LB/RB: tabs · B: close";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Y (T or Space): Reset character. The server asks first and resets only on a second press
-	//! within its window (Backgrounds/RZ_Character.c); the answers come as notices.
-	override void Track()
-	{
-		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
-		if (ui)
-			ui.AskReset();
+		return "D-pad: choose · A: open · LB/RB: tabs · B: close";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2113,10 +2156,22 @@ class RZ_RadioPage : RZ_NotebookPage
 //------------------------------------------------------------------------------------------------
 //! The season tab (docs/UI.md, "The notebook"), one page that scrolls: the four majors as they stand,
 //! in the epilogue the season as the Zone tells it and your lines, then the hall of fame (this
-//! season's records and names, all time, the last seasons; Persistence/RZ_HallOfFame.c). Read only;
-//! up and down scroll it.
+//! season's records and names, all time, the last seasons; Persistence/RZ_HallOfFame.c). Up and
+//! down scroll it. Its one button, **Reset character** (ResetButton, top right), opens a pop-up
+//! (ResetPopup) that says who you are and what a reset takes and keeps, with Confirm and Cancel:
+//! the pad's focus starts on the button and on Cancel in the pop-up, left/right move between the
+//! two, A presses, B or Esc cancels; the mouse clicks either. Confirm asks the server
+//! (RZ_PlayerUIComponent.AskReset), which resets once a real day (Backgrounds/RZ_Character.c).
 class RZ_SeasonPage : RZ_NotebookPage
 {
+	protected static const int CHOICE_CONFIRM = 0;
+	protected static const int CHOICE_CANCEL = 1;
+
+	protected bool m_bAsking;			// the pop-up is open
+	protected int m_iChoice = CHOICE_CANCEL;
+	protected bool m_bCanReset;			// the last Standing payload: a character, and today's reset not used
+	protected float m_fPressedAt = -1;	// A on a focused button may come both as MenuSelect and as its click
+
 	//------------------------------------------------------------------------------------------------
 	override ResourceName Layout(RZ_UISettings settings)
 	{
@@ -2130,29 +2185,300 @@ class RZ_SeasonPage : RZ_NotebookPage
 		if (!ui)
 			return 0;
 
-		return ui.GetSeasonVersion() * 1000 + ui.GetHallVersion();
+		// The Standing payload's head line is the pop-up's who and when
+		return ui.GetSeasonVersion() * 1000 + ui.GetHallVersion() + ui.GetStandingVersion() * 7919;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnOpened()
 	{
+		m_bAsking = false;
+		RZ_UIW.Show(m_wRoot, "ResetPopup", false);
+		RZ_UIW.OnClick(m_wRoot, "ResetButton", m_Click);
+		RZ_UIW.OnClick(m_wRoot, "ResetConfirm", m_Click);
+		RZ_UIW.OnClick(m_wRoot, "ResetCancel", m_Click);
+		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "ResetPrompts", "MenuSelect", "Choose");
+		prompts = RZ_UIW.AddPrompt(m_wRoot, "ResetPrompts", "MenuBack", "Cancel") && prompts;
+		RZ_UIW.Show(m_wRoot, "ResetPrompts", prompts);
+		RZ_UIW.Show(m_wRoot, "ResetPromptsText", !prompts);
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (!ui)
 			return;
 
 		ui.Ask(RZ_UIFeed.PAYLOAD_SEASON);
 		ui.Ask(RZ_UIFeed.PAYLOAD_HALL);
+		ui.Ask(RZ_UIFeed.PAYLOAD_STANDING);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The pad's focus: the Reset character button (the page's one thing to press).
+	//! VERIFY: the pad's focus shows on a blank-style button (else only the page's own look, the red
+	//! border, marks it) and A reaches it as MenuSelect and maybe as its click too (Debounce takes one).
+	override bool FocusFirst()
+	{
+		Widget button = RZ_UIW.Find(m_wRoot, "ResetButton");
+		if (!button)
+			return false;
+
+		RZ_UIW.FocusWidget(button);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Move(int dir)
 	{
+		// The pop-up keeps the focus on its buttons; the page scrolls under nothing
+		if (m_bAsking)
+		{
+			FocusChoice();
+			return;
+		}
+
 		RZ_UIW.Scroll(m_wRoot, "SeasonScroll", dir);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Left/right in the pop-up: Confirm on the left, Cancel on the right.
+	override void Side(int dir)
+	{
+		if (!m_bAsking)
+			return;
+
+		if (dir < 0 && m_bCanReset)
+			m_iChoice = CHOICE_CONFIRM;
+		else
+			m_iChoice = CHOICE_CANCEL;
+
+		FocusChoice();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A or Enter: on the page, opens the pop-up; in it, presses the chosen button.
+	override void Select()
+	{
+		if (!Debounce())
+			return;
+
+		if (!m_bAsking)
+		{
+			OpenAsk();
+			return;
+		}
+
+		if (m_iChoice == CHOICE_CONFIRM)
+			Confirm();
+		else
+			CloseAsk();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnClick(Widget w, string name)
+	{
+		if (name == "ResetButton")
+		{
+			if (!m_bAsking && Debounce())
+				OpenAsk();
+		}
+		else if (name == "ResetConfirm")
+		{
+			if (m_bAsking && Debounce())
+				Confirm();
+		}
+		else if (name == "ResetCancel")
+		{
+			if (m_bAsking && Debounce())
+				CloseAsk();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! B or Esc with the pop-up open: Cancel.
+	override bool Back()
+	{
+		if (!m_bAsking)
+			return false;
+
+		CloseAsk();
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One press, however it arrives (MenuSelect and the focused button's click within 0.2 s).
+	protected bool Debounce()
+	{
+		float now = RZ_UIW.Now();
+		if (now - m_fPressedAt < 0.2)
+			return false;
+
+		m_fPressedAt = now;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OpenAsk()
+	{
+		m_bAsking = true;
+		m_iChoice = CHOICE_CANCEL;
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+			ui.Ask(RZ_UIFeed.PAYLOAD_STANDING);
+
+		DrawAsk();
+		RZ_UIW.Show(m_wRoot, "ResetPopup", true);
+		FocusChoice();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CloseAsk()
+	{
+		m_bAsking = false;
+		RZ_UIW.Show(m_wRoot, "ResetPopup", false);
+		FocusFirst();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Confirm: the server resets (or says why it can't, as a notice). The notebook closes, since the
+	//! character is about to die.
+	protected void Confirm()
+	{
+		if (!m_bCanReset)
+			return;
+
+		CloseAsk();
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+			ui.AskReset();
+
+		RZ_NotebookMenu.CloseOpen();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void FocusChoice()
+	{
+		string name = "ResetCancel";
+		if (m_iChoice == CHOICE_CONFIRM)
+			name = "ResetConfirm";
+
+		RZ_UIW.Focus(m_wRoot, name);
+		DrawChoice();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The chosen button lit (a bone border), the other a dim one, so the pad's choice always shows;
+	//! Confirm hidden while a reset isn't allowed.
+	protected void DrawChoice()
+	{
+		Color on = RZ_UIColor.Bone();
+		Color off = RZ_UIW.Rgb(42, 46, 49);
+		if (m_iChoice == CHOICE_CONFIRM)
+		{
+			RZ_UIW.Tint(m_wRoot, "ResetConfirmLine", on);
+			RZ_UIW.Tint(m_wRoot, "ResetCancelLine", off);
+		}
+		else
+		{
+			RZ_UIW.Tint(m_wRoot, "ResetConfirmLine", off);
+			RZ_UIW.Tint(m_wRoot, "ResetCancelLine", on);
+		}
+
+		RZ_UIW.Show(m_wRoot, "ResetConfirm", m_bCanReset);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The pop-up's words from the Standing payload's head line (H|name|background|deaths|...|hours
+	//! until a reset|has a character): who this is, and what a reset takes and keeps.
+	protected void DrawAsk()
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		string name = "";
+		string background = "";
+		int deaths = 0;
+		int hours = 0;
+		bool hasChar = true;
+		bool heard = false;
+		if (ui)
+		{
+			array<ref array<string>> recs = {};
+			RZ_MenuBase.Records(ui.GetStanding(), recs);
+			foreach (array<string> f : recs)
+			{
+				if (RZ_UIText.Str(f, 0) != "H")
+					continue;
+
+				heard = true;
+				name = RZ_UIText.Str(f, 1);
+				background = RZ_UIText.Str(f, 2);
+				deaths = RZ_UIText.Int(f, 3);
+				hours = RZ_UIText.Int(f, 6);
+				// An older server sends no seventh field: take it there's a character
+				if (f.Count() > 7)
+					hasChar = RZ_UIText.Int(f, 7) == 1;
+			}
+		}
+
+		string who = name;
+		if (!background.IsEmpty())
+			who = who + " · " + background;
+
+		if (heard)
+			who = who + " · " + RZ_SeasonPage.DeathsText(deaths);
+
+		who.ToUpper();
+		RZ_UIW.SetText(m_wRoot, "ResetWho", who);
+		RZ_UIW.Show(m_wRoot, "ResetWho", !who.IsEmpty());
+
+		string body;
+		m_bCanReset = hasChar && hours <= 0;
+		if (!hasChar)
+			body = "You have no character to reset yet. The next spawn starts one.";
+		else if (hours > 0)
+			body = string.Format("One reset a real day. You can reset again in %1.", RZ_SeasonPage.HoursText(hours));
+		else
+			body = RZ_SeasonPage.WarningText();
+
+		RZ_UIW.SetText(m_wRoot, "ResetBody", body);
+		if (!m_bCanReset)
+			m_iChoice = CHOICE_CANCEL;
+
+		DrawChoice();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a reset takes and keeps, as the pop-up says it (docs/DESIGN.md, "A character who lasts").
+	static string WarningText()
+	{
+		string s = "This person is gone. They die where they stand, and what they carry stays on the body. Their name stays on the wall.\n\n";
+		s += "Gone with them: your standing and Favor with every faction, the trust the errand givers had in you, the quests and errands you hold, your habit, and what your map has uncovered.\n\n";
+		s += "Kept: your Legacy, your unlocks and the hall of fame.\n\n";
+		s += "One reset a real day. The next spawn is someone new.";
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string DeathsText(int deaths)
+	{
+		if (deaths == 1)
+			return "1 death";
+
+		return string.Format("%1 deaths", deaths);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string HoursText(int hours)
+	{
+		if (hours == 1)
+			return "an hour";
+
+		return string.Format("%1 hours", hours);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Redraw()
 	{
+		// The pop-up first: it's drawn whether or not the season's data has come
+		if (m_bAsking)
+			DrawAsk();
+
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		bool have = false;
 		if (ui)

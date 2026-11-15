@@ -573,7 +573,8 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! H|player name|background|life|the whole picture (RZ_RepNamesPage.Header)|the habit's line (RZ_Habits.StandingLine, "" none)
+	//! H|player name|background|life|the whole picture (RZ_RepNamesPage.Header)|the habit's line (RZ_Habits.StandingLine, "" none)|
+	//!   hours until a reset is allowed again (0 now)|has a character (0/1): the last two for the Season page's Reset character pop-up
 	//! F|faction|fame|infamy|favor|tier|need|need line|rep (RZ_ERep)|notoriety|word|note|left to forgive (-1 no budget)|owed (0/1)
 	//! The fields after the need line are new (docs/REPUTATION.md, "Reputations"): older layouts
 	//! read the first eight and ignore the rest. The word is what the faction calls you; owed is 1 while
@@ -592,7 +593,11 @@ class RZ_UIFeed
 			bgName = bg.m_sName;
 
 		RZ_UILine head = new RZ_UILine("H");
-		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iDeaths).Add(RZ_RepNamesPage.Header(m_GM, playerId)).Add(RZ_Habits.StandingLine(p)).End();
+		int hasCharacter = 0;
+		if (p.HasCharacter())
+			hasCharacter = 1;
+
+		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iDeaths).Add(RZ_RepNamesPage.Header(m_GM, playerId)).Add(RZ_Habits.StandingLine(p)).AddInt(RZ_Character.ResetWaitHours(p)).AddInt(hasCharacter).End();
 		IEntity standingEnt = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		vector standingAt = vector.Zero;
 		if (standingEnt)
@@ -1183,7 +1188,7 @@ class RZ_UIFeed
 			if (p.HasCharacter() && bg.m_sId != p.m_sBackgroundId)
 			{
 				locked = "1";
-				why = "Your character goes on as someone else. Reset your character (the notebook's Standing page) to start as this.";
+				why = "Your character goes on as someone else. Reset your character (the notebook's Season page) to start as this.";
 			}
 
 			RZ_UILine lnB = new RZ_UILine("B");

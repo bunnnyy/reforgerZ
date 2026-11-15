@@ -54,8 +54,8 @@ FrameWidgetClass "{E24505BF71C59D5F}" {
       OffsetLeft 24
       PositionY 12
       OffsetTop 12
-      SizeX -48
-      OffsetRight 24
+      SizeX -448
+      OffsetRight 424
       SizeY -24
       OffsetBottom 12
       Alignment 0 0
@@ -277,6 +277,89 @@ FrameWidgetClass "{E24505BF71C59D5F}" {
       }
      }
     }
+    ButtonWidgetClass "{2A8344A28DE8FFA2}" {
+     Name "ResetButton"
+     Slot FrameWidgetSlot "{30680FFEE167B930}" {
+      Anchor 0 0 0 0
+      PositionX 1324
+      OffsetLeft 1324
+      PositionY 24
+      OffsetTop 24
+      SizeX 380
+      OffsetRight -1704
+      SizeY 60
+      OffsetBottom -84
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{94B682C50C3E6ED2}" {
+       Name "ResetBox"
+       Slot ButtonWidgetSlot "{96E338B23A190DC4}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{1332671DC7A8B54F}" {
+         Name "ResetBg"
+         Slot OverlayWidgetSlot "{8DD264482DF476CD}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.2 0.094 0.082 1
+         Size 1 1
+        }
+        PanelWidgetClass "{F24DD2941982FE51}" {
+         Name "ResetLine"
+         Slot OverlayWidgetSlot "{B619AD92FBCDDA5A}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.894 0.51 0.435 1
+         style outline_2px
+        }
+        TextWidgetClass "{151418905AF86081}" {
+         Name "ResetText"
+         Slot OverlayWidgetSlot "{BE93D720D9E50320}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.91 0.886 0.816 1
+         Text "RESET CHARACTER"
+         "Font Size" 22
+         "Min Font Size" 22
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{AF9293526A39B906}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    TextWidgetClass "{97DB09BAB27C5FE5}" {
+     Name "ResetNote"
+     Slot FrameWidgetSlot "{D92B66E92FF3A9A9}" {
+      Anchor 0 0 0 0
+      PositionX 1324
+      OffsetLeft 1324
+      PositionY 94
+      OffsetTop 94
+      SizeX 380
+      OffsetRight -1704
+      SizeY 56
+      OffsetBottom -150
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "Ends this character and starts someone new. One a real day."
+     "Font Size" 18
+     "Min Font Size" 18
+     Wrap 1
+     FontProperties FontProperties "{0B3D2BA5A81E9A6D}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
    }
   }
   TextWidgetClass "{F6A8FFA331B5868D}" {
@@ -301,6 +384,317 @@ FrameWidgetClass "{E24505BF71C59D5F}" {
    FontProperties FontProperties "{8837CA2C58491F0E}" {
     Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
     Italic 1
+   }
+  }
+  FrameWidgetClass "{B5E48F0C39D5AD6B}" {
+   Name "ResetPopup"
+   Slot FrameWidgetSlot "{3EC654FD0654AC0F}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+   "Is Visible" 0
+   {
+    ImageWidgetClass "{E90A5ACED03329FC}" {
+     Name "ResetDim"
+     Slot FrameWidgetSlot "{B692AC2A862AC994}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.039 0.047 0.051 0.8
+     Size 1 1
+    }
+    FrameWidgetClass "{E9539694C599ECCC}" {
+     Name "ResetCard"
+     Slot FrameWidgetSlot "{29645F5C1E2E5A5C}" {
+      Anchor 0.5 0.5 0.5 0.5
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 1000
+      OffsetRight -1000
+      SizeY 640
+      OffsetBottom -640
+      Alignment 0.5 0.5
+     }
+     {
+      ImageWidgetClass "{8D729F55BFF5A02A}" {
+       Name "ResetCardBg"
+       Slot FrameWidgetSlot "{B8485D77C146F518}" {
+        Anchor 0 0 1 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 0
+        OffsetRight 0
+        SizeY 0
+        OffsetBottom 0
+        Alignment 0 0
+       }
+       Color 0.071 0.078 0.086 0.98
+       Size 1 1
+      }
+      ImageWidgetClass "{B9E915647AFB0BE1}" {
+       Name "ResetCardBar"
+       Slot FrameWidgetSlot "{DB2328352999F90D}" {
+        Anchor 0 0 0 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 6
+        OffsetRight -6
+        SizeY 0
+        OffsetBottom 0
+        Alignment 0 0
+       }
+       Color 0.894 0.51 0.435 1
+       Size 1 1
+      }
+      TextWidgetClass "{F760495C66AD04EF}" {
+       Name "ResetTitle"
+       Slot FrameWidgetSlot "{3DCE6EFA839BB360}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 36
+        OffsetTop 36
+        SizeX 904
+        OffsetRight -952
+        SizeY 44
+        OffsetBottom -80
+        Alignment 0 0
+       }
+       Color 0.91 0.886 0.816 1
+       Text "RESET CHARACTER?"
+       "Font Size" 34
+       "Min Font Size" 34
+       FontProperties FontProperties "{263D372D10A84BEB}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{AFE74581D84F6775}" {
+       Name "ResetWho"
+       Slot FrameWidgetSlot "{0E6400F0C024D0A1}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 92
+        OffsetTop 92
+        SizeX 904
+        OffsetRight -952
+        SizeY 32
+        OffsetBottom -124
+        Alignment 0 0
+       }
+       Color 0.949 0.761 0.188 1
+       Text ""
+       "Font Size" 24
+       "Min Font Size" 24
+       FontProperties FontProperties "{C1C4D5D1C2B515A8}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{874633948EA41B09}" {
+       Name "ResetBody"
+       Slot FrameWidgetSlot "{8F17A908F6A732D8}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 140
+        OffsetTop 140
+        SizeX 904
+        OffsetRight -952
+        SizeY 330
+        OffsetBottom -470
+        Alignment 0 0
+       }
+       Color 0.91 0.886 0.816 1
+       Text ""
+       "Font Size" 24
+       "Min Font Size" 22
+       Wrap 1
+       FontProperties FontProperties "{53E326B6FA1F5382}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      ButtonWidgetClass "{CBDC278E2F6D4F72}" {
+       Name "ResetConfirm"
+       Slot FrameWidgetSlot "{95AF8479ED617D6C}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 490
+        OffsetTop 490
+        SizeX 320
+        OffsetRight -368
+        SizeY 64
+        OffsetBottom -554
+        Alignment 0 0
+       }
+       style blank
+       {
+        OverlayWidgetClass "{02E1CED581668CD7}" {
+         Name "ResetConfirmBox"
+         Slot ButtonWidgetSlot "{C1B415576855AD48}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          ImageWidgetClass "{217F3AB288A81B61}" {
+           Name "ResetConfirmBg"
+           Slot OverlayWidgetSlot "{E2DD61C6F145CCB5}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.32 0.118 0.098 1
+           Size 1 1
+          }
+          PanelWidgetClass "{535EFE485500DA7C}" {
+           Name "ResetConfirmLine"
+           Slot OverlayWidgetSlot "{D019456142F397B5}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.165 0.18 0.192 1
+           style outline_2px
+          }
+          TextWidgetClass "{62D41AE8C7B52606}" {
+           Name "ResetConfirmText"
+           Slot OverlayWidgetSlot "{DE1863AE3F91D18F}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+           }
+           Color 0.91 0.886 0.816 1
+           Text "CONFIRM"
+           "Font Size" 22
+           "Min Font Size" 22
+           "Horizontal Alignment" Center
+           FontProperties FontProperties "{71E98580C4289B63}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+      ButtonWidgetClass "{42D6548718C6D823}" {
+       Name "ResetCancel"
+       Slot FrameWidgetSlot "{19A0241DA12E01B4}" {
+        Anchor 0 0 0 0
+        PositionX 392
+        OffsetLeft 392
+        PositionY 490
+        OffsetTop 490
+        SizeX 320
+        OffsetRight -712
+        SizeY 64
+        OffsetBottom -554
+        Alignment 0 0
+       }
+       style blank
+       {
+        OverlayWidgetClass "{667FB48F6C7E96A1}" {
+         Name "ResetCancelBox"
+         Slot ButtonWidgetSlot "{D5502D8AAB8FC383}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         {
+          ImageWidgetClass "{1190BD9A6B7480E0}" {
+           Name "ResetCancelBg"
+           Slot OverlayWidgetSlot "{9E38877B1CCA94B8}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.102 0.114 0.125 1
+           Size 1 1
+          }
+          PanelWidgetClass "{71FD37DCF832D45E}" {
+           Name "ResetCancelLine"
+           Slot OverlayWidgetSlot "{BF8B226FC6F0405B}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.91 0.886 0.816 1
+           style outline_2px
+          }
+          TextWidgetClass "{607F381E4847997D}" {
+           Name "ResetCancelText"
+           Slot OverlayWidgetSlot "{B90AC7C48BE4F0A9}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+           }
+           Color 0.91 0.886 0.816 1
+           Text "CANCEL"
+           "Font Size" 22
+           "Min Font Size" 22
+           "Horizontal Alignment" Center
+           FontProperties FontProperties "{F82A2FDD4E23A999}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+      HorizontalLayoutWidgetClass "{9AA2CFDF36F40E51}" {
+       Name "ResetPrompts"
+       Slot FrameWidgetSlot "{D26EC18F97C80CDD}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 574
+        OffsetTop 574
+        SizeX 664
+        OffsetRight -712
+        SizeY 40
+        OffsetBottom -614
+        Alignment 0 0
+       }
+      }
+      TextWidgetClass "{0005BF39BED07EFE}" {
+       Name "ResetPromptsText"
+       Slot FrameWidgetSlot "{87B799F71562B3E0}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 580
+        OffsetTop 580
+        SizeX 664
+        OffsetRight -712
+        SizeY 28
+        OffsetBottom -608
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.639 0.62 0.565 1
+       Text "A: CHOOSE   B / ESC: CANCEL"
+       "Font Size" 20
+       "Min Font Size" 20
+       FontProperties FontProperties "{F2BA3FD38A4A503A}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+     }
+    }
    }
   }
  }

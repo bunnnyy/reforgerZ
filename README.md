@@ -14,7 +14,7 @@ and one way to end it: **research the cure.**
   unlocked through Legacy.
 - **A character who lasts:** a death costs what you carried, nothing else: standing, quests,
   errands and memory stay, quest items come back in your pack, and you come round free at the
-  nearest camp that takes you in. Reset character (the notebook's Standing page) starts someone new
+  nearest camp that takes you in. Reset character (a button on the notebook's Season page) starts someone new
   ([DESIGN.md](docs/DESIGN.md#a-character-who-lasts)).
 - **Openings:** every new character starts somewhere random that suits who you were, coming out of a door
   for a reason (the last bottle empty, your group gone three days, the fever broken), and whoever's

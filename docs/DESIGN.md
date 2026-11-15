@@ -909,9 +909,12 @@ bandage, one water bottle and the background's own tool (the Mechanic's wrench, 
 Operator's radio, the Nurse's and Doctor's dressing) stay; every weapon, magazine, round and
 anything else goes; the new character's compass, paper map and wind-up radio aren't given again. No other cost: no debuff, no Favor owed, no longer timer than vanilla's.
 
-**Reset character.** On the notebook's Standing page, **Y** (T or Space): the first press asks
-(*"This person is gone. Their name stays on the wall."*), a second within 10 seconds resets. One a
-real day. The character is killed where they stand; the next spawn picks a background and runs the
+**Reset character.** A button on the notebook's Season page, **Reset character**: a click, or A with
+the pad (its focus starts there), opens a pop-up with the character's name, background and deaths
+and a plain warning (*"This person is gone. They die where they stand ... Their name stays on the
+wall."*, then what goes and what's kept), and **Confirm** and **Cancel** (Cancel has the focus; B or
+Esc cancels; [UI.md](UI.md#the-notebook)). Confirm resets at once. One a real day: until then the
+pop-up says how many hours are left and has no Confirm, and the server refuses anyway. The character is killed where they stand; the next spawn picks a background and runs the
 opening. A reset clears standing, Favor, the trust ladder, quests and errands held, the habit and
 the fog; Legacy, unlocks, the season record and the hall of fame stay
 ([REPUTATION.md](REPUTATION.md#characters-and-carry-over): Word gets around, the name carried as
@@ -3699,6 +3702,10 @@ it's handed over, and the world streams in there.
 | Your group is gone | **Guidance > Group gone weight** (18) | "... Four bedrolls, one of them yours. They said back by dark, three days ago." | Their note under a stone, "Gone to see about *the next town*. Back by dark.", that town circled on a map |
 | The fever broke | **Guidance > Fever weight** (12) | "... The fever broke in the night. The bite on your arm is only a scar." | Chalk on the door: IF YOU'RE READING THIS, YOU'RE YOU. COME FIND US. |
 
+All three are drawn on the reader's paper, not described: the calendar's grid and strokes, the note's
+pencil map with the town ringed, the dark door with its chalk and four strokes
+([UI.md](UI.md#subtitles-and-the-reader), "Drawn pages").
+
 A brand-new player's two weights are halved, so they lean to the hiding place. The fever is the
 story's: it changes nothing about your infection.
 
@@ -4143,7 +4150,7 @@ A player who comes back after 30+ real days gets two levels more guidance for tw
 For play-tests, a server admin's `/level 0` to `/level 3` (or the talk screen's **[Admin] My guidance
 level** row, which steps it on) sets their own level from their next character: their counted
 characters become that level's first, the refresher is cleared and the character they're playing
-doesn't count. A death doesn't start one: reset the character on the Standing page.
+doesn't count. A death doesn't start one: reset the character (the notebook's Season page).
 The [opening](#openings-how-every-character-starts) sets its chain by level; the wanderer who comes
 looking is for a brand-new character with nobody outside.
 

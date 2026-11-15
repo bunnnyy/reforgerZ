@@ -695,35 +695,11 @@ class RZ_Character
 	}
 
 	// ================================================================ Reset character
-	static const float CONFIRM_WINDOW = 10;			// the second press must come within this (s)
-	protected static ref map<int, int> s_mArmed;	// a first press: when (real time)
-
 	//------------------------------------------------------------------------------------------------
-	//! The Standing page's Reset character: the first press asks (two confirms: the press and its
-	//! answer), the second within the window resets. Answers as notices to that player.
+	//! The Season page's Reset character button, confirmed in its pop-up on the client (RZ_SeasonPage,
+	//! UI/RZ_Notebook.c): resets now, once a real day. A refusal comes as a notice to that player.
 	static void AskReset(RZ_GameModeComponent gm, int playerId)
 	{
-		if (!s_mArmed)
-			s_mArmed = new map<int, int>();
-
-		RZ_PlayerProfile profile = gm.GetProfile(playerId);
-		int wait = ResetWait(profile);
-		if (profile && profile.HasCharacter() && wait > 0)
-		{
-			gm.NotifyPlayer(playerId, "Reset character", string.Format("One reset a day. You can reset again in %1 hours.", Math.Ceil(wait / 3600.0)));
-			return;
-		}
-
-		int armed;
-		int now = RZ_SeasonClock.Now();
-		if (!s_mArmed.Find(playerId, armed) || now - armed > CONFIRM_WINDOW)
-		{
-			s_mArmed.Set(playerId, now);
-			gm.NotifyPlayer(playerId, "Reset character?", "This person is gone. Their name stays on the wall. Your standing, quests and things go with them; Legacy stays. Press again to reset.");
-			return;
-		}
-
-		s_mArmed.Remove(playerId);
 		string why = Reset(gm, playerId);
 		if (!why.IsEmpty())
 			gm.NotifyPlayer(playerId, "Reset character", why);
@@ -740,7 +716,18 @@ class RZ_Character
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Reset character, confirmed twice on the client (the Standing page): this person is gone. The
+	//! Whole hours until this player may reset again, rounded up (0: now), for the Season page's pop-up.
+	static int ResetWaitHours(RZ_PlayerProfile profile)
+	{
+		int wait = ResetWait(profile);
+		if (wait <= 0)
+			return 0;
+
+		return RZ_Util.RoundToInt(Math.Ceil(wait / 3600.0));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Reset character, confirmed on the client (the Season page's pop-up): this person is gone. The
 	//! character is killed where they stand; the next spawn picks a background and runs the opening.
 	//! The reason it can't be done, or "" when it was.
 	static string Reset(RZ_GameModeComponent gm, int playerId)
