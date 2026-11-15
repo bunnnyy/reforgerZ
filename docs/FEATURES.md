@@ -95,7 +95,7 @@ Spawn, loot, fight, die, come round. Always on: these have no switch.
 | **Haven safehouses** | Safehouses | Haven > Enabled | — | coming round only at holdings | none | safehouses with people and food |
 | **Named leaders** | Leaders | Leaders > Enabled | — | no leader jobs; a holding's named people stay | RZT_PersonObj | a leader has a personality and a job |
 | **Shops and quartermasters** | Shops | the switch only | — | a quartermaster has no Trade reply and no shop actions | none | buy and sell by tier; once-only items stay once |
-| **Errands and duties** | Errands | Errands > Enabled | — | nobody offers small work; Tonight has no work line | RZT_Kitchen, RZT_Patrol, RZT_Rules, RZT_Story | someone offers work in walking reach; a duty with your hands |
+| **Errands and duties** | Errands | Errands > Enabled | — | nobody offers small work; Tonight has no work line; errands held in the save stay there, unbound, until it's on again | RZT_Kitchen, RZT_Patrol, RZT_Rules, RZT_Story | someone offers work in walking reach; a duty with your hands |
 | **Work sites and carrying** | WorkSites | Shared > Work sites > Enabled | — | errands' and the opening's "do this here" steps can't run | RZT_Carry | you carry a crate for real; a work site at its place |
 | **Wanderers** | Wanderers | Wanderers > Enabled | — | no gossip, Doctor or Trader on the roads | none | a wanderer on a road talks and moves on |
 | **Faction life** | FactionLife | Faction life > Enabled | — | no need-driven events | none | a hungry camp says so |

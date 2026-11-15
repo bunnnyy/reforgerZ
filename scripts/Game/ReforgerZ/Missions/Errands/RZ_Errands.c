@@ -876,9 +876,13 @@ class RZ_Errands
 	//! This player's character is back (the game mode's spawn, before the quest items come back):
 	//! their held errands left unbound are theirs again (restored, or kept from a logout), and each
 	//! open step's prop, work site or carry is put out again where it stood. One from another
-	//! character of theirs ends quietly; a duty's game that wasn't kept ends unpaid.
+	//! character of theirs ends quietly; a duty's game that wasn't kept ends unpaid. With errands off
+	//! (the Errands switch) nothing is bound: they stay held, unbound, in the save for when it's on.
 	void Bind(int playerId)
 	{
+		if (!IsOn())
+			return;
+
 		RZ_PlayerProfile profile = m_GM.FindProfile(playerId);
 		if (!profile || profile.m_sIdentity.IsEmpty())
 			return;
