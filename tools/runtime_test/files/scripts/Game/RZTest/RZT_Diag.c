@@ -696,6 +696,11 @@ modded class RZ_GameModeComponent
 		if (m_iRZTSec >= 12)
 			RZT_Tonight.Tick(this);
 
+		// Wildlife (RZT_Wildlife.c): the rates, four herds put out in the country and never a fifth,
+		// meat by a shot deer, every herd put away with the tester far off; once, in one go
+		if (m_iRZTSec >= 12)
+			RZT_Wildlife.Tick(this);
+
 		// The Long Table and its reach (RZT_LongTable.c, stepped from the house's own tick): nothing
 		// else moves the tester until it's done
 		if (m_iRZTSec >= 12 && !RZT_Table.s_bDone)

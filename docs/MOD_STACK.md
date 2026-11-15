@@ -125,11 +125,13 @@ brew, cook: [DESIGN.md](DESIGN.md#fireplaces-and-campfires)) and draws the infec
 
 ## Wildlife
 
-A dependency in `addon.gproj` since 2026-11-13. Not seen in play yet.
+A dependency in `addon.gproj` since 2026-11-13. Not seen in play yet. Checked for updates on 2026-11-15:
+version **1.0.4** (10.9 MB) is still its latest and only version. It has only the red deer (doe, buck
+and herd); more species and its own spawning are listed on its page as planned, not released.
 
 | Mod | Workshop ID | Size | Licence | What we use | What we don't |
 |---|---|---|---|---|---|
-| [WildlifeExpansion](https://reforger.armaplatform.com/workshop/68B3771125D0A209) | `68B3771125D0A209` | 10.4 MB | APL | Two prefabs, in **World > Wildlife**: the doe (`Prefabs/RedStagDoe.et`) and the buck (`Prefabs/RedStag_v2.et`). ReforgerZ puts herds of them out near players in the country and gives a shot deer its meat ([DESIGN.md](DESIGN.md#wildlife)) | Its herd object (we place the deer ourselves, to be able to take them away again), its Game Master entries, and its wolf, goat and test scripts, which nothing spawns |
+| [WildlifeExpansion](https://reforger.armaplatform.com/workshop/68B3771125D0A209) | `68B3771125D0A209` | 10.9 MB (1.0.4) | APL | Two prefabs, in **World > Wildlife**: the doe (`Prefabs/RedStagDoe.et`) and the buck (`Prefabs/RedStag_v2.et`). ReforgerZ puts herds of them out near players in the country and gives a shot deer its meat ([DESIGN.md](DESIGN.md#wildlife)) | Its herd object (we place the deer ourselves, to be able to take them away again), its Game Master entries, and its wolf, goat and test scripts, which nothing spawns |
 
 Three things to know about it:
 

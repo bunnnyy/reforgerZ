@@ -8303,20 +8303,20 @@
    "cls": "RZ_WildlifeSettings",
    "defaults": {
     "m_bEnabled": "1",
-    "m_iMaxHerds": "2",
+    "m_iMaxHerds": "4",
     "m_iMaxDoes": "3",
     "m_fBuckChance": "0.7",
-    "m_fChancePerMinute": "0.25",
+    "m_fChancePerMinute": "0.5",
     "m_fNightMult": "0.5",
-    "m_fPlayerMinutes": "20",
+    "m_fPlayerMinutes": "8",
     "m_fNearMin": "150",
     "m_fNearMax": "300",
     "m_fAwayRadius": "450",
-    "m_fTownMargin": "150",
+    "m_fTownMargin": "80",
     "m_iMeatMin": "1",
     "m_iMeatMax": "2",
     "m_fShotRange": "260",
-    "m_iMeatPerMinute": "4"
+    "m_iMeatPerMinute": "6"
    }
   },
   {

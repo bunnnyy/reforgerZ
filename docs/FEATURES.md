@@ -173,7 +173,7 @@ Work sites moved here from stage 4: errands and the opening are made of their st
 | **The radio station** | RadioStation | Radio station > Enabled | — | — | none | take it and broadcast |
 | **Traces** | Traces | Traces > Enabled | — | no door marks or scenes | none | a mark on a door reads by your level |
 | **Town memory** | TownMemory | Town memory > Enabled | — | towns forget being looted | none | a looted town stays looted |
-| **Wildlife** | Wildlife | Wildlife > Enabled | — | — | none | deer in the country |
+| **Wildlife** | Wildlife | Wildlife > Enabled | — | — | none | deer in the country: walk 5 minutes in open country or the fields past a village and a herd comes (up to 4 on the server, one a player every 8 min) |
 | **Season rules** | SeasonRules | Seasons > Winner rules, Story rules, Rule sets | — | every season starts plain | none | a season's rules show; the winner's start next season |
 
 ## Stage 8: Endgame
