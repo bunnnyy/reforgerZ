@@ -17,6 +17,9 @@ and one way to end it: **research the cure.**
   nearest camp that takes you in. A logout, a restart or a death never costs a held errand or your
   opening: they come back where you left off. Reset character (a button on the notebook's Season page) starts someone new
   ([DESIGN.md](docs/DESIGN.md#a-character-who-lasts)).
+- **Tonight:** coming round or logging back in, the spawn card ends with up to three true things near
+  you (someone with work for you, something happening, a town you've never seen); they stay on the
+  Quests tab, and picking one tracks it ([UI.md](docs/UI.md#tonight)).
 - **Openings:** every new character starts somewhere random that suits who you were, coming out of a door
   for a reason (the last bottle empty, your group gone three days, the fever broken), and whoever's
   outside calls you over: someone who knew you before, a stranger, or a wanderer who met an earlier
@@ -341,7 +344,7 @@ scripts/Game/ReforgerZ/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen and the nametags, the reader,
                  the car repair, shop, crafting and cooking screens (and the item picture), the radio screen, the object menu and the status strip, the power panel, the street lamps (dark but where there's power), the screen guard, the notice board, the spawn screen and loadout lock, the
-                 death brief, the map's icon layer, its fog and key, notice styles, notice lanes (the interruption budget), chat commands
+                 death brief, the map's icon layer, its fog and key, notice styles, notice lanes (the interruption budget), Tonight, chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugins: ReforgerZ: Create prefabs, Write prefab checklist
                  (RZ_CreatePrefabsPlugin.c); the PC's helpers for building prefabs as text:

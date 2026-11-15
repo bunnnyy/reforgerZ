@@ -1172,7 +1172,7 @@ class RZ_JournalPage : RZ_NotebookPage
 	//! A job's row (a mission, a questline, an errand) by its id; the rest are notes.
 	static bool IsJobRow(int id)
 	{
-		return id != 0 && id > -RZ_UIFeed.TRIBE_ID_BASE;
+		return id != 0 && (id > -RZ_UIFeed.TRIBE_ID_BASE || RZ_UIFeed.IsTonightRow(id));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1505,6 +1505,9 @@ class RZ_JournalPage : RZ_NotebookPage
 		if (kind == RZ_EMissionKindUI.FINALE)
 			return "The lab's readout by faction, never by player. Lock counts are never shown.";
 
+		if (kind == RZ_EMissionKindUI.TONIGHT)
+			return "Nothing to take: it's there now. Track it and the tracker takes you to it.";
+
 		if (IsPastRow(m))
 			return RZ_UIText.Str(m, 14) + " · " + RZ_UIText.Str(m, 15);
 
@@ -1701,18 +1704,21 @@ class RZ_QuestsPage : RZ_JournalPage
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The group a job is listed in: 0 the season's story (a major you took part in), 1 questlines
-	//! and jobs, 2 errands.
+	//! The group a job is listed in: 0 Tonight (UI/RZ_Tonight.c), 1 the season's story (a major you
+	//! took part in), 2 questlines and jobs, 3 errands.
 	protected static int GroupRank(array<string> m)
 	{
 		int kind = RZ_UIText.Int(m, 2);
-		if (kind == RZ_EMissionKindUI.ERRAND)
-			return 2;
-
-		if (kind == RZ_EMissionKindUI.QUESTLINE && RZ_UIText.Str(m, 14) == RZ_QuestText.KindLabel(RZ_EMissionKindUI.QUESTLINE, true))
+		if (kind == RZ_EMissionKindUI.TONIGHT)
 			return 0;
 
-		return 1;
+		if (kind == RZ_EMissionKindUI.ERRAND)
+			return 3;
+
+		if (kind == RZ_EMissionKindUI.QUESTLINE && RZ_UIText.Str(m, 14) == RZ_QuestText.KindLabel(RZ_EMissionKindUI.QUESTLINE, true))
+			return 1;
+
+		return 2;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1720,8 +1726,9 @@ class RZ_QuestsPage : RZ_JournalPage
 	{
 		switch (GroupRank(m))
 		{
-			case 0: return "THE SEASON'S STORY";
-			case 2: return "ERRANDS";
+			case 0: return "TONIGHT, NEAR YOU";
+			case 1: return "THE SEASON'S STORY";
+			case 3: return "ERRANDS";
 		}
 
 		return "QUESTLINES AND JOBS";
@@ -1734,7 +1741,7 @@ class RZ_QuestsPage : RZ_JournalPage
 	//! the tracker can't follow them.
 	override protected void Collect(array<ref array<string>> rows)
 	{
-		for (int rank = 0; rank < 3; rank++)
+		for (int rank = 0; rank < 4; rank++)
 		{
 			foreach (array<string> taken : rows)
 			{
@@ -1742,7 +1749,8 @@ class RZ_QuestsPage : RZ_JournalPage
 					m_aMissions.Insert(taken);
 			}
 
-			if (rank == 0)
+			// The season's story lists only what you took part in
+			if (rank == 1)
 				continue;
 
 			foreach (array<string> offered : rows)
@@ -1770,13 +1778,16 @@ class RZ_QuestsPage : RZ_JournalPage
 	override protected string HeaderText()
 	{
 		int taken = 0;
+		int tonight = 0;
 		foreach (array<string> m : m_aMissions)
 		{
 			if (RZ_UIText.Int(m, 13) == 1)
 				taken++;
+			else if (GroupRank(m) == 0)
+				tonight++;
 		}
 
-		return string.Format("%1 TAKEN, %2 OFFERED", taken, m_aMissions.Count() - taken);
+		return string.Format("%1 TAKEN, %2 OFFERED", taken, m_aMissions.Count() - taken - tonight);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1797,7 +1808,7 @@ class RZ_QuestsPage : RZ_JournalPage
 	{
 		string sub = AreaOf(m);
 		string stage = RZ_UIText.Str(m, 5);
-		if (GroupRank(m) == 0 && !stage.IsEmpty())
+		if (GroupRank(m) == 1 && !stage.IsEmpty())
 		{
 			if (sub.IsEmpty())
 				sub = stage;
@@ -1818,7 +1829,9 @@ class RZ_QuestsPage : RZ_JournalPage
 		RZ_UIW.Tint(row, "RowDir", RZ_UIColor.Hazard());
 		string right = "";
 		int minutes = RZ_UIText.Int(m, 8);
-		if (RZ_UIText.Int(m, 13) != 1)
+		if (GroupRank(m) == 0)
+			right = "Near you";
+		else if (RZ_UIText.Int(m, 13) != 1)
 			right = "Offered";
 		else if (minutes >= 0)
 			right = string.Format("%1 min left", minutes);

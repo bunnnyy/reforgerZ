@@ -2041,7 +2041,13 @@ Known with the Haven, a death by its safehouse comes round at that camp, near wh
 hunted by every faction, no camp takes them in; the held item comes back in the pack; on a profile of
 its own a confirmed reset ends the character and starts a new one (number +1, no deaths), Watched with
 a faction the last one was hunted by; an old save's life number becomes its character (`RZT persist
-OK|FAIL <what>`, `RZT persist: N checks, N failed`; the run fails on FAIL). **A fresh spawn**
+OK|FAIL <what>`, `RZT persist: N checks, N failed`; the run fails on FAIL). **Tonight**
+(`RZT_Tonight.c`, once after the openings' checks): the card waits for an opening and otherwise starts
+*Tonight:*; with the fake player's fog cleared, one to three lines, one of each kind, each within
+reach, a town never seen among them; a row of kind Tonight per line; picking a row tracks it, its one
+objective has a place, and reaching the place ends the line; a row that's a real job tracks the job;
+with **UI > Tonight** off, no card and no rows (`RZT tonight OK|FAIL <what>`, `RZT tonight line
+<kind>: <line>`, `RZT tonight: N checks, N failed`; the run fails on FAIL). **A fresh spawn**
 (`RZT_Fresh.c`), as a veteran (level 3, where the author's play-test went wrong): every running job
 drops the new character; its opening has its contact standing
 within 15 m and the chain starting at the door (its favour, which a veteran's skips once talked to: the opening by level, below), not the lead to work; the Quests tab lists no taken job; and later,
@@ -3032,6 +3038,10 @@ Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player>
 `World memory: town ...`; on a restart, `World memory: N reasons, N signals, N town logs, N world
 records.` and `Shared: N callbacks waiting, N season records.`
 
+**Tonight:** at each pick, `Tonight: <player>, <n> lines within <m> m: [work: ...] [happening: ...]
+[find: unseen <town>]` (or `nothing true near`), and `Tonight: <player> reached <title> (<source>)`
+when a tracked line is reached ([UI.md](UI.md#tonight)).
+
 **A character who lasts:** the `Character:` lines in [DESIGN.md](DESIGN.md#a-character-who-lasts)
 ("Log lines"): one at each new character, death, coming round (a camp, or a random start with why),
 quest items given back, and reset; and `Missions: <player> began a new character, off N job(s) the
@@ -3225,6 +3235,11 @@ session, tick off:
   LOCKED. Die bitten: a random start, no opening. Get Hunted by everyone (an admin standing change):
   a random start. On the Standing page press Y twice: the character dies, the spawn screen opens every
   background, and the opening runs again (`Character:` lines, section 7 via DESIGN).
+- [ ] **Tonight** ([UI.md](UI.md#tonight)), with a pad: after the opening, die near a camp. The come-round
+  card ends with *Tonight:* and up to three lines, each true where you stand (the person named is
+  there and has work when you ask, the patrol or truck is where it says, the town isn't on your map).
+  On the Quests tab they're under TONIGHT, NEAR YOU; A on one tracks it, the arrow leads there, and
+  arriving ends it. Log out and in: the card has them again. Readable on a TV at the sofa.
 - [ ] **Coming back** ([ERRANDS.md](ERRANDS.md#saved-across-restarts)): take an errand with a step
   away, start it, log out and back in: it's still tracked, its work site is where it was, and its
   minutes left kept falling. Do it again across a server restart (`Errands: restored ...`, `...
