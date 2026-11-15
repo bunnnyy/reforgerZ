@@ -5,29 +5,47 @@ GenericEntity {
   }
   Hierarchy "{0DF940545C7D4524}" {
   }
+  ActionsManagerComponent "{9DE54E34EF3C926F}" {
+   ActionContexts {
+    UserActionContext "{E92F524281AF5B84}" {
+     ContextName "default"
+     Radius 1.8
+    }
+   }
+   additionalActions {
+    RZ_ReadMarkAction "{5541F2B29D54F6E6}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{74EDEF846BE6D439}" {
+      Name "Read it"
+     }
+    }
+   }
+  }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "9DE54E34EF3C926F"
+   ID "158FD74B5B0F5831"
    components {
-    Hierarchy "{E92F524281AF5B84}" {
+    Hierarchy "{C2E6376F4D9486D1}" {
     }
    }
    coords -1.5 0 0
    angles 0 0 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "5541F2B29D54F6E6"
+   ID "F6CC4AD56ECC21A2"
    components {
-    Hierarchy "{74EDEF846BE6D439}" {
+    Hierarchy "{C985CCBC367B6563}" {
     }
    }
    coords 1.5 0 0
    angles 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "158FD74B5B0F5831"
+   ID "EEF7893F5B6D0DBB"
    coords -1.5 1.2 0.06
    angles 0 0 0
   }

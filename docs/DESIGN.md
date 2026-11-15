@@ -2994,7 +2994,10 @@ is data: a place (on the verge, 6–10 m off the nearest road's centre line with
 place is on), a prefab, a line of text, a salience, how many season days it lasts. Its prop is spawned
 only while a player is within 150 m, stays up at least 10 minutes, and goes once nobody is within
 200 m. A full pool gives up its oldest lowest-salience mark that isn't protected; with no room, or no
-prefab, a mark is text only (`TextNear`, an approach line). Nothing is saved: owners put their marks
+prefab, a mark is text only (`TextNear`, an approach line). A mark whose prop stands is never told as a
+card: you read it on the prop, **Read it** (`RZ_ReadMarkAction`, on the season marks' props, built by
+`tools/camp_kit/build.py`), in the reader, how it's written on the second line (seen in play: *A
+board by the road...* on a card with no board to read). Nothing is saved: owners put their marks
 back. The town log's season marks are the first ([World memory](#world-memory)); Traces gives them a look
 and an opening line by their kind ([TRACES.md](TRACES.md#player-traces), P5).
 

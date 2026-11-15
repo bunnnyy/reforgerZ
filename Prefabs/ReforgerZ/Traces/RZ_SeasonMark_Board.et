@@ -5,29 +5,47 @@ GenericEntity {
   }
   Hierarchy "{899DD61B9F1BC6BD}" {
   }
+  ActionsManagerComponent "{356C59ECDDA3268C}" {
+   ActionContexts {
+    UserActionContext "{81CD4245BA3015CF}" {
+     ContextName "default"
+     Radius 1.8
+    }
+   }
+   additionalActions {
+    RZ_ReadMarkAction "{91D6DCF24FA55BCF}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{0FADB705D4CF0474}" {
+      Name "Read it"
+     }
+    }
+   }
+  }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "356C59ECDDA3268C"
+   ID "57962DFD11F83448"
    components {
-    Hierarchy "{81CD4245BA3015CF}" {
+    Hierarchy "{E23832D463B0D82C}" {
     }
    }
    coords 0 0 0
    angles 0 0 0
   }
   GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
-   ID "91D6DCF24FA55BCF"
+   ID "6A3BC00AD464B096"
    components {
-    Hierarchy "{0FADB705D4CF0474}" {
+    Hierarchy "{25FA8D50D2FE5197}" {
     }
    }
    coords 0 1.4 0.06
    angles 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "57962DFD11F83448"
+   ID "A00F9A85C783BE38"
    coords 0 1.45 0.1
    angles 0 0 0
   }

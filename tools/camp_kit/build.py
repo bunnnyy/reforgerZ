@@ -106,8 +106,13 @@ def write_meta(rel):
     write_text(rel + ".meta", t.replace(old, "{%s}%s" % (gid(), rel)))
 
 
-def piece_text(parts, props, index):
-    L = ["GenericEntity {", ' ID "%s"' % gid(), " components {", '  RplComponent "{%s}" {' % gid(), "  }", '  Hierarchy "{%s}" {' % gid(), "  }", " }", " coords 0 0 0", " {"]
+def piece_text(parts, props, index, read=False):
+    L = ["GenericEntity {", ' ID "%s"' % gid(), " components {", '  RplComponent "{%s}" {' % gid(), "  }", '  Hierarchy "{%s}" {' % gid(), "  }"]
+    if read:
+        # A season mark is read on the prop itself ("Read it", RZ_ReadMarkAction in World/RZ_Marks.c)
+        L += ['  ActionsManagerComponent "{%s}" {' % gid(), "   ActionContexts {", '    UserActionContext "{%s}" {' % gid(), '     ContextName "default"', "     Radius 1.8", "    }", "   }",
+              "   additionalActions {", '    RZ_ReadMarkAction "{%s}" {' % gid(), "     ParentContextList {", '      "default"', "     }", '     UIInfo UIInfo "{%s}" {' % gid(), '      Name "Read it"', "     }", "    }", "   }", "  }"]
+    L += [" }", " coords 0 0 0", " {"]
     for p in parts:
         if p[0] != "p":
             continue
@@ -553,7 +558,7 @@ def main():
     for slot, (name, parts) in TRACES.items():
         rel = "Prefabs/ReforgerZ/Traces/%s.et" % name
         seed(rel)
-        write_text(rel, piece_text(parts, props, index))
+        write_text(rel, piece_text(parts, props, index, name.startswith("RZ_SeasonMark_")))
         write_meta(rel)
         slots[slot] = guid_of(rel) + rel
     write_trace_kit(slots)

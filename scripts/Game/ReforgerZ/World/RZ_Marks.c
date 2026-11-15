@@ -244,6 +244,23 @@ class RZ_Marks
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The mark whose prop this entity is (or is part of), or null.
+	RZ_Mark OfEntity(IEntity e)
+	{
+		IEntity top = e;
+		while (top && top.GetParent())
+			top = top.GetParent();
+
+		foreach (RZ_Mark m : m_aMarks)
+		{
+			if (m.m_Entity && (m.m_Entity == e || m.m_Entity == top))
+				return m;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The line of the nearest mark within `radius` of `pos` (any pool), "" if none: what a passer-by
 	//! is told about a text-only mark, or about one whose prop they can't make out.
 	string TextNear(vector pos, float radius)
@@ -252,6 +269,11 @@ class RZ_Marks
 		float bestDist = radius;
 		foreach (RZ_Mark m : m_aMarks)
 		{
+			// A mark whose prop stands there is read on the prop (RZ_ReadMarkAction), not told as a
+			// card (seen in play: "A board by the road..." on a card, the board nowhere to read)
+			if (m.m_Entity && !m.m_bTextOnly)
+				continue;
+
 			float d = RZ_Util.DistXZ(pos, m.m_vPos);
 			if (d <= bestDist && !m.m_sText.IsEmpty())
 			{
@@ -393,5 +415,56 @@ class RZ_Marks
 
 		float off = Math.RandomFloat(Math.Min(minOff, maxOff), Math.Max(minOff, maxOff));
 		return a + side * off;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! "Read it": on a mark's prop (a board, a sheet, a stencil, tape, flowers with a card). Its words
+//! in the reader: how it's written as the reader's second line, the words themselves as the page.
+class RZ_ReadMarkAction : ScriptedUserAction
+{
+	//------------------------------------------------------------------------------------------------
+	override bool GetActionNameScript(out string outName)
+	{
+		outName = "Read it";
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool HasLocalEffectOnlyScript()
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int playerId = RZ_PuzzleActionHelper.GetPlayerId(pUserEntity);
+		RZ_Marks marks = RZ_Marks.Get();
+		if (!gm || playerId <= 0 || !marks)
+			return;
+
+		RZ_Mark m = marks.OfEntity(pOwnerEntity);
+		if (!m || m.m_sText.IsEmpty())
+		{
+			gm.NotifyPlayer(playerId, "By the road", "The words have run in the rain. You can't make them out.");
+			return;
+		}
+
+		// "A board by the road, painted by hand: Day 1: ..." -> how it's written, then the words
+		string how = "";
+		string words = m.m_sText;
+		int colon = words.IndexOf(": ");
+		if (colon > 0)
+		{
+			how = words.Substring(0, colon);
+			words = words.Substring(colon + 2, words.Length() - colon - 2);
+		}
+
+		RZ_Reader.Show(gm, playerId, "By the road", how, words);
 	}
 }
