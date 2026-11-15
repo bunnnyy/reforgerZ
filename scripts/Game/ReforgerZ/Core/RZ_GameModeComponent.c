@@ -1848,6 +1848,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_UIFeed.RecordGearSoon(playerId, GetPickedLoadoutName(playerId));
 		RegisterGunfire(controlledEntity);
 		m_Interactions.OnPlayerSpawned(playerId);
+		// A wind-up radio again, unless they kept one: the open channels are how you learn the Zone
+		if (m_Guidance)
+			m_Guidance.OnPlayerSpawned(playerId, controlledEntity);
+
 		if (!line.IsEmpty())
 			NotifyPlayerAs(playerId, bg.m_sName, line, RZ_ENoticeTag.SPAWN);
 	}

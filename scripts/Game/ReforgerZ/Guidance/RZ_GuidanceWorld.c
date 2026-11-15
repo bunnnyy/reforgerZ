@@ -79,7 +79,7 @@ class RZ_GuidanceWorld
 
 	// ================================================================ Spawn
 	//------------------------------------------------------------------------------------------------
-	//! A new life: the wind-up radio (a moment later, once the inventory exists), the radio and
+	//! Every spawn, coming round after a death included: the wind-up radio (a moment later, once the inventory exists), the radio and
 	//! wanderer timers.
 	void OnPlayerSpawned(int playerId, IEntity ent, RZ_PlayerProfile p, RZ_GuidePlayer st, int level)
 	{
