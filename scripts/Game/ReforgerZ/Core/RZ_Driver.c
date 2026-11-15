@@ -651,8 +651,22 @@ class RZ_Driver
 			return;
 		}
 
-		// Look ahead: the clear way nearest the goal's bearing, 20 m out
-		s_vSteer = Plan(here, s_vGoal);
+		// Look ahead: the clear way nearest the goal's bearing, 20 m out. A way already chosen is kept
+		// while it's still clear for 4 m and not more than 90 degrees off the goal, so it doesn't flip
+		bool keep = false;
+		if (s_vSteer != vector.Zero && RZ_Util.DistXZ(here, s_vSteer) > 2)
+		{
+			vector kept = s_vSteer - here;
+			kept[1] = 0;
+			vector toGoal = s_vGoal - here;
+			toGoal[1] = 0;
+			kept.Normalize();
+			toGoal.Normalize();
+			keep = vector.Dot(kept, toGoal) > 0 && Clearance(here, kept, 4) >= 4;
+		}
+
+		if (!keep)
+			s_vSteer = Plan(here, s_vGoal);
 
 		// What's right in front on that way: a door (open it), something low (jump or climb over),
 		// something at chest height with room under (crouch), room only at the ground (prone)
@@ -690,7 +704,8 @@ class RZ_Driver
 					s_vDetour = here + side * wide - way * 1.5;
 					s_bDetour = true;
 					m_fDetourFor = 0;
-					m_iSide = -m_iSide;
+					if (m_iJumps % 2 == 0)
+						m_iSide = -m_iSide;
 					if (m_iJumps % 3 == 0)
 						s_fJumpUntil = GetGame().GetWorld().GetWorldTime() + 400;
 				}
@@ -910,7 +925,9 @@ class RZ_Driver
 		param.Start = from;
 		param.End = to;
 		param.LayerMask = EPhysicsLayerPresets.Projectile;
-		param.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+		// Objects only: the ground itself (a rise, a dip) is the slope check's, or every way on rolling
+		// ground looks blocked and the choice flips each look (seen in play: turning back and forth)
+		param.Flags = TraceFlags.ENTS;
 		return ChimeraCharacter.TraceMoveWithoutCharacters(GetGame().GetWorld(), param);
 	}
 
