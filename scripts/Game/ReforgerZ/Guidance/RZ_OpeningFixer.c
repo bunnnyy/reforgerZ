@@ -1024,8 +1024,16 @@ class RZ_OpeningFixer
 		if (v.m_iPhase == PHASE_WAIT)
 		{
 			// He finds you wherever you are: the street you started from isn't where the case goes
-			if (m_fClock - v.m_fPhaseAt >= v.m_fDue)
+			float waited = m_fClock - v.m_fPhaseAt;
+			if (waited >= v.m_fDue)
+			{
+				RZ_Log.Info(string.Format("Openings: Ferda's %1 s are up for %2: he comes", RZ_Util.RoundToInt(waited), RZ_Util.PlayerName(v.m_iPlayer)));
 				Come(v, me);
+			}
+			else if (Math.Floor(waited / 60) != Math.Floor((waited - dt) / 60))
+			{
+				RZ_Log.Info(string.Format("Openings: Ferda waits for %1: %2 of %3 s", RZ_Util.PlayerName(v.m_iPlayer), RZ_Util.RoundToInt(waited), RZ_Util.RoundToInt(v.m_fDue)));
+			}
 
 			return;
 		}

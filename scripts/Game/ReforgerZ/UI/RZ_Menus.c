@@ -138,6 +138,96 @@ class RZ_MenuBase : ChimeraMenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The Workbench driver (Core/RZ_Driver.c) works this screen from inside the game: `list` (or no
+	//! verb) gives its buttons (name#tag) and the text it shows, `click <name>` or `click <name#tag>`
+	//! clicks a button as the mouse would, `back` is B. A screen with more (a game's moves) overrides
+	//! this, calling super for these. False: a verb it doesn't know.
+	bool DriverDo(string verb, string arg, notnull array<string> lines)
+	{
+		if (verb == "" || verb == "list")
+		{
+			DriverList(m_wRoot, lines, 0);
+			return true;
+		}
+
+		if (verb == "back")
+		{
+			Back();
+			lines.Insert("back");
+			return true;
+		}
+
+		if (verb == "click")
+		{
+			Widget w = DriverFind(m_wRoot, arg);
+			if (!w)
+			{
+				lines.Insert("no visible button " + arg);
+				return true;
+			}
+
+			OnWidgetClick(w);
+			lines.Insert("clicked " + arg);
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DriverList(Widget w, notnull array<string> lines, int depth)
+	{
+		Widget child = w;
+		while (child && lines.Count() < 120)
+		{
+			if (child.IsVisible())
+			{
+				TextWidget text = TextWidget.Cast(child);
+				string said;
+				if (text)
+					said = text.GetText();
+
+				if (ButtonWidget.Cast(child))
+					lines.Insert(string.Format("[button] %1#%2", child.GetName(), child.GetUserID()));
+				else if (!said.IsEmpty())
+					lines.Insert(string.Format("%1: %2", child.GetName(), said));
+
+				if (child.GetChildren())
+					DriverList(child.GetChildren(), lines, depth + 1);
+			}
+
+			if (depth == 0)
+				break;
+
+			child = child.GetSibling();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A visible button by "name" or "name#tag".
+	protected Widget DriverFind(Widget w, string key)
+	{
+		Widget child = w;
+		while (child)
+		{
+			if (child.IsVisible())
+			{
+				string me = child.GetName();
+				if (ButtonWidget.Cast(child) && (me == key || me + "#" + child.GetUserID().ToString() == key))
+					return child;
+
+				Widget inner = DriverFind(child.GetChildren(), key);
+				if (inner)
+					return inner;
+			}
+
+			child = child.GetSibling();
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Mouse (RZ_MenuClick): the cursor came onto `w` (on) or left it. A row of this screen's is the
 	//! screen's own (OnHoverRow: on the screens where a click does it, the row becomes the selected one;
 	//! where a click only picks it, it's lit like the selected row until the cursor leaves). Any other

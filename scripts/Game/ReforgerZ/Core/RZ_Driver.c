@@ -16,6 +16,12 @@
 //!   act <n>               do prompt n (the whole action at once: a held one counts as held through)
 //!   jobs                  your jobs and their objectives; `track <id>` follows one
 //!   shot <name>           a screenshot to $profile:RZ_Control/<name>.png
+//!   walkto|runto|sprintto <x> <z> [stop m]   go there on foot, steered in the game (no keyboard or
+//!                         mouse: the character's own input each frame), jumping when it stops making
+//!                         headway; "arrived" (or "stuck") is added to out.txt; `stop` ends it
+//!   ui [verb] [arg]       the open screen: with no verb, its name and what it offers; otherwise the
+//!                         verb goes to the screen itself (RZ_MenuBase.DriverDo: tabs, rows, buttons,
+//!                         a game's moves); `ui close` closes it
 #ifdef WORKBENCH
 class RZ_Driver
 {
@@ -33,6 +39,16 @@ class RZ_Driver
 	protected ref array<IEntity> m_aFound = {};
 	protected ref array<string> m_aOut = {};
 
+	// Going somewhere on foot (read by the character controller each frame, below)
+	protected static bool s_bGoing;
+	protected static vector s_vGoal;
+	protected static float s_fSpeed;
+	protected static float s_fStopAt = 3;
+	protected static float s_fJumpUntil;
+	protected vector m_vLastPos;
+	protected float m_fStillFor;
+	protected int m_iJumps;
+
 	//------------------------------------------------------------------------------------------------
 	static void Start(RZ_GameModeComponent gm)
 	{
@@ -49,6 +65,7 @@ class RZ_Driver
 	//------------------------------------------------------------------------------------------------
 	protected void Poll()
 	{
+		Going();
 		if (!FileIO.FileExists(CMD))
 			return;
 
@@ -141,6 +158,11 @@ class RZ_Driver
 			case "jobs": Jobs(me); return;
 			case "track": Track(me, Arg(a, 1, 0)); return;
 			case "shot": Shot(a); return;
+			case "walkto": GoTo(me, a, 1); return;
+			case "runto": GoTo(me, a, 2); return;
+			case "sprintto": GoTo(me, a, 3); return;
+			case "stop": Stop("stopped"); return;
+			case "ui": Ui(a); return;
 		}
 
 		Say("unknown command: " + verb);
@@ -355,9 +377,10 @@ class RZ_Driver
 
 		m_aOut.Clear();
 		m_iSeq++;
-		m_aOut.Insert(string.Format("#%1 state (after talk/pick)", m_iSeq));
+		m_aOut.Insert(string.Format("#%1 state (after talk/pick/act)", m_iSeq));
 		State(me);
-		FileHandle w = FileIO.OpenFile(OUT, FileMode.WRITE);
+		// Added after what the command's own answers said, never over them
+		FileHandle w = FileIO.OpenFile(OUT, FileMode.APPEND);
 		if (!w)
 			return;
 
@@ -509,6 +532,205 @@ class RZ_Driver
 
 		System.MakeScreenshot(DIR + "/" + name);
 		Say("screenshot " + name);
+	}
+	// ================================================================ On foot
+	//------------------------------------------------------------------------------------------------
+	protected void GoTo(IEntity me, array<string> a, float speed)
+	{
+		if (a.Count() < 3)
+		{
+			Say("walkto <x> <z> [stop m]");
+			return;
+		}
+
+		s_vGoal = Vector(a[1].ToFloat(), 0, a[2].ToFloat());
+		s_fSpeed = speed;
+		s_fStopAt = Arg(a, 3, 3);
+		s_bGoing = true;
+		m_vLastPos = me.GetOrigin();
+		m_fStillFor = 0;
+		m_iJumps = 0;
+		Say(string.Format("on my way: %1 m (%2)", RZ_Util.RoundToInt(RZ_Util.DistXZ(me.GetOrigin(), s_vGoal)), RZ_Util.DirectionText(me.GetOrigin(), s_vGoal)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Each quarter second while going: arrived, a talk screen opened (someone called us), or no
+	//! headway (a jump, then a step aside, then "stuck").
+	protected void Going()
+	{
+		if (!s_bGoing)
+			return;
+
+		IEntity me = MyBody();
+		if (!me)
+		{
+			Stop("no character");
+			return;
+		}
+
+		vector here = me.GetOrigin();
+		float left = RZ_Util.DistXZ(here, s_vGoal);
+		if (left <= s_fStopAt)
+		{
+			Stop(string.Format("arrived (%1 m off) at %2", RZ_Util.RoundToInt(left), Pos(here)));
+			return;
+		}
+
+		RZ_Dialogue talk = m_GM.GetDialogue();
+		if (talk && talk.SessionOf(Me()))
+		{
+			Stop("someone is talking to us: stopped at " + Pos(here));
+			return;
+		}
+
+		if (RZ_Util.DistXZ(here, m_vLastPos) < 0.3)
+		{
+			m_fStillFor += 0.25;
+			if (m_fStillFor >= 1)
+			{
+				m_fStillFor = 0;
+				m_iJumps++;
+				s_fJumpUntil = GetGame().GetWorld().GetWorldTime() + 400;
+				if (m_iJumps >= 6)
+					Stop("stuck at " + Pos(here) + ", " + RZ_Util.RoundToInt(left).ToString() + " m to go");
+			}
+		}
+		else
+		{
+			m_fStillFor = 0;
+			m_iJumps = 0;
+		}
+
+		m_vLastPos = here;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Stop(string why)
+	{
+		bool was = s_bGoing;
+		s_bGoing = false;
+		if (!was && why != "stopped")
+			return;
+
+		Note(why);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line added to out.txt on its own (after whatever is there).
+	protected void Note(string line)
+	{
+		m_iSeq++;
+		FileHandle w = FileIO.OpenFile(OUT, FileMode.APPEND);
+		if (!w)
+			return;
+
+		w.WriteLine(string.Format("#%1 %2", m_iSeq, line));
+		w.Close();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! From the player's character controller each frame (below): while going, the character's own
+	//! input is the way to the goal, at the asked speed; a jump while it's stuck. True when it drove.
+	static bool Drive(SCR_CharacterControllerComponent ctrl, IEntity owner)
+	{
+		if (!s_bGoing || !ctrl || !owner)
+			return false;
+
+		PlayerController pc = GetGame().GetPlayerController();
+		if (!pc || GetGame().GetPlayerManager().GetPlayerControlledEntity(pc.GetPlayerId()) != owner)
+			return false;
+
+		CharacterInputContext ctx = ctrl.GetInputContext();
+		if (!ctx)
+			return false;
+
+		vector way = s_vGoal - owner.GetOrigin();
+		way[1] = 0;
+		if (way.Length() < 0.01)
+			return false;
+
+		way.Normalize();
+		// Turn to face the way (heading in radians round the world's up axis), and move along it in
+		// the character's own frame, so it goes the right way even before the turn has finished
+		float bearing = Math.Atan2(way[0], way[2]);
+		ctrl.SetHeadingAngle(bearing, true); // VERIFY: CharacterControllerComponent.SetHeadingAngle turns a player character, the aim following (adjustAimingYaw)
+		vector local = owner.VectorToLocal(way);
+		local[1] = 0;
+		ctx.SetMovement(s_fSpeed, local); // VERIFY: CharacterInputContext.SetMovement from OnPrepareControls moves a player character (1 walk, 2 run, 3 sprint)
+		if (GetGame().GetWorld().GetWorldTime() < s_fJumpUntil)
+			ctx.SetJump(1);
+
+		return true;
+	}
+
+	// ================================================================ Screens
+	//------------------------------------------------------------------------------------------------
+	protected void Ui(array<string> a)
+	{
+		MenuManager mm = GetGame().GetMenuManager();
+		MenuBase top;
+		if (mm)
+			top = mm.GetTopMenu();
+
+		if (!top)
+		{
+			Say("ui: no screen open");
+			return;
+		}
+
+		string verb = "";
+		string arg = "";
+		if (a.Count() >= 2)
+			verb = a[1];
+
+		if (a.Count() >= 3)
+		{
+			for (int i = 2; i < a.Count(); i++)
+			{
+				if (i > 2)
+					arg += " ";
+
+				arg += a[i];
+			}
+		}
+
+		if (verb == "close")
+		{
+			top.Close();
+			Say("closed " + top.ClassName());
+			return;
+		}
+
+		RZ_MenuBase ours = RZ_MenuBase.Cast(top);
+		if (!ours)
+		{
+			Say("ui: " + top.ClassName() + " (not ours: only `ui close`)");
+			return;
+		}
+
+		array<string> lines = {};
+		if (!ours.DriverDo(verb, arg, lines))
+			lines.Insert(string.Format("ui: %1 doesn't know '%2'", top.ClassName(), verb));
+
+		Say("ui: " + top.ClassName());
+		foreach (string l : lines)
+		{
+			Say("  " + l);
+		}
+	}
+
+}
+
+//------------------------------------------------------------------------------------------------
+//! The driver walks the player through the character's own controls (Workbench only).
+modded class SCR_CharacterControllerComponent
+{
+	//------------------------------------------------------------------------------------------------
+	override void OnPrepareControls(IEntity owner, ActionManager am, float dt, bool player)
+	{
+		super.OnPrepareControls(owner, am, dt, player);
+		if (player)
+			RZ_Driver.Drive(this, owner);
 	}
 }
 #endif
