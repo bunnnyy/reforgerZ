@@ -52,6 +52,9 @@ class RZ_Driver
 	protected static vector s_vDetour;
 	protected float m_fDetourFor;
 	protected int m_iSide = 1;
+	protected vector m_vGlideLast;
+	protected int m_iSlow;				// frames the controls didn't move us (Workbench not in focus)
+	protected static const float GLIDE_MS = 50;
 
 	//------------------------------------------------------------------------------------------------
 	static void Start(RZ_GameModeComponent gm)
@@ -156,7 +159,7 @@ class RZ_Driver
 			case "face": Face(me, a); return;
 			case "talk": Talk(me, Arg(a, 1, -1)); return;
 			case "pick": Pick(Arg(a, 1, -1)); return;
-			case "leave": Pick(RZ_Dialogue.LEAVE); return;
+			case "leave": Leave(); return;
 			case "actions": Actions(me, Arg(a, 1, 4)); return;
 			case "act": Act(me, Arg(a, 1, -1)); return;
 			case "jobs": Jobs(me); return;
@@ -416,6 +419,17 @@ class RZ_Driver
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The way out, and the talk screen closed on this machine as the player's B would (the server
+	//! ending it alone leaves the screen up, and an open screen holds the character still).
+	protected void Leave()
+	{
+		Pick(RZ_Dialogue.LEAVE);
+		MenuManager mm = GetGame().GetMenuManager();
+		if (mm && RZ_TalkMenu.Cast(mm.GetTopMenu()))
+			mm.GetTopMenu().Close();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool OnThing(IEntity e)
 	{
 		if (e && e.FindComponent(ActionsManagerComponent))
@@ -552,6 +566,10 @@ class RZ_Driver
 		s_fStopAt = Arg(a, 3, 3);
 		s_bGoing = true;
 		m_vLastPos = me.GetOrigin();
+		m_vGlideLast = me.GetOrigin();
+		m_iSlow = 0;
+		GetGame().GetCallqueue().Remove(Glide);
+		GetGame().GetCallqueue().CallLater(Glide, GLIDE_MS, true);
 		m_fStillFor = 0;
 		m_iJumps = 0;
 		Say(string.Format("on my way: %1 m (%2)", RZ_Util.RoundToInt(RZ_Util.DistXZ(me.GetOrigin(), s_vGoal)), RZ_Util.DirectionText(me.GetOrigin(), s_vGoal)));
@@ -704,6 +722,67 @@ class RZ_Driver
 		}
 
 		return RZ_Util.GroundPos(to);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every 50 ms while going: when the character's own controls don't move it (Workbench isn't the
+	//! focused window, so the engine reads no controls), the driver moves it along the ground at the
+	//! asked pace itself, never through a wall (a chest-high trace ahead), so Claude Code can play while
+	//! the author uses the PC.
+	protected void Glide()
+	{
+		IEntity me = MyBody();
+		if (!s_bGoing || !me)
+		{
+			GetGame().GetCallqueue().Remove(Glide);
+			return;
+		}
+
+		vector here = me.GetOrigin();
+		float pace = 1.6;
+		if (s_fSpeed >= 3)
+			pace = 5.2;
+		else if (s_fSpeed >= 2)
+			pace = 3.4;
+
+		float step = pace * GLIDE_MS / 1000;
+		if (RZ_Util.DistXZ(here, m_vGlideLast) > step * 0.4)
+		{
+			m_iSlow = 0;
+			m_vGlideLast = here;
+			return;
+		}
+
+		m_iSlow++;
+		if (m_iSlow < 4)
+			return;
+
+		vector aim = s_vGoal;
+		if (s_bDetour)
+			aim = s_vDetour;
+
+		vector way = aim - here;
+		way[1] = 0;
+		if (way.Length() < 0.05)
+			return;
+
+		way.Normalize();
+		vector chest = here + Vector(0, 1.2, 0);
+		if (RZ_CampLife.TraceHits(chest, chest + way * 0.8, false))
+			return;	// a wall: the stuck check goes round it
+
+		vector next = RZ_Util.GroundPos(here + way * step);
+		if (next[1] - here[1] > 0.6)
+			return;	// a step too high to walk up
+
+		me.SetOrigin(next); // VERIFY: moving the local player's character by SetOrigin in small steps keeps it there (no snap back) in Workbench play
+		vector mat[4];
+		me.GetWorldTransform(mat);
+		vector pos = mat[3];
+		Math3D.AnglesToMatrix(Vector(Math.Atan2(way[0], way[2]) * Math.RAD2DEG, 0, 0), mat);
+		mat[3] = pos;
+		me.SetWorldTransform(mat);
+		m_vGlideLast = next;
 	}
 
 	//------------------------------------------------------------------------------------------------
