@@ -18,6 +18,7 @@ class RZ_Character
 	static const float FLOOR_REACH = 40;		// coming back: a saved spot this far above the ground is a floor (higher: the ground)
 
 	protected static ref map<int, bool> s_mBack;		// the spawn handler put this player back where they left off
+	protected static ref map<int, bool> s_mReopen;		// ... and their unfinished opening runs again
 	protected static ref map<int, bool> s_mMoved;		// the spawn handler moved this player's character to a camp
 	protected static ref map<int, string> s_mCamp;		// ... and the camp's name, for the line
 	protected static ref map<int, int> s_mCampFaction;	// ... and its people's faction
@@ -175,9 +176,11 @@ class RZ_Character
 			s_mCamp = new map<int, string>();
 			s_mCampFaction = new map<int, int>();
 			s_mBack = new map<int, bool>();
+			s_mReopen = new map<int, bool>();
 		}
 
 		s_mBack.Remove(playerId);
+		s_mReopen.Remove(playerId);
 		s_mMoved.Remove(playerId);
 		s_mCamp.Remove(playerId);
 		s_mCampFaction.Remove(playerId);
@@ -188,6 +191,18 @@ class RZ_Character
 		profile.EnsureArrays();
 		if (!profile.HasCharacter())
 			return false;
+
+		// Logged out alive in the middle of their opening: it runs again from a door, with what they
+		// carried (the first quest is never lost to a logout)
+		RZ_Openings again = RZ_Openings.Get();
+		if (profile.m_bLeftAlive && profile.m_iOpenLife == profile.m_iCharacter && again && again.IsOn())
+		{
+			again.PlaceSpawn(playerId, character);
+			s_mBack.Set(playerId, true);
+			s_mReopen.Set(playerId, true);
+			RZ_Log.Info(string.Format("Character: %1 comes back mid-opening: it runs again", RZ_Util.PlayerName(playerId)));
+			return true;
+		}
 
 		// Logged out alive (or the server stopped): back where they were, never a camp or a random start
 		if (profile.m_bLeftAlive && (profile.m_fLeftX != 0 || profile.m_fLeftZ != 0))
@@ -435,6 +450,13 @@ class RZ_Character
 	static bool CameBack(int playerId)
 	{
 		return s_mBack && s_mBack.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Came back mid-opening: the opening runs again (the game mode's spawn asks).
+	static bool Reopens(int playerId)
+	{
+		return s_mReopen && s_mReopen.Contains(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------

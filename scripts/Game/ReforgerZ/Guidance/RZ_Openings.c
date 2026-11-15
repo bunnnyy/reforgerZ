@@ -453,6 +453,9 @@ class RZ_Openings
 		}
 
 		RZ_OpeningRoll.NoteStart(profile, ent.GetOrigin());
+		// Under way for this character until it ends for a reason of its own (a logout doesn't end it:
+		// coming back runs it again, RZ_Character.PlaceComeRound)
+		profile.m_iOpenLife = profile.m_iCharacter;
 		RZ_WorldFacts facts = m_GM.GetFacts();
 		if (facts && facts.IsEpilogue())
 			return;
@@ -960,10 +963,32 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The player is still connected and their character alive, though not in the alive list (in
+	//! Game Master the controlled entity isn't the character).
+	protected static bool StillThere(int playerId)
+	{
+		array<int> all = {};
+		GetGame().GetPlayerManager().GetPlayers(all);
+		if (!all.Contains(playerId))
+			return false;
+
+		SCR_PlayerController pc = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
+		if (!pc)
+			return false;
+
+		IEntity body = pc.GetMainEntity(); // VERIFY: SCR_PlayerController.GetMainEntity is the player's own character while Game Master is open
+		return body && RZ_Util.IsCharacterAlive(body);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void TickOne(RZ_Opening o)
 	{
 		int idx = m_aIds.Find(o.m_iPlayer);
 		RZ_PlayerProfile profile = m_GM.FindProfile(o.m_iPlayer);
+		// Out of the world with the same character still alive (Game Master, a load): it waits
+		if (idx < 0 && profile && profile.m_iCharacter == o.m_iLife && StillThere(o.m_iPlayer))
+			return;
+
 		if (idx < 0 || !profile || profile.m_iCharacter != o.m_iLife)
 		{
 			Finish(o, "died or left");
@@ -2095,6 +2120,13 @@ class RZ_Openings
 
 		o.m_bEnded = true;
 		DropStep(o, why);
+		if (why != "died or left" && why != "a new character")
+		{
+			RZ_PlayerProfile owner = m_GM.FindProfile(o.m_iPlayer);
+			if (owner)
+				owner.m_iOpenLife = -1;
+		}
+
 		RZ_OpeningLine.Cleanup(o.m_Line);
 		// A Sample's remains go back to the engine's own corpse cleanup
 		RZ_OpeningTasks.KeepBody(o.m_Remains, false);

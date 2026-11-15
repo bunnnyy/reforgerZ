@@ -19,6 +19,7 @@ class RZ_PlayerProfile
 	float m_fDiedZ;
 	// Where the character was and what they carried at the last server tick alive (RZ_Character.Take):
 	// logging back in puts them there with those things, never at a camp
+	int m_iOpenLife = -1;			// the character whose opening is under way (Guidance/RZ_Openings.c), -1 none
 	bool m_bLeftAlive;				// alive at the last look: the next spawn is a coming back, not a coming round
 	float m_fLeftX;
 	float m_fLeftY;

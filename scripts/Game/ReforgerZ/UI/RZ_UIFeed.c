@@ -1156,13 +1156,18 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! G|legacy|Legacy for the Drifter
+	//! G|legacy|Legacy for the Drifter|goes on (1: a character who goes on: the spawn screen deploys
+	//! them as themselves at once, never asking who they were)
 	//! B|id|name|loadout|perk|flaw|locked (0/1)|unlock text|Haven|Bastion|Red Hand|Halcyon (signed start standing)|gear
 	protected string BuildBackgrounds(int playerId)
 	{
 		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
 		RZ_UILine lnG = new RZ_UILine("G");
-		string s = lnG.AddInt(p.m_iLegacy).AddInt(RZ_GameModeComponent.GetDrifterLegacy()).End();
+		int goesOn = 0;
+		if (p.HasCharacter())
+			goesOn = 1;
+
+		string s = lnG.AddInt(p.m_iLegacy).AddInt(RZ_GameModeComponent.GetDrifterLegacy()).AddInt(goesOn).End();
 		array<ref RZ_Background> list = m_GM.GetBackgrounds();
 		if (!list)
 			return s;

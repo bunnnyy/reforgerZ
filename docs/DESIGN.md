@@ -893,7 +893,12 @@ profile's `m_bLeftAlive`, `m_fLeft*`, `m_aLeftItems`, quest items as data); a de
 the next spawn the spawn handler puts them there (on the floor they stood on; more than 40 m above
 the ground, on the ground), the loadout's carried things are swapped for what they carried, the
 quest items come back by the death's path, and the card says *"You're back where you left off."*
-No kit trimming, no death counted. *Simplified:* what they wear comes back as the background's
+No kit trimming, no death counted, and no spawn screen: a character who goes on is never asked who
+they were again (the screen deploys them as themselves, hidden; only a reset brings it back,
+[UI.md](UI.md#the-spawn-screen)). **Mid-opening:** a character who left before their opening ended
+(`m_iOpenLife`) has it run again from a new door, with what they carried (`Character: <player> comes
+back mid-opening: it runs again`), so the first quest is never lost to a logout. Game Master doesn't
+end an opening or Ferda's visit: with the character still alive they wait. *Simplified:* what they wear comes back as the background's
 loadout wears it (changed clothes aren't kept); a magazine keeps its rounds (VERIFY in
 `RZ_Character.c`); a weapon comes back as its prefab spawns, in the pack, not in the hands. Log:
 `Character: <player> comes back where they left off (<grid>)`, `Character: <player> came back with

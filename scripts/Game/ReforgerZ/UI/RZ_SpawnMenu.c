@@ -60,6 +60,7 @@ class RZ_SpawnMenu : RZ_MenuBase
 	protected int m_iSelected = -1;
 	protected int m_iLegacy;
 	protected int m_iDrifterAt = 10;
+	protected bool m_bGoesOn;				// a character who goes on: deployed as themselves at once, the screen hidden
 	protected ref array<ref array<string>> m_aBackgrounds = {};
 	protected ref array<Widget> m_aRows = {};
 	protected ref array<SCR_SpawnPoint> m_aPlaces = {};
@@ -168,7 +169,7 @@ class RZ_SpawnMenu : RZ_MenuBase
 		{
 			RefreshPlaces();
 			int wait = WaitSeconds();
-			if (wait != m_iWait)
+			if (wait != m_iWait || m_bGoesOn)
 			{
 				m_iWait = wait;
 				m_iLocal++;
@@ -494,6 +495,7 @@ class RZ_SpawnMenu : RZ_MenuBase
 			{
 				m_iLegacy = RZ_UIText.Int(f, 1);
 				m_iDrifterAt = Math.Max(1, RZ_UIText.Int(f, 2));
+				m_bGoesOn = RZ_UIText.Int(f, 3) == 1;
 			}
 			else if (tag == "B")
 			{
@@ -533,6 +535,33 @@ class RZ_SpawnMenu : RZ_MenuBase
 			m_iParsed = ui.GetBackgroundsVersion();
 			Parse(ui.GetBackgrounds());
 		}
+
+		// A character who goes on isn't asked who they were (the author): only a reset brings the
+		// screen back. The screen stays hidden and deploys them as their own background, again each
+		// second while the respawn timer or the spawn points make them wait
+		if (m_bGoesOn)
+		{
+			if (m_wRoot)
+				m_wRoot.SetVisible(false);
+
+			int own = -1;
+			foreach (int k, array<string> b : m_aBackgrounds)
+			{
+				if (RZ_UIText.Int(b, 6) != 1)
+					own = k;
+			}
+
+			if (own >= 0)
+			{
+				m_iSelected = own;
+				TryDeploy();
+			}
+
+			return;
+		}
+
+		if (m_wRoot)
+			m_wRoot.SetVisible(true);
 
 		RZ_UIW.Show(m_wRoot, "ListEmpty", m_aBackgrounds.IsEmpty());
 		DrawRows();

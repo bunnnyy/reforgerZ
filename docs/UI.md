@@ -1361,7 +1361,10 @@ show the control prefab's **Use** and **Choose**.
 ### The spawn screen
 
 As in `background_picker.html`: our own screen opens where vanilla's deploy menu and role selection
-would, after the welcome screen and after every death. There's no faction or group step: the
+would, after the welcome screen and after every death. **A character who goes on never sees it**
+(the author: it shouldn't pop up unless you reset): the backgrounds' payload says so (`G`'s fourth
+field), and the screen stays hidden and deploys them as their own background at once, again each
+second while the respawn timer makes them wait. It shows for a new character and after a reset. There's no faction or group step: the
 faction is forced to `SURV` (`SCR_MenuSpawnLogic`'s **Forced faction**). On the left, the 13
 backgrounds in the game mode's order, a locked one dim with a lock and LOCKED. While a character
 goes on ([DESIGN.md](DESIGN.md#a-character-who-lasts)) every background but theirs shows LOCKED with

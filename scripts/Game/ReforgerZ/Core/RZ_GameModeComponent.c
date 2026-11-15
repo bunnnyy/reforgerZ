@@ -1827,6 +1827,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		else
 			line = RZ_Character.ComeRound(this, playerId, controlledEntity, profile, bg);
 
+		// Back mid-opening: it runs again from the door it rolled
+		if (back && RZ_Character.Reopens(playerId) && m_Guidance && m_Guidance.GetOpenings())
+		{
+			line = "";
+			m_Guidance.GetOpenings().OnSpawned(playerId, controlledEntity, profile, bg);
+		}
+
 		m_BiteDetector.Reset(playerId);
 		m_Stealth.Forget(playerId);
 		m_Infection.OnPlayerSpawned(playerId);
@@ -1834,7 +1841,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_UIFeed.RecordGearSoon(playerId, GetPickedLoadoutName(playerId));
 		RegisterGunfire(controlledEntity);
 		m_Interactions.OnPlayerSpawned(playerId);
-		NotifyPlayerAs(playerId, bg.m_sName, line, RZ_ENoticeTag.SPAWN);
+		if (!line.IsEmpty())
+			NotifyPlayerAs(playerId, bg.m_sName, line, RZ_ENoticeTag.SPAWN);
 	}
 
 	//------------------------------------------------------------------------------------------------
