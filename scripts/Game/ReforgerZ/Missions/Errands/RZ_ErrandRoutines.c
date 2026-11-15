@@ -225,7 +225,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.Done("That's the one. Clean water by supper. I'll tell everyone it was me.");
 
 		w = Way("do");
-		w.m_sLabel = "Take only the good part";
+		w.m_sLabel = "Take only the part worth taking";
 		w.m_sBackground = "mechanic,labtech";
 		w.m_ePlace = RZ_EErrandPlace.NEXT_TOWN;
 		w.m_fSeconds = 12;
@@ -248,7 +248,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_sRoles = "lookout";
 		m_bTimed = true;
 		Offer("It's me on the gate tonight, and only me: the others are out on a water run. {near_town} has been loud since the afternoon, and dusk is when they move. Stand with me a while?",
-			"Dusk soon. One on the gate, and the infected in {near_town} are restless. I'd rather not be the only one listening when the light goes.");
+			"Dusk soon, and I'm alone on this gate. The infected in {near_town} are restless, and dusk is when they move. Stand watch with me a while, so I'm not the only one listening when the light goes.");
 		Over("The others are back. Go on, I'm fine.");
 
 		RZ_ErrandWay w = Way("do");
@@ -402,8 +402,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
 		m_iFault = RZ_EFault.RELIEF;
-		Offer("The private relieving me hasn't shown. Last seen walking to a car out on the road with a blanket, an hour ago. The shift changes at half five whether he's here or not. Wake him, or stand his post.",
-			"One on the gate, and the relief missing. Asleep on watch is the stockade and extra duties. I know where he is. I'd rather not know.");
+		Offer("I'm on this gate, and the private who should relieve me hasn't shown. He was seen walking to a car out on the road with a blanket an hour ago: he's asleep in it. The shift changes at half five. Wake him and send him here, or stand his post yourself till he comes.",
+			"I've been on this gate all shift, and my relief never came. He's asleep in a car out on the road, and asleep on watch means the stockade and extra duties if it's reported. I'd rather nobody had to report it. Wake him and get him here, or stand his post yourself.");
 		Over("The relief's turned up. Carry on.");
 
 		RZ_ErrandWay w = Way("do");
@@ -419,7 +419,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.Done("He'll be on the gate in five. He owes you. He'll pretend he doesn't.");
 
 		w = Way("report");
-		w.m_sLabel = "Report him asleep";
+		w.m_sLabel = "Report him asleep (the stockade for him)";
 		w.m_iFame = 1;
 		w.Done("Charge him with what? Sleeping through the end of the world? I'll write it up anyway. Everything gets written up.");
 
@@ -443,7 +443,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_sRoles = "radio operator";
 		m_iFault = RZ_EFault.SET;
 		m_bTimed = true;
-		Offer("The radio's battery is flat. Tonight's call, strength, rounds, fuel, requesting relief, goes out as a hiss unless someone has a spare. Command won't notice. Command doesn't notice. The other posts will.");
+		Offer("The post's radio battery is flat. Tonight's report to Command, our strength, rounds and fuel and a request for relief, goes out as a hiss unless someone has a spare battery. Command won't notice. The other posts will, and they'll think we've fallen.");
 		Over("A spare battery turned up in a drawer, under a sandwich.");
 
 		RZ_ErrandWay w = Way("give");
@@ -497,7 +497,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.Done("That's short. That's very short. I'll file it as it is, and we'll see if anyone at the stronghold reads it.");
 
 		w = Way("do");
-		w.m_sLabel = "Count it and write what they want";
+		w.m_sLabel = "Count it and write what they want (a false count)";
 		w.m_iMinTier = RZ_ETier.KNOWN;
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 30;
@@ -601,7 +601,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
 		m_sRoles = "cook";
-		Offer("I cook for this camp, and the still out back wants feeding: two tins of fruit. It's for the medicine, for cuts and coughs. The medicine is also the brandy.");
+		Offer("I cook for this camp, and the still out back needs two tins of fruit to make its next batch. It's our medicine, for cuts and coughs. The medicine is also the brandy.");
 		Over("The still's fed. Come back when it's thirsty.");
 
 		RZ_ErrandWay w = Way("give");
@@ -623,7 +623,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		Over("Forget it. The boss sorted it, loudly.");
 
 		RZ_ErrandWay w = Way("do");
-		w.m_sLabel = "Watch them, then name him";
+		w.m_sLabel = "Watch them, then name the skimmer";
 		w.m_iMinTier = RZ_ETier.KNOWN;
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 60;
@@ -633,7 +633,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.Done("Him? Course it's him. He's got new boots. Nobody gets new boots.");
 
 		w = Way("do");
-		w.m_sLabel = "Pick him out";
+		w.m_sLabel = "Pick out the skimmer";
 		w.m_sBackground = "police,excon";
 		w.m_iMinTier = RZ_ETier.KNOWN;
 		w.m_ePlace = RZ_EErrandPlace.HERE;
@@ -644,7 +644,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.Done("Twenty seconds. You've done this before, haven't you. Don't answer.");
 
 		w = Way("do");
-		w.m_sLabel = "Watch them, then warn him";
+		w.m_sLabel = "Watch them, then warn the skimmer";
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 60;
 		w.m_fRadius = 25;
@@ -712,7 +712,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_iFaction = RZ_EFaction.INSTITUTE;
 		m_iFault = RZ_EFault.SENSOR;
 		Offer("Sensor four has gone dark, {place}. It counts the infected moving past at night, and the overnight numbers go out at the change of shift. A fresh battery, or a reset if you can do it unseen. We'd like the readings.",
-			"No data from sensor four, {place}, since the shift change. Possibly the cable. Possibly not a rat. We'd like it to be a rat.");
+			"Sensor four, {place}, has sent nothing since the shift change. It counts the infected passing at night. It could be the cable, or a rat, or something bigger. Fit a fresh battery, or reset it without being seen, and we have our readings back.");
 		Over("Sensor four is back. Perhaps it was the rat.");
 
 		RZ_ErrandWay w = Way("give");
@@ -835,12 +835,12 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.Done("Forgotten. Faces are hard to remember. Yours especially, now.");
 
 		w = Way("press");
-		w.m_sLabel = "Lean on him";
+		w.m_sLabel = "Lean on him till he forgets";
 		w.m_bThreat = true;
 		w.Done("Alright. Alright. I never saw you. I never see anyone.");
 
 		w = Way("leave");
-		w.m_sLabel = "Let him sell it";
+		w.m_sLabel = "Let him sell where you sleep (hunters will come)";
 		w.m_iEffect = FX_HUNTERS;
 		w.Done("No hard feelings. Business. Sleep somewhere else tonight.");
 	}

@@ -439,7 +439,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	{
 		m_iRung = RZ_Duties.RUNG_FACE;
 		m_sRoles = "nurse,medic,lookout,sentry,guard,toll man";
-		m_sThread = "stood the line at the gate";
+		m_sThread = "checked the arrivals at the gate for bites";
 		TableWay(RZ_DutyGame.KIND_LINE, true, "Look the line over",
 			"Go to each of the people waiting at the gate of {here}, look them over, and take each by the arm to the gate, the wash or the holding room. Then tell {giver}.", 6, 1);
 		switch (m_iFaction)
@@ -722,7 +722,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			{
 				m_iRung = RZ_Duties.RUNG_FACE;
 				m_sRoles = "clerk,cook,storekeeper";
-				m_sThread = "took the roll";
+				m_sThread = "found out who was missing from the roll";
 				m_sTitle = "The Roll Call";
 				SceneWay("Take the roll", false, "Find out who of {here} is on the list and wasn't fed, from what's in the house, and write why against the name. Then tell {giver}.", 6, 1);
 				Offer("The list says twenty and the kitchen fed nineteen. {why} I could ask, and be told what people want me to hear. You go and look. Pegs, beds, the gate book. Then tell me who, and what's become of them.");
@@ -868,7 +868,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			{
 				m_iRung = RZ_Duties.RUNG_ARMED;
 				m_sRoles = "lookout";
-				m_sThread = "lay up on the hill with the glass";
+				m_sThread = "kept watch from the hill for the crew";
 				m_sTitle = "Spotter";
 				SceneWay("Take the glass up the hill", true, "Go up the hill beyond {here}, lie up with the glass, watch three times, and mark on the slate the one thing the crew can use. Then tell {giver}.", 8, 1);
 				Offer("I want a pair of eyes on the hill, and the boss said yours. {why} Lie up, watch, and watch again. Don't count everything. Find the one thing we can use, and put that on the slate. One line. The crew goes out on what you write.");
@@ -992,7 +992,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			case RZ_EFaction.MILITARY:
 			{
 				m_sTitle = "Stag";
-				Offer("Stag at the wire, one relief. {why} You report what moves and you decide what it is. Stand the gate to for nothing and the section will hate you. Miss one, and there won't be a section.");
+				Offer("Stag at the wire: sentry duty, one relief. {why} You report what moves out there and decide what it is. Call the post to arms for nothing and the section will hate you. Miss a real one, and there won't be a section.");
 				Over("Stand down. Stag is covered.");
 				Said("You're relieved when you're relieved, and not a minute sooner.", "Stag complete. Let's have it.", "Relieved. What did you have?");
 				break;
@@ -1071,7 +1071,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	{
 		m_iRung = RZ_Duties.RUNG_TRUST;
 		m_sRoles = "sentry,guard,lookout,toll man,medic";
-		m_sThread = "kept the door on the lock-up";
+		m_sThread = "kept the lock-up's door overnight";
 		SceneWay("Take the night watch on the door", true, "Take the watch at the lock-up door by the gate of {here}, and keep the door until the one inside has had their say. Then tell {giver}.", 10, 2);
 		switch (m_iFaction)
 		{
@@ -1117,7 +1117,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	protected void DefineNames()
 	{
 		m_iRung = RZ_Duties.RUNG_TRUST;
-		m_sThread = "carried the names";
+		m_sThread = "told the families of our dead";
 		if (m_iFaction == RZ_EFaction.MILITARY)
 		{
 			m_sRoles = "radio operator,medic,sentry";
@@ -1145,7 +1145,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		{
 			m_sRoles = "lab assistant,technician";
 			m_sTitle = "Whose Work It Was";
-			m_sThread = "put the names on the week's work";
+			m_sThread = "put the right names on the week's bench report";
 			SceneWay("Read the desks for the week's report", false, "Go to each of the three desks at {here}, read what's on it, and place each name on the week's report: first, thanked, or left off. Then initial it and tell {giver}.", 10, 2);
 			Offer("The week's bench report goes in the record tonight, and the names on it are wrong more often than they're right. {why} Read the desks. The notebooks don't lie, even when the people do. Whatever you place stays on their record.");
 			Over("Never mind. The director placed the names himself.");
@@ -1178,7 +1178,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	protected void DefineDose()
 	{
 		m_iRung = RZ_Duties.RUNG_TRUST;
-		m_sThread = "wrote a name on the dose";
+		m_sThread = "chose who got the one dose";
 		switch (m_iFaction)
 		{
 			case RZ_EFaction.MILITARY:
@@ -1234,7 +1234,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	{
 		m_iRung = RZ_Duties.RUNG_TRUST;
 		m_sRoles = "lookout,sentry,guard,farmer";
-		m_sThread = "cleared the strays with their people";
+		m_sThread = "cleared the infected off the wire with their people";
 		RZ_ErrandWay w = Way("cull");
 		w.m_sLabel = "Go out with them and clear it";
 		w.m_ePlace = RZ_EErrandPlace.GATE;
@@ -1247,14 +1247,14 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		if (m_iFaction == RZ_EFaction.MILITARY)
 		{
 			m_sTitle = "Clearing the Wire";
-			Offer("There are strays gathering off the wire, a handful, and a handful becomes a hundred. {why} A section's going out to clear them and I want you on it. You've earned a place in the line. Hold it.");
+			Offer("There are infected gathering off the wire, a handful, and a handful draws a hundred. {why} A section's going out to clear them before that happens, and I want you on it. You've earned a place in the line. Hold it.");
 			Over("Stand down. The section cleared it without you.");
 			Said("They're at the gate. Check your magazine twice.", "All back. Clear. That's the whole report.", "Section's in. Good work out there.");
 			return;
 		}
 
 		m_sTitle = "The Strays";
-		Offer("There are strays at the bottom field again. A few, off some pack, and they bring the rest in time. {why} Two of ours are going down to see to it and they asked for you by name. That's not nothing, here.");
+		Offer("There are infected at the bottom field again. A few, wandered off some pack, and they bring the rest in time. {why} Two of ours are going down to put them down, and they asked for you by name. That's not nothing, here.");
 		Over("Never mind. They've gone down and come back, and nobody's saying how it went.");
 		Said("They're waiting at the gate. Don't let them go first.", "Everyone home. That's the only count I want.", "It's done. Wash before you come in the kitchen.");
 	}

@@ -16,7 +16,7 @@ class RZ_Routine_WhosAtTheGate : RZ_ErrandDef
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "lookout";
 		Offer("There's someone at our gate, holding one arm close. Says another house sent them. The rule is you declare a bite at the door, and not everyone does. I've let nobody in since Tuesday without a second pair of eyes. Will you look?",
-			"Stranger at the gate, holding an arm and saying it's nothing. Could be a fence. Could be a bite. Could be nothing. Will you look them over before I open up?");
+			"Stranger at the gate, holding an arm and saying it's nothing. Could be a cut from a fence. Could be a bite. If it's a bite and I let them in, the whole house is at risk. Will you look them over before I open up?");
 		Over("Never mind the gate. They've gone. Or someone else let them in. I'm not asking which.");
 
 		RZ_ErrandWay w = Way("talk");
@@ -448,7 +448,7 @@ class RZ_Routine_RentsDue : RZ_ErrandDef
 		m_sRoles = "toll man,lookout";
 		m_bTimed = true;
 		Offer("Every crossroads pays somebody. At dusk, ours pays {lot}: they walk right past the toll. Get up on the lorry roof and count them past, so we know whether to shut the toll early. Don't wave.",
-			"Rent's due. Theirs, not ours. Count {lot} going by the toll at dusk so we know how many to not argue with.");
+			"At dusk, {lot} walk right past our toll, and we let them: that's the rent this crossroads pays. Count them going by from the lorry roof, so we know how many we'd be arguing with, and whether to shut the toll early.");
 		Over("Never mind the count. Somebody's done it, or they didn't come. Either way, drink up.");
 
 		RZ_ErrandWay w = Way("sneak");
@@ -506,8 +506,8 @@ class RZ_Routine_TheNumber : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
 		m_sRoles = "lab assistant,technician";
-		Offer("A trial dose didn't take today. One of the other two. We write a number in the notebook, not a name. Would you sit with the night shift? We're not good company. That's rather the point.",
-			"Tonight's volunteer didn't walk out. Somebody wrote the time and the number, and then we all went back to work. Sit with us a while. You needn't talk. We don't.");
+		Offer("A trial dose of the cure didn't take today. The volunteer is one of 'the other two', as we say: the two in ten it doesn't work for. We write a number in the notebook, not a name. Would you sit with the night shift a while? We're not good company. That's rather the point.",
+			"Tonight's trial volunteer didn't walk out of the room. Somebody wrote down the time and his number, and then we all went back to work. Sit with the night shift a while. You needn't talk. We don't.");
 		Over("It's all right. The shift changed. The new ones didn't see it.");
 
 		RZ_ErrandWay w = Way("do");
