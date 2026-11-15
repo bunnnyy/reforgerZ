@@ -1342,6 +1342,8 @@ class RZ_Safehouses
 			if (occupant)
 			{
 				TagOccupant(occupant, idx);
+				// The same row of the same house, the same person (the nametags; a named person's own name wins)
+				RZ_PersonTags.Mark(occupant, string.Format("s%1:o%2", idx, i), RZ_EFaction.SURVIVORS, "resident");
 				h.m_aBodies.Insert(occupant);
 				personBodies.Insert(occupant);
 			}
@@ -1358,6 +1360,7 @@ class RZ_Safehouses
 			{
 				h.m_aBodies.Insert(guard);
 				guardBodies.Insert(guard);
+				RZ_PersonTags.Mark(guard, string.Format("s%1:g%2", idx, g), RZ_EFaction.SURVIVORS, "guard");
 
 				// Shooting at a safehouse guard turns the Haven's people there on you for a while
 				if (m_GM.GetHostility())
@@ -1373,6 +1376,7 @@ class RZ_Safehouses
 			{
 				h.m_aBodies.Insert(qm);
 				keeperBodies.Insert(qm);
+				RZ_PersonTags.Mark(qm, string.Format("s%1:qm", idx), RZ_EFaction.SURVIVORS, "quartermaster");
 			}
 		}
 
@@ -1383,6 +1387,7 @@ class RZ_Safehouses
 			{
 				h.m_aBodies.Insert(medic);
 				keeperBodies.Insert(medic);
+				RZ_PersonTags.Mark(medic, string.Format("s%1:medic", idx), RZ_EFaction.SURVIVORS, "medic");
 			}
 		}
 

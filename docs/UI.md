@@ -190,7 +190,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | The death brief | — | At a death, one card over the spawn screen: the name, the background and which death of the character, the day and place, how it ended, how long you lived, and a few of the character's numbers, then one closing line; A, Space, a click or B gives way to the spawn screen ([below](#the-death-brief)) | `RZ_DeathBrief`, `RZ_DeathBriefMenu` | Built as text (layout too), preset added; not checked in play; no mockup |
 | Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), a box to write one with a Pin it up button, and seven ready-made notes for a pad. Opened when you read the board, with **UI > Board menus** on (the default) | `RZ_NoticeBoardMenu` | Layout built, not checked in play; no mockup |
 | Talk | `talk.png` (still shows the old reading bar) | New Vegas style, in two steps: their line on its own in a subtitle band, typed out a box at a time with a bouncing ▼ and "2 / 4", then your replies on their own in an outlined box, with what each needs; their name top right ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play; the boxes, typing and paging by moving compile, not played |
-| Nametags | — | A small tag over each person within 8 m you can talk to and can see: name, role, who they're with in their colour; three at most ([below](#nametags)) | `RZ_NametagClient` | `NametagPanel` built as text in the HUD layout, compiles, not checked in play |
+| Nametags | — | A small tag over each person within 8 m you can see (everyone human but players): name, role, who they're with in their colour; three at most; the same person always has the same name ([below](#nametags)) | `RZ_NametagClient` | `NametagPanel` built as text in the HUD layout; seen in play on named people; every person, stable names and the head bone not compiled or checked in play |
 | Subtitles | `hud.png` (the old one-line name) | What people say outside the talk screen, at the bottom centre: how it reaches you (an icon), the name in their faction colour and their role, for someone in person an arrow to them and how far; the line in bright bone. Radio channels' voices in their own box at the top centre, clear of the quest tracker ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` and `RadioLinePanel` built as text in the HUD layout, not checked in play |
 | The reader | `reader.png` | A note, letter, order or flyer on a sheet of paper in the middle of the screen, a page at a time ([below](#subtitles-and-the-reader)) | `RZ_ReaderMenu` | Layout built as text, not checked in play |
 | Car repair | `car_repair.png`, `car_hotwire.png` (the loom) | A fixable car's job card (each job, what the car has and lacks, what you need, the button that does it) beside a side view of the car with each job lit where it is, and Start the engine; Hotwire puts the loom in the picture's place, a wire to follow from its plug to the lit socket ([below](#the-car-repair-screen)) | `RZ_CarMenu` | Layouts built as text, not checked in play |
@@ -726,26 +726,55 @@ leaves, and shows the person's actions again (`RZ_TalkMenu.Available`).
 
 ### Nametags
 
-Walk up to someone you can talk to and a small tag shows over their head: their **name** (condensed
-bold 24, bone), their **role** under it (20, dim: "Council head", "Toll man", "Trader"), and **who
-they're with**, the faction's name in its colour ("The Haven"); no line for someone with none. Only
-people with a Talk prompt (never the infected, never players), only within **Dialogue > Nametag
-range** (8 m) and in sight, **three at most** (the nearest, **Nametag max**), and none while a menu
-is open or you're dead. Names are what the talk screen calls them: a wanderer's own name ("Old
-Marta"), "Resident" for a house's people, "Stranger", a quartermaster's or the medic's role
-("Quartermaster", "Medic"), a mission's people by their Talk prompt ("The captain"); a house's
-people, strangers, the Long Table, posts and a mission's people show no role. Vanilla's nametags
-(players only) stay as they are. Nothing to press, so it's the same on a pad.
+Walk up to anyone and a small tag shows over their head: their **name** (condensed bold 24, bone),
+their **role** under it (20, dim: "Council head", "Sentry", "Toll man", "Trader"), and **who
+they're with**, the faction's name in its colour ("The Haven"); no line for someone with none.
+Every person the mod spawns or places has one: the people you can talk to, and the guards,
+sentries, crews, patrols and a camp's people you can't (never the infected, never players). Only
+within **Dialogue > Nametag range** (8 m) and in sight, **three at most** (the nearest, **Nametag
+max**), and none while a menu is open or you're dead. Vanilla's nametags (players only) stay as they
+are. Nothing to press, so it's the same on a pad.
+
+**Who they are.** In this order, the first that knows:
+
+| Who | Their tag | Where the name comes from |
+|---|---|---|
+| Someone you can talk to | what the talk screen calls them: a leader, a holding's named person ("Corporal Oskar Kral", *Sentry*), a house's named resident, a wanderer ("Old Marta", *Trader*), a Long Table member, an opening's contact, a mast's keeper, a local, a duty's person; "Stranger"; a mission's people by their Talk prompt ("The captain"). Strangers, the Long Table, posts and a mission's people show no role | their own system, saved (docs: [DIALOGUE.md](DIALOGUE.md#the-talk-screen)) |
+| A quartermaster or the medic | their own name, the role under it ("Private Emil Kral", *Quartermaster*); the talk screen's header says the same | `RZ_PersonTags`: an outpost's or a safehouse's by its place, a placed one by where it stands |
+| A safehouse's people (not its named residents) | their own name, *Resident*; the talk screen's header too | `RZ_PersonTags`: the house and the row |
+| A holding's or a safehouse's guards | a name in the faction's style, *Sentry* (Bastion), *Lookout* (Red Hand), *Guard* (the Haven, Halcyon) | `RZ_PersonTags`: the holding and the guard's slot |
+| A road post's crew | a name, *Checkpoint guard* or *Roadblock crew*; its speaker at the barrier stays "The corporal at the barrier" / "The toll man" | `RZ_PersonTags`: the post's place on the road, and each member's slot in the group |
+| A road patrol | its leader by his own name; the others a name each, *Patrol* | `RZ_PersonTags`: the patrol and the slot |
+| A supply truck's crew | a name each, *Supply crew* | `RZ_PersonTags`: the faction and the stronghold it drives from |
+| A camp's extras, and anyone who wakes up in the morning | a name, their work ("Cook", "Mechanic") | `RZ_PersonTags`: whoever went to bed comes out; a new extra takes the place's lowest free slot |
+| Anyone else on one of the four sides (a mission's or a squad's men nobody has named) | their side's word: *Soldier*, *Crewman*, *Guard*, *Survivor*, and the faction | nobody has told you their name yet |
+
+**Names stick.** A name is never rolled when someone spawns. The spawning system marks the body (a
+character, or an AI group whose members are then named in the group's own order, the order their
+looks come in) with a key for the place and the slot ("h12:g0", "s3:o2", "patrol:4"); the name
+comes from the season's seed and that key (`RZ_PersonTags.NameFor`, in the faction's style:
+`RZ_FactionVoice.PersonNameFor`). So the same guard post has the same person each time it spawns
+near you, after a restart too, and the tag, the talk screen and every line name them alike. When
+someone dies (seen within 10 s), their slot moves on a generation (the season flag `name.<key>`):
+whoever fills it next is someone new, and the dead one isn't back. A camp's people who go to bed as
+data keep their keys and get up as themselves. The talk screen's own people (above) keep the names
+their systems save (a holding's named person killed is replaced under a new name, as before). A
+new season is new people.
+
+**On the right person.** Each tag is its body's: the server keeps a worked-out tag only for the
+body it was worked out for (an id that comes back on someone new is worked out again), and the
+client draws it over that body's head bone every frame (a little above it, so it stays on them as
+they crouch, lie down, sit or ride; without the bone, 2.05 m over their feet).
 
 **Cheap by design.** The server works out who's near each player every 1.5 s (one sphere query of
-range + 4 m round them, like barks) and sends that player only the nearest four, each as its body's
-RplId, name, role and faction (`PAYLOAD_NAMETAGS`, kind 20: `N|id|name|role|faction` per person, ""
-for none), and only when the list changes; who someone is comes from the talk screen's adapters,
-worked out once a minute per body (`RZ_Nametags`). The client (`RZ_NametagClient`, from the HUD's
-update) picks who shows four times a second (the distance and one sight trace each, at most four)
-and every frame moves at most three tags (one projection each; the text is set only when a tag's
-person changes). The widgets are `NametagPanel` with `Nametag0`–`2` in the HUD layout
-([UI/LAYOUTS.md](../UI/LAYOUTS.md#hud-rz_hudlayout)); without them, nothing shows.
+range + 4 m round them, like barks, up to 24 candidates) and sends that player only the nearest
+four, each as its body's RplId, name, role and faction (`PAYLOAD_NAMETAGS`, kind 20:
+`N|id|name|role|faction` per person, "" for none), and only when the list changes; who someone is
+is worked out at most every 15 s per body (`RZ_Nametags`). The client (`RZ_NametagClient`, from the
+HUD's update) picks who shows four times a second (the distance and one sight trace each, at most
+four) and every frame moves at most three tags (one bone read and one projection each; the text is
+set only when a tag's person changes). The widgets are `NametagPanel` with `Nametag0`–`2` in the HUD
+layout ([UI/LAYOUTS.md](../UI/LAYOUTS.md#hud-rz_hudlayout)); without them, nothing shows.
 
 ### Subtitles and the reader
 
@@ -1720,7 +1749,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_Dialogue`, `RZ_TalkSpeaker` (`RZ_TalkGeneric`, `RZ_TalkLeader`, `RZ_TalkStaff`), `RZ_TalkNeeds`, `RZ_DialogueTrees` | server | Conversations: sessions, capture, replies and their needs, picks; with Trees on, topics, nodes, checks and their tags ([DIALOGUE.md](DIALOGUE.md)) |
 | `RZ_TalkAction` (`Dialogue/RZ_TalkStaff.c`) | every machine | The one **Talk to the quartermaster** / **Talk to the medic** prompt on a person with no puzzle components; while the talk screen is used, the person's other ReforgerZ actions hide (`RZ_TalkMenu.HidesActionsOn`) |
 | `RZ_TalkMenu` | client (`ChimeraMenuBase`) | The talk screen ([The talk screen](#the-talk-screen)) |
-| `RZ_Nametags`, `RZ_NametagClient` | server, on the dialogue's tick; client, from the HUD's update | [Nametags](#nametags): each player's list of the people near them to talk to, and the tags over the ones in sight |
+| `RZ_Nametags`, `RZ_PersonTags`, `RZ_NametagClient` | server, on the dialogue's tick (and where people spawn); client, from the HUD's update | [Nametags](#nametags): each player's list of the people near them, the stable names of the people nobody else names, and the tags over the ones in sight |
 | `RZ_Reader`, `RZ_ReaderMenu` | server, client | The reader: one player's paper, a page at a time ([Subtitles and the reader](#subtitles-and-the-reader)) |
 | `RZ_Cars` (its repair screen part), `RZ_CarLoom`, `RZ_CarMenu` | server, server (data), client | The car repair screen and the hotwire's loom ([above](#the-car-repair-screen)) |
 | `RZ_ShopScreen`, `RZ_ShopOpenAction`, `RZ_ShopMenu` | server, server, client | The shop screen ([above](#the-shop-screen)) |

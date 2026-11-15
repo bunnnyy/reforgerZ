@@ -919,6 +919,8 @@ class RZ_SupplyLines
 			return null;
 		}
 
+		// The same crew drives this stronghold's truck each time (the nametags)
+		RZ_PersonTags.Mark(crew, string.Format("truck:%1:%2", f, top.m_iId), f, "supply crew");
 		RZ_SupplyTruck t = new RZ_SupplyTruck();
 		t.m_eFaction = f;
 		t.m_Vehicle = vehicle;

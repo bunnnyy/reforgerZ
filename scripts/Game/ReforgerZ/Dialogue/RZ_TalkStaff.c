@@ -134,7 +134,8 @@ class RZ_TalkStaff : RZ_TalkSpeaker
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "The quartermaster"; the sub-line "The Haven - quartermaster - Morton".
+	//! Their own name, the one their nametag shows (RZ_PersonTags: "Corporal Emil Kral"), else "The
+	//! quartermaster"; the sub-line "The Haven - quartermaster - Morton".
 	override void Setup(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId)
 	{
 		if (!m_Talk || !m_Owner)
@@ -142,7 +143,10 @@ class RZ_TalkStaff : RZ_TalkSpeaker
 
 		string role = m_Talk.GetRole();
 		RZ_EFaction faction = m_Talk.GetFaction();
-		s.m_sName = "The " + role;
+		s.m_sName = RZ_PersonTags.StaffName(m_Owner, role, faction);
+		if (s.m_sName.IsEmpty())
+			s.m_sName = "The " + role;
+
 		s.m_sHeader = s.m_sName;
 		s.m_iFaction = faction;
 		s.m_sSub = RZ_Factions.GetName(faction) + " - " + role;

@@ -1,26 +1,33 @@
 //! Nametags, the server's half (docs/UI.md, "Nametags"). Every POLL seconds, for each living
-//! player: the people they could talk to within Dialogue > Nametag range and a margin (a sphere
-//! query round the player, as barks do), the nearest LIST_MAX, each as its body's RplId, name, role
-//! and faction, sent to that player only (RZ_UIFeed.PAYLOAD_NAMETAGS) when the list changes. Who
-//! someone is comes from the talk screen's adapters (RZ_TalkSpeaker.Describe, RZ_TalkStaff), worked
-//! out once a minute per body. Players and the infected are never on it (only living characters
-//! with a Talk prompt are). The client draws the tags it can see (UI/RZ_NametagClient.c).
-//! Changes nothing in the game. Server only.
+//! player: the people within Dialogue > Nametag range and a margin (a sphere query round the player,
+//! as barks do), the nearest LIST_MAX, each as its body's RplId, name, role and faction, sent to
+//! that player only (RZ_UIFeed.PAYLOAD_NAMETAGS) when the list changes. Everyone human who isn't a
+//! player is on it: who someone is comes from the talk screen's adapters (RZ_TalkSpeaker.Describe,
+//! RZ_TalkStaff) for the people you can talk to, else from the name their spawn gave them
+//! (RZ_PersonTags: guards, crews, patrols, a camp's extras), else from their Talk prompt, else their
+//! side's word ("Soldier"). Worked out every KNOWN_FOR seconds per body, and kept only for that body.
+//! Players and the infected are never on it. The client draws the tags it can see
+//! (UI/RZ_NametagClient.c). Changes nothing in the game. Server only.
 class RZ_Nametags
 {
 	protected static const float POLL = 1.5;
 	protected static const float MARGIN = 4;		// the list reaches this far past the range, so a tag shows as you walk up
-	protected static const float KNOWN_FOR = 60;	// seconds a body's tag is kept before it's worked out again
+	protected static const float KNOWN_FOR = 15;	// seconds a body's tag is kept before it's worked out again
+	protected static const float SWEEP = 10;		// seconds between RZ_PersonTags' sweeps (the dead and the gone)
 	protected static const int LIST_MAX = 4;		// bodies on one player's list
-	protected static const int FOUND_MAX = 12;		// candidates one query keeps
+	protected static const int FOUND_MAX = 24;		// candidates one query keeps
 	protected static const int KNOWN_MAX = 400;		// tags remembered before the memory starts again
+	protected static const int SIDE_NONE = -2;		// SideOf: not one of the four sides (the infected, a vanilla faction)
+	protected static const int SIDE_LOOSE = -1;		// SideOf: on the player side, with no faction of its own (a survivor)
 
 	protected RZ_GameModeComponent m_GM;
 	protected float m_fClock;
 	protected float m_fNext;
+	protected float m_fNextSweep;
 	protected ref map<int, string> m_mSent = new map<int, string>();	// player -> the list last sent
-	protected ref map<int, string> m_mTag = new map<int, string>();		// a body's RplId -> "name|role|faction" ("" not a talker)
+	protected ref map<int, string> m_mTag = new map<int, string>();		// a body's RplId -> "name|role|faction" ("" no tag)
 	protected ref map<int, float> m_mTagAt = new map<int, float>();
+	protected ref map<int, ref RZ_NametagBody> m_mTagBody = new map<int, ref RZ_NametagBody>();	// whose that RplId was
 	protected ref array<IEntity> m_aFound = {};
 
 	//------------------------------------------------------------------------------------------------
@@ -34,6 +41,12 @@ class RZ_Nametags
 	void Tick(float dt)
 	{
 		m_fClock += dt;
+		if (m_fClock >= m_fNextSweep)
+		{
+			m_fNextSweep = m_fClock + SWEEP;
+			RZ_PersonTags.Sweep();
+		}
+
 		if (m_fClock < m_fNext)
 			return;
 
@@ -46,6 +59,7 @@ class RZ_Nametags
 		{
 			m_mTag.Clear();
 			m_mTagAt.Clear();
+			m_mTagBody.Clear();
 		}
 
 		array<int> ids = {};
@@ -78,8 +92,8 @@ class RZ_Nametags
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The nearest people to talk to round `me`, one N|id|name|role|faction record each, in a fixed
-	//! order (so the list only changes when who's there does).
+	//! The nearest people round `me`, one N|id|name|role|faction record each, in a fixed order (so the
+	//! list only changes when who's there does).
 	protected string ListFor(int pid, IEntity me, float reach)
 	{
 		m_aFound.Clear();
@@ -116,8 +130,9 @@ class RZ_Nametags
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A living character that isn't a player and has a Talk prompt: an RZ_TalkAction, or the
-	//! puzzle components' read (not hidden). The infected have neither.
+	//! A living character that isn't a player and isn't one of the infected: someone with a Talk
+	//! prompt (an RZ_TalkAction, or the puzzle components' read), someone their spawn named, or anyone
+	//! on one of the four sides' keys (the infected are on none of them).
 	protected bool OnEntity(IEntity e)
 	{
 		if (m_aFound.Count() >= FOUND_MAX)
@@ -126,8 +141,11 @@ class RZ_Nametags
 		if (!RZ_Dialogue.IsPerson(e) || GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(e) > 0)
 			return true;
 
+		if (RZ_BaconBody.IsBacon(e))
+			return true;
+
 		RZ_ClueComponent clue = RZ_ClueComponent.Cast(e.FindComponent(RZ_ClueComponent));
-		if (RZ_TalkAction.On(e) || (clue && clue.GetReadLabel() != RZ_ClueComponent.NO_READ))
+		if (RZ_TalkAction.On(e) || (clue && clue.GetReadLabel() != RZ_ClueComponent.NO_READ) || SideOf(e) != SIDE_NONE)
 			m_aFound.Insert(e);
 
 		return true;
@@ -144,11 +162,20 @@ class RZ_Nametags
 		int id = rpl.Id();
 		string tag;
 		float at;
-		if (!m_mTag.Find(id, tag) || !m_mTagAt.Find(id, at) || m_fClock - at > KNOWN_FOR)
+		RZ_NametagBody whose;
+		// Kept only for the same body: an id given to someone new is worked out again
+		bool fresh = m_mTag.Find(id, tag) && m_mTagAt.Find(id, at) && m_fClock - at <= KNOWN_FOR;
+		if (fresh && (!m_mTagBody.Find(id, whose) || whose.m_Body != body))
+			fresh = false;
+
+		if (!fresh)
 		{
 			tag = Describe(pid, me, body);
 			m_mTag.Set(id, tag);
 			m_mTagAt.Set(id, m_fClock);
+			RZ_NametagBody b = new RZ_NametagBody();
+			b.m_Body = body;
+			m_mTagBody.Set(id, b);
 		}
 
 		if (tag.IsEmpty())
@@ -164,38 +191,80 @@ class RZ_Nametags
 		string name = "";
 		string role = "";
 		int faction = -1;
-		RZ_TalkSession s = new RZ_TalkSession();
-		s.m_iPlayer = pid;
-		s.m_Speaker = body;
-		s.m_Adapter = RZ_TalkSpeaker.For(m_GM, body);
-		RZ_TalkStaff staff = RZ_TalkStaff.Cast(s.m_Adapter);
-		if (staff)
+		RZ_TalkAction talk = RZ_TalkAction.On(body);
+		RZ_ClueComponent clue = RZ_ClueComponent.Cast(body.FindComponent(RZ_ClueComponent));
+		bool talker = talk != null;
+		if (clue && clue.GetReadLabel() != RZ_ClueComponent.NO_READ)
+			talker = true;
+
+		if (talker)
 		{
-			staff.Setup(m_GM, s, pid);
-			name = RZ_Util.Capitalize(RZ_TalkAction.On(body).GetRole());
-			faction = s.m_iFaction;
-		}
-		else if (s.m_Adapter)
-		{
-			RZ_DCtx ctx = new RZ_DCtx();
-			ctx.m_GM = m_GM;
-			ctx.m_iPlayer = pid;
-			ctx.m_User = me;
-			ctx.m_Body = body;
-			if (s.m_Adapter.Describe(m_GM, s, ctx) && !ctx.m_aKinds.IsEmpty())
+			RZ_TalkSession s = new RZ_TalkSession();
+			s.m_iPlayer = pid;
+			s.m_Speaker = body;
+			s.m_Adapter = RZ_TalkSpeaker.For(m_GM, body);
+			RZ_TalkStaff staff = RZ_TalkStaff.Cast(s.m_Adapter);
+			if (staff)
 			{
-				faction = ctx.m_iFaction;
-				name = TagName(ctx);
-				role = TagRole(ctx);
+				// A quartermaster or the medic: their own name (RZ_TalkStaff says the same), the role under it
+				staff.Setup(m_GM, s, pid);
+				role = talk.GetRole();
+				name = RZ_PersonTags.StaffName(body, role, talk.GetFaction());
+				if (name.IsEmpty())
+				{
+					name = role;
+					role = "";
+				}
+
+				faction = s.m_iFaction;
+			}
+			else if (s.m_Adapter)
+			{
+				RZ_DCtx ctx = new RZ_DCtx();
+				ctx.m_GM = m_GM;
+				ctx.m_iPlayer = pid;
+				ctx.m_User = me;
+				ctx.m_Body = body;
+				if (s.m_Adapter.Describe(m_GM, s, ctx) && !ctx.m_aKinds.IsEmpty())
+				{
+					faction = ctx.m_iFaction;
+					name = TagName(ctx, body);
+					role = TagRole(ctx, body);
+				}
+			}
+
+			// Nobody the talk screen can describe: what their Talk prompt calls them ("Talk to the captain")
+			if (name.IsEmpty())
+				name = FromRead(body);
+		}
+
+		// Someone their spawn named (a guard, a crew, a patrol, a camp's extra)
+		if (name.IsEmpty())
+		{
+			RZ_PersonTag t = RZ_PersonTags.Get(body);
+			if (t && !t.m_sName.IsEmpty())
+			{
+				name = t.m_sName;
+				role = t.m_sRole;
+				faction = t.m_iFaction;
 			}
 		}
 
-		// Nobody the talk screen can describe: what their Talk prompt calls them ("Talk to the captain")
+		// Anyone else on a side: nobody has told you their name, so their side's word
 		if (name.IsEmpty())
-			name = FromRead(body);
+		{
+			int side = SideOf(body);
+			name = SideWord(side);
+			role = "";
+			faction = side;
+		}
 
 		if (name.IsEmpty())
 			return "";
+
+		// Named by their Talk prompt with no side said (a patrol's leader): the side they're on
+		if (!RZ_Factions.IsValid(faction))
+			faction = SideOf(body);
 
 		if (!RZ_Factions.IsValid(faction))
 			faction = -1;
@@ -205,15 +274,21 @@ class RZ_Nametags
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The name a tag shows: a wanderer's own name, "Resident" for a house's people, "Stranger";
-	//! nothing for a mission's people (their Talk prompt names them).
-	protected static string TagName(RZ_DCtx ctx)
+	//! The name a tag shows: a wanderer's own name, a house's people by the names their spawn gave
+	//! them (else "Resident"), "Stranger"; nothing for a mission's people (their Talk prompt names them).
+	protected static string TagName(RZ_DCtx ctx, IEntity body)
 	{
 		if (ctx.m_Wanderer)
 			return ctx.m_sShort;
 
 		if (ctx.m_aKinds.Contains("occupant"))
+		{
+			RZ_PersonTag t = RZ_PersonTags.Get(body);
+			if (t && !t.m_sName.IsEmpty())
+				return t.m_sName;
+
 			return "Resident";
+		}
 
 		if (ctx.m_aKinds.Contains("stranger"))
 			return "Stranger";
@@ -225,11 +300,20 @@ class RZ_Nametags
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The role a tag shows, where it says something the name doesn't: none for a house's people, a
-	//! stranger, the Long Table, a post or a mission's people.
-	protected static string TagRole(RZ_DCtx ctx)
+	//! The role a tag shows, where it says something the name doesn't: a house's named occupant is a
+	//! resident; none for a stranger, the Long Table, a post or a mission's people.
+	protected static string TagRole(RZ_DCtx ctx, IEntity body)
 	{
-		array<string> plain = {"occupant", "stranger", "mission", "quest", "table", "post"};
+		if (ctx.m_aKinds.Contains("occupant"))
+		{
+			RZ_PersonTag t = RZ_PersonTags.Get(body);
+			if (t && !t.m_sName.IsEmpty())
+				return "resident";
+
+			return "";
+		}
+
+		array<string> plain = {"stranger", "mission", "quest", "table", "post"};
 		foreach (string kind : plain)
 		{
 			if (ctx.m_aKinds.Contains(kind))
@@ -258,4 +342,48 @@ class RZ_Nametags
 
 		return who;
 	}
+
+	// ================================================================ Sides
+	//------------------------------------------------------------------------------------------------
+	//! Which side a character's faction key is: a faction, SIDE_LOOSE for the player side's keys,
+	//! SIDE_NONE for anything else (the infected, a vanilla faction).
+	protected static int SideOf(IEntity e)
+	{
+		string key = RZ_Util.GetCharacterFactionKey(e);
+		if (key.IsEmpty())
+			return SIDE_NONE;
+
+		for (int f = RZ_EFaction.MILITARY; f < RZ_Factions.COUNT; f++)
+		{
+			if (key == RZ_Factions.GetAIKey(f))
+				return f;
+		}
+
+		if (RZ_Factions.IsPlayerSide(key))
+			return SIDE_LOOSE;
+
+		return SIDE_NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone nobody has named, by their side: "Soldier", "Crewman", "Guard", "Survivor"; "" none.
+	protected static string SideWord(int side)
+	{
+		switch (side)
+		{
+			case RZ_EFaction.MILITARY: return "Soldier";
+			case RZ_EFaction.BANDITS: return "Crewman";
+			case RZ_EFaction.INSTITUTE: return "Guard";
+			case SIDE_LOOSE: return "Survivor";
+		}
+
+		return "";
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Whose an RplId's kept tag is (weak), so an id that comes back on someone new isn't read wrong.
+class RZ_NametagBody
+{
+	IEntity m_Body;
 }

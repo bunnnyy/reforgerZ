@@ -2386,10 +2386,10 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **229** lines with the tag, all but one in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 49 are in `UI/`: [the UI's](#the-ui-47), the loadout
-lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
-`Dialogue/`, two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
+There are **233** lines with the tag, all but one in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 50 are in `UI/`: [the UI's](#the-ui-48), the loadout
+lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; three are in `Dialogue/` (the talk
+screen's, and the two of the nametags' names), two are the radio screen's, three the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
 ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
@@ -2397,7 +2397,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-47)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-48)
 come last.
 
 ### High risk: the core loop (2)
@@ -2521,10 +2521,12 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:1475` | a quartermaster or the medic moved and turned with `SetWorldTransform` on the server stays at their hand-placed spot, facing its way, on every client | They stand where they spawned; the quartermaster turns to serve as before |
 | `World/HandBuilt/RZ_HandSpots.c:402` | a short flat trace through a spot inside a wall, a crate or a tent's side reports a hit (the spot turns red), and the excluded marker cone doesn't | A spot in a wall isn't flagged; the author sees it in play |
 
-### Low risk: contained or cosmetic (60)
+### Low risk: contained or cosmetic (62)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `Dialogue/RZ_PersonTags.c:145` | `string.Hash()` gives the same number for the same key on every run and machine, so a guard's name is the same after a restart | Names stay put while the server runs but change at a restart: seed from a hash of our own in `RZ_PersonTags.NameFor` |
+| `Dialogue/RZ_PersonTags.c:274` | a body spawned on the server has its RplId at once (if not, its mark waits in `s_aPending` and is filed on the next ask) | None needed; if a guard shows only their side's word ("Soldier"), the mark never got an id: report it |
 | `Factions/RZ_SiteGrid.c:667` | a downward trace's `TraceMaterial` names the surface hit, with a word that tells paved ground from soft (on Everon: grass_01 to grass_03, dirt_01, cobblestone_01_wave) | Soft ground isn't told from paving: sites treat all ground alike |
 | `World/RZ_LongTableReach.c:698` | the farm building's world box (`GetWorldBounds`) tops out at its roof, so the chimney smoke (**Long Table > Reach > Chimney smoke**) stands over the house, not inside it or high above | The smoke is in the wrong place: empty the slot |
 | `World/RZ_LongTableReach.c:809` | the bowls, jars and lanterns at 0.82 m sit on TableLong_01's top, not sunk into it or floating | Adjust the 0.82 (`top` in `SetTable` and `Lanterns`) |
@@ -2586,7 +2588,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PowerLooks.c:102` | the power station's generator: `RZ_PowerGeneratorSound.et` (no mesh, vanilla's diesel generator sounds on a `StaticSoundComponent`), spawned by the server, plays on every client that streams it in and stops when the server deletes it, as vanilla's placed generators do | No sound at a running station: empty **World > Power grid > Generator sound prefab**; the panel and the notices still say it runs |
 | `UI/RZ_PowerLampsClient.c:185` | street lamps: `StreetLampComponent.SetBroken(true)` on a client puts that lamp out there (its light and its glow), and `SetBroken(false)` lets it light itself at night again | Lamps stay lit in dark towns, or stay out after the main switch: turn **World > Power grid > Street lamps** off, and every lamp is left as the map has it |
 
-### The UI (47)
+### The UI (48)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -2622,7 +2624,8 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_TalkMenu.c:62`, `:400` | `OnMouseWheel` reaches a reply row's `Button` and the reply box's frame (`ReplyPanel`), with `wheel` positive rolled up, so the wheel moves the selection and past the ends turns the page | The wheel does nothing or runs the wrong way (flip the sign in `RZ_TalkMenu.Wheel`); the arrow keys, Q/E and the arrows' clicks still move and turn the page |
 | `UI/RZ_TalkMenu.c:652` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls a box that overflows toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.UpdateLine`; boxes are cut to fit, so it's rarely needed |
 | `UI/RZ_TalkMenu.c:692` | `string.ToAscii` gives 0–127 for a plain character and something else for a byte of a longer UTF-8 one, so the typing never stops inside an accented letter | A name like "Zoë" shows a broken character for a frame while it types; the whole box is set once it's done |
-| `UI/RZ_NametagClient.c:170` | `WorkspaceWidget.ProjWorldToScreen` gives reference-resolution units with z below 0 behind the camera (vanilla's nametags read it so), so a tag's foot sits over the person's head and hides behind you | The tags sit in the wrong place or show behind you: turn **Dialogue > Nametags** off; talking isn't affected |
+| `UI/RZ_NametagClient.c:180` | `WorkspaceWidget.ProjWorldToScreen` gives reference-resolution units with z below 0 behind the camera (vanilla's nametags read it so), so a tag's foot sits over the person's head and hides behind you | The tags sit in the wrong place or show behind you: turn **Dialogue > Nametags** off; talking isn't affected |
+| `UI/RZ_NametagClient.c:221` | a character's vanilla `Head` bone, read in its model space (as the hands-on screen reads bones), so a tag stays over the head as the person crouches, lies down, sits or rides | Without the bone the tag sits 2.05 m over their feet (as before): high over someone sitting or lying |
 | `UI/RZ_UIData.c:1143` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `UI/RZ_UIData.c:1282` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow, the talk screen's down arrows (its page indicator and the ▼ at the end of their line), and the quest tracker's arrow to its objective | The arrows point the wrong way or swing about a corner: the markers still sit in the right place, and the tracker's text still gives the metres (the compass words past a km) |
 | `Dialogue/RZ_Dialogue.c:1019` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
@@ -4171,6 +4174,15 @@ when it happens)
   follows the person as they move or you turn (no jitter), and is gone behind the camera. **Dialogue
   > Nametags** off: none. The server log stays quiet and the frame time doesn't move with three
   tags up.
+- [ ] **Every person has a tag, and keeps their name** ([UI.md](UI.md#nametags), "Who they are"): at a
+  Bastion post, its guards (*Sentry*), the quartermaster (a name, *Quartermaster*, and the talk
+  screen's header the same name), a camp's extras (a name and their work); at a road post its crew;
+  a road patrol and a supply truck's crew; a safehouse's people (a name, *Resident*, the talk header
+  the same) and guards. Write three names down, walk 600 m off (they despawn) and back: the same
+  names on the same posts. Restart the server: still the same. A sentry's tag stays on him as he
+  crouches or sits at the fire (over the head, not floating). Kill a guard, walk off and back: his
+  post has someone with a new name. A mission's men nobody has named show their side's word
+  (*Soldier*, *Crewman*). Never a tag over an infected.
 - [ ] With **UI > Talk reply layout** empty, Talk and the slots are actions with notices again.
 - [ ] **Dialogue > Trees** off (the default): the talk screen is exactly as above, no topics, no
   speaker at road posts, leaders greet as before.

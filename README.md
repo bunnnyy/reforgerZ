@@ -332,7 +332,7 @@ scripts/Game/ReforgerZ/
   Persistence/   save and load of mode state, the hall of fame
   Dialogue/      the talk screen's engine: conversations, adapters for each kind of person
                  (strangers, the open channel, the quartermasters, the medic and a duty's people too), what a reply
-                 needs, who's near each player for the nametags; the trees (hubs,
+                 needs, who's near each player for the nametags and the names they keep; the trees (hubs,
                  nodes, checks, effects), conditions, memory (dialogue.json: promises, callbacks,
                  lies told), scenes and sittings, barks, Make it right, greets that open, the secure
                  nets and distress calls, bindings and world predicates, the notebook's talk rows;

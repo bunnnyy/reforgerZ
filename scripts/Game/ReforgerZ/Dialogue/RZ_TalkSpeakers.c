@@ -242,8 +242,15 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 		if (tag == RZ_Safehouses.TAG_OCCUPANT && gm.GetSafehouses())
 		{
 			RZ_Safehouse h = gm.GetSafehouses().Get(idx);
-			if (h)
-				return "Safehouse: " + h.m_sName;
+			if (!h)
+				return "";
+
+			// The name their nametag shows (RZ_PersonTags), so the screen and the tag agree
+			RZ_PersonTag who = RZ_PersonTags.Get(m_Owner);
+			if (who && !who.m_sName.IsEmpty())
+				return who.m_sName + ", Safehouse: " + h.m_sName;
+
+			return "Safehouse: " + h.m_sName;
 		}
 
 		if (tag == RZ_NamedPeople.TAG_HOUSE && gm.GetErrands())

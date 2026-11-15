@@ -1,9 +1,11 @@
-//! Nametags on each client (docs/UI.md, "Nametags"): a small tag over the people near you that you
-//! can talk to, their name, their role and who they're with (the faction's name in its colour).
+//! Nametags on each client (docs/UI.md, "Nametags"): a small tag over the people near you (anyone
+//! human who isn't a player), their name, their role and who they're with (the faction's name in
+//! its colour).
 //! The server sends the nearest few (Dialogue/RZ_Nametags.c: each body's RplId, name, role and
 //! faction). Four times a second this keeps the ones within Dialogue > Nametag range that you can
 //! see (one sight trace each), at most Nametag max, nearest first; every frame it moves those tags
-//! over their heads (one projection each; the text is set only when a slot's person changes).
+//! over their heads (the head bone, one projection each; the text is set only when a slot's
+//! person changes), so a tag stays on its person as they walk, crouch, sit or ride.
 //! Needs NametagPanel with Nametag0-2 in the HUD layout. Hidden while a menu is open, while you're
 //! dead, and with Dialogue > Nametags off. Never a player or the infected (the server lists neither).
 //! Changes nothing in the game. Called from the HUD's update.
@@ -17,6 +19,7 @@ class RZ_NametagEntry
 	string m_sRole;
 	int m_iFaction = -1;
 	string m_sKey;		// the whole record, so a slot's text is set only when it changes
+	TNodeId m_iHead = -2;	// the body's "Head" bone, -2 not looked up yet, -1 none
 	float m_fDist;
 }
 
@@ -24,7 +27,8 @@ class RZ_NametagEntry
 class RZ_NametagClient
 {
 	protected static const float CHECK = 0.25;	// seconds between choosing who shows
-	protected static const float HEAD = 2.05;	// the tag's foot above the body's origin (m)
+	protected static const float HEAD = 2.05;	// the tag's foot above the body's origin (m), without a head bone
+	protected static const float ABOVE_HEAD = 0.35;	// the tag's foot above the head bone (m)
 	protected static const int SLOTS = 3;		// Nametag0-2 in the HUD layout
 
 	protected static ref array<ref RZ_NametagEntry> s_aList = {};
@@ -61,7 +65,10 @@ class RZ_NametagClient
 			foreach (RZ_NametagEntry prev : old)
 			{
 				if (prev.m_Id == e.m_Id)
+				{
 					e.m_Body = prev.m_Body;
+					e.m_iHead = prev.m_iHead;
+				}
 			}
 
 			s_aList.Insert(e);
@@ -117,7 +124,10 @@ class RZ_NametagClient
 		foreach (RZ_NametagEntry e : s_aList)
 		{
 			if (!e.m_Body)
+			{
 				e.m_Body = Body(e.m_Id);
+				e.m_iHead = -2;
+			}
 
 			if (!e.m_Body || !RZ_Util.IsCharacterAlive(e.m_Body))
 				continue;
@@ -167,7 +177,7 @@ class RZ_NametagClient
 				Fill(tag, e);
 			}
 
-			vector screen = ws.ProjWorldToScreen(e.m_Body.GetOrigin() + Vector(0, HEAD, 0), world); // VERIFY: reference-resolution units, z below 0 behind the camera (as vanilla's nametags read it)
+			vector screen = ws.ProjWorldToScreen(HeadOf(e), world); // VERIFY: reference-resolution units, z below 0 behind the camera (as vanilla's nametags read it)
 			if (screen[2] < 0)
 			{
 				tag.SetVisible(false);
@@ -193,6 +203,26 @@ class RZ_NametagClient
 
 		RZ_UIW.SetText(tag, "NametagFaction", RZ_Factions.GetName(e.m_iFaction));
 		RZ_UIW.Tint(tag, "NametagFaction", RZ_UIColor.Faction(e.m_iFaction));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the tag's foot goes: a little over the head bone, so it stays on the person when they
+	//! crouch, lie down, sit or ride; without the bone, HEAD over the body's origin.
+	protected static vector HeadOf(RZ_NametagEntry e)
+	{
+		IEntity body = e.m_Body;
+		Animation anim = body.GetAnimation();
+		if (anim)
+		{
+			if (e.m_iHead == -2)
+				e.m_iHead = anim.GetBoneIndex("Head");
+
+			vector bm[4];
+			if (e.m_iHead != -1 && anim.GetBoneMatrix(e.m_iHead, bm)) // VERIFY: a character's vanilla "Head" bone, in its model space (as the hands-on screen reads bones)
+				return body.CoordToParent(bm[3]) + Vector(0, ABOVE_HEAD, 0);
+		}
+
+		return body.GetOrigin() + Vector(0, HEAD, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
